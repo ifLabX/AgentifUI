@@ -29,7 +29,38 @@ export function AvatarButton({
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
     if (avatarRef.current) {
-      toggleDropdown(dropdownId, avatarRef.current)
+      const rect = avatarRef.current.getBoundingClientRect();
+      // --- BEGIN MODIFIED COMMENT ---
+      // 假设菜单的最小宽度，与 DropdownMenu 的 minWidth prop 保持一致或近似
+      // --- END MODIFIED COMMENT ---
+      const menuWidthEstimate = 160; // 从 DropdownMenu 的 minWidth prop 获取或估算
+      const screenPadding = 8; // 距离屏幕边缘的最小间距
+
+      // --- BEGIN MODIFIED COMMENT ---
+      // 优先尝试右对齐菜单 (菜单的右边缘与按钮的右边缘对齐)
+      // --- END MODIFIED COMMENT ---
+      let left = rect.right + window.scrollX - menuWidthEstimate;
+
+      // --- BEGIN MODIFIED COMMENT ---
+      // 检查是否超出屏幕右边界
+      // --- END MODIFIED COMMENT ---
+      if (left + menuWidthEstimate > window.innerWidth - screenPadding) {
+        left = window.innerWidth - menuWidthEstimate - screenPadding;
+      }
+
+      // --- BEGIN MODIFIED COMMENT ---
+      // 确保不会超出屏幕左边界
+      // --- END MODIFIED COMMENT ---
+      if (left < screenPadding) {
+        left = screenPadding;
+      }
+
+      const position = {
+        top: rect.bottom + window.scrollY + 4, // 保持在按钮下方
+        left: left,
+      };
+      
+      toggleDropdown(dropdownId, position)
     }
     onClick?.(event)
   }

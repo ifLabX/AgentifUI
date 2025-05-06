@@ -126,13 +126,6 @@ export function DropdownMenu({
     }
   }, [isVisible, closeDropdown, id]);
   
-  // 监听侧边栏状态，当侧边栏收起时关闭下拉菜单
-  useEffect(() => {
-    if (!isExpanded && isVisible) {
-      closeDropdown()
-    }
-  }, [isExpanded, isVisible, closeDropdown])
-  
   // 滚动时关闭下拉菜单
   useEffect(() => {
     const handleScroll = () => {
