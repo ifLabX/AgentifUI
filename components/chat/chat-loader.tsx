@@ -36,6 +36,7 @@ export const ChatLoader = ({ messages, isWaitingForResponse = false, className }
               key={msg.id} 
               content={msg.text} 
               attachments={msg.attachments} 
+              id={msg.id}
             />
           ) : (
             <AssistantMessage 
@@ -43,6 +44,7 @@ export const ChatLoader = ({ messages, isWaitingForResponse = false, className }
               content={msg.text} 
               isStreaming={msg.isStreaming ?? false}
               wasManuallyStopped={msg.wasManuallyStopped ?? false}
+              id={msg.id}
             />
           )
         ))}

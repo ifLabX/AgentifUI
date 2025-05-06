@@ -36,7 +36,7 @@ export default function ChatPage() {
     handleStopProcessing, 
   } = useChatInterface();
 
-  const scrollRef = useChatScroll<HTMLDivElement>(messages.length);
+  const scrollRef = useChatScroll<HTMLDivElement>(messages);
 
   const isWaitingForResponse = useChatStore((state) => state.isWaitingForResponse);
 

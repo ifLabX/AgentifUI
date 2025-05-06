@@ -36,6 +36,7 @@ const extractThinkContent = (rawContent: string): {
 };
 
 interface AssistantMessageProps {
+  id: string;
   content: string
   isStreaming: boolean
   wasManuallyStopped: boolean
@@ -43,6 +44,7 @@ interface AssistantMessageProps {
 }
 
 export const AssistantMessage: React.FC<AssistantMessageProps> = ({ 
+  id,
   content, 
   isStreaming,
   wasManuallyStopped, 
@@ -154,7 +156,10 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   };
 
   return (
-    <div className={cn("w-full mb-4 assistant-message-container", className)}>
+    <div 
+      className={cn("w-full mb-4 assistant-message-container", className)}
+      data-message-id={id}
+    >
       {hasThinkBlock && (
         <>
           <ThinkBlockHeader 

@@ -63,7 +63,7 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
             key={attachment.id}
             onClick={() => handleAttachmentClick(attachment)}
             className={cn(
-              "relative pl-2 pr-1 py-1 rounded-md flex items-center gap-2 flex-shrink basis-[calc((100%-1.5rem)/3)] sm:basis-[calc((100%-1rem)/2)] max-w-[180px] sm:max-w-[200px]",
+              "relative pl-2 pr-1 py-1 rounded-md flex items-center gap-2 flex-shrink basis-[calc((100%-1rem)/3)] max-w-[180px] sm:max-w-[200px]",
               "text-left",
               isDark
                 ? "bg-gray-700/90 border border-gray-600/80 hover:bg-gray-600/90"

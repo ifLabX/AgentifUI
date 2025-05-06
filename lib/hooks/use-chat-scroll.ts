@@ -1,6 +1,7 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 import throttle from 'lodash/throttle';
+import { ChatMessage } from '@lib/stores/chat-store'; // 引入 ChatMessage 类型
 
 // --- BEGIN COMMENT ---
 // useChatScroll Hook
@@ -21,195 +22,179 @@ import throttle from 'lodash/throttle';
 // --- END COMMENT ---
 const SCROLL_THRESHOLD = 50;
 
-// 检查是否为流式响应的函数
-const isStreamingResponse = (dep: any): boolean => {
-  // 根据你的消息数据结构来判断是否为流式响应
-  // 这只是一个示例实现，需要根据你的实际数据结构调整
-  return dep?.isStreaming || 
-         (typeof dep === 'object' && 
-          dep?.messages?.length > 0 && 
-          dep.messages[dep.messages.length - 1]?.isStreaming);
+// --- BEGIN COMMENT ---
+// 定义 NavBar 高度和下方间距 (需要与实际 NavBar 高度 h-12 匹配)
+// --- END COMMENT ---
+const NAVBAR_HEIGHT_PX = 48; // NavBar h-12 高度 (3rem = 48px)
+const MARGIN_BELOW_NAVBAR_PX = 16; // 滚动到 NavBar 下方留出的额外间距 (1rem = 16px)
+
+// 检查是否为流式响应的函数 (简化，假设最后一个消息有 isStreaming 属性)
+const isStreamingResponse = (messages: ChatMessage[]): boolean => {
+  if (!Array.isArray(messages) || messages.length === 0) return false;
+  const lastMessage = messages[messages.length - 1];
+  return lastMessage && lastMessage.isStreaming === true;
 }
 
-export function useChatScroll<T extends HTMLElement>(dependency: any) {
-  const scrollRef = useRef<T>(null); // Ref 附加到主滚动容器
-  const prevScrollHeightRef = useRef<number>(0); // 记录前一次的滚动高度
-  const animationFrameRef = useRef<number | null>(null); // 用于存储动画帧ID
+export function useChatScroll<T extends HTMLElement>(
+  messages: ChatMessage[], // 依赖改为整个 messages 数组
+) {
+  const scrollRef = useRef<T>(null);
+  const prevMessagesRef = useRef<ChatMessage[]>([]); // 存储上一次的 messages
+  const animationFrameRef = useRef<number | null>(null); 
   
   const { 
     userScrolledUp, 
     setUserScrolledUp, 
-    setIsAtBottom, // 获取更新 isAtBottom 的 action
-    setScrollRef, // 获取设置 ref 的 action
-    scrollToBottom // 获取滚动到底部的方法，以便在初始加载时使用
+    isAtBottom, // 读取 isAtBottom 状态
+    setIsAtBottom,
+    setScrollRef,
   } = useChatScrollStore();
+
+  // --- BEGIN COMMENT ---
+  // 使用常量定义的 NavBar 高度和边距
+  // --- END COMMENT ---
+  const navBarHeight = NAVBAR_HEIGHT_PX; 
+  const marginBelowNavBar = MARGIN_BELOW_NAVBAR_PX;
 
   // --- BEGIN COMMENT ---
   // 注册 scrollRef 到 store
   // --- END COMMENT ---
   useEffect(() => {
     if (scrollRef.current) {
-      setScrollRef(scrollRef as React.RefObject<HTMLElement>)
-      // 初始化高度记录
-      prevScrollHeightRef.current = scrollRef.current.scrollHeight;
-    }
-    // 确保在组件卸载时清除引用，虽然在这个场景下可能不是严格必需
-    return () => {
-      // 注意：这里直接 setScrollRef(null) 可能会在快速导航时出问题
-      // 如果 store 的实例持续存在，但 ref 已失效。视情况决定是否需要清理。
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      setScrollRef(scrollRef as React.RefObject<HTMLElement>);
+      const element = scrollRef.current;
+      const atBottomNow = element.scrollHeight - element.scrollTop - element.clientHeight < SCROLL_THRESHOLD;
+      if (isAtBottom !== atBottomNow) {
+        setIsAtBottom(atBottomNow);
       }
-    }
-  }, [setScrollRef])
-
-  // --- BEGIN COMMENT ---
-  // 检查内容高度变化并更新isAtBottom状态
-  // 这个函数不依赖于滚动事件，而是主动检测内容变化
-  // --- END COMMENT ---
-  const checkContentHeightChange = useCallback(() => {
-    const element = scrollRef.current;
-    if (!element) return;
-    
-    const { scrollTop, scrollHeight, clientHeight } = element;
-    const currentDistanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    
-    // 如果高度发生变化
-    if (scrollHeight !== prevScrollHeightRef.current) {
-      // 更新前一次高度记录
-      prevScrollHeightRef.current = scrollHeight;
-      
-      // 更新isAtBottom状态
-      const atBottom = currentDistanceFromBottom < SCROLL_THRESHOLD;
-      setIsAtBottom(atBottom);
-      
-      // 如果不在底部且没有设置userScrolledUp，则设置它
-      // 这确保当内容增加导致用户不再在底部时，滚动按钮会出现
-      if (!atBottom && !userScrolledUp) {
+      if (!atBottomNow && !useChatScrollStore.getState().userScrolledUp) { 
         setUserScrolledUp(true);
       }
     }
-    
-    // 递归调用以持续监测高度变化
-    animationFrameRef.current = requestAnimationFrame(checkContentHeightChange);
-  }, [setIsAtBottom, setUserScrolledUp, userScrolledUp]);
-  
-  // 启动高度监测
-  useEffect(() => {
-    animationFrameRef.current = requestAnimationFrame(checkContentHeightChange);
-    
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [checkContentHeightChange]);
+  }, [setScrollRef, setIsAtBottom, setUserScrolledUp, userScrolledUp, isAtBottom]);
 
   // --- BEGIN COMMENT ---
   // 使用 useCallback 和 throttle 优化滚动事件处理函数
   // 减少 throttle 时间从 100ms 到 50ms 使滚动更平滑
   // --- END COMMENT ---
   const handleScroll = useCallback(throttle(() => {
-    const element = scrollRef.current
+    const element = scrollRef.current;
     if (element) {
       const { scrollTop, scrollHeight, clientHeight } = element;
-      const atBottom = scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD
-      const scrolledUp = !atBottom
+      const currentAtBottom = scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD;
+      const currentScrolledUp = !currentAtBottom;
       
-      // --- BEGIN COMMENT ---
-      // 添加详细滚动日志
-      // --- END COMMENT ---
-      // console.log(`[ScrollHandler] scrollTop: ${scrollTop.toFixed(1)}, scrollHeight: ${scrollHeight.toFixed(1)}, clientHeight: ${clientHeight.toFixed(1)}, calculated_atBottom: ${atBottom}, calculated_scrolledUp: ${scrolledUp}`);
-
-      // --- BEGIN COMMENT ---
-      // 更新 isAtBottom 状态
-      // 更新 userScrolledUp 状态，只有在状态实际变化时才更新 store
-      // --- END COMMENT ---
-      setIsAtBottom(atBottom)
-      if (scrolledUp !== useChatScrollStore.getState().userScrolledUp) {
-          setUserScrolledUp(scrolledUp)
+      if (currentAtBottom !== useChatScrollStore.getState().isAtBottom) {
+        setIsAtBottom(currentAtBottom);
+      }
+      if (currentScrolledUp !== useChatScrollStore.getState().userScrolledUp) {
+        setUserScrolledUp(currentScrolledUp);
       }
     }
-  }, 50), [setUserScrolledUp, setIsAtBottom]) // 依赖项包含 setIsAtBottom；将节流从100ms减少到50ms
+  }, 50), [setIsAtBottom, setUserScrolledUp]);
 
   useEffect(() => {
-    const element = scrollRef.current
+    const element = scrollRef.current;
     if (element) {
-      // --- BEGIN COMMENT ---
-      // 组件挂载和依赖项变化时，添加滚动事件监听器
-      // --- END COMMENT ---
-      element.addEventListener('scroll', handleScroll)
-      
-      // --- BEGIN COMMENT ---
-      // 初始状态检查：如果不在底部，则标记用户已滚动
-      // 并确保初始时 isAtBottom 状态正确
-      // --- END COMMENT ---
-      const atBottom = element.scrollHeight - element.scrollTop - element.clientHeight < SCROLL_THRESHOLD;
-      setIsAtBottom(atBottom);
-      if (!atBottom) {
-        setUserScrolledUp(true);
-      }
-
-      // --- BEGIN COMMENT ---
-      // 组件卸载时，移除监听器
-      // --- END COMMENT ---
+      element.addEventListener('scroll', handleScroll);
+      handleScroll();
       return () => {
-        element.removeEventListener('scroll', handleScroll)
-        handleScroll.cancel() // 取消可能在等待执行的 throttle 调用
+        element.removeEventListener('scroll', handleScroll);
+        handleScroll.cancel();
+      };
+    }
+  }, [handleScroll]);
+
+  // CONSOLIDATED SCROLL LOGIC EFFECT
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
+
+    if (!Array.isArray(messages)) {
+      console.warn('[useChatScroll] messages prop is not an array. Aborting scroll logic for this cycle.');
+      return;
+    }
+
+    const prevMessages = prevMessagesRef.current; 
+    const currentMessages = messages; 
+    let newLastUserMessage: ChatMessage | null = null;
+
+    if (currentMessages.length > 0) {
+      const lastMessage = currentMessages[currentMessages.length - 1];
+      if (lastMessage.isUser) {
+        const prevWasEmptyOrDifferent = !Array.isArray(prevMessages) || prevMessages.length === 0 || 
+                                      (prevMessages.length > 0 && lastMessage.id !== prevMessages[prevMessages.length - 1]?.id);
+        if (currentMessages.length > prevMessages.length || prevWasEmptyOrDifferent) {
+          newLastUserMessage = lastMessage;
+        }
       }
     }
-  }, [handleScroll, setIsAtBottom, setUserScrolledUp]) // 依赖项包含 setIsAtBottom 和 setUserScrolledUp
-
-  useEffect(() => {
-    // --- BEGIN COMMENT ---
-    // 当依赖项（如消息列表长度）变化时触发
-    // 如果用户没有手动向上滚动，则自动滚动到底部
-    // 使用 requestAnimationFrame 确保滚动发生在 DOM 更新之后
-    // --- END COMMENT ---
-    if (!userScrolledUp && scrollRef.current) {
-      requestAnimationFrame(() => {
-        const element = scrollRef.current
-        if (element) {
-          const isCurrentlyAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < SCROLL_THRESHOLD;
-          // 只有当实际不在底部时才执行滚动，防止不必要的重绘
-          if(!isCurrentlyAtBottom) {
-            element.scrollTo({
-              top: element.scrollHeight,
-              behavior: 'auto' // 自动滚动通常不需要平滑效果
-            })
-            // 自动滚动后，我们确定在底部
-            setIsAtBottom(true)
+    
+    if (newLastUserMessage && newLastUserMessage.id) {
+      animationFrameRef.current = requestAnimationFrame(() => {
+        if (!scrollRef.current) return;
+        const messageElement = scrollRef.current.querySelector(`[data-message-id="${newLastUserMessage!.id}"]`) as HTMLElement;
+        
+        if (messageElement) {
+          let targetScrollTop = messageElement.offsetTop - navBarHeight - marginBelowNavBar;
+          targetScrollTop = Math.max(0, targetScrollTop);
+          
+          scrollRef.current.scrollTo({
+            top: targetScrollTop,
+            behavior: 'auto'
+          });
+          
+          setUserScrolledUp(true);
+          const atBottomAfterScroll = scrollRef.current.scrollHeight - targetScrollTop - scrollRef.current.clientHeight < SCROLL_THRESHOLD;
+          setIsAtBottom(atBottomAfterScroll);
+        } else {
+          if (!useChatScrollStore.getState().userScrolledUp) {
+             scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'auto' });
+             setIsAtBottom(true);
           }
         }
-      })
+      });
+      prevMessagesRef.current = [...currentMessages];
+      return;
     }
-  }, [dependency, userScrolledUp, setIsAtBottom]) // 依赖项包含 setIsAtBottom
 
-  // --- BEGIN COMMENT ---
-  // 增加对流式响应的特殊处理
-  // --- END COMMENT ---
-  useEffect(() => {
-    // 检测是否为流式响应
-    const streaming = isStreamingResponse(dependency);
-    
-    if (streaming && scrollRef.current) {
-      // 流式响应时，即使用户向上滚动，也考虑滚动（但要更智能）
-      const element = scrollRef.current;
-      const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
-      
-      // 如果用户在接近底部，即使userScrolledUp=true也自动滚动
-      if (distanceFromBottom < SCROLL_THRESHOLD * 3) {
-        requestAnimationFrame(() => {
+    if (!userScrolledUp) { 
+      const streaming = isStreamingResponse(messages);
+      if (streaming) {
+        const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+        if (distanceFromBottom < SCROLL_THRESHOLD * 3) {
+          animationFrameRef.current = requestAnimationFrame(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+              setIsAtBottom(true);
+            }
+          });
+        }
+      } else {
+        animationFrameRef.current = requestAnimationFrame(() => {
           if (scrollRef.current) {
-            scrollRef.current.scrollTo({
-              top: scrollRef.current.scrollHeight,
-              behavior: 'smooth'
-            });
+            if (element.scrollHeight - element.scrollTop - element.clientHeight >= SCROLL_THRESHOLD) {
+               scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'auto' });
+            }
+            setIsAtBottom(true);
           }
         });
       }
     }
-  }, [dependency]) // 单独监听dependency变化
 
+    prevMessagesRef.current = [...currentMessages];
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [messages, userScrolledUp, navBarHeight, marginBelowNavBar, setIsAtBottom, setUserScrolledUp]);
+  
   return scrollRef; // 返回 ref
 } 
