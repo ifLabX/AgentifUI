@@ -27,15 +27,26 @@ export function NavBar() {
     return null
   }
 
+  // --- BEGIN MODIFIED COMMENT ---
+  // 根据 isExpanded 和 isDark 动态确定边框类
+  // --- END MODIFIED COMMENT ---
+  const borderClass = isExpanded 
+    ? (isDark ? "border-b border-black" : "border-b border-slate-200") 
+    : ""; // 侧边栏收起时无边框类
+
   return (
     <>
       <header
         className={cn(
-          "fixed top-0 right-0 h-12 z-20",
+          "fixed top-0 right-4 h-12 z-20",
           isExpanded ? "left-0 md:left-64" : "left-0 md:left-16",
           isDark ? "bg-gray-900" : "bg-gray-50",
-          "flex items-center justify-between px-4",
-          "transition-all duration-300 ease-in-out"
+          "flex items-center justify-between pl-4 pr-2",
+          // --- BEGIN MODIFIED COMMENT ---
+          // 应用动态计算的边框类
+          // --- END MODIFIED COMMENT ---
+          borderClass,
+          "transition-[left] duration-300 ease-in-out"
         )}
       >
         <div className="flex items-center space-x-2">
@@ -43,7 +54,7 @@ export function NavBar() {
         </div>
 
         <div className="flex items-center">
-          <AvatarButton dropdownId="user-menu" />
+          <AvatarButton dropdownId="user-menu" isDark={isDark} />
         </div>
       </header>
 

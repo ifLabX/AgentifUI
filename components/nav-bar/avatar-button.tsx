@@ -5,12 +5,13 @@ import { cn } from "@lib/utils"
 import { User } from "lucide-react" // 默认图标
 import { useDropdownStore } from "@lib/stores/ui/dropdown-store"
 
-interface AvatarButtonProps {
+interface UserAvatarDisplayProps {
   // 未来可以传入 src 用于显示图片头像
   // src?: string; 
   alt?: string
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   dropdownId: string;
+  isDark: boolean; // 添加 isDark prop
 }
 
 // --- BEGIN COMMENT ---
@@ -21,8 +22,9 @@ interface AvatarButtonProps {
 export function AvatarButton({ 
   alt = "用户头像", 
   onClick,
-  dropdownId
-}: AvatarButtonProps) {
+  dropdownId,
+  isDark // 接收 isDark prop
+}: UserAvatarDisplayProps) {
   const avatarRef = useRef<HTMLButtonElement>(null)
   const { toggleDropdown, isOpen, activeDropdownId } = useDropdownStore()
 
@@ -30,36 +32,19 @@ export function AvatarButton({
     event.stopPropagation()
     if (avatarRef.current) {
       const rect = avatarRef.current.getBoundingClientRect();
-      // --- BEGIN MODIFIED COMMENT ---
-      // 假设菜单的最小宽度，与 DropdownMenu 的 minWidth prop 保持一致或近似
-      // --- END MODIFIED COMMENT ---
-      const menuWidthEstimate = 160; // 从 DropdownMenu 的 minWidth prop 获取或估算
-      const screenPadding = 8; // 距离屏幕边缘的最小间距
-
-      // --- BEGIN MODIFIED COMMENT ---
-      // 优先尝试右对齐菜单 (菜单的右边缘与按钮的右边缘对齐)
-      // --- END MODIFIED COMMENT ---
+      const menuWidthEstimate = 160; 
+      const screenPadding = 8; 
       let left = rect.right + window.scrollX - menuWidthEstimate;
-
-      // --- BEGIN MODIFIED COMMENT ---
-      // 检查是否超出屏幕右边界
-      // --- END MODIFIED COMMENT ---
       if (left + menuWidthEstimate > window.innerWidth - screenPadding) {
         left = window.innerWidth - menuWidthEstimate - screenPadding;
       }
-
-      // --- BEGIN MODIFIED COMMENT ---
-      // 确保不会超出屏幕左边界
-      // --- END MODIFIED COMMENT ---
       if (left < screenPadding) {
         left = screenPadding;
       }
-
       const position = {
-        top: rect.bottom + window.scrollY + 4, // 保持在按钮下方
+        top: rect.bottom + window.scrollY + 4, 
         left: left,
       };
-      
       toggleDropdown(dropdownId, position)
     }
     onClick?.(event)
@@ -72,20 +57,27 @@ export function AvatarButton({
       ref={avatarRef}
       onClick={handleClick}
       className={cn(
-        // 尺寸和形状
+        // Base styles
         "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden",
-        // 背景和边框
-        "bg-gray-200 dark:bg-gray-700",
-        "border-2 border-transparent", // 初始无边框
-        // 交互效果
-        "hover:border-primary/50 dark:hover:border-primary/70",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-gray-800",
-        // 下拉菜单激活时的状态
-        isDropdownActive && "ring-2 ring-primary border-primary dark:ring-offset-gray-800",
-        "transition-all duration-150 ease-in-out"
+        "border-2 border-transparent", // 保持透明边框占位，防止激活时跳动
+        "focus:outline-none",
+        "transition-colors duration-150 ease-in-out", // 只过渡颜色
+        "mt-1", // 添加上边距
+
+        // --- BEGIN MODIFIED COMMENT ---
+        // 使用 isDark prop 进行条件渲染，替换 dark: 前缀
+        // --- END MODIFIED COMMENT ---
+        // Default colors
+        isDark ? "bg-slate-700" : "bg-slate-100",
+        // Hover colors
+        isDark ? "hover:bg-slate-600" : "hover:bg-slate-200",
+        // Active state colors (dropdown open)
+        isDropdownActive ? (isDark ? "bg-slate-600" : "bg-slate-200") : (isDark ? "bg-slate-700" : "bg-slate-100")
+        // 移除悬停边框，保持简洁
+        // isDark ? "hover:border-slate-500" : "hover:border-slate-300", 
       )}
       aria-label={alt}
-      data-more-button-id={`${dropdownId}-trigger`} // 确保与 dropdown 关闭逻辑兼容
+      data-more-button-id={`${dropdownId}-trigger`}
     >
       {/* --- BEGIN COMMENT --- */}
       {/* 
@@ -93,7 +85,13 @@ export function AvatarButton({
         <Image src={src || defaultAvatar} alt={alt} width={36} height={36} className="object-cover" /> 
       */}
       {/* --- END COMMENT --- */}
-      <User className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+      <User className={cn(
+        "w-5 h-5",
+        // --- BEGIN MODIFIED COMMENT ---
+        // 图标颜色也使用 isDark prop
+        // --- END MODIFIED COMMENT ---
+        isDark ? "text-slate-400" : "text-slate-500"
+      )} />
     </button>
   )
 } 
