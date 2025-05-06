@@ -17,6 +17,7 @@ import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useChatScroll } from '@lib/hooks/use-chat-scroll';
 import { useFilePreviewStore } from '@lib/stores/ui/file-preview-store';
 import { cn } from '@lib/utils';
+import { NavBar } from '@components/nav-bar/nav-bar';
 
 export default function ChatPage() {
   const params = useParams();
@@ -58,19 +59,22 @@ export default function ChatPage() {
   return (
     <div 
       className={cn(
-        "h-full flex",
+        "h-full w-full relative flex flex-col",
         isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       )}
     >
+      <NavBar />
+
       <div 
         className={cn(
-          "relative h-full flex flex-col overflow-hidden",
+          "relative flex-1 flex flex-col overflow-hidden min-h-0",
+          "pt-10",
           "transition-[width] duration-300 ease-in-out",
           isPreviewOpen ? "w-[50%] lg:w-[60%]" : "w-full"
         )}
         style={{ '--chat-input-height': chatInputHeightVar } as React.CSSProperties}
       >
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-h-0">
           {isWelcomeScreen && useChatStore.getState().currentConversationId === null ? (
             <WelcomeScreen />
           ) : (

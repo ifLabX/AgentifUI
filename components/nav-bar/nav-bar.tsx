@@ -31,7 +31,7 @@ export function NavBar() {
     <>
       <header
         className={cn(
-          "fixed top-0 right-0 h-14 z-20",
+          "fixed top-0 right-0 h-12 z-20",
           isExpanded ? "left-0 md:left-64" : "left-0 md:left-16",
           isDark ? "bg-gray-900" : "bg-gray-50",
           "flex items-center justify-between px-4",
