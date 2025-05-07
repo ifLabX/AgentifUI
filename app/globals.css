@@ -114,27 +114,3 @@ body {
   animation: slideInDown 200ms ease-out forwards;
 }
 
-/* 确保 html 和 body 有足够的高度 */
-html, 
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto; /* 允许垂直滚动 */
-}
-
-/* 修复内容容器的高度和溢出行为 */
-#__next,
-main,
-.main-content {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto; /* 允许垂直滚动 */
-}
-
-/* 确保内容区域可以正常滚动 */
-.content-wrapper {
-  flex: 1;
-  overflow-y: auto;
-}

@@ -10,8 +10,21 @@ import rehypeKatex from "rehype-katex"
 import rehypeRaw from "rehype-raw"
 import "katex/dist/katex.min.css"
 import type { Components } from "react-markdown"
-import { ThinkBlockHeader, ThinkBlockStatus } from "@components/chat/markdown-block/think-block-header"
+// --- BEGIN MODIFIED COMMENT ---
+// 导入原子化的 Markdown 组件和思考块相关组件
+// --- END MODIFIED COMMENT ---
+import { 
+  ThinkBlockHeader, 
+  ThinkBlockStatus 
+} from "@components/chat/markdown-block/think-block-header" // Keep existing think block components
 import { ThinkBlockContent } from "@components/chat/markdown-block/think-block-content"
+import {
+  InlineCode,
+  CodeBlock,
+  MarkdownTableContainer,
+  MarkdownBlockquote,
+} from "@components/chat/markdown-block";
+
 
 const extractThinkContent = (rawContent: string): {
   hasThinkBlock: boolean;
@@ -97,61 +110,98 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   }, [currentStatus]);
 
   const mainMarkdownComponents: Components = {
-    code({ className, children, ...props }: any) {
+    // --- BEGIN MODIFIED COMMENT ---
+    // 使用原子化组件渲染代码块和内联代码
+    // --- END MODIFIED COMMENT ---
+    code({ node, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
-      return !className?.includes('language-') ? (
-        <code className={cn("px-1 py-0.5 rounded", isDark ? "bg-gray-800" : "bg-gray-100")} {...props}>
-          {children}
-        </code>
-      ) : (
-        <pre className={cn("rounded-md p-4 my-2", isDark ? "bg-gray-800" : "bg-gray-100")}>
-          <code className={className} {...props}>
-            {children}
-          </code>
-        </pre>
-      );
+      const language = match ? match[1] : null;
+
+      if (node.position?.start.line !== node.position?.end.line || language) {
+        // 多行代码或指定了语言 -> 代码块
+        return (
+          <CodeBlock language={language} className={className} {...props}>
+            {String(children).replace(/\n$/, "")}
+          </CodeBlock>
+        );
+      }
+      // 单行代码 -> 内联代码
+      return <InlineCode {...props}>{children}</InlineCode>;
     },
-    table({ className, children, ...props }: any) {
-      return (
-        <div className="overflow-x-auto my-4">
-          <table className={cn("min-w-full divide-y", isDark ? "divide-gray-700" : "divide-gray-200")} {...props}>
-            {children}
-          </table>
-        </div>
-      );
+    // --- BEGIN MODIFIED COMMENT ---
+    // 使用原子化组件渲染表格容器，并直接在此处定义 th 和 td 的现代化样式
+    // --- END MODIFIED COMMENT ---
+    table({ children, ...props }: any) {
+      return <MarkdownTableContainer {...props}>{children}</MarkdownTableContainer>;
     },
-    th({ className, children, ...props }: any) {
+    th({ children, ...props }: any) {
       return (
-        <th 
-          className={cn("px-4 py-2 text-left", isDark ? "bg-gray-800" : "bg-gray-100")} 
+        <th
+          className={cn(
+            "px-4 py-2.5 text-left text-sm font-semibold border-b-2", // Adjusted padding and added bottom border
+            isDark
+              ? "border-gray-700 bg-gray-800 text-gray-200" // Header background for dark
+              : "border-gray-300 bg-gray-100 text-gray-700", // Header background for light
+            "first:pl-3 last:pr-3 sm:first:pl-4 sm:last:pr-4" // Responsive padding for first/last cells
+          )}
           {...props}
         >
           {children}
         </th>
       );
     },
-    td({ className, children, ...props }: any) {
+    td({ children, ...props }: any) {
       return (
-        <td 
-          className={cn("px-4 py-2 border-t", isDark ? "border-gray-700" : "border-gray-200")} 
+        <td
+          className={cn(
+            "px-4 py-2.5 text-sm border-b", // Adjusted padding
+            isDark ? "border-gray-700/50 text-gray-300" : "border-gray-200/70 text-gray-600",
+            "first:pl-3 last:pr-3 sm:first:pl-4 sm:last:pr-4" // Responsive padding
+          )}
           {...props}
         >
           {children}
         </td>
       );
     },
-    blockquote({ className, children, ...props }: any) {
-      return (
-        <blockquote 
-          className={cn(
-            "pl-4 border-l-4 my-4", 
-            isDark ? "border-gray-600 bg-gray-800/50" : "border-gray-300 bg-gray-100/50"
-          )} 
-          {...props}
-        >
-          {children}
-        </blockquote>
-      );
+    // --- BEGIN MODIFIED COMMENT ---
+    // 使用原子化组件渲染引用块
+    // --- END MODIFIED COMMENT ---
+    blockquote({ children, ...props }: any) {
+      return <MarkdownBlockquote {...props}>{children}</MarkdownBlockquote>;
+    },
+    // --- BEGIN MODIFIED COMMENT ---
+    // 为其他 HTML 元素（如 p, ul, ol, li, h1-h6, a, hr）添加现代化样式
+    // --- END MODIFIED COMMENT ---
+    p({ children, ...props }) {
+      return <p className="my-2.5" {...props}>{children}</p>;
+    },
+    ul({ children, ...props }) {
+      return <ul className="my-2.5 ml-6 list-disc space-y-1" {...props}>{children}</ul>;
+    },
+    ol({ children, ...props }) {
+      return <ol className="my-2.5 ml-6 list-decimal space-y-1" {...props}>{children}</ol>;
+    },
+    li({ children, ...props }) {
+      return <li className="pb-0.5" {...props}>{children}</li>;
+    },
+    h1({ children, ...props }) {
+      return <h1 className={cn("text-2xl font-semibold mt-4 mb-2 pb-1 border-b", isDark ? "border-gray-700" : "border-gray-300")} {...props}>{children}</h1>;
+    },
+    h2({ children, ...props }) {
+      return <h2 className={cn("text-xl font-semibold mt-3.5 mb-1.5 pb-1 border-b", isDark ? "border-gray-700" : "border-gray-300")} {...props}>{children}</h2>;
+    },
+    h3({ children, ...props }) {
+      return <h3 className="text-lg font-semibold mt-3 mb-1" {...props}>{children}</h3>;
+    },
+    h4({ children, ...props }) {
+      return <h4 className="text-base font-semibold mt-2.5 mb-0.5" {...props}>{children}</h4>;
+    },
+    a({ children, href, ...props }) {
+      return <a href={href} className={cn("underline", isDark ? "text-sky-400 hover:text-sky-300" : "text-sky-600 hover:text-sky-700")} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
+    },
+    hr({ ...props }) {
+      return <hr className={cn("my-4 border-t", isDark ? "border-gray-700" : "border-gray-300")} {...props} />;
     }
   };
 
@@ -175,10 +225,14 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
       )}
 
       {mainContent && (
+        // --- BEGIN MODIFIED COMMENT ---
+        // 优化主内容区域的整体字体样式
+        // - 设置基础字体大小 (text-base) 和行高 (leading-relaxed)
+        // --- END MODIFIED COMMENT ---
         <div className={cn(
-          "w-full markdown-body main-content-area",
-          isDark ? "text-white" : "text-gray-900",
-          !hasThinkBlock ? "py-2" : ""
+          "w-full markdown-body main-content-area text-base leading-relaxed",
+          isDark ? "text-gray-200" : "text-gray-800", // 更柔和的文本颜色
+          !hasThinkBlock ? "py-2" : "pt-1 pb-2" // 调整无思考块时的padding
         )}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
@@ -190,4 +244,4 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
       )}
     </div>
   );
-}; 
+};
