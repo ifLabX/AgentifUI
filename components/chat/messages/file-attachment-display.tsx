@@ -100,6 +100,7 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
               )}>{attachment.name}</p>
               <p className={cn(
                 "text-xs",
+                "whitespace-nowrap",
                 isDark ? "text-gray-400" : "text-gray-600"
               )}>{formatBytes(attachment.size)}</p>
             </div>
