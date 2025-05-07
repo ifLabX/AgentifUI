@@ -6,6 +6,8 @@ import { useTheme } from "@lib/hooks"
 import { FileTextIcon, FileImageIcon, FileArchiveIcon, FileMusicIcon, FileVideoIcon, FileIcon } from "lucide-react"
 import { useFilePreviewStore } from "@lib/stores/ui/file-preview-store"
 import type { MessageAttachment } from '@lib/stores/chat-store'
+import { useSidebarStore } from "@lib/stores/sidebar-store"
+import { useMobile } from "@lib/hooks/use-mobile"
 
 interface FileAttachmentDisplayProps {
   attachments: MessageAttachment[]
@@ -37,10 +39,22 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
   className
 }) => {
   const openPreview = useFilePreviewStore((state) => state.openPreview);
+  const isMobile = useMobile();
 
   if (!attachments || attachments.length === 0) return null
 
   const handleAttachmentClick = (attachment: MessageAttachment) => {
+    const sidebarState = useSidebarStore.getState();
+
+    if (isMobile) {
+      if (sidebarState.isMobileNavVisible) {
+        sidebarState.hideMobileNav();
+      }
+    } else {
+      if (sidebarState.isExpanded) {
+        sidebarState.toggleSidebar();
+      }
+    }
     openPreview(attachment);
   }
 
