@@ -42,7 +42,24 @@ function TabPanel(props: TabPanelProps) {
 
 // 显示 API 密钥的安全版本
 function maskApiKey(key: string) {
+  console.log('调试 - 密钥值详情:', {
+    key: key,
+    类型: typeof key,
+    长度: key ? key.length : 0,
+    是否为空: !key,
+    是否为字符串: typeof key === 'string',
+    前4位: key && key.length > 4 ? key.substring(0, 4) : '',
+    后4位: key && key.length > 4 ? key.substring(key.length - 4) : '',
+  });
+  
   if (!key) return '未设置';
+  
+  // 检查是否是加密格式的 API 密钥 (iv:authTag:encryptedData)
+  if (key.includes(':')) {
+    return '已加密 (请重新设置真实密钥)';
+  }
+  
+  // 如果是普通密钥，显示部分内容
   if (key.length <= 8) return '******';
   return `${key.substring(0, 4)}...${key.substring(key.length - 4)}`;
 }
@@ -80,6 +97,33 @@ export default function ApiConfigForm() {
   const defaultKey = defaultInstance
     ? apiKeys.find(k => k.service_instance_id === defaultInstance.id && k.is_default)
     : null;
+    
+  // 调试信息
+  console.log('调试 - 数据库记录信息:', {
+    providers: providers,
+    difyProvider: difyProvider,
+    serviceInstances: serviceInstances,
+    defaultInstance: defaultInstance,
+    apiKeys: apiKeys,
+    defaultKey: defaultKey,
+    有Dify提供商: !!difyProvider,
+    有默认服务实例: !!defaultInstance,
+    有默认API密钥: !!defaultKey,
+  });
+  
+  // 详细检查 API 密钥对象
+  if (defaultKey) {
+    console.log('调试 - API 密钥对象详情:', {
+      id: defaultKey.id,
+      service_instance_id: defaultKey.service_instance_id,
+      key_value: defaultKey.key_value,
+      key_value_type: typeof defaultKey.key_value,
+      key_value_length: defaultKey.key_value ? defaultKey.key_value.length : 0,
+      is_default: defaultKey.is_default,
+      created_at: defaultKey.created_at,
+      对象属性列表: Object.keys(defaultKey),
+    });
+  }
 
   if (isLoading) {
     return (
