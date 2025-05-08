@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@components/ui/button';
 import Link from 'next/link';
+import { createClient } from '../../lib/supabase/client';
 
 export function RegisterForm() {
   const router = useRouter();
+  const supabase = createClient();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -37,14 +39,23 @@ export function RegisterForm() {
     setError('');
 
     try {
-      // 这里添加实际的注册逻辑
-      // 模拟注册请求
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 使用 Supabase Auth 进行注册
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+          },
+        },
+      });
       
-      // 注册成功后跳转到登录页面
-      router.push('/login');
-    } catch (err) {
-      setError('注册失败，请稍后再试');
+      if (signUpError) throw signUpError;
+      
+      // 注册成功后跳转到登录页面，并显示验证邮件提示
+      router.push('/login?registered=true');
+    } catch (err: any) {
+      setError(err.message || '注册失败，请稍后再试');
     } finally {
       setIsLoading(false);
     }
