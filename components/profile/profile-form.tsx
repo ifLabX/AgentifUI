@@ -17,7 +17,6 @@ export function ProfileForm({ userId }: ProfileFormProps) {
   const [profile, setProfile] = useState({
     full_name: '',
     username: '',
-    website: '',
     avatar_url: '',
   });
 
@@ -49,7 +48,6 @@ export function ProfileForm({ userId }: ProfileFormProps) {
           setProfile({
             full_name: data.full_name || '',
             username: data.username || '',
-            website: data.website || '',
             avatar_url: data.avatar_url || '',
           });
         }
@@ -96,7 +94,6 @@ export function ProfileForm({ userId }: ProfileFormProps) {
           id: user.id,
           full_name: profile.full_name,
           username: profile.username,
-          website: profile.website,
           avatar_url: profile.avatar_url,
           updated_at: new Date().toISOString(),
         });
@@ -159,20 +156,6 @@ export function ProfileForm({ userId }: ProfileFormProps) {
             name="username"
             type="text"
             value={profile.username}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="website" className="block text-sm font-medium mb-1">
-            网站
-          </label>
-          <input
-            id="website"
-            name="website"
-            type="url"
-            value={profile.website}
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded-md"
           />

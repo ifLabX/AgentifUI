@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   full_name TEXT,
   username TEXT UNIQUE,
   avatar_url TEXT,
-  website TEXT,
   updated_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -28,10 +27,11 @@ CREATE POLICY "允许用户插入自己的资料" ON public.profiles
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, avatar_url, created_at, updated_at)
+  INSERT INTO public.profiles (id, full_name, username, avatar_url, created_at, updated_at)
   VALUES (
     NEW.id,
     NEW.raw_user_meta_data->>'full_name',
+    CONCAT('user_', SUBSTRING(CAST(NEW.id AS TEXT), 1, 8)), -- 生成临时用户名
     NEW.raw_user_meta_data->>'avatar_url',
     NEW.created_at,
     NEW.created_at
@@ -47,3 +47,8 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  
+-- 更新现有记录，确保所有记录都有 username 值
+UPDATE public.profiles
+SET username = CONCAT('user_', SUBSTRING(CAST(id AS TEXT), 1, 8))
+WHERE username IS NULL OR username = '';
