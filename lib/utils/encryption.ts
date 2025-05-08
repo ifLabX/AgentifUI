@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';
 
 /**
  * 加密 API 密钥
@@ -7,8 +7,10 @@ import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
  * @returns 加密后的字符串，格式为 "iv:authTag:encryptedData"
  */
 export function encryptApiKey(apiKey: string, masterKey: string): string {
-  // 确保主密钥长度为 32 字节（256 位）
-  const key = Buffer.from(masterKey.padEnd(64, '0').slice(0, 64), 'hex');
+  // 使用 SHA-256 生成固定长度的密钥
+  const hash = createHash('sha256');
+  hash.update(masterKey);
+  const key = hash.digest(); // 生成 32 字节的密钥
   
   // 生成随机初始化向量
   const iv = randomBytes(16);
@@ -34,8 +36,10 @@ export function encryptApiKey(apiKey: string, masterKey: string): string {
  * @returns 解密后的 API 密钥
  */
 export function decryptApiKey(encryptedData: string, masterKey: string): string {
-  // 确保主密钥长度为 32 字节（256 位）
-  const key = Buffer.from(masterKey.padEnd(64, '0').slice(0, 64), 'hex');
+  // 使用 SHA-256 生成固定长度的密钥
+  const hash = createHash('sha256');
+  hash.update(masterKey);
+  const key = hash.digest(); // 生成 32 字节的密钥
   
   // 解析加密数据
   const [ivHex, authTagHex, encryptedHex] = encryptedData.split(':');
