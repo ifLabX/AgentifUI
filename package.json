@@ -10,8 +10,12 @@
     "migrate-dify": "ts-node scripts/migrate-dify-config.ts"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.1.0",
     "@radix-ui/react-popover": "^1.1.11",
     "@radix-ui/react-slot": "^1.2.0",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
     "class-variance-authority": "^0.7.1",
