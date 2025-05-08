@@ -11,17 +11,44 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- 启用行级安全
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- 创建策略，允许用户读取所有资料
-CREATE POLICY "允许所有用户查看所有资料" ON public.profiles
-  FOR SELECT USING (true);
+-- 创建策略，允许用户读取所有资料（如果不存在）
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'profiles' 
+    AND policyname = '允许所有用户查看所有资料'
+  ) THEN
+    EXECUTE 'CREATE POLICY "允许所有用户查看所有资料" ON public.profiles FOR SELECT USING (true)';
+  END IF;
+END
+$$;
 
--- 创建策略，只允许用户更新自己的资料
-CREATE POLICY "允许用户更新自己的资料" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
+-- 创建策略，只允许用户更新自己的资料（如果不存在）
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'profiles' 
+    AND policyname = '允许用户更新自己的资料'
+  ) THEN
+    EXECUTE 'CREATE POLICY "允许用户更新自己的资料" ON public.profiles FOR UPDATE USING (auth.uid() = id)';
+  END IF;
+END
+$$;
 
--- 创建策略，只允许用户插入自己的资料
-CREATE POLICY "允许用户插入自己的资料" ON public.profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
+-- 创建策略，只允许用户插入自己的资料（如果不存在）
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'profiles' 
+    AND policyname = '允许用户插入自己的资料'
+  ) THEN
+    EXECUTE 'CREATE POLICY "允许用户插入自己的资料" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id)';
+  END IF;
+END
+$$;
 
 -- 创建函数，在用户注册时自动创建资料
 CREATE OR REPLACE FUNCTION public.handle_new_user()
