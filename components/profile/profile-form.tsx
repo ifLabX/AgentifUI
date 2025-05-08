@@ -1,68 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@components/ui/button';
 import { createClient } from '../../lib/supabase/client';
 
-interface ProfileFormProps {
-  userId?: string;
+interface ProfileData {
+  id: string;
+  full_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  updated_at?: string | null;
+  created_at?: string | null;
 }
 
-export function ProfileForm({ userId }: ProfileFormProps) {
+interface ProfileFormProps {
+  profileData: ProfileData; // 直接接收已加载的数据
+}
+
+export function ProfileForm({ profileData }: ProfileFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [profile, setProfile] = useState({
-    full_name: '',
-    username: '',
-    avatar_url: '',
+    full_name: profileData.full_name || '',
+    username: profileData.username || '',
+    avatar_url: profileData.avatar_url || '',
   });
 
-  useEffect(() => {
-    async function loadProfile() {
-      try {
-        setLoading(true);
-        
-        // 获取当前用户
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          router.push('/login');
-          return;
-        }
-        
-        // 获取用户资料
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        
-        if (error) {
-          throw error;
-        }
-        
-        if (data) {
-          setProfile({
-            full_name: data.full_name || '',
-            username: data.username || '',
-            avatar_url: data.avatar_url || '',
-          });
-        }
-      } catch (error: any) {
-        setMessage({
-          type: 'error',
-          text: error.message || '加载资料失败'
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    loadProfile();
-  }, [router, supabase]);
+  // 不再需要加载用户资料，因为数据已经通过 props 传入
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -79,19 +46,12 @@ export function ProfileForm({ userId }: ProfileFormProps) {
       setLoading(true);
       setMessage(null);
       
-      // 获取当前用户
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-      
+      // 直接使用传入的 profileData.id
       // 更新用户资料
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          id: user.id,
+          id: profileData.id, // 使用传入的 profileData.id
           full_name: profile.full_name,
           username: profile.username,
           avatar_url: profile.avatar_url,
@@ -164,9 +124,9 @@ export function ProfileForm({ userId }: ProfileFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full"
+          className="w-full mt-6"
         >
-          {loading ? '保存中...' : '保存资料'}
+          {loading ? '正在保存...' : '保存修改'}
         </Button>
       </form>
     </div>
