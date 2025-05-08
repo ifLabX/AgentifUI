@@ -4,6 +4,8 @@ import { TooltipContainer } from "@components/ui/tooltip";
 import "./globals.css";
 import { NotificationBar } from '@components/ui/notification-bar';
 import { ThemeProvider } from "next-themes";
+import { ClientLayout } from "./layouts/client-layout";
+import { cn } from "@lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,11 +41,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
+          <ClientLayout fontClasses={`${geistSans.variable} ${geistMono.variable}`}>
             {children}
             <TooltipContainer />
             <NotificationBar />
-          </div>
+          </ClientLayout>
         </ThemeProvider>
       </body>
     </html>

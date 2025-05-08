@@ -4,6 +4,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --page-height: auto; /* 默认高度为自动 */
+  --page-overflow: visible; /* 默认溢出为可见 */
 }
 
 @theme inline {
@@ -29,7 +31,31 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto; /* 默认允许垂直滚动 */
+}
+
+/* 聊天页面特定样式 - 控制滚动行为 */
+body.chat-page {
+  overflow: hidden; /* 防止页面级别的滚动 */
+}
+
+body.chat-page main {
+  height: 100%;
+  overflow: auto; /* 在主内容区域允许滚动 */
+}
+
+/* 非聊天页面样式 - 自然滚动 */
+body.default-page {
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+/* 确保内容容器有足够的空间和滚动行为 */
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
 }
 
 body {

@@ -22,7 +22,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
   }, [setMounted])
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen h-full bg-background">
       {/* 
         移动端导航按钮 - 仅在客户端挂载后显示 
         使用mobile类只在移动设备上显示
@@ -48,10 +48,10 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
         </div>
       </div>
       
-      {/* 主内容区域恢复到简单结构 */}
+      {/* 主内容区域 - 确保聊天页面有固定高度和正确的滚动行为 */}
       <main
         className={cn(
-          "flex-1 overflow-auto h-screen",
+          "flex-1 overflow-auto h-screen", // 保持固定高度和溢出滚动
           // 桌面端根据侧边栏状态设置margin
           isExpanded ? "md:ml-64" : "md:ml-16",
           // 移动设备不设置margin

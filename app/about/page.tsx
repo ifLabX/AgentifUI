@@ -1,6 +1,8 @@
+"use client";
+
 export default function AboutPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center py-16 px-4 md:px-8">
+    <main className="flex flex-col items-center py-16 px-4 md:px-8 overflow-auto">
       <div className="max-w-4xl w-full space-y-12">
         <section className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
