@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate-dify": "ts-node scripts/migrate-dify-config.ts"
   },
   "dependencies": {
     "@radix-ui/react-popover": "^1.1.11",
