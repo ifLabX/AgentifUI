@@ -268,8 +268,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   loadConfigData: async () => {
     const supabase = createClient();
     
-    console.log('[调试] 开始加载 API 配置数据');
-    
     try {
       set({ isLoading: true, error: null });
       
@@ -278,16 +276,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         .from('providers')
         .select('*')
         .order('created_at', { ascending: false });
-      
-      console.log('[调试] 提供商数据:', {
-        数量: providersData?.length || 0,
-        错误: providersError ? providersError.message : null,
-        数据样本: providersData?.slice(0, 2).map(p => ({
-          id: p.id,
-          name: p.name,
-          base_url: p.base_url
-        }))
-      });
         
       if (providersError) throw providersError;
       
@@ -296,19 +284,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         .from('service_instances')
         .select('*')
         .order('created_at', { ascending: false });
-      
-      console.log('[调试] 服务实例数据:', {
-        数量: instancesData?.length || 0,
-        错误: instancesError ? instancesError.message : null,
-        数据样本: instancesData?.slice(0, 2).map(i => ({
-          id: i.id,
-          provider_id: i.provider_id,
-          instance_id: i.instance_id,
-          name: i.name,
-          display_name: i.display_name,
-          is_default: i.is_default
-        }))
-      });
         
       if (instancesError) throw instancesError;
       
@@ -317,18 +292,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         .from('api_keys')
         .select('*')
         .order('created_at', { ascending: false });
-      
-      console.log('[调试] API 密钥数据:', {
-        数量: keysData?.length || 0,
-        错误: keysError ? keysError.message : null,
-        数据样本: keysData?.slice(0, 2).map(k => ({
-          id: k.id,
-          service_instance_id: k.service_instance_id,
-          provider_id: k.provider_id,
-          is_default: k.is_default,
-          有密钥值: !!k.key_value
-        }))
-      });
         
       if (keysError) throw keysError;
       

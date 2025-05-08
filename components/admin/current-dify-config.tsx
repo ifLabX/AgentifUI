@@ -29,10 +29,6 @@ export default function CurrentDifyConfig() {
         
         // 获取默认配置
         const defaultConfig = await getDifyAppConfig('default');
-        console.log('[调试] 获取到的默认配置:', {
-          ...defaultConfig,
-          apiKey: defaultConfig?.apiKey ? '已隐藏' : '未设置'
-        });
         
         setConfig(defaultConfig);
       } catch (err) {

@@ -48,10 +48,24 @@ export default function AppInstanceForm({
   // 如果是编辑模式，加载现有实例数据
   useEffect(() => {
     if (instance) {
-      setFormData({
+      // 确保所有字段都有值
+      const updatedFormData = {
+        // 先复制原始实例数据
         ...instance,
+        // 确保必要字段存在
         provider_id: providerId,
-      });
+        instance_id: instance.instance_id || '',
+        name: instance.name || '',
+        // 如果 display_name 不存在，使用 name 或空字符串
+        display_name: instance.display_name || instance.name || '',
+        // 如果 description 不存在，使用空字符串
+        description: instance.description || '',
+        // 如果 is_default 不存在，使用 false
+        is_default: Boolean(instance.is_default),
+        api_path: instance.api_path || '',
+      };
+      
+      setFormData(updatedFormData);
     }
   }, [instance, providerId]);
 
