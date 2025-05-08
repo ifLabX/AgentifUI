@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@components/ui/button';
 import Link from 'next/link';
+import { createClient } from '../../lib/supabase/client';
 
 export function LoginForm() {
   const router = useRouter();
@@ -24,15 +25,26 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // 注意：这里是简化的登录逻辑，后续需要添加真实的用户认证
     setIsLoading(true);
+    setError('');
     
     try {
-      // 简化逻辑：直接跳转到聊天页面
-      // 注意：后续需要替换为实际的登录API调用和认证逻辑
+      // 使用 Supabase Auth 进行登录
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // 登录成功，跳转到聊天页面
       router.push('/chat');
-    } catch (err) {
-      setError('登录失败，请检查您的邮箱和密码');
+      router.refresh(); // 刷新页面以更新用户状态
+    } catch (err: any) {
+      setError(err.message || '登录失败，请检查您的邮箱和密码');
     } finally {
       setIsLoading(false);
     }
