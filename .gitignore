@@ -42,6 +42,7 @@ next-env.d.ts
 
 # test files
 /files
+/scripts
 
 # venv
 .venv
