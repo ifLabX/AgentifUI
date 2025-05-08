@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate-dify": "ts-node scripts/migrate-dify-config.ts"
+    "migrate-dify": "ts-node scripts/migrate-dify-config.ts",
+    "init-dify": "node init-scripts/init-dify-config.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
