@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-// --- BEGIN MODIFIED COMMENT ---
-// 移除 Supabase 客户端导入
-// --- END MODIFIED COMMENT ---
-// import { createServerClient } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 
-// --- BEGIN COMMENT ---
 // 这个中间件会拦截所有请求。
-// 目前移除了基于 Supabase 的认证逻辑。
-// 后续需要使用 NextAuth.js 的中间件来处理认证和路由保护。
-// --- END COMMENT ---
+// 使用 Supabase 的认证逻辑处理路由保护。
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -28,45 +22,61 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(newChatUrl)
   }
 
-  // --- BEGIN COMMENT ---
-  // 移除 Supabase 客户端创建逻辑
-  // --- END COMMENT ---
-  // const supabase = createServerClient(...)
-
-  // --- BEGIN COMMENT ---
-  // 移除 Supabase 会话刷新逻辑
-  // --- END COMMENT ---
-  // await supabase.auth.getSession()
-
-  // --- BEGIN COMMENT ---
-  // 移除 Supabase 获取用户信息的逻辑
-  // --- END COMMENT ---
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser()
-
-  // --- BEGIN COMMENT ---
-  // 移除基于 Supabase 用户状态的路由保护逻辑。
-  // 目前所有路由（除了特殊处理的 /chat）在中间件层面都是公开的。
-  // 需要后续使用 NextAuth.js 中间件来恢复路由保护。
-  // --- END COMMENT ---
-  // const isAuthRoute = pathname.startsWith('/auth')
-  // const isApiRoute = pathname.startsWith('/api')
-  // const isPublicRoute = pathname === '/' || 
-  //                        pathname === '/login' || 
-  //                        pathname === '/about' || 
-  //                        pathname.startsWith('/register') ||
-  //                        pathname.startsWith('/chat/'); 
+  // 创建 Supabase 客户端
+  const cookieStore = {
+    get: (name: string) => {
+      return request.cookies.get(name)?.value
+    },
+    set: (name: string, value: string, options: any) => {
+      // 在中间件中设置 cookie 需要通过 response
+      response.cookies.set(name, value, options)
+    },
+    remove: (name: string, options: any) => {
+      // 在中间件中删除 cookie 需要通过 response
+      response.cookies.set({
+        name,
+        value: '',
+        ...options,
+        maxAge: 0,
+      })
+    },
+  }
   
-  // if (!user && !isAuthRoute && !isApiRoute && !isPublicRoute) {
-  //   console.log(`[Middleware] User not logged in, redirecting protected route ${pathname} to /login`)
-  //   return NextResponse.redirect(new URL('/login', request.url))
-  // }
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: cookieStore
+    }
+  )
 
-  // if (user && isAuthRoute) {
-  //   console.log(`[Middleware] User logged in, redirecting auth route ${pathname} to /`)
-  //   return NextResponse.redirect(new URL('/', request.url))
-  // }
+  // 获取用户会话
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  // 基于用户会话状态的路由保护逻辑
+  const isAuthRoute = pathname.startsWith('/auth')
+  const isApiRoute = pathname.startsWith('/api')
+  const isPublicRoute = pathname === '/' || 
+                         pathname === '/login' || 
+                         pathname === '/about' || 
+                         pathname.startsWith('/register') ||
+                         pathname.startsWith('/chat/'); 
+  
+  // 注释掉路由保护逻辑，保持现有的路由开放状态
+  // 但保留代码以便后续启用
+  /*
+  if (!session && !isAuthRoute && !isApiRoute && !isPublicRoute) {
+    console.log(`[Middleware] User not logged in, redirecting protected route ${pathname} to /login`)
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (session && isAuthRoute) {
+    console.log(`[Middleware] User logged in, redirecting auth route ${pathname} to /`)
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+  */
 
   return response
 }

@@ -6,13 +6,13 @@
 ┌─────────────────┐      ┌───────────────────┐      ┌─────────────────┐      ┌─────────────┐
 │                 │      │                   │      │                 │      │             │
 │  前端应用层       │──────▶   Next.js API层   │──────▶   服务集成层      │──────▶  数据存储层  │
-│  React + TS     │      │ (含NextAuth.js)   │      │  Dify API       │      │ PostgreSQL  │
-│  Tailwind CSS   │◀─────│ 路由和中间件        │◀─────│  (或其他服务)   │◀─────│ (或其他DB)  │
+│  React + TS     │      │ (含Supabase Auth) │      │  Dify API       │      │ PostgreSQL  │
+│  Tailwind CSS   │◀─────│ 路由和中间件        │◀─────│  (或其他服务)   │◀─────│ (Supabase)  │
 │                 │      │                   │      │                 │      │             │
 └─────────────────┘      └───────────────────┘      └─────────────────┘      └─────────────┘
 ```
 
-LLM-EduHub采用现代化的多层架构设计，结合Next.js App Router的最佳实践，实现前端、API、服务集成和数据存储的无缝衔接。这种分层设计确保了关注点分离，使系统更易于维护和扩展。核心认证服务由 **NextAuth.js** 提供。
+LLM-EduHub采用现代化的多层架构设计，结合Next.js App Router的最佳实践，实现前端、API、服务集成和数据存储的无缝衔接。这种分层设计确保了关注点分离，使系统更易于维护和扩展。核心认证服务由 **Supabase Auth** 提供。
 
 ## 2. 前端架构
 
@@ -22,7 +22,7 @@ LLM-EduHub采用现代化的多层架构设计，结合Next.js App Router的最�
 - **样式方案**: Tailwind CSS
 - **构建工具**: Next.js (App Router)
 - **状态管理**: Zustand
-- **认证库**: NextAuth.js
+- **认证库**: Supabase Auth
 - **工具库**: Lucide Icons, clsx/cn
 
 ### 目录结构设计
@@ -34,7 +34,7 @@ llm-eduhub/
   ├── .vscode/            # VSCode配置文件
   ├── app/                # 应用源代码（App Router模式）
   │   ├── api/            # API路由
-  │   │   ├── auth/       # NextAuth.js 核心认证路由 ([...nextauth])
+  │   │   ├── auth/       # Supabase Auth 相关路由
   │   │   └── dify/       # Dify API集成
   │   │       └── [appId]/[...slug]/ # 动态路由处理
   │   ├── about/          # About页面路由
