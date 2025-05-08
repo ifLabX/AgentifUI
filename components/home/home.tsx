@@ -3,12 +3,32 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { createClient } from '@lib/supabase/client';
 
 export function Home() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
 
-  const handleLoginClick = () => {
-    router.push('/login');
+  const handleStartClick = async () => {
+    // 不显示加载状态，直接检查并跳转
+    try {
+      // 检查用户是否已登录
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // 用户已登录，直接跳转到聊天页面
+        router.push('/chat');
+      } else {
+        // 用户未登录，跳转到登录页面
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error('检查登录状态失败:', error);
+      // 出错时默认跳转到登录页面
+      router.push('/login');
+    }
   };
 
   const handleLearnMoreClick = () => {
@@ -52,7 +72,7 @@ export function Home() {
             size="lg" 
             variant="gradient" 
             className="px-8 py-6 h-auto text-base font-medium"
-            onClick={handleLoginClick}
+            onClick={handleStartClick}
           >
             立即开始
           </Button>
