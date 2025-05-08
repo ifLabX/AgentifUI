@@ -277,10 +277,10 @@ lib/hooks/
 ### API路由结构
 ```
 app/
-  ├── api/
-  │   ├── auth/                     # NextAuth.js 核心认证路由
-  │   │   └── [...nextauth]/        # 处理登录、登出、会话、回调等
-  │   │       └── route.ts          # NextAuth.js 处理器
+  │  └─ api/
+  │    └─ auth/                     # Supabase Auth 相关路由
+  │       └─ callback/              # 处理认证回调
+  │          └─ route.ts          # Supabase Auth 回调处理器
   │   ├── dify/                     # Dify API集成
   │   │   └── [appId]/[...slug]/    # 动态路由处理
   │   └── ...                       # 其他业务 API 路由 (例如后台管理 API)
@@ -291,56 +291,62 @@ app/
 中间件主要分为两类：
 
 1. **Edge中间件**：位于项目根目录的`middleware.ts`文件。
-   *   目前已**移除 Supabase Auth 逻辑**。
-   *   **后续需要集成 NextAuth.js 提供的中间件**或使用其 `auth()` 辅助函数来实现路由保护（检查用户会话）。
-   *   可以继续负责基本的请求检查、路由重定向（如 `/chat` -> `/chat/new`）、CORS 配置、请求频率限制等。
+   *   已**集成 Supabase Auth 逻辑**，实现路由保护。
+   *   负责检查用户会话状态，将未登录用户重定向到登录页面。
+   *   处理基本的请求检查、路由重定向（如 `/chat` -> `/chat/new`）、CORS 配置等。
 
 2. **API路由内部逻辑**：在具体API路由处理函数内部（例如后台管理 API）
-   *   可以使用 NextAuth.js 的 `auth()` 辅助函数获取当前登录用户信息（ID、角色等）。
+   *   使用 Supabase 服务端客户端获取当前登录用户信息。
    *   负责API密钥管理、请求参数验证、详细请求日志、错误处理和基于角色的访问控制 (RBAC)。
 
 ## 5. 数据存储设计
 
 ### 数据库选型
-- **数据库类型**: PostgreSQL (可以使用 Supabase 托管的，或其他云服务商，或自建)
-- **ORM (推荐)**: Prisma (或其他 Node.js ORM)
+- **数据库类型**: PostgreSQL (Supabase 托管)
+- **数据库访问**: 使用 Supabase 客户端库直接访问
 
-### 核心数据模型 (示例，需根据实际需求细化)
-- **用户 (`User`)**: 存储用户信息 (id, name, email, image)。如果使用 NextAuth.js Adapter，会自动创建/管理此表及相关表。
-- **账户 (`Account`)**: 存储 OAuth 提供商信息 (provider, providerAccountId)。由 NextAuth.js Adapter 管理。
-- **会话 (`Session`)**: 存储用户登录会话。由 NextAuth.js Adapter 管理。
-- **验证令牌 (`VerificationToken`)**: 用于邮件验证等。由 NextAuth.js Adapter 管理。
-- **角色 (`Role`)**: 定义系统角色 (e.g., admin, user)。
-- **权限 (`Permission`)**: 定义具体操作权限。
-- **用户角色关联 (`UserRole`)**: 连接用户和角色。
-- **聊天会话 (`ChatSession`)**: 存储聊天记录元数据。
-- **聊天消息 (`ChatMessage`)**: 存储具体聊天内容。
-- **Dify配置 (`DifyConfig`) / AI配置 (`AiConfig`)**: 存储 Dify 或其他 AI 服务的配置信息（如 API Key, URL），可能按用户或组织区分。
-- **组织 (`Organization`)** (如果需要多租户)。
+### 核心数据模型
+- **认证相关表** (由 Supabase Auth 自动管理):
+  - **`auth.users`**: 存储核心用户认证信息 (id, email, password_hash 等)。
+  - **`auth.identities`**: 存储 OAuth 身份信息。
+  - **`auth.sessions`**: 存储用户会话信息。
+  - **`auth.refresh_tokens`**: 存储刷新令牌。
+
+- **应用相关表** (自定义):
+  - **`profiles`**: 存储用户资料 (id, full_name, username, avatar_url, updated_at, created_at)。
+  - **`roles`**: 定义系统角色 (e.g., admin, user)。
+  - **`permissions`**: 定义具体操作权限。
+  - **`user_roles`**: 连接用户和角色。
+  - **`chat_sessions`**: 存储聊天记录元数据。
+  - **`chat_messages`**: 存储具体聊天内容。
+  - **`dify_configs`**: 存储 Dify 或其他 AI 服务的配置信息。
+  - **`organizations`**: 组织信息 (如果需要多租户)。
 
 ### 存储策略
 - 敏感数据（如外部 API 密钥）应加密存储或通过安全的环境变量管理。
-- 使用 ORM (如 Prisma) 进行数据库交互和迁移管理。
-- 实时功能可考虑使用 WebSocket 或数据库的实时订阅机制（如果数据库支持）。
+- 使用 Supabase 客户端库进行数据库交互，使用 Supabase 迁移文件进行版本控制。
+- 利用 Supabase 的 Row Level Security (RLS) 策略确保数据安全。
+- 使用 Supabase Realtime 功能实现实时数据更新和通知。
 
 ## 6. 认证流程
 
 ### 认证方式
-- 使用 **NextAuth.js** 实现统一认证。
-- 支持多种认证提供者 (Providers):
-   - **Credentials**: 邮箱/密码登录。
+- 使用 **Supabase Auth** 实现统一认证。
+- 支持多种认证方式:
+   - **邮箱/密码**: 标准的邮箱密码登录。
    - **OAuth**: Google, GitHub 等社交登录。
-   - **OIDC / SAML**: 对接企业级 SSO 系统。
+   - **验证码**: 无密码登录（验证码发送到邮箱）。
+   - **企业 SSO**: 支持 SAML 2.0 集成。
 
 ### 认证流程图 (示例: OAuth 登录)
 ```
-用户点击登录按钮 → 前端调用 NextAuth signIn('google') → 重定向到 Google 授权页
-  ↑                                                          ↓
-  授权成功后回调到 NextAuth API Route (/api/auth/callback/google) ← Google 返回授权码
-  ↑                                                          ↓
-  NextAuth 处理回调，获取用户信息，创建/更新用户记录，建立会话 (JWT/数据库) → 返回会话 Cookie 给浏览器
-  ↑                                                          ↓
-  浏览器后续请求携带会话 Cookie → NextAuth 中间件/API 验证会话 → 允许访问受保护资源
+用户点击登录按钮 → 前端调用 Supabase signInWithOAuth({ provider: 'google' }) → 重定向到 Google 授权页
+  ↑                                                                    ↓
+  授权成功后回调到 Supabase 回调 URL (/api/auth/callback) ← Google 返回授权码
+  ↑                                                                    ↓
+  Supabase 处理回调，获取用户信息，创建/更新用户记录，建立会话 → 返回会话 Cookie 给浏览器
+  ↑                                                                    ↓
+  浏览器后续请求携带会话 Cookie → Supabase 中间件/API 验证会话 → 允许访问受保护资源
 ```
 
 ## 7. AI模型集成

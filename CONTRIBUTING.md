@@ -31,20 +31,20 @@ npm install
 cp .env.example .env.local
 ```
 
-编辑 `.env.local` 文件。你需要填入认证和 API 所需的环境变量。参考 `.env.example` 获取所需变量列表，**特别是 `NEXTAUTH_SECRET` 和 `NEXTAUTH_URL`**。
+编辑 `.env.local` 文件。你需要填入认证和 API 所需的环境变量。参考 `.env.example` 获取所需变量列表，**特别是 Supabase 相关配置**。
 
 ```ini
-# 认证配置 (NextAuth.js)
-NEXTAUTH_SECRET= # 必须设置一个强密钥
-NEXTAUTH_URL=http://localhost:3000 # 或你的部署 URL
+# Supabase 配置
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url # Supabase 项目 URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key # Supabase 匿名密钥
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # 服务角色密钥（仅服务器端使用）
 
-# (可选) OAuth Provider 配置 (例如 Google)
-# GOOGLE_CLIENT_ID=...
-# GOOGLE_CLIENT_SECRET=...
+# (可选) OAuth Provider 配置
+# 这些在 Supabase 控制台中配置
 
 # Dify配置
 DIFY_API_KEY=your_dify_api_key
-DIFY_API_URL=[https://api.dify.ai](https://api.dify.ai)
+DIFY_API_URL=https://api.dify.ai
 
 # 网站URL
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -108,11 +108,11 @@ feat(auth): 添加Google Workspace SSO认证支持
 
 ### Q: 如何在开发中添加新的SSO提供商？
 
-A: 在 NextAuth.js 的配置文件 (例如 `auth.ts`) 中添加相应的 Provider (如 `GoogleProvider`, `AzureADProvider`)，并在 `.env.local` 文件中配置所需的 Client ID 和 Client Secret 等环境变量。
+A: 在 Supabase 控制台的认证设置中添加相应的 OAuth 提供商(如 Google, GitHub)，并配置所需的 Client ID 和 Client Secret。然后在应用中使用 Supabase Auth 的 API 进行认证。
 
 ## 资源链接
 
   - [Next.js文档](https://nextjs.org/docs)
-  - [NextAuth.js文档](https://next-auth.js.org/)
+  - [Supabase Auth 文档](https://supabase.com/docs/guides/auth)
 
 ```
