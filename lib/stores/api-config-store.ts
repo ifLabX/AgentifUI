@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@lib/supabase/client';
 
 // 类型定义
 export interface Provider {
@@ -60,7 +60,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   setNewApiUrl: (url) => set({ newApiUrl: url }),
   
   loadConfigData: async () => {
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
     
     try {
       set({ isLoading: true, error: null });
@@ -113,7 +113,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   
   updateDifyConfig: async () => {
     const { newApiKey, newApiUrl, providers, serviceInstances, apiKeys } = get();
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
     
     if (!newApiKey && !newApiUrl) {
       set({ error: new Error('请至少提供 API 密钥或 URL') });
