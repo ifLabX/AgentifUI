@@ -64,9 +64,7 @@ export async function middleware(request: NextRequest) {
                          pathname.startsWith('/register') ||
                          pathname.startsWith('/chat/'); 
   
-  // 注释掉路由保护逻辑，保持现有的路由开放状态
-  // 但保留代码以便后续启用
-  /*
+  // 启用路由保护逻辑，确保未登录用户无法访问受保护的路由
   if (!session && !isAuthRoute && !isApiRoute && !isPublicRoute) {
     console.log(`[Middleware] User not logged in, redirecting protected route ${pathname} to /login`)
     return NextResponse.redirect(new URL('/login', request.url))
@@ -76,7 +74,6 @@ export async function middleware(request: NextRequest) {
     console.log(`[Middleware] User logged in, redirecting auth route ${pathname} to /`)
     return NextResponse.redirect(new URL('/', request.url))
   }
-  */
 
   return response
 }

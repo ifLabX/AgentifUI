@@ -32,6 +32,9 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code)
   }
   
-  // 重定向到首页或其他页面
-  return NextResponse.redirect(new URL('/', request.url))
+  // 获取重定向目标，如果没有指定，则重定向到聊天页面
+  const redirectTo = requestUrl.searchParams.get('redirectTo') || '/chat/new'
+  
+  // 重定向到指定页面
+  return NextResponse.redirect(new URL(redirectTo, request.url))
 }
