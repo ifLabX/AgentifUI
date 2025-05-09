@@ -21,12 +21,14 @@ const DIFY_API_BASE_URL = '/api/dify'; // 代理的基础路径
  * 
  * @param payload - 发送给 Dify API 的请求体。
  * @param appId - Dify 应用的 ID。
+ * @param onConversationIdReceived - 可选的回调函数，当 conversationId 首次被提取时调用。
  * @returns 一个包含异步生成器 (answerStream)、conversationId 和 taskId 的 Promise。
  * @throws 如果 fetch 请求失败或 API 返回错误状态，则抛出错误。
  */
 export async function streamDifyChat(
   payload: DifyChatRequestPayload,
-  appId: string // 将 appId 作为参数传入
+  appId: string, // 将 appId 作为参数传入
+  onConversationIdReceived?: (id: string) => void
 ): Promise<DifyStreamResponse> {
   console.log('[Dify Service] Sending request to proxy:', payload);
 
@@ -70,6 +72,7 @@ export async function streamDifyChat(
     const stream = response.body;
     let conversationId: string | null = null;
     let taskId: string | null = null;
+    let conversationIdCallbackCalled = false;
 
     // --- BEGIN COMMENT ---
     // 创建一个内部异步生成器来处理解析后的 SSE 事件并提取所需信息
@@ -90,7 +93,7 @@ export async function streamDifyChat(
         // --- BEGIN COMMENT ---
         // 处理成功解析的事件
         // --- END COMMENT ---
-        const event = result.event;
+        const event = result.event as DifySseEvent; // 明确事件类型
         // console.log(`[Dify Service] Received SSE event type: ${event.event}`);
 
         // --- BEGIN COMMENT ---
@@ -101,6 +104,15 @@ export async function streamDifyChat(
         if (event.conversation_id && !conversationId) {
           conversationId = event.conversation_id;
           console.log('[Dify Service] Extracted conversationId:', conversationId);
+          if (onConversationIdReceived && !conversationIdCallbackCalled) {
+            try {
+              onConversationIdReceived(conversationId);
+              conversationIdCallbackCalled = true; // 标记回调已成功执行
+            } catch (callbackError) {
+              console.error('[Dify Service] Error in onConversationIdReceived callback:', callbackError);
+              // 此处不应因回调错误中断主流程
+            }
+          }
         }
         if ('task_id' in event && event.task_id && !taskId) {
           taskId = event.task_id;
@@ -129,9 +141,17 @@ export async function streamDifyChat(
             // 流结束事件
             // 确保此时已获取 conversationId 和 taskId
             // --- END COMMENT ---
-            if (event.conversation_id && !conversationId) {
+            if (event.conversation_id && !conversationId) { // 理论上此时 conversationId 应该已经有了
               conversationId = event.conversation_id;
               console.log('[Dify Service] Extracted conversationId from message_end:', conversationId);
+              if (onConversationIdReceived && !conversationIdCallbackCalled) {
+                try {
+                  onConversationIdReceived(conversationId);
+                  conversationIdCallbackCalled = true; // 标记回调已成功执行
+                } catch (callbackError) {
+                  console.error('[Dify Service] Error in onConversationIdReceived callback (message_end):', callbackError);
+                }
+              }
             }
             if (event.task_id && !taskId) {
               taskId = event.task_id;
