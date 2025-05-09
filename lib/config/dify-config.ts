@@ -63,9 +63,14 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
   // 初始化 Supabase 客户端
   const supabase = createClient();
   
-  // 使用固定的密钥，而不是依赖环境变量
-  // 注意：在真实生产环境中，应该使用更安全的方式来管理密钥
-  const masterKey = 'llm-eduhub-api-encryption-key-for-development-12345';
+  // 从环境变量获取主密钥
+  const masterKey = process.env.API_ENCRYPTION_KEY; 
+
+  if (!masterKey) {
+    console.error('[获取Dify配置] 错误: API_ENCRYPTION_KEY 环境变量未设置。无法解密 API 密钥。');
+    // 返回 null，因为没有主密钥无法进行解密
+    return null; 
+  }
   
   // 1. 查找 Dify 提供商
   const { data: provider, error: providerError } = await supabase
@@ -167,11 +172,13 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
       decryptedKey = apiKey.key_value;
     } else {
       try {     
-        // 4. 解密 API 密钥
+        // 使用从环境变量获取的 masterKey 进行解密
         decryptedKey = decryptApiKey(apiKey.key_value, masterKey);
       } catch (decryptError) {
-        // 如果解密失败，使用测试密钥
-        decryptedKey = 'app-test-api-key-for-development';
+        // 当解密失败时，不再使用测试密钥，而是记录错误并返回 null
+        console.error(`[获取Dify配置] 解密 appID '${appId}' 的 API Key 失败:`, decryptError);
+        console.error('[获取Dify配置] 使用的主密钥可能与加密时不一致（请检查环境变量 API_ENCRYPTION_KEY），或者加密数据已损坏。');
+        return null; 
       }
     }
     
