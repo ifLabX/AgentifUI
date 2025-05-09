@@ -16,7 +16,6 @@ import { useApiConfigStore, ServiceInstance } from '@lib/stores/api-config-store
 import AdminLayout from '@components/admin/admin-layout';
 import AppInstanceList from '@components/admin/app-instance-list';
 import AppInstanceForm from '@components/admin/app-instance-form';
-import CurrentDifyConfig from '@components/admin/current-dify-config';
 
 export default function ApiConfigPage() {
   // 使用管理员权限检查 hook
@@ -220,8 +219,6 @@ export default function ApiConfigPage() {
       
       {tabValue === 0 && (
         <Box>
-          {/* 显示当前 Dify 配置 */}
-          <CurrentDifyConfig />
           
           {isAddingInstance ? (
             <AppInstanceForm 
