@@ -24,6 +24,7 @@ import {
   MarkdownTableContainer,
   MarkdownBlockquote,
 } from "@components/chat/markdown-block";
+import { AssistantMessageActions } from "./assistant-message-actions";
 
 
 const extractThinkContent = (rawContent: string): {
@@ -207,7 +208,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
 
   return (
     <div 
-      className={cn("w-full mb-4 assistant-message-container", className)}
+      className={cn("w-full mb-4 assistant-message-container group", className)}
       data-message-id={id}
     >
       {hasThinkBlock && (
@@ -239,6 +240,16 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
             rehypePlugins={[rehypeKatex, rehypeRaw]}
             components={mainMarkdownComponents} 
             children={mainContent}
+          />
+          
+          {/* 助手消息操作按钮 - 添加-ml-2来抵消可能的内边距，确保与消息内容左侧对齐 */}
+          <AssistantMessageActions
+            messageId={id}
+            onCopy={() => console.log('Copy assistant message', id)}
+            onRegenerate={() => console.log('Regenerate message', id)}
+            onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)}
+            isRegenerating={isStreaming}
+            className="-ml-2"
           />
         </div>
       )}

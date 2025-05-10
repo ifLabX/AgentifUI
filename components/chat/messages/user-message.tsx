@@ -5,22 +5,34 @@ import { cn } from "@lib/utils"
 import { useTheme, useMobile } from "@lib/hooks"
 import { MessageAttachment } from '@lib/stores/chat-store'
 import { FileAttachmentDisplay } from './file-attachment-display'
+import { UserMessageActions } from './user-message-actions'
 
 interface UserMessageProps {
   content: string
   attachments?: MessageAttachment[]
   id: string
   className?: string
+  onCopy?: () => void
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export const UserMessage: React.FC<UserMessageProps> = ({ content, attachments = [], id, className }) => {
+export const UserMessage: React.FC<UserMessageProps> = ({ 
+  content, 
+  attachments = [], 
+  id, 
+  className,
+  onCopy = () => console.log('Copy message', id),
+  onEdit = () => console.log('Edit message', id),
+  onDelete = () => console.log('Delete message', id)
+}) => {
   const { isDark } = useTheme()
   const isMobile = useMobile()
   const hasAttachments = attachments && attachments.length > 0
   
   return (
     <div 
-      className="flex justify-end w-full"
+      className="flex justify-end w-full group"
       data-message-id={id}
     >
       <div className="flex flex-col items-end max-w-[85%] md:max-w-[75%] lg:max-w-[65%]">
@@ -52,6 +64,14 @@ export const UserMessage: React.FC<UserMessageProps> = ({ content, attachments =
         >
           {content}
         </div>
+        
+        {/* 消息操作按钮 */}
+        <UserMessageActions
+          messageId={id}
+          onCopy={onCopy}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       </div>
     </div>
   )
