@@ -15,11 +15,8 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// 使用替代图标，避免依赖问题
-import HomeIcon from '@mui/icons-material/Home';
+// 只导入需要的图标
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
-import GroupIcon from '@mui/icons-material/Group';
-import TuneIcon from '@mui/icons-material/Tune';
 
 const drawerWidth = 240;
 
@@ -30,19 +27,17 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   
+  // 只保留API配置路由
   const menuItems = [
-    { text: '控制面板', icon: <HomeIcon />, href: '/admin' },
     { text: 'API 配置', icon: <SettingsApplicationsIcon />, href: '/admin/api-config' },
-    { text: '用户管理', icon: <GroupIcon />, href: '/admin/users' },
-    { text: '系统设置', icon: <TuneIcon />, href: '/admin/settings' },
   ];
 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: '#1976d2' }}>
         <Toolbar>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 500 }}>
             LLM EduHub 管理后台
           </Typography>
         </Toolbar>
