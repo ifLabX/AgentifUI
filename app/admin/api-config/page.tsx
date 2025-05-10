@@ -1,26 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  CircularProgress, 
-  Alert, 
-  AlertTitle,
-  Container,
-  Tabs,
-  Tab,
-  Snackbar,
-  Paper,
-  Card,
-  CardContent
-} from '@mui/material';
+import { Box } from '@mui/material';
 import { useAdminAuth } from '@lib/hooks/use-admin-auth';
 import { useApiConfigStore, ServiceInstance } from '@lib/stores/api-config-store';
 import AdminLayout from '@components/admin/admin-layout';
-import AppInstanceList from '@components/admin/app-instance-list';
-import AppInstanceForm from '@components/admin/app-instance-form';
 import { ApiConfigSkeleton } from '@components/ui/skeleton';
+
+// 导入拆分后的组件
+import ApiConfigHeader from '@components/admin/api-config/api-config-header';
+import ApiKeyInfo from '@components/admin/api-config/api-key-info';
+import ApiConfigTabs from '@components/admin/api-config/api-config-tabs';
+import ApiConfigContent from '@components/admin/api-config/api-config-content';
+import FeedbackNotification from '@components/admin/api-config/feedback-notification';
+import { AuthError, AccessDenied, DataError } from '@components/admin/api-config/error-display';
 
 export default function ApiConfigPage() {
   // 使用管理员权限检查 hook
@@ -212,125 +205,63 @@ export default function ApiConfigPage() {
   
   // 显示错误信息
   if (authError) {
-    return (
-      <AdminLayout>
-        <Alert severity="error">
-          <AlertTitle>权限验证错误</AlertTitle>
-          {authError.message}
-        </Alert>
-      </AdminLayout>
-    );
+    return <AuthError message={authError.message} />;
   }
   
   // 显示访问被拒绝信息
   if (!isAdmin) {
-    return (
-      <AdminLayout>
-        <Alert severity="error">
-          <AlertTitle>访问被拒绝</AlertTitle>
-          您没有管理员权限访问此页面。
-        </Alert>
-      </AdminLayout>
-    );
+    return <AccessDenied />;
   }
   
   // 显示数据加载错误
   if (dataError) {
     return (
-      <AdminLayout>
-        <Alert severity="error" sx={{ mb: 3 }}>
-          <AlertTitle>数据加载错误</AlertTitle>
-          {dataError.message}
-        </Alert>
-        
-        {/* 显示应用实例列表，即使有错误 */}
-        <AppInstanceList 
-          serviceInstances={serviceInstances}
-          onAddInstance={handleAddInstance}
-          onEditInstance={handleEditInstance}
-          onDeleteInstance={handleDeleteInstance}
-        />
-      </AdminLayout>
+      <DataError 
+        message={dataError.message}
+        serviceInstances={serviceInstances}
+        onAddInstance={handleAddInstance}
+        onEditInstance={handleEditInstance}
+        onDeleteInstance={handleDeleteInstance}
+      />
     );
   }
   
   // 显示 API 配置管理界面
   return (
     <AdminLayout>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          API 配置管理
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          管理应用程序使用的 API 密钥和配置
-        </Typography>
-      </Box>
+      {/* 标题和描述 */}
+      <ApiConfigHeader />
       
       {/* API密钥单向配置的提示信息 */}
-      <Paper 
-        elevation={0} 
-        sx={{ 
-          p: 2, 
-          mb: 3, 
-          bgcolor: 'info.light', 
-          color: 'info.contrastText',
-          border: '1px solid',
-          borderColor: 'info.main'
-        }}
-      >
-        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-          关于 API 密钥管理
-        </Typography>
-        <Typography variant="body2">
-          出于安全考虑，API 密钥采用单向加密存储。一旦保存，密钥将无法以原始形式查看。当编辑应用实例时，密钥字段为空，只有当您需要更改密钥时才需要填写。如果保持为空，将继续使用当前密钥。
-        </Typography>
-      </Paper>
+      <ApiKeyInfo />
       
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab label="Dify 应用" />
-          <Tab label="全局设置" disabled />
-        </Tabs>
-      </Box>
+      {/* 标签页切换 */}
+      <ApiConfigTabs value={tabValue} onChange={handleTabChange} />
       
+      {/* 根据标签页显示相应内容 */}
       {tabValue === 0 && (
-        <Box>
-          {isAddingInstance ? (
-            <AppInstanceForm 
-              instance={editingInstance || undefined}
-              providerId={difyProvider?.id || ''}
-              onSave={handleSaveInstance}
-              onCancel={handleCancelInstance}
-              isProcessing={processingInstance}
-              error={instanceError}
-            />
-          ) : (
-            <AppInstanceList 
-              serviceInstances={serviceInstances}
-              onAddInstance={handleAddInstance}
-              onEditInstance={handleEditInstance}
-              onDeleteInstance={handleDeleteInstance}
-            />
-          )}
-        </Box>
+        <ApiConfigContent
+          isAddingInstance={isAddingInstance}
+          editingInstance={editingInstance}
+          providerId={difyProvider?.id || ''}
+          serviceInstances={serviceInstances}
+          processingInstance={processingInstance}
+          instanceError={instanceError}
+          onAddInstance={handleAddInstance}
+          onEditInstance={handleEditInstance}
+          onDeleteInstance={handleDeleteInstance}
+          onSaveInstance={handleSaveInstance}
+          onCancelInstance={handleCancelInstance}
+        />
       )}
       
-      {/* 操作反馈Snackbar */}
-      <Snackbar
+      {/* 操作反馈通知 */}
+      <FeedbackNotification
         open={feedback.open}
-        autoHideDuration={3000}
+        message={feedback.message}
+        severity={feedback.severity}
         onClose={handleCloseFeedback}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert 
-          onClose={handleCloseFeedback} 
-          severity={feedback.severity} 
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {feedback.message}
-        </Alert>
-      </Snackbar>
+      />
     </AdminLayout>
   );
 }
