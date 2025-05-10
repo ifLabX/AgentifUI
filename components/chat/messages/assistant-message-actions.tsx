@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { FiCopy, FiRefreshCw, FiThumbsUp, FiThumbsDown } from "react-icons/fi"
+import { FiCopy, FiRefreshCw, FiThumbsUp, FiThumbsDown, FiCheck } from "react-icons/fi"
 import { MessageActionButton } from "@components/ui/message-action-button"
 import { MessageActionsContainer } from "@components/ui/message-actions-container"
 
@@ -30,9 +30,11 @@ export const AssistantMessageActions: React.FC<AssistantMessageActionsProps> = (
     >
       <MessageActionButton
         icon={FiCopy}
-        label="复制回答"
+        activeIcon={FiCheck}
+        label="复制"
+        activeLabel="已复制"
         onClick={onCopy}
-        tooltipPosition="top"
+        tooltipPosition="bottom"
       />
       <MessageActionButton
         icon={FiRefreshCw}
@@ -40,20 +42,22 @@ export const AssistantMessageActions: React.FC<AssistantMessageActionsProps> = (
         onClick={onRegenerate}
         disabled={isRegenerating}
         className={isRegenerating ? "animate-spin" : ""}
-        tooltipPosition="top"
+        tooltipPosition="bottom"
       />
-      <div className="h-4 border-r border-gray-300 dark:border-gray-700 mx-1" />
+      <div className="self-stretch border-r border-gray-300 dark:border-gray-700 mx-1" />
       <MessageActionButton
         icon={FiThumbsUp}
-        label="有帮助"
+        label="有用"
+        activeLabel="已评价"
         onClick={() => onFeedback(true)}
-        tooltipPosition="top"
+        tooltipPosition="bottom"
       />
       <MessageActionButton
         icon={FiThumbsDown}
-        label="没帮助"
+        label="无用"
+        activeLabel="已评价"
         onClick={() => onFeedback(false)}
-        tooltipPosition="top"
+        tooltipPosition="bottom"
       />
     </MessageActionsContainer>
   )

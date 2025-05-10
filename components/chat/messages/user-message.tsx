@@ -14,7 +14,6 @@ interface UserMessageProps {
   className?: string
   onCopy?: () => void
   onEdit?: () => void
-  onDelete?: () => void
 }
 
 export const UserMessage: React.FC<UserMessageProps> = ({ 
@@ -23,8 +22,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   id, 
   className,
   onCopy = () => console.log('Copy message', id),
-  onEdit = () => console.log('Edit message', id),
-  onDelete = () => console.log('Delete message', id)
+  onEdit = () => console.log('Edit message', id)
 }) => {
   const { isDark } = useTheme()
   const isMobile = useMobile()
@@ -70,7 +68,6 @@ export const UserMessage: React.FC<UserMessageProps> = ({
           messageId={id}
           onCopy={onCopy}
           onEdit={onEdit}
-          onDelete={onDelete}
         />
       </div>
     </div>

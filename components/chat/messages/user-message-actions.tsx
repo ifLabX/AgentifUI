@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { FiCopy, FiEdit2, FiTrash2 } from "react-icons/fi"
+import { FiCopy, FiEdit2, FiCheck } from "react-icons/fi"
 import { MessageActionButton } from "@components/ui/message-action-button"
 import { MessageActionsContainer } from "@components/ui/message-actions-container"
 
@@ -9,7 +9,6 @@ interface UserMessageActionsProps {
   messageId: string
   onCopy: () => void
   onEdit: () => void
-  onDelete: () => void
   className?: string
 }
 
@@ -17,7 +16,6 @@ export const UserMessageActions: React.FC<UserMessageActionsProps> = ({
   messageId,
   onCopy,
   onEdit,
-  onDelete,
   className
 }) => {
   return (
@@ -27,21 +25,17 @@ export const UserMessageActions: React.FC<UserMessageActionsProps> = ({
     >
       <MessageActionButton
         icon={FiCopy}
-        label="复制消息"
+        activeIcon={FiCheck}
+        label="复制"
+        activeLabel="已复制"
         onClick={onCopy}
-        tooltipPosition="top"
+        tooltipPosition="bottom"
       />
       <MessageActionButton
         icon={FiEdit2}
-        label="编辑消息"
+        label="编辑"
         onClick={onEdit}
-        tooltipPosition="top"
-      />
-      <MessageActionButton
-        icon={FiTrash2}
-        label="删除消息"
-        onClick={onDelete}
-        tooltipPosition="top"
+        tooltipPosition="bottom"
       />
     </MessageActionsContainer>
   )
