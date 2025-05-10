@@ -2,36 +2,50 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-// 使用 CSS 变量而不是 React 状态或 Tailwind 类
-import { CodeIcon } from "lucide-react"; // Or a more specific language icon library
+import { CodeIcon } from "lucide-react";
+import { FiCopy, FiCheck } from "react-icons/fi";
+import { TooltipWrapper } from "@components/ui/tooltip-wrapper";
 
 interface CodeBlockHeaderProps {
   language: string | null;
   className?: string;
+  codeContent?: string; // 添加代码内容属性用于复制功能
 }
 
 // 使用 React.memo 包装组件，防止不必要的重新渲染
 export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
   language,
   className,
+  codeContent,
 }) => {
-  // 不使用任何 React 状态，完全依赖 CSS 变量
+  // 复制功能状态
+  const [isCopied, setIsCopied] = React.useState(false);
+  
+  // 处理复制操作
+  const handleCopy = React.useCallback(async () => {
+    if (!codeContent) return;
+    
+    try {
+      await navigator.clipboard.writeText(codeContent);
+      setIsCopied(true);
+      
+      // 2秒后重置状态
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to copy code:", error);
+    }
+  }, [codeContent]);
 
   if (!language) {
     return null; // Don't render header if language is not specified
   }
 
-  // --- BEGIN COMMENT ---
-  // 现代化代码块头部样式：
-  // - 左侧显示语言名称，使用圆角和柔和的背景色。
-  // - 整体头部有上下边框，与代码块内容区分。
-  // - 响应式设计，确保在小屏幕上也能良好显示。
-  // - 暗黑模式兼容。
-  // --- END COMMENT ---
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-3 py-1.5 rounded-t-lg transform-gpu border-b",
+        "flex items-center justify-between px-3 py-1 rounded-t-lg transform-gpu border-b", // 降低头部高度
         className
       )}
       style={{
@@ -40,13 +54,40 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
         color: 'var(--md-code-header-text)'
       }}
     >
-      <div className="flex items-center gap-2">
-        <CodeIcon className="w-4 h-4" />
-        <span className="text-xs font-medium select-none">
+      <div className="flex items-center gap-1.5">
+        <CodeIcon className="w-3.5 h-3.5" />
+        <span className="text-xs font-medium select-none tracking-wide">
           {language.charAt(0).toUpperCase() + language.slice(1)}
         </span>
       </div>
-      {/* Future: Add copy button or other controls here */}
+      
+      {/* 复制按钮 - 使用与消息操作按钮相同的样式 */}
+      {codeContent && (
+        <TooltipWrapper
+          content={isCopied ? "已复制" : "复制代码"}
+          id={`copy-code-${language}`}
+          placement="bottom"
+          desktopOnly={true}
+        >
+          <button
+            onClick={handleCopy}
+            className={cn(
+              "flex items-center justify-center p-1.5 rounded-md transition-all",
+              "text-gray-500 dark:text-gray-400", 
+              "hover:text-gray-700 dark:hover:text-gray-200",
+              "hover:bg-gray-200/50 dark:hover:bg-gray-700/50",
+              "focus:outline-none"
+            )}
+            aria-label={isCopied ? "已复制" : "复制代码"}
+          >
+            {isCopied ? (
+              <FiCheck className="w-4 h-4" />
+            ) : (
+              <FiCopy className="w-4 h-4" />
+            )}
+          </button>
+        </TooltipWrapper>
+      )}
     </div>
   );
 });

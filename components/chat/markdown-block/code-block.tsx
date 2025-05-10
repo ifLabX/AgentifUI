@@ -2,8 +2,9 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-// 使用 CSS 变量而不是 React 状态或 Tailwind 类
-import { CodeBlockHeader } from "./code-block-header"; // Assuming it's in the same directory
+import { CodeBlockHeader } from "./code-block-header";
+import { Highlight, themes } from "prism-react-renderer";
+import { useTheme } from "@lib/hooks/use-theme";
 
 interface CodeBlockProps {
   language: string | null;
@@ -19,16 +20,54 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(({
   className, // from react-markdown
   codeClassName, // for inner code tag
 }) => {
-  // 不使用任何 React 状态，完全依赖 CSS 变量
+  const { isDark } = useTheme();
+  
+  // 提取代码内容以便复制和高亮
+  const codeContent = React.useMemo(() => {
+    // 如果 children 是字符串，直接返回
+    if (typeof children === 'string') {
+      return children;
+    }
+    
+    // 如果 children 是 React 元素，尝试提取文本内容
+    if (React.isValidElement(children)) {
+      const props = children.props as any;
+      if (props?.children && typeof props.children === 'string') {
+        return props.children;
+      }
+    }
+    
+    // 如果是数组，尝试将所有子元素连接成字符串
+    if (Array.isArray(children)) {
+      return children
+        .map(child => {
+          if (typeof child === 'string') return child;
+          if (React.isValidElement(child)) {
+            const props = child.props as any;
+            if (props?.children && typeof props.children === 'string') {
+              return props.children;
+            }
+          }
+          return '';
+        })
+        .join('');
+    }
+    
+    return '';
+  }, [children]);
+  
+  // 解析语言名称，如 "language-python" 变为 "python"
+  const parsedLanguage = React.useMemo(() => {
+    if (!language) return 'text';
+    if (language.startsWith('language-')) {
+      return language.replace('language-', '');
+    }
+    return language;
+  }, [language]);
 
-  // --- BEGIN COMMENT ---
-  // 现代化代码块样式：
-  // - 包含 CodeBlockHeader 显示语言。
-  // - <pre> 标签负责整体容器样式，包括背景、边框、圆角、内边距和水平滚动。
-  // - 内部 <code> 标签负责代码文本本身的样式。
-  // - 响应式设计，确保在不同屏幕尺寸和主题下均表现良好。
-  // - 暗黑模式兼容。
-  // --- END COMMENT ---
+  // 选择适合当前主题的代码高亮主题
+  const theme = isDark ? themes.nightOwl : themes.github;
+  
   return (
     <div
       className="my-3 rounded-lg shadow-sm border transform-gpu"
@@ -37,16 +76,29 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(({
         borderColor: 'var(--md-code-border)'
       }}
     >
-      <CodeBlockHeader language={language} />
-      <pre
-        className="font-mono text-sm p-4 overflow-x-auto rounded-b-lg"
-        style={{
-          backgroundColor: 'var(--md-code-bg)',
-          color: 'var(--md-code-text)'
-        }}
-      >
-        <code className={cn(className, codeClassName)}>{children}</code>
-      </pre>
+      <CodeBlockHeader language={parsedLanguage} codeContent={codeContent} />
+      <div className="overflow-hidden rounded-b-lg">
+        <Highlight
+          theme={theme}
+          code={codeContent}
+          language={parsedLanguage as any}
+        >
+          {({ className: highlightClassName, style, tokens, getLineProps, getTokenProps }) => (
+            <pre 
+              className={cn("font-mono text-sm p-4 overflow-x-auto", highlightClassName)}
+              style={style}
+            >
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line, key: i })}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token, key })} />
+                  ))}
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
+      </div>
     </div>
   );
 });
