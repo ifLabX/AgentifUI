@@ -10,6 +10,7 @@ interface FeedbackButtonProps {
   isPositive: boolean
   tooltipPosition?: "top" | "bottom" | "left" | "right"
   className?: string
+  active?: boolean // 是否处于激活状态
 }
 
 /**
@@ -22,18 +23,21 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
   onFeedback,
   isPositive,
   tooltipPosition = "bottom",
-  className
+  className,
+  active = false
 }) => {
+  // 如果提供了active属性，使用外部控制，否则使用内部状态
   const { handleFeedback, hasFeedback } = useFeedbackAction(onFeedback)
   
   return (
     <MessageActionButton
       icon={isPositive ? FiThumbsUp : FiThumbsDown}
-      activeIcon={FiCheck}
+      // 不使用激活图标，而是使用染色效果
+      // activeIcon={FiCheck}
       label={isPositive ? "有用" : "无用"}
       activeLabel="已评价"
       onClick={() => handleFeedback(isPositive)}
-      active={hasFeedback}
+      active={active || hasFeedback}
       tooltipPosition={tooltipPosition}
       className={className}
     />

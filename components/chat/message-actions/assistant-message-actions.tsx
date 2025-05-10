@@ -5,6 +5,7 @@ import { MessageActionsContainer } from "@components/ui/message-actions-containe
 import { CopyButton } from "./buttons/copy-button"
 import { RegenerateButton } from "./buttons/regenerate-button"
 import { FeedbackButton } from "./buttons/feedback-button"
+import { useFeedbackManager } from "./hooks/use-feedback-manager"
 
 interface AssistantMessageActionsProps {
   messageId: string
@@ -28,6 +29,8 @@ export const AssistantMessageActions: React.FC<AssistantMessageActionsProps> = (
   isRegenerating = false,
   className
 }) => {
+  // 使用反馈管理hook，实现排他性
+  const { selectedFeedback, handleFeedback, shouldShowButton } = useFeedbackManager(onFeedback);
   return (
     <MessageActionsContainer 
       align="left" 
@@ -43,15 +46,21 @@ export const AssistantMessageActions: React.FC<AssistantMessageActionsProps> = (
       {/* 分隔线 - 使用更深的颜色，在深色模式下不那么显眼 */}
       <div className="self-stretch border-r border-gray-200/50 dark:border-gray-800/50 mx-1" />
       
-      {/* 反馈按钮 */}
-      <FeedbackButton 
-        onFeedback={(isPositive) => onFeedback(isPositive)}
-        isPositive={true}
-      />
-      <FeedbackButton 
-        onFeedback={(isPositive) => onFeedback(isPositive)}
-        isPositive={false}
-      />
+      {/* 反馈按钮 - 实现排他性，点击一个时另一个消失 */}
+      {shouldShowButton(true) && (
+        <FeedbackButton 
+          onFeedback={() => handleFeedback(true)}
+          isPositive={true}
+          active={selectedFeedback === true}
+        />
+      )}
+      {shouldShowButton(false) && (
+        <FeedbackButton 
+          onFeedback={() => handleFeedback(false)}
+          isPositive={false}
+          active={selectedFeedback === false}
+        />
+      )}
     </MessageActionsContainer>
   )
 }
