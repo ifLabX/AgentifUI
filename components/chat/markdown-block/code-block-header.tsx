@@ -13,13 +13,20 @@ interface CodeBlockHeaderProps {
 }
 
 // 使用 React.memo 包装组件，防止不必要的重新渲染
+// 使用随机ID生成器确保每个复制按钮的tooltip是唯一的
+const generateUniqueId = () => `copy-code-${Math.random().toString(36).substring(2, 11)}`;
+
+// 使用 React.memo 包装组件，防止不必要的重新渲染
 export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
   language,
   className,
   codeContent,
 }) => {
-  // 复制功能状态
+  // 复制功能状态 - 使用状态管理复制按钮的UI，这不会影响代码高亮
   const [isCopied, setIsCopied] = React.useState(false);
+  
+  // 为每个复制按钮生成唯一的tooltip ID
+  const tooltipId = React.useRef(generateUniqueId()).current;
   
   // 处理复制操作
   const handleCopy = React.useCallback(async () => {
@@ -37,6 +44,8 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
       console.error("Failed to copy code:", error);
     }
   }, [codeContent]);
+  
+  // 注意：这个组件只处理头部UI和复制功能，不影响代码高亮
 
   if (!language) {
     return null; // Don't render header if language is not specified
@@ -65,7 +74,7 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
       {codeContent && (
         <TooltipWrapper
           content={isCopied ? "已复制" : "复制代码"}
-          id={`copy-code-${language}`}
+          id={tooltipId}
           placement="bottom"
           desktopOnly={true}
         >

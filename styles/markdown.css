@@ -1,5 +1,131 @@
 /* Markdown样式 */
 
+/* 代码语法高亮 - 使用CSS变量实现 */
+:root {
+  /* 基础语法高亮颜色 - 亮色主题 */
+  --syntax-comment: #6a737d;
+  --syntax-keyword: #d73a49;
+  --syntax-string: #032f62;
+  --syntax-variable: #e36209;
+  --syntax-function: #6f42c1;
+  --syntax-operator: #005cc5;
+  --syntax-number: #005cc5;
+  --syntax-builtin: #005cc5;
+  --syntax-class: #6f42c1;
+  --syntax-tag: #22863a;
+  --syntax-attr-name: #6f42c1;
+  --syntax-attr-value: #032f62;
+  --syntax-punctuation: #24292e;
+}
+
+.dark {
+  /* 基础语法高亮颜色 - 暗色主题 */
+  --syntax-comment: #8b949e;
+  --syntax-keyword: #ff7b72;
+  --syntax-string: #a5d6ff;
+  --syntax-variable: #ffa657;
+  --syntax-function: #d2a8ff;
+  --syntax-operator: #79c0ff;
+  --syntax-number: #79c0ff;
+  --syntax-builtin: #79c0ff;
+  --syntax-class: #d2a8ff;
+  --syntax-tag: #7ee787;
+  --syntax-attr-name: #d2a8ff;
+  --syntax-attr-value: #a5d6ff;
+  --syntax-punctuation: #c9d1d9;
+}
+
+/* 语法高亮类 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--syntax-comment);
+  font-style: italic;
+}
+
+.token.namespace {
+  opacity: 0.7;
+}
+
+.token.string,
+.token.attr-value {
+  color: var(--syntax-string);
+}
+
+.token.punctuation {
+  color: var(--syntax-punctuation);
+}
+
+.token.operator {
+  color: var(--syntax-operator);
+}
+
+.token.boolean,
+.token.number {
+  color: var(--syntax-number);
+}
+
+.token.property {
+  color: var(--syntax-variable);
+}
+
+.token.tag {
+  color: var(--syntax-tag);
+}
+
+.token.attr-name {
+  color: var(--syntax-attr-name);
+}
+
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: var(--syntax-string);
+}
+
+.token.selector,
+.token.inserted {
+  color: var(--syntax-tag);
+}
+
+.token.atrule,
+.token.keyword,
+.token.important,
+.token.deleted {
+  color: var(--syntax-keyword);
+}
+
+.token.regex,
+.token.statement {
+  color: var(--syntax-operator);
+}
+
+.token.placeholder,
+.token.variable {
+  color: var(--syntax-variable);
+}
+
+.token.important,
+.token.statement,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.function,
+.token.class-name {
+  color: var(--syntax-function);
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
 .markdown-body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.6;

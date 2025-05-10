@@ -1,0 +1,63 @@
+/* 自定义Prism.js样式，确保与我们的CSS变量系统兼容 */
+
+/* 确保代码块中的行高和间距一致 */
+pre[class*="language-"] {
+  margin: 0;
+  padding: 0;
+  background: var(--md-code-bg);
+  color: var(--md-code-text);
+  overflow: auto;
+}
+
+code[class*="language-"] {
+  display: block;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 2;
+  hyphens: none;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  text-shadow: none;
+  padding: 0.75rem; /* 添加上下左右内边距，保持一致的间距 */
+}
+
+/* 确保行内代码样式与代码块一致 */
+:not(pre) > code[class*="language-"] {
+  background: var(--md-inline-code-bg);
+  color: var(--md-inline-code-text);
+  border: 1px solid var(--md-inline-code-border);
+  border-radius: 0.25rem;
+  padding: 0.1em 0.3em;
+  white-space: normal;
+}
+
+/* 确保代码块内的滚动条样式一致 */
+pre[class*="language-"]::-webkit-scrollbar {
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+}
+
+.dark pre[class*="language-"]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 确保代码块内的行号样式一致（如果有的话） */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid var(--md-code-border);
+}
+
+.line-numbers-rows > span:before {
+  color: var(--md-code-header-text);
+}

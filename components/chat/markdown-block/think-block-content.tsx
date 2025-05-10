@@ -9,8 +9,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import "katex/dist/katex.min.css";
 import type { Components } from "react-markdown";
-import { useTheme } from '@lib/hooks';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
+// 移除 useTheme 和 useThemeColors 的导入，使用 CSS 变量替代
 import { motion } from 'framer-motion'; // 仅导入 motion
 
 /**
@@ -32,8 +31,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
   markdownContent,
   isOpen 
 }) => {
-  const { isDark } = useTheme(); // 获取主题状态
-  const { colors } = useThemeColors(); // 获取主题颜色
+  // 移除 useTheme 和 useThemeColors，使用 CSS 变量替代
 
   // --- Markdown 渲染器的组件配置 ---
   const markdownComponents: Components = {
@@ -41,20 +39,26 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       const match = /language-(\w+)/.exec(className || '');
       // 如果不是带有语言标识的代码块 (inline code)
       return !className?.includes('language-') ? (
-        <code className={cn(
-          "px-2 py-1 rounded font-mono", 
-          isDark ? "bg-stone-800 text-stone-300" : "bg-stone-100 text-stone-700"
-        )} {...props}>
+        <code 
+          className="px-2 py-1 rounded font-mono"
+          style={{
+            backgroundColor: 'var(--md-think-inline-code-bg)',
+            color: 'var(--md-think-inline-code-text)'
+          }}
+          {...props}
+        >
           {children}
         </code>
       ) : (
         // 如果是带有语言标识的代码块
-        <pre className={cn(
-          "rounded-md p-5 my-4 overflow-auto",
-          isDark ? "bg-stone-900 text-stone-100" : "bg-stone-50 text-stone-900",
-          "border",
-          isDark ? "border-stone-700" : "border-stone-200"
-        )}>
+        <pre 
+          className="rounded-md p-5 my-4 overflow-auto border"
+          style={{
+            backgroundColor: 'var(--md-code-bg)',
+            color: 'var(--md-code-text)',
+            borderColor: 'var(--md-code-border)'
+          }}
+        >
           <code className={cn(className, 'block whitespace-pre-wrap text-base')} {...props}>
             {children}
           </code>
@@ -65,11 +69,20 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     // 表格渲染
     table({ className, children, ...props }: any) {
       return (
-        <div className="overflow-x-auto my-5 border rounded-md w-full">
-          <table className={cn(
-            "min-w-full divide-y",
-            isDark ? "divide-stone-700 border-stone-700" : "divide-stone-200 border-stone-200"
-          )} {...props}>
+        <div 
+          className="overflow-x-auto my-5 border rounded-md w-full"
+          style={{
+            borderColor: 'var(--md-table-border)'
+          }}
+        >
+          <table 
+            className="min-w-full divide-y"
+            style={{
+              borderColor: 'var(--md-table-border)',
+              // CSS 没有 divideColor 属性，使用类名设置分隔线颜色
+            }}
+            {...props}
+          >
             {children}
           </table>
         </div>
@@ -80,10 +93,11 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     th({ className, children, ...props }: any) {
       return (
         <th 
-          className={cn(
-            "px-5 py-3 text-left font-medium text-base", 
-            isDark ? "bg-stone-900 text-stone-100" : "bg-stone-50 text-stone-900"
-          )} 
+          className="px-5 py-3 text-left font-medium text-base"
+          style={{
+            backgroundColor: 'var(--md-table-header-bg)',
+            color: 'var(--md-table-header-text)'
+          }}
           {...props}
         >
           {children}
@@ -95,10 +109,11 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     td({ className, children, ...props }: any) {
       return (
         <td 
-          className={cn(
-            "px-5 py-3 border-t text-base", 
-            isDark ? "border-stone-700 text-stone-200" : "border-stone-200 text-stone-800"
-          )} 
+          className="px-5 py-3 border-t text-base"
+          style={{
+            borderColor: 'var(--md-table-divide)',
+            color: 'var(--md-table-cell-text)'
+          }}
           {...props}
         >
           {children}
@@ -110,12 +125,12 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     blockquote({ className, children, ...props }: any) {
       return (
         <blockquote 
-          className={cn(
-            "pl-5 border-l-4 my-5 py-3", 
-            isDark 
-              ? "border-stone-600 bg-stone-800/80 text-stone-200" 
-              : "border-stone-500 bg-stone-50 text-stone-800"
-          )} 
+          className="pl-5 border-l-4 my-5 py-3"
+          style={{
+            backgroundColor: 'var(--md-blockquote-bg)',
+            borderColor: 'var(--md-blockquote-border)',
+            color: 'var(--md-blockquote-text)'
+          }}
           {...props}
         >
           {children}
@@ -127,10 +142,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     p({ className, children, ...props }: any) {
       return (
         <p 
-          className={cn(
-            "my-0 text-base leading-relaxed", // 完全去除上下外边距
-            isDark ? "text-gray-200" : "text-gray-800"
-          )} 
+          className="my-0 text-base leading-relaxed" // 完全去除上下外边距
+          style={{
+            color: 'var(--md-think-content-text)'
+          }}
           {...props}
         >
           {children}
@@ -142,10 +157,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     h1({ className, children, ...props }: any) {
       return (
         <h1 
-          className={cn(
-            "text-2xl font-bold my-5",
-            isDark ? colors.mainText.tailwind : "text-stone-900"
-          )} 
+          className="text-2xl font-bold my-5"
+          style={{
+            color: 'var(--md-think-content-text)'
+          }}
           {...props}
         >
           {children}
@@ -156,10 +171,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     h2({ className, children, ...props }: any) {
       return (
         <h2 
-          className={cn(
-            "text-xl font-bold my-4",
-            isDark ? colors.mainText.tailwind : "text-stone-800"
-          )} 
+          className="text-xl font-bold my-4"
+          style={{
+            color: 'var(--md-think-content-text)'
+          }}
           {...props}
         >
           {children}
@@ -170,10 +185,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     h3({ className, children, ...props }: any) {
       return (
         <h3 
-          className={cn(
-            "text-lg font-semibold my-3",
-            isDark ? colors.mainText.tailwind : "text-stone-700"
-          )} 
+          className="text-lg font-semibold my-3"
+          style={{
+            color: 'var(--md-think-content-text)'
+          }}
           {...props}
         >
           {children}
@@ -185,10 +200,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     ul({ className, children, ...props }: any) {
       return (
         <ul 
-          className={cn(
-            "my-4 pl-6 list-disc space-y-2 text-base",
-            isDark ? "text-gray-200" : "text-gray-800"
-          )} 
+          className="my-4 pl-6 list-disc space-y-2 text-base"
+          style={{
+            color: 'var(--md-think-content-text)'
+          }}
           {...props}
         >
           {children}
@@ -199,10 +214,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     ol({ className, children, ...props }: any) {
       return (
         <ol 
-          className={cn(
-            "my-4 pl-6 list-decimal space-y-2 text-base",
-            isDark ? "text-gray-200" : "text-gray-800"
-          )} 
+          className="my-4 pl-6 list-decimal space-y-2 text-base"
+          style={{
+            color: 'var(--md-think-content-text)'
+          }}
           {...props}
         >
           {children}
@@ -214,10 +229,11 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     a({ className, children, ...props }: any) {
       return (
         <a 
-          className={cn(
-            "underline",
-            isDark ? "text-stone-400 hover:text-stone-300" : "text-stone-600 hover:text-stone-800"
-          )} 
+          className="underline"
+          style={{
+            color: 'var(--md-think-content-text)',
+            opacity: 0.9
+          }}
           {...props}
         >
           {children}
@@ -264,16 +280,12 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
     >
       <div
         id="think-block-content"
-        className={cn(
-          "think-block-content flex-1 markdown-body w-full",
-          "border rounded-md", // 边框和圆角
-          isDark ? "bg-stone-800/90 border-stone-700" : "bg-white border-stone-200", // 背景和边框颜色
-          "p-5", // 内边距
-          isDark ? colors.mainText.tailwind : "text-stone-900", // 文字颜色
-          "font-sans text-base", // 字体
-          "max-w-full", // 最大宽度
-          "transform-gpu" // 启用GPU加速
-        )}
+        className="think-block-content flex-1 markdown-body w-full border rounded-md p-5 font-sans text-base max-w-full transform-gpu"
+        style={{
+          backgroundColor: 'var(--md-think-content-bg)',
+          borderColor: 'var(--md-think-content-border)',
+          color: 'var(--md-think-content-text)'
+        }}
       >
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkMath]}

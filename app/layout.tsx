@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipContainer } from "@components/ui/tooltip";
 import "./globals.css";
+import "../styles/markdown-variables.css";
+import "../styles/markdown.css";
+import "../styles/prism-custom.css"; // 导入自定义Prism样式
 import { NotificationBar } from '@components/ui/notification-bar';
 import { ThemeProvider } from "next-themes";
 import { ClientLayout } from "./layouts/client-layout";
