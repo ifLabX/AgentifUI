@@ -9,13 +9,18 @@ import {
   AlertTitle,
   Container,
   Tabs,
-  Tab
+  Tab,
+  Snackbar,
+  Paper,
+  Card,
+  CardContent
 } from '@mui/material';
 import { useAdminAuth } from '@lib/hooks/use-admin-auth';
 import { useApiConfigStore, ServiceInstance } from '@lib/stores/api-config-store';
 import AdminLayout from '@components/admin/admin-layout';
 import AppInstanceList from '@components/admin/app-instance-list';
 import AppInstanceForm from '@components/admin/app-instance-form';
+import { ApiConfigSkeleton } from '@components/ui/skeleton';
 
 export default function ApiConfigPage() {
   // 使用管理员权限检查 hook
@@ -35,6 +40,9 @@ export default function ApiConfigPage() {
     deleteAppInstance
   } = useApiConfigStore();
   
+  // 防止页面闪烁，在完全加载前始终显示加载状态
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+  
   // 组件状态
   const [tabValue, setTabValue] = useState(0);
   const [isAddingInstance, setIsAddingInstance] = useState(false);
@@ -42,13 +50,26 @@ export default function ApiConfigPage() {
   const [processingInstance, setProcessingInstance] = useState(false);
   const [instanceError, setInstanceError] = useState<Error | null>(null);
   
+  // 操作反馈状态
+  const [feedback, setFeedback] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
+  }>({ open: false, message: '', severity: 'info' });
+  
   // 找到 Dify 提供商
   const difyProvider = providers.find(p => p.name === 'Dify');
   
   // 加载配置数据
   useEffect(() => {
     if (isAdmin) {
-      loadConfigData();
+      // 加载数据
+      loadConfigData().then(() => {
+        // 数据加载完成后设置状态
+        setTimeout(() => {
+          setIsFullyLoaded(true);
+        }, 300); // 添加小延迟确保数据已完全加载到组件
+      });
     }
   }, [isAdmin, loadConfigData]);
   
@@ -82,9 +103,22 @@ export default function ApiConfigPage() {
     
     try {
       await deleteAppInstance(instanceId);
+      // 显示成功反馈
+      setFeedback({
+        open: true,
+        message: '应用实例已成功删除',
+        severity: 'success'
+      });
       // 删除成功后会自动重新加载数据
     } catch (error) {
-      setInstanceError(error instanceof Error ? error : new Error('删除应用实例时出错'));
+      const errorMessage = error instanceof Error ? error.message : '删除应用实例时出错';
+      setInstanceError(error instanceof Error ? error : new Error(errorMessage));
+      // 显示错误反馈
+      setFeedback({
+        open: true,
+        message: errorMessage,
+        severity: 'error'
+      });
     } finally {
       setProcessingInstance(false);
     }
@@ -115,11 +149,21 @@ export default function ApiConfigPage() {
       if (editingInstance) {
         // 更新现有实例
         await updateAppInstance(editingInstance.id, instanceData, apiKey);
-        console.log('已更新应用实例:', instanceData.display_name);
+        // 显示成功反馈
+        setFeedback({
+          open: true,
+          message: `应用实例 "${instanceData.display_name}" 已成功更新`,
+          severity: 'success'
+        });
       } else {
         // 创建新实例
         await createAppInstance(instanceData, apiKey);
-        console.log('已创建新应用实例:', instanceData.display_name);
+        // 显示成功反馈
+        setFeedback({
+          open: true,
+          message: `应用实例 "${instanceData.display_name}" 已成功创建`,
+          severity: 'success'
+        });
       }
       
       // 重新加载数据已在函数内完成
@@ -128,8 +172,15 @@ export default function ApiConfigPage() {
       setIsAddingInstance(false);
       setEditingInstance(null);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '保存应用实例时出错';
       console.error('保存应用实例时出错:', error);
-      setInstanceError(error instanceof Error ? error : new Error('保存应用实例时出错'));
+      setInstanceError(error instanceof Error ? error : new Error(errorMessage));
+      // 显示错误反馈
+      setFeedback({
+        open: true,
+        message: errorMessage,
+        severity: 'error'
+      });
     } finally {
       setProcessingInstance(false);
     }
@@ -142,15 +193,18 @@ export default function ApiConfigPage() {
     setInstanceError(null);
   };
   
+  // 关闭反馈通知
+  const handleCloseFeedback = () => {
+    setFeedback(prev => ({ ...prev, open: false }));
+  };
+  
   // 显示加载状态
-  if (isAuthLoading || isDataLoading) {
+  if (isAuthLoading || isDataLoading || !isFullyLoaded) {
     return (
       <AdminLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-          <CircularProgress />
-          <Typography variant="body1" sx={{ ml: 2 }}>
-            加载中...
-          </Typography>
+        <Box sx={{ p: 3 }}>
+          {/* 使用骨架屏代替简单的加载指示器 */}
+          <ApiConfigSkeleton />
         </Box>
       </AdminLayout>
     );
@@ -203,12 +257,34 @@ export default function ApiConfigPage() {
   // 显示 API 配置管理界面
   return (
     <AdminLayout>
-      <Typography variant="h4" component="h1" gutterBottom>
-        API 配置管理
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
-        管理应用程序使用的 API 密钥和配置
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          API 配置管理
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary">
+          管理应用程序使用的 API 密钥和配置
+        </Typography>
+      </Box>
+      
+      {/* API密钥单向配置的提示信息 */}
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          p: 2, 
+          mb: 3, 
+          bgcolor: 'info.light', 
+          color: 'info.contrastText',
+          border: '1px solid',
+          borderColor: 'info.main'
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          关于 API 密钥管理
+        </Typography>
+        <Typography variant="body2">
+          出于安全考虑，API 密钥采用单向加密存储。一旦保存，密钥将无法以原始形式查看。当编辑应用实例时，密钥字段为空，只有当您需要更改密钥时才需要填写。如果保持为空，将继续使用当前密钥。
+        </Typography>
+      </Paper>
       
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={tabValue} onChange={handleTabChange}>
@@ -219,7 +295,6 @@ export default function ApiConfigPage() {
       
       {tabValue === 0 && (
         <Box>
-          
           {isAddingInstance ? (
             <AppInstanceForm 
               instance={editingInstance || undefined}
@@ -239,6 +314,23 @@ export default function ApiConfigPage() {
           )}
         </Box>
       )}
+      
+      {/* 操作反馈Snackbar */}
+      <Snackbar
+        open={feedback.open}
+        autoHideDuration={6000}
+        onClose={handleCloseFeedback}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseFeedback} 
+          severity={feedback.severity} 
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {feedback.message}
+        </Alert>
+      </Snackbar>
     </AdminLayout>
   );
 }

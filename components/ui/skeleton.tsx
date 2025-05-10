@@ -85,3 +85,96 @@ export function ChatListSkeleton({ messageCount = 3 }: { messageCount?: number }
     </div>
   );
 }
+
+// 卡片骨架屏
+export function CardSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("rounded-lg p-4", className)}>
+      <Skeleton className="h-8 w-1/3 mb-4" />
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+  );
+}
+
+// 表格骨架屏
+export function TableSkeleton({ rows = 3, className }: { rows?: number, className?: string }) {
+  return (
+    <div className={cn("space-y-3", className)}>
+      <div className="flex space-x-4 pb-2">
+        <Skeleton className="h-8 w-1/4" />
+        <Skeleton className="h-8 w-1/4" />
+        <Skeleton className="h-8 w-1/4" />
+        <Skeleton className="h-8 w-1/4" />
+      </div>
+      {Array.from({ length: rows }).map((_, index) => (
+        <div key={index} className="flex space-x-4 py-2">
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-6 w-1/4" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// API配置页面骨架屏
+export function ApiConfigSkeleton() {
+  return (
+    <div className="space-y-8">
+      {/* 标题区域 */}
+      <div className="space-y-2">
+        <Skeleton className="h-10 w-1/3" />
+        <Skeleton className="h-5 w-2/3" />
+      </div>
+      
+      {/* API密钥管理提示区域 */}
+      <div className="p-4 rounded-lg bg-blue-50">
+        <Skeleton className="h-6 w-1/4 mb-2" />
+        <Skeleton className="h-4 w-full mb-1" />
+        <Skeleton className="h-4 w-full mb-1" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+      
+      {/* 选项卡区域 */}
+      <div>
+        <div className="flex pb-2 mb-6">
+          <Skeleton className="h-10 w-24 mr-4" />
+          <Skeleton className="h-10 w-24" />
+        </div>
+        
+        {/* 应用实例列表区域 */}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center mb-4">
+            <Skeleton className="h-8 w-1/4" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+          
+          {/* 表格 */}
+          <div className="rounded-lg overflow-hidden">
+            {/* 表头 */}
+            <div className="flex p-4 bg-gray-50">
+              <Skeleton className="h-6 w-1/5 mr-4" />
+              <Skeleton className="h-6 w-1/5 mr-4" />
+              <Skeleton className="h-6 w-1/5 mr-4" />
+              <Skeleton className="h-6 w-1/5 mr-4" />
+              <Skeleton className="h-6 w-1/5" />
+            </div>
+            
+            {/* 表行 */}
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="flex p-4">
+                <Skeleton className="h-6 w-1/5 mr-4" />
+                <Skeleton className="h-6 w-1/5 mr-4" />
+                <Skeleton className="h-6 w-1/5 mr-4" />
+                <Skeleton className="h-6 w-1/5 mr-4" />
+                <Skeleton className="h-6 w-1/5" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
