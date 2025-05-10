@@ -4,14 +4,11 @@
  * 本文件包含与服务提供商表(providers)相关的所有数据库操作
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '../supabase/client';
 import { Provider } from '../types/database';
 
-// 创建Supabase客户端
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+// 使用单例模式的Supabase客户端
+const supabase = createClient();
 
 /**
  * 获取所有活跃的服务提供商

@@ -4,14 +4,11 @@
  * 本文件包含与服务实例表(service_instances)相关的所有数据库操作
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '../supabase/client';
 import { ServiceInstance } from '../types/database';
 
-// 创建Supabase客户端
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+// 使用单例模式的Supabase客户端
+const supabase = createClient();
 
 /**
  * 获取指定提供商的所有服务实例

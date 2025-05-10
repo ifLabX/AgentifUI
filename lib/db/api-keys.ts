@@ -4,15 +4,12 @@
  * 本文件包含与API密钥表(api_keys)相关的所有数据库操作
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '../supabase/client';
 import { ApiKey } from '../types/database';
 import { encryptApiKey, decryptApiKey } from '../utils/encryption';
 
-// 创建Supabase客户端
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+// 使用单例模式的Supabase客户端
+const supabase = createClient();
 
 /**
  * 获取指定服务实例的API密钥
