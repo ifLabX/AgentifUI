@@ -3,6 +3,7 @@
 import type React from "react"
 import { cn } from "@lib/utils"
 import { Button as UIButton } from "@components/ui/button"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 
 interface ChatButtonProps {
   icon: React.ReactNode
@@ -25,6 +26,8 @@ export const ChatButton = ({
   ariaLabel,
   forceActiveStyle = false,
 }: ChatButtonProps) => {
+  // 获取主题颜色
+  const { colors } = useThemeColors();
   // 功能按钮 - 带有渐变感觉的浅灰色边框
   if (variant === "function") {
     return (
@@ -37,7 +40,7 @@ export const ChatButton = ({
         className={cn(
           "rounded-lg h-8 w-8 flex items-center justify-center",
           isDark
-            ? "border border-gray-700 text-gray-300 hover:bg-gray-800"
+            ? `border border-stone-600 bg-stone-600/30 ${colors.mainText.tailwind} ${colors.buttonHover.tailwind}`
             : "border border-gray-200 text-gray-600 hover:bg-gray-50",
           "bg-transparent",
           "cursor-pointer",
@@ -61,10 +64,10 @@ export const ChatButton = ({
         "rounded-full h-8 w-8 flex items-center justify-center",
         forceActiveStyle || !disabled
           ? isDark
-            ? "bg-gray-900 text-white hover:bg-gray-800"
+            ? "bg-stone-900 text-white hover:bg-stone-800"
             : "bg-black text-white hover:bg-gray-800"
           : isDark
-            ? "bg-gray-700 text-gray-500"
+            ? "bg-stone-600 text-stone-300"
             : "bg-gray-200 text-gray-400",
         "cursor-pointer shadow-sm",
         className,

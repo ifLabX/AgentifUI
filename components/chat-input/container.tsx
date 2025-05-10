@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@lib/utils"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 
 // 容器组件
 interface ChatContainerProps {
@@ -23,6 +24,8 @@ export const ChatContainer = ({
   className, 
   widthClass 
 }: ChatContainerProps) => {
+  // 获取主题颜色
+  const { colors } = useThemeColors();
   
   // 基本样式，包括绝对定位和宽度
   const baseClasses = cn(
@@ -56,7 +59,7 @@ export const ChatContainer = ({
       <div
         className={cn(
           "flex flex-col rounded-2xl",
-          isDark ? "bg-gray-800" : "bg-white",
+          isDark ? colors.sidebarBackground.tailwind : "bg-white",
           "shadow-[0_0_15px_rgba(0,0,0,0.1)]",
         )}
       >

@@ -3,6 +3,7 @@
 import { useRef, useCallback, useEffect, forwardRef } from "react"
 import { cn } from "@lib/utils"
 import { INITIAL_INPUT_HEIGHT } from "@lib/stores/chat-layout-store"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 
 interface ChatTextInputProps {
   value: string
@@ -33,6 +34,9 @@ export const ChatTextInput = forwardRef<HTMLTextAreaElement, ChatTextInputProps>
   disabled,
   readOnly,
 }, ref) => {
+  // 获取主题颜色
+  const { colors } = useThemeColors()
+  
   // 内部引用，用于在没有外部ref时使用
   const internalRef = useRef<HTMLTextAreaElement>(null)
   
@@ -108,7 +112,7 @@ export const ChatTextInput = forwardRef<HTMLTextAreaElement, ChatTextInputProps>
       className={cn(
         "w-full resize-none border-0 bg-transparent focus:ring-0 focus:outline-none",
         "min-h-[48px] overflow-y-auto",
-        isDark ? "text-white placeholder:text-gray-400" : "text-gray-900 placeholder:text-gray-500",
+        isDark ? `${colors.mainText.tailwind} placeholder:text-stone-400` : "text-gray-900 placeholder:text-gray-500",
         className,
       )}
       style={{ maxHeight: `${maxHeight}px` }}

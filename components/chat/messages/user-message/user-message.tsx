@@ -60,7 +60,6 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             "border",
             isDark ? "border-stone-600/30" : "border-stone-300/80",
             "shadow-sm",
-            "transition-colors duration-200",
             className
           )}
         >

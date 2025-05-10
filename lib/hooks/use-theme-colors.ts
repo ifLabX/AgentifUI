@@ -1,5 +1,5 @@
 import { useTheme } from './use-theme';
-import { getThemeColors } from '../theme/colors';
+import { getThemeColors } from '../theme/main-colors';
 
 /**
  * 主题颜色Hook

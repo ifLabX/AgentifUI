@@ -5,6 +5,7 @@ import ReactDOM from "react-dom"
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks/use-theme"
 import { useMobile } from "@lib/hooks/use-mobile"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface PopoverProps {
@@ -29,6 +30,7 @@ export function Popover({
   minWidth = 180
 }: PopoverProps) {
   const { isDark } = useTheme()
+  const { colors } = useThemeColors()
   const isMobile = useMobile()
   const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false)
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -231,7 +233,7 @@ export function Popover({
         "py-2 rounded-xl shadow-lg backdrop-blur-sm",
         "overflow-hidden",
         isDark
-          ? "bg-gray-800/95 border border-gray-700/80 shadow-black/20"
+          ? `${colors.sidebarBackground.tailwind} border border-stone-600/80 shadow-black/20`
           : "bg-white/95 border border-gray-200/80 shadow-gray-200/40",
         contentClassName
       )}
@@ -290,6 +292,7 @@ export function PopoverItem({
   disabled = false
 }: PopoverItemProps) {
   const { isDark } = useTheme()
+  const { colors } = useThemeColors()
   
   return (
     <button
@@ -300,7 +303,7 @@ export function PopoverItem({
           ? [
               danger 
                 ? "text-red-300 hover:bg-red-900/40 active:bg-red-900/60" 
-                : "text-gray-200 hover:bg-gray-700/60 active:bg-gray-700/80"
+                : `${colors.mainText.tailwind} hover:bg-stone-600/60 active:bg-stone-600/80`
             ]
           : [
               danger 
@@ -330,12 +333,13 @@ interface PopoverDividerProps {
 
 export function PopoverDivider({ className }: PopoverDividerProps) {
   const { isDark } = useTheme()
+  const { colors } = useThemeColors()
   
   return (
     <div 
       className={cn(
         "h-px my-1.5 mx-3",
-        isDark ? "bg-gray-700/80" : "bg-gray-200/80",
+        isDark ? "bg-stone-600/80" : "bg-gray-200/80",
         className
       )}
     />
