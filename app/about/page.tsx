@@ -1,6 +1,38 @@
 "use client";
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@components/ui/button';
+import { createClient } from '@lib/supabase/client';
+
 export default function AboutPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // 处理"开始探索"按钮点击
+  const handleExploreClick = async () => {
+    setIsLoading(true);
+    try {
+      // 检查用户是否已登录
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // 用户已登录，直接跳转到聊天页面
+        router.push('/chat');
+      } else {
+        // 用户未登录，跳转到登录页面
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error('检查登录状态失败:', error);
+      // 出错时默认跳转到登录页面
+      router.push('/login');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="flex flex-col items-center py-16 px-4 md:px-8 overflow-auto">
       <div className="max-w-4xl w-full space-y-12">
@@ -57,12 +89,15 @@ export default function AboutPage() {
             我们邀请教育工作者、开发者和对教育科技有热情的人士加入我们，共同探索 AI 教育的新边界。
           </p>
           <div className="flex justify-center">
-            <a 
-              href="/login" 
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+            <Button 
+              size="lg" 
+              variant="gradient" 
+              className="px-8 py-6 h-auto text-base font-medium"
+              onClick={handleExploreClick}
+              isLoading={isLoading}
             >
               开始探索
-            </a>
+            </Button>
           </div>
         </section>
       </div>
