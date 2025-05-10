@@ -31,19 +31,19 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
         "border border-transparent",
         
         !isDark && [
-          "text-stone-600 hover:text-stone-900",
-          "hover:bg-stone-300 hover:shadow-md", // 增强悬停效果，使用更深的背景色和阴影
+          "text-stone-600", // 保持文字颜色不变
+          "hover:bg-stone-300 hover:shadow-md", // 只保留背景和阴影的悬停效果
           active 
-            ? "bg-stone-300 text-stone-900 font-semibold shadow-sm border-stone-400/80"
-            : "",
+            ? "bg-stone-300 shadow-sm border-stone-400/80"
+            : "", // 移除 font-semibold，确保字重不变
         ],
         
         isDark && [
-          "text-gray-200 hover:text-white",
+          "text-gray-200", // 保持文字颜色不变
           "hover:bg-stone-600 hover:shadow-md hover:border-stone-500/50",
           active 
-            ? "bg-stone-700 text-blue-300 font-semibold shadow-sm border-stone-600"
-            : "",
+            ? "bg-stone-700 shadow-sm border-stone-600"
+            : "", // 移除 font-semibold，确保字重不变
         ],
         
         isExpanded ? "w-full" : "w-10",
@@ -54,11 +54,10 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
     >
       <span className={cn(
         "flex h-5 w-5 items-center justify-center",
-        "transition-[margin,transform,color] duration-200 ease-in-out",
+        "transition-[margin,transform] duration-200 ease-in-out", // 移除 color 过渡
         
-        active 
-          ? (isDark ? "text-blue-400" : "text-primary") 
-          : (isDark ? "text-gray-400" : "text-gray-500"),
+        // 保持图标颜色一致，不因选中状态而改变
+        isDark ? "text-gray-400" : "text-gray-500",
         
         !isExpanded && "scale-110",
         !isExpanded && "-ml-0.5",
@@ -67,8 +66,8 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
       </span>
 
       <span className={cn(
-        "absolute left-10 whitespace-nowrap transition-colors duration-200",
-        active && (isDark ? "text-blue-300" : "text-primary font-medium"),
+        "absolute left-10 whitespace-nowrap", // 移除颜色过渡效果
+        // 移除 active && "font-medium"，完全去除字重变化
         isExpanded ? "block" : "hidden"
       )}>
         {text}

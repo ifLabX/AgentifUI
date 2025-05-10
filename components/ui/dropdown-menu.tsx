@@ -35,17 +35,17 @@ function DropdownItem({
     <button
       className={cn(
         "w-full text-left px-3 py-2 text-sm flex items-center gap-2 rounded-md",
-        "transition-colors duration-150",
+        "transition-all duration-200",
         isDark
           ? [
               danger 
-                ? "text-red-300 hover:bg-red-900/30" 
-                : "text-gray-300 hover:bg-gray-700/50"
+                ? "text-red-300 hover:bg-red-900/40 active:bg-red-900/60" 
+                : "text-gray-200 hover:bg-stone-600/60 active:bg-stone-600/80"
             ]
           : [
               danger 
-                ? "text-red-600 hover:bg-red-50" 
-                : "text-gray-700 hover:bg-gray-100"
+                ? "text-red-600 hover:bg-red-50 active:bg-red-100" 
+                : "text-gray-700 hover:bg-gray-100 active:bg-gray-200"
             ],
         className
       )}
@@ -67,8 +67,8 @@ function DropdownDivider({ className }: DropdownDividerProps) {
   return (
     <div 
       className={cn(
-        "h-px my-1 mx-1",
-        isDark ? "bg-gray-700" : "bg-gray-200",
+        "h-px my-1.5 mx-3",
+        isDark ? "bg-stone-600/80" : "bg-gray-200/80",
         className
       )}
     />
@@ -167,11 +167,11 @@ export function DropdownMenu({
       ref={dropdownRef}
       className={cn(
         "fixed z-50 animate-fade-in",
-        "py-1.5 rounded-lg shadow-lg",
+        "py-2 rounded-xl shadow-lg backdrop-blur-sm",
         "overflow-hidden",
         isDark
-          ? "bg-gray-800 border border-gray-700"
-          : "bg-white border border-gray-200",
+          ? "bg-stone-800/95 border border-stone-600/80 shadow-black/20"
+          : "bg-white/95 border border-gray-200/80 shadow-gray-200/40",
         className
       )}
       style={{ 

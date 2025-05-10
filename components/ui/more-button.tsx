@@ -48,11 +48,11 @@ export function MoreButton({ id, className, tooltipText = "更多选项" }: More
         isActive && "opacity-100",
         isDark
           ? [
-              "hover:bg-gray-700/60 text-gray-400 hover:text-gray-200",
-              isActive && "bg-gray-700/60 text-gray-200"
+              "hover:bg-stone-600/60 active:bg-stone-600/80 text-gray-400 hover:text-gray-200",
+              isActive && "bg-stone-600/60 text-gray-200"
             ]
           : [
-              "hover:bg-gray-100 text-gray-500 hover:text-gray-700",
+              "hover:bg-gray-100 active:bg-gray-200 text-gray-500 hover:text-gray-700",
               isActive && "bg-gray-100 text-gray-700"
             ],
         className
