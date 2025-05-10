@@ -318,7 +318,7 @@ export default function ApiConfigPage() {
       {/* 操作反馈Snackbar */}
       <Snackbar
         open={feedback.open}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={handleCloseFeedback}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
