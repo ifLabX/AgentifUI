@@ -244,7 +244,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
           {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，添加-mt-4来减少与消息内容的间距 */}
           <AssistantMessageActions
             messageId={id}
-            content={mainContent}
+            content={content} // 使用原始文本而不是处理后的mainContent
             onRegenerate={() => console.log('Regenerate message', id)}
             onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)}
             isRegenerating={isStreaming}

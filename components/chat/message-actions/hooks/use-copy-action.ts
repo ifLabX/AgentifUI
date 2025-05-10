@@ -18,10 +18,10 @@ export function useCopyAction(content: string) {
       await navigator.clipboard.writeText(content)
       setIsCopied(true)
       
-      // 3秒后重置状态
+      // 2秒后重置状态
       setTimeout(() => {
         setIsCopied(false)
-      }, 3000)
+      }, 2000)
     } catch (error) {
       console.error("Failed to copy:", error)
     }

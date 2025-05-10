@@ -30,21 +30,17 @@ export const MessageActionButton: React.FC<MessageActionButtonProps> = ({
   active = false
 }) => {
   const { isDark } = useTheme()
-  const [isActive, setIsActive] = useState(active)
-  
+  // 使用外部传入的active属性控制状态，而不是内部状态
   // 当前显示的图标和标签
-  const DisplayIcon = isActive && ActiveIcon ? ActiveIcon : Icon
-  const displayLabel = isActive && activeLabel ? activeLabel : label
+  const DisplayIcon = active && ActiveIcon ? ActiveIcon : Icon
+  const displayLabel = active && activeLabel ? activeLabel : label
   
   // 创建唯一的tooltip ID
   const tooltipId = `tooltip-${displayLabel.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).substring(2, 7)}`
   
   const handleClick = () => {
     if (!disabled) {
-      // 如果提供了激活图标，则切换状态
-      if (ActiveIcon || activeLabel) {
-        setIsActive(prev => !prev)
-      }
+      // 直接调用外部点击处理函数，不在内部管理状态
       onClick()
     }
   }

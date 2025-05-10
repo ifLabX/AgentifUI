@@ -40,8 +40,8 @@ export const AssistantMessageActions: React.FC<AssistantMessageActionsProps> = (
         isRegenerating={isRegenerating}
       />
       
-      {/* 分隔线 */}
-      <div className="self-stretch border-r border-gray-300 dark:border-gray-700 mx-1" />
+      {/* 分隔线 - 使用更深的颜色，在深色模式下不那么显眼 */}
+      <div className="self-stretch border-r border-gray-200/50 dark:border-gray-800/50 mx-1" />
       
       {/* 反馈按钮 */}
       <FeedbackButton 
