@@ -15,7 +15,7 @@ interface ChatContainerProps {
 // 定义欢迎界面时的向上偏移量
 const INPUT_VERTICAL_SHIFT = "5rem"; 
 // 定义对话界面距离底部的距离
-const INPUT_BOTTOM_MARGIN = "1.5rem";
+const INPUT_BOTTOM_MARGIN = "1rem";
 
 export const ChatContainer = ({ 
   children, 
