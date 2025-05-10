@@ -1,43 +1,30 @@
 import { create } from 'zustand';
 import { createClient } from '@lib/supabase/client';
 
-// 类型定义
-export interface Provider {
-  id: string;
-  name: string;
-  type: string;
-  base_url: string;
-  auth_type?: string;
-  is_active?: boolean;
-  created_at: string;
-  updated_at?: string;
-}
+// 导入类型定义
+import { Provider, ServiceInstance, ApiKey } from '@lib/types/database';
 
-export interface ServiceInstance {
-  id: string;
-  provider_id: string;
-  name: string;
-  display_name?: string;
-  description?: string;
-  instance_id: string;
-  api_path?: string;
-  is_default: boolean;
-  config?: Record<string, any>;
-  created_at: string;
-  updated_at?: string;
-}
-
-export interface ApiKey {
-  id: string;
-  provider_id?: string;
-  service_instance_id: string;
-  key_value: string;
-  is_default: boolean;
-  usage_count?: number;
-  last_used_at?: string;
-  created_at: string;
-  updated_at?: string;
-}
+// 导入数据库操作函数
+import {
+  getActiveProviders,
+  getProviderById,
+  getProviderByName,
+  createProvider,
+  updateProvider,
+  deleteProvider,
+  getServiceInstancesByProvider,
+  getDefaultServiceInstance,
+  getServiceInstanceById,
+  getServiceInstanceByInstanceId,
+  createServiceInstance,
+  updateServiceInstance,
+  deleteServiceInstance,
+  getApiKeyByServiceInstance,
+  createApiKey,
+  updateApiKey,
+  deleteApiKey,
+  getDecryptedApiKey
+} from '@lib/db';
 
 interface ApiConfigState {
   providers: Provider[];
@@ -76,8 +63,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   
   // 创建新的应用实例
   createAppInstance: async (instance, apiKey) => {
-    const supabase = createClient();
-    
     try {
       // 验证必要字段
       if (!instance.provider_id) {
@@ -89,32 +74,27 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       }
       
       // 检查应用 ID 是否已存在
-      const { data: existingInstance } = await supabase
-        .from('service_instances')
-        .select('id')
-        .eq('instance_id', instance.instance_id)
-        .maybeSingle();
+      const existingInstance = await getServiceInstanceByInstanceId(instance.provider_id, instance.instance_id);
         
       if (existingInstance) {
         throw new Error(`应用 ID "${instance.instance_id}" 已存在`);
       }
       
       // 创建服务实例
-      const { data: newInstance, error: instanceError } = await supabase
-        .from('service_instances')
-        .insert({
-          provider_id: instance.provider_id,
-          name: instance.name || instance.display_name,
-          display_name: instance.display_name,
-          description: instance.description,
-          instance_id: instance.instance_id,
-          api_path: instance.api_path,
-          is_default: instance.is_default || false
-        })
-        .select()
-        .single();
-        
-      if (instanceError) throw instanceError;
+      const newInstance = await createServiceInstance({
+        provider_id: instance.provider_id,
+        name: instance.name || instance.display_name || 'New Instance',
+        display_name: instance.display_name || null,
+        description: instance.description || null,
+        instance_id: instance.instance_id,
+        api_path: instance.api_path || '',
+        is_default: instance.is_default || false,
+        config: {}
+      });
+      
+      if (!newInstance) {
+        throw new Error('创建服务实例失败');
+      }
       
       // 如果提供了 API 密钥，则加密并存储
       if (apiKey) {
@@ -134,16 +114,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         const { encryptedKey } = await response.json();
         
         // 创建 API 密钥
-        const { error: keyError } = await supabase
-          .from('api_keys')
-          .insert({
-            service_instance_id: newInstance.id,
-            provider_id: instance.provider_id,
-            key_value: encryptedKey,
-            is_default: true
-          });
-          
-        if (keyError) throw keyError;
+        const newApiKey = await createApiKey({
+          service_instance_id: newInstance.id,
+          provider_id: instance.provider_id,
+          key_value: encryptedKey,
+          is_default: true,
+          usage_count: 0,
+          user_id: null,
+          last_used_at: null
+        });
+        
+        if (!newApiKey) {
+          throw new Error('创建 API 密钥失败');
+        }
       }
       
       // 重新加载数据
@@ -158,24 +141,26 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   
   // 更新应用实例
   updateAppInstance: async (id, instance, apiKey) => {
-    const supabase = createClient();
-    
     try {
+      // 获取现有实例信息
+      const existingInstance = await getServiceInstanceById(id);
+      
+      if (!existingInstance) {
+        throw new Error('未找到要更新的应用实例');
+      }
+      
       // 更新服务实例
-      const { data: updatedInstance, error: instanceError } = await supabase
-        .from('service_instances')
-        .update({
-          name: instance.name || instance.display_name,
-          display_name: instance.display_name,
-          description: instance.description,
-          api_path: instance.api_path,
-          is_default: instance.is_default
-        })
-        .eq('id', id)
-        .select()
-        .single();
-        
-      if (instanceError) throw instanceError;
+      const updatedInstance = await updateServiceInstance(id, {
+        name: instance.name || instance.display_name || existingInstance.name,
+        display_name: instance.display_name !== undefined ? instance.display_name : existingInstance.display_name,
+        description: instance.description !== undefined ? instance.description : existingInstance.description,
+        api_path: instance.api_path || existingInstance.api_path,
+        is_default: instance.is_default !== undefined ? instance.is_default : existingInstance.is_default
+      });
+      
+      if (!updatedInstance) {
+        throw new Error('更新服务实例失败');
+      }
       
       // 如果提供了 API 密钥，则加密并存储/更新
       if (apiKey) {
@@ -195,31 +180,47 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         const { encryptedKey } = await response.json();
         
         // 查找现有 API 密钥
-        const { data: existingKeys } = await supabase
-          .from('api_keys')
-          .select('id')
-          .eq('service_instance_id', id);
+        const existingKey = await getApiKeyByServiceInstance(id);
           
-        if (existingKeys && existingKeys.length > 0) {
-          // 更新现有密钥
-          const { error: keyError } = await supabase
+        if (existingKey) {
+          // 更新现有密钥 - 使用 Supabase 直接更新
+          // 注意：这里我们不调用 updateApiKey 函数，因为它需要服务器端环境变量
+          // 而是直接将已经加密的密钥写入数据库
+          const supabase = createClient();
+          const { data: updatedKey, error } = await supabase
             .from('api_keys')
             .update({ key_value: encryptedKey })
-            .eq('id', existingKeys[0].id);
-            
-          if (keyError) throw keyError;
+            .eq('id', existingKey.id)
+            .select()
+            .single();
+          
+          if (error || !updatedKey) {
+            console.error('更新 API 密钥失败:', error);
+            throw new Error('更新 API 密钥失败');
+          }
         } else {
-          // 创建新密钥
-          const { error: keyError } = await supabase
+          // 创建新密钥 - 使用 Supabase 直接插入
+          // 注意：这里我们不调用 createApiKey 函数，因为它需要服务器端环境变量
+          // 而是直接将已经加密的密钥写入数据库
+          const supabase = createClient();
+          const { data: newKey, error } = await supabase
             .from('api_keys')
             .insert({
               service_instance_id: id,
-              provider_id: instance.provider_id,
+              provider_id: existingInstance.provider_id,
               key_value: encryptedKey,
-              is_default: true
-            });
-            
-          if (keyError) throw keyError;
+              is_default: true,
+              usage_count: 0,
+              user_id: null,
+              last_used_at: null
+            })
+            .select()
+            .single();
+          
+          if (error || !newKey) {
+            console.error('创建 API 密钥失败:', error);
+            throw new Error('创建 API 密钥失败');
+          }
         }
       }
       
@@ -235,24 +236,28 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   
   // 删除应用实例
   deleteAppInstance: async (id) => {
-    const supabase = createClient();
-    
     try {
-      // 先删除相关的 API 密钥
-      const { error: keyError } = await supabase
-        .from('api_keys')
-        .delete()
-        .eq('service_instance_id', id);
-        
-      if (keyError) throw keyError;
+      // 获取现有实例信息
+      const existingInstance = await getServiceInstanceById(id);
       
-      // 再删除服务实例
-      const { error: instanceError } = await supabase
-        .from('service_instances')
-        .delete()
-        .eq('id', id);
-        
-      if (instanceError) throw instanceError;
+      if (!existingInstance) {
+        throw new Error('未找到要删除的应用实例');
+      }
+      
+      // 查找并删除相关的 API 密钥
+      const existingKey = await getApiKeyByServiceInstance(id);
+      if (existingKey) {
+        const deleted = await deleteApiKey(existingKey.id);
+        if (!deleted) {
+          throw new Error('删除 API 密钥失败');
+        }
+      }
+      
+      // 删除服务实例
+      const deleted = await deleteServiceInstance(id);
+      if (!deleted) {
+        throw new Error('删除服务实例失败');
+      }
       
       // 重新加载数据
       await get().loadConfigData();
@@ -266,45 +271,39 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   setNewApiUrl: (url) => set({ newApiUrl: url }),
   
   loadConfigData: async () => {
-    const supabase = createClient();
-    
     try {
       set({ isLoading: true, error: null });
       
-      // 加载提供商
-      const { data: providersData, error: providersError } = await supabase
-        .from('providers')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (providersError) throw providersError;
+      // 使用数据库函数获取所有提供商
+      const providers = await getActiveProviders();
       
-      // 加载服务实例
-      const { data: instancesData, error: instancesError } = await supabase
-        .from('service_instances')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (instancesError) throw instancesError;
+      // 获取每个提供商的服务实例
+      const serviceInstances: ServiceInstance[] = [];
+      for (const provider of providers) {
+        const providerInstances = await getServiceInstancesByProvider(provider.id);
+        serviceInstances.push(...providerInstances);
+      }
       
-      // 加载 API 密钥
-      const { data: keysData, error: keysError } = await supabase
-        .from('api_keys')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (keysError) throw keysError;
+      // 获取每个服务实例的API密钥
+      const apiKeys: ApiKey[] = [];
+      for (const instance of serviceInstances) {
+        const apiKey = await getApiKeyByServiceInstance(instance.id);
+        if (apiKey) {
+          apiKeys.push(apiKey);
+        }
+      }
       
       // 更新状态
       set({ 
-        providers: providersData || [], 
-        serviceInstances: instancesData || [], 
-        apiKeys: keysData || [],
-        isLoading: false 
+        providers, 
+        serviceInstances, 
+        apiKeys,
+        isLoading: false,
+        error: null
       });
       
       // 设置默认 Dify URL
-      const difyProvider = providersData?.find(p => p.name === 'Dify');
+      const difyProvider = providers.find(p => p.name === 'Dify');
       if (difyProvider) {
         set({ newApiUrl: difyProvider.base_url });
       }
@@ -319,7 +318,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   
   updateDifyConfig: async () => {
     const { newApiKey, newApiUrl, providers, serviceInstances, apiKeys } = get();
-    const supabase = createClient();
     
     if (!newApiKey && !newApiUrl) {
       set({ error: new Error('请至少提供 API 密钥或 URL') });
@@ -334,29 +332,31 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       
       // 如果不存在，创建一个
       if (!difyProvider && newApiUrl) {
-        const { data: newProvider, error: providerError } = await supabase
-          .from('providers')
-          .insert({
-            name: 'Dify',
-            type: 'llm',
-            base_url: newApiUrl,
-          })
-          .select()
-          .single();
+        const newProvider = await createProvider({
+          name: 'Dify',
+          type: 'llm',
+          base_url: newApiUrl,
+          auth_type: 'api_key',
+          is_active: true
+        });
           
-        if (providerError) throw providerError;
+        if (!newProvider) {
+          throw new Error('创建提供商失败');
+        }
+        
         difyProvider = newProvider;
         
         // 更新提供商列表
         set({ providers: [...providers, newProvider] });
       } else if (difyProvider && newApiUrl && difyProvider.base_url !== newApiUrl) {
         // 更新 URL
-        const { error: updateError } = await supabase
-          .from('providers')
-          .update({ base_url: newApiUrl })
-          .eq('id', difyProvider.id);
+        const updatedProvider = await updateProvider(difyProvider.id, { 
+          base_url: newApiUrl 
+        });
           
-        if (updateError) throw updateError;
+        if (!updatedProvider) {
+          throw new Error('更新提供商失败');
+        }
         
         // 更新本地状态
         set({
@@ -375,20 +375,21 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         
         // 如果不存在，创建一个
         if (!defaultInstance) {
-          const { data: newInstance, error: instanceError } = await supabase
-            .from('service_instances')
-            .insert({
-              provider_id: difyProvider.id,
-              name: 'default',
-              display_name: 'Default Dify Application',
-              description: '默认 Dify 应用实例',
-              instance_id: 'default',
-              is_default: true,
-            })
-            .select()
-            .single();
+          const newInstance = await createServiceInstance({
+            provider_id: difyProvider.id,
+            name: 'default',
+            display_name: 'Default Dify Application',
+            description: '默认 Dify 应用实例',
+            instance_id: 'default',
+            api_path: '',
+            is_default: true,
+            config: {}
+          });
             
-          if (instanceError) throw instanceError;
+          if (!newInstance) {
+            throw new Error('创建服务实例失败');
+          }
+          
           defaultInstance = newInstance;
           
           // 更新服务实例列表
@@ -417,12 +418,13 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         
         if (defaultKey) {
           // 更新现有密钥
-          const { error: updateKeyError } = await supabase
-            .from('api_keys')
-            .update({ key_value: encryptedKey })
-            .eq('id', defaultKey.id);
+          const updatedKey = await updateApiKey(defaultKey.id, { 
+            key_value: encryptedKey 
+          });
             
-          if (updateKeyError) throw updateKeyError;
+          if (!updatedKey) {
+            throw new Error('更新 API 密钥失败');
+          }
           
           // 更新本地状态
           set({
@@ -432,18 +434,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           });
         } else if (defaultInstance) {
           // 创建新密钥
-          const { data: newKey, error: keyError } = await supabase
-            .from('api_keys')
-            .insert({
-              service_instance_id: defaultInstance.id,
-              provider_id: difyProvider.id,
-              key_value: encryptedKey,
-              is_default: true,
-            })
-            .select()
-            .single();
+          const newKey = await createApiKey({
+            service_instance_id: defaultInstance.id,
+            provider_id: difyProvider.id,
+            key_value: encryptedKey,
+            is_default: true,
+            usage_count: 0,
+            user_id: null,
+            last_used_at: null
+          });
             
-          if (keyError) throw keyError;
+          if (!newKey) {
+            throw new Error('创建 API 密钥失败');
+          }
           
           // 更新 API 密钥列表
           set({ apiKeys: [...apiKeys, newKey] });

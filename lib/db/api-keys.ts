@@ -42,9 +42,9 @@ export async function getApiKeyByServiceInstance(serviceInstanceId: string): Pro
  */
 export async function createApiKey(apiKey: Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>): Promise<ApiKey | null> {
   // 加密API密钥值
-  const masterKey = process.env.API_ENCRYPTION_KEY || '';
+  const masterKey = process.env.API_ENCRYPTION_KEY;
   if (!masterKey) {
-    console.error('API_ENCRYPTION_KEY 环境变量未设置');
+    console.error('API_ENCRYPTION_KEY 环境变量未设置，无法加密 API 密钥');
     return null;
   }
   const encryptedKeyValue = encryptApiKey(apiKey.key_value, masterKey);
@@ -78,7 +78,7 @@ export async function updateApiKey(
 ): Promise<ApiKey | null> {
   // 如果包含密钥值，需要加密
   if (updates.key_value) {
-    const masterKey = process.env.API_ENCRYPTION_KEY || '';
+    const masterKey = process.env.API_ENCRYPTION_KEY;
     if (!masterKey) {
       console.error('API_ENCRYPTION_KEY 环境变量未设置');
       return null;
@@ -138,9 +138,9 @@ export async function getDecryptedApiKey(apiKeyId: string): Promise<string | nul
   }
 
   try {
-    const masterKey = process.env.API_ENCRYPTION_KEY || '';
+    const masterKey = process.env.API_ENCRYPTION_KEY;
     if (!masterKey) {
-      console.error('API_ENCRYPTION_KEY 环境变量未设置');
+      console.error('API_ENCRYPTION_KEY 环境变量未设置，无法解密 API 密钥');
       return null;
     }
     return decryptApiKey(data.key_value, masterKey);
