@@ -246,7 +246,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
             messageId={id}
             content={content} // 使用原始文本而不是处理后的mainContent
             onRegenerate={() => console.log('Regenerate message', id)}
-            onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)}
+            onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)} //后续修改反馈功能
             isRegenerating={isStreaming}
             className="-ml-2 -mt-4"
           />

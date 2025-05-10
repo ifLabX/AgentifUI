@@ -25,7 +25,7 @@ export const ScrollToBottomButton = () => {
   // 基于输入框高度（CSS 变量 --chat-input-height）
   // 额外增加一些间距
   // --- END COMMENT ---
-  const bottomOffset = `calc(var(--chat-input-height, 80px) + 4rem)`;
+  const bottomOffset = `calc(var(--chat-input-height, 80px) + 5.5rem)`;
 
   const handleClick = () => {
     // 使用新增的重置滚动状态方法，确保完全重置状态并滚动到底部
