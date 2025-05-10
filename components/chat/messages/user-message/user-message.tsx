@@ -4,7 +4,7 @@ import React from "react"
 import { cn } from "@lib/utils"
 import { useTheme, useMobile } from "@lib/hooks"
 import { MessageAttachment } from '@lib/stores/chat-store'
-import { FileAttachmentDisplay } from './file-attachment-display'
+import { FileAttachmentDisplay } from '../file-attachment-display'
 import { UserMessageActions } from './user-message-actions'
 
 interface UserMessageProps {
