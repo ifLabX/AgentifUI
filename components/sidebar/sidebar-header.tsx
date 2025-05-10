@@ -27,7 +27,7 @@ export function SidebarHeader() {
         icon={<Plus className={cn(
           "h-5 w-5 transition-transform duration-200 group-hover:rotate-90",
           isDark
-            ? "text-gray-400 group-hover:text-blue-400"
+            ? "text-gray-400"
             : "text-gray-500 group-hover:text-primary"
         )} />}
         text="发起新对话"
@@ -36,7 +36,7 @@ export function SidebarHeader() {
         className={cn(
           "group font-medium",
           isDark 
-            ? "bg-gray-800/90 hover:bg-gray-700/90 border border-gray-700/50 hover:border-gray-600 shadow-sm hover:shadow-md"
+            ? "bg-stone-700 hover:bg-stone-600 border border-stone-600 hover:border-stone-500/80 shadow-sm hover:shadow-md text-gray-100 hover:text-white"
             : "bg-primary/10 hover:bg-primary/15 text-primary shadow-sm hover:shadow-md"
         )}
       />

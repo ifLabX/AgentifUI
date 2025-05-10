@@ -46,7 +46,7 @@ export function SidebarAppList({
     <div className="space-y-2 px-3">
       <div className={cn(
         "pl-1 pr-3 mb-2 text-sm font-semibold uppercase flex items-center gap-2 tracking-wider",
-        "text-gray-600 dark:text-gray-400"
+        "text-gray-600 dark:text-gray-200"
       )}>
         <span>应用列表</span>
       </div>
@@ -70,7 +70,7 @@ export function SidebarAppList({
             text={showAllApps ? "收起" : "显示更多"}
             className={cn(
               "w-full text-xs group font-medium",
-              isDark ? "text-gray-400" : "text-gray-500",
+              isDark ? "text-gray-300" : "text-gray-500",
               "bg-transparent dark:bg-transparent",
               "dark:hover:bg-gray-700/60",
               "border-none shadow-none"

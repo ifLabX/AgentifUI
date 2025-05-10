@@ -39,10 +39,10 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
         ],
         
         isDark && [
-          "text-gray-400 hover:text-gray-100",
-          "hover:bg-gray-800",
+          "text-gray-200 hover:text-white",
+          "hover:bg-stone-600 hover:shadow-md hover:border-stone-500/50",
           active 
-            ? "bg-gray-800 text-blue-400 font-semibold shadow-sm border-gray-700"
+            ? "bg-stone-700 text-blue-300 font-semibold shadow-sm border-stone-600"
             : "",
         ],
         
