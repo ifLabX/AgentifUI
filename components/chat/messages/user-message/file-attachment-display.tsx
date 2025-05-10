@@ -81,8 +81,7 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
               "text-left",
               isDark
                 ? "bg-gray-700/90 border border-gray-600/80 hover:bg-gray-600/90"
-                : "bg-gray-200 border border-gray-400 hover:bg-gray-300",
-              "transition-colors duration-150"
+                : "bg-gray-200 border border-gray-400 hover:bg-gray-300"
             )}
             title={`预览 ${attachment.name}`}
             aria-label={`预览文件 ${attachment.name}`}
@@ -109,4 +108,4 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
       })}
     </div>
   )
-} 
+}

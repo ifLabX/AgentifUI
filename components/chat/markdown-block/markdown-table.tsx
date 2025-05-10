@@ -3,6 +3,7 @@
 import React from "react";
 import { cn } from "@lib/utils";
 import { useTheme } from "@lib/hooks";
+import { useThemeColors } from "@lib/hooks/use-theme-colors";
 
 interface MarkdownTableProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
   className,
 }) => {
   const { isDark } = useTheme();
+  const { colors } = useThemeColors();
 
   // --- BEGIN COMMENT ---
   // 现代化表格容器样式：
@@ -27,14 +29,14 @@ export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
       className={cn(
         "my-4 overflow-x-auto rounded-lg shadow-sm", // Added shadow
         "border",
-        isDark ? "border-gray-700/60" : "border-gray-300/80",
+        isDark ? "border-stone-700/60" : "border-stone-300/80",
         className
       )}
     >
       <table
         className={cn(
           "min-w-full border-collapse w-full", // w-full to ensure it tries to fill container
-          isDark ? "divide-gray-700" : "divide-gray-200" // For potential internal dividers if not using cell borders
+          isDark ? "divide-stone-700" : "divide-stone-200" // For potential internal dividers if not using cell borders
         )}
       >
         {children}

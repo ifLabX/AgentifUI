@@ -10,6 +10,7 @@ import rehypeRaw from "rehype-raw";
 import "katex/dist/katex.min.css";
 import type { Components } from "react-markdown";
 import { useTheme } from '@lib/hooks';
+import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { motion } from 'framer-motion'; // 仅导入 motion
 
 /**
@@ -32,6 +33,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
   isOpen 
 }) => {
   const { isDark } = useTheme(); // 获取主题状态
+  const { colors } = useThemeColors(); // 获取主题颜色
 
   // --- Markdown 渲染器的组件配置 ---
   const markdownComponents: Components = {
@@ -41,7 +43,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       return !className?.includes('language-') ? (
         <code className={cn(
           "px-2 py-1 rounded font-mono", 
-          isDark ? "bg-gray-800 text-blue-300" : "bg-gray-100 text-blue-700"
+          isDark ? "bg-stone-800 text-stone-300" : "bg-stone-100 text-stone-700"
         )} {...props}>
           {children}
         </code>
@@ -49,9 +51,9 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         // 如果是带有语言标识的代码块
         <pre className={cn(
           "rounded-md p-5 my-4 overflow-auto",
-          isDark ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900",
+          isDark ? "bg-stone-900 text-stone-100" : "bg-stone-50 text-stone-900",
           "border",
-          isDark ? "border-gray-700" : "border-gray-200"
+          isDark ? "border-stone-700" : "border-stone-200"
         )}>
           <code className={cn(className, 'block whitespace-pre-wrap text-base')} {...props}>
             {children}
@@ -66,7 +68,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <div className="overflow-x-auto my-5 border rounded-md w-full">
           <table className={cn(
             "min-w-full divide-y",
-            isDark ? "divide-gray-700 border-gray-700" : "divide-gray-200 border-gray-200"
+            isDark ? "divide-stone-700 border-stone-700" : "divide-stone-200 border-stone-200"
           )} {...props}>
             {children}
           </table>
@@ -80,7 +82,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <th 
           className={cn(
             "px-5 py-3 text-left font-medium text-base", 
-            isDark ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+            isDark ? "bg-stone-900 text-stone-100" : "bg-stone-50 text-stone-900"
           )} 
           {...props}
         >
@@ -95,7 +97,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <td 
           className={cn(
             "px-5 py-3 border-t text-base", 
-            isDark ? "border-gray-700 text-gray-200" : "border-gray-200 text-gray-800"
+            isDark ? "border-stone-700 text-stone-200" : "border-stone-200 text-stone-800"
           )} 
           {...props}
         >
@@ -111,8 +113,8 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
           className={cn(
             "pl-5 border-l-4 my-5 py-3", 
             isDark 
-              ? "border-blue-600 bg-gray-900 text-gray-200" 
-              : "border-blue-500 bg-gray-50 text-gray-800"
+              ? "border-stone-600 bg-stone-800/80 text-stone-200" 
+              : "border-stone-500 bg-stone-50 text-stone-800"
           )} 
           {...props}
         >
@@ -142,7 +144,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <h1 
           className={cn(
             "text-2xl font-bold my-5",
-            isDark ? "text-white" : "text-gray-900"
+            isDark ? colors.mainText.tailwind : "text-stone-900"
           )} 
           {...props}
         >
@@ -156,7 +158,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <h2 
           className={cn(
             "text-xl font-bold my-4",
-            isDark ? "text-gray-100" : "text-gray-800"
+            isDark ? colors.mainText.tailwind : "text-stone-800"
           )} 
           {...props}
         >
@@ -170,7 +172,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <h3 
           className={cn(
             "text-lg font-semibold my-3",
-            isDark ? "text-gray-200" : "text-gray-700"
+            isDark ? colors.mainText.tailwind : "text-stone-700"
           )} 
           {...props}
         >
@@ -214,7 +216,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         <a 
           className={cn(
             "underline",
-            isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-800"
+            isDark ? "text-stone-400 hover:text-stone-300" : "text-stone-600 hover:text-stone-800"
           )} 
           {...props}
         >
@@ -236,7 +238,6 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         stiffness: 300, // 弹性系数
         damping: 24, // 阻尼系数，值越大动画越快结束
         mass: 0.8, // 质量，值越小动画越快
-        opacity: { duration: 0.2 }, // 透明度过渡单独控制
         height: { type: "spring", stiffness: 100, damping: 30 }, // 高度使用更缓和的弹簧
       }
     },
@@ -249,7 +250,6 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         type: "spring",
         stiffness: 300,
         damping: 25, 
-        opacity: { duration: 0.15 }, // 关闭时，透明度渐变更快
         height: { delay: 0.1, type: "spring", stiffness: 200, damping: 30 }, // 稍延迟高度变化
       }
     }
@@ -267,9 +267,9 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         className={cn(
           "think-block-content flex-1 markdown-body w-full",
           "border rounded-md", // 边框和圆角
-          isDark ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200", // 背景和边框颜色
+          isDark ? "bg-stone-800/90 border-stone-700" : "bg-white border-stone-200", // 背景和边框颜色
           "p-5", // 内边距
-          isDark ? "text-gray-100" : "text-gray-900", // 文字颜色
+          isDark ? colors.mainText.tailwind : "text-stone-900", // 文字颜色
           "font-sans text-base", // 字体
           "max-w-full", // 最大宽度
           "transform-gpu" // 启用GPU加速

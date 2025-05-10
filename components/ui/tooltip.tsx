@@ -101,7 +101,7 @@ export function Tooltip({
     })
 
     return () => {
-      setMounted(false)
+      // 不要在清理函数中调用 setMounted(false)，这可能导致无限循环更新
       unsubscribe()
     }
   }, [id])

@@ -7,6 +7,7 @@ import { cn } from '@lib/utils';
 import { Spinner } from '@components/ui/spinner';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useMobile } from '@lib/hooks/use-mobile';
+import { useThemeColors } from '@lib/hooks/use-theme-colors';
 
 // --- BEGIN COMMENT --- 定义状态类型 --- END COMMENT ---
 export type ThinkBlockStatus = 'thinking' | 'completed' | 'stopped'; 
@@ -39,6 +40,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   // --- BEGIN COMMENT --- 移除 useTranslation hook --- END COMMENT ---
   // const { t } = useTranslation();
   const { isDark } = useTheme();
+  const { colors } = useThemeColors();
   const isMobile = useMobile();
 
   // --- BEGIN COMMENT --- 根据 status 判断是否正在思考 (用于 Spinner 和样式) --- END COMMENT ---
@@ -68,16 +70,15 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
         // --- BEGIN COMMENT --- 背景和边框颜色根据 isThinking (即 status === 'thinking') --- END COMMENT ---
         isThinking
           ? isDark 
-            ? "bg-blue-900/30 border border-blue-800/60" 
-            : "bg-blue-50 border border-blue-200" 
+            ? "bg-stone-700/80 border border-stone-600/60" 
+            : "bg-stone-200/80 border border-stone-300/60" 
           : isDark 
-            ? "bg-gray-800 border border-gray-700 hover:bg-gray-700" 
-            : "bg-gray-100 border border-gray-200 hover:bg-gray-200", 
+            ? "bg-stone-800 border border-stone-700 hover:bg-stone-700" 
+            : "bg-stone-100 border border-stone-200 hover:bg-stone-200", 
         // --- BEGIN COMMENT --- 可以为 stopped 状态添加特殊样式，例如不同的背景色或边框色 --- END COMMENT ---
         // status === 'stopped' && (isDark ? "border-yellow-700" : "border-yellow-400"), 
         // --- 中文注释: 焦点样式和过渡效果 --- 
-        "focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-600",
-        "transition-all duration-200 ease-in-out"
+        "focus:outline-none"
       )}
       onClick={onToggle} // --- 中文注释: 点击时调用切换函数 --- 
       aria-expanded={isOpen} // --- 中文注释: 无障碍属性，指示是否展开 --- 
@@ -88,10 +89,10 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
         {/* --- 展开/折叠图标 --- */}
         <svg
           className={cn(
-            "h-4 w-4 mr-2 transition-transform duration-300 ease-in-out", // --- 中文注释: 图标大小，右边距，旋转过渡 --- 
+            "h-4 w-4 mr-2", // --- 中文注释: 图标大小，右边距 --- 
             isOpen ? "rotate-90" : "rotate-0", // --- 中文注释: 根据展开状态旋转 --- 
             // --- BEGIN COMMENT --- 图标颜色根据 isThinking --- END COMMENT ---
-            isThinking ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400" // --- 中文注释: 图标颜色根据思考状态变化 --- 
+            isThinking ? "text-stone-500 dark:text-stone-300" : "text-stone-500 dark:text-stone-400" // --- 中文注释: 图标颜色根据思考状态变化 --- 
           )}
           fill="none"
           stroke="currentColor"
@@ -108,7 +109,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
         <span className={cn(
           "font-medium whitespace-nowrap", // 添加 whitespace-nowrap 防止文本换行
           // --- BEGIN COMMENT --- 文本颜色根据 isThinking (可以为 stopped 添加不同颜色) --- END COMMENT ---
-          isThinking ? "text-blue-700 dark:text-blue-300" : "text-gray-500 dark:text-gray-300" 
+          isThinking ? "text-stone-600 dark:text-stone-200" : "text-stone-500 dark:text-stone-300" 
           // status === 'stopped' && (isDark ? "text-yellow-400" : "text-yellow-600"), 
         )}>
           {/* --- BEGIN COMMENT --- 调用函数获取中文文本 --- END COMMENT --- */}
@@ -121,7 +122,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
         {isThinking && (
           <Spinner 
             size="md" 
-            className={cn(isThinking ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400")} // --- 中文注释: Spinner 颜色与状态匹配 --- 
+            className={cn(isThinking ? "text-stone-500 dark:text-stone-300" : "text-stone-500 dark:text-stone-400")} // --- 中文注释: Spinner 颜色与状态匹配 --- 
           />
         )}
       </div>
