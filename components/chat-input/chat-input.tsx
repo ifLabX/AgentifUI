@@ -221,12 +221,13 @@ export const ChatInput = ({
     setIsComposing(false)
   }
 
-  // 消息变化时自动聚焦
+  // 消息变化时自动聚焦，但避免在流式输出过程中触发
   useEffect(() => {
-    if (message) {
+    // 只在非流式输出状态下自动聚焦，避免在处理消息时形成循环
+    if (message && !isProcessing && !isWaitingForResponse) {
       useFocusManager.getState().focusInput();
     }
-  }, [message]);
+  }, [message, isProcessing, isWaitingForResponse]);
   
   // --- BEGIN 中文注释 --- 文件类型选择处理 ---
   // 处理文件类型选择后的文件上传

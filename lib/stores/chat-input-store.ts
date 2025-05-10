@@ -20,10 +20,14 @@ interface ChatInputState {
   setDarkMode: (isDark: boolean) => void
 }
 
-export const useChatInputStore = create<ChatInputState>((set) => ({
+export const useChatInputStore = create<ChatInputState>((set, get) => ({
   // 聊天消息
   message: "",
-  setMessage: (message) => set({ message }),
+  setMessage: (message) => {
+    // 防止与当前值相同的更新，避免不必要的状态变化
+    if (get().message === message) return;
+    set({ message });
+  },
   clearMessage: () => set({ message: "" }),
   
   // 输入法状态
