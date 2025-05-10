@@ -123,12 +123,12 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
     
-    // 段落样式
+    // 段落样式 - 完全去除段落间的间距，使其与普通换行一样
     p({ className, children, ...props }: any) {
       return (
         <p 
           className={cn(
-            "my-4 text-base leading-relaxed",
+            "my-0 text-base leading-relaxed", // 完全去除上下外边距
             isDark ? "text-gray-200" : "text-gray-800"
           )} 
           {...props}

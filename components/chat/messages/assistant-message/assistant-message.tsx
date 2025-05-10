@@ -174,7 +174,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
     // 为其他 HTML 元素（如 p, ul, ol, li, h1-h6, a, hr）添加现代化样式
     // --- END MODIFIED COMMENT ---
     p({ children, ...props }) {
-      return <p className="my-2.5" {...props}>{children}</p>;
+      return <p className="my-0" {...props}>{children}</p>; // 完全去除段落间的间距
     },
     ul({ children, ...props }) {
       return <ul className="my-2.5 ml-6 list-disc space-y-1" {...props}>{children}</ul>;
