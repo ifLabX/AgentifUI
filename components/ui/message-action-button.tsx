@@ -58,13 +58,9 @@ export const MessageActionButton: React.FC<MessageActionButtonProps> = ({
       className={cn(
         "flex items-center justify-center p-1.5 rounded-md transition-all",
         "text-sm",
-        isActive
-          ? isDark 
-            ? "text-blue-400 bg-blue-900/30" 
-            : "text-blue-600 bg-blue-100/70"
-          : isDark 
-            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/50" 
-            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50",
+        isDark 
+          ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/50" 
+          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50",
         disabled && "opacity-50 cursor-not-allowed hover:bg-transparent",
         className
       )}
