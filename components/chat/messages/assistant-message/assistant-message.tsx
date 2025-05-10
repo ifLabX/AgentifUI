@@ -24,8 +24,7 @@ import {
   MarkdownTableContainer,
   MarkdownBlockquote,
 } from "@components/chat/markdown-block";
-import { AssistantMessageActions } from "./assistant-message-actions";
-
+import { AssistantMessageActions } from '@components/chat/message-actions';
 
 const extractThinkContent = (rawContent: string): {
   hasThinkBlock: boolean;
@@ -245,7 +244,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
           {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，添加-mt-4来减少与消息内容的间距 */}
           <AssistantMessageActions
             messageId={id}
-            onCopy={() => console.log('Copy assistant message', id)}
+            content={mainContent}
             onRegenerate={() => console.log('Regenerate message', id)}
             onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)}
             isRegenerating={isStreaming}

@@ -4,8 +4,8 @@ import React from "react"
 import { cn } from "@lib/utils"
 import { useTheme, useMobile } from "@lib/hooks"
 import { MessageAttachment } from '@lib/stores/chat-store'
-import { FileAttachmentDisplay } from '../file-attachment-display'
-import { UserMessageActions } from './user-message-actions'
+import { FileAttachmentDisplay } from './file-attachment-display'
+import { UserMessageActions } from '@components/chat/message-actions'
 
 interface UserMessageProps {
   content: string
@@ -66,7 +66,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
         {/* 消息操作按钮 */}
         <UserMessageActions
           messageId={id}
-          onCopy={onCopy}
+          content={content}
           onEdit={onEdit}
         />
       </div>
