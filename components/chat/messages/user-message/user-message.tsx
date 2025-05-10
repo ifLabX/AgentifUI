@@ -33,7 +33,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
       className="flex justify-end w-full group"
       data-message-id={id}
     >
-      <div className="flex flex-col items-end max-w-[85%] md:max-w-[75%] lg:max-w-[65%]">
+      <div className="flex flex-col items-end max-w-3xl w-full">
         {/* 附件显示区域 - 直接右对齐 */}
         {hasAttachments && (
           <FileAttachmentDisplay 
@@ -50,13 +50,17 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             )}
           />
         )}
-        {/* 消息气泡 */}
+        {/* 消息气泡 - 现代化设计，温暖灰色配色 */}
         <div
           className={cn(
-            "max-w-full rounded-2xl px-4 py-2",
+            "max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed",
             isDark 
-              ? "bg-blue-600 text-white" 
-              : "bg-blue-500 text-white",
+              ? "bg-stone-700/90 text-gray-100" 
+              : "bg-stone-100 text-gray-800",
+            "border",
+            isDark ? "border-stone-600/30" : "border-stone-200",
+            "shadow-sm",
+            "transition-colors duration-200",
             className
           )}
         >
