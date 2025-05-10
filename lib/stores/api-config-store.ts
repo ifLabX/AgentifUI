@@ -113,7 +113,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         
         const { encryptedKey } = await response.json();
         
-        // 创建 API 密钥
+        // 创建 API 密钥 - 传递isEncrypted=true表示密钥已通过API端点加密
         const newApiKey = await createApiKey({
           service_instance_id: newInstance.id,
           provider_id: instance.provider_id,
@@ -122,7 +122,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           usage_count: 0,
           user_id: null,
           last_used_at: null
-        });
+        }, true); // 标记密钥已加密
         
         if (!newApiKey) {
           throw new Error('创建 API 密钥失败');
@@ -181,44 +181,33 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         
         // 查找现有 API 密钥
         const existingKey = await getApiKeyByServiceInstance(id);
-          
+        
         if (existingKey) {
-          // 更新现有密钥 - 使用 Supabase 直接更新
-          // 注意：这里我们不调用 updateApiKey 函数，因为它需要服务器端环境变量
-          // 而是直接将已经加密的密钥写入数据库
-          const supabase = createClient();
-          const { data: updatedKey, error } = await supabase
-            .from('api_keys')
-            .update({ key_value: encryptedKey })
-            .eq('id', existingKey.id)
-            .select()
-            .single();
+          // 更新现有密钥 - 使用更新后的 updateApiKey 函数
+          // 传递 isEncrypted=true 表示密钥已经通过API端点加密
+          const updatedKey = await updateApiKey(
+            existingKey.id, 
+            { key_value: encryptedKey },
+            true // 标记密钥已加密
+          );
           
-          if (error || !updatedKey) {
-            console.error('更新 API 密钥失败:', error);
+          if (!updatedKey) {
             throw new Error('更新 API 密钥失败');
           }
         } else {
-          // 创建新密钥 - 使用 Supabase 直接插入
-          // 注意：这里我们不调用 createApiKey 函数，因为它需要服务器端环境变量
-          // 而是直接将已经加密的密钥写入数据库
-          const supabase = createClient();
-          const { data: newKey, error } = await supabase
-            .from('api_keys')
-            .insert({
-              service_instance_id: id,
-              provider_id: existingInstance.provider_id,
-              key_value: encryptedKey,
-              is_default: true,
-              usage_count: 0,
-              user_id: null,
-              last_used_at: null
-            })
-            .select()
-            .single();
+          // 创建新密钥 - 使用更新后的 createApiKey 函数
+          // 传递 isEncrypted=true 表示密钥已经通过API端点加密
+          const newKey = await createApiKey({
+            service_instance_id: id,
+            provider_id: existingInstance.provider_id,
+            key_value: encryptedKey,
+            is_default: true,
+            usage_count: 0,
+            user_id: null,
+            last_used_at: null
+          }, true); // 标记密钥已加密
           
-          if (error || !newKey) {
-            console.error('创建 API 密钥失败:', error);
+          if (!newKey) {
             throw new Error('创建 API 密钥失败');
           }
         }
@@ -417,10 +406,12 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         );
         
         if (defaultKey) {
-          // 更新现有密钥
-          const updatedKey = await updateApiKey(defaultKey.id, { 
-            key_value: encryptedKey 
-          });
+          // 更新现有密钥 - 传递isEncrypted=true表示密钥已通过API端点加密
+          const updatedKey = await updateApiKey(
+            defaultKey.id, 
+            { key_value: encryptedKey },
+            true // 标记密钥已加密
+          );
             
           if (!updatedKey) {
             throw new Error('更新 API 密钥失败');
@@ -433,7 +424,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             )
           });
         } else if (defaultInstance) {
-          // 创建新密钥
+          // 创建新密钥 - 传递isEncrypted=true表示密钥已通过API端点加密
           const newKey = await createApiKey({
             service_instance_id: defaultInstance.id,
             provider_id: difyProvider.id,
@@ -442,7 +433,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             usage_count: 0,
             user_id: null,
             last_used_at: null
-          });
+          }, true); // 标记密钥已加密
             
           if (!newKey) {
             throw new Error('创建 API 密钥失败');

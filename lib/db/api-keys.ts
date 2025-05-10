@@ -38,22 +38,30 @@ export async function getApiKeyByServiceInstance(serviceInstanceId: string): Pro
 /**
  * 创建新的API密钥
  * @param apiKey API密钥对象
+ * @param isEncrypted 密钥值是否已经加密，默认为false
  * @returns 创建的API密钥对象，如果创建失败则返回null
  */
-export async function createApiKey(apiKey: Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>): Promise<ApiKey | null> {
-  // 加密API密钥值
-  const masterKey = process.env.API_ENCRYPTION_KEY;
-  if (!masterKey) {
-    console.error('API_ENCRYPTION_KEY 环境变量未设置，无法加密 API 密钥');
-    return null;
+export async function createApiKey(
+  apiKey: Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>,
+  isEncrypted: boolean = false
+): Promise<ApiKey | null> {
+  let keyValue = apiKey.key_value;
+  
+  // 如果密钥未加密，则进行加密
+  if (!isEncrypted) {
+    const masterKey = process.env.API_ENCRYPTION_KEY;
+    if (!masterKey) {
+      console.error('API_ENCRYPTION_KEY 环境变量未设置，无法加密 API 密钥');
+      return null;
+    }
+    keyValue = encryptApiKey(apiKey.key_value, masterKey);
   }
-  const encryptedKeyValue = encryptApiKey(apiKey.key_value, masterKey);
   
   const { data, error } = await supabase
     .from('api_keys')
     .insert({
       ...apiKey,
-      key_value: encryptedKeyValue,
+      key_value: keyValue,
     })
     .select()
     .single();
@@ -70,17 +78,19 @@ export async function createApiKey(apiKey: Omit<ApiKey, 'id' | 'created_at' | 'u
  * 更新API密钥
  * @param id API密钥ID
  * @param updates 需要更新的字段
+ * @param isEncrypted 密钥值是否已经加密，默认为false
  * @returns 更新后的API密钥对象，如果更新失败则返回null
  */
 export async function updateApiKey(
   id: string, 
-  updates: Partial<Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>>
+  updates: Partial<Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>>,
+  isEncrypted: boolean = false
 ): Promise<ApiKey | null> {
-  // 如果包含密钥值，需要加密
-  if (updates.key_value) {
+  // 如果包含密钥值且未加密，需要加密
+  if (updates.key_value && !isEncrypted) {
     const masterKey = process.env.API_ENCRYPTION_KEY;
     if (!masterKey) {
-      console.error('API_ENCRYPTION_KEY 环境变量未设置');
+      console.error('API_ENCRYPTION_KEY 环境变量未设置，无法加密 API 密钥');
       return null;
     }
     updates.key_value = encryptApiKey(updates.key_value, masterKey);
