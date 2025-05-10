@@ -46,3 +46,6 @@ next-env.d.ts
 
 # venv
 .venv
+
+# documentation
+supabase-docs.md
