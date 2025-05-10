@@ -8,8 +8,8 @@ export const lightColors = {
   // 主背景色 - 用于主页、导航栏、输入背景等需要与主页融合的组件
   mainBackground: {
     tailwind: 'bg-stone-100', // Tailwind类名
-    rgb: 'rgb(245, 243, 230)', // 对应的RGB值，用于内联样式
-    hex: '#f5f3e6', // 对应的HEX值
+    rgb: 'rgb(245, 245, 244)', // 对应的RGB值
+    hex: '#f5f5f4', // 对应的HEX值
   },
   
   // 文本颜色
@@ -21,21 +21,21 @@ export const lightColors = {
   
   // 侧边栏背景色 - 稍深于主背景
   sidebarBackground: {
-    tailwind: 'bg-stone-200/95',
-    rgb: 'rgba(231, 229, 228, 0.95)',
-    hex: '#e7e5e4f2',
+    tailwind: 'bg-stone-200', // 与UserMessage亮色背景一致
+    rgb: 'rgb(231, 229, 228)', 
+    hex: '#e7e5e4',
   },
   
   // 用户消息背景色 - 稍深于主背景
   userMessageBackground: {
-    tailwind: 'bg-stone-200',
+    tailwind: 'bg-stone-200', // 与UserMessage亮色背景一致
     rgb: 'rgb(231, 229, 228)',
     hex: '#e7e5e4',
   },
   
   // 按钮悬停效果 - 更深的背景色
   buttonHover: {
-    tailwind: 'hover:bg-stone-300',
+    tailwind: 'hover:bg-stone-300', 
     rgb: 'rgb(214, 211, 209)',
     hex: '#d6d3d1',
   },
@@ -45,37 +45,37 @@ export const lightColors = {
 export const darkColors = {
   // 主背景色
   mainBackground: {
-    tailwind: 'bg-gray-900',
-    rgb: 'rgb(17, 24, 39)',
-    hex: '#111827',
+    tailwind: 'bg-stone-800', // 更浅的暗色主背景
+    rgb: 'rgb(41, 37, 36)', // stone-800
+    hex: '#292524',
   },
   
   // 文本颜色
   mainText: {
-    tailwind: 'text-gray-100',
+    tailwind: 'text-gray-100', 
     rgb: 'rgb(243, 244, 246)',
     hex: '#f3f4f6',
   },
   
   // 侧边栏背景色
   sidebarBackground: {
-    tailwind: 'bg-gray-800/90',
-    rgb: 'rgba(31, 41, 55, 0.9)',
-    hex: '#1f2937e6',
+    tailwind: 'bg-stone-700', // 与UserMessage暗色背景完全一致 (移除透明度)
+    rgb: 'rgba(68, 64, 60, 1)', // stone-700 不透明
+    hex: '#44403c',
   },
   
   // 用户消息背景色
   userMessageBackground: {
-    tailwind: 'bg-gray-800',
-    rgb: 'rgb(31, 41, 55)',
-    hex: '#1f2937',
+    tailwind: 'bg-stone-700', // UserMessage暗色背景基色
+    rgb: 'rgb(68, 64, 60)',
+    hex: '#44403c',
   },
   
   // 按钮悬停效果
   buttonHover: {
-    tailwind: 'hover:bg-gray-700',
-    rgb: 'rgb(55, 65, 81)',
-    hex: '#374151',
+    tailwind: 'hover:bg-stone-600', 
+    rgb: 'rgb(87, 83, 78)', 
+    hex: '#57534e',
   },
 };
 

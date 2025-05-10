@@ -18,11 +18,12 @@ export function ChatInputBackdrop({ className }: ChatInputBackdropProps) {
       className={cn(
         "absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-0 mx-auto",
         widthClass, // 使用统一的宽度类
+        colors.mainBackground.tailwind, // <-- 始终使用 mainBackground
         className
       )}
-      style={{ 
-        background: colors.mainBackground.rgb
-      }}
+      // style={{  <-- 修改点：移除 style
+      //   background: colors.mainBackground.rgb
+      // }}
     />
   )
 } 
