@@ -3,7 +3,7 @@
 import React, { useRef } from "react"
 import { cn } from "@lib/utils"
 import { useMobile } from "@lib/hooks"
-import { useTheme } from "@lib/hooks/use-theme"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useDropdownStore } from "@lib/stores/ui/dropdown-store"
 import { DropdownMenu } from "@components/ui/dropdown-menu"
@@ -20,7 +20,7 @@ import { AvatarButton } from "./avatar-button"
 // --- END COMMENT ---
 export function NavBar() {
   const isMobile = useMobile()
-  const { isDark } = useTheme()
+  const { colors, isDark } = useThemeColors()
   const { isExpanded } = useSidebarStore()
 
   if (isMobile) {
@@ -41,7 +41,7 @@ export function NavBar() {
         className={cn(
           "fixed top-0 right-4 h-12 z-20", 
           isExpanded ? "left-0 md:left-64" : "left-0 md:left-16",
-          isDark ? "bg-gray-900" : "bg-gray-50",
+          colors.mainBackground.tailwind,
           "flex items-center justify-between pl-4 pr-2",
           "transition-[left] duration-300 ease-in-out" 
         )}

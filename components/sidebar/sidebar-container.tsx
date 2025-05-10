@@ -39,11 +39,11 @@ export function SidebarContainer() {
         
         "z-20 fixed md:relative",
         
-        // Light mode styles
+        // Light mode styles - 更深的灰黄色调
         !isDark && [
-          "bg-white/90 backdrop-blur-sm", // Slightly transparent background with blur
-          "shadow-lg shadow-gray-200/50", // Softer shadow
-          "border-r-gray-200/60", // Subtle border
+          "bg-stone-200/95 backdrop-blur-sm", // 更深的石灰色半透明背景
+          "shadow-lg shadow-stone-300/50", // 增强阴影
+          "border-r-stone-300/60", // 更深的石灰色边框
         ],
         
         // Dark mode styles

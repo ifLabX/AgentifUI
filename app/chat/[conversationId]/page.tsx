@@ -12,6 +12,7 @@ import {
 } from '@components/chat';
 import { FilePreviewCanvas } from '@components/file-preview/file-preview-canvas';
 import { useChatInterface, useChatStateSync } from '@lib/hooks';
+import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useChatScroll } from '@lib/hooks/use-chat-scroll';
@@ -27,7 +28,8 @@ export default function ChatPage() {
   const { inputHeight } = useChatLayoutStore();
   const isPreviewOpen = useFilePreviewStore((state) => state.isPreviewOpen);
 
-  const { isDark, isWelcomeScreen } = useChatStateSync();
+  const { isWelcomeScreen } = useChatStateSync();
+  const { colors, isDark } = useThemeColors();
   
   const { 
     messages, 
@@ -60,7 +62,8 @@ export default function ChatPage() {
     <div 
       className={cn(
         "h-full w-full relative flex flex-col",
-        isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+        colors.mainBackground.tailwind,
+        colors.mainText.tailwind
       )}
     >
       <NavBar />

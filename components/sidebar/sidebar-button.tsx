@@ -31,10 +31,10 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
         "border border-transparent",
         
         !isDark && [
-          "text-gray-600 hover:text-gray-900",
-          "hover:bg-gray-100",
+          "text-stone-600 hover:text-stone-900",
+          "hover:bg-stone-300 hover:shadow-md", // 增强悬停效果，使用更深的背景色和阴影
           active 
-            ? "bg-gray-100 text-primary font-semibold shadow-sm border-gray-200/80"
+            ? "bg-stone-300 text-stone-900 font-semibold shadow-sm border-stone-400/80"
             : "",
         ],
         

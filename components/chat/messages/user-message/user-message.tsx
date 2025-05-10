@@ -56,9 +56,9 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             "max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed",
             isDark 
               ? "bg-stone-700/90 text-gray-100" 
-              : "bg-stone-100 text-gray-800",
+              : "bg-stone-200 text-stone-800",
             "border",
-            isDark ? "border-stone-600/30" : "border-stone-200",
+            isDark ? "border-stone-600/30" : "border-stone-300/80",
             "shadow-sm",
             "transition-colors duration-200",
             className

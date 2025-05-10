@@ -2,14 +2,15 @@
 
 import React from "react"
 import { cn } from "@lib/utils"
-import { useTheme, useChatWidth } from "@lib/hooks"
+import { useChatWidth } from "@lib/hooks"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 
 interface ChatInputBackdropProps {
   className?: string
 }
 
 export function ChatInputBackdrop({ className }: ChatInputBackdropProps) {
-  const { isDark } = useTheme()
+  const { colors, isDark } = useThemeColors()
   const { widthClass } = useChatWidth()
   
   return (
@@ -20,7 +21,7 @@ export function ChatInputBackdrop({ className }: ChatInputBackdropProps) {
         className
       )}
       style={{ 
-        background: isDark ? 'rgb(17, 24, 39)' : 'rgb(249, 250, 251)',
+        background: colors.mainBackground.rgb
       }}
     />
   )
