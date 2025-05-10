@@ -2,8 +2,7 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-import { useTheme } from "@lib/hooks";
-import { useThemeColors } from "@lib/hooks/use-theme-colors";
+// 使用 CSS 变量而不是 React 状态或 Tailwind 类
 import { CodeIcon } from "lucide-react"; // Or a more specific language icon library
 
 interface CodeBlockHeaderProps {
@@ -16,8 +15,7 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
   language,
   className,
 }) => {
-  const { isDark } = useTheme();
-  const { colors } = useThemeColors();
+  // 不使用任何 React 状态，完全依赖 CSS 变量
 
   if (!language) {
     return null; // Don't render header if language is not specified
@@ -33,13 +31,14 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(({
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-3 py-1.5 rounded-t-lg",
-        "border-b",
-        isDark
-          ? `bg-stone-800 border-stone-700 ${colors.mainText.tailwind}/70`
-          : "bg-stone-100 border-stone-300 text-stone-600",
+        "flex items-center justify-between px-3 py-1.5 rounded-t-lg transform-gpu border-b",
         className
       )}
+      style={{
+        backgroundColor: 'var(--md-code-header-bg)',
+        borderColor: 'var(--md-code-header-border)',
+        color: 'var(--md-code-header-text)'
+      }}
     >
       <div className="flex items-center gap-2">
         <CodeIcon className="w-4 h-4" />

@@ -2,8 +2,7 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-import { useTheme } from "@lib/hooks";
-import { useThemeColors } from "@lib/hooks/use-theme-colors";
+// 使用 CSS 变量而不是 React 状态或 Tailwind 类
 
 interface MarkdownBlockquoteProps {
   children: React.ReactNode;
@@ -14,8 +13,7 @@ export const MarkdownBlockquote: React.FC<MarkdownBlockquoteProps> = ({
   children,
   className,
 }) => {
-  const { isDark } = useTheme();
-  const { colors } = useThemeColors();
+  // 不使用任何 React 状态，完全依赖 CSS 变量
 
   // --- BEGIN COMMENT ---
   // 现代化引用块样式：
@@ -27,13 +25,14 @@ export const MarkdownBlockquote: React.FC<MarkdownBlockquoteProps> = ({
   return (
     <blockquote
       className={cn(
-        "pl-4 pr-3 py-2 my-3 border-l-4 rounded-r-md shadow-sm", // Added shadow and adjusted padding/margin
-        isDark
-          ? "border-amber-600 bg-stone-800/80 text-amber-200" // 暗色模式使用玄色背景和琥珀色边框
-          : "border-amber-400 bg-stone-100/80 text-amber-700", // 亮色模式使用浅玄色背景和琥珀色边框
-        "leading-relaxed", // Ensure good line height within blockquote
+        "pl-4 pr-3 py-2 my-3 border-l-4 rounded-r-md shadow-sm leading-relaxed", // Added shadow and adjusted padding/margin
         className
       )}
+      style={{
+        borderLeftColor: 'var(--md-blockquote-border)',
+        backgroundColor: 'var(--md-blockquote-bg)',
+        color: 'var(--md-blockquote-text)'
+      }}
     >
       {children}
     </blockquote>

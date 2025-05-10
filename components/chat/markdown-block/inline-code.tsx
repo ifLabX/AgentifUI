@@ -2,8 +2,7 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-import { useTheme } from "@lib/hooks";
-import { useThemeColors } from "@lib/hooks/use-theme-colors";
+// 使用 CSS 变量而不是 React 状态或 Tailwind 类
 
 interface InlineCodeProps {
   children: React.ReactNode;
@@ -15,8 +14,7 @@ export const InlineCode: React.FC<InlineCodeProps> = React.memo(({
   children,
   className,
 }) => {
-  const { isDark } = useTheme();
-  const { colors } = useThemeColors();
+  // 不使用任何 React 状态，完全依赖 CSS 变量
 
   // --- BEGIN COMMENT ---
   // 现代化内联代码样式：
@@ -27,12 +25,14 @@ export const InlineCode: React.FC<InlineCodeProps> = React.memo(({
   return (
     <code
       className={cn(
-        "font-mono text-sm px-1.5 py-0.5 rounded-md mx-0.5 align-baseline", // align-baseline for better flow with text
-        isDark
-          ? "bg-stone-700 text-pink-300 border border-stone-600/50" // 使用stone色系与pink色系的组合
-          : "bg-stone-200 text-pink-600 border border-stone-300/70",
+        "font-mono text-sm px-1.5 py-0.5 rounded-md mx-0.5 align-baseline transform-gpu border",
         className
       )}
+      style={{
+        backgroundColor: 'var(--md-inline-code-bg)',
+        borderColor: 'var(--md-inline-code-border)',
+        color: 'var(--md-inline-code-text)'
+      }}
     >
       {children}
     </code>

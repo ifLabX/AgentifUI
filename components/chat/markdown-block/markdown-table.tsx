@@ -2,8 +2,7 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-import { useTheme } from "@lib/hooks";
-import { useThemeColors } from "@lib/hooks/use-theme-colors";
+// 使用 CSS 变量而不是 React 状态或 Tailwind 类
 
 interface MarkdownTableProps {
   children: React.ReactNode;
@@ -14,8 +13,7 @@ export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
   children,
   className,
 }) => {
-  const { isDark } = useTheme();
-  const { colors } = useThemeColors();
+  // 不使用任何 React 状态，完全依赖 CSS 变量
 
   // --- BEGIN COMMENT ---
   // 现代化表格容器样式：
@@ -27,17 +25,19 @@ export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
   return (
     <div
       className={cn(
-        "my-4 overflow-x-auto rounded-lg shadow-sm", // Added shadow
-        "border",
-        isDark ? "border-stone-700/60" : "border-stone-300/80",
+        "my-4 overflow-x-auto rounded-lg shadow-sm border",
         className
       )}
+      style={{
+        borderColor: 'var(--md-table-border)'
+      }}
     >
       <table
-        className={cn(
-          "min-w-full border-collapse w-full", // w-full to ensure it tries to fill container
-          isDark ? "divide-stone-700" : "divide-stone-200" // For potential internal dividers if not using cell borders
-        )}
+        className="min-w-full border-collapse w-full divide-y"
+        style={{
+          borderColor: 'var(--md-table-border)',
+          // CSS 没有 divideColor 属性，使用 className 来设置分隔线颜色
+        }}
       >
         {children}
       </table>

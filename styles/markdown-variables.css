@@ -1,0 +1,60 @@
+/* Markdown 块组件的 CSS 变量 */
+
+:root {
+  /* 代码块 */
+  --md-code-bg: rgb(250, 250, 249); /* stone-50 */
+  --md-code-border: rgba(214, 211, 209, 0.7); /* stone-300/70 */
+  --md-code-text: rgb(28, 25, 23); /* stone-900 */
+  
+  /* 代码块头部 */
+  --md-code-header-bg: rgb(245, 245, 244); /* stone-100 */
+  --md-code-header-border: rgb(214, 211, 209); /* stone-300 */
+  --md-code-header-text: rgb(87, 83, 78); /* stone-600 */
+  
+  /* 内联代码 */
+  --md-inline-code-bg: rgb(231, 229, 228); /* stone-200 */
+  --md-inline-code-border: rgba(214, 211, 209, 0.7); /* stone-300/70 */
+  --md-inline-code-text: rgb(185, 28, 28); /* pink-600 */
+  
+  /* 引用块 */
+  --md-blockquote-bg: rgba(245, 245, 244, 0.8); /* stone-100/80 */
+  --md-blockquote-border: rgb(251, 191, 36); /* amber-400 */
+  --md-blockquote-text: rgb(180, 83, 9); /* amber-700 */
+  
+  /* 表格 */
+  --md-table-border: rgba(214, 211, 209, 0.8); /* stone-300/80 */
+  --md-table-divide: rgb(231, 229, 228); /* stone-200 */
+  --md-table-header-bg: rgb(245, 245, 244); /* stone-100 */
+  --md-table-header-text: rgb(28, 25, 23); /* stone-900 */
+  --md-table-cell-text: rgb(41, 37, 36); /* stone-800 */
+}
+
+/* 暗色模式变量 */
+.dark {
+  /* 代码块 */
+  --md-code-bg: rgb(28, 25, 23); /* stone-900 */
+  --md-code-border: rgba(68, 64, 60, 0.5); /* stone-700/50 */
+  --md-code-text: rgb(245, 245, 244); /* stone-100 */
+  
+  /* 代码块头部 */
+  --md-code-header-bg: rgb(41, 37, 36); /* stone-800 */
+  --md-code-header-border: rgb(68, 64, 60); /* stone-700 */
+  --md-code-header-text: rgb(214, 211, 209); /* stone-300 */
+  
+  /* 内联代码 */
+  --md-inline-code-bg: rgb(68, 64, 60); /* stone-700 */
+  --md-inline-code-border: rgba(87, 83, 78, 0.5); /* stone-600/50 */
+  --md-inline-code-text: rgb(249, 168, 212); /* pink-300 */
+  
+  /* 引用块 */
+  --md-blockquote-bg: rgba(41, 37, 36, 0.8); /* stone-800/80 */
+  --md-blockquote-border: rgb(217, 119, 6); /* amber-600 */
+  --md-blockquote-text: rgb(253, 230, 138); /* amber-200 */
+  
+  /* 表格 */
+  --md-table-border: rgba(68, 64, 60, 0.6); /* stone-700/60 */
+  --md-table-divide: rgb(68, 64, 60); /* stone-700 */
+  --md-table-header-bg: rgb(28, 25, 23); /* stone-900 */
+  --md-table-header-text: rgb(245, 245, 244); /* stone-100 */
+  --md-table-cell-text: rgb(214, 211, 209); /* stone-300 */
+}
