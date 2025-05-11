@@ -377,4 +377,34 @@ export interface GetConversationsResponse {
   has_more: boolean; // 是否有更多会话
   limit: number; // 返回条数
 }
+// --- BEGIN COMMENT ---
+// /conversations API - 删除会话的请求体结构
+// --- END COMMENT ---
+export interface DeleteConversationRequestPayload {
+  user: string; // 用户标识，由开发者定义规则，需保证用户标识在应用内唯一
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 删除会话的响应体结构
+// --- END COMMENT ---
+export interface DeleteConversationResponse {
+  result: 'success';
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 重命名会话的请求体结构
+// --- END COMMENT ---
+export interface RenameConversationRequestPayload {
+  name?: string; // （选填）名称，若 auto_generate 为 true 时，该参数可不传
+  auto_generate?: boolean; // （选填）自动生成标题，默认 false
+  user: string; // 用户标识，由开发者定义规则，需保证用户标识在应用内唯一
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 重命名会话的响应体结构，返回更新后的会话信息
+// --- END COMMENT ---
+export interface RenameConversationResponse extends Conversation {
+  // 继承了 Conversation 接口的所有字段
+}
+
 // --- END CONVERSATIONS API TYPES ---
