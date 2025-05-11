@@ -14,7 +14,9 @@ import {
   Grid,
   Divider
 } from '@mui/material';
-import { ServiceInstance } from '@lib/stores/api-config-store';
+import { ServiceInstance } from '@lib/types/database';
+import { useTheme } from '@lib/hooks/use-theme';
+import { cn } from '@lib/utils';
 
 interface AppInstanceFormProps {
   instance?: ServiceInstance;
@@ -33,6 +35,7 @@ export default function AppInstanceForm({
   isProcessing,
   error
 }: AppInstanceFormProps) {
+  const { isDark } = useTheme();
   const [formData, setFormData] = useState<Partial<ServiceInstance>>({
     provider_id: providerId,
     instance_id: '',
@@ -44,6 +47,43 @@ export default function AppInstanceForm({
   });
 
   const [apiKey, setApiKey] = useState('');
+  
+  // 获取当前主题的颜色
+  const getThemeColors = () => {
+    if (isDark) {
+      return {
+        cardBg: '#292524', // stone-800
+        borderColor: 'rgba(75, 85, 99, 0.3)', // gray-700 with opacity
+        inputBg: 'rgba(41, 37, 36, 0.8)', // stone-800 with opacity
+        inputBorder: 'rgba(87, 83, 78, 0.5)', // stone-600 with opacity
+        hoverBorder: 'rgba(120, 113, 108, 0.8)', // stone-500 with opacity
+        focusBorder: 'rgb(96, 165, 250)', // blue-400
+        buttonPrimary: 'rgb(59, 130, 246)', // blue-500
+        buttonPrimaryHover: 'rgb(37, 99, 235)', // blue-600
+        buttonSecondary: 'transparent',
+        buttonSecondaryHover: 'rgba(87, 83, 78, 0.2)', // stone-600 with opacity
+        dividerColor: 'rgba(75, 85, 99, 0.3)', // gray-700 with opacity
+        shadowColor: 'rgba(0, 0, 0, 0.25)'
+      };
+    } else {
+      return {
+        cardBg: '#ffffff',
+        borderColor: 'rgba(214, 211, 209, 0.5)', // stone-300 with opacity
+        inputBg: '#ffffff',
+        inputBorder: 'rgba(214, 211, 209, 0.8)', // stone-300 with opacity
+        hoverBorder: 'rgba(168, 162, 158, 0.8)', // stone-400 with opacity
+        focusBorder: 'rgb(37, 99, 235)', // blue-600
+        buttonPrimary: 'rgb(37, 99, 235)', // blue-600
+        buttonPrimaryHover: 'rgb(29, 78, 216)', // blue-700
+        buttonSecondary: 'transparent',
+        buttonSecondaryHover: 'rgba(214, 211, 209, 0.3)', // stone-300 with opacity
+        dividerColor: 'rgba(214, 211, 209, 0.8)', // stone-300 with opacity
+        shadowColor: 'rgba(120, 113, 108, 0.15)' // stone-500 with opacity
+      };
+    }
+  };
+  
+  const colors = getThemeColors();
   
   // 如果是编辑模式，加载现有实例数据
   useEffect(() => {
@@ -71,7 +111,7 @@ export default function AppInstanceForm({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev: Partial<ServiceInstance>) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
@@ -98,14 +138,43 @@ export default function AppInstanceForm({
   const title = isEditMode ? '编辑 Dify 应用' : '添加 Dify 应用';
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" component="div" gutterBottom>
+    <Card
+      elevation={isDark ? 0 : 1}
+      sx={{
+        bgcolor: colors.cardBg,
+        border: '1px solid',
+        borderColor: colors.borderColor,
+        borderRadius: '0.75rem',
+        boxShadow: `0 4px 6px -1px ${colors.shadowColor}`,
+        overflow: 'hidden',
+        transition: 'all 0.2s ease-in-out'
+      }}
+    >
+      <CardContent sx={{ p: 3 }}>
+        <Typography 
+          variant="h6" 
+          component="div" 
+          gutterBottom
+          sx={{ 
+            fontWeight: 600,
+            mb: 2,
+            color: isDark ? 'rgb(229, 231, 235)' : 'rgb(31, 41, 55)' // gray-200 : gray-800
+          }}
+        >
           {title}
         </Typography>
         
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert 
+            severity="error" 
+            sx={{ 
+              mb: 2,
+              borderRadius: '0.5rem',
+              '& .MuiAlert-icon': {
+                color: isDark ? 'rgb(248, 113, 113)' : 'rgb(220, 38, 38)' // red-400 : red-600
+              }
+            }}
+          >
             <AlertTitle>错误</AlertTitle>
             {error.message}
           </Alert>
@@ -126,6 +195,28 @@ export default function AppInstanceForm({
                 placeholder="例如: chat-bot-1"
                 helperText="唯一标识符，用于API路由，创建后不可修改"
                 disabled={isEditMode}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: colors.inputBg,
+                    borderRadius: '0.5rem',
+                    transition: 'all 0.2s',
+                    '& fieldset': {
+                      borderColor: colors.inputBorder,
+                    },
+                    '&:hover fieldset': {
+                      borderColor: colors.hoverBorder,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: colors.focusBorder,
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    mx: 0,
+                    mt: 0.5,
+                    fontSize: '0.75rem',
+                    opacity: 0.8
+                  }
+                }}
               />
             </Box>
             
@@ -161,7 +252,11 @@ export default function AppInstanceForm({
           </Box>
           
           <Box sx={{ mt: 2 }}>
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ 
+              my: 2.5,
+              borderColor: colors.dividerColor,
+              opacity: 0.8
+            }} />
             <Typography variant="subtitle1" gutterBottom>
               API 配置
             </Typography>
@@ -212,11 +307,25 @@ export default function AppInstanceForm({
             />
           </Box>
           
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
             <Button
               variant="outlined"
               onClick={onCancel}
               disabled={isProcessing}
+              sx={{
+                borderRadius: '0.5rem',
+                py: 1,
+                px: 2.5,
+                textTransform: 'none',
+                fontWeight: 500,
+                borderColor: isDark ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)', // gray-400/500 with opacity
+                color: isDark ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)', // gray-300 : gray-700
+                bgcolor: colors.buttonSecondary,
+                '&:hover': {
+                  bgcolor: colors.buttonSecondaryHover,
+                  borderColor: isDark ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)', // gray-400/500 with more opacity
+                }
+              }}
             >
               取消
             </Button>
@@ -224,9 +333,24 @@ export default function AppInstanceForm({
               type="submit"
               variant="contained"
               disabled={isProcessing || !formData.instance_id || !formData.display_name}
+              sx={{
+                borderRadius: '0.5rem',
+                py: 1,
+                px: 2.5,
+                textTransform: 'none',
+                fontWeight: 500,
+                bgcolor: colors.buttonPrimary,
+                '&:hover': {
+                  bgcolor: colors.buttonPrimaryHover,
+                },
+                '&.Mui-disabled': {
+                  opacity: 0.6,
+                  color: 'white'
+                }
+              }}
             >
               {isProcessing ? '保存中...' : '保存'}
-              {isProcessing && <CircularProgress size={24} sx={{ ml: 1 }} />}
+              {isProcessing && <CircularProgress size={20} sx={{ ml: 1 }} color="inherit" />}
             </Button>
           </Box>
         </Box>
