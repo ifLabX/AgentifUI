@@ -26,11 +26,31 @@ export function SidebarContainer() {
     }
   }
 
+  // 根据主题获取侧边栏样式
+  const getSidebarStyles = () => {
+    if (isDark) {
+      return {
+        shadow: "shadow-lg shadow-black/30",
+        border: "border-r-stone-700/50",
+        text: "text-stone-300"
+      }
+    } else {
+      return {
+        shadow: "shadow-lg shadow-stone-300/50",
+        border: "border-r-stone-300/60",
+        text: "text-stone-700"
+      }
+    }
+  }
+
+  const styles = getSidebarStyles()
+
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col border-r border-transparent",
-        "transition-all duration-300 ease-in-out",
+        "flex h-screen flex-col border-r",
+        // 只对宽度添加过渡效果
+        "transition-[width] duration-300 ease-in-out",
         
         // Responsive width adjustments
         isExpanded ? "md:w-64" : "md:w-16",
@@ -41,15 +61,11 @@ export function SidebarContainer() {
         colors.sidebarBackground.tailwind,
         "backdrop-blur-sm",
         
-        !isDark && [
-          "shadow-lg shadow-stone-300/50", 
-          "border-r-stone-300/60", 
-        ],
-        isDark && [
-          "shadow-lg shadow-black/30", 
-          "border-r-gray-700/50", 
-          "text-gray-300",
-        ],
+        // 使用预计算的主题样式
+        styles.shadow,
+        styles.border,
+        styles.text,
+       
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

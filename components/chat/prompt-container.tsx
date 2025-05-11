@@ -2,7 +2,8 @@
 
 import React, { useRef, useEffect, useState } from "react"
 import { cn } from "@lib/utils"
-import { useTheme, useChatWidth, useWelcomeScreen, usePromptTemplateInteraction } from "@lib/hooks"
+import { useChatWidth, useWelcomeScreen, usePromptTemplateInteraction, useMounted } from "@lib/hooks"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { PromptButton } from "@components/ui/prompt-button"
 import { PromptPanel } from "@components/ui/prompt-panel"
 import { Sparkles, HelpCircle, BookOpen, Building, LucideIcon } from "lucide-react"
@@ -23,12 +24,32 @@ const ICON_MAP: Record<string, LucideIcon> = {
 }
 
 export const PromptContainer = ({ className }: PromptContainerProps) => {
-  const { isDark } = useTheme()
+  const { colors, isDark } = useThemeColors()
   const { widthClass, paddingClass } = useChatWidth()
   const { isWelcomeScreen } = useWelcomeScreen()
+  const isMounted = useMounted()
   const containerRef = useRef<HTMLDivElement>(null)
   const { expandedId, togglePanel, resetPanel } = usePromptPanelStore()
   const { inputHeight } = useChatLayoutStore()
+
+  // 根据主题获取提示容器样式
+  const getPromptStyles = () => {
+    if (isDark) {
+      return {
+        background: colors.mainBackground.tailwind,
+        border: "border-stone-700/50",
+        text: "text-stone-300"
+      }
+    } else {
+      return {
+        background: colors.mainBackground.tailwind,
+        border: "border-stone-300/50",
+        text: "text-stone-700"
+      }
+    }
+  }
+
+  const styles = getPromptStyles()
   
   // 当前选中分类的模板
   const [currentTemplates, setCurrentTemplates] = useState<Array<any>>([])
@@ -53,6 +74,8 @@ export const PromptContainer = ({ className }: PromptContainerProps) => {
     return () => resetPanel()
   }, [resetPanel])
 
+  // 只在组件挂载完成后才显示或隐藏
+  if (!isMounted) return null
   if (!isWelcomeScreen) return null
   
   // 计算基于输入框高度增加的半个偏移量
@@ -70,6 +93,8 @@ export const PromptContainer = ({ className }: PromptContainerProps) => {
         paddingClass,
         "absolute left-1/2 transform -translate-x-1/2",
         "transition-[top] duration-200 ease-in-out",
+        styles.background,
+        styles.text,
         className
       )}
       style={{ 

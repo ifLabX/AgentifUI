@@ -70,8 +70,7 @@ export const FileTypeSelector = ({
     <TooltipWrapper 
       content={
         <>
-          添加附件，支持文档 (.pdf, .docx, .txt,)、<br />
-          图片 (.jpg, .png) 等
+          添加附件
         </>
       }
       id="file-type-selector-tooltip"
