@@ -105,9 +105,9 @@ export function Home() {
             className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
           >
             {[
-              { title: "智能对话", description: "基于大型语言模型的智能对话系统，提供个性化学习体验" },
-              { title: "知识管理", description: "高效组织和管理教育资源，轻松获取所需知识" },
-              { title: "学习分析", description: "深入分析学习行为，提供针对性的学习建议" }
+              { title: "大模型集成", description: "支持多种模型供应商，包括OpenAI、Anthropic、Dify等，满足不同企业需求" },
+              { title: "RAG知识增强", description: "集成检索增强生成(RAG)技术，实现私有知识库和上下文感知" },
+              { title: "企业级部署", description: "支持私有化部署，保障数据安全，基于Dify后端提供稳定可靠的服务" }
             ].map((feature, index) => (
               <motion.div 
                 key={index}
@@ -134,7 +134,7 @@ export function Home() {
           >
             <Button 
               size="lg" 
-              className={`${colors.primaryButton} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200`}
+              className={`${colors.primaryButton} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200 cursor-pointer hover:scale-105`}
               onClick={handleStartClick}
             >
               立即开始
@@ -142,7 +142,7 @@ export function Home() {
             <Button 
               size="lg" 
               variant="outline" 
-              className={`${colors.secondaryButton} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200`}
+              className={`${colors.secondaryButton} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200 cursor-pointer hover:scale-105`}
               onClick={handleLearnMoreClick}
             >
               了解更多
