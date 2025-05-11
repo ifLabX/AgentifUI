@@ -3,8 +3,8 @@
 @import "../styles/markdown-variables.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f5f4; /* stone-100 */
+  --foreground: #1c1917; /* stone-900 */
   --page-height: auto; /* 默认高度为自动 */
   --page-overflow: visible; /* 默认溢出为可见 */
 }
@@ -18,15 +18,15 @@
 
 /* 明确的暗色主题类 */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #292524; /* stone-800 */
+  --foreground: #f3f4f6; /* gray-100 */
 }
 
 /* 系统偏好设置（仅作为初始值） */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #292524; /* stone-800 */
+    --foreground: #f3f4f6; /* gray-100 */
   }
 }
 
