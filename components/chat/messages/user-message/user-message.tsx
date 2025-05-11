@@ -2,7 +2,7 @@
 
 import React from "react"
 import { cn } from "@lib/utils"
-import { useTheme, useMobile } from "@lib/hooks"
+import { useTheme, useMobile, useMounted } from "@lib/hooks"
 import { MessageAttachment } from '@lib/stores/chat-store'
 import { FileAttachmentDisplay } from './file-attachment-display'
 import { UserMessageActions } from '@components/chat/message-actions'
@@ -26,7 +26,12 @@ export const UserMessage: React.FC<UserMessageProps> = ({
 }) => {
   const { isDark } = useTheme()
   const isMobile = useMobile()
+  const isMounted = useMounted()
   const hasAttachments = attachments && attachments.length > 0
+
+  if (!isMounted) {
+    return null
+  }
   
   return (
     <div 
@@ -74,4 +79,4 @@ export const UserMessage: React.FC<UserMessageProps> = ({
       </div>
     </div>
   )
-} 
+}
