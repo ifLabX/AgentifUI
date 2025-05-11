@@ -83,14 +83,14 @@ export default function AboutPage() {
   };
 
   return (
-    <main className="min-h-screen w-full py-8 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+    <main className="min-h-screen w-full py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
       <div className="max-w-5xl mx-auto">
         {/* 标题部分 */}
         <motion.section 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -115,7 +115,7 @@ export default function AboutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-16"
+          className="mb-10"
         >
           <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>我们的使命</h2>
           <p className={`text-lg ${colors.paragraphColor}`}>
@@ -129,7 +129,7 @@ export default function AboutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-16"
+          className="mb-10"
         >
           <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>我们的价值观</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -158,7 +158,7 @@ export default function AboutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
           {/* “加入我们”标题和段落已根据用户要求移除 */}
           <Button
