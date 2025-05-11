@@ -32,7 +32,11 @@ export const useChatInputStore = create<ChatInputState>((set, get) => ({
   
   // 输入法状态
   isComposing: false,
-  setIsComposing: (isComposing) => set({ isComposing }),
+  setIsComposing: (isComposingValue: boolean) => {
+    if (get().isComposing !== isComposingValue) {
+      set({ isComposing: isComposingValue });
+    }
+  },
   
   // 聊天界面状态
   isWelcomeScreen: true,

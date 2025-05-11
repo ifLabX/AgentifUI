@@ -1,200 +1,164 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 import throttle from 'lodash/throttle';
-import { ChatMessage } from '@lib/stores/chat-store'; // 引入 ChatMessage 类型
+import debounce from 'lodash/debounce';
+import { ChatMessage } from '@lib/stores/chat-store';
 
-// --- BEGIN COMMENT ---
-// useChatScroll Hook
-// 负责管理聊天容器的自动滚动行为。
-// 返回一个 ref，应将其附加到 *主* 可滚动聊天容器元素上 (通常是页面级或布局级的容器)。
-//
-// 功能：
-// 1. 当依赖项 (dep) 改变时 (通常是消息列表长度)，如果用户未手动向上滚动，则自动滚动到底部。
-// 2. 监听滚动事件，检测用户是否手动滚动。
-// 3. 如果用户向上滚动，则禁用自动滚动。
-// 4. 如果用户滚动回底部，则重新启用自动滚动。
-// 5. 尝试区分程序化滚动和用户滚动，以避免错误地禁用自动滚动。
-// --- END COMMENT ---
+const SCROLL_THRESHOLD = 50; // Pixels from bottom to be considered "at bottom"
+// For streaming, how far from bottom user can be for auto-scroll to still engage
+const STREAMING_AUTO_SCROLL_MAX_DISTANCE = SCROLL_THRESHOLD * 4; 
+// When streaming, only scroll if we are further than this from the actual bottom
+const MIN_DISTANCE_FOR_STREAMING_SCROLL_ACTION = 5; 
 
-// --- BEGIN COMMENT ---
-// 定义滚动判断的阈值（像素）
-// 当滚动位置距离底部小于此值时，我们认为用户在底部
-// --- END COMMENT ---
-const SCROLL_THRESHOLD = 50;
-
-// --- BEGIN COMMENT ---
-// 定义 NavBar 高度和下方间距 (需要与实际 NavBar 高度 h-12 匹配)
-// --- END COMMENT ---
-const NAVBAR_HEIGHT_PX = 48; // NavBar h-12 高度 (3rem = 48px)
-const MARGIN_BELOW_NAVBAR_PX = 16; // 滚动到 NavBar 下方留出的额外间距 (1rem = 16px)
-
-// 检查是否为流式响应的函数 (简化，假设最后一个消息有 isStreaming 属性)
-const isStreamingResponse = (messages: ChatMessage[]): boolean => {
-  if (!Array.isArray(messages) || messages.length === 0) return false;
-  const lastMessage = messages[messages.length - 1];
-  return lastMessage && lastMessage.isStreaming === true;
-}
-
-export function useChatScroll<T extends HTMLElement>(
-  messages: ChatMessage[], // 依赖改为整个 messages 数组
-) {
-  const scrollRef = useRef<T>(null);
-  const prevMessagesRef = useRef<ChatMessage[]>([]); // 存储上一次的 messages
-  const animationFrameRef = useRef<number | null>(null); 
+export function useChatScroll(messages: ChatMessage[]) {
+  const scrollRef = useRef<HTMLDivElement>(null);
   
   const { 
-    userScrolledUp, 
     setUserScrolledUp, 
-    isAtBottom, // 读取 isAtBottom 状态
     setIsAtBottom,
-    setScrollRef,
+    setScrollRef: storeSetScrollRef,
+    // scrollToBottom action from store is NOT used directly by effects that respond to messages
+    // to prevent its state-setting副作用 from causing loops with message updates.
+    // Effects responding to messages will call raw scrollTo if needed.
   } = useChatScrollStore();
 
-  // --- BEGIN COMMENT ---
-  // 使用常量定义的 NavBar 高度和边距
-  // --- END COMMENT ---
-  const navBarHeight = NAVBAR_HEIGHT_PX; 
-  const marginBelowNavBar = MARGIN_BELOW_NAVBAR_PX;
+  // Track if user is actively interacting with scrollbar
+  const isUserInteractingRef = useRef(false);
+  // Timer for detecting end of user scroll interaction
+  const userInteractionEndTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- BEGIN COMMENT ---
-  // 注册 scrollRef 到 store
-  // --- END COMMENT ---
-  useEffect(() => {
-    if (scrollRef.current) {
-      setScrollRef(scrollRef as React.RefObject<HTMLElement>);
-      const element = scrollRef.current;
-      const atBottomNow = element.scrollHeight - element.scrollTop - element.clientHeight < SCROLL_THRESHOLD;
-      if (isAtBottom !== atBottomNow) {
-        setIsAtBottom(atBottomNow);
-      }
-      if (!atBottomNow && !useChatScrollStore.getState().userScrolledUp) { 
-        setUserScrolledUp(true);
-      }
-    }
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [setScrollRef, setIsAtBottom, setUserScrolledUp, userScrolledUp, isAtBottom]);
+  // Refs to track previous messages state for precise change detection
+  const prevMessagesLengthRef = useRef(messages.length);
+  const prevLastMessageIdRef = useRef<string | null>(messages.length > 0 ? messages[messages.length - 1].id : null);
+  const prevLastMessageTextLengthRef = useRef<number>(messages.length > 0 ? messages[messages.length - 1].text.length : 0);
+  
+  // State to signal a scroll request from message changes
+  // 'auto' or 'smooth' for behavior, or null if no request
+  const [scrollRequest, setScrollRequest] = useState<ScrollBehavior | null>(null);
 
-  // --- BEGIN COMMENT ---
-  // 使用 useCallback 和 throttle 优化滚动事件处理函数
-  // 减少 throttle 时间从 100ms 到 50ms 使滚动更平滑
-  // --- END COMMENT ---
-  const handleScroll = useCallback(throttle(() => {
-    const element = scrollRef.current;
-    if (element) {
-      const { scrollTop, scrollHeight, clientHeight } = element;
-      const currentAtBottom = scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD;
-      const currentScrolledUp = !currentAtBottom;
-      
-      if (currentAtBottom !== useChatScrollStore.getState().isAtBottom) {
-        setIsAtBottom(currentAtBottom);
-      }
-      if (currentScrolledUp !== useChatScrollStore.getState().userScrolledUp) {
-        setUserScrolledUp(currentScrolledUp);
-      }
-    }
-  }, 50), [setIsAtBottom, setUserScrolledUp]);
 
-  useEffect(() => {
-    const element = scrollRef.current;
-    if (element) {
-      element.addEventListener('scroll', handleScroll);
-      handleScroll();
-      return () => {
-        element.removeEventListener('scroll', handleScroll);
-        handleScroll.cancel();
-      };
-    }
-  }, [handleScroll]);
-
-  // CONSOLIDATED SCROLL LOGIC EFFECT
+  // Effect 1: Setup scroll listener, handle user interaction, and sync scroll state
   useEffect(() => {
     const element = scrollRef.current;
     if (!element) return;
 
-    if (!Array.isArray(messages)) {
-      console.warn('[useChatScroll] messages prop is not an array. Aborting scroll logic for this cycle.');
-      return;
-    }
+    storeSetScrollRef(scrollRef as React.RefObject<HTMLElement>);
 
-    const prevMessages = prevMessagesRef.current; 
-    const currentMessages = messages; 
-    let newLastUserMessage: ChatMessage | null = null;
+    const handleUserInteractionEnd = debounce(() => {
+      isUserInteractingRef.current = false;
+      // After user stops scrolling, if there was a pending scroll request due to new messages,
+      // it might be good to trigger it now if they landed at the bottom.
+      // However, for simplicity, we'll let the regular message-driven effect handle it.
+    }, 300); // 300ms after last scroll event is considered "interaction ended"
 
-    if (currentMessages.length > 0) {
-      const lastMessage = currentMessages[currentMessages.length - 1];
-      if (lastMessage.isUser) {
-        const prevWasEmptyOrDifferent = !Array.isArray(prevMessages) || prevMessages.length === 0 || 
-                                      (prevMessages.length > 0 && lastMessage.id !== prevMessages[prevMessages.length - 1]?.id);
-        if (currentMessages.length > prevMessages.length || prevWasEmptyOrDifferent) {
-          newLastUserMessage = lastMessage;
-        }
+    const handleScroll = () => { // Not throttled, but sets a flag and uses debounce for end
+      isUserInteractingRef.current = true;
+      if (userInteractionEndTimerRef.current) {
+        clearTimeout(userInteractionEndTimerRef.current);
       }
-    }
-    
-    if (newLastUserMessage && newLastUserMessage.id) {
-      animationFrameRef.current = requestAnimationFrame(() => {
-        if (!scrollRef.current) return;
-        const messageElement = scrollRef.current.querySelector(`[data-message-id="${newLastUserMessage!.id}"]`) as HTMLElement;
-        
-        if (messageElement) {
-          let targetScrollTop = messageElement.offsetTop - navBarHeight - marginBelowNavBar;
-          targetScrollTop = Math.max(0, targetScrollTop);
-          
-          scrollRef.current.scrollTo({
-            top: targetScrollTop,
-            behavior: 'auto'
-          });
-          
-          setUserScrolledUp(true);
-          const atBottomAfterScroll = scrollRef.current.scrollHeight - targetScrollTop - scrollRef.current.clientHeight < SCROLL_THRESHOLD;
-          setIsAtBottom(atBottomAfterScroll);
-        } else {
-          if (!useChatScrollStore.getState().userScrolledUp) {
-             scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'auto' });
-             setIsAtBottom(true);
-          }
-        }
-      });
-      prevMessagesRef.current = [...currentMessages];
-      return;
-    }
+      userInteractionEndTimerRef.current = setTimeout(handleUserInteractionEnd, 300);
 
-    if (!userScrolledUp) { 
-      const streaming = isStreamingResponse(messages);
-      if (streaming) {
-        const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
-        if (distanceFromBottom < SCROLL_THRESHOLD * 3) {
-          animationFrameRef.current = requestAnimationFrame(() => {
-            if (scrollRef.current) {
-              scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-              setIsAtBottom(true);
-            }
-          });
-        }
-      } else {
-        animationFrameRef.current = requestAnimationFrame(() => {
-          if (scrollRef.current) {
-            if (element.scrollHeight - element.scrollTop - element.clientHeight >= SCROLL_THRESHOLD) {
-               scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'auto' });
-            }
-            setIsAtBottom(true);
-          }
-        });
-      }
-    }
+      const el = scrollRef.current;
+      if (!el) return;
+      const currentIsAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < SCROLL_THRESHOLD;
+      const currentScrolledUp = !currentIsAtBottom;
+      
+      setIsAtBottom(currentIsAtBottom); // Store action has internal check
+      setUserScrolledUp(currentScrolledUp); // Store action has internal check
+    };
 
-    prevMessagesRef.current = [...currentMessages];
+    element.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial state sync
+    const initialIsAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < SCROLL_THRESHOLD;
+    setIsAtBottom(initialIsAtBottom);
+    setUserScrolledUp(!initialIsAtBottom);
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      element.removeEventListener('scroll', handleScroll);
+      if (userInteractionEndTimerRef.current) {
+        clearTimeout(userInteractionEndTimerRef.current);
       }
+      handleUserInteractionEnd.cancel(); // Cancel lodash debounce
     };
-  }, [messages, userScrolledUp, navBarHeight, marginBelowNavBar, setIsAtBottom, setUserScrolledUp]);
-  
-  return scrollRef; // 返回 ref
-} 
+  }, [scrollRef, storeSetScrollRef, setIsAtBottom, setUserScrolledUp]);
+
+
+  // Effect 2: Detect message changes and set a scroll request
+  useEffect(() => {
+    const currentMessages = messages;
+    const userIsCurrentlyScrolledUp = useChatScrollStore.getState().userScrolledUp;
+
+    const newMessagesAdded = currentMessages.length > prevMessagesLengthRef.current;
+    const lastMessageIdChanged = currentMessages.length > 0 && 
+                                 currentMessages[currentMessages.length - 1].id !== prevLastMessageIdRef.current;
+    
+    let lastMessageTextChanged = false;
+    if (currentMessages.length > 0 && !newMessagesAdded && !lastMessageIdChanged) {
+        const lastMessage = currentMessages[currentMessages.length - 1];
+        if (!lastMessage.isUser && lastMessage.isStreaming) {
+            lastMessageTextChanged = lastMessage.text.length > prevLastMessageTextLengthRef.current;
+        }
+    }
+
+    let shouldScroll: ScrollBehavior | null = null;
+
+    if (newMessagesAdded || lastMessageIdChanged) {
+      const newLastMessage = currentMessages[currentMessages.length - 1];
+      if (newLastMessage.isUser) {
+        shouldScroll = 'auto'; // User sent a message, always scroll
+      } else if (!userIsCurrentlyScrolledUp) { // New assistant message and user is at/near bottom
+        shouldScroll = 'smooth';
+      }
+    } else if (lastMessageTextChanged) { // Streaming update to the existing last message
+      if (!userIsCurrentlyScrolledUp) {
+        shouldScroll = 'smooth'; // Request smooth scroll for streaming
+      }
+    }
+
+    if (shouldScroll) {
+      setScrollRequest(shouldScroll);
+    }
+
+    // Update refs for the next comparison
+    prevMessagesLengthRef.current = currentMessages.length;
+    if (currentMessages.length > 0) {
+      prevLastMessageIdRef.current = currentMessages[currentMessages.length - 1].id;
+      prevLastMessageTextLengthRef.current = currentMessages[currentMessages.length - 1].text.length;
+    } else {
+      prevLastMessageIdRef.current = null;
+      prevLastMessageTextLengthRef.current = 0;
+    }
+  }, [messages]); // Only depends on messages
+
+
+  // Effect 3: Execute scroll request if conditions are met
+  useEffect(() => {
+    if (!scrollRequest || !scrollRef.current) return;
+
+    const element = scrollRef.current;
+    const userIsCurrentlyScrolledUp = useChatScrollStore.getState().userScrolledUp; // Get fresh state
+
+    // Only execute scroll if user is not interacting OR if it's an 'auto' scroll (typically for user's own new message)
+    if (!isUserInteractingRef.current || scrollRequest === 'auto') {
+      if (scrollRequest === 'auto') { // Usually for user's own message
+        useChatScrollStore.getState().scrollToBottom('auto'); // Use store action to also reset flags
+      } else if (scrollRequest === 'smooth' && !userIsCurrentlyScrolledUp) {
+        // For streaming or new assistant message when user is at bottom
+        const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+        if (distanceFromBottom < STREAMING_AUTO_SCROLL_MAX_DISTANCE && distanceFromBottom > MIN_DISTANCE_FOR_STREAMING_SCROLL_ACTION) {
+          requestAnimationFrame(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+            }
+          });
+        } else if (distanceFromBottom <= MIN_DISTANCE_FOR_STREAMING_SCROLL_ACTION) {
+          // Already at bottom, ensure state is correct if not already by handleScroll
+           if(!useChatScrollStore.getState().isAtBottom) setIsAtBottom(true);
+        }
+      }
+    }
+    setScrollRequest(null); // Reset the request
+  }, [scrollRequest, setIsAtBottom]); // Depends on scrollRequest signal
+
+  return scrollRef;
+}

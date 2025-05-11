@@ -102,18 +102,40 @@ export const ChatInput = ({
     setMessage(e.target.value)
   }
 
+  // 从 store 获取当前的 inputHeight 以进行比较
+  const currentLayoutInputHeight = useChatLayoutStore(state => state.inputHeight);
+
   // 回调函数，用于处理文本输入框高度变化
-  const handleTextHeightChange = useCallback((height: number) => {
-    const newTextAreaHeight = Math.max(height, INITIAL_INPUT_HEIGHT)
-    setTextAreaHeight(newTextAreaHeight) // 更新本地文本区域高度状态
-    setInputHeight(newTextAreaHeight + attachmentBarHeight)
-  }, [setInputHeight, attachmentBarHeight])
+  const handleTextHeightChange = useCallback((newObservedHeight: number) => {
+    const newCalculatedTextAreaHeight = Math.max(newObservedHeight, INITIAL_INPUT_HEIGHT);
+    
+    // 更新本地 textAreaHeight 状态 (setTextAreaHeight 会自动处理重复值)
+    setTextAreaHeight(newCalculatedTextAreaHeight); 
+
+    // 计算新的总输入高度
+    // attachmentBarHeight 是 ChatInput 的本地状态，在 handleAttachmentBarHeightChange 中更新
+    const newTotalInputHeight = newCalculatedTextAreaHeight + attachmentBarHeight; 
+    
+    // 只有当计算出的总高度与 store 中的当前总高度不同时，才更新 store
+    if (currentLayoutInputHeight !== newTotalInputHeight) {
+      setInputHeight(newTotalInputHeight);
+    }
+  }, [setInputHeight, attachmentBarHeight, currentLayoutInputHeight]); // textAreaHeight 从依赖中移除，因为它在内部通过 setTextAreaHeight 更新
 
   // 回调函数，用于处理附件预览栏高度变化
-  const handleAttachmentBarHeightChange = useCallback((height: number) => {
-    setAttachmentBarHeight(height) // 更新本地附件栏高度状态
-    setInputHeight(textAreaHeight + height)
-  }, [setInputHeight, textAreaHeight])
+  const handleAttachmentBarHeightChange = useCallback((newAttachmentBarHeight: number) => {
+    // 更新本地 attachmentBarHeight 状态 (setAttachmentBarHeight 会自动处理重复值)
+    setAttachmentBarHeight(newAttachmentBarHeight);
+
+    // 计算新的总输入高度
+    // textAreaHeight 是 ChatInput 的本地状态
+    const newTotalInputHeight = textAreaHeight + newAttachmentBarHeight;
+
+    // 只有当计算出的总高度与 store 中的当前总高度不同时，才更新 store
+    if (currentLayoutInputHeight !== newTotalInputHeight) {
+      setInputHeight(newTotalInputHeight);
+    }
+  }, [setInputHeight, textAreaHeight, currentLayoutInputHeight]); // attachmentBarHeight 从依赖中移除
 
   // --- BEGIN 中文注释 --- 用户ID和应用ID信息 ---
   // TODO: 获取真实的 User ID 和 App ID - 占位符实现
@@ -221,13 +243,19 @@ export const ChatInput = ({
     setIsComposing(false)
   }
 
-  // 消息变化时自动聚焦，但避免在流式输出过程中触发
+  // 消息变化时自动聚焦，但避免在流式输出或输入法组合过程中触发
   useEffect(() => {
-    // 只在非流式输出状态下自动聚焦，避免在处理消息时形成循环
-    if (message && !isProcessing && !isWaitingForResponse) {
+    // isComposing 状态从 store 中订阅，确保使用最新值
+    const currentIsComposing = useChatInputStore.getState().isComposing; 
+    if (message && !isProcessing && !isWaitingForResponse && !currentIsComposing) {
       useFocusManager.getState().focusInput();
     }
+    // isComposing 状态本身的变化不应该触发这个 effect 来聚焦，
+    // 而是当 message, isProcessing, isWaitingForResponse 变化时，再结合当时的 isComposing 来判断。
+    // 如果将 isComposing 加入依赖数组，当 isComposing 从 true 变为 false 时，如果其他条件满足，也会聚焦，这可能是期望的。
+    // 让我们先不加 isComposing 到依赖，看看效果。如果需要更精确控制，再调整。
   }, [message, isProcessing, isWaitingForResponse]);
+
 
   // --- BEGIN COMMENT ---
   // 组件首次挂载时自动聚焦输入框

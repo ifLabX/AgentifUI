@@ -37,38 +37,58 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
   // 实现状态更新方法。
   // --- END COMMENT ---
   setUserScrolledUp: (scrolledUp) => {
-    // console.log(`[ChatScrollStore] Setting userScrolledUp to: ${scrolledUp}`); // 可以取消注释用于调试
-    set({ userScrolledUp: scrolledUp });
+    if (get().userScrolledUp !== scrolledUp) {
+      // console.log(`[ChatScrollStore] Setting userScrolledUp to: ${scrolledUp}`);
+      set({ userScrolledUp: scrolledUp });
+    }
   },
-  setIsAtBottom: (isBottom) => set({ isAtBottom: isBottom }),
-  setScrollRef: (ref) => set({ scrollRef: ref }),
+  setIsAtBottom: (isBottom) => {
+    if (get().isAtBottom !== isBottom) {
+      // console.log(`[ChatScrollStore] Setting isAtBottom to: ${isBottom}`);
+      set({ isAtBottom: isBottom });
+    }
+  },
+  setScrollRef: (ref) => {
+    if (get().scrollRef !== ref) {
+      set({ scrollRef: ref });
+    }
+  },
   
   // 增强版 scrollToBottom 方法，确保一定会滚动到底部
   scrollToBottom: (behavior = 'auto') => {
     const { scrollRef } = get();
     if (scrollRef?.current) {
-      // 加入setTimeout确保在DOM更新后执行
-      setTimeout(() => {
+      requestAnimationFrame(() => { // Prefer requestAnimationFrame over setTimeout(0) for rendering tasks
         if (scrollRef.current) {
           scrollRef.current.scrollTo({
             top: scrollRef.current.scrollHeight,
             behavior: behavior
           });
-          set({ userScrolledUp: false, isAtBottom: true });
+          // Ensure state is consistent after programmatic scroll
+          if (get().userScrolledUp !== false || get().isAtBottom !== true) {
+            set({ userScrolledUp: false, isAtBottom: true });
+          }
         }
-      }, 0);
+      });
     }
   },
   
   // 添加一个新方法，用于关键事件后重置滚动状态
   resetScrollState: () => {
-    set({ userScrolledUp: false, isAtBottom: true });
+    // Set state first, then scroll if ref is available
+    if (get().userScrolledUp !== false || get().isAtBottom !== true) {
+      set({ userScrolledUp: false, isAtBottom: true });
+    }
     const { scrollRef } = get();
     if (scrollRef?.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: 'smooth'
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTo({
+            top: scrollRef.current.scrollHeight,
+            behavior: 'auto' // Changed to 'auto' for faster reset, 'smooth' can be slow
+          });
+        }
       });
     }
   }
-})); 
+}));
