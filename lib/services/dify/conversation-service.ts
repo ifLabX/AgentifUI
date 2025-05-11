@@ -12,6 +12,8 @@ import type {
   DeleteConversationResponse,
   RenameConversationRequestPayload,
   RenameConversationResponse,
+  GetConversationVariablesParams,
+  GetConversationVariablesResponse,
   DifyApiError 
 } from './types';
 
@@ -296,6 +298,110 @@ export async function renameConversation(
   } catch (error) {
     // 处理 fetch 本身的网络错误或其他在 try 块中未被捕获的错误
     console.error('[Dify Conversation Service] Network or unexpected error while renaming conversation:', error);
+    // 重新抛出错误，或者将其包装成一个标准化的错误对象
+    // 如果 error 已经是我们上面抛出的 errorData 结构，直接抛出
+    if (error && typeof error === 'object' && ('status' in error || 'message' in error)) {
+      throw error; 
+    }
+    // 否则，包装成一个通用的错误结构
+    throw {
+      message: (error instanceof Error) ? error.message : 'An unexpected error occurred',
+      code: 'NETWORK_ERROR',
+    } as DifyApiError;
+  }
+}
+
+// --- BEGIN COMMENT ---
+/**
+ * 获取指定对话的变量。
+ *
+ * 通过向后端的 Dify 代理服务发送 GET 请求来工作。
+ * 支持分页加载，通过 `last_id` 和 `limit` 参数控制。
+ *
+ * @param appId - 当前 Dify 应用的 ID。
+ * @param conversationId - 要获取变量的对话 ID。
+ * @param params - 包含 `user`, 以及可选的 `last_id` 和 `limit` 的对象。
+ * @returns 一个解析为 `GetConversationVariablesResponse` 对象的 Promise，其中包含了变量列表和分页信息。
+ * @throws 如果请求失败或 API 返回非 2xx 状态码，则抛出一个包含错误详情的对象 (类似 DifyApiError)。
+ */
+// --- END COMMENT ---
+export async function getConversationVariables(
+  appId: string,
+  conversationId: string,
+  params: GetConversationVariablesParams
+): Promise<GetConversationVariablesResponse> {
+  if (!appId) {
+    console.warn(
+      '[Dify Conversation Service] Warning: appId is not provided. API call may fail or use a default app.'
+    );
+  }
+
+  if (!conversationId) {
+    throw new Error('[Dify Conversation Service] conversationId is required.');
+  }
+
+  const slug = `conversations/${conversationId}/variables`; // Dify API 中用于获取对话变量的端点路径
+  const apiUrl = `${DIFY_PROXY_BASE_URL}/${appId}/${slug}`;
+
+  // 构造查询参数字符串
+  const queryParams = new URLSearchParams();
+  queryParams.append('user', params.user);
+
+  if (params.limit !== undefined) {
+    queryParams.append('limit', String(params.limit));
+  }
+  if (params.last_id !== undefined && params.last_id !== null) {
+    // 只有当 last_id 存在且不为 null 时才添加它
+    queryParams.append('last_id', params.last_id);
+  }
+
+  const fullUrl = `${apiUrl}?${queryParams.toString()}`;
+
+  console.log(`[Dify Conversation Service] Fetching conversation variables from: ${fullUrl}`);
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json', // 期望接收 JSON 格式的响应
+      },
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应体，以便提供更详细的错误信息
+      let errorData: DifyApiError | { message: string, code?: string } = {
+        message: `API request failed with status ${response.status}: ${response.statusText}`,
+      };
+      try {
+        // 尝试将错误响应解析为 JSON。Dify 的错误响应通常是 JSON 格式。
+        const parsedError = await response.json();
+        errorData = {
+          status: response.status,
+          code: parsedError.code || response.status.toString(),
+          message: parsedError.message || response.statusText,
+          ...parsedError, // 包含其他可能的错误字段
+        };
+      } catch (e) {
+        // 如果错误响应体不是有效的 JSON，则使用 HTTP 状态文本作为消息。
+        console.warn('[Dify Conversation Service] Failed to parse error response JSON.', e);
+      }
+
+      console.error(
+        `[Dify Conversation Service] Failed to get conversation variables (${response.status}):`,
+        errorData
+      );
+      // 抛出错误对象，上层调用者可以捕获并处理
+      throw errorData;
+    }
+
+    // 响应成功，解析 JSON 数据
+    const data: GetConversationVariablesResponse = await response.json();
+    console.log('[Dify Conversation Service] Successfully fetched conversation variables.', data);
+    return data;
+
+  } catch (error) {
+    // 处理 fetch 本身的网络错误或其他在 try 块中未被捕获的错误
+    console.error('[Dify Conversation Service] Network or unexpected error while fetching conversation variables:', error);
     // 重新抛出错误，或者将其包装成一个标准化的错误对象
     // 如果 error 已经是我们上面抛出的 errorData 结构，直接抛出
     if (error && typeof error === 'object' && ('status' in error || 'message' in error)) {

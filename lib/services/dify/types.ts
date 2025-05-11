@@ -407,4 +407,35 @@ export interface RenameConversationResponse extends Conversation {
   // 继承了 Conversation 接口的所有字段
 }
 
+// --- BEGIN COMMENT ---
+// /conversations API - 获取对话变量的请求参数
+// --- END COMMENT ---
+export interface GetConversationVariablesParams {
+  user: string; // 用户标识符，由开发人员定义的规则，在应用程序内必须唯一
+  last_id?: string | null; // （选填）当前页最后面一条记录的 ID，默认 null
+  limit?: number; // （选填）一次请求返回多少条记录，默认 20 条，最大 100 条，最小 1 条
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 对话变量对象结构
+// --- END COMMENT ---
+export interface ConversationVariable {
+  id: string; // 变量 ID
+  name: string; // 变量名称
+  value_type: string; // 变量类型（字符串、数字、布尔等）
+  value: string; // 变量值
+  description: string; // 变量描述
+  created_at: number; // 创建时间戳
+  updated_at: number; // 最后更新时间戳
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 获取对话变量的响应体结构
+// --- END COMMENT ---
+export interface GetConversationVariablesResponse {
+  limit: number; // 每页项目数
+  has_more: boolean; // 是否有更多项目
+  data: ConversationVariable[]; // 变量列表
+}
+
 // --- END CONVERSATIONS API TYPES ---
