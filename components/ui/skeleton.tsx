@@ -17,7 +17,7 @@ export function Skeleton({ className, width, height }: SkeletonProps) {
 
   return (
     <div 
-      className={cn("bg-gray-200 animate-pulse rounded-md", className)}
+      className={cn("dark:bg-stone-700/50 bg-gray-200 animate-pulse rounded-md", className)}
       style={style}
     />
   );
@@ -130,16 +130,16 @@ export function ApiConfigSkeleton() {
       </div>
       
       {/* API密钥管理提示区域 */}
-      <div className="p-4 rounded-lg bg-blue-50">
-        <Skeleton className="h-6 w-1/4 mb-2" />
-        <Skeleton className="h-4 w-full mb-1" />
-        <Skeleton className="h-4 w-full mb-1" />
-        <Skeleton className="h-4 w-3/4" />
+      <div className="p-4 rounded-lg bg-blue-50/80 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
+        <Skeleton className="h-6 w-1/4 mb-2 bg-blue-200/50 dark:bg-blue-700/30" />
+        <Skeleton className="h-4 w-full mb-1 bg-blue-200/50 dark:bg-blue-700/30" />
+        <Skeleton className="h-4 w-full mb-1 bg-blue-200/50 dark:bg-blue-700/30" />
+        <Skeleton className="h-4 w-3/4 bg-blue-200/50 dark:bg-blue-700/30" />
       </div>
       
       {/* 选项卡区域 */}
       <div>
-        <div className="flex pb-2 mb-6">
+        <div className="flex pb-2 mb-6 border-b dark:border-stone-700/50">
           <Skeleton className="h-10 w-24 mr-4" />
           <Skeleton className="h-10 w-24" />
         </div>
@@ -151,10 +151,10 @@ export function ApiConfigSkeleton() {
             <Skeleton className="h-10 w-32" />
           </div>
           
-          {/* 表格 */}
-          <div className="rounded-lg overflow-hidden">
+          {/* 表格 - 使用卡片包裹 */}
+          <div className="rounded-lg overflow-hidden dark:bg-stone-800 bg-white border dark:border-stone-700/30 border-stone-300/50">
             {/* 表头 */}
-            <div className="flex p-4 bg-gray-50">
+            <div className="flex p-4 bg-stone-100/80 dark:bg-stone-800/60">
               <Skeleton className="h-6 w-1/5 mr-4" />
               <Skeleton className="h-6 w-1/5 mr-4" />
               <Skeleton className="h-6 w-1/5 mr-4" />
@@ -164,7 +164,7 @@ export function ApiConfigSkeleton() {
             
             {/* 表行 */}
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="flex p-4">
+              <div key={index} className="flex p-4 border-t dark:border-stone-700/20 border-stone-200/50">
                 <Skeleton className="h-6 w-1/5 mr-4" />
                 <Skeleton className="h-6 w-1/5 mr-4" />
                 <Skeleton className="h-6 w-1/5 mr-4" />
