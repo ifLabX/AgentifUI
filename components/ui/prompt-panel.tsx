@@ -3,7 +3,7 @@
 import React from "react"
 import { Sparkles, X, Check } from "lucide-react"
 import { cn } from "@lib/utils"
-import { useTheme } from "@lib/hooks"
+import { useTheme, useMounted } from "@lib/hooks"
 
 interface PromptTemplate {
   id: number | string  // 更新类型支持字符串ID
@@ -33,6 +33,11 @@ export function PromptPanel({
   className,
 }: PromptPanelProps) {
   const { isDark } = useTheme()
+  const isMounted = useMounted()
+
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <div
