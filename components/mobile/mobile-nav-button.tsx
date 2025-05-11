@@ -28,19 +28,18 @@ export function MobileNavButton() {
         
         // 亮色模式样式
         !isDark && [
-          "bg-white/90 hover:bg-white",
-          "shadow-lg shadow-primary/5",
+          "bg-stone-100 hover:bg-stone-300 text-stone-900",
+          "shadow-lg shadow-primary/5", 
         ],
         
         // 暗色模式样式
         isDark && [
-          "bg-gray-800/90 hover:bg-gray-800",
+          "bg-stone-700 hover:bg-stone-600 text-gray-100",
           "shadow-[0_0_10px_rgba(0,0,0,0.4)]",
-          "text-gray-200",
         ],
       )}
     >
       <Menu className="w-6 h-6" />
     </button>
   )
-} 
+}
