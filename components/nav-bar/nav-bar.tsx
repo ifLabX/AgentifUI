@@ -53,7 +53,7 @@ export function NavBar() {
           isExpanded ? "left-0 md:left-64" : "left-0 md:left-16",
           colors.mainBackground.tailwind,
           "flex items-center justify-between pl-4 pr-2",
-          "transition-all duration-300 ease-in-out" 
+          ""
         )}
       >
         <div className="flex items-center space-x-2">
@@ -73,7 +73,7 @@ export function NavBar() {
           "z-20", 
           "pointer-events-none", 
           isExpanded ? navStyles.dividerColor : "bg-transparent",
-          "transition-all duration-300 ease-in-out" 
+          ""
         )}
       />
 

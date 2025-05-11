@@ -87,7 +87,7 @@ export function AvatarButton({
         styles.hover,
         styles.active,
         "focus:outline-none", // 移除焦点环
-        "transition-all duration-200 ease-in-out", // 过渡所有属性
+
         "mt-1", // 保持上边距
         "cursor-pointer hover:scale-105" // 添加悬停指针和缩放效果
       )}
