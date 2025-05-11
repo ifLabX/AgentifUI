@@ -6,9 +6,9 @@ import "../styles/markdown-variables.css";
 import "../styles/markdown.css";
 import "../styles/prism-custom.css"; // 导入自定义Prism样式
 import { NotificationBar } from '@components/ui/notification-bar';
-import { ThemeProvider } from "next-themes";
 import { ClientLayout } from "./layouts/client-layout";
 import { cn } from "@lib/utils";
+import { Providers } from "./providers"; // 确保导入 Providers 组件
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,19 +37,13 @@ export default function RootLayout({
         {/* Let next-themes handle the initial theme setting */}
       </head>
       <body>
-        {/* Restore defaultTheme and enableSystem props for ThemeProvider */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Providers> { /* 使用 Providers 包裹 */ }
           <ClientLayout fontClasses={`${geistSans.variable} ${geistMono.variable}`}>
             {children}
             <TooltipContainer />
             <NotificationBar />
           </ClientLayout>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
