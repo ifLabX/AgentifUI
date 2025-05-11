@@ -51,9 +51,9 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg border border-gray-100 dark:bg-gray-900 dark:border-gray-800 transition-all">
+    <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
       <div className="text-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">登录</h2>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">登录</h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           继续探索 AI 教育的无限可能
         </p>
@@ -77,7 +77,7 @@ export function LoginForm() {
               type="email"
               autoComplete="email"
               required
-              className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              className="block w-full px-4 py-3 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
               placeholder="your@email.com"
               value={formData.email}
               onChange={handleChange}
@@ -94,7 +94,7 @@ export function LoginForm() {
               type="password"
               autoComplete="current-password"
               required
-              className="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              className="block w-full px-4 py-3 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
@@ -108,7 +108,7 @@ export function LoginForm() {
               id="remember_me"
               name="remember_me"
               type="checkbox"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-stone-600 focus:ring-stone-500 border-gray-300 rounded"
             />
             <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
               记住我
@@ -116,7 +116,7 @@ export function LoginForm() {
           </div>
 
           <div className="text-sm">
-            <Link href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+            <Link href="/forgot-password" className="font-medium text-stone-700 hover:text-stone-600 dark:text-stone-400">
               忘记密码？
             </Link>
           </div>
@@ -137,7 +137,7 @@ export function LoginForm() {
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           还没有账号？{' '}
-          <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+          <Link href="/register" className="font-medium text-stone-700 hover:text-stone-600 dark:text-stone-400">
             立即注册
           </Link>
         </p>

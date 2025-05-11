@@ -22,7 +22,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
   }, [setMounted])
 
   return (
-    <div className="flex min-h-screen h-full bg-blue-400">
+    <div className="flex min-h-screen h-full bg-stone-100 dark:bg-stone-800">
       {/* 
         移动端导航按钮 - 仅在客户端挂载后显示 
         使用mobile类只在移动设备上显示
