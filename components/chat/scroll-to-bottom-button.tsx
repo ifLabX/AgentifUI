@@ -3,6 +3,7 @@ import { useChatScrollStore } from '@lib/stores/chat-scroll-store'
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store'
 import { useChatInputStore } from '@lib/stores/chat-input-store'
 import { useWelcomeScreen } from '@lib/hooks'
+import { useThemeColors } from '@lib/hooks/use-theme-colors'
 import { cn } from '@lib/utils'
 
 // --- BEGIN COMMENT ---
@@ -12,7 +13,7 @@ import { cn } from '@lib/utils'
 // --- END COMMENT ---
 export const ScrollToBottomButton = () => {
   const { isAtBottom, userScrolledUp } = useChatScrollStore();
-  const { isDark } = useChatInputStore();
+  const { colors, isDark } = useThemeColors();
   const scrollToBottom = useChatScrollStore((state) => state.scrollToBottom);
   const resetScrollState = useChatScrollStore((state) => state.resetScrollState);
   const { isWelcomeScreen: isOnWelcomeScreen } = useWelcomeScreen();
@@ -48,8 +49,10 @@ export const ScrollToBottomButton = () => {
         // --- END MODIFIED COMMENT ---
         'rounded-full p-1.5 shadow-md transition-transform duration-150 ease-in-out', // 仅保留 transform 过渡
         
-        // 颜色主题 (可以按需添加 transition-colors)
-        isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-white hover:bg-gray-100 text-gray-600',
+        // 颜色主题
+        colors.userMessageBackground.tailwind,
+        colors.buttonHover.tailwind,
+        isDark ? 'text-stone-300' : 'text-stone-700',
         
         // 交互效果
         'hover:scale-110 active:scale-95'
