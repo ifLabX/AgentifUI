@@ -83,7 +83,7 @@ export default function AboutPage() {
   };
 
   return (
-    <main className="min-h-screen w-full py-12 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+    <main className="min-h-screen w-full py-8 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
       <div className="max-w-5xl mx-auto">
         {/* 标题部分 */}
         <motion.section 
@@ -160,11 +160,8 @@ export default function AboutPage() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>加入我们</h2>
-          <p className={`text-lg ${colors.paragraphColor} max-w-3xl mx-auto mb-8`}>
-            我们邀请开发者、企业决策者和对 AI 技术有热情的人士加入我们，共同探索大模型应用的新边界。
-          </p>
-          <Button 
+          {/* “加入我们”标题和段落已根据用户要求移除 */}
+          <Button
             size="lg" 
             className={`${colors.buttonClass} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200`}
             onClick={handleExploreClick}
