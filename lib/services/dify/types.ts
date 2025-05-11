@@ -277,3 +277,104 @@ export interface DifyFileUploadResponse {
   created_at: number; // Unix 时间戳
 }
 // --- END ADDITION --- 
+
+// --- BEGIN MESSAGES API TYPES ---
+
+// --- BEGIN COMMENT ---
+// /messages API - 通用错误响应结构
+// 这个可以作为 message-service.ts 抛出错误的类型参考
+// --- END COMMENT ---
+export interface DifyApiError {
+  status: number;      // HTTP 状态码
+  code: string;        // Dify 内部错误码或 HTTP 状态码字符串
+  message: string;     // 错误描述
+  [key: string]: any; // 允许其他可能的错误字段，如 Dify 返回的 validation_errors 等
+}
+
+// --- BEGIN COMMENT ---
+// /messages API - 消息文件对象结构
+// --- END COMMENT ---
+export interface DifyMessageFile {
+  id: string; // 文件 ID
+  type: string; // 文件类型，例如 "image" (图片)
+  url: string; // 文件的预览地址
+  belongs_to: 'user' | 'assistant'; // 文件归属方，"user" (用户) 或 "assistant" (助手)
+}
+
+// --- BEGIN COMMENT ---
+// /messages API - 消息反馈信息结构
+// --- END COMMENT ---
+export interface DifyMessageFeedback {
+  rating: 'like' | 'dislike' | null; // 点赞 'like' / 点踩 'dislike'，或者可能为 null
+  // 根据实际 API 可能还有其他反馈相关的字段，例如 content
+}
+
+// --- BEGIN COMMENT ---
+// /messages API - 单条消息对象结构 (与 SSE 中的 DifyMessage 不同，这是获取历史消息的特定结构)
+// --- END COMMENT ---
+export interface ConversationMessage {
+  id: string; // 消息的唯一 ID
+  conversation_id: string; // 该消息所属的会话 ID
+  inputs: Record<string, any>; // 用户输入的参数，具体内容取决于应用设计
+  query: string; // 用户发送的原始提问内容
+  answer: string; // AI 助手的回答内容
+  message_files: DifyMessageFile[]; // 消息中包含的文件列表
+  created_at: number; // 消息创建的时间戳 (Unix timestamp)
+  feedback: DifyMessageFeedback | null; // 用户对这条回答的反馈信息
+  retriever_resources: DifyRetrieverResource[]; // 引用和归属分段列表
+}
+
+// --- BEGIN COMMENT ---
+// /messages API - 获取历史消息的请求查询参数 (Query Parameters) 接口
+// --- END COMMENT ---
+export interface GetMessagesParams {
+  conversation_id: string; // 会话 ID (必需)
+  user: string; // 用户标识 (必需)
+  first_id?: string | null; // 当前消息列表最上面 (最早) 那条消息的 ID，用于分页 (可选, 默认为 null)
+  limit?: number; // 一次请求希望返回多少条聊天记录 (可选, 默认为 20)
+}
+
+// --- BEGIN COMMENT ---
+// /messages API - 获取历史消息的响应体结构
+// --- END COMMENT ---
+export interface GetMessagesResponse {
+  data: ConversationMessage[]; // 本次请求获取到的消息对象列表
+  has_more: boolean; // 是否还有更早的聊天记录可以加载
+  limit: number; // 本次请求实际返回的聊天记录条数
+}
+// --- END MESSAGES API TYPES --- 
+
+
+// --- BEGIN CONVERSATIONS API TYPES ---
+// --- BEGIN COMMENT ---
+// /conversations API - 获取会话列表的参数
+// --- END COMMENT ---
+export interface GetConversationsParams {
+  user: string; // 用户标识，必需
+  last_id?: string | null; // 当前页最后一条记录的ID，用于分页，选填
+  limit?: number; // 一次返回多少条记录，默认20，选填
+  sort_by?: 'created_at' | '-created_at' | 'updated_at' | '-updated_at'; // 排序字段，默认-updated_at
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 单个会话对象结构
+// --- END COMMENT ---
+export interface Conversation {
+  id: string; // 会话ID
+  name: string; // 会话名称，默认由大语言模型生成
+  inputs: Record<string, any>; // 用户输入参数
+  status: string; // 会话状态
+  introduction: string; // 开场白
+  created_at: number; // 创建时间(时间戳)
+  updated_at: number; // 更新时间(时间戳)
+}
+
+// --- BEGIN COMMENT ---
+// /conversations API - 获取会话列表的响应体结构
+// --- END COMMENT ---
+export interface GetConversationsResponse {
+  data: Conversation[]; // 会话列表
+  has_more: boolean; // 是否有更多会话
+  limit: number; // 返回条数
+}
+// --- END CONVERSATIONS API TYPES ---
