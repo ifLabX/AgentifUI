@@ -228,6 +228,15 @@ export const ChatInput = ({
       useFocusManager.getState().focusInput();
     }
   }, [message, isProcessing, isWaitingForResponse]);
+
+  // --- BEGIN COMMENT ---
+  // 组件首次挂载时自动聚焦输入框
+  // --- END COMMENT ---
+  useEffect(() => {
+    // 确保在非欢迎屏幕（即实际聊天界面）时，或者即使用户要求任何时候都聚焦
+    // 当前逻辑：只要组件挂载就尝试聚焦
+    useFocusManager.getState().focusInput();
+  }, []); // 空依赖数组确保只在挂载时运行一次
   
   // --- BEGIN 中文注释 --- 文件类型选择处理 ---
   // 处理文件类型选择后的文件上传
@@ -368,4 +377,4 @@ export const ChatInput = ({
       </div>
     </ChatContainer>
   )
-} 
+}
