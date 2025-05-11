@@ -4,6 +4,7 @@ import type React from "react"
 import { cn } from "@lib/utils"
 import { Button as UIButton } from "@components/ui/button"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
+import { useMounted } from "@lib/hooks"
 
 interface ChatButtonProps {
   icon: React.ReactNode
@@ -26,8 +27,14 @@ export const ChatButton = ({
   ariaLabel,
   forceActiveStyle = false,
 }: ChatButtonProps) => {
+  const isMounted = useMounted();
   // 获取主题颜色
   const { colors } = useThemeColors();
+
+  if (!isMounted) {
+    return null;
+  }
+
   // 功能按钮 - 带有渐变感觉的浅灰色边框
   if (variant === "function") {
     return (
