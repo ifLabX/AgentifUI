@@ -39,7 +39,7 @@ export function MoreButton({ id, className, tooltipText = "更多选项" }: More
     <button
       ref={buttonRef}
       className={cn(
-        "p-1.5 rounded-full transition-colors duration-200",
+        "p-1.5 rounded-full transition-colors duration-200 cursor-pointer",
         "focus:outline-none",
         isMobile
           ? "flex items-center justify-center"

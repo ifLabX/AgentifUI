@@ -57,7 +57,7 @@ export function PromptPanel({
         </h3>
         <button
           className={cn(
-            "p-1 rounded-full",
+            "p-1 rounded-full cursor-pointer",
             isDark ? "hover:bg-stone-700 text-stone-400" : "hover:bg-stone-100 text-stone-500"
           )}
           onClick={onClose}
@@ -74,7 +74,7 @@ export function PromptPanel({
             <button
               key={template.id}
               className={cn(
-                "w-full text-left p-2 sm:p-3 rounded-lg border transition-all duration-200",
+                "w-full text-left p-2 sm:p-3 rounded-lg border transition-all duration-200 cursor-pointer",
                 "hover:shadow-md hover:-translate-y-0.5",
                 "animate-fadein flex flex-col",
                 template.isSelected 

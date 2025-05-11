@@ -43,7 +43,7 @@ export function PromptButton({
   return (
     <button
       className={cn(
-        "flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2.5 text-xs sm:text-sm rounded-full",
+        "flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2.5 text-xs sm:text-sm rounded-full cursor-pointer",
         "border transition-all duration-300 group whitespace-nowrap",
         "shadow-sm hover:shadow-md hover:-translate-y-0.5",
         expanded ? (

@@ -34,7 +34,7 @@ function DropdownItem({
   return (
     <button
       className={cn(
-        "w-full text-left px-3 py-2 text-sm flex items-center gap-2 rounded-md",
+        "w-full text-left px-3 py-2 text-sm flex items-center gap-2 rounded-md cursor-pointer",
         "transition-all duration-200",
         isDark
           ? [
