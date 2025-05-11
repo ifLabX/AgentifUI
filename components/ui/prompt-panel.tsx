@@ -21,6 +21,10 @@ interface PromptPanelProps {
   className?: string
 }
 
+/**
+ * 提示面板组件
+ * 使用石色(stone)调色板，与应用整体风格一致
+ */
 export function PromptPanel({
   templates,
   title,
@@ -35,26 +39,26 @@ export function PromptPanel({
       className={cn(
         "z-50 rounded-xl overflow-hidden",
         "animate-slide-in-down shadow-lg",
-        isDark ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200",
+        isDark ? "bg-stone-800 border border-stone-700" : "bg-white border border-stone-200",
         className
       )}
     >
       {/* 头部 */}
       <div className={cn(
         "flex items-center justify-between py-2 sm:py-3 px-3 sm:px-4 border-b",
-        isDark ? "border-gray-700" : "border-gray-200"
+        isDark ? "border-stone-700" : "border-stone-200"
       )}>
         <h3 className={cn(
           "text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2",
-          isDark ? "text-gray-200" : "text-gray-800"
+          isDark ? "text-stone-200" : "text-stone-800"
         )}>
-          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500" />
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-stone-500" />
           {title}
         </h3>
         <button
           className={cn(
-            "p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700",
-            "text-gray-500 dark:text-gray-400"
+            "p-1 rounded-full",
+            isDark ? "hover:bg-stone-700 text-stone-400" : "hover:bg-stone-100 text-stone-500"
           )}
           onClick={onClose}
           aria-label="关闭"
@@ -75,11 +79,11 @@ export function PromptPanel({
                 "animate-fadein flex flex-col",
                 template.isSelected 
                   ? isDark 
-                    ? "border-blue-500 bg-blue-900/20 text-blue-200"
-                    : "border-blue-500 bg-blue-50 text-blue-800"
+                    ? "border-stone-500 bg-stone-700/50 text-stone-200"
+                    : "border-stone-500 bg-stone-100 text-stone-800"
                   : isDark
-                    ? "border-gray-700 hover:bg-gray-700 text-gray-300"
-                    : "border-gray-200 hover:bg-gray-50 text-gray-700"
+                    ? "border-stone-700 hover:bg-stone-700 text-stone-300"
+                    : "border-stone-200 hover:bg-stone-50 text-stone-700"
               )}
               onClick={() => onSelect(template)}
               style={{ animationDelay: `${index * 0.05}s` }}
@@ -88,8 +92,8 @@ export function PromptPanel({
                 <span className={cn(
                   "w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full",
                   template.isSelected
-                    ? isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"
-                    : isDark ? "bg-blue-900/50 text-blue-300" : "bg-blue-100 text-blue-600"
+                    ? isDark ? "bg-stone-600 text-white" : "bg-stone-500 text-white"
+                    : isDark ? "bg-stone-800/50 text-stone-300" : "bg-stone-100 text-stone-600"
                 )}>
                   {template.isSelected ? <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : template.icon}
                 </span>
@@ -98,8 +102,8 @@ export function PromptPanel({
               <p className={cn(
                 "text-xs line-clamp-2",
                 template.isSelected
-                  ? isDark ? "text-blue-200" : "text-blue-700"
-                  : isDark ? "text-gray-400" : "text-gray-500"
+                  ? isDark ? "text-stone-200" : "text-stone-700"
+                  : isDark ? "text-stone-400" : "text-stone-500"
               )}>
                 {template.prompt}
               </p>
@@ -109,4 +113,4 @@ export function PromptPanel({
       </div>
     </div>
   )
-} 
+}

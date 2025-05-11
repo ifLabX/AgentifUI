@@ -50,16 +50,15 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             )}
           />
         )}
-        {/* 消息气泡 - 现代化设计，温暖灰色配色 */}
+        {/* 消息气泡 - 现代化设计，石色主题 */}
         <div
           className={cn(
             "max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed",
             isDark 
-              ? "bg-stone-700/90 text-gray-100" 
+              ? "bg-stone-700/90 text-stone-100" 
               : "bg-stone-200 text-stone-800",
             "border",
             isDark ? "border-stone-600/30" : "border-stone-300/80",
-            "shadow-sm",
             className
           )}
         >

@@ -13,6 +13,10 @@ interface PromptButtonProps {
   children?: React.ReactNode
 }
 
+/**
+ * 提示按钮组件
+ * 使用石色(stone)调色板，与应用整体风格一致
+ */
 export function PromptButton({ 
   className, 
   onClick, 
@@ -22,16 +26,17 @@ export function PromptButton({
 }: PromptButtonProps) {
   const { isDark } = useTheme()
   
+  // 根据当前状态选择图标
   const defaultIcon = expanded ? (
     <ChevronUp className={cn(
       "w-4 h-4 transition-all duration-300",
-      isDark ? "text-blue-400" : "text-blue-500"
+      isDark ? "text-stone-400" : "text-stone-600"
     )} />
   ) : (
     <Sparkles className={cn(
       "w-4 h-4 transition-all duration-300",
-      "group-hover:text-blue-500 group-hover:animate-bounce-subtle",
-      isDark ? "text-blue-400" : "text-blue-500"
+      // 亮色模式下悬停时改变颜色，暗色模式下保持原色
+      isDark ? "text-stone-400" : "text-stone-600 group-hover:text-stone-700 group-hover:animate-bounce-subtle"
     )} />
   )
   
@@ -43,12 +48,12 @@ export function PromptButton({
         "shadow-sm hover:shadow-md hover:-translate-y-0.5",
         expanded ? (
           isDark 
-            ? "border-blue-600 bg-blue-900/50 text-blue-300" 
-            : "border-blue-300 bg-blue-50 text-blue-600"
+            ? "border-stone-600 bg-stone-800/50 text-stone-300" 
+            : "border-stone-300 bg-stone-100 text-stone-700"
         ) : (
           isDark
-            ? "border-gray-700 bg-gray-800/50 hover:bg-gray-800 text-gray-300"
-            : "border-gray-200 bg-white hover:bg-gray-50 text-gray-600"
+            ? "border-stone-700 bg-stone-800/50 hover:bg-stone-800 text-stone-300"
+            : "border-stone-200 bg-white hover:bg-stone-50 text-stone-600"
         ),
         className
       )}
@@ -58,11 +63,13 @@ export function PromptButton({
     >
       {icon || defaultIcon}
       <span className={cn(
-        "group-hover:text-blue-500 transition-colors duration-300",
-        expanded && (isDark ? "text-blue-300" : "text-blue-600")
+        // 仅在亮色模式下悬停时改变文本颜色
+        isDark ? "transition-colors duration-300" : "group-hover:text-stone-700 transition-colors duration-300",
+        expanded && (isDark ? "text-stone-300" : "text-stone-700"),
+        !expanded && (isDark ? "text-stone-300" : "text-stone-600")
       )}>
         {children}
       </span>
     </button>
   )
-} 
+}

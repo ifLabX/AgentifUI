@@ -80,27 +80,27 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
               "relative pl-2 pr-1 py-1 rounded-md flex items-center gap-2 flex-shrink basis-[calc((100%-1rem)/3)] max-w-[180px] sm:max-w-[200px]",
               "text-left",
               isDark
-                ? "bg-gray-700/90 border border-gray-600/80 hover:bg-gray-600/90"
-                : "bg-gray-200 border border-gray-400 hover:bg-gray-300"
+                ? "bg-stone-800/90 border border-stone-700/80 hover:bg-stone-700/90"
+                : "bg-stone-200 border border-stone-300 hover:bg-stone-300"
             )}
             title={`预览 ${attachment.name}`}
             aria-label={`预览文件 ${attachment.name}`}
           >
             <div className={cn(
               "flex-shrink-0 w-5 h-5 flex items-center justify-center relative",
-              isDark ? "text-gray-200" : "text-gray-700"
+              isDark ? "text-stone-200" : "text-stone-700"
             )}>
               <IconComponent className="w-4 h-4" />
             </div>
             <div className="flex-grow min-w-0">
               <p className={cn(
                 "text-sm font-medium truncate",
-                isDark ? "text-gray-100" : "text-gray-900"
+                isDark ? "text-stone-100" : "text-stone-900"
               )}>{attachment.name}</p>
               <p className={cn(
                 "text-xs",
                 "whitespace-nowrap",
-                isDark ? "text-gray-400" : "text-gray-600"
+                isDark ? "text-stone-400" : "text-stone-600"
               )}>{formatBytes(attachment.size)}</p>
             </div>
           </button>

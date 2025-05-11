@@ -14,11 +14,11 @@ interface UserAvatarDisplayProps {
   isDark: boolean; // 添加 isDark prop
 }
 
-// --- BEGIN COMMENT ---
-// 用户头像按钮组件
-// 用于显示用户头像（当前为图标占位），并作为下拉菜单的触发器。
-// 设计上更美观，预留了未来显示图片头像的空间。
-// --- END COMMENT ---
+/**
+ * 用户头像按钮组件
+ * 用于显示用户头像（当前为图标占位），并作为下拉菜单的触发器
+ * 设计风格与应用的石色(stone)主题保持一致，同时有足够对比度
+ */
 export function AvatarButton({ 
   alt = "用户头像", 
   onClick,
@@ -51,6 +51,30 @@ export function AvatarButton({
   }
 
   const isDropdownActive = isOpen && activeDropdownId === dropdownId;
+  
+  // 根据主题状态选择颜色
+  const getButtonStyles = () => {
+    // 暗色模式下，使用深色系石色
+    if (isDark) {
+      return {
+        base: "bg-stone-700",
+        hover: "hover:bg-stone-600",
+        active: isDropdownActive ? "bg-stone-600" : "bg-stone-700",
+        iconColor: "text-stone-300"
+      };
+    } 
+    // 亮色模式下，使用浅色系石色
+    else {
+      return {
+        base: "bg-stone-200",
+        hover: "hover:bg-stone-300",
+        active: isDropdownActive ? "bg-stone-300" : "bg-stone-200",
+        iconColor: "text-stone-700"
+      };
+    }
+  };
+  
+  const styles = getButtonStyles();
 
   return (
     <button
@@ -58,40 +82,23 @@ export function AvatarButton({
       onClick={handleClick}
       className={cn(
         // Base styles
-        "w-9 h-9 rounded-full flex items-center justify-center overflow-hidden",
-        "border-2 border-transparent", // 保持透明边框占位，防止激活时跳动
-        "focus:outline-none",
-        "transition-colors duration-150 ease-in-out", // 只过渡颜色
-        "mt-1", // 添加上边距
-
-        // --- BEGIN MODIFIED COMMENT ---
-        // 使用 isDark prop 进行条件渲染，替换 dark: 前缀
-        // --- END MODIFIED COMMENT ---
-        // Default colors
-        isDark ? "bg-slate-700" : "bg-slate-100",
-        // Hover colors
-        isDark ? "hover:bg-slate-600" : "hover:bg-slate-200",
-        // Active state colors (dropdown open)
-        isDropdownActive ? (isDark ? "bg-slate-600" : "bg-slate-200") : (isDark ? "bg-slate-700" : "bg-slate-100")
-        // 移除悬停边框，保持简洁
-        // isDark ? "hover:border-slate-500" : "hover:border-slate-300", 
+        "w-10 h-10 rounded-full flex items-center justify-center overflow-hidden",
+        styles.base,
+        styles.hover,
+        styles.active,
+        "focus:outline-none", // 移除焦点环
+        "transition-all duration-200 ease-in-out", // 过渡所有属性
+        "mt-1", // 保持上边距
+        "cursor-pointer hover:scale-105" // 添加悬停指针和缩放效果
       )}
       aria-label={alt}
       data-more-button-id={`${dropdownId}-trigger`}
     >
-      {/* --- BEGIN COMMENT --- */}
-      {/* 
-        TODO: 未来替换为 <Image /> 组件显示用户头像 
-        <Image src={src || defaultAvatar} alt={alt} width={36} height={36} className="object-cover" /> 
-      */}
-      {/* --- END COMMENT --- */}
+      {/* 未来可以替换为 <Image /> 组件显示用户头像 */}
       <User className={cn(
         "w-5 h-5",
-        // --- BEGIN MODIFIED COMMENT ---
-        // 图标颜色也使用 isDark prop
-        // --- END MODIFIED COMMENT ---
-        isDark ? "text-slate-400" : "text-slate-500"
+        styles.iconColor
       )} />
     </button>
   )
-} 
+}

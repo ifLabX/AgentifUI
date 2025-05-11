@@ -7,14 +7,20 @@ import { XIcon, FileTextIcon, CheckCircle2Icon, RotateCcw } from "lucide-react"
 import { TooltipWrapper } from "@components/ui/tooltip-wrapper"
 import { Spinner } from "@components/ui/spinner"
 
-// 单个附件预览项的 Props 定义
+/**
+ * 单个附件预览项的 Props 定义
+ * 使用石色(stone)调色板，与应用整体风格一致
+ */
 interface AttachmentPreviewItemProps {
   attachment: AttachmentFile
   isDark?: boolean
   onRetry: (id: string) => void
 }
 
-// 圆形进度条组件 (无文字)
+/**
+ * 圆形进度条组件 (无文字)
+ * 使用石色(stone)调色板，与应用整体风格一致
+ */
 const CircularProgress: React.FC<{ progress: number; size?: number; strokeWidth?: number; isDark?: boolean }> = ({ progress, size = 20, strokeWidth = 2, isDark = false }) => {
   const radius = (size - strokeWidth) / 2
   const circumference = radius * 2 * Math.PI
@@ -27,7 +33,7 @@ const CircularProgress: React.FC<{ progress: number; size?: number; strokeWidth?
       {/* 背景圆环 */}
       <circle
         className={cn(
-          isDark ? "text-gray-600" : "text-gray-300" // 更中性的背景环颜色
+          isDark ? "text-stone-600" : "text-stone-300" // 石色背景环
         )}
         strokeWidth={strokeWidth}
         stroke="currentColor"
@@ -40,7 +46,7 @@ const CircularProgress: React.FC<{ progress: number; size?: number; strokeWidth?
       <circle
         className={cn(
           "transition-all duration-300 ease-linear",
-          isDark ? "text-gray-300" : "text-gray-700" // 更中性的进度环颜色
+          isDark ? "text-stone-300" : "text-stone-700" // 石色进度环
         )}
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
@@ -56,7 +62,10 @@ const CircularProgress: React.FC<{ progress: number; size?: number; strokeWidth?
   )
 }
 
-// 单个附件预览项组件 (简约风格 v2)
+/**
+ * 单个附件预览项组件 (简约风格)
+ * 使用石色(stone)调色板，与应用整体风格一致
+ */
 export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ attachment, isDark = false, onRetry }) => {
   const removeFile = useAttachmentStore((state) => state.removeFile)
 
@@ -75,7 +84,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
       case 'uploading':
         return <Spinner size="sm" />
       case 'success':
-        return <CheckCircle2Icon className={cn("w-4 h-4 text-gray-500 dark:text-gray-400")} />
+        return <CheckCircle2Icon className={cn("w-4 h-4", isDark ? "text-stone-400" : "text-stone-500")} />
       case 'error':
         return (
           <TooltipWrapper content="重新上传" placement="top" id={`retry-att-${attachment.id}`}>
@@ -84,8 +93,10 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
               onClick={handleRetryClick}
               className={cn(
                 "w-full h-full flex items-center justify-center rounded-full",
-                "text-gray-500 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:bg-gray-900/30",
-                "focus:outline-none focus:ring-1 focus:ring-gray-500 focus:ring-offset-1",
+                isDark 
+                  ? "text-stone-400 hover:bg-stone-800/50" 
+                  : "text-stone-500 hover:bg-stone-100/50",
+                "focus:outline-none",
                 "transition-colors duration-150"
               )}
               aria-label="重试上传"
@@ -96,7 +107,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
         )
       case 'pending':
       default:
-        return <FileTextIcon className={cn("w-4 h-4 text-gray-500 dark:text-gray-400")} />
+        return <FileTextIcon className={cn("w-4 h-4", isDark ? "text-stone-400" : "text-stone-500")} />
     }
   }
 
@@ -106,7 +117,9 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
         "relative pl-2 pr-1 py-1 rounded-md flex items-center gap-2",
         "flex-shrink basis-[calc((100%-1.5rem)/3)] sm:basis-[calc((100%-1rem)/2)]",
         "max-w-[180px] sm:max-w-[200px]",
-        isDark ? "bg-gray-700/80 border border-gray-600/60" : "bg-gray-100 border border-gray-200",
+        isDark 
+          ? "bg-stone-800/90 border border-stone-700/80" 
+          : "bg-stone-100 border border-stone-200",
         attachment.status === 'error' && (isDark ? "border-red-500/30" : "border-red-400/30")
       )}
       title={attachment.error ? `错误: ${attachment.error}` : attachment.name}
@@ -119,7 +132,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
         <p
           className={cn(
             "text-sm font-medium truncate",
-            isDark ? "text-gray-100" : "text-gray-900",
+            isDark ? "text-stone-100" : "text-stone-900",
           )}
         >
           {attachment.name}
@@ -127,7 +140,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
         <p
           className={cn(
             "text-xs",
-            isDark ? "text-gray-400" : "text-gray-500",
+            isDark ? "text-stone-400" : "text-stone-500",
           )}
         >
           {formatBytes(attachment.size)}
@@ -140,8 +153,9 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
           onClick={handleRemove}
           className={cn(
             "ml-auto flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors",
-            "bg-gray-300/50 hover:bg-gray-400/70 dark:bg-gray-600/50 dark:hover:bg-gray-500/70",
-            isDark ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-black",
+            isDark 
+              ? "bg-stone-700/80 hover:bg-stone-600/80 text-stone-300 hover:text-white" 
+              : "bg-stone-300/50 hover:bg-stone-400/70 text-stone-600 hover:text-black",
           )}
           aria-label="移除附件"
         >
