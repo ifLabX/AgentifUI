@@ -1,17 +1,68 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Button } from '@components/ui/button';
 import { createClient } from '@lib/supabase/client';
+import { useTheme } from '@lib/hooks/use-theme';
 
 export default function AboutPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isDark } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  // 确保客户端渲染一致性
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // 根据主题获取颜色
+  const getColors = () => {
+    if (isDark) {
+      return {
+        titleGradient: 'from-stone-300 to-stone-500',
+        textColor: 'text-gray-300',
+        headingColor: 'text-gray-100',
+        paragraphColor: 'text-gray-400',
+        cardBg: 'bg-stone-700',
+        cardBorder: 'border-stone-600',
+        cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.3)]',
+        cardHeadingColor: 'text-stone-300',
+        cardTextColor: 'text-gray-400',
+        buttonClass: 'bg-stone-600 hover:bg-stone-500 text-gray-100 cursor-pointer hover:scale-105'
+      };
+    } else {
+      return {
+        titleGradient: 'from-stone-700 to-stone-900',
+        textColor: 'text-stone-700',
+        headingColor: 'text-stone-800',
+        paragraphColor: 'text-stone-600',
+        cardBg: 'bg-stone-100',
+        cardBorder: 'border-stone-200',
+        cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1)]',
+        cardHeadingColor: 'text-stone-700',
+        cardTextColor: 'text-stone-600',
+        buttonClass: 'bg-stone-800 hover:bg-stone-700 text-gray-100 cursor-pointer hover:scale-105'
+      };
+    }
+  };
+  
+  const colors = mounted ? getColors() : {
+    titleGradient: '',
+    textColor: '',
+    headingColor: '',
+    paragraphColor: '',
+    cardBg: '',
+    cardBorder: '',
+    cardShadow: '',
+    cardHeadingColor: '',
+    cardTextColor: '',
+    buttonClass: ''
+  };
   
   // 处理"开始探索"按钮点击
   const handleExploreClick = async () => {
-    setIsLoading(true);
     try {
       // 检查用户是否已登录
       const supabase = createClient();
@@ -28,79 +79,112 @@ export default function AboutPage() {
       console.error('检查登录状态失败:', error);
       // 出错时默认跳转到登录页面
       router.push('/login');
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
-    <main className="flex flex-col items-center py-16 px-4 md:px-8 overflow-auto">
-      <div className="max-w-4xl w-full space-y-12">
-        <section className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+    <main className="min-h-screen w-full py-12 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+      <div className="max-w-5xl mx-auto">
+        {/* 标题部分 */}
+        <motion.section 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className={`text-4xl md:text-5xl font-bold bg-gradient-to-r ${colors.titleGradient} bg-clip-text text-transparent mb-6`}
+          >
             关于 LLM-EduHub
-          </h1>
-          <p className="mt-6 text-xl text-gray-600">
-            连接 AI 与教育，打造未来学习新体验
-          </p>
-        </section>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className={`text-xl ${colors.textColor} max-w-3xl mx-auto font-light`}
+          >
+            连接 AI 与企业，打造大模型应用新体验
+          </motion.p>
+        </motion.section>
 
-        <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">我们的使命</h2>
-          <p className="text-lg text-gray-700">
-            LLM-EduHub 致力于利用大型语言模型的力量，为学生、教师和教育机构提供创新的学习体验和工具。
-            我们相信，AI 辅助教育可以为每个人创造更加个性化、高效和平等的学习机会。
+        {/* 使命部分 */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-16"
+        >
+          <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>我们的使命</h2>
+          <p className={`text-lg ${colors.paragraphColor}`}>
+            LLM-EduHub 致力于利用大型语言模型的力量，为企业和教育机构提供创新的应用解决方案。
+            我们整合了多种模型供应商的能力，并基于 Dify 后端提供稳定、可靠的服务，帮助组织充分利用 AI 技术的价值。
           </p>
-        </section>
+        </motion.section>
 
-        <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">我们的价值观</h2>
+        {/* 价值观部分 */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mb-16"
+        >
+          <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>我们的价值观</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-blue-600">平等获取教育</h3>
-              <p className="mt-2 text-gray-700">
-                我们致力于消除教育差距，让每个学习者都能获得高质量的学习资源。
-              </p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-blue-600">个性化学习</h3>
-              <p className="mt-2 text-gray-700">
-                我们通过 AI 技术，打造适应每个学习者特点的个性化学习路径。
-              </p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-blue-600">创新与实用</h3>
-              <p className="mt-2 text-gray-700">
-                我们追求教育技术的创新，同时确保它们真正满足教育实践的需求。
-              </p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-blue-600">数据安全与隐私</h3>
-              <p className="mt-2 text-gray-700">
-                我们严格保护用户数据，确保学习过程的安全和隐私。
-              </p>
-            </div>
+            {[
+              { title: "技术创新", description: "持续集成前沿的大模型技术，为企业提供领先的 AI 解决方案" },
+              { title: "数据安全", description: "支持私有化部署和严格的数据保护措施，确保企业数据的安全与隐私" },
+              { title: "灵活定制", description: "提供高度可定制的解决方案，满足不同行业和场景的特定需求" },
+              { title: "知识增强", description: "通过 RAG 技术实现私有知识库的整合，增强模型的上下文感知能力" }
+            ].map((value, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                className={`${colors.cardBg} ${colors.cardShadow} border ${colors.cardBorder} rounded-xl p-6`}
+              >
+                <h3 className={`text-lg font-semibold ${colors.cardHeadingColor} mb-2`}>{value.title}</h3>
+                <p className={`${colors.cardTextColor}`}>{value.description}</p>
+              </motion.div>
+            ))}
           </div>
-        </section>
+        </motion.section>
 
-        <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">加入我们</h2>
-          <p className="text-lg text-gray-700">
-            我们邀请教育工作者、开发者和对教育科技有热情的人士加入我们，共同探索 AI 教育的新边界。
+        {/* 加入我们部分 */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>加入我们</h2>
+          <p className={`text-lg ${colors.paragraphColor} max-w-3xl mx-auto mb-8`}>
+            我们邀请开发者、企业决策者和对 AI 技术有热情的人士加入我们，共同探索大模型应用的新边界。
           </p>
-          <div className="flex justify-center">
-            <Button 
-              size="lg" 
-              variant="gradient" 
-              className="px-8 py-6 h-auto text-base font-medium"
-              onClick={handleExploreClick}
-              isLoading={isLoading}
-            >
-              开始探索
-            </Button>
-          </div>
-        </section>
+          <Button 
+            size="lg" 
+            className={`${colors.buttonClass} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200`}
+            onClick={handleExploreClick}
+          >
+            开始探索
+          </Button>
+        </motion.section>
+        
+        {/* 底部信息 */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className={`text-center ${colors.textColor} text-sm`}
+        >
+          <p>
+            © <span suppressHydrationWarning>{new Date().getFullYear()}</span> LLM-EduHub. 探索大模型应用的未来。
+          </p>
+        </motion.div>
       </div>
     </main>
   );
-} 
+}
