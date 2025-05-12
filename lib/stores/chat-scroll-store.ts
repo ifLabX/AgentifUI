@@ -18,9 +18,9 @@ interface ChatScrollState {
   setIsAtBottom: (isBottom: boolean) => void;
   scrollRef: RefObject<HTMLElement> | null;
   setScrollRef: (ref: RefObject<HTMLElement>) => void;
-  scrollToBottom: (behavior?: ScrollBehavior) => void;
+  scrollToBottom: (behavior?: ScrollBehavior, onScrollEnd?: () => void) => void; // Added onScrollEnd
   // 添加重置滚动状态的方法
-  resetScrollState: () => void;
+  resetScrollState: (onScrollEnd?: () => void) => void; // Added onScrollEnd
 }
 
 // --- BEGIN COMMENT ---
@@ -55,10 +55,10 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
   },
   
   // 增强版 scrollToBottom 方法，确保一定会滚动到底部
-  scrollToBottom: (behavior = 'auto') => {
+  scrollToBottom: (behavior = 'auto', onScrollEnd) => { // Added onScrollEnd parameter
     const { scrollRef } = get();
     if (scrollRef?.current) {
-      requestAnimationFrame(() => { // Prefer requestAnimationFrame over setTimeout(0) for rendering tasks
+      requestAnimationFrame(() => { 
         if (scrollRef.current) {
           scrollRef.current.scrollTo({
             top: scrollRef.current.scrollHeight,
@@ -68,13 +68,27 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
           if (get().userScrolledUp !== false || get().isAtBottom !== true) {
             set({ userScrolledUp: false, isAtBottom: true });
           }
+          // Call the onScrollEnd callback if provided
+          if (onScrollEnd) {
+            onScrollEnd();
+          }
+        } else {
+          // If scrollRef.current became null somehow, still call onScrollEnd
+          if (onScrollEnd) {
+            onScrollEnd();
+          }
         }
       });
+    } else {
+      // If there's no scrollRef, call onScrollEnd immediately
+      if (onScrollEnd) {
+        onScrollEnd();
+      }
     }
   },
   
   // 添加一个新方法，用于关键事件后重置滚动状态
-  resetScrollState: () => {
+  resetScrollState: (onScrollEnd) => { // Added onScrollEnd parameter
     // Set state first, then scroll if ref is available
     if (get().userScrolledUp !== false || get().isAtBottom !== true) {
       set({ userScrolledUp: false, isAtBottom: true });
@@ -85,10 +99,21 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
         if (scrollRef.current) {
           scrollRef.current.scrollTo({
             top: scrollRef.current.scrollHeight,
-            behavior: 'auto' // Changed to 'auto' for faster reset, 'smooth' can be slow
+            behavior: 'auto' 
           });
+          if (onScrollEnd) {
+            onScrollEnd();
+          }
+        } else {
+          if (onScrollEnd) {
+            onScrollEnd();
+          }
         }
       });
+    } else {
+      if (onScrollEnd) {
+        onScrollEnd();
+      }
     }
   }
 }));

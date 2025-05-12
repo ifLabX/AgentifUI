@@ -185,7 +185,7 @@ export function useChatInterface() {
       }
       setIsWaitingForResponse(false);
       isSubmittingRef.current = false;
-      console.log("[handleSubmit] finally executed. isSubmittingRef, isWaitingForResponse set to false.");
+      // console.log("[handleSubmit] finally executed. isSubmittingRef, isWaitingForResponse set to false.");
     }
   }, [
     currentUserIdentifier, 
