@@ -56,7 +56,11 @@ interface AssistantMessageProps {
   className?: string
 }
 
-export const AssistantMessage: React.FC<AssistantMessageProps> = ({ 
+// --- BEGIN MODIFIED ---
+// 使用 React.memo 包裹 AssistantMessage 以优化渲染性能
+// 只有当 props 实际发生变化时，组件才会重新渲染
+// --- END MODIFIED ---
+export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({ 
   id,
   content, 
   isStreaming,
@@ -119,8 +123,16 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
 
       if (node.position?.start.line !== node.position?.end.line || language) {
         // 多行代码或指定了语言 -> 代码块
+        // --- BEGIN MODIFIED ---
+        // 将 AssistantMessage 的 isStreaming prop 传递给 CodeBlock
+        // --- END MODIFIED ---
         return (
-          <CodeBlock language={language} className={className} {...props}>
+          <CodeBlock 
+            language={language} 
+            className={className} 
+            isStreaming={isStreaming} // <<< 添加此行
+            {...props}
+          >
             {String(children).replace(/\n$/, "")}
           </CodeBlock>
         );
@@ -254,4 +266,8 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
       )}
     </div>
   );
-};
+});
+// --- BEGIN MODIFIED ---
+// 添加 displayName 属性，方便 React DevTools 调试
+// --- END MODIFIED ---
+AssistantMessage.displayName = "AssistantMessage";

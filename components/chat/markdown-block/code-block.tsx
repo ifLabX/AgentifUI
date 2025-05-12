@@ -30,6 +30,7 @@ interface CodeBlockProps {
   children: React.ReactNode;
   className?: string; // This className comes from react-markdown, e.g., "language-python"
   codeClassName?: string; // Additional class for the inner <code> element
+  isStreaming?: boolean; // 新增：标记是否正在流式输出
 }
 
 // 使用 React.memo 包装组件，防止不必要的重新渲染
@@ -38,6 +39,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(({
   children,
   className, // from react-markdown
   codeClassName, // for inner code tag
+  isStreaming = false, // 默认为非流式，即代码已完整
 }) => {
   // 提取代码内容以便复制和高亮
   const codeContent = React.useMemo(() => {
@@ -82,29 +84,51 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(({
     return language;
   }, [language]);
 
-  // 使用 useEffect 在组件挂载后应用 Prism 高亮
+  const codeRef = React.useRef<HTMLElement>(null);
+
+  // --- BEGIN COMMENT ---
+  // 使用 useEffect 在组件挂载后或内容/状态变化后应用 Prism 高亮
+  // --- END COMMENT ---
   React.useEffect(() => {
-    // 确保 Prism 已加载并且代码内容存在
-    if (Prism && codeContent) {
-      // 延迟执行以确保 DOM 已更新
-      setTimeout(() => {
-        Prism.highlightAll();
-      }, 0);
+    // --- BEGIN COMMENT ---
+    // 调试日志：打印 useEffect 触发时的状态 (已注释)
+    // --- END COMMENT ---
+    /*
+    console.log(
+      '[CodeBlock Effect]', 
+      { 
+        isStreaming, 
+        codeContentExists: !!codeContent, 
+        refExists: !!codeRef.current,
+        language: parsedLanguage, 
+        firstChars: codeContent?.slice(0,30) 
+      }
+    );
+    */
+
+    // --- BEGIN COMMENT ---
+    // 确保 Prism 已加载，代码内容存在，ref 已附加，并且当前不处于流式输出状态
+    // --- END COMMENT ---
+    if (!isStreaming && Prism && codeContent && codeRef.current) {
+      // --- BEGIN COMMENT ---
+      // 调试日志：准备执行高亮 (已注释)
+      // --- END COMMENT ---
+      /*
+      console.log('[CodeBlock Highlighting]', parsedLanguage, codeContent?.slice(0, 50));
+      */
+      Prism.highlightElement(codeRef.current);
     }
-  }, [codeContent, parsedLanguage]);
+    // --- BEGIN COMMENT ---
+    // 依赖项：当代码内容、语言或流式状态变化时，重新评估高亮逻辑
+    // 当 isStreaming 从 true 变为 false 时，此 effect 会执行，并进行高亮
+    // --- END COMMENT ---
+  }, [codeContent, parsedLanguage, isStreaming]);
   
-  // 生成高亮的 HTML
-  const getHighlightedCode = () => {
-    try {
-      // 尝试使用指定的语言进行高亮
-      const grammar = Prism.languages[parsedLanguage] || Prism.languages.text;
-      return Prism.highlight(codeContent, grammar, parsedLanguage);
-    } catch (error) {
-      console.error('Prism highlighting error:', error);
-      // 如果高亮失败，返回未处理的代码
-      return codeContent;
-    }
-  };
+  // --- BEGIN COMMENT ---
+  // Prism.highlightElement 会直接修改DOM，
+  // 所以我们不再需要 dangerouslySetInnerHTML 和 getHighlightedCode。
+  // 我们将直接把 codeContent 放入 <code> 标签，Prism.highlightElement 会读取它并修改。
+  // --- END COMMENT ---
   
   return (
     <div
@@ -123,10 +147,12 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(({
           }}
         >
           <code
+            ref={codeRef} // 附加 ref
             className={cn(`language-${parsedLanguage}`, codeClassName)}
-            dangerouslySetInnerHTML={{ __html: getHighlightedCode() }}
             style={{ display: 'block' }} // 确保代码块是块级元素
-          />
+          >
+            {codeContent} {/* 直接渲染代码内容，Prism.highlightElement 会处理它 */}
+          </code>
         </pre>
       </div>
     </div>
