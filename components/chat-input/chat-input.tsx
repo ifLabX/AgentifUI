@@ -61,7 +61,7 @@ interface ChatInputProps {
 export const ChatInput = ({
   className,
   placeholder = "输入消息...",
-  maxHeight = 180,
+  maxHeight = 300, // 定义输入框最大高度
   onSubmit,
   onStop,
   isProcessing = false,
