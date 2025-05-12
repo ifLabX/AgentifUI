@@ -2,7 +2,10 @@
 
 import React from "react";
 import { cn } from "@lib/utils";
-import { useThemeColors } from "@lib/hooks/use-theme-colors";
+// --- BEGIN MODIFIED COMMENT ---
+// 移除了 useThemeColors 的导入，改用 CSS 变量
+// --- END MODIFIED COMMENT ---
+// import { useThemeColors } from "@lib/hooks/use-theme-colors";
 
 interface MarkdownTableProps {
   children: React.ReactNode;
@@ -13,7 +16,10 @@ export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
   children,
   className,
 }) => {
-  const { colors } = useThemeColors();
+  // --- BEGIN MODIFIED COMMENT ---
+  // 移除了 useThemeColors hook 的使用
+  // --- END MODIFIED COMMENT ---
+  // const { colors } = useThemeColors();
 
   return (
     <div
@@ -26,13 +32,19 @@ export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
       <table
         className={cn(
           "border-collapse",
-          "rounded-lg overflow-hidden", // 圆角和溢出隐藏
-          colors.userMessageBackground.tailwind, // 使用主题背景色
-          "divide-y",
-          "border",
-          "dark:divide-stone-700/30 divide-stone-200/50", // 分隔线颜色
-          "dark:border-stone-700/30 border-stone-200/50" // 边框颜色
+          "rounded-lg overflow-hidden" // 圆角和溢出隐藏
+          // --- BEGIN MODIFIED COMMENT ---
+          // 移除了 colors.userMessageBackground.tailwind (背景将透明化，由父级决定)
+          // 移除了 divide-y 和相关的颜色类 (内部边框由子元素处理)
+          // 移除了 border 和相关的颜色类 (外部边框通过 style 应用 CSS 变量)
+          // --- END MODIFIED COMMENT ---
         )}
+        style={{
+          // --- BEGIN MODIFIED COMMENT ---
+          // 使用 CSS 变量设置表格边框
+          // --- END MODIFIED COMMENT ---
+          border: '1px solid var(--md-table-border)'
+        }}
       >
         {children}
       </table>
