@@ -237,6 +237,22 @@
   padding: 6px 13px;
 }
 
+/* Apply theme variables to table headers, overriding Tailwind utility classes if necessary */
+/* Light mode (uses variables defined in :root) */
+.markdown-body table th {
+  background-color: var(--md-table-header-bg);
+  color: var(--md-table-header-text);
+  border-bottom-color: var(--md-table-divide); /* Overrides border-gray-700 from Tailwind */
+  /* Spacing and font styles from Tailwind classes like px-4, text-sm will still apply */
+}
+
+/* Dark mode (uses variables defined in .dark) */
+.dark .markdown-body table th {
+  background-color: var(--md-table-header-bg) !important;
+  color: var(--md-table-header-text) !important;
+  border-bottom-color: var(--md-table-divide) !important;
+}
+
 /* LaTeX公式样式 */
 .markdown-body .katex-display {
   overflow-x: auto;
