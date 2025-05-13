@@ -237,6 +237,104 @@ export async function updateMessageStatus(id: string, status: Message['status'])
 }
 
 /**
+ * 更新会话元数据
+ * @param conversationId 会话ID
+ * @param metadata 元数据对象
+ * @returns 是否更新成功
+ */
+export async function updateConversationMetadata(
+  conversationId: string,
+  metadata: Record<string, any>
+): Promise<boolean> {
+  // --- BEGIN COMMENT ---
+  // 更新会话的元数据，用于存储额外信息如是否固定等
+  // --- END COMMENT ---
+  const { error } = await supabase
+    .from('conversations')
+    .update({ metadata })
+    .eq('id', conversationId);
+
+  if (error) {
+    console.error('更新会话元数据失败:', error);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * 重命名会话
+ * @param conversationId 会话ID
+ * @param newTitle 新标题
+ * @returns 是否更新成功
+ */
+export async function renameConversation(
+  conversationId: string,
+  newTitle: string
+): Promise<boolean> {
+  // --- BEGIN COMMENT ---
+  // 更新会话的标题
+  // --- END COMMENT ---
+  const { error } = await supabase
+    .from('conversations')
+    .update({ title: newTitle })
+    .eq('id', conversationId);
+
+  if (error) {
+    console.error('重命名会话失败:', error);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * 物理删除会话及其消息
+ * @param conversationId 会话ID
+ * @returns 是否删除成功
+ */
+export async function permanentlyDeleteConversation(
+  conversationId: string
+): Promise<boolean> {
+  // --- BEGIN COMMENT ---
+  // 物理删除会话及其相关消息（从数据库中完全删除）
+  // 先删除消息，再删除会话
+  // --- END COMMENT ---
+  try {
+    // 开始事务
+    const { error: beginError } = await supabase.rpc('begin_transaction');
+    if (beginError) throw beginError;
+    
+    // 删除所有相关消息
+    const { error: messagesError } = await supabase
+      .from('messages')
+      .delete()
+      .eq('conversation_id', conversationId);
+    
+    if (messagesError) throw messagesError;
+    
+    // 删除会话
+    const { error: conversationError } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('id', conversationId);
+    
+    if (conversationError) throw conversationError;
+    
+    // 提交事务
+    const { error: commitError } = await supabase.rpc('commit_transaction');
+    if (commitError) throw commitError;
+    
+    return true;
+  } catch (error) {
+    // 回滚事务
+    await supabase.rpc('rollback_transaction');
+    console.error('物理删除会话失败:', error);
+    return false;
+  }
+}
+
+/**
  * 创建新的空对话
  * @param userId 用户ID
  * @param appId 应用ID

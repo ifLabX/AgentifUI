@@ -1,31 +1,25 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, ChevronDown, ChevronUp, Pin, Trash, Edit } from "lucide-react"
+import { MessageSquare, ChevronDown, ChevronUp, Pin, Trash, Edit, RefreshCw } from "lucide-react"
 import { SidebarButton } from "./sidebar-button"
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { MoreButton, DropdownMenu, PinButton } from "@components/ui"
 import { useMobile } from "@lib/hooks/use-mobile"
-
-// Sample data - Passing isDark to SidebarChatIcon
-const getChatHistory = (isDark: boolean) => [
-  { id: 1, title: "网站开发指南", icon: <SidebarChatIcon size="sm" isDark={isDark} />, isPinned: false },
-  { id: 2, title: "JavaScript最佳实践", icon: <SidebarChatIcon size="sm" isDark={isDark} />, isPinned: true },
-  { id: 3, title: "React Hooks详解", icon: <SidebarChatIcon size="sm" isDark={isDark} />, isPinned: false },
-  { id: 4, title: "Grid与Flexbox比较", icon: <SidebarChatIcon size="sm" isDark={isDark} />, isPinned: false },
-  { id: 5, title: "TypeScript技巧", icon: <SidebarChatIcon size="sm" isDark={isDark} />, isPinned: false },
-  { id: 6, title: "Next.js App Router", icon: <SidebarChatIcon size="sm" isDark={isDark} />, isPinned: false },
-];
+import { useSidebarConversations } from "@lib/hooks/use-sidebar-conversations"
+import { Conversation } from "@lib/types/database"
+import { format, formatDistanceToNow } from "date-fns"
+import { zhCN } from "date-fns/locale"
 
 interface SidebarChatListProps {
   isDark: boolean
   contentVisible: boolean
   /** 当前选中的聊天ID */
-  selectedId: string | number | null
+  selectedId: string | null
   /** 选中聊天项的回调函数 */
-  onSelectChat: (chatId: string | number) => void
+  onSelectChat: (chatId: string) => void
 }
 
 /**
@@ -39,153 +33,356 @@ export function SidebarChatList({
   selectedId,
   onSelectChat 
 }: SidebarChatListProps) {
+  // 使用 useSidebarStore 获取侧边栏状态
+  // 使用 useMobile 检测是否为移动设备
+  // 使用 useSidebarConversations 获取会话列表
   const { lockExpanded } = useSidebarStore()
   const isMobile = useMobile()
   const [showAllChats, setShowAllChats] = React.useState(false)
+  const { 
+    conversations, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useSidebarConversations()
   
-  // Get chat history based on current theme
-  const chatHistory = React.useMemo(() => getChatHistory(isDark), [isDark]);
+  // 将会话分类为固定和非固定
+  // 注意：目前数据库中没有固定字段，我们使用元数据中的 isPinned 标记
+  // 后续可以扩展数据库模型添加该字段
+  const pinnedChats = React.useMemo(() => {
+    return conversations.filter(chat => 
+      chat.metadata && typeof chat.metadata === 'object' && chat.metadata.isPinned === true
+    );
+  }, [conversations]);
+  
+  const unpinnedChats = React.useMemo(() => {
+    return conversations.filter(chat => 
+      !chat.metadata || typeof chat.metadata !== 'object' || chat.metadata.isPinned !== true
+    );
+  }, [conversations]);
 
-  const [pinnedChats, setPinnedChats] = React.useState(() => chatHistory.filter(chat => chat.isPinned));
-  const [unpinnedChats, setUnpinnedChats] = React.useState(() => chatHistory.filter(chat => !chat.isPinned));
-
-  // Update state when chatHistory changes (due to theme change)
-  React.useEffect(() => {
-    setPinnedChats(chatHistory.filter(chat => chat.isPinned));
-    setUnpinnedChats(chatHistory.filter(chat => !chat.isPinned));
-  }, [chatHistory]);
-
-  // 根据是否展示全部聊天记录决定显示哪些未固定的聊天
-  const visibleUnpinnedChats = showAllChats ? unpinnedChats : unpinnedChats.slice(0, 3);
-
-  const toggleShowAllChats = () => {
-    setShowAllChats(!showAllChats)
-    lockExpanded() // Keep sidebar expanded when toggling
-  }
-
-  const handlePinChat = (chatId: number | string, isPinned: boolean) => {
-    // 找到要修改的聊天
-    const chat = chatHistory.find(c => c.id === chatId);
-    if (!chat) return;
-
-    // 更新聊天的固定状态
-    chat.isPinned = isPinned;
+  // --- BEGIN COMMENT ---
+  // 切换会话的固定状态
+  // 使用 updateConversationMetadata 函数更新会话的元数据
+  // --- END COMMENT ---
+  const togglePin = React.useCallback(async (chatId: string) => {
+    // 查找当前会话
+    const conversation = conversations.find(c => c.id === chatId);
+    if (!conversation) return;
     
-    // 重新计算固定和未固定的聊天列表
-    setPinnedChats(chatHistory.filter(c => c.isPinned));
-    setUnpinnedChats(chatHistory.filter(c => !c.isPinned));
-  }
-
-  const handleRenameChat = (chatId: number | string) => {
-    console.log("重命名聊天:", chatId);
-    // 这里可以添加重命名聊天的逻辑
-  }
-
-  const handleDeleteChat = (chatId: number | string) => {
-    console.log("删除聊天:", chatId);
-    // 这里可以添加删除聊天的逻辑
-  }
-
-  // 渲染单个聊天项
-  const renderChatItem = (chat: typeof chatHistory[0]) => (
-    <div key={chat.id} className="group relative flex items-center">
-      <SidebarButton
-        icon={chat.icon}
-        text={chat.title}
-        active={selectedId === chat.id}
-        className="w-full pr-8 group"
-        onClick={() => onSelectChat(chat.id)}
-      />
+    // 获取当前固定状态
+    const isPinned = conversation.metadata?.isPinned === true;
+    
+    // 准备新的元数据
+    const newMetadata = {
+      ...conversation.metadata,
+      isPinned: !isPinned
+    };
+    
+    try {
+      // 导入更新函数
+      const { updateConversationMetadata } = await import('@lib/db/conversations');
       
-      {/* 更多按钮 - 确保在移动端也能正确显示 */}
-      <div className={cn(
-        "absolute right-1 top-1/2 -translate-y-1/2",
-        // 确保在移动端点击区域更大
-        isMobile && "w-8 h-8 flex items-center justify-center"
-      )}>
-        <MoreButton 
-          id={`chat-more-${chat.id}`}
-          className={cn(
-            // 移除group-hover控制，由MoreButton内部处理
-            selectedId === chat.id && "opacity-100"
-          )}
-          tooltipText="聊天选项"
-        />
+      // 更新会话元数据
+      const success = await updateConversationMetadata(chatId, newMetadata);
+      
+      if (success) {
+        // 刷新会话列表
+        refresh();
+      } else {
+        console.error('更新固定状态失败');
+      }
+    } catch (error) {
+      console.error('切换固定状态出错:', error);
+    }
+  }, [conversations, refresh]);
+  
+  // --- BEGIN COMMENT ---
+  // 重命名会话
+  // 显示一个简单的提示框让用户输入新名称
+  // --- END COMMENT ---
+  const handleRename = React.useCallback(async (chatId: string) => {
+    // 查找当前会话
+    const conversation = conversations.find(c => c.id === chatId);
+    if (!conversation) return;
+    
+    // 显示提示框
+    const newTitle = window.prompt('请输入新的会话名称', conversation.title || '新对话');
+    
+    // 如果用户取消或输入为空，则不进行操作
+    if (!newTitle || newTitle.trim() === '') return;
+    
+    try {
+      // 导入重命名函数
+      const { renameConversation } = await import('@lib/db/conversations');
+      
+      // 重命名会话
+      const success = await renameConversation(chatId, newTitle.trim());
+      
+      if (success) {
+        // 刷新会话列表
+        refresh();
+      } else {
+        console.error('重命名会话失败');
+      }
+    } catch (error) {
+      console.error('重命名会话出错:', error);
+    }
+  }, [conversations, refresh]);
+  
+  // --- BEGIN COMMENT ---
+  // 删除会话
+  // 先进行确认，然后调用删除函数
+  // --- END COMMENT ---
+  const handleDelete = React.useCallback(async (chatId: string) => {
+    // 查找当前会话
+    const conversation = conversations.find(c => c.id === chatId);
+    if (!conversation) return;
+    
+    // 显示确认框
+    const confirmed = window.confirm(`确定要删除会话 "${conversation.title || '新对话'}" 吗？此操作无法撤销。`);
+    
+    if (!confirmed) return;
+    
+    try {
+      // 导入删除函数
+      // 这里使用软删除函数，只是将状态改为 deleted
+      const { deleteConversation } = await import('@lib/db/conversations');
+      
+      // 删除会话
+      const success = await deleteConversation(chatId);
+      
+      if (success) {
+        // 刷新会话列表
+        refresh();
+        
+        // 如果当前选中的是这个会话，则选中第一个可用的会话
+        if (selectedId === chatId) {
+          const firstAvailableChat = conversations.find(c => c.id !== chatId);
+          if (firstAvailableChat) {
+            onSelectChat(firstAvailableChat.id);
+          }
+        }
+      } else {
+        console.error('删除会话失败');
+      }
+    } catch (error) {
+      console.error('删除会话出错:', error);
+    }
+  }, [conversations, refresh, selectedId, onSelectChat]);
+
+  // 显示有限的非固定会话
+  const visibleUnpinnedChats = React.useMemo(() => {
+    return showAllChats ? unpinnedChats : unpinnedChats.slice(0, 5);
+  }, [unpinnedChats, showAllChats]);
+
+  // 确定是否需要“显示更多”按钮
+  const hasMoreChats = unpinnedChats.length > 5;
+
+  // 如果内容不可见（侧边栏折叠），则不渲染任何内容
+  if (!contentVisible) return null;
+
+  // 如果正在加载，显示加载状态
+  if (isLoading) {
+    return (
+      <div className="flex flex-col space-y-2 p-2">
+        {Array(5).fill(0).map((_, i) => (
+          <div key={i} className="h-14 bg-stone-200 dark:bg-stone-700 animate-pulse rounded-md"></div>
+        ))}
       </div>
-      
-      {/* 对应的下拉菜单 */}
-      <DropdownMenu id={`chat-more-${chat.id}`}>
-        <DropdownMenu.Item
-          icon={<Pin className="w-4 h-4" />}
-          onClick={() => handlePinChat(chat.id, !chat.isPinned)}
+    );
+  }
+
+  // 如果加载出错，显示错误信息
+  if (error) {
+    return (
+      <div className="p-4 text-red-500">
+        加载会话列表失败，请重试
+        <button 
+          onClick={refresh}
+          className="mt-2 flex items-center justify-center w-full px-3 py-1.5 text-xs bg-stone-200 dark:bg-stone-700 rounded-md hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
         >
-          {chat.isPinned ? "取消固定" : "固定聊天"}
-        </DropdownMenu.Item>
-        
-        <DropdownMenu.Item
-          icon={<Edit className="w-4 h-4" />}
-          onClick={() => handleRenameChat(chat.id)}
-        >
-          重命名
-        </DropdownMenu.Item>
-        
-        <DropdownMenu.Divider />
-        
-        <DropdownMenu.Item
-          icon={<Trash className="w-4 h-4" />}
-          danger
-          onClick={() => handleDeleteChat(chat.id)}
-        >
-          删除聊天
-        </DropdownMenu.Item>
-      </DropdownMenu>
-    </div>
-  );
+          <RefreshCw size={14} className="mr-1.5" />
+          重新加载
+        </button>
+      </div>
+    );
+  }
+
+  // 如果没有会话，显示空状态
+  if (conversations.length === 0) {
+    return (
+      <div className="p-4 text-stone-500 dark:text-stone-400 text-center">
+        暂无历史会话
+      </div>
+    );
+  }
+
+  // 格式化时间的辅助函数
+  const formatTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return formatDistanceToNow(date, { addSuffix: true, locale: zhCN });
+    } catch (e) {
+      return '';
+    }
+  };
 
   return (
-    <div className="space-y-2 px-3">
-      <div className={cn(
-        "pl-1 pr-3 mb-2 text-sm font-semibold uppercase flex items-center gap-2 tracking-wider",
-        "text-gray-600 dark:text-gray-200"
-      )}>
-        <span>对话列表</span>
-      </div>
-      
-      <div className="space-y-1">
-        {/* 固定的聊天 */}
-        {pinnedChats.length > 0 && (
-          <>
-            {pinnedChats.map(renderChatItem)}
-            {unpinnedChats.length > 0 && <div className="my-2 border-t border-gray-200/80 dark:border-gray-700/50" />}
-          </>
-        )}
-        
-        {/* 未固定的聊天 */}
-        {visibleUnpinnedChats.map(renderChatItem)}
-        
-        {/* More/Less Button - Cleaned up className overrides */}
-        {unpinnedChats.length > 3 && (
-          <SidebarButton
-            icon={showAllChats 
-              ? <ChevronUp className="h-4 w-4" /> 
-              : <ChevronDown className="h-4 w-4" />
-            }
-            text={showAllChats ? "收起" : "显示更多"}
-            className={cn(
-              "w-full text-xs group font-medium",
-              // Base text colors
-              isDark ? "text-gray-300" : "text-gray-500",
-              // Ensure base background is transparent, especially in dark mode
-              "bg-transparent dark:bg-transparent", 
-              // Explicitly set dark hover background override
-              "dark:hover:bg-gray-700/60", 
-              // Keep border/shadow overrides
-              "border-none shadow-none"
-            )}
-            onClick={toggleShowAllChats}
-          />
-        )}
+    <div className="flex flex-col space-y-1">
+      {/* 固定的会话部分 */}
+      {pinnedChats.length > 0 && (
+        <div className="mb-2">
+          <div className="flex items-center px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
+            <Pin size={14} className="mr-1.5" />
+            固定的聊天
+          </div>
+          <div className="space-y-1">
+            {pinnedChats.map(chat => (
+              <div className="flex items-center w-full group" key={chat.id}>
+                <SidebarButton
+                  icon={<SidebarChatIcon size="sm" isDark={isDark} />}
+                  text={chat.title || '新对话'}
+                  active={chat.id === selectedId}
+                  onClick={() => onSelectChat(chat.id)}
+                  className="flex-1 mr-1"
+                >
+                  <div className="flex flex-col items-start overflow-hidden ml-2">
+                    {chat.last_message_preview && (
+                      <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
+                        {chat.last_message_preview}
+                      </span>
+                    )}
+                    <span className="text-xs text-stone-400 dark:text-stone-500">
+                      {formatTime(chat.updated_at)}
+                    </span>
+                  </div>
+                </SidebarButton>
+                <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+                  <MoreButton
+                    id={`pinned-chat-${chat.id}`}
+                    tooltipText="更多选项"
+                  />
+                  <DropdownMenu id={`pinned-chat-${chat.id}`}>
+                    <DropdownMenu.Item
+                      icon={<Pin className="w-4 h-4" />}
+                      onClick={() => togglePin(chat.id)}
+                    >
+                      取消固定
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      icon={<Edit className="w-4 h-4" />}
+                      onClick={() => handleRename(chat.id)}
+                    >
+                      重命名
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Divider />
+                    <DropdownMenu.Item
+                      icon={<Trash className="w-4 h-4" />}
+                      danger
+                      onClick={() => handleDelete(chat.id)}
+                    >
+                      删除聊天
+                    </DropdownMenu.Item>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 最近的会话部分 */}
+      <div>
+        <div className="flex items-center justify-between px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
+          <div className="flex items-center">
+            <MessageSquare size={14} className="mr-1.5" />
+            最近的聊天
+          </div>
+          <button 
+            onClick={refresh}
+            className="p-1 rounded-md hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+            title="刷新列表"
+          >
+            <RefreshCw size={14} />
+          </button>
+        </div>
+        <div className="space-y-1">
+          {visibleUnpinnedChats.map(chat => (
+            <div className="flex items-center w-full group" key={chat.id}>
+              <SidebarButton
+                icon={<SidebarChatIcon size="sm" isDark={isDark} />}
+                text={chat.title || '新对话'}
+                active={chat.id === selectedId}
+                onClick={() => onSelectChat(chat.id)}
+                className="flex-1 mr-1"
+              >
+                <div className="flex flex-col items-start overflow-hidden ml-2">
+                  {chat.last_message_preview && (
+                    <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
+                      {chat.last_message_preview}
+                    </span>
+                  )}
+                  <span className="text-xs text-stone-400 dark:text-stone-500">
+                    {formatTime(chat.updated_at)}
+                  </span>
+                </div>
+              </SidebarButton>
+              <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+                <MoreButton
+                  id={`pinned-chat-${chat.id}`}
+                  tooltipText="更多选项"
+                />
+                <DropdownMenu id={`pinned-chat-${chat.id}`}>
+                  <DropdownMenu.Item
+                    icon={<Pin className="w-4 h-4" />}
+                    onClick={() => togglePin(chat.id)}
+                  >
+                    取消固定
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<Edit className="w-4 h-4" />}
+                    onClick={() => handleRename(chat.id)}
+                  >
+                    重命名
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Divider />
+                  <DropdownMenu.Item
+                    icon={<Trash className="w-4 h-4" />}
+                    danger
+                    onClick={() => handleDelete(chat.id)}
+                  >
+                    删除聊天
+                  </DropdownMenu.Item>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))}
+          {/* 显示更多/更少按钮 */}
+          {hasMoreChats && (
+            <button
+              onClick={() => setShowAllChats(!showAllChats)}
+              className={cn(
+                "flex items-center justify-center w-full px-3 py-1.5 text-xs",
+                "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100",
+                "transition-colors"
+              )}
+            >
+              {showAllChats ? (
+                <>
+                  <ChevronUp size={14} className="mr-1.5" />
+                  显示更少
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={14} className="mr-1.5" />
+                  显示更多 ({unpinnedChats.length - visibleUnpinnedChats.length})
+                </>
+              )}
+            </button>
+          )}
       </div>
     </div>
-  )
-} 
+    </div>
+  );
+}

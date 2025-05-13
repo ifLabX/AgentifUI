@@ -74,10 +74,12 @@ export interface Conversation {
   // external_id: Dify 中的会话 ID
   // app_id: 关联的 Dify 应用 ID
   // last_message_preview: 最后一条消息的预览，用于在侧边栏显示
+  // metadata: 存储额外的元数据，如固定状态等
   // --- END COMMENT ---
   external_id: string | null;
   app_id: string | null;
   last_message_preview: string | null;
+  metadata?: Record<string, any>;
 }
 
 export interface Message {
