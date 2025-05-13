@@ -1,9 +1,14 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 import { useChatStore, selectIsProcessing, ChatMessage } from '@lib/stores/chat-store';
-import debounce from 'lodash/debounce'; // Removed unused throttle import
+import debounce from 'lodash/debounce'; // --- BEGIN MODIFIED COMMENT ---
+// 移除了未使用的 throttle 导入
+// --- END MODIFIED COMMENT ---
 
-const SCROLL_THRESHOLD = 50; // Pixels from bottom to be considered "at bottom"
+// --- BEGIN COMMENT ---
+// 滚动阈值，单位像素，距离底部多少像素被认为是“在底部”
+// --- END COMMENT ---
+const SCROLL_THRESHOLD = 50; 
 
 export function useChatScroll(messages: ChatMessage[]) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -18,14 +23,23 @@ export function useChatScroll(messages: ChatMessage[]) {
 
   const isGenerating = useChatStore(selectIsProcessing);
 
-  // Track if user is actively interacting with scrollbar
+  // --- BEGIN COMMENT ---
+  // 跟踪用户是否正在与滚动条交互
+  // --- END COMMENT ---
   const isUserInteractingRef = useRef(false); 
-  // Timer for detecting end of user scroll interaction
+  // --- BEGIN COMMENT ---
+  // 用于检测用户滚动交互结束的计时器
+  // --- END COMMENT ---
   const userInteractionEndTimerRef = useRef<NodeJS.Timeout | null>(null); 
-  const isProgrammaticScroll = useRef(false); // Added for tracking programmatic scrolls
+  // --- BEGIN MODIFIED COMMENT ---
+  // 用于跟踪程序化滚动
+  // --- END MODIFIED COMMENT ---
+  const isProgrammaticScroll = useRef(false); 
 
 
-  // Effect 1: Setup scroll listener, handle user interaction, and sync scroll state
+  // --- BEGIN COMMENT ---
+  // Effect 1: 设置滚动监听器，处理用户交互，并同步滚动状态
+  // --- END COMMENT ---
   useEffect(() => {
     const element = scrollRef.current;
     if (!element) return;
@@ -34,10 +48,14 @@ export function useChatScroll(messages: ChatMessage[]) {
 
     const handleUserInteractionEnd = debounce(() => {
       isUserInteractingRef.current = false;
-      // After user stops scrolling, if there was a pending scroll request due to new messages,
-      // it might be good to trigger it now if they landed at the bottom.
-      // However, for simplicity, we'll let the regular message-driven effect handle it.
-    }, 300); // 300ms after last scroll event is considered "interaction ended"
+      // --- BEGIN COMMENT ---
+      // 用户停止滚动后，如果由于新消息而存在待处理的滚动请求，
+      // 如果用户恰好滚动到底部，此时触发该请求可能是个好主意。
+      // 然而，为简单起见，我们将让常规的消息驱动效果来处理它。
+      // --- END COMMENT ---
+    }, 300); // --- BEGIN MODIFIED COMMENT ---
+    // 最后一次滚动事件后 300 毫秒被视为“交互结束”
+    // --- END MODIFIED COMMENT ---
 
     const handleScroll = () => { 
       isUserInteractingRef.current = true; 
@@ -50,24 +68,35 @@ export function useChatScroll(messages: ChatMessage[]) {
       if (!el) return;
       const currentIsAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < SCROLL_THRESHOLD;
       
-      setIsAtBottom(currentIsAtBottom); // Store action has internal check
+      // --- BEGIN MODIFIED COMMENT ---
+      // Store action 内部有检查机制
+      // --- END MODIFIED COMMENT ---
+      setIsAtBottom(currentIsAtBottom); 
 
-      // Only update userScrolledUp based on user's direct scroll actions,
-      // not as a side effect of programmatic scrolling.
+      // --- BEGIN COMMENT ---
+      // 仅根据用户的直接滚动操作更新 userScrolledUp，
+      // 而不是作为程序化滚动的副作用。
+      // --- END COMMENT ---
       if (!isProgrammaticScroll.current) {
-        // If it's not a programmatic scroll, then any deviation from the bottom is user-initiated scrolling up.
-        // And if user scrolls back to bottom, userScrolledUp should be false.
+        // --- BEGIN COMMENT ---
+        // 如果不是程序化滚动，则任何偏离底部的行为都是用户主动向上滚动。
+        // 如果用户滚动回底部，userScrolledUp 应为 false。
+        // --- END COMMENT ---
         const newScrolledUpState = !currentIsAtBottom;
         if (userScrolledUp !== newScrolledUpState) {
           setUserScrolledUp(newScrolledUpState);
         }
       }
-      // If isProgrammaticScroll.current is true, userScrolledUp is managed by the programmatic scroll
-      // (i.e., storeScrollToBottom sets it to false upon completion).
+      // --- BEGIN COMMENT ---
+      // 如果 isProgrammaticScroll.current 为 true，则 userScrolledUp 由程序化滚动管理
+      // (即 storeScrollToBottom 在完成后将其设置为 false)。
+      // --- END COMMENT ---
     };
 
     element.addEventListener('scroll', handleScroll, { passive: true });
-    // Initial state sync
+    // --- BEGIN COMMENT ---
+    // 初始状态同步
+    // --- END COMMENT ---
     const initialIsAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < SCROLL_THRESHOLD;
     setIsAtBottom(initialIsAtBottom);
     setUserScrolledUp(!initialIsAtBottom);
@@ -77,56 +106,66 @@ export function useChatScroll(messages: ChatMessage[]) {
       if (userInteractionEndTimerRef.current) {
         clearTimeout(userInteractionEndTimerRef.current);
       }
-      handleUserInteractionEnd.cancel(); // Cancel lodash debounce
+      handleUserInteractionEnd.cancel(); // --- BEGIN MODIFIED COMMENT ---
+      // 取消 lodash debounce
+      // --- END MODIFIED COMMENT ---
     };
   }, [scrollRef, storeSetScrollRef, setIsAtBottom, setUserScrolledUp]);
 
 
-  // Old Effect 2 and Effect 3 are now removed.
-  // The new automatic scrolling logic is handled by the effect below.
+  // --- BEGIN COMMENT ---
+  // 旧的 Effect 2 和 Effect 3 现已移除。
+  // 新的自动滚动逻辑由下面的 effect 处理。
+  // --- END COMMENT ---
 
 
-  // New Effect for Automatic Scrolling based on isGenerating and userScrolledUp
+  // --- BEGIN COMMENT ---
+  // 新 Effect：基于 isGenerating 和 userScrolledUp 进行自动滚动
+  // --- END COMMENT ---
   useEffect(() => {
     const element = scrollRef.current;
     if (!element) {
-      // console.log('[useChatScroll] Auto-scroll: No element');
       return;
     }
 
-    // It's often safer to get the latest state from stores inside effects
-    // to avoid issues with stale closures, especially if dependencies are complex
-    // or if the effect logic itself might trigger state changes that should be immediately reflected.
-    // However, for standard hook dependencies, relying on the values from the hook's scope is typical.
-    // Here, `isGenerating` and `userScrolledUp` are already in the dependency array,
-    // so they will be up-to-date when the effect runs due to their change.
-
-    // console.log(`[useChatScroll] Auto-scroll check: isGenerating=${isGenerating}, userScrolledUp=${userScrolledUp}, messages.length=${messages.length}`);
+    // --- BEGIN COMMENT ---
+    // 在 effect 内部从 store 获取最新状态通常更安全，
+    // 以避免陈旧闭包的问题，尤其是在依赖项复杂
+    // 或 effect 逻辑本身可能触发应立即反映的状态更改时。
+    // 然而，对于标准的 hook 依赖项，依赖 hook 作用域中的值是典型的做法。
+    // 这里，`isGenerating` 和 `userScrolledUp` 已经在依赖项数组中，
+    // 因此当 effect 因它们的变化而运行时，它们将是最新的。
+    // --- END COMMENT ---
 
     if (isGenerating && !userScrolledUp) {
-      // console.log('[useChatScroll] Auto-scrolling triggered: isGenerating=true, userScrolledUp=false');
       isProgrammaticScroll.current = true;
       storeScrollToBottom('smooth', () => {
-        // This callback is executed after the scroll action is initiated (and states in store are set).
-        // For 'smooth' scroll, the animation might still be ongoing.
-        // We reset the flag here, accepting that during the smooth scroll animation,
-        // handleScroll might still see isProgrammaticScroll as true.
-        // A more advanced solution would be to detect actual scroll animation end.
+        // --- BEGIN COMMENT ---
+        // 此回调在滚动操作启动后（且 store 中的状态已设置）执行。
+        // 对于 'smooth' 滚动，动画可能仍在进行中。
+        // 我们在此处重置标志，接受在平滑滚动动画期间，
+        // handleScroll 可能仍将 isProgrammaticScroll 视为 true。
+        // 更高级的解决方案是检测实际滚动动画的结束。
+        // --- END COMMENT ---
         isProgrammaticScroll.current = false;
-        // console.log('[useChatScroll] Programmatic scroll ended (via callback), flag reset.');
       }); 
     }
   }, [messages, isGenerating, userScrolledUp, storeScrollToBottom, scrollRef]);
 
-  // Effect to reset userScrolledUp when AI stops generating if user was scrolled up
+  // --- BEGIN COMMENT ---
+  // Effect：当 AI 停止生成且用户已向上滚动时，重置 userScrolledUp
+  // --- END COMMENT ---
   useEffect(() => {
-    // If generation has just stopped AND the user was previously in a scrolled-up state
+    // --- BEGIN COMMENT ---
+    // 如果生成刚停止 且 用户之前处于向上滚动的状态
+    // --- END COMMENT ---
     if (!isGenerating && userScrolledUp) {
-      // console.log('[useChatScroll] AI finished generating, resetting userScrolledUp to false.');
       setUserScrolledUp(false);
     }
-    // This effect should run when isGenerating changes (to detect it becoming false)
-    // or when userScrolledUp changes (to ensure the condition is correctly evaluated).
+    // --- BEGIN COMMENT ---
+    // 当 isGenerating 改变（以检测其变为 false）
+    // 或 userScrolledUp 改变（以确保正确评估条件）时，此 effect 应运行。
+    // --- END COMMENT ---
   }, [isGenerating, userScrolledUp, setUserScrolledUp]);
 
   return scrollRef;

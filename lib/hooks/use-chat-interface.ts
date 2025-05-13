@@ -7,7 +7,10 @@ import type { DifyChatRequestPayload, DifyStopTaskResponse } from '@lib/services
 
 const DIFY_APP_IDENTIFIER = process.env.NEXT_PUBLIC_DIFY_APP_IDENTIFIER || "default";
 const currentUserIdentifier = "userlyz";
-const CHUNK_APPEND_INTERVAL = 100; // ms, batch chunks for this duration
+// --- BEGIN COMMENT ---
+// 毫秒，批量处理数据块的持续时间
+// --- END COMMENT ---
+const CHUNK_APPEND_INTERVAL = 100; 
 
 export function useChatInterface() {
   const router = useRouter();
@@ -26,14 +29,22 @@ export function useChatInterface() {
   const setCurrentTaskId = useChatStore(state => state.setCurrentTaskId);
 
   const isSubmittingRef = useRef(false);
-  const chunkBufferRef = useRef(""); // For accumulating chunks
-  const appendTimerRef = useRef<NodeJS.Timeout | null>(null); // Timer for flushing buffer
+  // --- BEGIN COMMENT ---
+  // 用于累积数据块
+  // --- END COMMENT ---
+  const chunkBufferRef = useRef(""); 
+  // --- BEGIN COMMENT ---
+  // 用于刷新缓冲区的计时器
+  // --- END COMMENT ---
+  const appendTimerRef = useRef<NodeJS.Timeout | null>(null); 
 
   const flushChunkBuffer = useCallback((id: string | null) => {
     if (id && chunkBufferRef.current) {
       appendMessageChunk(id, chunkBufferRef.current);
       chunkBufferRef.current = "";
-      // lastAppendTime can be a ref if needed for more precise timing, or simply reset here
+      // --- BEGIN COMMENT ---
+      // 如果需要更精确的计时，lastAppendTime 可以是一个 ref，或者在这里简单重置
+      // --- END COMMENT ---
     }
     if (appendTimerRef.current) {
       clearTimeout(appendTimerRef.current);
@@ -76,9 +87,14 @@ export function useChatInterface() {
     let routeUpdatedViaCallback = false;
     const initialConversationIdForThisSubmit = useChatStore.getState().currentConversationId;
     
-    // Reset chunkBuffer for new submission
+    // --- BEGIN COMMENT ---
+    // 为新的提交重置 chunkBuffer
+    // --- END COMMENT ---
     chunkBufferRef.current = ""; 
-    let lastAppendTime = Date.now(); // This can remain local to handleSubmit
+    // --- BEGIN COMMENT ---
+    // 这个可以保留在 handleSubmit 的局部作用域
+    // --- END COMMENT ---
+    let lastAppendTime = Date.now(); 
 
     try {
       const fileInputVarName = 'file';
@@ -113,7 +129,9 @@ export function useChatInterface() {
         if (useChatStore.getState().streamingMessageId === null && assistantMessageId === null) {
           const assistantMessage = addMessage({ text: '', isUser: false, isStreaming: true });
           assistantMessageId = assistantMessage.id;
-          // Set streamingMessageId AND set isWaitingForResponse to false as stream has started
+          // --- BEGIN COMMENT ---
+          // 设置 streamingMessageId 并将 isWaitingForResponse 设置为 false，因为流已开始
+          // --- END COMMENT ---
           useChatStore.setState({ streamingMessageId: assistantMessageId });
           setIsWaitingForResponse(false); 
           
@@ -132,14 +150,23 @@ export function useChatInterface() {
 
         if (assistantMessageId) {
           if (useChatStore.getState().streamingMessageId === assistantMessageId) {
-            chunkBufferRef.current += answerChunk; // Use ref
+            // --- BEGIN MODIFIED COMMENT ---
+            // 使用 ref
+            // --- END MODIFIED COMMENT ---
+            chunkBufferRef.current += answerChunk; 
             if (Date.now() - lastAppendTime >= CHUNK_APPEND_INTERVAL || chunkBufferRef.current.includes('\n\n') || chunkBufferRef.current.length > 500) {
               flushChunkBuffer(assistantMessageId);
-              lastAppendTime = Date.now(); // Reset lastAppendTime after flushing
+              // --- BEGIN MODIFIED COMMENT ---
+              // 刷新后重置 lastAppendTime
+              // --- END MODIFIED COMMENT ---
+              lastAppendTime = Date.now(); 
             } else if (!appendTimerRef.current) {
               appendTimerRef.current = setTimeout(() => {
                 flushChunkBuffer(assistantMessageId);
-                lastAppendTime = Date.now(); // Reset lastAppendTime after flushing
+                // --- BEGIN MODIFIED COMMENT ---
+                // 刷新后重置 lastAppendTime
+                // --- END MODIFIED COMMENT ---
+                lastAppendTime = Date.now(); 
               }, CHUNK_APPEND_INTERVAL);
             }
           } else {
@@ -150,9 +177,14 @@ export function useChatInterface() {
             break; 
           }
         }
-      } // End of for-await loop
+      } // --- BEGIN MODIFIED COMMENT ---
+      // for-await 循环结束
+      // --- END MODIFIED COMMENT ---
       
-      flushChunkBuffer(assistantMessageId); // Append any remaining buffer for this submission
+      // --- BEGIN COMMENT ---
+      // 追加此提交的任何剩余缓冲区
+      // --- END COMMENT ---
+      flushChunkBuffer(assistantMessageId); 
 
       if (!finalTaskId) finalTaskId = response.getTaskId();
       if (finalTaskId && useChatStore.getState().currentTaskId !== finalTaskId) setCurrentTaskId(finalTaskId);
@@ -190,9 +222,11 @@ export function useChatInterface() {
   }, [
     currentUserIdentifier, 
     addMessage, setIsWaitingForResponse, isWelcomeScreen, setIsWelcomeScreen,
-    // appendMessageChunk is stable, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
-    // setCurrentConversationId, setCurrentTaskId are stable. router, currentPathname are from Next.js.
-    // flushChunkBuffer is now a useCallback dep.
+    // --- BEGIN COMMENT ---
+    // appendMessageChunk 稳定, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
+    // setCurrentConversationId, setCurrentTaskId 稳定。router, currentPathname 来自 Next.js。
+    // flushChunkBuffer 现在是 useCallback 的依赖项。
+    // --- END COMMENT ---
     appendMessageChunk, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
     setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer 
   ]);
@@ -203,7 +237,9 @@ export function useChatInterface() {
     const currentTaskId = state.currentTaskId;
     
     if (currentStreamingId) {
-      // Access appendTimerRef and flushChunkBuffer correctly as they are now top-level
+      // --- BEGIN COMMENT ---
+      // 正确访问 appendTimerRef 和 flushChunkBuffer，因为它们现在是顶级作用域的
+      // --- END COMMENT ---
       if (appendTimerRef.current) { 
         clearTimeout(appendTimerRef.current);
         appendTimerRef.current = null;
@@ -214,21 +250,34 @@ export function useChatInterface() {
       if (currentTaskId) {
         try {
           await stopDifyStreamingTask(DIFY_APP_IDENTIFIER, currentTaskId, currentUserIdentifier);
-          setCurrentTaskId(null); // Clear task ID after successful stop
+          // --- BEGIN MODIFIED COMMENT ---
+          // 成功停止后清除任务 ID
+          // --- END MODIFIED COMMENT ---
+          setCurrentTaskId(null); 
         } catch (error) {
           console.error(`[handleStopProcessing] Error calling stopDifyStreamingTask:`, error);
         }
       }
     }
-    // Ensure isWaitingForResponse is false if we were waiting due to this stream
+    // --- BEGIN COMMENT ---
+    // 如果我们因为此流而等待，请确保 isWaitingForResponse 为 false
+    // --- END COMMENT ---
     if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
         setIsWaitingForResponse(false);
     }
-  }, [markAsManuallyStopped, setCurrentTaskId, appendMessageChunk, setIsWaitingForResponse]); // Added appendMessageChunk and setIsWaitingForResponse
+  }, [markAsManuallyStopped, setCurrentTaskId, appendMessageChunk, setIsWaitingForResponse]); // --- BEGIN MODIFIED COMMENT ---
+  // 添加了 appendMessageChunk 和 setIsWaitingForResponse
+  // --- END MODIFIED COMMENT ---
 
   return {
     messages, handleSubmit, handleStopProcessing, 
-    isProcessing: useChatStore(selectIsProcessing), // Get fresh isProcessing state
-    isWaitingForResponse: useChatStore(state => state.isWaitingForResponse), // Get fresh waiting state
+    // --- BEGIN MODIFIED COMMENT ---
+    // 获取最新的 isProcessing 状态
+    // --- END MODIFIED COMMENT ---
+    isProcessing: useChatStore(selectIsProcessing), 
+    // --- BEGIN MODIFIED COMMENT ---
+    // 获取最新的 waiting 状态
+    // --- END MODIFIED COMMENT ---
+    isWaitingForResponse: useChatStore(state => state.isWaitingForResponse), 
   };
 }
