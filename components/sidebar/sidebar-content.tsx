@@ -6,12 +6,11 @@ import { useTheme } from "@lib/hooks/use-theme"
 import { useMobile } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { SidebarChatList } from "./sidebar-chat-list"
-import { SidebarAppList } from "./sidebar-app-list"
 
 /**
  * 侧边栏内容组件
  * 
- * 管理侧边栏主要内容区域，包括聊天列表和应用列表
+ * 管理侧边栏主要内容区域，主要包含聊天列表
  * 提供选中状态管理，并负责将状态传递给子组件
  */
 export function SidebarContent() {
@@ -51,14 +50,7 @@ export function SidebarContent() {
     lockExpanded() // 确保在选择聊天时保持侧边栏展开状态
   }, [selectItem, lockExpanded])
 
-  /**
-   * 选择应用项目的回调函数
-   * @param appId 应用项目的ID
-   */
-  const handleSelectApp = React.useCallback((appId: number | string) => {
-    selectItem('app', appId)
-    lockExpanded() // 确保在选择应用时保持侧边栏展开状态
-  }, [selectItem, lockExpanded])
+
 
   return (
     <div className="relative flex-1 overflow-hidden">
@@ -95,25 +87,8 @@ export function SidebarContent() {
         <SidebarChatList 
           isDark={isDark ?? false}
           contentVisible={contentVisible}
-          selectedId={selectedType === 'chat' ? selectedId : null}
+          selectedId={selectedType === 'chat' ? String(selectedId) : null}
           onSelectChat={handleSelectChat}
-        />
-
-        {/* Divider between sections */}
-        {isExpanded && (
-          <div className={cn(
-            "h-px mx-4",
-            "bg-gradient-to-r from-transparent via-accent/30 to-transparent",
-            contentVisible ? "opacity-100" : "opacity-0"
-          )} />
-        )}
-
-        {/* App List Section */}
-        <SidebarAppList 
-          isDark={isDark ?? false}
-          contentVisible={contentVisible}
-          selectedId={selectedType === 'app' ? selectedId : null}
-          onSelectApp={handleSelectApp}
         />
       </div>
 

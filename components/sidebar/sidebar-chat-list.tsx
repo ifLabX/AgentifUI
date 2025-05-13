@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, ChevronDown, ChevronUp, Pin, Trash, Edit, RefreshCw } from "lucide-react"
+import { MessageSquare, ChevronDown, ChevronUp, Pin, Trash, Edit } from "lucide-react"
 import { SidebarButton } from "./sidebar-button"
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { cn } from "@lib/utils"
@@ -182,41 +182,9 @@ export function SidebarChatList({
   // 如果内容不可见（侧边栏折叠），则不渲染任何内容
   if (!contentVisible) return null;
 
-  // 如果正在加载，显示加载状态
-  if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 p-2">
-        {Array(5).fill(0).map((_, i) => (
-          <div key={i} className="h-14 bg-stone-200 dark:bg-stone-700 animate-pulse rounded-md"></div>
-        ))}
-      </div>
-    );
-  }
+  // 即使正在加载或出错，也不显示特殊状态，保持界面简洁
 
-  // 如果加载出错，显示错误信息
-  if (error) {
-    return (
-      <div className="p-4 text-red-500">
-        加载会话列表失败，请重试
-        <button 
-          onClick={refresh}
-          className="mt-2 flex items-center justify-center w-full px-3 py-1.5 text-xs bg-stone-200 dark:bg-stone-700 rounded-md hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
-        >
-          <RefreshCw size={14} className="mr-1.5" />
-          重新加载
-        </button>
-      </div>
-    );
-  }
-
-  // 如果没有会话，显示空状态
-  if (conversations.length === 0) {
-    return (
-      <div className="p-4 text-stone-500 dark:text-stone-400 text-center">
-        暂无历史会话
-      </div>
-    );
-  }
+  // 即使没有会话，也不显示空状态提示，而是直接显示标题
 
   // 格式化时间的辅助函数
   const formatTime = (dateString: string) => {
@@ -230,6 +198,12 @@ export function SidebarChatList({
 
   return (
     <div className="flex flex-col space-y-1">
+      {/* 近期对话标题 */}
+      <div className="flex items-center px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
+        <MessageSquare size={14} className="mr-1.5" />
+        近期对话
+      </div>
+      
       {/* 固定的会话部分 */}
       {pinnedChats.length > 0 && (
         <div className="mb-2">
@@ -294,19 +268,6 @@ export function SidebarChatList({
 
       {/* 最近的会话部分 */}
       <div>
-        <div className="flex items-center justify-between px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
-          <div className="flex items-center">
-            <MessageSquare size={14} className="mr-1.5" />
-            最近的聊天
-          </div>
-          <button 
-            onClick={refresh}
-            className="p-1 rounded-md hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
-            title="刷新列表"
-          >
-            <RefreshCw size={14} />
-          </button>
-        </div>
         <div className="space-y-1">
           {visibleUnpinnedChats.map(chat => (
             <div className="flex items-center w-full group" key={chat.id}>
@@ -381,8 +342,8 @@ export function SidebarChatList({
               )}
             </button>
           )}
+        </div>
       </div>
-    </div>
     </div>
   );
 }
