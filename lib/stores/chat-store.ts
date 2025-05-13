@@ -19,7 +19,6 @@ export interface ChatMessage {
   error?: string | null; // 消息相关的错误信息
   attachments?: MessageAttachment[]; // 消息附带的文件附件
   // 可以添加时间戳等其他元数据
-  // timestamp?: number;
 }
 
 // --- Store 状态接口 ---
@@ -181,12 +180,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
   }
 }));
 
-// --- 导出常量 (如果需要) ---
-// export const MAX_MESSAGES = 100;
+// --- BEGIN COMMENT ---
+// --- 导出常量 (如果项目需要) ---
+// 例如: export const MAX_MESSAGES = 100;
+// --- END COMMENT ---
 
-// --- 辅助 Selector (可选) ---
+// --- BEGIN COMMENT ---
+// --- 辅助 Selector (可选，用于优化性能或封装复杂逻辑) ---
+// --- END COMMENT ---
 /**
  * 获取当前是否正在处理消息（等待响应或正在流式传输）
  */
 export const selectIsProcessing = (state: ChatState): boolean =>
-  state.isWaitingForResponse || state.streamingMessageId !== null; 
+  state.isWaitingForResponse || state.streamingMessageId !== null;

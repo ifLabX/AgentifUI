@@ -4,22 +4,34 @@ import { create } from "zustand"
 export type SelectedItemType = 'chat' | 'app' | null
 
 interface SidebarState {
+  // --- BEGIN COMMENT ---
   // 基础状态
-  isExpanded: boolean
-  isHovering: boolean
-  hoverTimeoutId: number | null
-  clickCooldown: boolean
+  // --- END COMMENT ---
+  isExpanded: boolean // 侧边栏是否展开
+  isHovering: boolean // 鼠标是否悬停在侧边栏上
+  hoverTimeoutId: number | null // 悬停展开/收起的计时器ID
+  clickCooldown: boolean // 点击后防止悬停立即触发的冷却状态
+  // --- BEGIN COMMENT ---
   // 客户端挂载状态
-  isMounted: boolean
+  // --- END COMMENT ---
+  isMounted: boolean // 组件是否已在客户端挂载
+  // --- BEGIN COMMENT ---
   // 内容显示状态
-  contentVisible: boolean
+  // --- END COMMENT ---
+  contentVisible: boolean // 侧边栏内容是否可见
+  // --- BEGIN COMMENT ---
   // 移动端状态管理
-  isMobileNavVisible: boolean
+  // --- END COMMENT ---
+  isMobileNavVisible: boolean // 移动端导航是否可见
+  // --- BEGIN COMMENT ---
   // 选中状态管理
-  selectedType: SelectedItemType // 'chat' 或 'app' 或 null
+  // --- END COMMENT ---
+  selectedType: SelectedItemType // 选中的项目类型：'chat' 或 'app' 或 null
   selectedId: string | number | null // 选中项目的ID
   
+  // --- BEGIN COMMENT ---
   // 方法
+  // --- END COMMENT ---
   toggleSidebar: () => void
   setHovering: (hovering: boolean) => void
   lockExpanded: () => void
@@ -41,14 +53,20 @@ interface SidebarState {
 }
 
 export const useSidebarStore = create<SidebarState>((set, get) => ({
+  // --- BEGIN COMMENT ---
   // 基础状态
+  // --- END COMMENT ---
   isExpanded: false,
   isHovering: false,
   hoverTimeoutId: null,
   clickCooldown: false,
-  // 客户端挂载状态 - 初始为false
-  isMounted: false,
+  // --- BEGIN MODIFIED COMMENT ---
+  // 客户端挂载状态 - 初始为 false
+  // --- END MODIFIED COMMENT ---
+  isMounted: false, 
+  // --- BEGIN COMMENT ---
   // 内容显示状态
+  // --- END COMMENT ---
   contentVisible: false,
   // 移动端状态
   isMobileNavVisible: false,
@@ -104,19 +122,27 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
 
   toggleSidebar: () => {
     set((state) => {
-      // Clear any pending hover timeout
+      // --- BEGIN COMMENT ---
+      // 清除任何待处理的悬停超时
+      // --- END COMMENT ---
       if (state.hoverTimeoutId) {
         clearTimeout(state.hoverTimeoutId)
       }
 
-      // Set clickCooldown to prevent hover from immediately triggering
+      // --- BEGIN COMMENT ---
+      // 设置点击冷却以防止悬停立即触发
+      // --- END COMMENT ---
       const willBeCollapsed = !state.isExpanded
 
-      // If we're collapsing, set a cooldown to prevent immediate hover expansion
+      // --- BEGIN COMMENT ---
+      // 如果我们正在折叠，设置一个冷却时间以防止立即悬停展开
+      // --- END MODIFIED COMMENT ---
       if (state.isExpanded) {
         setTimeout(() => {
           set({ clickCooldown: false })
-        }, 300) // 300ms cooldown after clicking to close
+        }, 300) // --- BEGIN MODIFIED COMMENT ---
+        // 点击关闭后 300 毫秒冷却时间
+        // --- END MODIFIED COMMENT ---
       }
 
       // 当收起侧边栏时，立即隐藏内容
@@ -128,7 +154,10 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
         isExpanded: !state.isExpanded,
         isHovering: false,
         hoverTimeoutId: null,
-        clickCooldown: state.isExpanded, // Only set cooldown when collapsing
+        // --- BEGIN MODIFIED COMMENT ---
+        // 仅在折叠时设置冷却
+        // --- END MODIFIED COMMENT ---
+        clickCooldown: state.isExpanded, 
       }
     })
   },
@@ -140,34 +169,48 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
         return { hoverTimeoutId: null }
       }
       
-      // Clear any existing timeout
+      // --- BEGIN COMMENT ---
+      // 清除任何现有的超时
+      // --- END COMMENT ---
       if (state.hoverTimeoutId) {
         clearTimeout(state.hoverTimeoutId)
       }
 
-      // If we're in cooldown mode after a click, don't respond to hover
+      // --- BEGIN COMMENT ---
+      // 如果我们处于点击后的冷却模式，则不响应悬停
+      // --- END COMMENT ---
       if (state.clickCooldown) {
         return { hoverTimeoutId: null }
       }
 
-      // If we're already in a clicked-expanded state, don't change anything on hover
+      // --- BEGIN COMMENT ---
+      // 如果我们已经处于点击展开状态，则悬停时不改变任何东西
+      // --- END COMMENT ---
       if (state.isExpanded && !state.isHovering) {
         return { hoverTimeoutId: null }
       }
 
-      // For hover in, add delay
+      // --- BEGIN COMMENT ---
+      // 对于悬停进入，添加延迟
+      // --- END COMMENT ---
       if (hovering && !state.isExpanded) {
         const timeoutId = window.setTimeout(() => {
-          // Only expand if we're still hovering and not in cooldown
+          // --- BEGIN COMMENT ---
+          // 仅当我们仍在悬停且不处于冷却状态时才展开
+          // --- END COMMENT ---
           if (!get().clickCooldown) {
             set({ isHovering: true, isExpanded: true, hoverTimeoutId: null })
           }
-        }, 200) // 200ms delay before expanding
+        }, 200) // --- BEGIN MODIFIED COMMENT ---
+        // 展开前延迟 200 毫秒
+        // --- END MODIFIED COMMENT ---
 
         return { hoverTimeoutId: timeoutId }
       }
 
-      // For hover out, add longer delay
+      // --- BEGIN COMMENT ---
+      // 对于悬停移出，添加更长的延迟
+      // --- END COMMENT ---
       if (!hovering && state.isHovering) {
         const timeoutId = window.setTimeout(() => {
           set({ 
@@ -176,7 +219,9 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
             hoverTimeoutId: null,
             contentVisible: false // 当收起侧边栏时，隐藏内容
           })
-        }, 300) // 300ms delay before collapsing
+        }, 300) // --- BEGIN MODIFIED COMMENT ---
+        // 折叠前延迟 300 毫秒
+        // --- END MODIFIED COMMENT ---
 
         return { hoverTimeoutId: timeoutId }
       }
@@ -187,19 +232,26 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
 
   lockExpanded: () => {
     const state = get()
-    // Clear any pending hover timeout
+    // --- BEGIN COMMENT ---
+    // 清除任何待处理的悬停超时
+    // --- END COMMENT ---
     if (state.hoverTimeoutId) {
       clearTimeout(state.hoverTimeoutId)
     }
     set({ isHovering: false, hoverTimeoutId: null })
   },
   
+  // --- BEGIN COMMENT ---
   // 移动端方法
+  // --- END COMMENT ---
   showMobileNav: () => {
     set({ 
       isExpanded: true, 
       isMobileNavVisible: true,
-      contentVisible: true // 移动端上立即显示内容
+      // --- BEGIN MODIFIED COMMENT ---
+      // 移动端上立即显示内容
+      // --- END MODIFIED COMMENT ---
+      contentVisible: true 
     })
   },
   
@@ -218,19 +270,29 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
     set({ 
       isExpanded: newState,
       isMobileNavVisible: newState,
-      contentVisible: newState // 同步内容显示状态
+      // --- BEGIN MODIFIED COMMENT ---
+      // 同步内容显示状态
+      // --- END MODIFIED COMMENT ---
+      contentVisible: newState 
     })
   },
 
+  // --- BEGIN COMMENT ---
   // 选中状态管理方法
+  // --- END COMMENT ---
   selectItem: (type: SelectedItemType, id: string | number | null) => {
     set({ 
       selectedType: type, 
       selectedId: id,
+      // --- BEGIN MODIFIED COMMENT ---
       // 确保侧边栏保持展开状态
+      // --- END MODIFIED COMMENT ---
       isExpanded: true,
       isHovering: false,
-      contentVisible: true // 确保选择项后内容可见
+      // --- BEGIN MODIFIED COMMENT ---
+      // 确保选择项后内容可见
+      // --- END MODIFIED COMMENT ---
+      contentVisible: true 
     })
   },
 
@@ -240,4 +302,4 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
       selectedId: null 
     })
   },
-})) 
+}))

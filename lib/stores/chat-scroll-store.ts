@@ -18,9 +18,11 @@ interface ChatScrollState {
   setIsAtBottom: (isBottom: boolean) => void;
   scrollRef: RefObject<HTMLElement> | null;
   setScrollRef: (ref: RefObject<HTMLElement>) => void;
-  scrollToBottom: (behavior?: ScrollBehavior, onScrollEnd?: () => void) => void; // Added onScrollEnd
+  scrollToBottom: (behavior?: ScrollBehavior, onScrollEnd?: () => void) => void;
+  // --- BEGIN COMMENT ---
   // 添加重置滚动状态的方法
-  resetScrollState: (onScrollEnd?: () => void) => void; // Added onScrollEnd
+  // --- END COMMENT ---
+  resetScrollState: (onScrollEnd?: () => void) => void;
 }
 
 // --- BEGIN COMMENT ---
@@ -38,13 +40,11 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
   // --- END COMMENT ---
   setUserScrolledUp: (scrolledUp) => {
     if (get().userScrolledUp !== scrolledUp) {
-      // console.log(`[ChatScrollStore] Setting userScrolledUp to: ${scrolledUp}`);
       set({ userScrolledUp: scrolledUp });
     }
   },
   setIsAtBottom: (isBottom) => {
     if (get().isAtBottom !== isBottom) {
-      // console.log(`[ChatScrollStore] Setting isAtBottom to: ${isBottom}`);
       set({ isAtBottom: isBottom });
     }
   },
@@ -54,8 +54,10 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
     }
   },
   
+  // --- BEGIN COMMENT ---
   // 增强版 scrollToBottom 方法，确保一定会滚动到底部
-  scrollToBottom: (behavior = 'auto', onScrollEnd) => { // Added onScrollEnd parameter
+  // --- END COMMENT ---
+  scrollToBottom: (behavior = 'auto', onScrollEnd) => {
     const { scrollRef } = get();
     if (scrollRef?.current) {
       requestAnimationFrame(() => { 
@@ -64,32 +66,44 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
             top: scrollRef.current.scrollHeight,
             behavior: behavior
           });
-          // Ensure state is consistent after programmatic scroll
+          // --- BEGIN COMMENT ---
+          // 确保程序化滚动后状态一致
+          // --- END COMMENT ---
           if (get().userScrolledUp !== false || get().isAtBottom !== true) {
             set({ userScrolledUp: false, isAtBottom: true });
           }
-          // Call the onScrollEnd callback if provided
+          // --- BEGIN COMMENT ---
+          // 如果提供了 onScrollEnd 回调，则调用它
+          // --- END COMMENT ---
           if (onScrollEnd) {
             onScrollEnd();
           }
         } else {
-          // If scrollRef.current became null somehow, still call onScrollEnd
+          // --- BEGIN COMMENT ---
+          // 如果 scrollRef.current 不知何故变为空，仍然调用 onScrollEnd
+          // --- END COMMENT ---
           if (onScrollEnd) {
             onScrollEnd();
           }
         }
       });
     } else {
-      // If there's no scrollRef, call onScrollEnd immediately
+      // --- BEGIN COMMENT ---
+      // 如果没有 scrollRef，立即调用 onScrollEnd
+      // --- END COMMENT ---
       if (onScrollEnd) {
         onScrollEnd();
       }
     }
   },
   
+  // --- BEGIN COMMENT ---
   // 添加一个新方法，用于关键事件后重置滚动状态
-  resetScrollState: (onScrollEnd) => { // Added onScrollEnd parameter
-    // Set state first, then scroll if ref is available
+  // --- END COMMENT ---
+  resetScrollState: (onScrollEnd) => {
+    // --- BEGIN COMMENT ---
+    // 首先设置状态，如果 ref 可用则滚动
+    // --- END COMMENT ---
     if (get().userScrolledUp !== false || get().isAtBottom !== true) {
       set({ userScrolledUp: false, isAtBottom: true });
     }

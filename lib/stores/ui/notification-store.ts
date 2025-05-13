@@ -5,7 +5,7 @@ type NotificationType = 'success' | 'error' | 'warning' | 'info';
 interface NotificationState {
   message: string | null;
   type: NotificationType;
-  duration: number; // in milliseconds
+  duration: number; // --- BEGIN MODIFIED COMMENT --- 单位：毫秒 --- END MODIFIED COMMENT ---
   isVisible: boolean;
   showNotification: (message: string, type?: NotificationType, duration?: number) => void;
   hideNotification: () => void;
@@ -42,4 +42,4 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     // 隐藏通知并重置消息
     set({ isVisible: false, message: null });
   },
-})); 
+}));
