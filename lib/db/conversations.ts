@@ -11,24 +11,46 @@ import { Conversation, Message } from '../types/database';
 const supabase = createClient();
 
 /**
- * 获取用户的所有对话
+ * 获取用户的所有对话，支持分页和按应用筛选
  * @param userId 用户ID
- * @returns 对话列表
+ * @param limit 每页数量，默认20
+ * @param offset 偏移量，默认0
+ * @param appId 可选的应用ID筛选
+ * @returns 对话列表和总数
  */
-export async function getUserConversations(userId: string): Promise<Conversation[]> {
-  const { data, error } = await supabase
+export async function getUserConversations(
+  userId: string, 
+  limit: number = 20, 
+  offset: number = 0,
+  appId?: string
+): Promise<{ conversations: Conversation[], total: number }> {
+  // --- BEGIN COMMENT ---
+  // 构建基础查询，添加了count选项以获取总记录数
+  // --- END COMMENT ---
+  let query = supabase
     .from('conversations')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('user_id', userId)
     .eq('status', 'active')
-    .order('updated_at', { ascending: false });
+    .order('updated_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+  
+  // 如果指定了appId，添加筛选条件
+  if (appId) {
+    query = query.eq('app_id', appId);
+  }
+  
+  const { data, error, count } = await query;
 
   if (error) {
     console.error('获取用户对话失败:', error);
-    return [];
+    return { conversations: [], total: 0 };
   }
 
-  return data as Conversation[];
+  return { 
+    conversations: data as Conversation[], 
+    total: count || 0 
+  };
 }
 
 /**
@@ -59,9 +81,19 @@ export async function getConversationById(conversationId: string): Promise<Conve
 export async function createConversation(
   conversation: Omit<Conversation, 'id' | 'created_at' | 'updated_at'>
 ): Promise<Conversation | null> {
+  // --- BEGIN COMMENT ---
+  // 添加默认值，确保新增字段有合适的初始值
+  // --- END COMMENT ---
+  const conversationWithDefaults = {
+    ...conversation,
+    external_id: conversation.external_id || null,
+    app_id: conversation.app_id || null,
+    last_message_preview: conversation.last_message_preview || null
+  };
+
   const { data, error } = await supabase
     .from('conversations')
-    .insert(conversation)
+    .insert(conversationWithDefaults)
     .select()
     .single();
 
@@ -148,9 +180,19 @@ export async function getConversationMessages(conversationId: string): Promise<M
 export async function addMessageToConversation(
   message: Omit<Message, 'id' | 'created_at'>
 ): Promise<Message | null> {
+  // --- BEGIN COMMENT ---
+  // 添加默认值，确保新增字段有合适的初始值
+  // --- END COMMENT ---
+  const messageWithDefaults = {
+    ...message,
+    external_id: message.external_id || null,
+    token_count: message.token_count || null,
+    is_synced: message.is_synced !== undefined ? message.is_synced : true
+  };
+
   const { data, error } = await supabase
     .from('messages')
-    .insert(message)
+    .insert(messageWithDefaults)
     .select()
     .single();
 
@@ -159,10 +201,16 @@ export async function addMessageToConversation(
     return null;
   }
 
-  // 更新对话的最后更新时间
+  // --- BEGIN COMMENT ---
+  // 更新对话的最后更新时间和最后消息预览
+  // 取消息内容的前100个字符作为预览
+  // --- END COMMENT ---
   await supabase
     .from('conversations')
-    .update({ updated_at: new Date().toISOString() })
+    .update({ 
+      updated_at: new Date().toISOString(),
+      last_message_preview: message.content.substring(0, 100) // 取前100个字符作为预览
+    })
     .eq('id', message.conversation_id);
 
   return data as Message;
@@ -186,4 +234,33 @@ export async function updateMessageStatus(id: string, status: Message['status'])
   }
 
   return true;
+}
+
+/**
+ * 创建新的空对话
+ * @param userId 用户ID
+ * @param appId 应用ID
+ * @param initialTitle 初始标题（可选）
+ * @returns 创建的对话对象
+ */
+export async function createEmptyConversation(
+  userId: string,
+  appId: string,
+  initialTitle?: string
+): Promise<Conversation | null> {
+  // --- BEGIN COMMENT ---
+  // 创建一个新的空对话，设置初始值
+  // --- END COMMENT ---
+  return await createConversation({
+    user_id: userId,
+    title: initialTitle || '新对话',
+    summary: null,
+    ai_config_id: null,
+    app_id: appId,
+    external_id: null,
+    org_id: null,
+    settings: {},
+    status: 'active',
+    last_message_preview: null
+  });
 }

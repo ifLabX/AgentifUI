@@ -69,6 +69,15 @@ export interface Conversation {
   created_at: string;
   updated_at: string;
   status: string;
+  // --- BEGIN COMMENT ---
+  // 以下是新增字段，用于支持与 Dify 的集成
+  // external_id: Dify 中的会话 ID
+  // app_id: 关联的 Dify 应用 ID
+  // last_message_preview: 最后一条消息的预览，用于在侧边栏显示
+  // --- END COMMENT ---
+  external_id: string | null;
+  app_id: string | null;
+  last_message_preview: string | null;
 }
 
 export interface Message {
@@ -80,6 +89,15 @@ export interface Message {
   metadata: Record<string, any>;
   created_at: string;
   status: MessageStatus;
+  // --- BEGIN COMMENT ---
+  // 以下是新增字段，用于支持与 Dify 的集成
+  // external_id: Dify 中的消息 ID
+  // token_count: 消息的 token 数量，用于统计使用量
+  // is_synced: 消息是否已同步到 Dify
+  // --- END COMMENT ---
+  external_id: string | null;
+  token_count: number | null;
+  is_synced: boolean;
 }
 
 // API密钥管理
