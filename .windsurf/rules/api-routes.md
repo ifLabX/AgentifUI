@@ -1,0 +1,98 @@
+---
+trigger: model_decision
+description: 
+globs: 
+---
+# API 路由设计指南
+
+本文档提供关于LLM-EduHub项目API路由的设计规范和开发指南。
+
+## 路由结构
+
+API路由位于`app/api/`目录下，采用Next.js 13+ App Router模式组织：
+
+```
+app/api/
+  ├── auth/               # 认证相关API
+  │   ├── identify/       # 用户身份识别
+  │   └── sso/            # 单点登录
+  │       └── initiate/   # SSO启动端点
+  └── dify/               # Dify API集成
+      └── [appId]/        # 动态路由，基于Dify应用ID
+          └── [...slug]/  # 通配路由处理器
+              └── route.ts # 代理实现
+```
+
+## 路由命名规范
+
+1. **目录命名**：
+   - 使用小写kebab-case（例如：`user-profile/`）
+   - 使用方括号表示动态路由段（例如：`[appId]/`）
+   - 使用扩展语法表示通配路由（例如：`[...slug]/`）
+
+2. **文件命名**：
+   - 主要使用`route.ts`作为API处理文件
+   - 相关辅助功能可以创建同级别的其他文件（例如：`utils.ts`）
+
+## 路由处理函数
+
+每个API路由应该导出以下标准HTTP方法之一或多个作为处理函数：
+
+```typescript
+// app/api/example/route.ts
+export async function GET(request: Request) {
+  // 处理GET请求
+}
+
+export async function POST(request: Request) {
+  // 处理POST请求
+}
+
+// 其他方法：PUT, DELETE, PATCH, HEAD, OPTIONS
+```
+
+## 最佳实践
+
+1. **路由组织**：
+   - 按功能域或服务组织路由
+   - 保持合理的嵌套深度（不超过4级）
+
+2. **请求验证**：
+   - 对所有入站请求进行严格验证
+   - 使用类型安全的请求解析（例如Zod）
+
+3. **错误处理**：
+   - 使用标准HTTP状态码
+   - 提供清晰的错误消息
+   - 实现统一的错误响应结构
+
+4. **响应格式**：
+   - 使用一致的响应格式
+   - 必要时支持内容协商（Content-Type）
+
+```typescript
+// 标准响应结构示例
+export type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+  };
+};
+```
+
+5. **中间件集成**：
+   - 路由中间件应该在项目根目录的`middleware.ts`中定义
+   - 按需为特定路由配置中间件
+
+## Dify API代理模式
+
+当实现Dify API代理时，请遵循以下模式：
+
+1. 使用动态段和通配段捕获所有Dify API路径
+2. 在代理实现中保持请求和响应头的一致性
+3. 必要时处理流式响应
+4. 实现适当的错误处理和超时处理
+
+例如，查看[app/api/dify/[appId]/[...slug]/route.ts](mdc:app/api/dify/[appId]/[...slug]/route.ts)了解完整实现。
