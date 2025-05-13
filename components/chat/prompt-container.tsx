@@ -74,9 +74,11 @@ export const PromptContainer = ({ className }: PromptContainerProps) => {
     return () => resetPanel()
   }, [resetPanel])
 
-  // 只在组件挂载完成后才显示或隐藏
+  // --- BEGIN MODIFIED COMMENT ---
+  // 只在组件挂载完成后才显示
+  // 删除对 isWelcomeScreen 的检查，因为现在由父组件控制显示
+  // --- END MODIFIED COMMENT ---
   if (!isMounted) return null
-  if (!isWelcomeScreen) return null
   
   // 计算基于输入框高度增加的半个偏移量
   const offsetY = Math.max(0, (inputHeight - INITIAL_INPUT_HEIGHT) / 2)

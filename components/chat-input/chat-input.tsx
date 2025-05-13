@@ -56,6 +56,15 @@ interface ChatInputProps {
   isProcessing?: boolean
   isWaitingForResponse?: boolean
   isWaiting?: boolean
+  // --- BEGIN COMMENT ---
+  // 是否处于欢迎界面状态
+  // --- END COMMENT ---
+  isWelcomeScreen?: boolean
+  // --- BEGIN COMMENT ---
+  // 是否正在从对话界面过渡到欢迎界面
+  // 当为 true 时，使用闪烁效果而不是滑动
+  // --- END COMMENT ---
+  isTransitioningToWelcome?: boolean
 }
 
 export const ChatInput = ({
@@ -66,7 +75,9 @@ export const ChatInput = ({
   onStop,
   isProcessing = false,
   isWaitingForResponse = false,
-  isWaiting = false
+  isWaiting = false,
+  isWelcomeScreen: externalIsWelcomeScreen = false,
+  isTransitioningToWelcome = false
 }: ChatInputProps) => {
   const { widthClass } = useChatWidth()
   const { setInputHeight } = useChatLayoutStore()
@@ -342,8 +353,20 @@ export const ChatInput = ({
   const isUploading = attachments.some(f => f.status === 'uploading');
   const hasError = attachments.some(f => f.status === 'error');
 
+  // --- BEGIN COMMENT ---
+  // 优先使用外部传入的欢迎屏幕状态，如果没有则使用内部状态
+  // 这样可以确保在页面组件中控制欢迎屏幕的显示状态
+  // --- END COMMENT ---
+  const effectiveIsWelcomeScreen = externalIsWelcomeScreen || isWelcomeScreen;
+  
   return (
-    <ChatContainer isWelcomeScreen={isWelcomeScreen} isDark={isDark} className={className} widthClass={widthClass}>
+    <ChatContainer 
+      isWelcomeScreen={effectiveIsWelcomeScreen} 
+      isDark={isDark} 
+      className={className} 
+      widthClass={widthClass}
+      isTransitioningToWelcome={isTransitioningToWelcome}
+    >
       {/* 附件预览栏，仅当有附件时显示 */}
       <AttachmentPreviewBar
         isDark={isDark}

@@ -77,15 +77,41 @@ export function useChatInterface() {
       text: message, isUser: true, attachments: messageAttachments 
     });
 
+    // --- BEGIN MODIFIED COMMENT ---
+    // 立即关闭欢迎屏幕，不等待响应返回
+    // 这确保用户在点击发送按钮后立即看到对话界面
+    // --- END MODIFIED COMMENT ---
     if (isWelcomeScreen) {
       setIsWelcomeScreen(false);
+      
+      // 如果当前URL是 /chat/new，则立即更新路由到一个临时状态
+      // 这样可以立即触发UI更新，而不需要等待API返回对话ID
+      if (window.location.pathname === '/chat/new') {
+        // 使用 history.replaceState 而不是 router.replace
+        // 这样可以立即更新URL而不触发完整的路由变化
+        window.history.replaceState({}, '', '/chat/temp-' + Date.now());
+      }
     }
 
     let assistantMessageId: string | null = null;
     let streamError: Error | null = null;
     setCurrentTaskId(null); 
     let routeUpdatedViaCallback = false;
-    const initialConversationIdForThisSubmit = useChatStore.getState().currentConversationId;
+    
+    // --- BEGIN MODIFIED COMMENT ---
+    // 判断当前是否在 /chat/new 路由下
+    // 如果是，则强制将初始对话ID设置为 null，确保创建新的对话
+    // --- END MODIFIED COMMENT ---
+    let initialConversationIdForThisSubmit = useChatStore.getState().currentConversationId;
+    
+    // 如果当前路径是 /chat/new 或者包含 temp-（我们之前设置的临时状态）
+    // 则强制将初始对话ID设置为 null，确保创建新的对话
+    if (window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-')) {
+      console.log('[handleSubmit] 检测到新对话路由，强制创建新对话');
+      initialConversationIdForThisSubmit = null;
+      // 确保全局状态也被设置为 null
+      setCurrentConversationId(null);
+    }
     
     // --- BEGIN COMMENT ---
     // 为新的提交重置 chunkBuffer
@@ -102,11 +128,20 @@ export function useChatInterface() {
       if (Array.isArray(files) && files.length > 0 && fileInputVarName) {
         inputs[fileInputVarName] = files.length === 1 ? files[0] : files;
       }
+      // --- BEGIN COMMENT ---
+      // 准备请求负载
+      // 当 initialConversationIdForThisSubmit 为 null 时，表示创建新对话
+      // 此时需要设置 auto_generate_name 为 true，以便自动生成标题
+      // --- END COMMENT ---
       const payload: DifyChatRequestPayload = {
-        query: message, user: currentUserIdentifier, response_mode: 'streaming',
+        query: message, 
+        user: currentUserIdentifier, 
+        response_mode: 'streaming',
         conversation_id: initialConversationIdForThisSubmit,
         inputs,
         ...(Array.isArray(files) && files.length > 0 && { files }),
+        // 当创建新对话时，自动生成标题
+        auto_generate_name: initialConversationIdForThisSubmit === null,
       };
 
       const response = await streamDifyChat(

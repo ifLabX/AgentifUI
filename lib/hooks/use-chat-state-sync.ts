@@ -26,6 +26,8 @@ export function useChatStateSync() {
     setIsWelcomeScreen(isWelcomeScreen)
   }, [isWelcomeScreen, setIsWelcomeScreen])
   
-  // 返回当前状态，方便页面使用
-  return { isDark, isWelcomeScreen }
+  // --- BEGIN MODIFIED COMMENT ---
+  // 返回当前状态和设置函数，方便页面使用
+  // --- END MODIFIED COMMENT ---
+  return { isDark, isWelcomeScreen, setIsWelcomeScreen }
 } 

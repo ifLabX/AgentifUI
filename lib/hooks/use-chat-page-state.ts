@@ -1,0 +1,73 @@
+import { useState, useCallback, useEffect } from 'react';
+import { useChatStore } from '@lib/stores/chat-store';
+import { useChatStateSync } from './use-chat-state-sync';
+
+/**
+ * 聊天页面状态管理钩子
+ * 
+ * 集中管理聊天页面的状态，减少页面组件中的状态管理逻辑
+ */
+export function useChatPageState(conversationIdFromUrl: string | undefined) {
+  // 从 useChatStore 中获取必要的状态和方法
+  const setCurrentConversationId = useChatStore((state) => state.setCurrentConversationId);
+  const clearMessages = useChatStore(state => state.clearMessages);
+  
+  // 从 useChatStateSync 中获取欢迎屏幕状态和设置方法
+  const { isWelcomeScreen, setIsWelcomeScreen } = useChatStateSync();
+  
+  // 本地状态
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTransitioningToWelcome, setIsTransitioningToWelcome] = useState(false);
+  
+  // 处理 URL 参数变化
+  useEffect(() => {
+    // 如果 URL 中的 conversationId 是 'new'，则设置为 null、清除消息历史并显示欢迎页面
+    if (conversationIdFromUrl === 'new') {
+      console.log('[ChatPageState] 检测到 new 路由，清除消息历史并显示欢迎页面');
+      setCurrentConversationId(null);
+      setIsWelcomeScreen(true);
+      // 清除所有消息历史，确保新对话从空开始
+      clearMessages();
+      // 设置为从对话界面到欢迎界面的过渡，使用闪烁效果
+      setIsTransitioningToWelcome(true);
+    } else if (conversationIdFromUrl) {
+      // 否则，如果有 conversationId，则设置它并关闭欢迎页面
+      console.log(`[ChatPageState] 设置对话 ID: ${conversationIdFromUrl}`);
+      setCurrentConversationId(conversationIdFromUrl);
+      setIsWelcomeScreen(false);
+      // 不是从对话界面到欢迎界面的过渡
+      setIsTransitioningToWelcome(false);
+    } else {
+      // 如果没有 conversationId，则设置为 null
+      setCurrentConversationId(null);
+    }
+  }, [conversationIdFromUrl, setCurrentConversationId, setIsWelcomeScreen, clearMessages]);
+  
+  // 包装 handleSubmit 函数
+  const wrapHandleSubmit = useCallback((originalHandleSubmit: (message: string, files?: any[]) => Promise<any>) => {
+    return async (message: string, files?: any[]) => {
+      // 立即设置提交状态为 true
+      setIsSubmitting(true);
+      // 立即关闭欢迎界面
+      setIsWelcomeScreen(false);
+      // 不是从对话界面到欢迎界面的过渡，使用滑动效果
+      setIsTransitioningToWelcome(false);
+      
+      // 如果当前是新对话（URL 为 /chat/new 或者包含 temp-），则清除消息历史
+      if (window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-')) {
+        console.log('[ChatPageState] 检测到新对话路由，清除消息历史');
+        clearMessages();
+      }
+      
+      // 调用原始的 handleSubmit 函数
+      return originalHandleSubmit(message, files);
+    };
+  }, [setIsWelcomeScreen, clearMessages]);
+  
+  return {
+    isWelcomeScreen,
+    isSubmitting,
+    isTransitioningToWelcome,
+    wrapHandleSubmit
+  };
+}

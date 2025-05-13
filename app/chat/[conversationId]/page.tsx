@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ChatInput } from '@components/chat-input';
 import { 
@@ -12,6 +12,7 @@ import {
 } from '@components/chat';
 import { FilePreviewCanvas } from '@components/file-preview/file-preview-canvas';
 import { useChatInterface, useChatStateSync } from '@lib/hooks';
+import { useChatPageState } from '@lib/hooks/use-chat-page-state';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
@@ -24,37 +25,36 @@ export default function ChatPage() {
   const params = useParams();
   const conversationIdFromUrl = params.conversationId as string | undefined;
   
-  const setCurrentConversationId = useChatStore((state) => state.setCurrentConversationId);
+  // --- BEGIN COMMENT ---
+  // 使用 useChatPageState hook 管理聊天页面状态
+  // 这样可以减少页面组件中的状态管理逻辑
+  // --- END COMMENT ---
+  const {
+    isWelcomeScreen,
+    isSubmitting,
+    isTransitioningToWelcome,
+    wrapHandleSubmit
+  } = useChatPageState(conversationIdFromUrl);
+  
   const { inputHeight } = useChatLayoutStore();
   const isPreviewOpen = useFilePreviewStore((state) => state.isPreviewOpen);
-
-  const { isWelcomeScreen } = useChatStateSync();
   const { colors, isDark } = useThemeColors();
   
   const { 
     messages, 
-    handleSubmit, 
+    handleSubmit: originalHandleSubmit, 
     isProcessing,        
     handleStopProcessing, 
   } = useChatInterface();
+  
+  // --- BEGIN COMMENT ---
+  // 使用 wrapHandleSubmit 包装原始的 handleSubmit 函数
+  // --- END COMMENT ---
+  const handleSubmit = wrapHandleSubmit(originalHandleSubmit);
 
   const scrollRef = useChatScroll(messages);
 
   const isWaitingForResponse = useChatStore((state) => state.isWaitingForResponse);
-
-  useEffect(() => {
-    const idToSet = (conversationIdFromUrl && conversationIdFromUrl !== 'new') ? conversationIdFromUrl : null;
-    console.log(`[ChatPage Effect] Syncing URL param. conversationIdFromUrl: ${conversationIdFromUrl}, Setting store ID to: ${idToSet}`);
-    setCurrentConversationId(idToSet);
-
-    // --- BEGIN COMMENT ---
-    // "new" 是一个特殊标识符，用于在 URL 中显式表示用户想要开始一个新对话。
-    // 在 handleSubmit 中，当首次从 API 获取到真实的 conversationId 后，
-    // URL 会被替换成 /chat/[realId]。
-    // 未来如果实现"自动重命名对话"（例如根据第一条消息内容），
-    // 可能也需要参考或处理这个初始的 "new" 状态。
-    // --- END COMMENT ---
-  }, [conversationIdFromUrl, setCurrentConversationId]);
 
   const chatInputHeightVar = `${inputHeight || 80}px`;
 
@@ -78,7 +78,15 @@ export default function ChatPage() {
         style={{ '--chat-input-height': chatInputHeightVar } as React.CSSProperties}
       >
         <div className="flex-1 min-h-0">
-          {isWelcomeScreen && useChatStore.getState().currentConversationId === null ? (
+          {/* --- BEGIN MODIFIED COMMENT ---
+          显示欢迎屏幕的条件：
+          1. 当前是欢迎屏幕状态 且 没有当前对话ID 且 不在提交消息中
+          2. 或者当前URL路径是 /chat/new 且 不在提交消息中
+          --- END MODIFIED COMMENT --- */}
+          {!isSubmitting && (
+            (isWelcomeScreen && useChatStore.getState().currentConversationId === null) || 
+            conversationIdFromUrl === 'new'
+          ) ? (
             <WelcomeScreen />
           ) : (
             <div 
@@ -103,9 +111,16 @@ export default function ChatPage() {
           isProcessing={isProcessing}
           isWaiting={isWaitingForResponse}
           onStop={handleStopProcessing}
+          isWelcomeScreen={isWelcomeScreen}
+          isTransitioningToWelcome={isTransitioningToWelcome}
         />
         
-        {useChatStore.getState().currentConversationId === null && <PromptContainer />}
+        {/* --- BEGIN MODIFIED COMMENT ---
+        显示提示模板容器的条件：
+        1. 当前是欢迎屏幕状态 或 当前URL路径是 /chat/new
+        2. 且 不在提交消息中
+        --- END MODIFIED COMMENT --- */}
+        {!isSubmitting && (isWelcomeScreen || conversationIdFromUrl === 'new') && <PromptContainer />}
       </div>
       
       <FilePreviewCanvas /> 
