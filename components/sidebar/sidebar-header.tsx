@@ -5,10 +5,12 @@ import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { cn } from "@lib/utils"
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { useTheme } from "@lib/hooks/use-theme"
+import { useRouter } from "next/navigation"
 
 export function SidebarHeader() {
   const { isExpanded, toggleSidebar } = useSidebarStore()
   const { isDark } = useTheme()
+  const router = useRouter()
 
   return (
     <div className={cn(
@@ -31,7 +33,7 @@ export function SidebarHeader() {
             : "text-gray-500 group-hover:text-primary"
         )} />}
         text="发起新对话"
-        onClick={() => console.log("New chat")}
+        onClick={() => router.push('/chat/new')}
         aria-label="发起新对话"
         className={cn(
           "group font-medium",
