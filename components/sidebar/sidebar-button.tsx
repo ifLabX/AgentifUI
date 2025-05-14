@@ -9,9 +9,10 @@ interface SidebarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   icon: React.ReactNode
   text: string
   active?: boolean
+  isLoading?: boolean
 }
 
-export function SidebarButton({ icon, text, active = false, className, onClick, ...props }: SidebarButtonProps) {
+export function SidebarButton({ icon, text, active = false, isLoading = false, className, onClick, ...props }: SidebarButtonProps) {
   const { isExpanded, lockExpanded } = useSidebarStore()
   const { isDark } = useTheme()
 
@@ -20,6 +21,9 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
     onClick?.(e)
   }
 
+  // --- BEGIN COMMENT ---
+  // 根据 isLoading 状态决定是否显示骨架屏
+  // --- END COMMENT ---
   return (
     <button
       className={cn(
@@ -50,27 +54,50 @@ export function SidebarButton({ icon, text, active = false, className, onClick, 
         className,
       )}
       onClick={handleClick}
+      disabled={isLoading}
       {...props}
     >
-      <span className={cn(
-        "flex h-5 w-5 items-center justify-center",
-        "transition-[margin,transform] duration-200 ease-in-out", // 移除 color 过渡
-        
-        // 保持图标颜色一致，不因选中状态而改变
-        isDark ? "text-gray-400" : "text-gray-500",
-        
-        !isExpanded && "scale-110",
-        !isExpanded && "-ml-0.5",
-      )}>
-        {icon}
-      </span>
+      {isLoading ? (
+        <span className={cn(
+          "flex h-5 w-5 items-center justify-center",
+          "transition-[margin,transform] duration-200 ease-in-out",
+          isDark ? "text-gray-400" : "text-gray-500",
+          !isExpanded && "scale-110",
+          !isExpanded && "-ml-0.5",
+        )}>
+          <div className={cn(
+            "h-4 w-4 animate-pulse rounded-full", 
+            isDark ? "bg-stone-700" : "bg-stone-300"
+          )} />
+        </span>
+      ) : (
+        <span className={cn(
+          "flex h-5 w-5 items-center justify-center",
+          "transition-[margin,transform] duration-200 ease-in-out", // 移除 color 过渡
+          
+          // 保持图标颜色一致，不因选中状态而改变
+          isDark ? "text-gray-400" : "text-gray-500",
+          
+          !isExpanded && "scale-110",
+          !isExpanded && "-ml-0.5",
+        )}>
+          {icon}
+        </span>
+      )}
 
       <span className={cn(
         "absolute left-10 whitespace-nowrap", // 移除颜色过渡效果
         // 移除 active && "font-medium"，完全去除字重变化
         isExpanded ? "block" : "hidden"
       )}>
-        {text}
+        {isLoading ? (
+          <div className={cn(
+            "h-4 w-32 animate-pulse rounded-md", 
+            isDark ? "bg-stone-700" : "bg-stone-300"
+          )} />
+        ) : (
+          text
+        )}
       </span>
     </button>
   )

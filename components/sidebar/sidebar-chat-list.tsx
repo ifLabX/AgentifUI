@@ -8,7 +8,7 @@ import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { MoreButton, DropdownMenu, PinButton } from "@components/ui"
 import { useMobile } from "@lib/hooks/use-mobile"
-import { useSidebarConversations } from "@lib/hooks/use-sidebar-conversations"
+import { useCombinedConversations, CombinedConversation } from "@lib/hooks/use-combined-conversations"
 import { Conversation } from "@lib/types/database"
 import { format, formatDistanceToNow } from "date-fns"
 import { zhCN } from "date-fns/locale"
@@ -35,7 +35,7 @@ export function SidebarChatList({
 }: SidebarChatListProps) {
   // 使用 useSidebarStore 获取侧边栏状态
   // 使用 useMobile 检测是否为移动设备
-  // 使用 useSidebarConversations 获取会话列表
+  // 使用 useCombinedConversations 获取整合后的会话列表（包含临时对话）
   const { lockExpanded } = useSidebarStore()
   const isMobile = useMobile()
   const [showAllChats, setShowAllChats] = React.useState(false)
@@ -44,21 +44,28 @@ export function SidebarChatList({
     isLoading, 
     error, 
     refresh 
-  } = useSidebarConversations()
+  } = useCombinedConversations()
   
-  // 将会话分类为固定和非固定
-  // 注意：目前数据库中没有固定字段，我们使用元数据中的 isPinned 标记
-  // 后续可以扩展数据库模型添加该字段
+  // --- BEGIN COMMENT ---
+  // 将会话分类为固定、非固定和临时对话
+  // 注意：
+  // 1. 目前数据库中没有固定字段，我们使用元数据中的 isPinned 标记
+  // 2. 临时对话通过 isPending 标记识别，不会被固定
+  // --- END COMMENT ---
   const pinnedChats = React.useMemo(() => {
     return conversations.filter(chat => 
-      chat.metadata && typeof chat.metadata === 'object' && chat.metadata.isPinned === true
+      !chat.isPending && chat.metadata && typeof chat.metadata === 'object' && chat.metadata.isPinned === true
     );
   }, [conversations]);
   
   const unpinnedChats = React.useMemo(() => {
     return conversations.filter(chat => 
-      !chat.metadata || typeof chat.metadata !== 'object' || chat.metadata.isPinned !== true
+      !chat.isPending && (!chat.metadata || typeof chat.metadata !== 'object' || chat.metadata.isPinned !== true)
     );
+  }, [conversations]);
+  
+  const pendingChats = React.useMemo(() => {
+    return conversations.filter(chat => chat.isPending === true);
   }, [conversations]);
 
   // --- BEGIN COMMENT ---
@@ -204,6 +211,49 @@ export function SidebarChatList({
         近期对话
       </div>
       
+      {/* 临时对话部分 */}
+      {pendingChats.length > 0 && (
+        <div className="mb-2">
+          <div className="space-y-1">
+            {pendingChats.map(chat => {
+              // 根据 pendingStatus 确定是否显示骨架屏
+              const isLoading = chat.pendingStatus === 'creating' || 
+                               chat.pendingStatus === 'title_fetching' || 
+                               chat.pendingStatus === 'streaming_message';
+              
+              return (
+                <div className="flex items-center w-full group" key={chat.tempId || chat.id}>
+                  <SidebarButton
+                    icon={<SidebarChatIcon size="sm" isDark={isDark} />}
+                    text={chat.title || '新对话'}
+                    active={chat.id === selectedId}
+                    onClick={() => onSelectChat(chat.id)}
+                    className="flex-1 mr-1"
+                    isLoading={isLoading}
+                  >
+                    <div className="flex flex-col items-start overflow-hidden ml-2">
+                      {chat.pendingStatus === 'streaming_message' && (
+                        <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
+                          正在生成回答...
+                        </span>
+                      )}
+                      {chat.pendingStatus === 'title_fetching' && (
+                        <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
+                          正在生成标题...
+                        </span>
+                      )}
+                      <span className="text-xs text-stone-400 dark:text-stone-500">
+                        刚刚
+                      </span>
+                    </div>
+                  </SidebarButton>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      
       {/* 固定的会话部分 */}
       {pinnedChats.length > 0 && (
         <div className="mb-2">
@@ -277,6 +327,7 @@ export function SidebarChatList({
                 active={chat.id === selectedId}
                 onClick={() => onSelectChat(chat.id)}
                 className="flex-1 mr-1"
+                isLoading={false}
               >
                 <div className="flex flex-col items-start overflow-hidden ml-2">
                   {chat.last_message_preview && (

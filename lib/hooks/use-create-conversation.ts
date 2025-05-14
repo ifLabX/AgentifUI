@@ -26,17 +26,20 @@ interface UseCreateConversationReturn {
 
 // --- BEGIN COMMENT ---
 // Hook 用于封装新对话的创建流程，包括：
-// 1. 在 pending store 中注册一个临时对话
-// 2. 调用 Dify chat-messages API (auto_generate_name: false) 创建对话并获取流
-// 3. 在获取到 realConvId 后，立即异步调用 Dify renameConversation API (auto_generate: true) 获取标题
+// 1. 在 pending store 中注册一个临时对话，状态为 'creating'
+// 2. 开始流式消息前，更新状态为 'streaming_message'
+// 3. 获取到 realConvId 后，更新状态为 'stream_completed_title_pending'
+// 4. 开始获取标题时，更新状态为 'title_fetching'
+// 5. 标题获取成功后，更新状态为 'title_resolved'
+// 6. 如果任何步骤失败，更新状态为 'failed'
 // --- END COMMENT ---
 export function useCreateConversation(): UseCreateConversationReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any>(null);
 
   const addPending = usePendingConversationStore((state) => state.addPending);
-  const setRealId = usePendingConversationStore((state) => state.setRealId);
-  const updateTitleAndStatus = usePendingConversationStore((state) => state.updateTitleAndStatus);
+  const setRealIdAndStatus = usePendingConversationStore((state) => state.setRealIdAndStatus);
+  const updateTitle = usePendingConversationStore((state) => state.updateTitle);
   const updateStatus = usePendingConversationStore((state) => state.updateStatus);
 
   const initiateNewConversation = useCallback(
@@ -56,6 +59,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
       const tempConvId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       addPending(tempConvId, "创建中..."); // 初始占位标题
+      updateStatus(tempConvId, 'creating');
 
       let streamResponse: DifyStreamResponse | null = null;
       let realConvIdFromStream: string | null = null;
@@ -63,6 +67,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
       try {
         // Step 1: 创建对话并开始流式消息 (auto_generate_name: false)
+        updateStatus(tempConvId, 'streaming_message');
         const chatPayload: DifyChatRequestPayload = {
           ...payloadData,
           user: userIdentifier,
@@ -78,25 +83,27 @@ export function useCreateConversation(): UseCreateConversationReturn {
             if (id && !realConvIdFromStream) {
               realConvIdFromStream = id;
               console.log(`[useCreateConversation] Real conversation ID received from stream: ${id}`);
-              setRealId(tempConvId, id); // 更新 pending store
-              updateStatus(id, 'untitled'); // 状态仍是 untitled，等待标题
+              // 更新状态为 stream_completed_title_pending，表示流已经开始但标题尚未获取
+              setRealIdAndStatus(tempConvId, id, 'stream_completed_title_pending');
+              // 更新状态为标题获取中
+              updateStatus(id, 'title_fetching');
 
               // Step 2: 异步获取/生成标题 (一旦有了 realConvId)
               renameConversation(appId, id, { user: userIdentifier, auto_generate: true })
                 .then(renameResponse => {
                   if (renameResponse && renameResponse.name) {
                     console.log(`[useCreateConversation] Title fetched for ${id}: ${renameResponse.name}`);
-                    updateTitleAndStatus(id, renameResponse.name, 'resolved');
+                    updateTitle(id, renameResponse.name, true); // 更新为最终标题
                   } else {
                     console.warn(`[useCreateConversation] Title fetch for ${id} returned no name. Setting to 'Untitled'.`);
-                    updateTitleAndStatus(id, "Untitled", 'untitled'); // 标题获取失败或为空，但对话本身可能没问题
+                    updateTitle(id, "Untitled", true); // 标题获取失败或为空，但对话本身可能没问题
                   }
                 })
                 .catch(renameError => {
                   console.error(`[useCreateConversation] Error fetching title for ${id}:`, renameError);
                   // 即使标题获取失败，对话流可能仍然成功，所以只更新标题为 "Untitled"
                   // 除非 renameError 表示一个严重到需要将整个 pending conversation 标记为 failed 的问题
-                  updateTitleAndStatus(id, "Untitled (获取标题失败)", 'untitled'); 
+                  updateTitle(id, "Untitled (获取标题失败)", true); 
                 });
             }
           }
@@ -116,21 +123,21 @@ export function useCreateConversation(): UseCreateConversationReturn {
         if (realConvIdFromStream && !usePendingConversationStore.getState().getPendingByRealId(realConvIdFromStream)?.realId) {
             // 如果回调由于某种原因没有及时设置 realId (例如流非常快，回调前的检查通过了)
             // 在这里再次确保设置
-            setRealId(tempConvId, realConvIdFromStream);
-            updateStatus(realConvIdFromStream, 'untitled');
+            setRealIdAndStatus(tempConvId, realConvIdFromStream, 'stream_completed_title_pending');
+            updateStatus(realConvIdFromStream, 'title_fetching');
 
             // 再次尝试触发标题获取，以防回调中的逻辑未执行或执行太晚
             renameConversation(appId, realConvIdFromStream, { user: userIdentifier, auto_generate: true })
             .then(renameResponse => {
               if (renameResponse && renameResponse.name) {
-                updateTitleAndStatus(realConvIdFromStream!, renameResponse.name, 'resolved');
+                updateTitle(realConvIdFromStream!, renameResponse.name, true);
               } else {
-                updateTitleAndStatus(realConvIdFromStream!, "Untitled", 'untitled');
+                updateTitle(realConvIdFromStream!, "Untitled", true);
               }
             })
             .catch(renameError => {
               console.error(`[useCreateConversation] Error fetching title (fallback) for ${realConvIdFromStream}:`, renameError);
-              updateTitleAndStatus(realConvIdFromStream!, "Untitled (获取标题失败)", 'untitled');
+              updateTitle(realConvIdFromStream!, "Untitled (获取标题失败)", true);
             });
         }
 
@@ -149,11 +156,11 @@ export function useCreateConversation(): UseCreateConversationReturn {
         setIsLoading(false);
         updateStatus(tempConvId, 'failed'); // 标记这个临时对话创建失败
         // 可以在这里设置一个更具体的错误标题
-        updateTitleAndStatus(tempConvId, "创建对话失败", 'failed');
+        updateTitle(tempConvId, "创建对话失败", true);
         return { tempConvId, error: e };
       }
     },
-    [addPending, setRealId, updateTitleAndStatus, updateStatus]
+    [addPending, setRealIdAndStatus, updateTitle, updateStatus]
   );
 
   return {

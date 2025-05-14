@@ -6,8 +6,9 @@ import { create } from 'zustand';
 export interface PendingConversation {
   tempId: string; // 客户端生成的临时 ID
   realId?: string; // 从后端获取的真实对话 ID
-  status: 'untitled' | 'resolved' | 'failed'; // 'untitled': 标题未知或加载中, 'resolved': 标题已获取, 'failed': 获取失败
-  title: string; // "加载中...", "新对话...", "Untitled", 或真实标题
+  status: 'creating' | 'title_fetching' | 'streaming_message' | 'stream_completed_title_pending' | 'title_resolved' | 'failed'; // 会话状态
+  title: string; // 当前显示的标题 (可能是 "创建中...", "新对话...", "Untitled", 或真实标题)
+  isTitleFinal: boolean; // 标题是否已最终确定从 /name API 获取
 }
 
 // --- BEGIN COMMENT ---
@@ -24,9 +25,9 @@ interface PendingConversationState {
   // Actions
   // --- END COMMENT ---
   addPending: (tempId: string, initialTitle?: string) => void;
-  setRealId: (tempId: string, realId: string) => void; // 仅设置 realId，状态通常保持 'untitled'
-  updateTitleAndStatus: (id: string, title: string, status: PendingConversation['status']) => void; // id 可以是 tempId 或 realId
-  updateStatus: (id: string, status: PendingConversation['status']) => void; // id 可以是 tempId 或 realId. 主要用于设置为 'failed' 或特殊情况
+  setRealIdAndStatus: (tempId: string, realId: string, status: PendingConversation['status']) => void;
+  updateStatus: (id: string, status: PendingConversation['status']) => void; // id 可以是 tempId 或 realId
+  updateTitle: (id: string, title: string, isFinal: boolean) => void; // 更新标题并设置是否为最终标题
   removePending: (id: string) => void; // id 可以是 tempId 或 realId
   
   // --- BEGIN COMMENT ---
@@ -42,42 +43,43 @@ interface PendingConversationState {
 export const usePendingConversationStore = create<PendingConversationState>((set, get) => ({
   pendingConversations: new Map(),
 
-  addPending: (tempId, initialTitle = "加载中...") => {
+  addPending: (tempId, initialTitle = "创建中...") => {
     set((state) => {
       const newMap = new Map(state.pendingConversations);
       if (newMap.has(tempId)) {
-        console.warn(`[PendingConversationStore] Attempted to add existing tempId: ${tempId}`);
+        console.warn(`[PendingConversationStore] 尝试添加已存在的临时ID: ${tempId}`);
         return state; 
       }
       newMap.set(tempId, {
         tempId,
-        status: 'untitled', // 初始状态为 'untitled'
+        status: 'creating', // 初始状态为 'creating'
         title: initialTitle,
+        isTitleFinal: false, // 初始标题不是最终标题
       });
       return { pendingConversations: newMap };
     });
   },
 
-  setRealId: (tempId: string, realId: string) => {
+  setRealIdAndStatus: (tempId: string, realId: string, status: PendingConversation['status']) => {
     set((state) => {
       const newMap = new Map(state.pendingConversations);
       const entry = newMap.get(tempId);
       if (entry) {
-        newMap.set(tempId, { ...entry, realId }); // 状态保持不变，通常是 'untitled'
+        newMap.set(tempId, { ...entry, realId, status });
         return { pendingConversations: newMap };
       }
-      console.warn(`[PendingConversationStore] tempId not found for setRealId: ${tempId}`);
+      console.warn(`[PendingConversationStore] 未找到临时ID: ${tempId}`);
       return state;
     });
   },
 
-  updateTitleAndStatus: (id: string, title: string, status: PendingConversation['status']) => {
+  updateTitle: (id: string, title: string, isFinal: boolean) => {
     set((state) => {
       const newMap = new Map(state.pendingConversations);
       let entryKey: string | undefined = id;
-      let entry = newMap.get(id); 
+      let entry = newMap.get(id); // 尝试按 tempId 查找
 
-      if (!entry) { 
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
         for (const [key, value] of newMap.entries()) {
           if (value.realId === id) {
             entry = value;
@@ -88,10 +90,13 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       }
       
       if (entry && entryKey) {
-        newMap.set(entryKey, { ...entry, title, status });
+        // 更新标题和 isTitleFinal 标志
+        // 如果 isFinal 为 true 且当前状态是 'title_fetching'，则同时更新状态为 'title_resolved'
+        const newStatus = isFinal && entry.status === 'title_fetching' ? 'title_resolved' : entry.status;
+        newMap.set(entryKey, { ...entry, title, isTitleFinal: isFinal, status: newStatus });
         return { pendingConversations: newMap };
       }
-      console.warn(`[PendingConversationStore] ID not found for updateTitleAndStatus: ${id}`);
+      console.warn(`[PendingConversationStore] 未找到ID: ${id}`);
       return state;
     });
   },
@@ -116,7 +121,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         newMap.set(entryKey, { ...entry, status }); // 只更新 status
         return { pendingConversations: newMap };
       }
-      console.warn(`[PendingConversationStore] ID not found for updateStatus: ${id}`);
+      console.warn(`[PendingConversationStore] 未找到ID: ${id}`);
       return state;
     });
   },
@@ -139,7 +144,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         newMap.delete(keyToDelete);
         return { pendingConversations: newMap };
       }
-      console.warn(`[PendingConversationStore] ID not found for removePending: ${id}`);
+      console.warn(`[PendingConversationStore] 未找到要删除的ID: ${id}`);
       return state;
     });
   },

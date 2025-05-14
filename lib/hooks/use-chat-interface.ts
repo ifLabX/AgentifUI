@@ -5,8 +5,7 @@ import { useChatStore, selectIsProcessing, ChatMessage } from '@lib/stores/chat-
 import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service'; // streamDifyChat 用于现有对话
 import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse } from '@lib/services/dify/types';
 import { useCreateConversation } from './use-create-conversation';
-// usePendingConversationStore 可能在这里不需要直接使用，因为状态更新由 useCreateConversation 内部处理
-// import { usePendingConversationStore } from '@lib/stores/pending-conversation-store'; 
+import { usePendingConversationStore } from '@lib/stores/pending-conversation-store'; 
 
 const DIFY_APP_IDENTIFIER = process.env.NEXT_PUBLIC_DIFY_APP_IDENTIFIER || "default";
 const currentUserIdentifier = "userlyz";
@@ -32,8 +31,7 @@ export function useChatInterface() {
   const setCurrentTaskId = useChatStore(state => state.setCurrentTaskId);
 
   const { initiateNewConversation } = useCreateConversation();
-  // updatePendingStatus 仅用于流结束后更新 pending store，如果需要的话
-  // const updatePendingStatus = usePendingConversationStore((state) => state.updateStatus);
+  const updatePendingStatus = usePendingConversationStore((state) => state.updateStatus);
 
 
   const isSubmittingRef = useRef(false);
@@ -142,8 +140,8 @@ export function useChatInterface() {
         // basePayloadForNewConversation 已经包含了 user
         const creationResult = await initiateNewConversation(
           basePayloadForNewConversation, // 使用正确的变量名
-          DIFY_APP_IDENTIFIER
-          // currentUserIdentifier // userIdentifier 已包含在 basePayloadForNewConversation.user 中
+          DIFY_APP_IDENTIFIER,
+          currentUserIdentifier // 显式传递 userIdentifier
         );
 
         if (creationResult.error) {
@@ -218,6 +216,11 @@ export function useChatInterface() {
           // 对于新对话，realConvId 和 taskId 应该已经从 initiateNewConversation 获取
           // 对于现有对话，它们从 streamDifyChat 获取
           // 此处不再需要从 response.getConversationId() 等获取
+
+          // 如果是新对话，更新 pending 状态为 streaming_message
+          if (isNewConversationFlow && finalRealConvId) {
+            updatePendingStatus(finalRealConvId, 'streaming_message');
+          }
         }
 
         if (assistantMessageId) {
@@ -255,6 +258,11 @@ export function useChatInterface() {
       if (finalTaskId && useChatStore.getState().currentTaskId !== finalTaskId) {
         setCurrentTaskId(finalTaskId);
       }
+      
+      // 如果是新对话，流结束后更新 pending 状态
+      if (isNewConversationFlow && finalRealConvId) {
+        updatePendingStatus(finalRealConvId, 'stream_completed_title_pending');
+      }
 
 
     } catch (error) {
@@ -274,7 +282,13 @@ export function useChatInterface() {
         const finalMessageState = useChatStore.getState().messages.find(m=>m.id===assistantMessageId);
         if (finalMessageState && finalMessageState.isStreaming && !finalMessageState.wasManuallyStopped) {
           finalizeStreamingMessage(assistantMessageId);
-          // 流结束的通知给 pending store 的逻辑由 useCreateConversation 内部或其回调处理
+          
+          // 如果是新对话且流正常结束，更新 pending 状态
+          if (isNewConversationFlow && finalRealConvId) {
+            // 注意：这里不设置为 title_resolved，因为标题获取是异步的
+            // 标题获取完成由 useCreateConversation 内部处理
+            updatePendingStatus(finalRealConvId, 'stream_completed_title_pending');
+          }
         }
       }
       setIsWaitingForResponse(false);
@@ -285,7 +299,7 @@ export function useChatInterface() {
     addMessage, setIsWaitingForResponse, isWelcomeScreen, setIsWelcomeScreen,
     appendMessageChunk, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
     setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer,
-    initiateNewConversation // 添加新的依赖
+    initiateNewConversation, updatePendingStatus // 添加新的依赖
   ]);
 
   const handleStopProcessing = useCallback(async () => {
@@ -303,6 +317,13 @@ export function useChatInterface() {
       }
       flushChunkBuffer(currentStreamingId); 
       markAsManuallyStopped(currentStreamingId); 
+
+      // 如果是新对话流程被手动停止，更新 pending 状态
+      const currentConvId = useChatStore.getState().currentConversationId;
+      const isNewConversationFlow = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+      if (isNewConversationFlow && currentConvId) {
+        updatePendingStatus(currentConvId, 'stream_completed_title_pending');
+      }
 
       if (currentTaskId) {
         try {
@@ -322,8 +343,8 @@ export function useChatInterface() {
     if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
         setIsWaitingForResponse(false);
     }
-  }, [markAsManuallyStopped, setCurrentTaskId, appendMessageChunk, setIsWaitingForResponse]); // --- BEGIN MODIFIED COMMENT ---
-  // 添加了 appendMessageChunk 和 setIsWaitingForResponse
+  }, [markAsManuallyStopped, setCurrentTaskId, appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer]); // --- BEGIN MODIFIED COMMENT ---
+  // 添加了 updatePendingStatus 和 flushChunkBuffer
   // --- END MODIFIED COMMENT ---
 
   return {

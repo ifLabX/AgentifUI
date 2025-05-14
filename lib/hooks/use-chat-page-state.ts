@@ -24,11 +24,14 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
     // 如果 URL 中的 conversationId 是 'new'，则设置为 null、清除消息历史并显示欢迎页面
     if (conversationIdFromUrl === 'new') {
       console.log('[ChatPageState] 检测到 new 路由，清除消息历史并显示欢迎页面');
-      setCurrentConversationId(null);
-      setIsWelcomeScreen(true);
-      // 清除所有消息历史，确保新对话从空开始
+      // 重要：先清除消息，再设置当前对话 ID 为 null
       clearMessages();
-      // 设置为从对话界面到欢迎界面的过渡，使用闪烁效果
+      setCurrentConversationId(null);
+      // 强制设置欢迎屏幕状态为 true
+      setIsWelcomeScreen(true);
+      // 重置提交状态
+      setIsSubmitting(false);
+      // 设置为从对话界面到欢迎界面的过渡
       setIsTransitioningToWelcome(true);
     } else if (conversationIdFromUrl) {
       // 否则，如果有 conversationId，则设置它并关闭欢迎页面
