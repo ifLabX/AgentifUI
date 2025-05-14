@@ -44,21 +44,46 @@ export function SidebarHeader() {
         )} />}
         text="发起新对话"
         onClick={() => {
-          // 1. 清除当前消息
-          clearMessages()
-          // 2. 设置当前对话ID为null
-          setCurrentConversationId(null)
-          // 3. 设置欢迎屏幕状态为true
-          setIsWelcomeScreen(true)
-          // 4. 设置过渡状态为true，启用闪烁过渡效果
-          setIsTransitioningToWelcome(true)
-          // 5. 重置等待响应状态
-          setIsWaitingForResponse(false)
-          // 6. 清除侧边栏选中状态
-          const { selectItem } = useSidebarStore.getState()
-          selectItem(null, null)
-          // 7. 路由跳转到新对话页面
-          router.push('/chat/new')
+          // --- BEGIN MODIFIED COMMENT ---
+          // 修改状态更新顺序，先跳转路由，然后再更新状态
+          // --- END MODIFIED COMMENT ---
+          // console.log('[SidebarHeader] 点击发起新对话按钮');
+          
+          // 1. 先跳转路由到新对话页面
+          router.push('/chat/new');
+          
+          // 2. 然后用setTimeout延迟更新状态，确保路由已经变化
+          setTimeout(() => {
+            // 强制清除所有消息
+            useChatStore.getState().clearMessages();
+            clearMessages();
+            
+            // 设置当前对话ID为null
+            setCurrentConversationId(null);
+            
+            // 设置欢迎屏幕状态为true
+            setIsWelcomeScreen(true);
+            
+            // 设置过渡状态为true，启用闪烁过渡效果
+            setIsTransitioningToWelcome(true);
+            
+            // 重置等待响应状态
+            setIsWaitingForResponse(false);
+            
+            // 清除侧边栏选中状态
+            const { selectItem } = useSidebarStore.getState();
+            selectItem(null, null);
+            
+            // console.log('[SidebarHeader] 状态更新完成');
+          }, 50);
+          
+          // 3. 再次确认消息数组完全清除
+          setTimeout(() => {
+            // console.log('[SidebarHeader] 再次确认消息数组清除状态');
+            useChatStore.getState().clearMessages();
+            clearMessages();
+            setIsWelcomeScreen(true);
+          }, 200);
         }}
         aria-label="发起新对话"
         className={cn(

@@ -30,15 +30,30 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
     // 如果 URL 中的 conversationId 是 'new'，则设置为 null、清除消息历史并显示欢迎页面
     if (conversationIdFromUrl === 'new') {
       console.log('[ChatPageState] 检测到 new 路由，清除消息历史并显示欢迎页面');
-      // 重要：先清除消息，再设置当前对话 ID 为 null
+      
+      // 强制清除所有消息
+      useChatStore.getState().clearMessages();
       clearMessages();
+      
+      // 设置当前对话 ID 为 null
       setCurrentConversationId(null);
+      
       // 强制设置欢迎屏幕状态为 true
       setIsWelcomeScreen(true);
+      
       // 重置提交状态
       setIsSubmitting(false);
+      
       // 设置为从对话界面到欢迎界面的过渡
       setIsTransitioningToWelcome(true);
+      
+      // 确保消息数组完全清除
+      setTimeout(() => {
+        console.log('[ChatPageState] 再次确认消息数组清除状态');
+        useChatStore.getState().clearMessages();
+        clearMessages();
+        setIsWelcomeScreen(true);
+      }, 100);
     } else if (conversationIdFromUrl) {
       // 否则，如果有 conversationId，则设置它并关闭欢迎页面
       console.log(`[ChatPageState] 设置对话 ID: ${conversationIdFromUrl}`);

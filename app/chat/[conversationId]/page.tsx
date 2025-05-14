@@ -23,8 +23,8 @@ import { cn } from '@lib/utils';
 import { NavBar } from '@components/nav-bar/nav-bar';
 
 export default function ChatPage() {
-  const params = useParams();
-  const conversationIdFromUrl = params.conversationId as string | undefined;
+  const params = useParams<{ conversationId: string }>();
+  const conversationIdFromUrl = params.conversationId;
   
   // --- BEGIN COMMENT ---
   // 使用 useChatPageState hook 管理聊天页面状态
@@ -84,9 +84,10 @@ export default function ChatPage() {
           1. 当前是欢迎屏幕状态 且 不在提交消息中
           2. 或者当前URL路径是 /chat/new 且 不在提交消息中
           --- END MODIFIED COMMENT --- */}
-          {!isSubmitting && (
-            isWelcomeScreen || conversationIdFromUrl === 'new'
-          ) ? (
+          {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示欢迎界面 */}
+          {(conversationIdFromUrl === 'new' && messages.length === 0) ? (
+            <WelcomeScreen />
+          ) : (!isSubmitting && isWelcomeScreen && messages.length === 0) ? (
             <WelcomeScreen />
           ) : (
             <div 
@@ -120,7 +121,10 @@ export default function ChatPage() {
         1. 当前是欢迎屏幕状态 或 当前URL路径是 /chat/new
         2. 且 不在提交消息中
         --- END MODIFIED COMMENT --- */}
-        {!isSubmitting && (isWelcomeScreen || conversationIdFromUrl === 'new') && <PromptContainer />}
+        {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示提示容器 */}
+        {(conversationIdFromUrl === 'new' && messages.length === 0) && <PromptContainer />}
+        {/* 原有条件作为备用 */}
+        {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <PromptContainer />}
       </div>
       
       <FilePreviewCanvas /> 
