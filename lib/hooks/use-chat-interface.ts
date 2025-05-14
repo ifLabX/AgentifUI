@@ -292,6 +292,21 @@ export function useChatInterface() {
         if (finalMessageState && finalMessageState.isStreaming && !finalMessageState.wasManuallyStopped) {
           finalizeStreamingMessage(assistantMessageId);
           
+          // --- BEGIN MODIFIED COMMENT ---
+          // 流式响应结束时（骨架屏消失时），确保在侧边栏中高亮当前对话项
+          // --- END MODIFIED COMMENT ---
+          const currentConvId = useChatStore.getState().currentConversationId;
+          if (currentConvId) {
+            try {
+              // 使用侧边栏存储的 selectItem 方法选中当前对话
+              const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+              console.log(`[流式响应结束] 骨架屏消失，高亮对话: ${currentConvId}`);
+              selectItem('chat', currentConvId);
+            } catch (error) {
+              console.error('[流式响应结束] 高亮对话失败:', error);
+            }
+          }
+          
           // 如果是新对话且流正常结束，更新 pending 状态
           if (isNewConversationFlow && finalRealConvId) {
             // 注意：这里不设置为 title_resolved，因为标题获取是异步的

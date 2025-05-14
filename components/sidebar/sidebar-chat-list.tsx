@@ -216,17 +216,25 @@ export function SidebarChatList({
         <div className="mb-2">
           <div className="space-y-1">
             {pendingChats.map(chat => {
+              // --- BEGIN MODIFIED COMMENT ---
               // 根据 pendingStatus 确定是否显示骨架屏
+              // 即使在加载状态下也保留悬停和选中效果
+              // --- END MODIFIED COMMENT ---
               const isLoading = chat.pendingStatus === 'creating' || 
                                chat.pendingStatus === 'title_fetching' || 
                                chat.pendingStatus === 'streaming_message';
+              
+              // --- BEGIN MODIFIED COMMENT ---
+              // 检查是否是当前选中的对话，或者是否应该显示为选中状态
+              // --- END MODIFIED COMMENT ---
+              const isActive = chat.id === selectedId;
               
               return (
                 <div className="flex items-center w-full group" key={chat.tempId || chat.id}>
                   <SidebarButton
                     icon={<SidebarChatIcon size="sm" isDark={isDark} />}
                     text={chat.title || '新对话'}
-                    active={chat.id === selectedId}
+                    active={isActive}
                     onClick={() => onSelectChat(chat.id)}
                     className="flex-1 mr-1"
                     isLoading={isLoading}

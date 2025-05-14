@@ -95,6 +95,22 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 window.history.replaceState({}, '', `/chat/${id}`);
               }
               
+              // --- BEGIN MODIFIED COMMENT ---
+              // 获取到真实对话ID后，立即在侧边栏选中该对话并激活悬停效果
+              // --- END MODIFIED COMMENT ---
+              try {
+                // 使用侧边栏存储的 selectItem 方法选中当前对话
+                const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                console.log(`[useCreateConversation] 选中新对话并激活悬停效果: ${id}`);
+                selectItem('chat', id, true); // 第三个参数 true 表示激活悬停效果
+                
+                // 同时更新 useChatStore 中的当前对话ID
+                const { setCurrentConversationId } = require('@lib/stores/chat-store').useChatStore.getState();
+                setCurrentConversationId(id);
+              } catch (error) {
+                console.error('[useCreateConversation] 选中对话失败:', error);
+              }
+              
               // 更新状态为 stream_completed_title_pending，表示流已经开始但标题尚未获取
               setRealIdAndStatus(tempConvId, id, 'stream_completed_title_pending');
               // 更新状态为标题获取中

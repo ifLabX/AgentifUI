@@ -21,9 +21,9 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
     onClick?.(e)
   }
 
-  // --- BEGIN COMMENT ---
-  // 根据 isLoading 状态决定是否显示骨架屏
-  // --- END COMMENT ---
+  // --- BEGIN MODIFIED COMMENT ---
+  // 骨架屏与按钮样式同时显示，保留悬停和选中效果
+  // --- END MODIFIED COMMENT ---
   return (
     <button
       className={cn(
@@ -54,7 +54,7 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         className,
       )}
       onClick={handleClick}
-      disabled={isLoading}
+      disabled={false} // 即使在加载状态下也允许点击
       {...props}
     >
       {isLoading ? (
@@ -67,7 +67,11 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         )}>
           <div className={cn(
             "h-4 w-4 animate-pulse rounded-full", 
-            isDark ? "bg-stone-700" : "bg-stone-400"
+            isDark ? "bg-stone-700" : "bg-stone-400",
+            // --- BEGIN MODIFIED COMMENT ---
+            // 确保骨架屏不会覆盖按钮的背景色
+            // --- END MODIFIED COMMENT ---
+            "opacity-80"
           )} />
         </span>
       ) : (
@@ -93,7 +97,11 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         {isLoading ? (
           <div className={cn(
             "h-4 w-32 animate-pulse rounded-md", 
-            isDark ? "bg-stone-700" : "bg-stone-400"
+            isDark ? "bg-stone-700" : "bg-stone-400",
+            // --- BEGIN MODIFIED COMMENT ---
+            // 确保文本骨架屏不会覆盖按钮的背景色
+            // --- END MODIFIED COMMENT ---
+            "opacity-80"
           )} />
         ) : (
           text
