@@ -2,8 +2,11 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useChatInputStore } from '@lib/stores/chat-input-store';
 import { useChatStore, selectIsProcessing, ChatMessage } from '@lib/stores/chat-store';
-import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service';
-import type { DifyChatRequestPayload, DifyStopTaskResponse } from '@lib/services/dify/types';
+import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service'; // streamDifyChat 用于现有对话
+import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse } from '@lib/services/dify/types';
+import { useCreateConversation } from './use-create-conversation';
+// usePendingConversationStore 可能在这里不需要直接使用，因为状态更新由 useCreateConversation 内部处理
+// import { usePendingConversationStore } from '@lib/stores/pending-conversation-store'; 
 
 const DIFY_APP_IDENTIFIER = process.env.NEXT_PUBLIC_DIFY_APP_IDENTIFIER || "default";
 const currentUserIdentifier = "userlyz";
@@ -27,6 +30,11 @@ export function useChatInterface() {
   const currentConversationId = useChatStore(state => state.currentConversationId);
   const setCurrentConversationId = useChatStore(state => state.setCurrentConversationId);
   const setCurrentTaskId = useChatStore(state => state.setCurrentTaskId);
+
+  const { initiateNewConversation } = useCreateConversation();
+  // updatePendingStatus 仅用于流结束后更新 pending store，如果需要的话
+  // const updatePendingStatus = usePendingConversationStore((state) => state.updateStatus);
+
 
   const isSubmittingRef = useRef(false);
   // --- BEGIN COMMENT ---
@@ -57,7 +65,6 @@ export function useChatInterface() {
       console.warn("[handleSubmit] Submission blocked: already submitting.");
       return;
     }
-    // Use selector for isProcessing check
     if (selectIsProcessing(useChatStore.getState())) {
       console.warn("[handleSubmit] Submission blocked: chat store isProcessing.");
       return;
@@ -77,130 +84,151 @@ export function useChatInterface() {
       text: message, isUser: true, attachments: messageAttachments 
     });
 
-    // --- BEGIN MODIFIED COMMENT ---
-    // 立即关闭欢迎屏幕，不等待响应返回
-    // 这确保用户在点击发送按钮后立即看到对话界面
-    // --- END MODIFIED COMMENT ---
     if (isWelcomeScreen) {
       setIsWelcomeScreen(false);
-      
-      // 如果当前URL是 /chat/new，则立即更新路由到一个临时状态
-      // 这样可以立即触发UI更新，而不需要等待API返回对话ID
       if (window.location.pathname === '/chat/new') {
-        // 使用 history.replaceState 而不是 router.replace
-        // 这样可以立即更新URL而不触发完整的路由变化
-        window.history.replaceState({}, '', '/chat/temp-' + Date.now());
+        window.history.replaceState({}, '', `/chat/temp-${Date.now()}`);
       }
     }
 
     let assistantMessageId: string | null = null;
     let streamError: Error | null = null;
     setCurrentTaskId(null); 
-    let routeUpdatedViaCallback = false;
     
-    // --- BEGIN MODIFIED COMMENT ---
-    // 判断当前是否在 /chat/new 路由下
-    // 如果是，则强制将初始对话ID设置为 null，确保创建新的对话
-    // --- END MODIFIED COMMENT ---
-    let initialConversationIdForThisSubmit = useChatStore.getState().currentConversationId;
-    
-    // 如果当前路径是 /chat/new 或者包含 temp-（我们之前设置的临时状态）
-    // 则强制将初始对话ID设置为 null，确保创建新的对话
-    if (window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-')) {
-      console.log('[handleSubmit] 检测到新对话路由，强制创建新对话');
-      initialConversationIdForThisSubmit = null;
-      // 确保全局状态也被设置为 null
-      setCurrentConversationId(null);
+    let currentConvId = useChatStore.getState().currentConversationId;
+    const isNewConversationFlow = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+
+    if (isNewConversationFlow) {
+      console.log('[handleSubmit] New conversation flow detected.');
+      currentConvId = null; 
+      setCurrentConversationId(null); // Ensure global state is also null for new conv
     }
     
-    // --- BEGIN COMMENT ---
-    // 为新的提交重置 chunkBuffer
-    // --- END COMMENT ---
     chunkBufferRef.current = ""; 
-    // --- BEGIN COMMENT ---
-    // 这个可以保留在 handleSubmit 的局部作用域
-    // --- END COMMENT ---
     let lastAppendTime = Date.now(); 
 
-    try {
-      const fileInputVarName = 'file';
-      let inputs: Record<string, any> = {};
-      if (Array.isArray(files) && files.length > 0 && fileInputVarName) {
-        inputs[fileInputVarName] = files.length === 1 ? files[0] : files;
-      }
-      // --- BEGIN COMMENT ---
-      // 准备请求负载
-      // 当 initialConversationIdForThisSubmit 为 null 时，表示创建新对话
-      // 此时需要设置 auto_generate_name 为 true，以便自动生成标题
-      // --- END COMMENT ---
-      const payload: DifyChatRequestPayload = {
-        query: message, 
-        user: currentUserIdentifier, 
-        response_mode: 'streaming',
-        conversation_id: initialConversationIdForThisSubmit,
-        inputs,
-        ...(Array.isArray(files) && files.length > 0 && { files }),
-        // 当创建新对话时，自动生成标题
-        auto_generate_name: initialConversationIdForThisSubmit === null,
-      };
+    let answerStream: AsyncGenerator<string, void, undefined> | undefined;
+    let finalRealConvId: string | undefined;
+    let finalTaskId: string | undefined;
 
-      const response = await streamDifyChat(
-        payload, 
-        DIFY_APP_IDENTIFIER,
-        (newlyFetchedConversationId) => {
-          const currentConvIdInStore = useChatStore.getState().currentConversationId;
-          if ((currentConvIdInStore === null || currentConvIdInStore !== newlyFetchedConversationId) && newlyFetchedConversationId) {
-            setCurrentConversationId(newlyFetchedConversationId);
-            router.replace(`/chat/${newlyFetchedConversationId}`, { scroll: false });
-            routeUpdatedViaCallback = true;
+    try {
+      // 将 messageAttachments (any[]) 转换为 DifyFile[]
+      // 假设 DifyFile 需要 type 和 upload_file_id
+      // 注意：这里的 type 需要根据 mime_type 推断，或者让 Dify 自行处理。
+      // DifyFile 的 type 是 'image' | 'document' 等，而不是 mime_type。
+      // 这是一个简化处理，实际项目中可能需要更复杂的 mime_type 到 DifyFile.type 的映射。
+      // 暂时假设所有文件都是 'document' 类型，并且使用 upload_file_id。
+      const difyFiles: { type: 'document'; transfer_method: 'local_file'; upload_file_id: any; }[] | undefined = 
+        Array.isArray(files) && files.length > 0
+          ? files.map(file => ({
+              type: 'document' as const, // 使用 as const 确保字面量类型
+              transfer_method: 'local_file' as const, // 使用 as const
+              upload_file_id: file.upload_file_id 
+            }))
+          : undefined;
+
+      const basePayloadForNewConversation = {
+        query: message,
+        user: currentUserIdentifier, // 添加 user 字段
+        inputs: {}, // 假设当前没有额外的 prompt inputs，或者从其他地方获取
+        ...(difyFiles && { files: difyFiles }),
+      };
+      
+      // 对于现有对话，payload 构造方式不同，需要包含 conversation_id
+      // 并且 auto_generate_name 应为 false
+
+      if (isNewConversationFlow) {
+        // --- 新对话逻辑 ---
+        // basePayloadForNewConversation 已经包含了 user
+        const creationResult = await initiateNewConversation(
+          basePayloadForNewConversation, // 使用正确的变量名
+          DIFY_APP_IDENTIFIER
+          // currentUserIdentifier // userIdentifier 已包含在 basePayloadForNewConversation.user 中
+        );
+
+        if (creationResult.error) {
+          throw creationResult.error;
+        }
+        
+        answerStream = creationResult.answerStream;
+        finalRealConvId = creationResult.realConvId;
+        finalTaskId = creationResult.taskId;
+
+        if (finalRealConvId) {
+          if (useChatStore.getState().currentConversationId !== finalRealConvId) {
+            setCurrentConversationId(finalRealConvId);
+          }
+          if (currentPathname !== `/chat/${finalRealConvId}`) {
+            router.replace(`/chat/${finalRealConvId}`, { scroll: false });
           }
         }
-      );
+        if (finalTaskId) {
+          setCurrentTaskId(finalTaskId);
+        }
 
-      let finalConversationIdFromStream: string | null = null; 
-      let finalTaskId: string | null = null;
+      } else {
+        // --- 现有对话逻辑 ---
+        // 为现有对话构造一个不包含 user 的基础 payload，因为 DifyChatRequestPayload 会单独添加
+        const payloadForExistingStream = {
+            query: message,
+            inputs: {}, // 与 basePayloadForNewConversation 的 inputs 保持一致
+            ...(difyFiles && { files: difyFiles }),
+        };
+        const difyPayload: DifyChatRequestPayload = {
+          ...payloadForExistingStream,
+          user: currentUserIdentifier,
+          response_mode: 'streaming',
+          conversation_id: currentConvId, // Should be a valid ID
+          auto_generate_name: false, // Not a new conversation
+        };
+        const streamServiceResponse = await streamDifyChat(
+          difyPayload,
+          DIFY_APP_IDENTIFIER,
+          (newlyFetchedConvId) => { // This callback might be redundant for existing chats
+            if (newlyFetchedConvId && useChatStore.getState().currentConversationId !== newlyFetchedConvId) {
+               // This case should ideally not happen for existing conversations if currentConvId is correct
+              console.warn(`[handleSubmit] Conversation ID changed mid-stream for existing chat: ${currentConvId} -> ${newlyFetchedConvId}`);
+              setCurrentConversationId(newlyFetchedConvId);
+              if (currentPathname !== `/chat/${newlyFetchedConvId}`) {
+                router.replace(`/chat/${newlyFetchedConvId}`, { scroll: false });
+              }
+            }
+          }
+        );
+        answerStream = streamServiceResponse.answerStream;
+        finalRealConvId = streamServiceResponse.getConversationId() || currentConvId || undefined; // Fallback to currentConvId
+        finalTaskId = streamServiceResponse.getTaskId() || undefined;
+        
+        if (finalTaskId && useChatStore.getState().currentTaskId !== finalTaskId) {
+          setCurrentTaskId(finalTaskId);
+        }
+      }
 
-      for await (const answerChunk of response.answerStream) {
+      if (!answerStream) {
+        throw new Error("Answer stream is undefined after API call.");
+      }
+
+      for await (const answerChunk of answerStream) {
         if (useChatStore.getState().streamingMessageId === null && assistantMessageId === null) {
           const assistantMessage = addMessage({ text: '', isUser: false, isStreaming: true });
           assistantMessageId = assistantMessage.id;
-          // --- BEGIN COMMENT ---
-          // 设置 streamingMessageId 并将 isWaitingForResponse 设置为 false，因为流已开始
-          // --- END COMMENT ---
           useChatStore.setState({ streamingMessageId: assistantMessageId });
           setIsWaitingForResponse(false); 
           
-          finalConversationIdFromStream = response.getConversationId(); 
-          finalTaskId = response.getTaskId();
-          if (finalTaskId) setCurrentTaskId(finalTaskId);
-
-          const currentConvIdInStoreAfterChunk = useChatStore.getState().currentConversationId;
-          if (!routeUpdatedViaCallback && 
-              (currentConvIdInStoreAfterChunk === null || currentConvIdInStoreAfterChunk !== finalConversationIdFromStream) && 
-              finalConversationIdFromStream) {
-            setCurrentConversationId(finalConversationIdFromStream);
-            router.replace(`/chat/${finalConversationIdFromStream}`, { scroll: false });
-          }
+          // 对于新对话，realConvId 和 taskId 应该已经从 initiateNewConversation 获取
+          // 对于现有对话，它们从 streamDifyChat 获取
+          // 此处不再需要从 response.getConversationId() 等获取
         }
 
         if (assistantMessageId) {
           if (useChatStore.getState().streamingMessageId === assistantMessageId) {
-            // --- BEGIN MODIFIED COMMENT ---
-            // 使用 ref
-            // --- END MODIFIED COMMENT ---
             chunkBufferRef.current += answerChunk; 
             if (Date.now() - lastAppendTime >= CHUNK_APPEND_INTERVAL || chunkBufferRef.current.includes('\n\n') || chunkBufferRef.current.length > 500) {
               flushChunkBuffer(assistantMessageId);
-              // --- BEGIN MODIFIED COMMENT ---
-              // 刷新后重置 lastAppendTime
-              // --- END MODIFIED COMMENT ---
               lastAppendTime = Date.now(); 
             } else if (!appendTimerRef.current) {
               appendTimerRef.current = setTimeout(() => {
                 flushChunkBuffer(assistantMessageId);
-                // --- BEGIN MODIFIED COMMENT ---
-                // 刷新后重置 lastAppendTime
-                // --- END MODIFIED COMMENT ---
                 lastAppendTime = Date.now(); 
               }, CHUNK_APPEND_INTERVAL);
             }
@@ -212,26 +240,22 @@ export function useChatInterface() {
             break; 
           }
         }
-      } // --- BEGIN MODIFIED COMMENT ---
-      // for-await 循环结束
-      // --- END MODIFIED COMMENT ---
+      } 
       
-      // --- BEGIN COMMENT ---
-      // 追加此提交的任何剩余缓冲区
-      // --- END COMMENT ---
       flushChunkBuffer(assistantMessageId); 
 
-      if (!finalTaskId) finalTaskId = response.getTaskId();
-      if (finalTaskId && useChatStore.getState().currentTaskId !== finalTaskId) setCurrentTaskId(finalTaskId);
-      
-      if (!finalConversationIdFromStream) finalConversationIdFromStream = response.getConversationId();
-      const storeConvIdAfterStream = useChatStore.getState().currentConversationId;
-      if (storeConvIdAfterStream !== finalConversationIdFromStream && finalConversationIdFromStream) {
-          setCurrentConversationId(finalConversationIdFromStream);
-          if (currentPathname !== `/chat/${finalConversationIdFromStream}`) { 
-              router.replace(`/chat/${finalConversationIdFromStream}`, { scroll: false });
+      // 确保 chat-store 中的 conversationId 是最新的 (主要针对新对话)
+      if (finalRealConvId && useChatStore.getState().currentConversationId !== finalRealConvId) {
+          setCurrentConversationId(finalRealConvId);
+          if (currentPathname !== `/chat/${finalRealConvId}`) { 
+              router.replace(`/chat/${finalRealConvId}`, { scroll: false });
           }
       }
+      // Task ID 应该在流开始时就设置了
+      if (finalTaskId && useChatStore.getState().currentTaskId !== finalTaskId) {
+        setCurrentTaskId(finalTaskId);
+      }
+
 
     } catch (error) {
       console.error("[handleSubmit] Error processing stream:", error);
@@ -239,6 +263,8 @@ export function useChatInterface() {
       if (assistantMessageId) {
         setMessageError(assistantMessageId, streamError.message);
       } else {
+        // 如果是新对话创建失败，useCreateConversation 内部会更新 pending store
+        // 这里只添加一个错误消息到聊天界面
         addMessage({ text: `抱歉，处理您的请求时发生错误: ${streamError.message}`, isUser: false, error: streamError.message });
       }
     } finally {
@@ -248,6 +274,7 @@ export function useChatInterface() {
         const finalMessageState = useChatStore.getState().messages.find(m=>m.id===assistantMessageId);
         if (finalMessageState && finalMessageState.isStreaming && !finalMessageState.wasManuallyStopped) {
           finalizeStreamingMessage(assistantMessageId);
+          // 流结束的通知给 pending store 的逻辑由 useCreateConversation 内部或其回调处理
         }
       }
       setIsWaitingForResponse(false);
@@ -256,13 +283,9 @@ export function useChatInterface() {
   }, [
     currentUserIdentifier, 
     addMessage, setIsWaitingForResponse, isWelcomeScreen, setIsWelcomeScreen,
-    // --- BEGIN COMMENT ---
-    // appendMessageChunk 稳定, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
-    // setCurrentConversationId, setCurrentTaskId 稳定。router, currentPathname 来自 Next.js。
-    // flushChunkBuffer 现在是 useCallback 的依赖项。
-    // --- END COMMENT ---
     appendMessageChunk, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
-    setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer 
+    setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer,
+    initiateNewConversation // 添加新的依赖
   ]);
 
   const handleStopProcessing = useCallback(async () => {
