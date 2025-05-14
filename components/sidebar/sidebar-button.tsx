@@ -67,7 +67,7 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         )}>
           <div className={cn(
             "h-4 w-4 animate-pulse rounded-full", 
-            isDark ? "bg-stone-700" : "bg-stone-300"
+            isDark ? "bg-stone-700" : "bg-stone-400"
           )} />
         </span>
       ) : (
@@ -93,7 +93,7 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         {isLoading ? (
           <div className={cn(
             "h-4 w-32 animate-pulse rounded-md", 
-            isDark ? "bg-stone-700" : "bg-stone-300"
+            isDark ? "bg-stone-700" : "bg-stone-400"
           )} />
         ) : (
           text
