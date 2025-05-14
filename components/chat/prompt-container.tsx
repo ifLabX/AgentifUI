@@ -10,6 +10,7 @@ import { Sparkles, HelpCircle, BookOpen, Building, LucideIcon } from "lucide-rea
 import { usePromptPanelStore } from "@lib/stores/ui/prompt-panel-store"
 import { useChatLayoutStore, INITIAL_INPUT_HEIGHT } from "@lib/stores/chat-layout-store"
 import { PROMPT_CATEGORIES } from "@presets/prompt.json"
+import { useChatTransitionStore } from "@lib/stores/chat-transition-store"
 
 interface PromptContainerProps {
   className?: string
@@ -31,6 +32,7 @@ export const PromptContainer = ({ className }: PromptContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const { expandedId, togglePanel, resetPanel } = usePromptPanelStore()
   const { inputHeight } = useChatLayoutStore()
+  const { isTransitioningToWelcome } = useChatTransitionStore()
 
   // 根据主题获取提示容器样式
   const getPromptStyles = () => {
@@ -94,7 +96,8 @@ export const PromptContainer = ({ className }: PromptContainerProps) => {
         widthClass,
         paddingClass,
         "absolute left-1/2 transform -translate-x-1/2",
-        "transition-[top] duration-200 ease-in-out",
+        // 使用与 ChatContainer 相同的过渡效果
+        "transition-opacity duration-100 ease-in-out",
         styles.background,
         styles.text,
         className
@@ -111,10 +114,14 @@ export const PromptContainer = ({ className }: PromptContainerProps) => {
           return (
             <PromptButton 
               key={category.id}
-              className="animate-pulse-subtle hover:animate-none" 
+              // 移除默认的动画效果，避免主题切换时闪烁
+              className={cn(
+                isTransitioningToWelcome ? "" : "hover:animate-pulse-subtle"
+              )}
               onClick={() => togglePanel(category.id)} 
               expanded={expandedId === category.id}
               icon={<IconComponent className="h-4 w-4" />}
+              isDark={isDark}
             >
               {category.title}
             </PromptButton>

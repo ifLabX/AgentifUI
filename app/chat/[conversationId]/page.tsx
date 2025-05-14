@@ -18,6 +18,7 @@ import { useChatStore } from '@lib/stores/chat-store';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useChatScroll } from '@lib/hooks/use-chat-scroll';
 import { useFilePreviewStore } from '@lib/stores/ui/file-preview-store';
+import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
 import { cn } from '@lib/utils';
 import { NavBar } from '@components/nav-bar/nav-bar';
 
@@ -80,12 +81,11 @@ export default function ChatPage() {
         <div className="flex-1 min-h-0">
           {/* --- BEGIN MODIFIED COMMENT ---
           显示欢迎屏幕的条件：
-          1. 当前是欢迎屏幕状态 且 没有当前对话ID 且 不在提交消息中
+          1. 当前是欢迎屏幕状态 且 不在提交消息中
           2. 或者当前URL路径是 /chat/new 且 不在提交消息中
           --- END MODIFIED COMMENT --- */}
           {!isSubmitting && (
-            (isWelcomeScreen && useChatStore.getState().currentConversationId === null) || 
-            conversationIdFromUrl === 'new'
+            isWelcomeScreen || conversationIdFromUrl === 'new'
           ) ? (
             <WelcomeScreen />
           ) : (

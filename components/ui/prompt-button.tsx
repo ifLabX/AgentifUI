@@ -11,6 +11,10 @@ interface PromptButtonProps {
   expanded?: boolean
   icon?: React.ReactNode
   children?: React.ReactNode
+  // --- BEGIN COMMENT ---
+  // 允许直接传递主题状态，避免重复计算
+  // --- END COMMENT ---
+  isDark?: boolean
 }
 
 /**
@@ -22,9 +26,15 @@ export function PromptButton({
   onClick, 
   expanded = false, 
   icon, 
-  children = "提示模板" 
+  children = "提示模板",
+  isDark: propIsDark
 }: PromptButtonProps) {
-  const { colors, isDark } = useThemeColors()
+  // --- BEGIN MODIFIED COMMENT ---
+  // 如果传入了 isDark 属性，则使用传入的值，否则使用 useThemeColors 获取
+  // 这样可以避免主题切换时的闪烁问题
+  // --- END MODIFIED COMMENT ---
+  const { colors, isDark: hookIsDark } = useThemeColors()
+  const isDark = propIsDark !== undefined ? propIsDark : hookIsDark
   
   // 根据主题获取样式
   const getStyles = () => {

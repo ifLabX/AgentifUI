@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useChatStateSync } from './use-chat-state-sync';
+import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
 
 /**
  * 聊天页面状态管理钩子
@@ -17,7 +18,12 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
   
   // 本地状态
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isTransitioningToWelcome, setIsTransitioningToWelcome] = useState(false);
+  
+  // 从全局状态获取过渡状态
+  const { 
+    isTransitioningToWelcome, 
+    setIsTransitioningToWelcome 
+  } = useChatTransitionStore();
   
   // 处理 URL 参数变化
   useEffect(() => {
@@ -44,7 +50,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       // 如果没有 conversationId，则设置为 null
       setCurrentConversationId(null);
     }
-  }, [conversationIdFromUrl, setCurrentConversationId, setIsWelcomeScreen, clearMessages]);
+  }, [conversationIdFromUrl, setCurrentConversationId, setIsWelcomeScreen, clearMessages, setIsTransitioningToWelcome]);
   
   // 包装 handleSubmit 函数
   const wrapHandleSubmit = useCallback((originalHandleSubmit: (message: string, files?: any[]) => Promise<any>) => {

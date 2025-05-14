@@ -38,40 +38,36 @@ export const ChatContainer = ({
   // --- END COMMENT ---
   const { colors } = useThemeColors();
   
-  // --- BEGIN COMMENT ---
+  // --- BEGIN MODIFIED COMMENT ---
   // 基本样式，包括绝对定位和宽度
-  // 根据 isTransitioningToWelcome 属性决定使用哪种过渡效果
-  // --- END COMMENT ---
+  // 简化过渡效果，使用闪烁效果而非滑动
+  // --- END MODIFIED COMMENT ---
   const baseClasses = cn(
     "w-full absolute left-1/2", // 定位和宽度
     widthClass,
-    // 当从对话界面到欢迎界面时，使用闪烁效果
-    // 否则保持现有的滑动效果
-    isTransitioningToWelcome 
-      ? "transition-opacity duration-100 ease-in-out" // 闪烁效果，只过渡透明度
-      : "transition-all duration-300 ease-in-out", // 滑动效果，过渡所有属性
+    // 使用闪烁过渡效果，只过渡透明度
+    "transition-opacity duration-100 ease-in-out",
     className,
   );
 
-  // --- BEGIN COMMENT ---
   // 动态计算样式，根据当前状态决定定位和变形
-  // --- END COMMENT ---
+  // 简化过渡效果，使用闪烁效果而非滑动
   const dynamicStyles: React.CSSProperties = isWelcomeScreen 
     ? { 
         // 欢迎界面：基于顶部定位，并通过 transform 居中和上移
         top: `50%`, 
         bottom: 'auto', // 确保 bottom 无效
         transform: `translate(-50%, calc(-50% - ${INPUT_VERTICAL_SHIFT}))`,
-        // 如果是从对话界面过渡到欢迎界面，不使用滑动效果
-        transition: isTransitioningToWelcome ? 'opacity 100ms ease-in-out' : undefined
+        // 统一使用闪烁效果
+        transition: 'opacity 100ms ease-in-out'
       }
     : { 
         // 对话界面：基于底部定位，并通过 transform 水平居中
         top: 'auto', // 确保 top 无效
         bottom: INPUT_BOTTOM_MARGIN, 
         transform: 'translateX(-50%)',
-        // 从欢迎界面到对话界面始终使用滑动效果
-        transition: 'all 300ms ease-in-out'
+        // 统一使用闪烁效果
+        transition: 'opacity 100ms ease-in-out'
       };
 
   return (

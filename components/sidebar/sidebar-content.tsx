@@ -6,6 +6,9 @@ import { useTheme } from "@lib/hooks/use-theme"
 import { useMobile } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { SidebarChatList } from "./sidebar-chat-list"
+import { useRouter } from "next/navigation"
+import { useChatStore } from "@lib/stores/chat-store"
+import { useChatInputStore } from "@lib/stores/chat-input-store"
 
 /**
  * 侧边栏内容组件
@@ -26,6 +29,11 @@ export function SidebarContent() {
   } = useSidebarStore()
   const { isDark } = useTheme()
   const isMobile = useMobile()
+  const router = useRouter()
+  
+  // 获取聊天相关状态和方法
+  const setCurrentConversationId = useChatStore((state) => state.setCurrentConversationId)
+  const { setIsWelcomeScreen } = useChatInputStore()
 
   // 处理侧边栏展开/收起的内容显示逻辑
   React.useEffect(() => {
@@ -46,9 +54,18 @@ export function SidebarContent() {
    * @param chatId 聊天项目的ID
    */
   const handleSelectChat = React.useCallback((chatId: number | string) => {
+    // 1. 更新侧边栏选中状态
     selectItem('chat', chatId)
-    lockExpanded() // 确保在选择聊天时保持侧边栏展开状态
-  }, [selectItem, lockExpanded])
+    // 2. 确保侧边栏保持展开
+    lockExpanded()
+    
+    // 3. 设置当前对话ID
+    setCurrentConversationId(String(chatId))
+    // 4. 关闭欢迎屏幕
+    setIsWelcomeScreen(false)
+    // 5. 路由跳转到对话页面
+    router.push(`/chat/${chatId}`)
+  }, [selectItem, lockExpanded, setCurrentConversationId, setIsWelcomeScreen, router])
 
 
 
