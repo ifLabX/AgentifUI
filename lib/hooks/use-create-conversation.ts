@@ -83,6 +83,18 @@ export function useCreateConversation(): UseCreateConversationReturn {
             if (id && !realConvIdFromStream) {
               realConvIdFromStream = id;
               console.log(`[useCreateConversation] Real conversation ID received from stream: ${id}`);
+              
+              // --- BEGIN MODIFIED COMMENT ---
+              // 重要：立即更新当前路径，确保从临时对话路径切换到真实对话路径
+              // 这里使用 window.history.replaceState 而不是 router.replace
+              // 因为这是在回调中执行，可能会比 router.replace 更可靠
+              // --- END MODIFIED COMMENT ---
+              const currentPath = window.location.pathname;
+              if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
+                console.log(`[useCreateConversation] Updating URL from ${currentPath} to /chat/${id}`);
+                window.history.replaceState({}, '', `/chat/${id}`);
+              }
+              
               // 更新状态为 stream_completed_title_pending，表示流已经开始但标题尚未获取
               setRealIdAndStatus(tempConvId, id, 'stream_completed_title_pending');
               // 更新状态为标题获取中
@@ -121,12 +133,25 @@ export function useCreateConversation(): UseCreateConversationReturn {
         if (!taskIdFromStream) taskIdFromStream = streamResponse.getTaskId();
 
         if (realConvIdFromStream && !usePendingConversationStore.getState().getPendingByRealId(realConvIdFromStream)?.realId) {
+            // --- BEGIN MODIFIED COMMENT ---
             // 如果回调由于某种原因没有及时设置 realId (例如流非常快，回调前的检查通过了)
             // 在这里再次确保设置
+            // --- END MODIFIED COMMENT ---
             setRealIdAndStatus(tempConvId, realConvIdFromStream, 'stream_completed_title_pending');
             updateStatus(realConvIdFromStream, 'title_fetching');
+            
+            // --- BEGIN MODIFIED COMMENT ---
+            // 再次检查并更新URL路径，确保从临时对话路径切换到真实对话路径
+            // --- END MODIFIED COMMENT ---
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
+                console.log(`[useCreateConversation] Updating URL (fallback) from ${currentPath} to /chat/${realConvIdFromStream}`);
+                window.history.replaceState({}, '', `/chat/${realConvIdFromStream}`);
+            }
 
+            // --- BEGIN MODIFIED COMMENT ---
             // 再次尝试触发标题获取，以防回调中的逻辑未执行或执行太晚
+            // --- END MODIFIED COMMENT ---
             renameConversation(appId, realConvIdFromStream, { user: userIdentifier, auto_generate: true })
             .then(renameResponse => {
               if (renameResponse && renameResponse.name) {
