@@ -94,12 +94,20 @@ export function useChatInterface() {
     setCurrentTaskId(null); 
     
     let currentConvId = useChatStore.getState().currentConversationId;
-    const isNewConversationFlow = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+    
+    // --- BEGIN MODIFIED COMMENT ---
+    // 修改判断新对话流程的逻辑，优先使用 currentConversationId
+    // 只有当 currentConversationId 为 null 且 URL 为新对话路径时，才认为是新对话
+    // --- END MODIFIED COMMENT ---
+    const isNewConversationFlow = !currentConvId && 
+      (window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-'));
 
     if (isNewConversationFlow) {
       console.log('[handleSubmit] New conversation flow detected.');
       currentConvId = null; 
       setCurrentConversationId(null); // Ensure global state is also null for new conv
+    } else {
+      console.log(`[handleSubmit] Continuing existing conversation: ${currentConvId}`);
     }
     
     chunkBufferRef.current = ""; 
