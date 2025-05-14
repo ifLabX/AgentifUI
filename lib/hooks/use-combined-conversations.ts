@@ -2,6 +2,14 @@
  * 整合数据库对话和临时对话的 Hook
  * 
  * 将数据库中的对话和 pending-conversation-store 中的临时对话整合在一起
+ * 
+ * TODO: 数据库集成
+ * 当数据库集成完成后，此 Hook 将从两个数据源获取对话：
+ * 1. 数据库中的正式对话（通过 useSidebarConversations 获取）
+ * 2. 前端存储中的临时对话（通过 usePendingConversationStore 获取）
+ * 
+ * 当对话创建完成并保存到数据库后，应该从 pendingConversationStore 中移除临时对话
+ * 这样就可以使用数据库中的实际对话，而不是临时对话
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -91,12 +99,28 @@ export function useCombinedConversations() {
       })
       .map(pending => {
         // 将临时对话转换为 CombinedConversation 格式
+        
+        // --- BEGIN COMMENT ---
+        // TODO: 数据库集成后的状态处理
+        // 当数据库集成完成后，我们应该在此处添加逻辑，判断临时对话是否已经保存到数据库
+        // 如果已保存，则应该从 pendingConversationStore 中移除该临时对话
+        // 如果数据库中已存在相同 realId 的对话，则不应该再显示临时对话
+        // 示例:
+        // if (databaseConversations.some(dbConv => dbConv.id === pending.realId)) {
+        //   // 如果数据库中已存在相同 realId 的对话，则跳过该临时对话
+        //   return null;
+        // }
+        // --- END COMMENT ---
+        
+        // 创建时间和更新时间使用当前时间，因为 PendingConversation 没有这些字段
+        const now = new Date().toISOString();
+        
         return {
           id: pending.realId || pending.tempId, // 优先使用 realId
           title: pending.title,
-          user_id: 'temp-user', // 临时用户 ID
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          user_id: 'temp-user', // 临时用户 ID，满足 CombinedConversation 类型要求
+          created_at: now,
+          updated_at: now,
           org_id: null,
           ai_config_id: null,
           summary: null,
@@ -106,11 +130,12 @@ export function useCombinedConversations() {
           app_id: null,
           last_message_preview: null,
           metadata: {},
-          isPending: true,
+          isPending: true, // 始终将临时对话显示为临时状态，直到数据库集成完成
           pendingStatus: pending.status,
           tempId: pending.tempId
         };
-      });
+      })
+      .filter(Boolean) // 过滤掉可能的 null 值
     
     // 将数据库对话标记为非临时对话
     const dbConvsFormatted: CombinedConversation[] = dbConversations.map(conv => ({

@@ -122,9 +122,46 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   if (renameResponse && renameResponse.name) {
                     console.log(`[useCreateConversation] Title fetched for ${id}: ${renameResponse.name}`);
                     updateTitle(id, renameResponse.name, true); // 更新为最终标题
+                    
+                    // --- BEGIN COMMENT ---
+                    // TODO: 数据库集成接口点
+                    // 在此处添加数据库集成代码，将对话保存到数据库
+                    // 示例:
+                    // await databaseIntegration.createConversation({
+                    //   externalId: id,
+                    //   title: renameResponse.name,
+                    //   messages: useChatStore.getState().messages,
+                    //   userId: currentUserIdentifier
+                    // });
+                    // 
+                    // 如果数据库保存成功，可以移除临时对话:
+                    // const removePending = usePendingConversationStore.getState().removePending;
+                    // removePending(tempConvId);
+                    // --- END COMMENT ---
+                    
+                    // 确保在侧边栏中选中当前对话
+                    try {
+                      const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                      selectItem('chat', id, true); // 第三个参数 true 表示激活悬停效果
+                    } catch (error) {
+                      console.error('[useCreateConversation] 选中对话失败:', error);
+                    }
                   } else {
                     console.warn(`[useCreateConversation] Title fetch for ${id} returned no name. Setting to 'Untitled'.`);
                     updateTitle(id, "Untitled", true); // 标题获取失败或为空，但对话本身可能没问题
+                    
+                    // --- BEGIN COMMENT ---
+                    // TODO: 标题获取失败时的数据库集成接口点
+                    // 即使标题获取失败，也应该将对话保存到数据库
+                    // --- END COMMENT ---
+                    
+                    // 确保在侧边栏中选中当前对话
+                    try {
+                      const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                      selectItem('chat', id, true);
+                    } catch (error) {
+                      console.error('[useCreateConversation] 选中对话失败 (标题为 Untitled 时):', error);
+                    }
                   }
                 })
                 .catch(renameError => {
@@ -132,6 +169,26 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   // 即使标题获取失败，对话流可能仍然成功，所以只更新标题为 "Untitled"
                   // 除非 renameError 表示一个严重到需要将整个 pending conversation 标记为 failed 的问题
                   updateTitle(id, "Untitled (获取标题失败)", true); 
+                  
+                  // --- BEGIN COMMENT ---
+                  // TODO: 标题获取失败时的数据库集成接口点
+                  // 即使标题获取失败，也应该将对话保存到数据库
+                  // 示例:
+                  // await databaseIntegration.createConversation({
+                  //   externalId: id,
+                  //   title: "Untitled (获取标题失败)",
+                  //   messages: useChatStore.getState().messages,
+                  //   userId: currentUserIdentifier
+                  // });
+                  // --- END COMMENT ---
+                  
+                  // 确保在侧边栏中选中当前对话
+                  try {
+                    const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                    selectItem('chat', id, true);
+                  } catch (error) {
+                    console.error('[useCreateConversation] 选中对话失败 (标题获取失败时):', error);
+                  }
                 });
             }
           }
@@ -172,13 +229,63 @@ export function useCreateConversation(): UseCreateConversationReturn {
             .then(renameResponse => {
               if (renameResponse && renameResponse.name) {
                 updateTitle(realConvIdFromStream!, renameResponse.name, true);
+                
+                // --- BEGIN COMMENT ---
+                // TODO: 备用逻辑中的数据库集成接口点
+                // 在此处添加数据库集成代码，将对话保存到数据库
+                // 示例:
+                // await databaseIntegration.createConversation({
+                //   externalId: realConvIdFromStream,
+                //   title: renameResponse.name,
+                //   messages: useChatStore.getState().messages,
+                //   userId: currentUserIdentifier
+                // });
+                // 
+                // 如果数据库保存成功，可以移除临时对话:
+                // const removePending = usePendingConversationStore.getState().removePending;
+                // removePending(tempConvId);
+                // --- END COMMENT ---
+                
+                // 确保在侧边栏中选中当前对话
+                try {
+                  const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                  selectItem('chat', realConvIdFromStream!, true);
+                } catch (error) {
+                  console.error('[useCreateConversation] 选中对话失败 (备用逻辑):', error);
+                }
               } else {
                 updateTitle(realConvIdFromStream!, "Untitled", true);
+                
+                // --- BEGIN COMMENT ---
+                // TODO: 备用逻辑中标题获取失败时的数据库集成接口点
+                // 即使标题获取失败，也应该将对话保存到数据库
+                // --- END COMMENT ---
+                
+                // 确保在侧边栏中选中当前对话
+                try {
+                  const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                  selectItem('chat', realConvIdFromStream!, true);
+                } catch (error) {
+                  console.error('[useCreateConversation] 选中对话失败 (备用逻辑标题为 Untitled 时):', error);
+                }
               }
             })
             .catch(renameError => {
               console.error(`[useCreateConversation] Error fetching title (fallback) for ${realConvIdFromStream}:`, renameError);
               updateTitle(realConvIdFromStream!, "Untitled (获取标题失败)", true);
+              
+              // --- BEGIN COMMENT ---
+              // TODO: 备用逻辑中标题获取失败时的数据库集成接口点
+              // 即使标题获取失败，也应该将对话保存到数据库
+              // --- END COMMENT ---
+              
+              // 确保在侧边栏中选中当前对话
+              try {
+                const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                selectItem('chat', realConvIdFromStream!, true);
+              } catch (error) {
+                console.error('[useCreateConversation] 选中对话失败 (备用逻辑标题获取失败时):', error);
+              }
             });
         }
 
