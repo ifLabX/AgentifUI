@@ -63,17 +63,18 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       setIsTransitioningToWelcome(false);
       
       // --- BEGIN MODIFIED COMMENT ---
-      // 修改清除消息的逻辑，优先使用 currentConversationId
-      // 只有当 currentConversationId 为 null 且 URL 为新对话路径时，才清除消息
+      // 修改清除消息历史的判断逻辑，增加对 currentConversationId 的检查
+      // 只有当 URL 路径表明是新对话且当前没有对话ID时，才清除消息历史
       // --- END MODIFIED COMMENT ---
-      const currentConversationId = useChatStore.getState().currentConversationId;
-      const isNewPath = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+      const urlIndicatesNew = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+      const currentConvId = useChatStore.getState().currentConversationId;
+      const isNewConversationFlow = urlIndicatesNew && !currentConvId;
       
-      if (!currentConversationId && isNewPath) {
-        console.log('[ChatPageState] 检测到新对话流程，清除消息历史');
+      if (isNewConversationFlow) {
+        console.log('[ChatPageState] 检测到新对话路由且没有当前对话ID，清除消息历史');
         clearMessages();
-      } else {
-        console.log(`[ChatPageState] 继续现有对话: ${currentConversationId}`);
+      } else if (currentConvId) {
+        console.log(`[ChatPageState] 使用现有对话: ${currentConvId}`);
       }
       
       // 调用原始的 handleSubmit 函数

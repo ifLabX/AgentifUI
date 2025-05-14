@@ -96,18 +96,19 @@ export function useChatInterface() {
     let currentConvId = useChatStore.getState().currentConversationId;
     
     // --- BEGIN MODIFIED COMMENT ---
-    // 修改判断新对话流程的逻辑，优先使用 currentConversationId
-    // 只有当 currentConversationId 为 null 且 URL 为新对话路径时，才认为是新对话
+    // 修改判断新对话的逻辑，增加对 currentConversationId 的检查
+    // 1. 如果 URL 是 /chat/new 或者包含 temp-，且 currentConvId 为 null，则是新对话
+    // 2. 如果已经有对话ID，即使 URL 路径是 /chat/new 或者包含 temp-，也不应该创建新对话
     // --- END MODIFIED COMMENT ---
-    const isNewConversationFlow = !currentConvId && 
-      (window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-'));
+    const urlIndicatesNew = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+    const isNewConversationFlow = urlIndicatesNew && !currentConvId;
 
     if (isNewConversationFlow) {
       console.log('[handleSubmit] New conversation flow detected.');
       currentConvId = null; 
       setCurrentConversationId(null); // Ensure global state is also null for new conv
-    } else {
-      console.log(`[handleSubmit] Continuing existing conversation: ${currentConvId}`);
+    } else if (currentConvId) {
+      console.log(`[handleSubmit] Using existing conversation: ${currentConvId}`);
     }
     
     chunkBufferRef.current = ""; 
