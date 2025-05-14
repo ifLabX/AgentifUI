@@ -54,7 +54,10 @@ export function SidebarHeader() {
           setIsTransitioningToWelcome(true)
           // 5. 重置等待响应状态
           setIsWaitingForResponse(false)
-          // 6. 路由跳转到新对话页面
+          // 6. 清除侧边栏选中状态
+          const { selectItem } = useSidebarStore.getState()
+          selectItem(null, null)
+          // 7. 路由跳转到新对话页面
           router.push('/chat/new')
         }}
         aria-label="发起新对话"
