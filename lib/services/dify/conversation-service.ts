@@ -221,15 +221,22 @@ export async function deleteConversation(
 
 // --- BEGIN COMMENT ---
 /**
- * 重命名指定的会话。
+ * 重命名指定的会话或触发异步标题生成。
  *
- * 通过向后端的 Dify 代理服务发送 POST 请求来工作。
- * 可以手动指定名称或者让系统自动生成。
+ * 通过向后端的 Dify 代理服务发送 POST 请求到 `/conversations/{conversationId}/name` 端点。
+ * 
+ * 双重功能:
+ * 1. **直接重命名**: 当 `payload` 中提供 `name` 字段时，直接将会话重命名为指定名称。
+ * 2. **异步获取/生成标题**: 当 `payload` 中设置 `auto_generate: true` 且不提供 `name` 字段时，
+ *    此接口会触发 Dify 后端异步为该会话生成一个标题。
+ *    操作成功后，返回的 `RenameConversationResponse` (即更新后的会话对象) 中的 `name` 字段将包含 Dify 生成或已有的标题。
  *
  * @param appId - 当前 Dify 应用的 ID。
- * @param conversationId - 要重命名的会话 ID。
- * @param payload - 包含 `user` 和可选的 `name` 和 `auto_generate` 的对象。
- * @returns 一个解析为 `RenameConversationResponse` 对象的 Promise，包含更新后的会话信息。
+ * @param conversationId - 要操作的会话 ID。
+ * @param payload - 包含 `user` 标识符的对象。
+ *                  - 若要直接重命名，还需包含 `name` 字段。
+ *                  - 若要异步生成/获取标题，需包含 `auto_generate: true` 且不包含 `name`。
+ * @returns 一个解析为 `RenameConversationResponse` 对象的 Promise，其中包含了更新后的会话信息（包括其 `name` 即标题）。
  * @throws 如果请求失败或 API 返回非 2xx 状态码，则抛出一个包含错误详情的对象 (类似 DifyApiError)。
  */
 // --- END COMMENT ---
