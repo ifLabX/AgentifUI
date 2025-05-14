@@ -67,10 +67,11 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         )}>
           <div className={cn(
             "h-4 w-4 animate-pulse rounded-full", 
-            isDark ? "bg-stone-700" : "bg-stone-400",
             // --- BEGIN MODIFIED COMMENT ---
-            // 确保骨架屏不会覆盖按钮的背景色
+            // 将暗黑模式下的骨架屏颜色改为与按钮的悬停效果颜色一致
+            // 从 bg-stone-700 改为 bg-stone-600，与悬停时的 hover:bg-stone-600 一致
             // --- END MODIFIED COMMENT ---
+            isDark ? "bg-stone-600" : "bg-stone-400",
             "opacity-80"
           )} />
         </span>
@@ -97,10 +98,11 @@ export function SidebarButton({ icon, text, active = false, isLoading = false, c
         {isLoading ? (
           <div className={cn(
             "h-4 w-32 animate-pulse rounded-md", 
-            isDark ? "bg-stone-700" : "bg-stone-400",
             // --- BEGIN MODIFIED COMMENT ---
-            // 确保文本骨架屏不会覆盖按钮的背景色
+            // 将暗黑模式下的文本骨架屏颜色改为与图标骨架屏一致
+            // 从 bg-stone-700 改为 bg-stone-600，与悬停时的 hover:bg-stone-600 一致
             // --- END MODIFIED COMMENT ---
+            isDark ? "bg-stone-600" : "bg-stone-400",
             "opacity-80"
           )} />
         ) : (
