@@ -11,7 +11,7 @@ export interface ApiConfigResult {
 /**
  * 用于获取 Dify API 配置的 Hook
  * 
- * @param appId Dify 应用 ID，默认为 'default'
+ * @param appId Dify 应用 ID (必需)
  * @returns API 配置结果，包含配置、加载状态和错误信息
  * 
  * @example
@@ -25,7 +25,7 @@ export interface ApiConfigResult {
  * // 使用 config.apiKey 和 config.apiUrl
  * ```
  */
-export function useDifyConfig(appId: string = 'default'): ApiConfigResult {
+export function useDifyConfig(appId: string): ApiConfigResult {
   const [config, setConfig] = useState<DifyAppConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

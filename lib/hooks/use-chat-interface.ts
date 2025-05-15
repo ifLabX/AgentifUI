@@ -2,13 +2,18 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useChatInputStore } from '@lib/stores/chat-input-store';
 import { useChatStore, selectIsProcessing, ChatMessage } from '@lib/stores/chat-store';
-import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service'; // streamDifyChat 用于现有对话
+import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service';
+import { useSupabaseAuth } from '@lib/supabase/hooks'; // 假设 Supabase Auth Hook
+import { useCurrentAppStore } from '@lib/stores/current-app-store'; // 引入新的 App Store
 import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse } from '@lib/services/dify/types';
 import { useCreateConversation } from './use-create-conversation';
-import { usePendingConversationStore } from '@lib/stores/pending-conversation-store'; 
+import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
 
-const DIFY_APP_IDENTIFIER = process.env.NEXT_PUBLIC_DIFY_APP_IDENTIFIER || "default";
-const currentUserIdentifier = "userlyz";
+// --- BEGIN COMMENT ---
+// 移除硬编码的 DIFY_APP_IDENTIFIER 和 currentUserIdentifier
+// 这些将从 store 和 auth hook 中获取
+// --- END COMMENT ---
+
 // --- BEGIN COMMENT ---
 // 毫秒，批量处理数据块的持续时间
 // --- END COMMENT ---
@@ -18,6 +23,14 @@ export function useChatInterface() {
   const router = useRouter();
   const currentPathname = usePathname();
   const { isWelcomeScreen, setIsWelcomeScreen } = useChatInputStore();
+
+  // --- BEGIN COMMENT ---
+  // 获取认证状态和当前应用ID
+  // --- END COMMENT ---
+  const { session } = useSupabaseAuth();
+  const currentUserId = session?.user?.id;
+  const { currentAppId, isLoadingAppId, errorLoadingAppId, currentAppInstance } = useCurrentAppStore();
+  // --- END COMMENT ---
 
   const messages = useChatStore(state => state.messages);
   const addMessage = useChatStore(state => state.addMessage);
@@ -67,6 +80,21 @@ export function useChatInterface() {
       console.warn("[handleSubmit] Submission blocked: chat store isProcessing.");
       return;
     }
+
+    // --- BEGIN COMMENT ---
+    // 在提交前检查用户是否登录，AppId 是否有效
+    // --- END COMMENT ---
+    if (!currentUserId) {
+      console.error("useChatInterface.handleSubmit: User not authenticated.");
+      // TODO: 可以通过 useNotificationStore 显示提示
+      return;
+    }
+    if (!currentAppId || isLoadingAppId) {
+      console.error(`useChatInterface.handleSubmit: App ID not ready (current: ${currentAppId}, loading: ${isLoadingAppId}).`);
+      // TODO: 可以通过 useNotificationStore 显示提示
+      return;
+    }
+    // --- END COMMENT ---
 
     isSubmittingRef.current = true;
     setIsWaitingForResponse(true);
@@ -136,21 +164,17 @@ export function useChatInterface() {
 
       const basePayloadForNewConversation = {
         query: message,
-        user: currentUserIdentifier, // 添加 user 字段
-        inputs: {}, // 假设当前没有额外的 prompt inputs，或者从其他地方获取
+        user: currentUserId, // 使用动态获取的 currentUserId
+        inputs: {}, 
         ...(difyFiles && { files: difyFiles }),
       };
       
-      // 对于现有对话，payload 构造方式不同，需要包含 conversation_id
-      // 并且 auto_generate_name 应为 false
-
       if (isNewConversationFlow) {
         // --- 新对话逻辑 ---
-        // basePayloadForNewConversation 已经包含了 user
         const creationResult = await initiateNewConversation(
-          basePayloadForNewConversation, // 使用正确的变量名
-          DIFY_APP_IDENTIFIER,
-          currentUserIdentifier // 显式传递 userIdentifier
+          basePayloadForNewConversation,
+          currentAppId, // 使用动态获取的 currentAppId
+          currentUserId // 显式传递 userIdentifier
         );
 
         if (creationResult.error) {
@@ -183,17 +207,16 @@ export function useChatInterface() {
         };
         const difyPayload: DifyChatRequestPayload = {
           ...payloadForExistingStream,
-          user: currentUserIdentifier,
+          user: currentUserId, // 使用动态获取的 currentUserId
           response_mode: 'streaming',
-          conversation_id: currentConvId, // Should be a valid ID
-          auto_generate_name: false, // Not a new conversation
+          conversation_id: currentConvId, 
+          auto_generate_name: false, 
         };
         const streamServiceResponse = await streamDifyChat(
           difyPayload,
-          DIFY_APP_IDENTIFIER,
-          (newlyFetchedConvId) => { // This callback might be redundant for existing chats
+          currentAppId, // 使用动态获取的 currentAppId
+          (newlyFetchedConvId) => { 
             if (newlyFetchedConvId && useChatStore.getState().currentConversationId !== newlyFetchedConvId) {
-               // This case should ideally not happen for existing conversations if currentConvId is correct
               console.warn(`[handleSubmit] Conversation ID changed mid-stream for existing chat: ${currentConvId} -> ${newlyFetchedConvId}`);
               setCurrentConversationId(newlyFetchedConvId);
               if (currentPathname !== `/chat/${newlyFetchedConvId}`) {
@@ -319,11 +342,12 @@ export function useChatInterface() {
       isSubmittingRef.current = false;
     }
   }, [
-    currentUserIdentifier, 
+    currentUserId, // 替换 currentUserIdentifier
+    currentAppId,  // 添加 currentAppId
     addMessage, setIsWaitingForResponse, isWelcomeScreen, setIsWelcomeScreen,
     appendMessageChunk, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
     setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer,
-    initiateNewConversation, updatePendingStatus // 添加新的依赖
+    initiateNewConversation, updatePendingStatus
   ]);
 
   const handleStopProcessing = useCallback(async () => {
@@ -331,10 +355,20 @@ export function useChatInterface() {
     const currentStreamingId = state.streamingMessageId;
     const currentTaskId = state.currentTaskId;
     
+    // --- BEGIN COMMENT ---
+    // 检查用户是否登录，AppId 是否有效
+    // --- END COMMENT ---
+    if (!currentUserId) {
+      console.error("useChatInterface.handleStopProcessing: User not authenticated.");
+      return;
+    }
+    if (!currentAppId) { // isLoadingAppId 检查可能也需要，但停止操作通常是紧急的
+      console.error(`useChatInterface.handleStopProcessing: App ID not available (current: ${currentAppId}).`);
+      return;
+    }
+    // --- END COMMENT ---
+
     if (currentStreamingId) {
-      // --- BEGIN COMMENT ---
-      // 正确访问 appendTimerRef 和 flushChunkBuffer，因为它们现在是顶级作用域的
-      // --- END COMMENT ---
       if (appendTimerRef.current) { 
         clearTimeout(appendTimerRef.current);
         appendTimerRef.current = null;
@@ -342,44 +376,41 @@ export function useChatInterface() {
       flushChunkBuffer(currentStreamingId); 
       markAsManuallyStopped(currentStreamingId); 
 
-      // 如果是新对话流程被手动停止，更新 pending 状态
       const currentConvId = useChatStore.getState().currentConversationId;
-      const isNewConversationFlow = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+      const urlIndicatesNew = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
+      const isNewConversationFlow = urlIndicatesNew && !currentConvId; // Re-evaluate based on current state
       if (isNewConversationFlow && currentConvId) {
         updatePendingStatus(currentConvId, 'stream_completed_title_pending');
       }
 
       if (currentTaskId) {
         try {
-          await stopDifyStreamingTask(DIFY_APP_IDENTIFIER, currentTaskId, currentUserIdentifier);
-          // --- BEGIN MODIFIED COMMENT ---
-          // 成功停止后清除任务 ID
-          // --- END MODIFIED COMMENT ---
+          await stopDifyStreamingTask(currentAppId, currentTaskId, currentUserId); // 使用动态 appId 和 userId
           setCurrentTaskId(null); 
         } catch (error) {
           console.error(`[handleStopProcessing] Error calling stopDifyStreamingTask:`, error);
         }
       }
     }
-    // --- BEGIN COMMENT ---
-    // 如果我们因为此流而等待，请确保 isWaitingForResponse 为 false
-    // --- END COMMENT ---
     if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
         setIsWaitingForResponse(false);
     }
-  }, [markAsManuallyStopped, setCurrentTaskId, appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer]); // --- BEGIN MODIFIED COMMENT ---
-  // 添加了 updatePendingStatus 和 flushChunkBuffer
-  // --- END MODIFIED COMMENT ---
+  }, [
+    currentUserId, // 添加依赖
+    currentAppId,  // 添加依赖
+    markAsManuallyStopped, setCurrentTaskId, 
+    appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer
+  ]);
 
   return {
     messages, handleSubmit, handleStopProcessing, 
-    // --- BEGIN MODIFIED COMMENT ---
-    // 获取最新的 isProcessing 状态
-    // --- END MODIFIED COMMENT ---
     isProcessing: useChatStore(selectIsProcessing), 
-    // --- BEGIN MODIFIED COMMENT ---
-    // 获取最新的 waiting 状态
-    // --- END MODIFIED COMMENT ---
-    isWaitingForResponse: useChatStore(state => state.isWaitingForResponse), 
+    isWaitingForResponse: useChatStore(state => state.isWaitingForResponse),
+    // --- BEGIN COMMENT ---
+    // 暴露 AppId 加载状态和错误状态，以便 UI 层可以响应
+    // --- END COMMENT ---
+    isAppConfigLoading: isLoadingAppId,
+    appConfigError: errorLoadingAppId,
+    isUserLoggedIn: !!currentUserId, // 方便 UI 判断用户是否登录
   };
 }

@@ -71,14 +71,32 @@ npm run migrate-dify
 
 ### 获取 Dify 配置
 
+获取 Dify 应用配置通常涉及两个步骤：
+1. **获取当前应用的 `appId`**：这通常通过状态管理（例如，我们项目中的 `useCurrentAppStore`）来实现，该状态管理会从数据库加载默认应用或用户选择的应用。
+2. **使用 `appId` 获取具体配置**：可以将获取到的 `appId` 传递给 `getDifyAppConfig` 函数或 `useDifyConfig` Hook。
+
 ```typescript
-import { getDifyAppConfig } from '../lib/config/dify-config';
+import { getDifyAppConfig } from '@lib/config/dify-config';
+import { useCurrentAppStore } from '@lib/stores/current-app-store'; // 假设的路径
 
-// 获取默认 Dify 应用配置
-const config = await getDifyAppConfig('default');
+// 示例：在某个异步函数或服务端逻辑中
+async function someFunction() {
+  // 1. 从 Store 获取当前 appId (这里用伪代码表示，实际取决于 Store 实现)
+  // const currentAppId = useCurrentAppStore.getState().currentAppId; 
+  // 或者，如果是在初始化阶段，可能是直接获取默认配置的 appId
+  const defaultAppInstance = await getDefaultAppInstanceFromDb(); // 伪代码：从数据库获取默认应用
+  const appIdToUse = defaultAppInstance?.instance_id;
 
-// 使用配置
-if (config) {
+  if (!appIdToUse) {
+    console.error("当前应用ID未设置");
+    return;
+  }
+
+  // 2. 获取配置
+  const config = await getDifyAppConfig(appIdToUse); // appId 是必需的
+
+  // 使用配置
+  if (config) {
   const { apiKey, apiUrl } = config;
   // 使用 apiKey 和 apiUrl 调用 Dify API
 }
@@ -87,14 +105,35 @@ if (config) {
 ### 在 React 组件中使用
 
 ```tsx
-import { useDifyConfig } from '../lib/hooks/use-api-config';
+import { useDifyConfig } from '@lib/hooks/use-api-config'; // 确保路径正确
+import { useCurrentAppStore } from '@lib/stores/current-app-store'; // 确保路径正确
 
 function ChatComponent() {
-  const { config, isLoading, error } = useDifyConfig('default');
+  // 1. 从 Store 获取当前 appId 和加载状态
+  const { currentAppId, isLoadingAppId, errorLoadingAppId } = useCurrentAppStore();
+
+  // 2. 使用获取到的 appId 调用 useDifyConfig
+  // 注意：只有当 currentAppId 有效时才调用 useDifyConfig，或者 useDifyConfig 内部能处理 appId 为 null 的情况
+  // 当前 useDifyConfig 要求 appId 是 string，所以需要确保 currentAppId 不是 null
   
-  if (isLoading) return <div>Loading configuration...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!config) return <div>Configuration not found</div>;
+  // 处理 appId 加载状态
+  const appIdForConfig = currentAppId; // 直接使用，但后续逻辑需要处理其可能为 null 的情况
+
+  // 当 appIdForConfig 准备好后，才获取其 Dify 配置
+  const { 
+    config, 
+    isLoading: isConfigLoading, 
+    error: configError 
+  } = useDifyConfig(appIdForConfig!); // 使用非空断言，前提是确保 appIdForConfig 在此时已有效
+                                     // 更安全的做法是条件性调用或传递
+
+  if (isLoadingAppId) return <div>Loading application ID...</div>;
+  if (errorLoadingAppId) return <div>Error loading application ID: {errorLoadingAppId}</div>;
+  if (!appIdForConfig) return <div>Application ID not available. Please select an application.</div>;
+  
+  if (isConfigLoading) return <div>Loading Dify configuration for app: {appIdForConfig}...</div>;
+  if (configError) return <div>Error loading Dify config: {configError.message}</div>;
+  if (!config) return <div>Dify configuration not found for app: {appIdForConfig}</div>;
   
   // 使用 config.apiKey 和 config.apiUrl
   return (

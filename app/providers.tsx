@@ -2,6 +2,7 @@
 
 import { ThemeProvider } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { useCurrentAppStore } from '@lib/stores/current-app-store'; // 引入 App Store
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // 避免水合不匹配，确保在客户端渲染时才加载 ThemeProvider
@@ -9,6 +10,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
+    // --- BEGIN COMMENT ---
+    // 初始化默认的 App ID
+    // --- END COMMENT ---
+    useCurrentAppStore.getState().initializeDefaultAppId();
   }, []);
 
   if (!mounted) {
@@ -27,4 +32,4 @@ export function Providers({ children }: { children: React.ReactNode }) {
       {children}
     </ThemeProvider>
   );
-} 
+}

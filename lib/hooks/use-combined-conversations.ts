@@ -15,15 +15,17 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSidebarConversations } from './use-sidebar-conversations';
 import { usePendingConversationStore, PendingConversation } from '@lib/stores/pending-conversation-store';
+import { useSupabaseAuth } from '@lib/supabase/hooks'; // 引入 Supabase Auth Hook
 import { Conversation } from '@lib/types/database';
 
 // --- BEGIN COMMENT ---
 // 扩展 Conversation 类型，添加临时状态标志
+// user_id 可以为 undefined，以适应匿名用户的临时对话，并与 Partial<Conversation> 兼容
 // --- END COMMENT ---
 export interface CombinedConversation extends Partial<Conversation> {
   id: string; // 必需字段
   title: string; // 必需字段
-  user_id: string; // 必需字段
+  user_id?: string; // 改为可选 string，即 string | undefined
   created_at: string; // 必需字段
   updated_at: string; // 必需字段
   isPending?: boolean; // 是否为临时对话
@@ -44,6 +46,12 @@ export function useCombinedConversations() {
     error: dbError,
     refresh: refreshDbConversations
   } = useSidebarConversations();
+
+  // --- BEGIN COMMENT ---
+  // 获取当前登录用户ID
+  // --- END COMMENT ---
+  const { session } = useSupabaseAuth();
+  const currentUserId = session?.user?.id;
 
   // --- BEGIN COMMENT ---
   // 获取临时对话列表
@@ -118,7 +126,11 @@ export function useCombinedConversations() {
         return {
           id: pending.realId || pending.tempId, // 优先使用 realId
           title: pending.title,
-          user_id: 'temp-user', // 临时用户 ID，满足 CombinedConversation 类型要求
+          // --- BEGIN COMMENT ---
+          // 使用动态获取的 currentUserId。如果用户未登录，则为 undefined。
+          // CombinedConversation 类型的 user_id 现在是 string | undefined。
+          // --- END COMMENT ---
+          user_id: currentUserId || undefined, 
           created_at: now,
           updated_at: now,
           org_id: null,
@@ -147,7 +159,7 @@ export function useCombinedConversations() {
     return [...dbConvsFormatted, ...pendingConvsFormatted].sort((a, b) => {
       return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
     });
-  }, [dbConversations, pendingArray]);
+  }, [dbConversations, pendingArray, currentUserId]); // 添加 currentUserId 到依赖数组
 
   // 刷新函数
   const refresh = () => {
