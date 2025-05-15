@@ -1,9 +1,13 @@
 import { useCallback, useState } from 'react';
-import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
+import { usePendingConversationStore, PendingConversation } from '@lib/stores/pending-conversation-store';
 import { streamDifyChat } from '@lib/services/dify/chat-service';
 import { DifyStreamResponse } from '@lib/services/dify/types';
 import { renameConversation } from '@lib/services/dify/conversation-service';
 import type { DifyChatRequestPayload } from '@lib/services/dify/types';
+import { useSupabaseAuth } from '@lib/supabase/hooks'; // For userId
+import { useCurrentAppStore } from '@lib/stores/current-app-store'; // For appId
+import { createConversation as dbCreateConversation } from '@lib/db'; // DB function
+import { useChatStore } from '@lib/stores/chat-store'; // To set local conversation ID
 
 // --- BEGIN COMMENT ---
 // 定义 Hook 返回值的接口
@@ -39,8 +43,18 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
   const addPending = usePendingConversationStore((state) => state.addPending);
   const setRealIdAndStatus = usePendingConversationStore((state) => state.setRealIdAndStatus);
-  const updateTitle = usePendingConversationStore((state) => state.updateTitle);
-  const updateStatus = usePendingConversationStore((state) => state.updateStatus);
+  const updateTitleInPendingStore = usePendingConversationStore((state) => state.updateTitle); // Renamed for clarity
+  const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus); // Renamed for clarity
+  const removePending = usePendingConversationStore((state) => state.removePending);
+
+  // --- BEGIN COMMENT ---
+  // Get current user and app context
+  // --- END COMMENT ---
+  const { session } = useSupabaseAuth();
+  const currentUserId = session?.user?.id;
+  const { currentAppId } = useCurrentAppStore();
+  const setCurrentChatConversationId = useChatStore((state) => state.setCurrentConversationId);
+
 
   const initiateNewConversation = useCallback(
     async (
@@ -59,7 +73,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
       const tempConvId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       addPending(tempConvId, "创建中..."); // 初始占位标题
-      updateStatus(tempConvId, 'creating');
+      updateStatusInPendingStore(tempConvId, 'creating');
 
       let streamResponse: DifyStreamResponse | null = null;
       let realConvIdFromStream: string | null = null;
@@ -67,7 +81,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
       try {
         // Step 1: 创建对话并开始流式消息 (auto_generate_name: false)
-        updateStatus(tempConvId, 'streaming_message');
+        updateStatusInPendingStore(tempConvId, 'streaming_message');
         const chatPayload: DifyChatRequestPayload = {
           ...payloadData,
           user: userIdentifier,
@@ -84,211 +98,118 @@ export function useCreateConversation(): UseCreateConversationReturn {
               realConvIdFromStream = id;
               console.log(`[useCreateConversation] Real conversation ID received from stream: ${id}`);
               
-              // --- BEGIN MODIFIED COMMENT ---
-              // 重要：立即更新当前路径，确保从临时对话路径切换到真实对话路径
-              // 这里使用 window.history.replaceState 而不是 router.replace
-              // 因为这是在回调中执行，可能会比 router.replace 更可靠
-              // --- END MODIFIED COMMENT ---
               const currentPath = window.location.pathname;
               if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
                 console.log(`[useCreateConversation] Updating URL from ${currentPath} to /chat/${id}`);
                 window.history.replaceState({}, '', `/chat/${id}`);
               }
               
-              // --- BEGIN MODIFIED COMMENT ---
-              // 获取到真实对话ID后，立即在侧边栏选中该对话并激活悬停效果
-              // --- END MODIFIED COMMENT ---
               try {
-                // 使用侧边栏存储的 selectItem 方法选中当前对话
                 const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
                 console.log(`[useCreateConversation] 选中新对话并激活悬停效果: ${id}`);
-                selectItem('chat', id, true); // 第三个参数 true 表示激活悬停效果
+                selectItem('chat', id, true); 
                 
-                // 同时更新 useChatStore 中的当前对话ID
                 const { setCurrentConversationId } = require('@lib/stores/chat-store').useChatStore.getState();
                 setCurrentConversationId(id);
               } catch (error) {
                 console.error('[useCreateConversation] 选中对话失败:', error);
               }
               
-              // 更新状态为 stream_completed_title_pending，表示流已经开始但标题尚未获取
               setRealIdAndStatus(tempConvId, id, 'stream_completed_title_pending');
-              // 更新状态为标题获取中
-              updateStatus(id, 'title_fetching');
+              updateStatusInPendingStore(tempConvId, 'title_fetching');
 
-              // Step 2: 异步获取/生成标题 (一旦有了 realConvId)
-              renameConversation(appId, id, { user: userIdentifier, auto_generate: true })
-                .then(renameResponse => {
-                  if (renameResponse && renameResponse.name) {
-                    console.log(`[useCreateConversation] Title fetched for ${id}: ${renameResponse.name}`);
-                    updateTitle(id, renameResponse.name, true); // 更新为最终标题
+              const saveConversationToDb = async (difyConvId: string, convTitle: string, currentTempConvId: string) => {
+                if (!currentUserId || !appId) {
+                  console.error("[useCreateConversation] Cannot save to DB: userId or appId is missing.", { currentUserId, appId });
+                  updateStatusInPendingStore(currentTempConvId, 'failed'); 
+                  updateTitleInPendingStore(currentTempConvId, "保存对话失败", true);
+                  return;
+                }
+                try {
+                  console.log(`[useCreateConversation] Saving to DB: difyId=${difyConvId}, title=${convTitle}, userId=${currentUserId}, appId=${appId}, tempId=${currentTempConvId}`);
+                  const localConversation = await dbCreateConversation({
+                    user_id: currentUserId,
+                    app_id: appId, 
+                    external_id: difyConvId,
+                    title: convTitle,
+                    org_id: null, 
+                    ai_config_id: null,
+                    summary: null,
+                    settings: {},
+                    status: 'active', 
+                    last_message_preview: payloadData.query.substring(0, 100), 
+                    metadata: {},
+                  });
+
+                  if (localConversation && localConversation.id) {
+                    console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}`);
+                    setCurrentChatConversationId(localConversation.id); 
+                    updateStatusInPendingStore(currentTempConvId, 'title_resolved'); 
+                    removePending(currentTempConvId); 
                     
-                    // --- BEGIN COMMENT ---
-                    // TODO: 数据库集成接口点
-                    // 在此处添加数据库集成代码，将对话保存到数据库
-                    // 示例:
-                    // await databaseIntegration.createConversation({
-                    //   externalId: id,
-                    //   title: renameResponse.name,
-                    //   messages: useChatStore.getState().messages,
-                    //   userId: currentUserIdentifier
-                    // });
-                    // 
-                    // 如果数据库保存成功，可以移除临时对话:
-                    // const removePending = usePendingConversationStore.getState().removePending;
-                    // removePending(tempConvId);
-                    // --- END COMMENT ---
-                    
-                    // 确保在侧边栏中选中当前对话
-                    try {
-                      const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                      selectItem('chat', id, true); // 第三个参数 true 表示激活悬停效果
-                    } catch (error) {
-                      console.error('[useCreateConversation] 选中对话失败:', error);
-                    }
+                    console.log("[useCreateConversation] TODO: Implement sidebar refresh trigger.");
+
                   } else {
-                    console.warn(`[useCreateConversation] Title fetch for ${id} returned no name. Setting to 'Untitled'.`);
-                    updateTitle(id, "Untitled", true); // 标题获取失败或为空，但对话本身可能没问题
-                    
-                    // --- BEGIN COMMENT ---
-                    // TODO: 标题获取失败时的数据库集成接口点
-                    // 即使标题获取失败，也应该将对话保存到数据库
-                    // --- END COMMENT ---
-                    
-                    // 确保在侧边栏中选中当前对话
-                    try {
-                      const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                      selectItem('chat', id, true);
-                    } catch (error) {
-                      console.error('[useCreateConversation] 选中对话失败 (标题为 Untitled 时):', error);
-                    }
+                    throw new Error("Failed to save conversation to local DB or local ID not returned.");
+                  }
+                } catch (dbError) {
+                  console.error(`[useCreateConversation] Error saving conversation (difyId: ${difyConvId}) to DB:`, dbError);
+                  updateStatusInPendingStore(currentTempConvId, 'failed');
+                  updateTitleInPendingStore(currentTempConvId, "保存对话失败", true);
+                }
+              };
+
+              renameConversation(appId, id, { user: userIdentifier, auto_generate: true })
+                .then(async renameResponse => { 
+                  const finalTitle = (renameResponse && renameResponse.name) ? renameResponse.name : "新对话";
+                  console.log(`[useCreateConversation] Title resolved for ${id}: ${finalTitle}`);
+                  updateTitleInPendingStore(tempConvId, finalTitle, true); 
+                  await saveConversationToDb(id, finalTitle, tempConvId); 
+
+                  try {
+                    const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                    selectItem('chat', id, true); 
+                  } catch (error) {
+                    console.error('[useCreateConversation] Error selecting item in sidebar:', error);
                   }
                 })
-                .catch(renameError => {
+                .catch(async renameError => { 
                   console.error(`[useCreateConversation] Error fetching title for ${id}:`, renameError);
-                  // 即使标题获取失败，对话流可能仍然成功，所以只更新标题为 "Untitled"
-                  // 除非 renameError 表示一个严重到需要将整个 pending conversation 标记为 failed 的问题
-                  updateTitle(id, "Untitled (获取标题失败)", true); 
-                  
-                  // --- BEGIN COMMENT ---
-                  // TODO: 标题获取失败时的数据库集成接口点
-                  // 即使标题获取失败，也应该将对话保存到数据库
-                  // 示例:
-                  // await databaseIntegration.createConversation({
-                  //   externalId: id,
-                  //   title: "Untitled (获取标题失败)",
-                  //   messages: useChatStore.getState().messages,
-                  //   userId: currentUserIdentifier
-                  // });
-                  // --- END COMMENT ---
-                  
-                  // 确保在侧边栏中选中当前对话
+                  const fallbackTitle = "获取标题失败";
+                  updateTitleInPendingStore(tempConvId, fallbackTitle, true); 
+                  await saveConversationToDb(id, fallbackTitle, tempConvId); 
+
                   try {
                     const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
                     selectItem('chat', id, true);
                   } catch (error) {
-                    console.error('[useCreateConversation] 选中对话失败 (标题获取失败时):', error);
+                    console.error('[useCreateConversation] Error selecting item in sidebar (title fetch failed):', error);
                   }
                 });
             }
           }
         );
         
-        // 注意：streamDifyChat 的 onConversationIdReceived 是在流内部被调用的。
-        // 我们需要确保在 streamDifyChat Promise resolve 后，realConvIdFromStream 已经被设置（如果流中有的话）
-        // 或者从 streamResponse.getConversationId() 获取。
-        // streamDifyChat 的实现是，getConversationId() 会在流处理过程中被填充。
-
-        // 尝试在流开始前或刚开始时获取 realConvId 和 taskId
-        // 这是为了尽早触发标题获取。
-        // 如果 onConversationIdReceived 已经执行，这里的 getConversationId() 应该能拿到值。
         if (!realConvIdFromStream) realConvIdFromStream = streamResponse.getConversationId();
         if (!taskIdFromStream) taskIdFromStream = streamResponse.getTaskId();
 
         if (realConvIdFromStream && !usePendingConversationStore.getState().getPendingByRealId(realConvIdFromStream)?.realId) {
-            // --- BEGIN MODIFIED COMMENT ---
-            // 如果回调由于某种原因没有及时设置 realId (例如流非常快，回调前的检查通过了)
-            // 在这里再次确保设置
-            // --- END MODIFIED COMMENT ---
             setRealIdAndStatus(tempConvId, realConvIdFromStream, 'stream_completed_title_pending');
-            updateStatus(realConvIdFromStream, 'title_fetching');
+            // Corrected line: use tempConvId for store operations
+            updateStatusInPendingStore(tempConvId, 'title_fetching'); 
             
-            // --- BEGIN MODIFIED COMMENT ---
-            // 再次检查并更新URL路径，确保从临时对话路径切换到真实对话路径
-            // --- END MODIFIED COMMENT ---
             const currentPath = window.location.pathname;
             if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
                 console.log(`[useCreateConversation] Updating URL (fallback) from ${currentPath} to /chat/${realConvIdFromStream}`);
                 window.history.replaceState({}, '', `/chat/${realConvIdFromStream}`);
             }
-
-            // --- BEGIN MODIFIED COMMENT ---
-            // 再次尝试触发标题获取，以防回调中的逻辑未执行或执行太晚
-            // --- END MODIFIED COMMENT ---
+            /*
+            // Commenting out duplicate/fallback title fetching logic as discussed,
+            // to rely on the primary flow within onConversationIdReceived.
             renameConversation(appId, realConvIdFromStream, { user: userIdentifier, auto_generate: true })
-            .then(renameResponse => {
-              if (renameResponse && renameResponse.name) {
-                updateTitle(realConvIdFromStream!, renameResponse.name, true);
-                
-                // --- BEGIN COMMENT ---
-                // TODO: 备用逻辑中的数据库集成接口点
-                // 在此处添加数据库集成代码，将对话保存到数据库
-                // 示例:
-                // await databaseIntegration.createConversation({
-                //   externalId: realConvIdFromStream,
-                //   title: renameResponse.name,
-                //   messages: useChatStore.getState().messages,
-                //   userId: currentUserIdentifier
-                // });
-                // 
-                // 如果数据库保存成功，可以移除临时对话:
-                // const removePending = usePendingConversationStore.getState().removePending;
-                // removePending(tempConvId);
-                // --- END COMMENT ---
-                
-                // 确保在侧边栏中选中当前对话
-                try {
-                  const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                  selectItem('chat', realConvIdFromStream!, true);
-                } catch (error) {
-                  console.error('[useCreateConversation] 选中对话失败 (备用逻辑):', error);
-                }
-              } else {
-                updateTitle(realConvIdFromStream!, "Untitled", true);
-                
-                // --- BEGIN COMMENT ---
-                // TODO: 备用逻辑中标题获取失败时的数据库集成接口点
-                // 即使标题获取失败，也应该将对话保存到数据库
-                // --- END COMMENT ---
-                
-                // 确保在侧边栏中选中当前对话
-                try {
-                  const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                  selectItem('chat', realConvIdFromStream!, true);
-                } catch (error) {
-                  console.error('[useCreateConversation] 选中对话失败 (备用逻辑标题为 Untitled 时):', error);
-                }
-              }
-            })
-            .catch(renameError => {
-              console.error(`[useCreateConversation] Error fetching title (fallback) for ${realConvIdFromStream}:`, renameError);
-              updateTitle(realConvIdFromStream!, "Untitled (获取标题失败)", true);
-              
-              // --- BEGIN COMMENT ---
-              // TODO: 备用逻辑中标题获取失败时的数据库集成接口点
-              // 即使标题获取失败，也应该将对话保存到数据库
-              // --- END COMMENT ---
-              
-              // 确保在侧边栏中选中当前对话
-              try {
-                const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                selectItem('chat', realConvIdFromStream!, true);
-              } catch (error) {
-                console.error('[useCreateConversation] 选中对话失败 (备用逻辑标题获取失败时):', error);
-              }
-            });
+              // ...
+            */
         }
-
 
         setIsLoading(false);
         return {
@@ -302,13 +223,21 @@ export function useCreateConversation(): UseCreateConversationReturn {
         console.error('[useCreateConversation] Error initiating new conversation:', e);
         setError(e);
         setIsLoading(false);
-        updateStatus(tempConvId, 'failed'); // 标记这个临时对话创建失败
-        // 可以在这里设置一个更具体的错误标题
-        updateTitle(tempConvId, "创建对话失败", true);
+        updateStatusInPendingStore(tempConvId, 'failed'); 
+        updateTitleInPendingStore(tempConvId, "创建对话失败", true);
         return { tempConvId, error: e };
       }
     },
-    [addPending, setRealIdAndStatus, updateTitle, updateStatus]
+    [
+      addPending, 
+      setRealIdAndStatus, 
+      updateTitleInPendingStore, 
+      updateStatusInPendingStore, 
+      removePending,
+      currentUserId, 
+      currentAppId, // Added currentAppId from useCurrentAppStore to dependencies
+      setCurrentChatConversationId,
+    ]
   );
 
   return {
