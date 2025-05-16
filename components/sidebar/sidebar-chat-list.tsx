@@ -249,9 +249,8 @@ export function SidebarChatList({
                         <DropdownMenu.Item
                           icon={<Edit className="w-4 h-4" />}
                           onClick={() => handleRename(chat.id)}
-                          className={cn({ // Visually disable if pending, onClick handler already alerts
-                            "opacity-50 cursor-not-allowed": chat.isPending === true,
-                          })}
+                          // Removed className that visually disables based on chat.isPending
+                          // The handleRename function itself will alert if chat.isPending
                         >
                           重命名
                         </DropdownMenu.Item>
@@ -260,9 +259,8 @@ export function SidebarChatList({
                           icon={<Trash className="w-4 h-4" />}
                           danger
                           onClick={() => handleDelete(chat.id)}
-                          className={cn({ // Visually disable if pending, onClick handler already alerts
-                            "opacity-50 cursor-not-allowed": chat.isPending === true,
-                          })}
+                          // Removed className that visually disables based on chat.isPending
+                          // The handleDelete function itself will alert if chat.isPending
                         >
                           删除聊天
                         </DropdownMenu.Item>

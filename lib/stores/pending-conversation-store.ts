@@ -9,6 +9,8 @@ export interface PendingConversation {
   status: 'creating' | 'title_fetching' | 'streaming_message' | 'stream_completed_title_pending' | 'title_resolved' | 'persisted_optimistic' | 'failed'; // 会话状态
   title: string; // 当前显示的标题 (可能是 "创建中...", "新对话...", "Untitled", 或真实标题)
   isTitleFinal: boolean; // 标题是否已最终确定从 /name API 获取
+  createdAt: string; // 创建时间
+  updatedAt: string; // 最后更新时间
 }
 
 // --- BEGIN COMMENT ---
@@ -56,6 +58,8 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         status: 'creating', // 初始状态为 'creating'
         title: initialTitle,
         isTitleFinal: false, // 初始标题不是最终标题
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
       return { pendingConversations: newMap };
     });
@@ -66,7 +70,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       const newMap = new Map(state.pendingConversations);
       const entry = newMap.get(tempId);
       if (entry) {
-        newMap.set(tempId, { ...entry, realId, status });
+        newMap.set(tempId, { ...entry, realId, status, updatedAt: new Date().toISOString() });
         return { pendingConversations: newMap };
       }
       console.warn(`[PendingConversationStore] 未找到临时ID: ${tempId}`);
@@ -94,7 +98,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         // 更新标题和 isTitleFinal 标志
         // 如果 isFinal 为 true 且当前状态是 'title_fetching'，则同时更新状态为 'title_resolved'
         const newStatus = isFinal && entry.status === 'title_fetching' ? 'title_resolved' : entry.status;
-        newMap.set(entryKey, { ...entry, title, isTitleFinal: isFinal, status: newStatus });
+        newMap.set(entryKey, { ...entry, title, isTitleFinal: isFinal, status: newStatus, updatedAt: new Date().toISOString() });
         return { pendingConversations: newMap };
       }
       console.warn(`[PendingConversationStore] 未找到ID: ${id}`);
@@ -119,7 +123,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       }
       
       if (entry && entryKey) {
-        newMap.set(entryKey, { ...entry, status }); // 只更新 status
+        newMap.set(entryKey, { ...entry, status, updatedAt: new Date().toISOString() });
         return { pendingConversations: newMap };
       }
       console.warn(`[PendingConversationStore] 未找到ID: ${id}`);
@@ -182,7 +186,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       if (entry && entryKey) {
         // 确保对话至少有 realId 才能标记为 optimistic
         if (entry.realId) {
-          newMap.set(entryKey, { ...entry, status: 'persisted_optimistic' });
+          newMap.set(entryKey, { ...entry, status: 'persisted_optimistic', updatedAt: new Date().toISOString() });
           console.log(`[PendingConversationStore] Marked ${entryKey} (realId: ${entry.realId}) as persisted_optimistic`);
           return { pendingConversations: newMap };
         } else {

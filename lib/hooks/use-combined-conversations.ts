@@ -61,37 +61,10 @@ export function useCombinedConversations() {
   const pendingConversations = usePendingConversationStore(state => state.pendingConversations);
   const [pendingArray, setPendingArray] = useState<PendingConversation[]>([]);
   
-  // 使用 ref 跟踪上一次的 pendingConversations 大小
-  const prevSizeRef = useRef(0);
-  const prevMapRef = useRef(new Map<string, PendingConversation>());
-  
   // 监听 pendingConversations 的变化
+  // 当 pendingConversations Map 实例从 store 更新时，直接用其内容更新 pendingArray
   useEffect(() => {
-    const currentSize = pendingConversations.size;
-    let hasChanged = currentSize !== prevSizeRef.current;
-    
-    // 如果大小相同，检查内容是否变化
-    if (!hasChanged && currentSize > 0) {
-      // 检查每个元素的状态是否变化
-      for (const [key, value] of pendingConversations.entries()) {
-        const prevValue = prevMapRef.current.get(key);
-        if (!prevValue || 
-            prevValue.status !== value.status || 
-            prevValue.title !== value.title || 
-            prevValue.isTitleFinal !== value.isTitleFinal ||
-            prevValue.realId !== value.realId) {
-          hasChanged = true;
-          break;
-        }
-      }
-    }
-    
-    if (hasChanged) {
-      const newArray = Array.from(pendingConversations.values());
-      setPendingArray(newArray);
-      prevSizeRef.current = currentSize;
-      prevMapRef.current = new Map(pendingConversations);
-    }
+    setPendingArray(Array.from(pendingConversations.values()));
   }, [pendingConversations]);
 
   // 整合数据库对话和临时对话
@@ -139,8 +112,8 @@ export function useCombinedConversations() {
         id: pending.realId || pending.tempId, // Primary ID: Dify realId if available, else tempId
         title: pending.title,
         user_id: currentUserId || undefined,
-        created_at: now, // Placeholder, ideally from pending store or first message
-        updated_at: now, // Placeholder, should update as pending item changes
+        created_at: pending.createdAt, // Use timestamp from pending store
+        updated_at: pending.updatedAt, // Use timestamp from pending store
 
         // Pending specific fields
         isPending: true,
