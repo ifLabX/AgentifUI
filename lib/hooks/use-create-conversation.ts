@@ -47,6 +47,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
   const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus); // Renamed for clarity
   const removePending = usePendingConversationStore((state) => state.removePending); // Kept for now, though direct usage is replaced
   const markAsOptimistic = usePendingConversationStore((state) => state.markAsOptimistic);
+  const setSupabasePKInPendingStore = usePendingConversationStore((state) => state.setSupabasePK);
 
   // --- BEGIN COMMENT ---
   // Get current user and app context
@@ -145,10 +146,12 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   if (localConversation && localConversation.id) {
                     console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}, Dify ID: ${difyConvId}`);
                     setCurrentChatConversationId(difyConvId); // Use Dify realId for ChatStore
-                    updateStatusInPendingStore(currentTempConvId, 'title_resolved');
+                    // Set Supabase PK in pending store once we have it
+                    setSupabasePKInPendingStore(difyConvId, localConversation.id); // difyConvId is realId, localConversation.id is supabase_pk
+                    updateStatusInPendingStore(currentTempConvId, 'title_resolved'); // This should ideally be the last status update before optimistic
                     markAsOptimistic(difyConvId); // Mark as optimistic instead of removing
                     
-                    console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}) as optimistic in pending store.`);
+                    console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}, supabase_pk: ${localConversation.id}) as optimistic and set PK in pending store.`);
 
                   } else {
                     throw new Error("Failed to save conversation to local DB or local ID not returned.");
@@ -236,7 +239,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
       updateStatusInPendingStore, 
       removePending,
       markAsOptimistic,
-      currentUserId, 
+      setSupabasePKInPendingStore,
+      currentUserId,
       currentAppId, // Added currentAppId from useCurrentAppStore to dependencies
       setCurrentChatConversationId,
     ]

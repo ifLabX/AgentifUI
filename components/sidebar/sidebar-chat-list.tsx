@@ -76,18 +76,18 @@ export function SidebarChatList({
     const conversation = conversations.find(c => c.id === chatId); // chatId is Dify realId
     if (!conversation) return;
 
-    if (conversation.isPending) {
-      alert("临时对话的重命名功能待对话同步完成后可用。");
-      return;
-    }
+    const supabasePK = conversation.supabase_pk;
 
-    const supabasePK = conversation.supabase_pk; // Get Supabase PK
+    // If supabase_pk is not available, it means the conversation isn't fully saved/synced yet for DB operations.
+    // This check covers both pending items that haven't received their PK yet,
+    // and potentially non-pending items if data is somehow inconsistent (though less likely).
     if (!supabasePK) {
-      console.error('Supabase PK not found for renaming conversation:', chatId);
-      alert('操作失败，对话信息不完整。');
+      alert("对话数据正在同步中，请稍后再尝试重命名。");
       return;
     }
     
+    // Now that we have supabasePK, we can proceed even if conversation.isPending might still be true
+    // (due to UI cleanup lag for pending store). The operation targets the DB record.
     const newTitle = window.prompt('请输入新的会话名称', conversation.title || '新对话');
     if (!newTitle || newTitle.trim() === '') return;
     
@@ -114,18 +114,14 @@ export function SidebarChatList({
     const conversation = conversations.find(c => c.id === chatId); // chatId is Dify realId
     if (!conversation) return;
 
-    if (conversation.isPending) {
-      alert("临时对话的删除功能待对话同步完成后可用。");
-      return;
-    }
+    const supabasePK = conversation.supabase_pk;
 
-    const supabasePK = conversation.supabase_pk; // Get Supabase PK
     if (!supabasePK) {
-      console.error('Supabase PK not found for deleting conversation:', chatId);
-      alert('操作失败，对话信息不完整。');
+      alert("对话数据正在同步中，请稍后再尝试删除。");
       return;
     }
     
+    // Proceed with supabasePK, even if conversation.isPending might be true.
     const confirmed = window.confirm(`确定要删除会话 "${conversation.title || '新对话'}" 吗？此操作无法撤销。`);
     if (!confirmed) return;
     
@@ -213,7 +209,7 @@ export function SidebarChatList({
                     text={chat.title || '新对话'}
                     active={isActive}
                     onClick={() => onSelectChat(chat.id)}
-                    className="flex-1 mr-1" // Keeping mr-1 for now as UI styling is deferred
+                    className={cn("flex-1 mr-1", "truncate")} // Added truncate
                     isLoading={isLoading}
                   >
                     <div className="flex flex-col items-start overflow-hidden ml-2">
@@ -286,7 +282,7 @@ export function SidebarChatList({
                 text={chat.title || '新对话'}
                 active={chat.id === selectedId}
                 onClick={() => onSelectChat(chat.id)}
-                className="flex-1 mr-1"
+                className={cn("flex-1 mr-1", "truncate")} // Added truncate
                 isLoading={false}
               >
                 <div className="flex flex-col items-start overflow-hidden ml-2">

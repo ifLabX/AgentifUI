@@ -119,7 +119,7 @@ export function useCombinedConversations() {
         isPending: true,
         pendingStatus: pending.status,
         tempId: pending.tempId,
-        supabase_pk: undefined, // Pending items don't have a supabase_pk until saved
+        supabase_pk: pending.supabase_pk, // Use supabase_pk from pending store if available
       });
     });
     

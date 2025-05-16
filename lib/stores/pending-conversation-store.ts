@@ -11,6 +11,7 @@ export interface PendingConversation {
   isTitleFinal: boolean; // 标题是否已最终确定从 /name API 获取
   createdAt: string; // 创建时间
   updatedAt: string; // 最后更新时间
+  supabase_pk?: string; // 数据库主键 (Supabase ID)，当已存入DB但仍在pending状态时使用
 }
 
 // --- BEGIN COMMENT ---
@@ -32,6 +33,7 @@ interface PendingConversationState {
   updateTitle: (id: string, title: string, isFinal: boolean) => void; // 更新标题并设置是否为最终标题
   removePending: (id: string) => void; // id 可以是 tempId 或 realId
   markAsOptimistic: (id: string) => void; // 将对话标记为乐观持久化状态
+  setSupabasePK: (id: string, supabasePK: string) => void; // 设置已存入DB的pending对话的Supabase PK
   
   // --- BEGIN COMMENT ---
   // Selectors / Getters (可选，但推荐，以便在 store 外部安全地访问状态)
@@ -195,6 +197,32 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         }
       }
       console.warn(`[PendingConversationStore] markAsOptimistic: 未找到ID: ${id}`);
+      return state;
+    });
+  },
+
+  setSupabasePK: (id: string, supabasePK: string) => {
+    set((state) => {
+      const newMap = new Map(state.pendingConversations);
+      let entryKey: string | undefined = id;
+      let entry = newMap.get(id); // 尝试按 tempId 查找
+
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
+        for (const [key, value] of newMap.entries()) {
+          if (value.realId === id) {
+            entry = value;
+            entryKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (entry && entryKey) {
+        newMap.set(entryKey, { ...entry, supabase_pk: supabasePK, updatedAt: new Date().toISOString() });
+        console.log(`[PendingConversationStore] Set supabase_pk for ${entryKey} (realId: ${entry.realId}) to ${supabasePK}`);
+        return { pendingConversations: newMap };
+      }
+      console.warn(`[PendingConversationStore] setSupabasePK: 未找到ID: ${id}`);
       return state;
     });
   },
