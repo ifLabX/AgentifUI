@@ -209,7 +209,7 @@ export function SidebarChatList({
                     text={chat.title || '新对话'}
                     active={isActive}
                     onClick={() => onSelectChat(chat.id)}
-                    className={cn("flex-1 mr-1", "truncate")} // Added truncate
+                    className={cn("flex-1 mr-1", "truncate", "min-w-0")} // Added truncate and min-w-0
                     isLoading={isLoading}
                   >
                     <div className="flex flex-col items-start overflow-hidden ml-2">
@@ -282,7 +282,7 @@ export function SidebarChatList({
                 text={chat.title || '新对话'}
                 active={chat.id === selectedId}
                 onClick={() => onSelectChat(chat.id)}
-                className={cn("flex-1 mr-1", "truncate")} // Added truncate
+                className={cn("flex-1 mr-1", "truncate", "min-w-0")} // Added truncate and min-w-0
                 isLoading={false}
               >
                 <div className="flex flex-col items-start overflow-hidden ml-2">
