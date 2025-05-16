@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useChatStateSync } from './use-chat-state-sync';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
+import { useSidebarStore } from '@lib/stores/sidebar-store'; // Import SidebarStore
 
 /**
  * 聊天页面状态管理钩子
@@ -24,6 +25,10 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
     isTransitioningToWelcome, 
     setIsTransitioningToWelcome 
   } = useChatTransitionStore();
+
+  // 从 SidebarStore 获取方法和状态
+  const selectSidebarItem = useSidebarStore((state) => state.selectItem);
+  const currentSidebarSelectedId = useSidebarStore((state) => state.selectedId);
   
   // 处理 URL 参数变化
   useEffect(() => {
@@ -46,6 +51,11 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       
       // 设置为从对话界面到欢迎界面的过渡
       setIsTransitioningToWelcome(true);
+
+      // 清除侧边栏选中
+      if (currentSidebarSelectedId !== null) {
+        selectSidebarItem(null, null);
+      }
       
       // 确保消息数组完全清除
       setTimeout(() => {
@@ -61,11 +71,23 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       setIsWelcomeScreen(false);
       // 不是从对话界面到欢迎界面的过渡
       setIsTransitioningToWelcome(false);
+
+      // --- BEGIN ADDED LOGIC TO RESTORE SIDEBAR SELECTION ---
+      if (currentSidebarSelectedId !== conversationIdFromUrl) { 
+        console.log(`[ChatPageState] Restoring sidebar selection to: ${conversationIdFromUrl}`);
+        selectSidebarItem('chat', conversationIdFromUrl); 
+      }
+      // --- END ADDED LOGIC TO RESTORE SIDEBAR SELECTION ---
+
     } else {
       // 如果没有 conversationId，则设置为 null
       setCurrentConversationId(null);
+      // 清除侧边栏选中
+      if (currentSidebarSelectedId !== null) {
+        selectSidebarItem(null, null);
+      }
     }
-  }, [conversationIdFromUrl, setCurrentConversationId, setIsWelcomeScreen, clearMessages, setIsTransitioningToWelcome]);
+  }, [conversationIdFromUrl, setCurrentConversationId, setIsWelcomeScreen, clearMessages, setIsTransitioningToWelcome, selectSidebarItem, currentSidebarSelectedId]);
   
   // 包装 handleSubmit 函数
   const wrapHandleSubmit = useCallback((originalHandleSubmit: (message: string, files?: any[]) => Promise<any>) => {
@@ -77,10 +99,6 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       // 不是从对话界面到欢迎界面的过渡，使用滑动效果
       setIsTransitioningToWelcome(false);
       
-      // --- BEGIN MODIFIED COMMENT ---
-      // 修改清除消息历史的判断逻辑，增加对 currentConversationId 的检查
-      // 只有当 URL 路径表明是新对话且当前没有对话ID时，才清除消息历史
-      // --- END MODIFIED COMMENT ---
       const urlIndicatesNew = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
       const currentConvId = useChatStore.getState().currentConversationId;
       const isNewConversationFlow = urlIndicatesNew && !currentConvId;
@@ -95,7 +113,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       // 调用原始的 handleSubmit 函数
       return originalHandleSubmit(message, files);
     };
-  }, [setIsWelcomeScreen, clearMessages]);
+  }, [setIsWelcomeScreen, clearMessages, setIsTransitioningToWelcome]); // Added setIsTransitioningToWelcome
   
   return {
     isWelcomeScreen,
