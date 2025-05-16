@@ -1,136 +1,89 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit } from "lucide-react" // Removed Pin
+import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit } from "lucide-react"
 import { SidebarButton } from "./sidebar-button"
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
-import { MoreButton, DropdownMenu } from "@components/ui" // Removed PinButton
 import { useMobile } from "@lib/hooks/use-mobile"
 import { useCombinedConversations, CombinedConversation } from "@lib/hooks/use-combined-conversations"
-import { Conversation } from "@lib/types/database"
-import { format, formatDistanceToNow } from "date-fns"
-import { zhCN } from "date-fns/locale"
+// formatDistanceToNow and zhCN are not needed if we only show title
+// import { formatDistanceToNow } from "date-fns" 
+// import { zhCN } from "date-fns/locale" 
+import { MoreButtonV2 } from "@components/ui/more-button-v2" 
+import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
 
 interface SidebarChatListProps {
   isDark: boolean
   contentVisible: boolean
-  /** 当前选中的聊天ID */
   selectedId: string | null
-  /** 选中聊天项的回调函数 */
   onSelectChat: (chatId: string) => void
 }
 
-/**
- * 侧边栏聊天列表组件
- * 
- * 显示用户的聊天历史记录，支持折叠/展开和项目选择
- */
 export function SidebarChatList({ 
   isDark, 
   contentVisible,
   selectedId,
   onSelectChat 
 }: SidebarChatListProps) {
-  // 使用 useSidebarStore 获取侧边栏状态
-  // 使用 useMobile 检测是否为移动设备
-  // 使用 useCombinedConversations 获取整合后的会话列表（包含临时对话）
-  const { lockExpanded } = useSidebarStore()
+  const { isExpanded } = useSidebarStore() 
   const isMobile = useMobile()
   const [showAllChats, setShowAllChats] = React.useState(false)
   const { 
     conversations, 
-    isLoading, 
+    isLoading: isLoadingConversations, 
     error, 
     refresh 
   } = useCombinedConversations()
   
-  // --- BEGIN COMMENT ---
-  // 将会话分类为固定、非固定和临时对话
-  // 注意：
-  // 1. 目前数据库中没有固定字段，我们使用元数据中的 isPinned 标记
-  // 2. 临时对话通过 isPending 标记识别，不会被固定
-  // --- END COMMENT ---
-  // const pinnedChats = React.useMemo(() => { // Removed pinnedChats
-  //   return conversations.filter(chat =>
-  //     !chat.isPending && chat.metadata && typeof chat.metadata === 'object' && chat.metadata.isPinned === true
-  //   );
-  // }, [conversations]);
-  
-  const unpinnedChats = React.useMemo(() => { // This will now be all non-pending chats
+  const unpinnedChats = React.useMemo(() => {
     return conversations.filter(chat => !chat.isPending);
   }, [conversations]);
   
   const pendingChats = React.useMemo(() => {
     return conversations.filter(chat => chat.isPending === true);
   }, [conversations]);
-
-  // Removed togglePin function
   
-  // --- BEGIN COMMENT ---
-  // 重命名会话
-  // 显示一个简单的提示框让用户输入新名称
-  // --- END COMMENT ---
   const handleRename = React.useCallback(async (chatId: string) => {
-    const conversation = conversations.find(c => c.id === chatId); // chatId is Dify realId
+    const conversation = conversations.find(c => c.id === chatId);
     if (!conversation) return;
-
     const supabasePK = conversation.supabase_pk;
-
-    // If supabase_pk is not available, it means the conversation isn't fully saved/synced yet for DB operations.
-    // This check covers both pending items that haven't received their PK yet,
-    // and potentially non-pending items if data is somehow inconsistent (though less likely).
     if (!supabasePK) {
       alert("对话数据正在同步中，请稍后再尝试重命名。");
       return;
     }
-    
-    // Now that we have supabasePK, we can proceed even if conversation.isPending might still be true
-    // (due to UI cleanup lag for pending store). The operation targets the DB record.
     const newTitle = window.prompt('请输入新的会话名称', conversation.title || '新对话');
     if (!newTitle || newTitle.trim() === '') return;
-    
     try {
       const { renameConversation } = await import('@lib/db/conversations');
-      const success = await renameConversation(supabasePK, newTitle.trim()); // Use supabasePK
+      const success = await renameConversation(supabasePK, newTitle.trim());
       if (success) {
         refresh();
       } else {
-        console.error('重命名会话失败 for supabasePK:', supabasePK);
         alert('重命名会话失败。');
       }
     } catch (error) {
-      console.error('重命名会话出错:', error);
       alert('操作出错，请稍后再试。');
     }
   }, [conversations, refresh]);
   
-  // --- BEGIN COMMENT ---
-  // 删除会话
-  // 先进行确认，然后调用删除函数
-  // --- END COMMENT ---
   const handleDelete = React.useCallback(async (chatId: string) => {
-    const conversation = conversations.find(c => c.id === chatId); // chatId is Dify realId
+    const conversation = conversations.find(c => c.id === chatId);
     if (!conversation) return;
-
     const supabasePK = conversation.supabase_pk;
-
     if (!supabasePK) {
       alert("对话数据正在同步中，请稍后再尝试删除。");
       return;
     }
-    
-    // Proceed with supabasePK, even if conversation.isPending might be true.
     const confirmed = window.confirm(`确定要删除会话 "${conversation.title || '新对话'}" 吗？此操作无法撤销。`);
     if (!confirmed) return;
-    
     try {
       const { deleteConversation } = await import('@lib/db/conversations');
-      const success = await deleteConversation(supabasePK); // Use supabasePK
+      const success = await deleteConversation(supabasePK);
       if (success) {
         refresh();
-        if (selectedId === chatId) { // chatId is Dify realId, selectedId is Dify realId
+        if (selectedId === chatId) {
           const firstAvailableChat = conversations.find(c => c.id !== chatId && !c.isPending);
           if (firstAvailableChat) {
             onSelectChat(firstAvailableChat.id);
@@ -140,129 +93,112 @@ export function SidebarChatList({
           }
         }
       } else {
-        console.error('删除会话失败 for supabasePK:', supabasePK);
         alert('删除会话失败。');
       }
     } catch (error) {
-      console.error('删除会话出错:', error);
       alert('操作出错，请稍后再试。');
     }
   }, [conversations, refresh, selectedId, onSelectChat]);
 
-  // 显示有限的非固定会话
   const visibleUnpinnedChats = React.useMemo(() => {
     return showAllChats ? unpinnedChats : unpinnedChats.slice(0, 5);
   }, [unpinnedChats, showAllChats]);
 
-  // 确定是否需要“显示更多”按钮
   const hasMoreChats = unpinnedChats.length > 5;
 
-  // 如果内容不可见（侧边栏折叠），则不渲染任何内容
   if (!contentVisible) return null;
-
-  // 即使正在加载或出错，也不显示特殊状态，保持界面简洁
-
-  // 即使没有会话，也不显示空状态提示，而是直接显示标题
-
-  // 格式化时间的辅助函数
-  const formatTime = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return formatDistanceToNow(date, { addSuffix: true, locale: zhCN });
-    } catch (e) {
-      return '';
+  
+  const renderChatItemContent = (chat: CombinedConversation, isItemLoading: boolean) => {
+    const title = chat.title || '新对话';
+    
+    // Only show skeleton if expanded and item is loading
+    if (isItemLoading && isExpanded) { 
+        return (
+            // Simplified skeleton for a single line title
+            <div className={cn("h-4 w-full animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
+        );
     }
+
+    // Only show title, ensure it truncates
+    return (
+      <div className="overflow-hidden w-full"> {/* Added w-full here for better truncation control by parent */}
+        <span className={cn("truncate w-full text-sm", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>
+      </div>
+    );
+  };
+  
+  const createMoreActions = (chat: CombinedConversation, itemIsLoading: boolean) => {
+    const canPerformActions = !!chat.supabase_pk;
+
+    if (!chat.id || chat.id.startsWith('temp-')) return null;
+
+    return (
+      <DropdownMenuV2
+        placement="bottom"
+        alignToTriggerBottom={true}
+        minWidth={150}
+        contentClassName={cn(isDark ? "bg-stone-800" : "bg-white")}
+        trigger={
+          <MoreButtonV2
+            aria-label="更多选项"
+            disabled={itemIsLoading || !canPerformActions}
+          />
+        }
+      >
+        <DropdownMenuV2.Item
+          icon={<Edit className="w-3.5 h-3.5" />}
+          onClick={() => handleRename(chat.id)}
+          disabled={itemIsLoading || !canPerformActions}
+        >
+          重命名
+        </DropdownMenuV2.Item>
+        <DropdownMenuV2.Divider />
+        <DropdownMenuV2.Item
+          icon={<Trash className="w-3.5 h-3.5" />}
+          danger
+          onClick={() => handleDelete(chat.id)}
+          disabled={itemIsLoading || !canPerformActions}
+        >
+          删除聊天
+        </DropdownMenuV2.Item>
+      </DropdownMenuV2>
+    );
   };
 
   return (
     <div className="flex flex-col space-y-1">
-      {/* 近期对话标题 */}
       <div className="flex items-center px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
         <MessageSquare size={14} className="mr-1.5" />
         近期对话
       </div>
       
-      {/* 临时对话部分 */}
       {pendingChats.length > 0 && (
         <div className="mb-2">
           <div className="space-y-1">
             {pendingChats.map(chat => {
-              // --- BEGIN MODIFIED COMMENT ---
-              // 根据 pendingStatus 确定是否显示骨架屏
-              // 即使在加载状态下也保留悬停和选中效果
-              // --- END MODIFIED COMMENT ---
-              const isLoading = chat.pendingStatus === 'creating' || 
-                               chat.pendingStatus === 'title_fetching' || 
-                               chat.pendingStatus === 'streaming_message';
-              
-              // --- BEGIN MODIFIED COMMENT ---
-              // 检查是否是当前选中的对话，或者是否应该显示为选中状态
-              // --- END MODIFIED COMMENT ---
+              const itemIsLoading = chat.pendingStatus === 'creating' || 
+                                 chat.pendingStatus === 'title_fetching' || 
+                                 chat.pendingStatus === 'streaming_message';
               const isActive = chat.id === selectedId;
-              // Show MoreButton for pending chats that have a realId and are in a stable-ish state
-              const showMoreButtonForPending = chat.id && !chat.id.startsWith('temp-') && !isLoading;
               
               return (
-                <div className="flex items-center w-full group" key={chat.tempId || chat.id}>
+                <div className="group relative" key={chat.tempId || chat.id}> 
                   <SidebarButton
                     icon={<SidebarChatIcon size="sm" isDark={isDark} />}
-                    text={chat.title || '新对话'}
                     active={isActive}
                     onClick={() => onSelectChat(chat.id)}
-                    className={cn("flex-1 mr-1", "truncate", "min-w-0")} // Added truncate and min-w-0
-                    isLoading={isLoading}
+                    className={cn("w-full", !isExpanded && "justify-center")}
+                    isLoading={itemIsLoading && !isExpanded}
+                    moreActionsTrigger={
+                       isExpanded ? (
+                        <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                           {createMoreActions(chat, itemIsLoading)}
+                        </div>
+                       ) : null
+                    }
                   >
-                    <div className="flex flex-col items-start overflow-hidden ml-2">
-                      {chat.pendingStatus === 'streaming_message' && (
-                        <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
-                          正在生成回答...
-                        </span>
-                      )}
-                      {chat.pendingStatus === 'title_fetching' && (
-                        <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
-                          正在生成标题...
-                        </span>
-                      )}
-                      {/* Display last message preview or relative time for more stable pending states */}
-                      {(chat.pendingStatus === 'persisted_optimistic' || chat.pendingStatus === 'title_resolved' || chat.pendingStatus === 'failed') && chat.last_message_preview && (
-                         <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
-                           {chat.last_message_preview}
-                         </span>
-                      )}
-                       <span className="text-xs text-stone-400 dark:text-stone-500">
-                         {/* For pending items, created_at is 'now'. formatTime will show '刚刚' or similar */}
-                         {formatTime(chat.created_at)}
-                       </span>
-                    </div>
+                    {isExpanded ? renderChatItemContent(chat, itemIsLoading) : null}
                   </SidebarButton>
-                  {showMoreButtonForPending && (
-                    <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreButton
-                        id={`pending-chat-more-${chat.id}`}
-                        tooltipText="更多选项"
-                      />
-                      <DropdownMenu id={`pending-chat-more-${chat.id}`}>
-                        <DropdownMenu.Item
-                          icon={<Edit className="w-4 h-4" />}
-                          onClick={() => handleRename(chat.id)}
-                          // Removed className that visually disables based on chat.isPending
-                          // The handleRename function itself will alert if chat.isPending
-                        >
-                          重命名
-                        </DropdownMenu.Item>
-                        <DropdownMenu.Divider />
-                        <DropdownMenu.Item
-                          icon={<Trash className="w-4 h-4" />}
-                          danger
-                          onClick={() => handleDelete(chat.id)}
-                          // Removed className that visually disables based on chat.isPending
-                          // The handleDelete function itself will alert if chat.isPending
-                        >
-                          删除聊天
-                        </DropdownMenu.Item>
-                      </DropdownMenu>
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -270,58 +206,33 @@ export function SidebarChatList({
         </div>
       )}
       
-      {/* Removed Pinned Chats Section */}
-
-      {/* "最近的会话" will now show all non-pending chats */}
       <div>
         <div className="space-y-1">
-          {visibleUnpinnedChats.map(chat => (
-            <div className="flex items-center w-full group" key={chat.id}>
-              <SidebarButton
-                icon={<SidebarChatIcon size="sm" isDark={isDark} />}
-                text={chat.title || '新对话'}
-                active={chat.id === selectedId}
-                onClick={() => onSelectChat(chat.id)}
-                className={cn("flex-1 mr-1", "truncate", "min-w-0")} // Added truncate and min-w-0
-                isLoading={false}
-              >
-                <div className="flex flex-col items-start overflow-hidden ml-2">
-                  {chat.last_message_preview && (
-                    <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
-                      {chat.last_message_preview}
-                    </span>
-                  )}
-                  <span className="text-xs text-stone-400 dark:text-stone-500">
-                    {formatTime(chat.updated_at)}
-                  </span>
-                </div>
-              </SidebarButton>
-              <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
-                <MoreButton
-                  id={`unpinned-chat-more-${chat.id}`} // Changed id to be more specific
-                  tooltipText="更多选项"
-                />
-                <DropdownMenu id={`unpinned-chat-more-${chat.id}`}>
-                  {/* Removed Pin/Unpin Item */}
-                  <DropdownMenu.Item
-                    icon={<Edit className="w-4 h-4" />}
-                    onClick={() => handleRename(chat.id)}
-                  >
-                    重命名
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Divider />
-                  <DropdownMenu.Item
-                    icon={<Trash className="w-4 h-4" />}
-                    danger
-                    onClick={() => handleDelete(chat.id)}
-                  >
-                    删除聊天
-                  </DropdownMenu.Item>
-                </DropdownMenu>
+          {visibleUnpinnedChats.map(chat => {
+            const isActive = chat.id === selectedId;
+            const itemIsLoading = false; 
+
+            return (
+              <div className="group relative" key={chat.id}>
+                <SidebarButton
+                  icon={<SidebarChatIcon size="sm" isDark={isDark} />}
+                  active={isActive}
+                  onClick={() => onSelectChat(chat.id)}
+                  className={cn("w-full", !isExpanded && "justify-center")}
+                  isLoading={itemIsLoading && !isExpanded}
+                  moreActionsTrigger={
+                    isExpanded ? (
+                      <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                        {createMoreActions(chat, itemIsLoading)}
+                      </div>
+                    ) : null
+                  }
+                >
+                  {isExpanded ? renderChatItemContent(chat, itemIsLoading) : null}
+                </SidebarButton>
               </div>
-            </div>
-          ))}
-          {/* 显示更多/更少按钮 */}
+            );
+          })}
           {hasMoreChats && (
             <button
               onClick={() => setShowAllChats(!showAllChats)}
@@ -332,15 +243,9 @@ export function SidebarChatList({
               )}
             >
               {showAllChats ? (
-                <>
-                  <ChevronUp size={14} className="mr-1.5" />
-                  显示更少
-                </>
+                <><ChevronUp size={14} className="mr-1.5" />显示更少</>
               ) : (
-                <>
-                  <ChevronDown size={14} className="mr-1.5" />
-                  显示更多 ({unpinnedChats.length - visibleUnpinnedChats.length})
-                </>
+                <><ChevronDown size={14} className="mr-1.5" />显示更多 ({unpinnedChats.length - visibleUnpinnedChats.length})</>
               )}
             </button>
           )}
