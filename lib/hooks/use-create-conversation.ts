@@ -5,13 +5,10 @@ import { DifyStreamResponse } from '@lib/services/dify/types';
 import { renameConversation } from '@lib/services/dify/conversation-service';
 import type { DifyChatRequestPayload } from '@lib/services/dify/types';
 import { useSupabaseAuth } from '@lib/supabase/hooks'; // For userId
-import { useCurrentAppStore } from '@lib/stores/current-app-store'; // For appId
+// import { useCurrentAppStore } from '@lib/stores/current-app-store'; // appId is passed as param
 import { createConversation as dbCreateConversation } from '@lib/db'; // DB function
 import { useChatStore } from '@lib/stores/chat-store'; // To set local conversation ID
 
-// --- BEGIN COMMENT ---
-// 定义 Hook 返回值的接口
-// --- END COMMENT ---
 interface UseCreateConversationReturn {
   initiateNewConversation: (
     payload: Omit<DifyChatRequestPayload, 'response_mode' | 'conversation_id' | 'auto_generate_name'>,
@@ -19,8 +16,8 @@ interface UseCreateConversationReturn {
     userIdentifier: string
   ) => Promise<{
     tempConvId: string;
-    realConvId?: string; // 初始可能未定义，在流中获取
-    taskId?: string;     // 初始可能未定义
+    realConvId?: string; 
+    taskId?: string;     
     answerStream?: AsyncGenerator<string, void, undefined>;
     error?: any;
   }>;
@@ -28,33 +25,19 @@ interface UseCreateConversationReturn {
   error: any;
 }
 
-// --- BEGIN COMMENT ---
-// Hook 用于封装新对话的创建流程，包括：
-// 1. 在 pending store 中注册一个临时对话，状态为 'creating'
-// 2. 开始流式消息前，更新状态为 'streaming_message'
-// 3. 获取到 realConvId 后，更新状态为 'stream_completed_title_pending'
-// 4. 开始获取标题时，更新状态为 'title_fetching'
-// 5. 标题获取成功后，更新状态为 'title_resolved'
-// 6. 如果任何步骤失败，更新状态为 'failed'
-// --- END COMMENT ---
 export function useCreateConversation(): UseCreateConversationReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any>(null);
 
   const addPending = usePendingConversationStore((state) => state.addPending);
   const setRealIdAndStatus = usePendingConversationStore((state) => state.setRealIdAndStatus);
-  const updateTitleInPendingStore = usePendingConversationStore((state) => state.updateTitle); // Renamed for clarity
-  const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus); // Renamed for clarity
-  const removePending = usePendingConversationStore((state) => state.removePending); // Kept for now, though direct usage is replaced
+  const updateTitleInPendingStore = usePendingConversationStore((state) => state.updateTitle);
+  const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus);
   const markAsOptimistic = usePendingConversationStore((state) => state.markAsOptimistic);
   const setSupabasePKInPendingStore = usePendingConversationStore((state) => state.setSupabasePK);
 
-  // --- BEGIN COMMENT ---
-  // Get current user and app context
-  // --- END COMMENT ---
   const { session } = useSupabaseAuth();
   const currentUserId = session?.user?.id;
-  const { currentAppId } = useCurrentAppStore();
   const setCurrentChatConversationId = useChatStore((state) => state.setCurrentConversationId);
 
 
@@ -74,22 +57,40 @@ export function useCreateConversation(): UseCreateConversationReturn {
       setError(null);
 
       const tempConvId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      addPending(tempConvId, "创建中..."); // 初始占位标题
+      addPending(tempConvId, "创建中..."); 
       updateStatusInPendingStore(tempConvId, 'creating');
+
+      // --- BEGIN EARLY HIGHLIGHT ---
+      try {
+        const currentPath = window.location.pathname;
+        if (currentPath === '/chat/new' || !currentPath.startsWith('/chat/temp-')) {
+          console.log(`[useCreateConversation] Early highlight: Updating URL to /chat/${tempConvId}`);
+          window.history.replaceState({}, '', `/chat/${tempConvId}`);
+        }
+        
+        console.log(`[useCreateConversation] Early highlight: Setting ChatStore currentConversationId to ${tempConvId}`);
+        setCurrentChatConversationId(tempConvId); 
+
+        const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+        console.log(`[useCreateConversation] Early highlight: Selecting item in SidebarStore: ${tempConvId}`);
+        selectItem('chat', tempConvId, true); 
+      } catch (highlightError) {
+        console.error('[useCreateConversation] Error during early highlight:', highlightError);
+      }
+      // --- END EARLY HIGHLIGHT ---
 
       let streamResponse: DifyStreamResponse | null = null;
       let realConvIdFromStream: string | null = null;
       let taskIdFromStream: string | null = null;
 
       try {
-        // Step 1: 创建对话并开始流式消息 (auto_generate_name: false)
         updateStatusInPendingStore(tempConvId, 'streaming_message');
         const chatPayload: DifyChatRequestPayload = {
           ...payloadData,
           user: userIdentifier,
           response_mode: 'streaming',
-          conversation_id: null, // 强制创建新对话
-          auto_generate_name: false, // 重要：不让 chat-messages API 生成标题
+          conversation_id: null, 
+          auto_generate_name: false, 
         };
 
         streamResponse = await streamDifyChat(
@@ -101,20 +102,26 @@ export function useCreateConversation(): UseCreateConversationReturn {
               console.log(`[useCreateConversation] Real conversation ID received from stream: ${id}`);
               
               const currentPath = window.location.pathname;
-              if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
+              if (currentPath === `/chat/${tempConvId}`) {
                 console.log(`[useCreateConversation] Updating URL from ${currentPath} to /chat/${id}`);
+                window.history.replaceState({}, '', `/chat/${id}`);
+              } else if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
+                 console.log(`[useCreateConversation] Updating URL (from new/other temp) to /chat/${id}`);
                 window.history.replaceState({}, '', `/chat/${id}`);
               }
               
               try {
-                const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                console.log(`[useCreateConversation] 选中新对话并激活悬停效果: ${id}`);
-                selectItem('chat', id, true); 
-                
-                const { setCurrentConversationId } = require('@lib/stores/chat-store').useChatStore.getState();
-                setCurrentConversationId(id);
+                const chatStoreState = require('@lib/stores/chat-store').useChatStore.getState();
+                if (chatStoreState.currentConversationId === tempConvId || chatStoreState.currentConversationId === null) {
+                    chatStoreState.setCurrentConversationId(id);
+                }
+
+                const sidebarStoreState = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                if (sidebarStoreState.selectedId === tempConvId || sidebarStoreState.selectedId === null) {
+                    sidebarStoreState.selectItem('chat', id, true); 
+                }
               } catch (error) {
-                console.error('[useCreateConversation] 选中对话失败:', error);
+                console.error('[useCreateConversation] Error updating stores to realId:', error);
               }
               
               setRealIdAndStatus(tempConvId, id, 'stream_completed_title_pending');
@@ -145,11 +152,10 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
                   if (localConversation && localConversation.id) {
                     console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}, Dify ID: ${difyConvId}`);
-                    setCurrentChatConversationId(difyConvId); // Use Dify realId for ChatStore
-                    // Set Supabase PK in pending store once we have it
-                    setSupabasePKInPendingStore(difyConvId, localConversation.id); // difyConvId is realId, localConversation.id is supabase_pk
-                    updateStatusInPendingStore(currentTempConvId, 'title_resolved'); // This should ideally be the last status update before optimistic
-                    markAsOptimistic(difyConvId); // Mark as optimistic instead of removing
+                    // setCurrentChatConversationId(difyConvId); // Already set to real ID or temp ID
+                    setSupabasePKInPendingStore(difyConvId, localConversation.id); 
+                    updateStatusInPendingStore(currentTempConvId, 'title_resolved'); 
+                    markAsOptimistic(difyConvId); 
                     
                     console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}, supabase_pk: ${localConversation.id}) as optimistic and set PK in pending store.`);
 
@@ -170,11 +176,12 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   updateTitleInPendingStore(tempConvId, finalTitle, true); 
                   await saveConversationToDb(id, finalTitle, tempConvId); 
 
+                  // Ensure selection is on real ID after title resolution
                   try {
                     const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
                     selectItem('chat', id, true); 
                   } catch (error) {
-                    console.error('[useCreateConversation] Error selecting item in sidebar:', error);
+                    console.error('[useCreateConversation] Error selecting item in sidebar after title:', error);
                   }
                 })
                 .catch(async renameError => { 
@@ -182,7 +189,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   const fallbackTitle = "获取标题失败";
                   updateTitleInPendingStore(tempConvId, fallbackTitle, true); 
                   await saveConversationToDb(id, fallbackTitle, tempConvId); 
-
+                  
                   try {
                     const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
                     selectItem('chat', id, true);
@@ -199,20 +206,13 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
         if (realConvIdFromStream && !usePendingConversationStore.getState().getPendingByRealId(realConvIdFromStream)?.realId) {
             setRealIdAndStatus(tempConvId, realConvIdFromStream, 'stream_completed_title_pending');
-            // Corrected line: use tempConvId for store operations
             updateStatusInPendingStore(tempConvId, 'title_fetching'); 
             
             const currentPath = window.location.pathname;
-            if (currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
+            if (currentPath === `/chat/${tempConvId}` || currentPath.includes('/chat/temp-') || currentPath === '/chat/new') {
                 console.log(`[useCreateConversation] Updating URL (fallback) from ${currentPath} to /chat/${realConvIdFromStream}`);
                 window.history.replaceState({}, '', `/chat/${realConvIdFromStream}`);
             }
-            /*
-            // Commenting out duplicate/fallback title fetching logic as discussed,
-            // to rely on the primary flow within onConversationIdReceived.
-            renameConversation(appId, realConvIdFromStream, { user: userIdentifier, auto_generate: true })
-              // ...
-            */
         }
 
         setIsLoading(false);
@@ -237,11 +237,9 @@ export function useCreateConversation(): UseCreateConversationReturn {
       setRealIdAndStatus, 
       updateTitleInPendingStore, 
       updateStatusInPendingStore, 
-      removePending,
       markAsOptimistic,
       setSupabasePKInPendingStore,
       currentUserId,
-      currentAppId, // Added currentAppId from useCurrentAppStore to dependencies
       setCurrentChatConversationId,
     ]
   );
