@@ -31,6 +31,7 @@ export interface CombinedConversation extends Partial<Conversation> {
   isPending?: boolean; // 是否为临时对话
   pendingStatus?: PendingConversation['status']; // 临时对话状态
   tempId?: string; // 临时 ID
+  supabase_pk?: string; // 数据库主键 (Supabase ID)
 }
 
 /**
@@ -95,71 +96,79 @@ export function useCombinedConversations() {
 
   // 整合数据库对话和临时对话
   const combinedConversations = useMemo(() => {
-    // 创建一个 Set 来存储已经存在于数据库中的对话 ID
-    const existingIds = new Set(dbConversations.map(conv => conv.id));
-    
-    // 将临时对话转换为 CombinedConversation 格式
-    const pendingConvsFormatted: CombinedConversation[] = pendingArray
-      .filter(pending => {
-        // 对于没有 realId 的临时对话，始终显示
-        // 对于有 realId 的临时对话，只有当它不在数据库中时才显示
-        return !pending.realId || (pending.realId && !existingIds.has(pending.realId));
-      })
-      .map(pending => {
-        // 将临时对话转换为 CombinedConversation 格式
-        
-        // --- BEGIN COMMENT ---
-        // TODO: 数据库集成后的状态处理
-        // 当数据库集成完成后，我们应该在此处添加逻辑，判断临时对话是否已经保存到数据库
-        // 如果已保存，则应该从 pendingConversationStore 中移除该临时对话
-        // 如果数据库中已存在相同 realId 的对话，则不应该再显示临时对话
-        // 示例:
-        // if (databaseConversations.some(dbConv => dbConv.id === pending.realId)) {
-        //   // 如果数据库中已存在相同 realId 的对话，则跳过该临时对话
-        //   return null;
-        // }
-        // --- END COMMENT ---
-        
-        // 创建时间和更新时间使用当前时间，因为 PendingConversation 没有这些字段
-        const now = new Date().toISOString();
-        
-        return {
-          id: pending.realId || pending.tempId, // 优先使用 realId
-          title: pending.title,
-          // --- BEGIN COMMENT ---
-          // 使用动态获取的 currentUserId。如果用户未登录，则为 undefined。
-          // CombinedConversation 类型的 user_id 现在是 string | undefined。
-          // --- END COMMENT ---
-          user_id: currentUserId || undefined, 
-          created_at: now,
-          updated_at: now,
-          org_id: null,
-          ai_config_id: null,
-          summary: null,
-          settings: {},
-          status: 'active',
-          external_id: pending.realId || null,
-          app_id: null,
-          last_message_preview: null,
-          metadata: {},
-          isPending: true, // 始终将临时对话显示为临时状态，直到数据库集成完成
-          pendingStatus: pending.status,
-          tempId: pending.tempId
-        };
-      })
-      .filter(Boolean) // 过滤掉可能的 null 值
-    
-    // 将数据库对话标记为非临时对话
-    const dbConvsFormatted: CombinedConversation[] = dbConversations.map(conv => ({
-      ...conv,
-      isPending: false
-    }));
-    
-    // 合并两个数组，并按更新时间排序
-    return [...dbConvsFormatted, ...pendingConvsFormatted].sort((a, b) => {
-      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+    const finalConversations: CombinedConversation[] = [];
+    const dbConvsRealIds = new Set<string>();
+
+    // 1. 处理数据库中的对话
+    dbConversations.forEach(dbConv => {
+      const realId = dbConv.external_id || dbConv.id; // Prefer external_id as Dify realId
+      if (realId) {
+        dbConvsRealIds.add(realId);
+      }
+      finalConversations.push({
+        ...dbConv,
+        id: realId, // Use Dify realId as the primary ID for CombinedConversation
+        supabase_pk: dbConv.id, // Store Supabase PK
+        isPending: false,
+        pendingStatus: undefined,
+        tempId: undefined,
+      });
     });
-  }, [dbConversations, pendingArray, currentUserId]); // 添加 currentUserId 到依赖数组
+
+    // 2. 处理并添加尚未被数据库版本覆盖的临时对话
+    pendingArray.forEach(pending => {
+      // If temporary conversation has a realId and it's already covered by dbConversations, skip it.
+      if (pending.realId && dbConvsRealIds.has(pending.realId)) {
+        return;
+      }
+
+      const now = new Date().toISOString();
+      finalConversations.push({
+        // Inherited from Partial<Conversation> - provide defaults or map from pending
+        org_id: null,
+        ai_config_id: null,
+        summary: null,
+        settings: {},
+        status: 'active', // Or map from pending.status if needed for display
+        external_id: pending.realId || null, // This is the Dify ID
+        app_id: null, // TODO: Consider if pending items need app_id context
+        last_message_preview: pending.title.substring(0, 50), // Example preview
+        metadata: {}, // TODO: Consider if pending items can have metadata
+
+        // Required CombinedConversation fields
+        id: pending.realId || pending.tempId, // Primary ID: Dify realId if available, else tempId
+        title: pending.title,
+        user_id: currentUserId || undefined,
+        created_at: now, // Placeholder, ideally from pending store or first message
+        updated_at: now, // Placeholder, should update as pending item changes
+
+        // Pending specific fields
+        isPending: true,
+        pendingStatus: pending.status,
+        tempId: pending.tempId,
+        supabase_pk: undefined, // Pending items don't have a supabase_pk until saved
+      });
+    });
+    
+    // 3. 排序
+    finalConversations.sort((a, b) => {
+      // Example: active pending items first, then by updated_at
+      if (a.isPending && a.pendingStatus && ['creating', 'streaming_message', 'title_fetching'].includes(a.pendingStatus) &&
+         !(b.isPending && b.pendingStatus && ['creating', 'streaming_message', 'title_fetching'].includes(b.pendingStatus))) {
+        return -1;
+      }
+      if (!(a.isPending && a.pendingStatus && ['creating', 'streaming_message', 'title_fetching'].includes(a.pendingStatus)) &&
+           b.isPending && b.pendingStatus && ['creating', 'streaming_message', 'title_fetching'].includes(b.pendingStatus)) {
+        return 1;
+      }
+      // Fallback to updated_at, ensuring it's a valid date string
+      const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+      const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    return finalConversations;
+  }, [dbConversations, pendingArray, currentUserId]);
 
   // 刷新函数
   const refresh = () => {
@@ -167,6 +176,20 @@ export function useCombinedConversations() {
     // 强制刷新 pendingArray
     setPendingArray(Array.from(pendingConversations.values()));
   };
+
+  // Effect to clean up fully synced pending conversations from PendingConversationStore
+  useEffect(() => {
+    const dbRealIds = new Set(dbConversations.map(c => c.external_id || c.id));
+    const { removePending } = usePendingConversationStore.getState();
+
+    pendingArray.forEach(p => {
+      if (p.realId && dbRealIds.has(p.realId) &&
+          (p.status === 'persisted_optimistic' || p.status === 'title_resolved')) {
+        console.log(`[useCombinedConversations] Cleaning up fully synced pending item from store: ${p.tempId} (realId: ${p.realId})`);
+        removePending(p.tempId); // remove by tempId, as it's the key in pendingConversations Map
+      }
+    });
+  }, [dbConversations, pendingArray]);
 
   return {
     conversations: combinedConversations,

@@ -45,7 +45,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
   const setRealIdAndStatus = usePendingConversationStore((state) => state.setRealIdAndStatus);
   const updateTitleInPendingStore = usePendingConversationStore((state) => state.updateTitle); // Renamed for clarity
   const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus); // Renamed for clarity
-  const removePending = usePendingConversationStore((state) => state.removePending);
+  const removePending = usePendingConversationStore((state) => state.removePending); // Kept for now, though direct usage is replaced
+  const markAsOptimistic = usePendingConversationStore((state) => state.markAsOptimistic);
 
   // --- BEGIN COMMENT ---
   // Get current user and app context
@@ -142,12 +143,12 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   });
 
                   if (localConversation && localConversation.id) {
-                    console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}`);
-                    setCurrentChatConversationId(localConversation.id); 
-                    updateStatusInPendingStore(currentTempConvId, 'title_resolved'); 
-                    removePending(currentTempConvId); 
+                    console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}, Dify ID: ${difyConvId}`);
+                    setCurrentChatConversationId(difyConvId); // Use Dify realId for ChatStore
+                    updateStatusInPendingStore(currentTempConvId, 'title_resolved');
+                    markAsOptimistic(difyConvId); // Mark as optimistic instead of removing
                     
-                    console.log("[useCreateConversation] TODO: Implement sidebar refresh trigger.");
+                    console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}) as optimistic in pending store.`);
 
                   } else {
                     throw new Error("Failed to save conversation to local DB or local ID not returned.");
@@ -234,6 +235,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
       updateTitleInPendingStore, 
       updateStatusInPendingStore, 
       removePending,
+      markAsOptimistic,
       currentUserId, 
       currentAppId, // Added currentAppId from useCurrentAppStore to dependencies
       setCurrentChatConversationId,

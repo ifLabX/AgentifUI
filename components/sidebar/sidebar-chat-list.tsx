@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, ChevronDown, ChevronUp, Pin, Trash, Edit } from "lucide-react"
+import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit } from "lucide-react" // Removed Pin
 import { SidebarButton } from "./sidebar-button"
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
-import { MoreButton, DropdownMenu, PinButton } from "@components/ui"
+import { MoreButton, DropdownMenu } from "@components/ui" // Removed PinButton
 import { useMobile } from "@lib/hooks/use-mobile"
 import { useCombinedConversations, CombinedConversation } from "@lib/hooks/use-combined-conversations"
 import { Conversation } from "@lib/types/database"
@@ -52,88 +52,57 @@ export function SidebarChatList({
   // 1. 目前数据库中没有固定字段，我们使用元数据中的 isPinned 标记
   // 2. 临时对话通过 isPending 标记识别，不会被固定
   // --- END COMMENT ---
-  const pinnedChats = React.useMemo(() => {
-    return conversations.filter(chat => 
-      !chat.isPending && chat.metadata && typeof chat.metadata === 'object' && chat.metadata.isPinned === true
-    );
-  }, [conversations]);
+  // const pinnedChats = React.useMemo(() => { // Removed pinnedChats
+  //   return conversations.filter(chat =>
+  //     !chat.isPending && chat.metadata && typeof chat.metadata === 'object' && chat.metadata.isPinned === true
+  //   );
+  // }, [conversations]);
   
-  const unpinnedChats = React.useMemo(() => {
-    return conversations.filter(chat => 
-      !chat.isPending && (!chat.metadata || typeof chat.metadata !== 'object' || chat.metadata.isPinned !== true)
-    );
+  const unpinnedChats = React.useMemo(() => { // This will now be all non-pending chats
+    return conversations.filter(chat => !chat.isPending);
   }, [conversations]);
   
   const pendingChats = React.useMemo(() => {
     return conversations.filter(chat => chat.isPending === true);
   }, [conversations]);
 
-  // --- BEGIN COMMENT ---
-  // 切换会话的固定状态
-  // 使用 updateConversationMetadata 函数更新会话的元数据
-  // --- END COMMENT ---
-  const togglePin = React.useCallback(async (chatId: string) => {
-    // 查找当前会话
-    const conversation = conversations.find(c => c.id === chatId);
-    if (!conversation) return;
-    
-    // 获取当前固定状态
-    const isPinned = conversation.metadata?.isPinned === true;
-    
-    // 准备新的元数据
-    const newMetadata = {
-      ...conversation.metadata,
-      isPinned: !isPinned
-    };
-    
-    try {
-      // 导入更新函数
-      const { updateConversationMetadata } = await import('@lib/db/conversations');
-      
-      // 更新会话元数据
-      const success = await updateConversationMetadata(chatId, newMetadata);
-      
-      if (success) {
-        // 刷新会话列表
-        refresh();
-      } else {
-        console.error('更新固定状态失败');
-      }
-    } catch (error) {
-      console.error('切换固定状态出错:', error);
-    }
-  }, [conversations, refresh]);
+  // Removed togglePin function
   
   // --- BEGIN COMMENT ---
   // 重命名会话
   // 显示一个简单的提示框让用户输入新名称
   // --- END COMMENT ---
   const handleRename = React.useCallback(async (chatId: string) => {
-    // 查找当前会话
-    const conversation = conversations.find(c => c.id === chatId);
+    const conversation = conversations.find(c => c.id === chatId); // chatId is Dify realId
     if (!conversation) return;
+
+    if (conversation.isPending) {
+      alert("临时对话的重命名功能待对话同步完成后可用。");
+      return;
+    }
+
+    const supabasePK = conversation.supabase_pk; // Get Supabase PK
+    if (!supabasePK) {
+      console.error('Supabase PK not found for renaming conversation:', chatId);
+      alert('操作失败，对话信息不完整。');
+      return;
+    }
     
-    // 显示提示框
     const newTitle = window.prompt('请输入新的会话名称', conversation.title || '新对话');
-    
-    // 如果用户取消或输入为空，则不进行操作
     if (!newTitle || newTitle.trim() === '') return;
     
     try {
-      // 导入重命名函数
       const { renameConversation } = await import('@lib/db/conversations');
-      
-      // 重命名会话
-      const success = await renameConversation(chatId, newTitle.trim());
-      
+      const success = await renameConversation(supabasePK, newTitle.trim()); // Use supabasePK
       if (success) {
-        // 刷新会话列表
         refresh();
       } else {
-        console.error('重命名会话失败');
+        console.error('重命名会话失败 for supabasePK:', supabasePK);
+        alert('重命名会话失败。');
       }
     } catch (error) {
       console.error('重命名会话出错:', error);
+      alert('操作出错，请稍后再试。');
     }
   }, [conversations, refresh]);
   
@@ -142,39 +111,45 @@ export function SidebarChatList({
   // 先进行确认，然后调用删除函数
   // --- END COMMENT ---
   const handleDelete = React.useCallback(async (chatId: string) => {
-    // 查找当前会话
-    const conversation = conversations.find(c => c.id === chatId);
+    const conversation = conversations.find(c => c.id === chatId); // chatId is Dify realId
     if (!conversation) return;
+
+    if (conversation.isPending) {
+      alert("临时对话的删除功能待对话同步完成后可用。");
+      return;
+    }
+
+    const supabasePK = conversation.supabase_pk; // Get Supabase PK
+    if (!supabasePK) {
+      console.error('Supabase PK not found for deleting conversation:', chatId);
+      alert('操作失败，对话信息不完整。');
+      return;
+    }
     
-    // 显示确认框
     const confirmed = window.confirm(`确定要删除会话 "${conversation.title || '新对话'}" 吗？此操作无法撤销。`);
-    
     if (!confirmed) return;
     
     try {
-      // 导入删除函数
-      // 这里使用软删除函数，只是将状态改为 deleted
       const { deleteConversation } = await import('@lib/db/conversations');
-      
-      // 删除会话
-      const success = await deleteConversation(chatId);
-      
+      const success = await deleteConversation(supabasePK); // Use supabasePK
       if (success) {
-        // 刷新会话列表
         refresh();
-        
-        // 如果当前选中的是这个会话，则选中第一个可用的会话
-        if (selectedId === chatId) {
-          const firstAvailableChat = conversations.find(c => c.id !== chatId);
+        if (selectedId === chatId) { // chatId is Dify realId, selectedId is Dify realId
+          const firstAvailableChat = conversations.find(c => c.id !== chatId && !c.isPending);
           if (firstAvailableChat) {
             onSelectChat(firstAvailableChat.id);
+          } else {
+            const anyOtherChat = conversations.find(c => c.id !== chatId);
+            if (anyOtherChat) onSelectChat(anyOtherChat.id);
           }
         }
       } else {
-        console.error('删除会话失败');
+        console.error('删除会话失败 for supabasePK:', supabasePK);
+        alert('删除会话失败。');
       }
     } catch (error) {
       console.error('删除会话出错:', error);
+      alert('操作出错，请稍后再试。');
     }
   }, [conversations, refresh, selectedId, onSelectChat]);
 
@@ -228,6 +203,8 @@ export function SidebarChatList({
               // 检查是否是当前选中的对话，或者是否应该显示为选中状态
               // --- END MODIFIED COMMENT ---
               const isActive = chat.id === selectedId;
+              // Show MoreButton for pending chats that have a realId and are in a stable-ish state
+              const showMoreButtonForPending = chat.id && !chat.id.startsWith('temp-') && !isLoading;
               
               return (
                 <div className="flex items-center w-full group" key={chat.tempId || chat.id}>
@@ -236,7 +213,7 @@ export function SidebarChatList({
                     text={chat.title || '新对话'}
                     active={isActive}
                     onClick={() => onSelectChat(chat.id)}
-                    className="flex-1 mr-1"
+                    className="flex-1 mr-1" // Keeping mr-1 for now as UI styling is deferred
                     isLoading={isLoading}
                   >
                     <div className="flex flex-col items-start overflow-hidden ml-2">
@@ -250,11 +227,48 @@ export function SidebarChatList({
                           正在生成标题...
                         </span>
                       )}
-                      <span className="text-xs text-stone-400 dark:text-stone-500">
-                        刚刚
-                      </span>
+                      {/* Display last message preview or relative time for more stable pending states */}
+                      {(chat.pendingStatus === 'persisted_optimistic' || chat.pendingStatus === 'title_resolved' || chat.pendingStatus === 'failed') && chat.last_message_preview && (
+                         <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
+                           {chat.last_message_preview}
+                         </span>
+                      )}
+                       <span className="text-xs text-stone-400 dark:text-stone-500">
+                         {/* For pending items, created_at is 'now'. formatTime will show '刚刚' or similar */}
+                         {formatTime(chat.created_at)}
+                       </span>
                     </div>
                   </SidebarButton>
+                  {showMoreButtonForPending && (
+                    <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreButton
+                        id={`pending-chat-more-${chat.id}`}
+                        tooltipText="更多选项"
+                      />
+                      <DropdownMenu id={`pending-chat-more-${chat.id}`}>
+                        <DropdownMenu.Item
+                          icon={<Edit className="w-4 h-4" />}
+                          onClick={() => handleRename(chat.id)}
+                          className={cn({ // Visually disable if pending, onClick handler already alerts
+                            "opacity-50 cursor-not-allowed": chat.isPending === true,
+                          })}
+                        >
+                          重命名
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Divider />
+                        <DropdownMenu.Item
+                          icon={<Trash className="w-4 h-4" />}
+                          danger
+                          onClick={() => handleDelete(chat.id)}
+                          className={cn({ // Visually disable if pending, onClick handler already alerts
+                            "opacity-50 cursor-not-allowed": chat.isPending === true,
+                          })}
+                        >
+                          删除聊天
+                        </DropdownMenu.Item>
+                      </DropdownMenu>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -262,69 +276,9 @@ export function SidebarChatList({
         </div>
       )}
       
-      {/* 固定的会话部分 */}
-      {pinnedChats.length > 0 && (
-        <div className="mb-2">
-          <div className="flex items-center px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
-            <Pin size={14} className="mr-1.5" />
-            固定的聊天
-          </div>
-          <div className="space-y-1">
-            {pinnedChats.map(chat => (
-              <div className="flex items-center w-full group" key={chat.id}>
-                <SidebarButton
-                  icon={<SidebarChatIcon size="sm" isDark={isDark} />}
-                  text={chat.title || '新对话'}
-                  active={chat.id === selectedId}
-                  onClick={() => onSelectChat(chat.id)}
-                  className="flex-1 mr-1"
-                >
-                  <div className="flex flex-col items-start overflow-hidden ml-2">
-                    {chat.last_message_preview && (
-                      <span className="text-xs text-stone-500 dark:text-stone-400 truncate w-full">
-                        {chat.last_message_preview}
-                      </span>
-                    )}
-                    <span className="text-xs text-stone-400 dark:text-stone-500">
-                      {formatTime(chat.updated_at)}
-                    </span>
-                  </div>
-                </SidebarButton>
-                <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
-                  <MoreButton
-                    id={`pinned-chat-${chat.id}`}
-                    tooltipText="更多选项"
-                  />
-                  <DropdownMenu id={`pinned-chat-${chat.id}`}>
-                    <DropdownMenu.Item
-                      icon={<Pin className="w-4 h-4" />}
-                      onClick={() => togglePin(chat.id)}
-                    >
-                      取消固定
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<Edit className="w-4 h-4" />}
-                      onClick={() => handleRename(chat.id)}
-                    >
-                      重命名
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Divider />
-                    <DropdownMenu.Item
-                      icon={<Trash className="w-4 h-4" />}
-                      danger
-                      onClick={() => handleDelete(chat.id)}
-                    >
-                      删除聊天
-                    </DropdownMenu.Item>
-                  </DropdownMenu>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Removed Pinned Chats Section */}
 
-      {/* 最近的会话部分 */}
+      {/* "最近的会话" will now show all non-pending chats */}
       <div>
         <div className="space-y-1">
           {visibleUnpinnedChats.map(chat => (
@@ -350,16 +304,11 @@ export function SidebarChatList({
               </SidebarButton>
               <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
                 <MoreButton
-                  id={`pinned-chat-${chat.id}`}
+                  id={`unpinned-chat-more-${chat.id}`} // Changed id to be more specific
                   tooltipText="更多选项"
                 />
-                <DropdownMenu id={`pinned-chat-${chat.id}`}>
-                  <DropdownMenu.Item
-                    icon={<Pin className="w-4 h-4" />}
-                    onClick={() => togglePin(chat.id)}
-                  >
-                    取消固定
-                  </DropdownMenu.Item>
+                <DropdownMenu id={`unpinned-chat-more-${chat.id}`}>
+                  {/* Removed Pin/Unpin Item */}
                   <DropdownMenu.Item
                     icon={<Edit className="w-4 h-4" />}
                     onClick={() => handleRename(chat.id)}

@@ -6,7 +6,7 @@ import { create } from 'zustand';
 export interface PendingConversation {
   tempId: string; // 客户端生成的临时 ID
   realId?: string; // 从后端获取的真实对话 ID
-  status: 'creating' | 'title_fetching' | 'streaming_message' | 'stream_completed_title_pending' | 'title_resolved' | 'failed'; // 会话状态
+  status: 'creating' | 'title_fetching' | 'streaming_message' | 'stream_completed_title_pending' | 'title_resolved' | 'persisted_optimistic' | 'failed'; // 会话状态
   title: string; // 当前显示的标题 (可能是 "创建中...", "新对话...", "Untitled", 或真实标题)
   isTitleFinal: boolean; // 标题是否已最终确定从 /name API 获取
 }
@@ -29,6 +29,7 @@ interface PendingConversationState {
   updateStatus: (id: string, status: PendingConversation['status']) => void; // id 可以是 tempId 或 realId
   updateTitle: (id: string, title: string, isFinal: boolean) => void; // 更新标题并设置是否为最终标题
   removePending: (id: string) => void; // id 可以是 tempId 或 realId
+  markAsOptimistic: (id: string) => void; // 将对话标记为乐观持久化状态
   
   // --- BEGIN COMMENT ---
   // Selectors / Getters (可选，但推荐，以便在 store 外部安全地访问状态)
@@ -160,6 +161,38 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       }
     }
     return undefined;
+  },
+
+  markAsOptimistic: (id: string) => {
+    set((state) => {
+      const newMap = new Map(state.pendingConversations);
+      let entryKey: string | undefined = id;
+      let entry = newMap.get(id); // 尝试按 tempId 查找
+
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
+        for (const [key, value] of newMap.entries()) {
+          if (value.realId === id) {
+            entry = value;
+            entryKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (entry && entryKey) {
+        // 确保对话至少有 realId 才能标记为 optimistic
+        if (entry.realId) {
+          newMap.set(entryKey, { ...entry, status: 'persisted_optimistic' });
+          console.log(`[PendingConversationStore] Marked ${entryKey} (realId: ${entry.realId}) as persisted_optimistic`);
+          return { pendingConversations: newMap };
+        } else {
+          console.warn(`[PendingConversationStore] Cannot mark ${entryKey} as persisted_optimistic without a realId.`);
+          return state;
+        }
+      }
+      console.warn(`[PendingConversationStore] markAsOptimistic: 未找到ID: ${id}`);
+      return state;
+    });
   },
 }));
 
