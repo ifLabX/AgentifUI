@@ -59,6 +59,14 @@ export function SidebarChatList({
       const { renameConversation } = await import('@lib/db/conversations');
       const success = await renameConversation(supabasePK, newTitle.trim());
       if (success) {
+        // --- BEGIN COMMENT ---
+        // 重命名成功后直接更新页面标题，无需刷新页面
+        // --- END COMMENT ---
+        if (selectedId === chatId) {
+          const baseTitle = 'if-agent-ui';
+          document.title = `${newTitle.trim()} | ${baseTitle}`;
+        }
+        
         refresh();
       } else {
         alert('重命名会话失败。');
