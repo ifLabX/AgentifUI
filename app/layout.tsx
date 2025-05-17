@@ -9,6 +9,7 @@ import { NotificationBar } from '@components/ui/notification-bar';
 import { ClientLayout } from "./layouts/client-layout";
 import { cn } from "@lib/utils";
 import { Providers } from "./providers"; // 确保导入 Providers 组件
+import { DynamicTitle } from "@components/ui/dynamic-title"; // 导入动态标题组件
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,8 @@ export default function RootLayout({
       </head>
       <body>
         <Providers> { /* 使用 Providers 包裹 */ }
+          {/* 添加 DynamicTitle 组件，确保它能在所有页面中生效 */}
+          <DynamicTitle />
           <ClientLayout fontClasses={`${geistSans.variable} ${geistMono.variable}`}>
             {children}
             <TooltipContainer />
