@@ -108,30 +108,37 @@ export function SidebarChatList({
 
   if (!contentVisible) return null;
   
+  // --- BEGIN COMMENT ---
+  // 修改渲染逻辑，确保骨架屏和标题状态下按钮尺寸一致
+  // 使用统一的结构和高度，避免切换时的布局跳动
+  // 考虑到右侧 more button 的占位，确保骨架屏宽度适当
+  // --- END COMMENT ---
   const renderChatItemContent = (chat: CombinedConversation, isItemLoading: boolean) => {
     const title = chat.title || '新对话';
     
-    // Only show skeleton if expanded and item is loading
-    if (isItemLoading && isExpanded) { 
-        return (
-            // Simplified skeleton for a single line title
-            <div className={cn("h-4 w-full animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
-        );
-    }
-
-    // Only show title, ensure it truncates
+    // 所有状态下使用相同的高度和结构，确保一致性
     return (
-      <div className="overflow-hidden w-full"> {/* Added w-full here for better truncation control by parent */}
-        <span className={cn("truncate w-full text-sm", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>
+      <div className="flex items-center h-4 w-full"> {/* 固定高度为 h-4，宽度为 w-full */}
+        {isItemLoading && isExpanded ? (
+          // 骨架屏 - 宽度设置为 w-[85%]，为右侧 more button 预留空间
+          <div className={cn("h-4 w-[85%] animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
+        ) : (
+          // 标题文本 - 使用 text-xs 和 leading-4 确保文本高度合适
+          <span className={cn("truncate w-full text-xs leading-4", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>
+        )}
       </div>
     );
   };
   
+  // --- BEGIN COMMENT ---
+  // 修改 createMoreActions 函数，确保临时 ID 和真正对话 ID 之间切换时布局保持一致
+  // 对于临时 ID 的对话，返回禁用状态的 more button 而不是 null，保持布局一致
+  // --- END COMMENT ---
   const createMoreActions = (chat: CombinedConversation, itemIsLoading: boolean) => {
     const canPerformActions = !!chat.supabase_pk;
-
-    if (!chat.id || chat.id.startsWith('temp-')) return null;
-
+    const isTempChat = !chat.id || chat.id.startsWith('temp-');
+    
+    // 无论是临时 ID 还是真正的对话 ID，都返回 more button 组件，保持布局一致
     return (
       <DropdownMenuV2
         placement="bottom"
@@ -141,14 +148,14 @@ export function SidebarChatList({
         trigger={
           <MoreButtonV2
             aria-label="更多选项"
-            disabled={itemIsLoading || !canPerformActions}
+            disabled={itemIsLoading || !canPerformActions || isTempChat}
           />
         }
       >
         <DropdownMenuV2.Item
           icon={<Edit className="w-3.5 h-3.5" />}
           onClick={() => handleRename(chat.id)}
-          disabled={itemIsLoading || !canPerformActions}
+          disabled={itemIsLoading || !canPerformActions || isTempChat}
         >
           重命名
         </DropdownMenuV2.Item>
@@ -157,7 +164,7 @@ export function SidebarChatList({
           icon={<Trash className="w-3.5 h-3.5" />}
           danger
           onClick={() => handleDelete(chat.id)}
-          disabled={itemIsLoading || !canPerformActions}
+          disabled={itemIsLoading || !canPerformActions || isTempChat}
         >
           删除聊天
         </DropdownMenuV2.Item>
@@ -191,7 +198,14 @@ export function SidebarChatList({
                     isLoading={itemIsLoading && !isExpanded}
                     moreActionsTrigger={
                        isExpanded ? (
-                        <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                        <div className={cn(
+                          "transition-opacity",
+                          // 加载状态下显示占位，但禁用交互
+                          itemIsLoading 
+                            ? "pointer-events-none" // 禁用交互但保持占位
+                            : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 非加载状态下正常显示
+                        )}>
+                           {/* 无论是否加载，都显示 more button，确保布局一致 */}
                            {createMoreActions(chat, itemIsLoading)}
                         </div>
                        ) : null
