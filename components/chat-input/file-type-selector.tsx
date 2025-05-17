@@ -29,7 +29,7 @@ export const FileTypeSelector = ({
 }: FileTypeSelectorProps) => {
   const { fileTypes, isLoading, error } = useFileTypes()
   const { isDark } = useTheme()
-//   const { isMobile } = useMobile()
+  const isMobile = useMobile()
   const [isOpen, setIsOpen] = useState(false)
   
   // 创建文件输入引用回调
@@ -98,6 +98,8 @@ export const FileTypeSelector = ({
         }
       }}
       minWidth={180}
+      offsetX={isMobile ? undefined : 108} // 在移动设备上使用默认值，桌面设备上使用自定义值
+      offsetY={isMobile ? undefined : 42} // 在移动设备上使用默认值，桌面设备上微调垂直位置
     >
       <div className="px-1 py-1">
         {isLoading ? (
