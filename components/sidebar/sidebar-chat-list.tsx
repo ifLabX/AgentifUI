@@ -83,14 +83,11 @@ export function SidebarChatList({
       const success = await deleteConversation(supabasePK);
       if (success) {
         refresh();
+        // --- BEGIN COMMENT ---
+        // 删除对话后直接路由到 /chat/new
+        // --- END COMMENT ---
         if (selectedId === chatId) {
-          const firstAvailableChat = conversations.find(c => c.id !== chatId && !c.isPending);
-          if (firstAvailableChat) {
-            onSelectChat(firstAvailableChat.id);
-          } else {
-            const anyOtherChat = conversations.find(c => c.id !== chatId);
-            if (anyOtherChat) onSelectChat(anyOtherChat.id);
-          }
+          window.location.href = '/chat/new';
         }
       } else {
         alert('删除会话失败。');

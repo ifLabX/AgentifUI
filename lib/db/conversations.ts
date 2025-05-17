@@ -135,20 +135,71 @@ export async function updateConversation(
 
 /**
  * 删除对话（软删除，将状态设置为deleted）
- * @param id 对话ID
+ * @param id 对话ID（supabase_pk）
  * @returns 是否删除成功
  */
 export async function deleteConversation(id: string): Promise<boolean> {
-  const { error } = await supabase
+  // --- BEGIN COMMENT ---
+  // 添加详细的调试日志，检查数据库查询的执行情况
+  // --- END COMMENT ---
+  console.log(`[删除对话] 开始删除对话，ID: ${id}`);
+  
+  // 首先检查该对话是否存在
+  const { data: existingConversation, error: checkError } = await supabase
     .from('conversations')
-    .update({ status: 'deleted', updated_at: new Date().toISOString() })
-    .eq('id', id);
-
-  if (error) {
-    console.error('删除对话失败:', error);
+    .select('id, status, title')
+    .eq('id', id)
+    .single();
+    
+  if (checkError) {
+    console.error(`[删除对话] 检查对话失败:`, checkError);
     return false;
   }
+  
+  if (!existingConversation) {
+    console.error(`[删除对话] 对话不存在，ID: ${id}`);
+    return false;
+  }
+  
+  console.log(`[删除对话] 找到对话:`, existingConversation);
+  
+  // 执行删除操作
+  const { data: updateResult, error } = await supabase
+    .from('conversations')
+    .update({ 
+      status: 'deleted', 
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', id)
+    .select();
 
+  if (error) {
+    console.error(`[删除对话] 删除对话失败:`, error);
+    return false;
+  }
+  
+  console.log(`[删除对话] 更新结果:`, updateResult);
+  
+  // 再次检查删除后的状态
+  const { data: updatedConversation, error: verifyError } = await supabase
+    .from('conversations')
+    .select('id, status, title')
+    .eq('id', id)
+    .single();
+    
+  if (verifyError) {
+    console.error(`[删除对话] 验证删除结果失败:`, verifyError);
+  } else if (updatedConversation) {
+    console.log(`[删除对话] 删除后的对话状态:`, updatedConversation);
+    
+    // 检查状态是否已更新为 deleted
+    if (updatedConversation.status !== 'deleted') {
+      console.error(`[删除对话] 对话状态未更新为 deleted:`, updatedConversation);
+      return false;
+    }
+  }
+
+  console.log(`[删除对话] 删除操作完成，ID: ${id}`);
   return true;
 }
 

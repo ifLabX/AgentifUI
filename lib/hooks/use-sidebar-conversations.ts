@@ -76,6 +76,11 @@ export function useSidebarConversations(limit: number = 20) {
 
     const newOffset = reset ? 0 : offset;
     
+    // --- BEGIN COMMENT ---
+    // 添加调试日志，查看获取对话列表的查询参数
+    // --- END COMMENT ---
+    console.log(`[获取对话列表] 开始获取对话列表，userId: ${userId}, limit: ${limit}, offset: ${newOffset}`);
+    
     setIsLoading(true);
     try {
       const result = await getUserConversations(userId, limit, newOffset);
