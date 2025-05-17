@@ -52,15 +52,9 @@ export function DynamicTitle() {
             const chatTitle = currentChat.title || '新对话'
             newTitle = `${chatTitle} | ${baseTitle}`
             
-            // 检查是否为临时ID或正在加载的对话
-            const isTempOrLoading = currentConversationId.startsWith('temp-') || 
-                                   currentChat.isPending || 
-                                   (currentChat.pendingStatus && ['creating', 'title_fetching', 'streaming_message'].includes(currentChat.pendingStatus))
-            
-            if (isTempOrLoading) {
-              // 如果是临时ID或正在加载，添加加载指示器
-              newTitle = `${chatTitle} (加载中...) | ${baseTitle}`
-            }
+            // 不管是临时ID还是正在加载的对话，都使用相同的标题格式
+            // 根据用户要求，不显示“(加载中...)”标记
+            newTitle = `${chatTitle} | ${baseTitle}`
           } else if (isLoading) {
             // 如果对话列表正在加载，显示加载状态
             newTitle = fallbackTitle
