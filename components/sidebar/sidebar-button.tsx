@@ -81,7 +81,8 @@ export function SidebarButton({
             <div className={cn("h-4 w-4 animate-pulse rounded-full", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
           </span>
         ) : (
-          <span className={cn("flex h-5 w-5 items-center justify-center", isDark ? "text-gray-400" : "text-gray-500")}>
+          <span className={cn("flex h-5 w-5 items-center justify-center -ml-0.5", 
+          isDark ? "text-gray-400" : "text-gray-500",)}>
             {icon}
           </span>
         )}
