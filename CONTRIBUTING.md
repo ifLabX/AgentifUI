@@ -1,6 +1,6 @@
-# LLM-EduHub 开发贡献指南
+# if-agent-ui 开发贡献指南
 
-这篇文档将指导你如何设置LLM-EduHub的开发环境，包括依赖安装和运行应用程序的步骤。
+这篇文档将指导你如何设置if-agent-ui的开发环境，包括依赖安装和运行应用程序的步骤。
 
 ## 前置要求
 
@@ -16,8 +16,8 @@
 
 ```bash
 # 克隆代码库
-git clone [https://github.com/lyzno1/llm-eduhub.git](https://github.com/lyzno1/llm-eduhub.git)
-cd llm-eduhub
+git clone [https://github.com/lyzno1/if-agent-ui.git](https://github.com/lyzno1/if-agent-ui.git)
+cd if-agent-ui
 
 # 安装依赖
 npm install

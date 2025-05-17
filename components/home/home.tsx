@@ -84,7 +84,7 @@ export function Home() {
               transition={{ duration: 0.6 }}
               className={`text-5xl md:text-6xl font-bold bg-gradient-to-r ${colors.titleGradient} bg-clip-text text-transparent mb-6`}
             >
-              LLM-EduHub
+              if-agent-ui
             </motion.h1>
             
             <motion.p 
@@ -157,7 +157,7 @@ export function Home() {
             className={`text-center ${colors.textColor} text-sm`}
           >
             <p>
-              © <span suppressHydrationWarning>{new Date().getFullYear()}</span> LLM-EduHub. 探索AI教育的未来。
+              © <span suppressHydrationWarning>{new Date().getFullYear()}</span> if-agent-ui. 探索AI教育的未来。
             </p>
           </motion.div>
         </motion.div>

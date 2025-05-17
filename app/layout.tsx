@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LLM-EduHub",
+  title: "if-agent-ui",
   description: "企业级大模型应用",
 };
 

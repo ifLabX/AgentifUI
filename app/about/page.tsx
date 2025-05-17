@@ -98,7 +98,7 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className={`text-4xl md:text-5xl font-bold bg-gradient-to-r ${colors.titleGradient} bg-clip-text text-transparent mb-6`}
           >
-            关于 LLM-EduHub
+            关于 if-agent-ui
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export default function AboutPage() {
         >
           <h2 className={`text-2xl font-bold ${colors.headingColor} mb-6`}>我们的使命</h2>
           <p className={`text-lg ${colors.paragraphColor}`}>
-            LLM-EduHub 致力于利用大型语言模型的力量，为企业和教育机构提供创新的应用解决方案。
+            if-agent-ui 致力于利用大型语言模型的力量，为企业和教育机构提供创新的应用解决方案。
             我们整合了多种模型供应商的能力，并基于 Dify 后端提供稳定、可靠的服务，帮助组织充分利用 AI 技术的价值。
           </p>
         </motion.section>
@@ -178,7 +178,7 @@ export default function AboutPage() {
           className={`text-center ${colors.textColor} text-sm`}
         >
           <p>
-            © <span suppressHydrationWarning>{new Date().getFullYear()}</span> LLM-EduHub. 探索大模型应用的未来。
+            © <span suppressHydrationWarning>{new Date().getFullYear()}</span> if-agent-ui. 探索大模型应用的未来。
           </p>
         </motion.div>
       </div>

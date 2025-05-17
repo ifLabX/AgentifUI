@@ -5,16 +5,16 @@ globs:
 ---
 # Directory Structure Management
 
-This document outlines the directory structure of the LLM-EduHub project and provides guidelines for maintaining and updating the directory organization.
+This document outlines the directory structure of the if-agent-ui project and provides guidelines for maintaining and updating the directory organization.
 
 ## Project Overview
 
-LLM-EduHub is a Next.js application using the App Router pattern. The directory structure follows Next.js 13+ conventions with some custom organization patterns for better code separation.
+if-agent-ui is a Next.js application using the App Router pattern. The directory structure follows Next.js 13+ conventions with some custom organization patterns for better code separation.
 
 ## Root Directory Structure
 
 ```
-llm-eduhub/
+if-agent-ui/
   ├── .cursor/            # Cursor IDE configuration files
   │   └── rules/          # Project-specific rules and documentation
   ├── .next/              # Next.js build output

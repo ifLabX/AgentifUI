@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # Tailwind CSS 响应式开发规范
 
-本文档提供 LLM-EduHub 项目使用 Tailwind CSS 进行响应式开发的规范和最佳实践。
+本文档提供 if-agent-ui 项目使用 Tailwind CSS 进行响应式开发的规范和最佳实践。
 
 ## 基本原则
 
@@ -318,4 +318,4 @@ function ResponsiveComponent() {
    - 组合使用基础类和少量响应式类
    - 提取重复的响应式模式为组件
 
-通过遵循这些响应式开发规范，可以确保LLM-EduHub在各种设备上提供一致且优质的用户体验。
+通过遵循这些响应式开发规范，可以确保if-agent-ui在各种设备上提供一致且优质的用户体验。

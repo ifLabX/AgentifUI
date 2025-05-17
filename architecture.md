@@ -1,4 +1,4 @@
-# LLM-EduHub架构设计文档
+# if-agent-ui架构设计文档
 
 ## 1. 整体架构概览
 
@@ -12,7 +12,7 @@
 └─────────────────┘      └───────────────────┘      └─────────────────┘      └─────────────┘
 ```
 
-LLM-EduHub采用现代化的多层架构设计，结合Next.js App Router的最佳实践，实现前端、API、服务集成和数据存储的无缝衔接。这种分层设计确保了关注点分离，使系统更易于维护和扩展。核心认证服务由 **Supabase Auth** 提供。
+if-agent-ui采用现代化的多层架构设计，结合Next.js App Router的最佳实践，实现前端、API、服务集成和数据存储的无缝衔接。这种分层设计确保了关注点分离，使系统更易于维护和扩展。核心认证服务由 **Supabase Auth** 提供。
 
 ## 2. 前端架构
 
@@ -27,7 +27,7 @@ LLM-EduHub采用现代化的多层架构设计，结合Next.js App Router的最�
 
 ### 目录结构设计
 ```
-llm-eduhub/
+if-agent-ui/
   ├── .cursor/            # Cursor IDE配置文件
   │   └── rules/          # 项目特定规则和文档
   ├── .next/              # Next.js构建输出
@@ -425,4 +425,4 @@ app/
 - [Dify API文档](https://docs.dify.ai/)
 - [Tailwind CSS设计系统最佳实践](https://tailwindcss.com/docs)
 
-这份架构文档提供了LLM-EduHub项目的整体设计蓝图，应根据项目进展和需求变化定期更新。
+这份架构文档提供了if-agent-ui项目的整体设计蓝图，应根据项目进展和需求变化定期更新。
