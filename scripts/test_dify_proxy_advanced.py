@@ -303,6 +303,61 @@ def test_delete_conversation(conversation_id_or_set: Union[str, Set[str]]):
         print(f"ERROR: Invalid type for conversation_id_or_set. Expected str or set, got {type(conversation_id_or_set)}.")
 
 
+def test_get_webapp_settings():
+    """测试 GET /site (获取应用 WebApp 设置)
+    
+    获取应用的 WebApp 设置，包括名称、颜色主题、图标等信息
+    
+    Returns:
+        成功时返回包含 WebApp 设置的字典，失败时返回 None
+    """
+    endpoint = "/site"
+    target_url = f"{config.proxy_base_url}/{config.app_id}{endpoint}"
+    print(f"\n--- Testing Get WebApp Settings ---")
+    print(f"Target URL: {target_url}")
+
+    try:
+        # 发送 GET 请求
+        with requests.get(target_url, timeout=30) as response:
+            print(f"Proxy Response Status Code: {response.status_code}")
+            print("Proxy Response Headers:")
+            for key, value in response.headers.items():
+                print(f"  {key}: {value}")
+
+            response.raise_for_status() # 检查 HTTP 错误
+
+            # 期望返回 JSON
+            response_json = response.json()
+            print("Response JSON:")
+            print(json.dumps(response_json, indent=2))
+
+            # 验证关键字段是否存在
+            expected_fields = [
+                'title', 'chat_color_theme', 'chat_color_theme_inverted', 
+                'icon_type', 'icon', 'icon_background', 'icon_url',
+                'description', 'copyright', 'privacy_policy', 
+                'custom_disclaimer', 'default_language',
+                'show_workflow_steps', 'use_icon_as_answer_icon'
+            ]
+            
+            missing_fields = [field for field in expected_fields if field not in response_json]
+            
+            if not missing_fields:
+                print(f"SUCCESS: Get WebApp settings successful. All expected fields present.")
+                return response_json
+            else:
+                print(f"WARNING: Some expected fields are missing: {missing_fields}")
+                return response_json
+
+    except requests.exceptions.RequestException as e:
+        print(f"ERROR during get WebApp settings request: {e}")
+    except json.JSONDecodeError:
+        print(f"ERROR: Response was not valid JSON. Response text: {response.text[:200]}...")
+    except Exception as e:
+        print(f"ERROR during get WebApp settings test: {e}")
+    
+    return None
+
 
 # --- 主执行逻辑 ---
 if __name__ == "__main__":
@@ -316,6 +371,10 @@ if __name__ == "__main__":
     # test_file_upload()
     # test_audio_to_text()
     # test_text_to_audio()
+    
+    # 测试获取WebApp设置
+    webapp_settings = test_get_webapp_settings()
+    
     conversations_list = test_get_conversations(limit=5) # 获取最近5个会话
 
     # --- 测试删除会话 ---
@@ -340,4 +399,4 @@ if __name__ == "__main__":
         print("INFO: No conversation IDs specified for deletion. Skipping delete test.")
 
 
-    print("\n--- All Tests Finished ---")
+    print("\n--- All Tests Finished ---")# 测试修改
