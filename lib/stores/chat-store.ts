@@ -9,16 +9,31 @@ export interface MessageAttachment {
   upload_file_id: string; // 上传后的文件ID
 }
 
-// --- 消息定义 ---
+// --- BEGIN COMMENT ---
+// 消息定义，增加了持久化相关的字段
+// db_id: 数据库中的消息ID，成功保存后才会有值
+// persistenceStatus: 消息持久化状态，用于UI展示
+// role: 消息角色，与数据库保持一致
+// dify_message_id: Dify 消息ID，用于关联外部消息
+// token_count: token计数，可用于计费或统计
+// metadata: 元数据，存储附加信息
+// --- END COMMENT ---
 export interface ChatMessage {
-  id: string; // 唯一消息 ID
+  id: string; // 唯一消息 ID (前端生成)
   text: string; // 消息内容
   isUser: boolean; // 是否为用户消息
   isStreaming?: boolean; // 标记助手消息是否仍在流式传输中
   wasManuallyStopped?: boolean; // 标记是否被用户手动停止
   error?: string | null; // 消息相关的错误信息
   attachments?: MessageAttachment[]; // 消息附带的文件附件
-  // 可以添加时间戳等其他元数据
+  
+  // 消息持久化相关字段
+  db_id?: string; // 数据库中的消息ID，保存成功后才有值
+  persistenceStatus?: 'pending' | 'saving' | 'saved' | 'error'; // 持久化状态
+  role?: 'user' | 'assistant' | 'system'; // 消息角色，与数据库保持一致
+  dify_message_id?: string; // Dify 消息ID
+  token_count?: number; // Token计数
+  metadata?: Record<string, any>; // 元数据
 }
 
 // --- Store 状态接口 ---
@@ -96,6 +111,13 @@ interface ChatState {
    * @param taskId 任务ID，null表示无进行中任务
    */
   setCurrentTaskId: (taskId: string | null) => void;
+
+  /**
+   * 更新消息的特定属性
+   * @param id 消息ID
+   * @param updates 要更新的属性
+   */
+  updateMessage: (id: string, updates: Partial<Omit<ChatMessage, 'id' | 'isUser'>>) => void;
 }
 
 // --- Store 实现 ---
@@ -177,8 +199,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set(() => ({
       currentTaskId: taskId
     }))
+  },
+
+  // --- BEGIN COMMENT ---
+  // 实现updateMessage函数，用于更新消息的特定属性
+  // 特别是持久化相关的状态，如persistenceStatus和db_id
+  // --- END COMMENT ---
+  updateMessage: (id, updates) => {
+    set((state) => ({
+      messages: state.messages.map((message) =>
+        message.id === id ? { ...message, ...updates } : message
+      )
+    }))
   }
 }));
+
 
 // --- BEGIN COMMENT ---
 // --- 导出常量 (如果项目需要) ---

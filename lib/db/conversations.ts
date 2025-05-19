@@ -314,6 +314,38 @@ export async function updateConversationMetadata(
 }
 
 /**
+ * 根据外部ID（Dify对话ID）查询对话
+ * @param externalId 外部ID（Dify对话ID）
+ * @returns 对话对象，如果未找到则返回null
+ */
+export async function getConversationByExternalId(externalId: string): Promise<Conversation | null> {
+  // --- BEGIN COMMENT ---
+  // 根据external_id查询对话，用于将Dify对话ID映射到数据库记录
+  // 这是消息持久化的关键函数，确保在已有对话中能找到对应的数据库记录
+  // --- END COMMENT ---
+  console.log(`[getConversationByExternalId] 开始查询外部ID为 ${externalId} 的对话`);
+  
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('*')
+    .eq('external_id', externalId)
+    .single();
+
+  if (error) {
+    console.error(`[getConversationByExternalId] 查询对话失败，externalId=${externalId}:`, error);
+    return null;
+  }
+
+  if (!data) {
+    console.log(`[getConversationByExternalId] 未找到外部ID为 ${externalId} 的对话`);
+    return null;
+  }
+
+  console.log(`[getConversationByExternalId] 找到对话，ID=${data.id}，外部ID=${externalId}`);
+  return data as Conversation;
+}
+
+/**
  * 重命名会话
  * @param conversationId 会话ID
  * @param newTitle 新标题
