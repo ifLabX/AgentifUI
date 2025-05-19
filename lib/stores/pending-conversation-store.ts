@@ -189,7 +189,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         // 确保对话至少有 realId 才能标记为 optimistic
         if (entry.realId) {
           newMap.set(entryKey, { ...entry, status: 'persisted_optimistic', updatedAt: new Date().toISOString() });
-          console.log(`[PendingConversationStore] Marked ${entryKey} (realId: ${entry.realId}) as persisted_optimistic`);
+          // console.log(`[PendingConversationStore] Marked ${entryKey} (realId: ${entry.realId}) as persisted_optimistic`);
           return { pendingConversations: newMap };
         } else {
           console.warn(`[PendingConversationStore] Cannot mark ${entryKey} as persisted_optimistic without a realId.`);
@@ -219,7 +219,7 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       
       if (entry && entryKey) {
         newMap.set(entryKey, { ...entry, supabase_pk: supabasePK, updatedAt: new Date().toISOString() });
-        console.log(`[PendingConversationStore] Set supabase_pk for ${entryKey} (realId: ${entry.realId}) to ${supabasePK}`);
+        // console.log(`[PendingConversationStore] Set supabase_pk for ${entryKey} (realId: ${entry.realId}) to ${supabasePK}`);
         return { pendingConversations: newMap };
       }
       console.warn(`[PendingConversationStore] setSupabasePK: 未找到ID: ${id}`);

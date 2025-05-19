@@ -135,7 +135,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   return;
                 }
                 try {
-                  console.log(`[useCreateConversation] Saving to DB: difyId=${difyConvId}, title=${convTitle}, userId=${currentUserId}, appId=${appId}, tempId=${currentTempConvId}`);
+                  // console.log(`[useCreateConversation] Saving to DB: difyId=${difyConvId}, title=${convTitle}, userId=${currentUserId}, appId=${appId}, tempId=${currentTempConvId}`);
                   const localConversation = await dbCreateConversation({
                     user_id: currentUserId,
                     app_id: appId, 
@@ -151,13 +151,13 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   });
 
                   if (localConversation && localConversation.id) {
-                    console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}, Dify ID: ${difyConvId}`);
+                    // console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}, Dify ID: ${difyConvId}`);
                     // setCurrentChatConversationId(difyConvId); // Already set to real ID or temp ID
                     setSupabasePKInPendingStore(difyConvId, localConversation.id); 
                     updateStatusInPendingStore(currentTempConvId, 'title_resolved'); 
                     markAsOptimistic(difyConvId); 
                     
-                    console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}, supabase_pk: ${localConversation.id}) as optimistic and set PK in pending store.`);
+                    // console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}, supabase_pk: ${localConversation.id}) as optimistic and set PK in pending store.`);
 
                   } else {
                     throw new Error("Failed to save conversation to local DB or local ID not returned.");
