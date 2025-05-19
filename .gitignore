@@ -48,4 +48,7 @@ next-env.d.ts
 .venv
 
 # documentation
-supabase-docs.md
+/docs/supabase-docs.md
+/docs/DATABASE-DESIGN.md
+/docs/EMBEDDABLE_CHAT_COMPONENT_DESIGN.md
+/docs/README-API-KEY-MANAGEMENT.md
