@@ -10,6 +10,7 @@ import { ClientLayout } from "./layouts/client-layout";
 import { cn } from "@lib/utils";
 import { Providers } from "./providers"; // 确保导入 Providers 组件
 import { DynamicTitle } from "@components/ui/dynamic-title"; // 导入动态标题组件
+import { StagewiseToolbarWrapper } from "@components/dev/stagewise-toolbar"; // 导入 Stagewise 工具栏组件
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +46,8 @@ export default function RootLayout({
             {children}
             <TooltipContainer />
             <NotificationBar />
+            {/* Stagewise 工具栏组件，仅在开发环境中渲染 */}
+            <StagewiseToolbarWrapper />
           </ClientLayout>
         </Providers>
       </body>
