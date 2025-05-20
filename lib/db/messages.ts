@@ -181,21 +181,27 @@ export function chatMessageToDbMessage(
   // --- BEGIN COMMENT ---
   // 将前端消息对象转换为数据库消息对象，用于保存
   // 注意：
-  // 1. 用户消息需要传入userId
-  // 2. 助手消息的userId应为null
+  // 1. 用户消息需要传入userId，确保用户消息有正确的用户ID关联
+  // 2. 助手消息的userId必须为null，符合数据库设计
   // 3. 如果没有指定role，根据isUser推断
+  // 4. 消息状态默认为'sent'，除非有错误
   // --- END COMMENT ---
+  
+  // 构建基础元数据
+  const baseMetadata = chatMessage.metadata || {};
+  // 如果有附件，确保添加到元数据中
+  if (chatMessage.attachments && chatMessage.attachments.length > 0) {
+    baseMetadata.attachments = chatMessage.attachments;
+  }
   
   return {
     conversation_id: conversationId,
-    user_id: chatMessage.isUser ? (userId || null) : null,
+    user_id: chatMessage.isUser ? (userId || null) : null, // 用户消息使用传入的userId，助手消息一定为null
     role: chatMessage.role || (chatMessage.isUser ? 'user' : 'assistant'),
     content: chatMessage.text,
-    metadata: chatMessage.metadata || { 
-      attachments: chatMessage.attachments || [] 
-    },
+    metadata: baseMetadata,
     status: chatMessage.error ? 'error' : 'sent',
-    external_id: chatMessage.dify_message_id || null,
+    external_id: chatMessage.dify_message_id || null, // 使用消息中的dify_message_id作为external_id
     token_count: chatMessage.token_count || null
   };
 }

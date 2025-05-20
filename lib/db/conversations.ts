@@ -323,26 +323,43 @@ export async function getConversationByExternalId(externalId: string): Promise<C
   // 根据external_id查询对话，用于将Dify对话ID映射到数据库记录
   // 这是消息持久化的关键函数，确保在已有对话中能找到对应的数据库记录
   // --- END COMMENT ---
+  
+  // 参数校验，确保externalId有效
+  if (!externalId || typeof externalId !== 'string' || externalId.trim() === '') {
+    console.log('[getConversationByExternalId] 外部ID无效，跳过查询');
+    return null;
+  }
+  
   console.log(`[getConversationByExternalId] 开始查询外部ID为 ${externalId} 的对话`);
   
-  const { data, error } = await supabase
-    .from('conversations')
-    .select('*')
-    .eq('external_id', externalId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('external_id', externalId)
+      .single();
 
-  if (error) {
-    console.error(`[getConversationByExternalId] 查询对话失败，externalId=${externalId}:`, error);
+    if (error) {
+      // 如果是 "No rows found" 错误，不打印错误日志，这是正常情况
+      if (error.code === 'PGRST116') {
+        console.log(`[getConversationByExternalId] 未找到外部ID为 ${externalId} 的对话`);
+      } else {
+        console.error(`[getConversationByExternalId] 查询对话失败，externalId=${externalId}:`, error);
+      }
+      return null;
+    }
+
+    if (!data) {
+      console.log(`[getConversationByExternalId] 未找到外部ID为 ${externalId} 的对话`);
+      return null;
+    }
+
+    console.log(`[getConversationByExternalId] 找到对话，ID=${data.id}，外部ID=${externalId}`);
+    return data as Conversation;
+  } catch (e) {
+    console.error(`[getConversationByExternalId] 查询对话异常:`, e);
     return null;
   }
-
-  if (!data) {
-    console.log(`[getConversationByExternalId] 未找到外部ID为 ${externalId} 的对话`);
-    return null;
-  }
-
-  console.log(`[getConversationByExternalId] 找到对话，ID=${data.id}，外部ID=${externalId}`);
-  return data as Conversation;
 }
 
 /**
