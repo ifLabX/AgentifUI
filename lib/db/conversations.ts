@@ -337,7 +337,7 @@ export async function getConversationByExternalId(externalId: string): Promise<C
       .from('conversations')
       .select('*')
       .eq('external_id', externalId)
-      .single();
+      .maybeSingle();  // 使用maybeSingle代替single，避免404错误
 
     if (error) {
       // 如果是 "No rows found" 错误，不打印错误日志，这是正常情况

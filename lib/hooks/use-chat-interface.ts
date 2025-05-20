@@ -268,7 +268,34 @@ export function useChatInterface() {
         const creationResult = await initiateNewConversation(
           basePayloadForNewConversation,
           currentAppId, // 使用动态获取的 currentAppId
-          currentUserId // 显式传递 userIdentifier
+          currentUserId, // 显式传递 userIdentifier
+          // 添加数据库ID回调
+          (difyId, dbId) => {
+            console.log(`[handleSubmit] 收到数据库对话ID回调：difyId=${difyId}, dbId=${dbId}`);
+            
+            // 立即设置数据库对话ID
+            finalDbConvUUID = dbId;
+            setDbConversationUUID(dbId);
+            
+            // 保存用户消息
+            if (userMessage && userMessage.persistenceStatus !== 'saved') {
+              console.log(`[handleSubmit] 立即保存用户消息，ID=${userMessage.id}, 数据库对话ID=${dbId}`);
+              saveMessage(userMessage, dbId).catch(err => {
+                console.error('[handleSubmit] 保存用户消息失败:', err);
+              });
+            }
+            
+            // 如果助手消息已创建，也保存助手消息
+            if (assistantMessageId) {
+              const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
+              if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
+                console.log(`[handleSubmit] 立即保存助手消息，ID=${assistantMessageId}, 数据库对话ID=${dbId}`);
+                saveMessage(assistantMessage, dbId).catch(err => {
+                  console.error('[handleSubmit] 保存助手消息失败:', err);
+                });
+              }
+            }
+          }
         );
 
         if (creationResult.error) {
@@ -542,11 +569,11 @@ export function useChatInterface() {
       // 2. 先保存用户消息，再保存助手消息
       // --- END COMMENT ---
       if (finalDbConvUUID) {
-        console.log(`[handleSubmit] 开始保存消息，数据库对话ID=${finalDbConvUUID}`);
+        console.log(`[handleSubmit] 流式响应结束，开始保存消息，数据库对话ID=${finalDbConvUUID}`);
         
         // 保存用户消息
         if (userMessage && userMessage.persistenceStatus !== 'saved') {
-          console.log(`[handleSubmit] 保存用户消息，ID=${userMessage.id}`);
+          console.log(`[handleSubmit] 保存用户消息，ID=${userMessage.id}, 数据库对话ID=${finalDbConvUUID}`);
           saveMessage(userMessage, finalDbConvUUID).catch(err => {
             console.error('[handleSubmit] 保存用户消息失败:', err);
           });
@@ -556,14 +583,47 @@ export function useChatInterface() {
         if (assistantMessageId) {
           const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
           if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
-            console.log(`[handleSubmit] 保存助手消息，ID=${assistantMessageId}`);
+            console.log(`[handleSubmit] 保存助手消息，ID=${assistantMessageId}, 数据库对话ID=${finalDbConvUUID}`);
             saveMessage(assistantMessage, finalDbConvUUID).catch(err => {
               console.error('[handleSubmit] 保存助手消息失败:', err);
             });
           }
         }
       } else {
-        console.warn('[handleSubmit] 未能获取数据库对话ID，消息将不会被持久化');
+        console.warn(`[handleSubmit] 流式响应结束，但未获取到数据库对话ID，消息无法保存`);
+        
+        // 尝试从Dify对话ID再次查询数据库对话ID
+        if (finalRealConvId) {
+          console.log(`[handleSubmit] 尝试最后一次查询数据库对话ID，Dify对话ID=${finalRealConvId}`);
+          getConversationByExternalId(finalRealConvId).then(dbConv => {
+            if (dbConv && dbConv.id) {
+              console.log(`[handleSubmit] 查询到数据库对话ID，开始保存消息，ID=${dbConv.id}`);
+              // 设置数据库对话ID
+              finalDbConvUUID = dbConv.id;
+              setDbConversationUUID(dbConv.id);
+              
+              // 保存用户消息和助手消息
+              if (userMessage && userMessage.persistenceStatus !== 'saved') {
+                saveMessage(userMessage, dbConv.id).catch(err => {
+                  console.error('[handleSubmit] 二次查询后保存用户消息失败:', err);
+                });
+              }
+              
+              if (assistantMessageId) {
+                const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
+                if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
+                  saveMessage(assistantMessage, dbConv.id).catch(err => {
+                    console.error('[handleSubmit] 二次查询后保存助手消息失败:', err);
+                  });
+                }
+              }
+            } else {
+              console.error(`[handleSubmit] 最终查询仍未获取到数据库对话ID，无法保存消息`);
+            }
+          }).catch(err => {
+            console.error('[handleSubmit] 二次查询数据库对话ID失败:', err);
+          });
+        }
       }
 
 

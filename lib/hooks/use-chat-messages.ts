@@ -113,6 +113,26 @@ export function useChatMessages(userId?: string) {
     }
     
     try {
+      // 检查数据库中是否已存在相同消息，避免重复保存
+      const { getMessageByContentAndRole } = require('@lib/db/messages');
+      if (typeof getMessageByContentAndRole === 'function') {
+        const existingMessage = await getMessageByContentAndRole(
+          message.text, 
+          message.isUser ? 'user' : 'assistant',
+          conversationId
+        );
+        
+        if (existingMessage) {
+          console.log(`[saveMessage] 消息内容已存在于数据库中，更新UI状态避免重复保存`);
+          updateMessage(message.id, { 
+            persistenceStatus: 'saved',
+            db_id: existingMessage.id,
+            dify_message_id: existingMessage.external_id || undefined
+          });
+          return true;
+        }
+      }
+      
       // 标记消息正在保存中
       addSavingMessage(message.id);
       

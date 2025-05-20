@@ -235,3 +235,37 @@ export async function createPlaceholderAssistantMessage(
     status
   });
 }
+
+/**
+ * 根据内容和角色查询消息，用于检查重复
+ */
+export async function getMessageByContentAndRole(
+  content: string, 
+  role: 'user' | 'assistant' | 'system',
+  conversationId: string
+): Promise<Message | null> {
+  const supabase = createClient();
+  
+  try {
+    // 使用内容前缀和角色检查消息是否已存在
+    const contentPrefix = content.substring(0, 50); // 取前50个字符作为匹配条件
+    
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .eq('role', role)
+      .ilike('content', `${contentPrefix}%`) // 使用前缀匹配
+      .maybeSingle();
+    
+    if (error) {
+      console.error('[getMessageByContentAndRole] 查询消息失败:', error);
+      return null;
+    }
+    
+    return data as Message;
+  } catch (e) {
+    console.error('[getMessageByContentAndRole] 查询消息异常:', e);
+    return null;
+  }
+}

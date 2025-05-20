@@ -13,7 +13,8 @@ interface UseCreateConversationReturn {
   initiateNewConversation: (
     payload: Omit<DifyChatRequestPayload, 'response_mode' | 'conversation_id' | 'auto_generate_name'>,
     appId: string,
-    userIdentifier: string
+    userIdentifier: string,
+    onDbIdCreated?: (difyId: string, dbId: string) => void
   ) => Promise<{
     tempConvId: string;
     realConvId?: string; 
@@ -45,7 +46,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
     async (
       payloadData: Omit<DifyChatRequestPayload, 'response_mode' | 'conversation_id' | 'auto_generate_name'>,
       appId: string,
-      userIdentifier: string
+      userIdentifier: string,
+      onDbIdCreated?: (difyId: string, dbId: string) => void
     ): Promise<{
       tempConvId: string;
       realConvId?: string;
@@ -159,6 +161,11 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     
                     // console.log(`[useCreateConversation] Marked ${currentTempConvId} (realId: ${difyConvId}, supabase_pk: ${localConversation.id}) as optimistic and set PK in pending store.`);
 
+                    // 新增：调用回调函数，直接通知数据库ID创建完成
+                    if (typeof onDbIdCreated === 'function') {
+                      console.log(`[useCreateConversation] 数据库对话记录创建完成，通知调用者, difyId=${difyConvId}, dbId=${localConversation.id}`);
+                      onDbIdCreated(difyConvId, localConversation.id);
+                    }
                   } else {
                     throw new Error("Failed to save conversation to local DB or local ID not returned.");
                   }
