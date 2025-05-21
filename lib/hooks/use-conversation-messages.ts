@@ -422,14 +422,27 @@ export function useConversationMessages() {
     // 检测是否是首次发送消息导致的路由变化
     // 1. 从 /chat/new 路径或 /chat/temp- 开头的路径切换到正常对话路径
     // 2. 在这种情况下，不应该清空消息或显示加载状态
+    // 3. 增强检测：如果当前有未保存的用户消息和助手正在流式响应的消息，也应该视为首次消息场景
     // --- END COMMENT ---
     const isFromNewChat = previousPathRef.current === '/chat/new' || 
                         (previousPathRef.current?.includes('/chat/temp-') ?? false);
     const isToExistingChat = externalId && externalId !== 'new' && !externalId.includes('temp-');
     const hasExistingMessages = currentMessages.length > 0;
     
-    // 首次发送消息的条件: 从新对话路径切换到存在的对话路径，且已有消息
-    const isFirstMessageTransition = isFromNewChat && isToExistingChat && hasExistingMessages;
+    // 检查是否有正在流式响应的助手消息
+    const hasStreamingMessage = currentMessages.some(msg => msg.isStreaming === true);
+    
+    // 检查是否有未保存的用户消息（处于发送状态）
+    const hasPendingUserMessage = currentMessages.some(msg => 
+      msg.isUser === true && 
+      (msg.persistenceStatus === 'pending' || msg.persistenceStatus === 'saving')
+    );
+    
+    // 首次发送消息的条件：
+    // 1. 传统条件：从新对话路径切换到存在的对话路径，且已有消息
+    // 2. 增强条件：当前有流式响应或未保存的用户消息，表明这是首次发送
+    const isFirstMessageTransition = (isFromNewChat && isToExistingChat && hasExistingMessages) || 
+                                    (hasExistingMessages && (hasStreamingMessage || hasPendingUserMessage));
     
     // 记录当前路径用于下次判断
     previousPathRef.current = pathname;

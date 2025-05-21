@@ -111,21 +111,32 @@ export default function ChatPage() {
         <div className="flex-1 min-h-0">
           {/* --- BEGIN MODIFIED COMMENT ---
           显示欢迎屏幕的条件：
-          1. 当前是欢迎屏幕状态 且 不在提交消息中
-          2. 或者当前URL路径是 /chat/new 且 不在提交消息中
+          1. 当前路径是 /chat/new 且 没有消息 且 不在提交消息中
+          2. 或者是欢迎状态 且 没有消息 且 不在提交消息中
+          
+          这里需要特别强调的是，只要有消息，就不应该显示欢迎屏幕，包括在发送第一条消息的过程中。
           --- END MODIFIED COMMENT --- */}
-          {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示欢迎界面 */}
-          {(conversationIdFromUrl === 'new' && messages.length === 0) ? (
+          {/* 欢迎屏幕只在没有消息且满足条件时显示 */}
+          {(messages.length === 0 && conversationIdFromUrl === 'new' && !isSubmitting) ? (
             <WelcomeScreen />
-          ) : (!isSubmitting && isWelcomeScreen && messages.length === 0) ? (
+          ) : (messages.length === 0 && !isSubmitting && isWelcomeScreen) ? (
             <WelcomeScreen />
           ) : (
             <div 
               ref={setScrollRef}
               className="h-full overflow-y-auto scroll-smooth chat-scroll-container"
             >
-              {/* 只在非初始加载时显示"加载更多"按钮 */}
-              {!isLoadingInitial && (
+              {/* --- BEGIN MODIFIED COMMENT ---
+              加载更多按钮显示条件：
+              1. 非初始加载状态
+              2. 非新对话或临时对话路径
+              3. 确实有更多消息可加载
+              --- END MODIFIED COMMENT --- */}
+              {!isLoadingInitial && 
+               hasMoreMessages && 
+               conversationIdFromUrl && 
+               conversationIdFromUrl !== 'new' && 
+               !conversationIdFromUrl.includes('temp-') && (
                 <MessagesLoadingIndicator 
                   loadingState={loadingState}
                   isLoadingMore={isLoadingMore}
