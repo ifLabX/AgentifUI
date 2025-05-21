@@ -126,14 +126,18 @@ export default function ChatPage() {
               ref={setScrollRef}
               className="h-full overflow-y-auto scroll-smooth chat-scroll-container"
             >
-              {/* --- BEGIN MODIFIED COMMENT ---
-              加载更多按钮显示条件：
-              1. 非初始加载状态
+              {/* --- BEGIN COMMENT ---
+              显示“加载更多”按钮或加载指示器的条件：
+              1. 非初始加载状态(避免与初始骨架屏重叠)
               2. 非新对话或临时对话路径
               3. 确实有更多消息可加载
-              --- END MODIFIED COMMENT --- */}
+              4. 已经有消息显示（非空消息列表）
+              5. 不在加载更多的状态中（避免闪烁）
+              --- END COMMENT --- */}
               {!isLoadingInitial && 
                hasMoreMessages && 
+               messages.length > 0 &&
+               !isLoadingMore &&
                conversationIdFromUrl && 
                conversationIdFromUrl !== 'new' && 
                !conversationIdFromUrl.includes('temp-') && (

@@ -25,14 +25,31 @@ export function MessagesLoadingIndicator({
   const { colors, isDark } = useThemeColors();
   const [isAtTop, setIsAtTop] = useState(false);
   
+  // --- BEGIN COMMENT ---
   // 监听滚动容器的滚动事件
+  // 使用防抖处理并延迟初始检测，避免初始加载完成后立即触发加载更多
+  // --- END COMMENT ---
+  const initialCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialLoadCompleteRef = useRef<boolean>(false);
+  
   useEffect(() => {
     const handleScroll = (e: Event) => {
       const container = e.target as HTMLElement;
       if (!container) return;
       
-      // 简单判断：滚动位置小于50px时认为已到顶部
-      setIsAtTop(container.scrollTop < 50);
+      // 清除之前的延时
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // 添加一个防抖延迟，避免滚动过程中频繁触发
+      scrollTimeoutRef.current = setTimeout(() => {
+        // 只有在初始加载完成后才允许设置顶部状态
+        if (isInitialLoadCompleteRef.current) {
+          setIsAtTop(container.scrollTop < 50);
+        }
+      }, 200);
     };
     
     // 获取滚动容器
@@ -41,10 +58,19 @@ export function MessagesLoadingIndicator({
     if (scrollContainer) {
       scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
       
-      // 初始检查
-      handleScroll({ target: scrollContainer } as unknown as Event);
+      // 延迟初始检查，等待初始加载完成
+      initialCheckTimeoutRef.current = setTimeout(() => {
+        isInitialLoadCompleteRef.current = true;
+        handleScroll({ target: scrollContainer } as unknown as Event);
+      }, 1000); // 当初始加载完成并居中后，等待1秒才允许进行顶部检测
       
       return () => {
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        if (initialCheckTimeoutRef.current) {
+          clearTimeout(initialCheckTimeoutRef.current);
+        }
         scrollContainer.removeEventListener('scroll', handleScroll);
       };
     }
