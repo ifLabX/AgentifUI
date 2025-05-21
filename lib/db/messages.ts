@@ -186,6 +186,7 @@ export function chatMessageToDbMessage(
   // 3. 如果没有指定role，根据isUser推断
   // 4. 消息状态默认为'sent'，除非有错误
   // 5. 如果消息被手动中断，添加相应的元数据标记
+  // 6. 添加sequence_index确保用户-助手消息对的顺序正确
   // --- END COMMENT ---
   
   // 构建基础元数据
@@ -201,6 +202,9 @@ export function chatMessageToDbMessage(
   if (chatMessage.attachments && chatMessage.attachments.length > 0) {
     baseMetadata.attachments = chatMessage.attachments;
   }
+  
+  // 添加序列索引标记，确保用户消息总是排在对应的助手消息前面
+  baseMetadata.sequence_index = chatMessage.isUser ? 0 : 1;
   
   return {
     conversation_id: conversationId,
@@ -239,7 +243,7 @@ export async function createPlaceholderAssistantMessage(
     user_id: null,
     role: 'assistant',
     content: errorMessage || '助手消息生成失败',
-    metadata: { error: true, errorMessage },
+    metadata: { error: true, errorMessage, sequence_index: 1 },
     status
   });
 }

@@ -85,52 +85,48 @@ export function useConversationMessages() {
    */
   const sortMessagesByTime = useCallback((messages: Message[]): Message[] => {
     // 首先按创建时间排序
-    // 如果创建时间相同，按ID排序作为次要条件，确保排序结果稳定
+    // 如果创建时间相同，按sequence_index排序作为第二顺序
+    // 如果上述均相同，按ID排序确保稳定性
     return [...messages].sort((a, b) => {
+      // 获取聊天窗口的创建时间
       const timeA = new Date(a.created_at).getTime();
       const timeB = new Date(b.created_at).getTime();
       
-      if (timeA !== timeB) {
-        return timeA - timeB; // 按时间升序
+      // 计算时间差的绝对值
+      const timeDiff = Math.abs(timeA - timeB);
+      
+      // 如果时间相差在一秒内，认为可能是同一轮对话的消息
+      // 此时优先使用sequence_index排序
+      if (timeDiff < 1000) {
+        // 获取序列索引
+        const seqA = a.metadata?.sequence_index ?? (a.role === 'user' ? 0 : 1);
+        const seqB = b.metadata?.sequence_index ?? (b.role === 'user' ? 0 : 1);
+        
+        if (seqA !== seqB) {
+          return seqA - seqB; // 用户消息(0)在前，助手消息(1)在后
+        }
       }
       
-      // 若时间相同，按ID排序确保稳定性
+      // 时间差超过阈值或sequence_index相同，按时间排序
+      if (timeA !== timeB) {
+        return timeA - timeB;
+      }
+      
+      // 最后按ID排序确保稳定性
       return a.id.localeCompare(b.id);
     });
   }, []);
   
   /**
-   * 确保消息以正确的顺序组织，用户消息紧随其后的应该是助手回复
+   * 确保消息以正确的顺序组织，并且用户-助手消息对保持合理的顺序
    */
   const organizeMessages = useCallback((messages: Message[]): Message[] => {
     // 先按创建时间排序
     const sortedMessages = sortMessagesByTime(messages);
     
-    // 按创建时间排序后不再做额外处理，确保完全按照时间顺序
-    // 但我们需要确保同一时间创建的消息能够正确排序（用户消息在前，助手消息在后）
-    const stableMessages = sortedMessages.map((msg, index) => ({
-      ...msg,
-      originalIndex: index, // 保存原始索引用于稳定排序
-      sortPriority: msg.role === 'user' ? 0 : 1 // 用户消息优先级更高
-    }));
-    
-    // 最终排序：先按时间，再按角色优先级，最后按原始索引确保稳定性
-    return stableMessages.sort((a, b) => {
-      const timeA = new Date(a.created_at).getTime();
-      const timeB = new Date(b.created_at).getTime();
-      
-      if (timeA !== timeB) {
-        return timeA - timeB; // 首先按时间排序
-      }
-      
-      // 时间相同时，比较角色优先级（用户消息排在前面）
-      if (a.sortPriority !== b.sortPriority) {
-        return a.sortPriority - b.sortPriority;
-      }
-      
-      // 角色优先级也相同时，保持原始顺序
-      return a.originalIndex - b.originalIndex;
-    });
+    // stableMessages中已经考虑了sequence_index对于时间接近的消息
+    // 所以这里可以直接返回排序后的结果
+    return sortedMessages;
   }, [sortMessagesByTime]);
   
   /**
