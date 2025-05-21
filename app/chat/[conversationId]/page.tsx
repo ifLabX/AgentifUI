@@ -10,8 +10,10 @@ import {
   PromptContainer, 
   ScrollToBottomButton
 } from '@components/chat';
+import { MessagesLoadingIndicator } from '@components/chat/messages-loading-indicator';
 import { FilePreviewCanvas } from '@components/file-preview/file-preview-canvas';
 import { useChatInterface, useChatStateSync } from '@lib/hooks';
+import { useConversationMessages } from '@lib/hooks/use-conversation-messages';
 import { useChatPageState } from '@lib/hooks/use-chat-page-state';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useChatStore } from '@lib/stores/chat-store';
@@ -49,6 +51,18 @@ export default function ChatPage() {
   } = useChatInterface();
   
   // --- BEGIN COMMENT ---
+  // 使用分页加载钩子获取历史消息
+  // --- END COMMENT ---
+  const {
+    loadingState,
+    hasMoreMessages,
+    isLoadingMore,
+    loadMoreMessages,
+    setMessagesContainer,
+    error
+  } = useConversationMessages();
+  
+  // --- BEGIN COMMENT ---
   // 使用 wrapHandleSubmit 包装原始的 handleSubmit 函数
   // --- END COMMENT ---
   const handleSubmit = wrapHandleSubmit(originalHandleSubmit);
@@ -58,6 +72,17 @@ export default function ChatPage() {
   const isWaitingForResponse = useChatStore((state) => state.isWaitingForResponse);
 
   const chatInputHeightVar = `${inputHeight || 80}px`;
+  
+  // --- BEGIN COMMENT ---
+  // 合并scrollRef和setMessagesContainer
+  // --- END COMMENT ---
+  const setScrollRef = (element: HTMLDivElement | null) => {
+    if (scrollRef) {
+      // @ts-ignore - scrollRef.current在类型上不是一个setter函数，但实际可能是
+      typeof scrollRef === 'function' ? scrollRef(element) : (scrollRef.current = element);
+    }
+    setMessagesContainer(element);
+  };
 
   return (
     <div 
@@ -91,9 +116,18 @@ export default function ChatPage() {
             <WelcomeScreen />
           ) : (
             <div 
-              ref={scrollRef}
+              ref={setScrollRef}
               className="h-full overflow-y-auto scroll-smooth"
             >
+              {/* 使用消息加载指示器 */}
+              <MessagesLoadingIndicator 
+                loadingState={loadingState}
+                isLoadingMore={isLoadingMore}
+                hasMoreMessages={hasMoreMessages}
+                error={error}
+                onRetry={loadMoreMessages}
+              />
+              
               <ChatLoader 
                 messages={messages} 
                 isWaitingForResponse={isWaitingForResponse}
