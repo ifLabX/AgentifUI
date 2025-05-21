@@ -14,7 +14,7 @@ import { getConversationByExternalId } from '@lib/db/conversations';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 
 // 每页加载的消息数量
-const MESSAGES_PER_PAGE = 10;
+const MESSAGES_PER_PAGE = 20;
 
 // 定义加载状态类型
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error' | 'complete';
