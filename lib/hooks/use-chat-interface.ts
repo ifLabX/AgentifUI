@@ -782,6 +782,50 @@ export function useChatInterface() {
           console.error(`[handleStopProcessing] Error calling stopDifyStreamingTask:`, error);
         }
       }
+      
+      // --- BEGIN COMMENT ---
+      // 为中断的消息添加持久化处理
+      // 1. 标记消息为手动中断
+      // 2. 更新消息元数据，添加中断状态标记
+      // 3. 如果数据库ID可用，立即保存中断消息
+      // 4. 如果数据库ID不可用，尝试查询后保存
+      // --- END COMMENT ---
+      const assistantMessage = useChatStore.getState().messages.find(m => m.id === currentStreamingId);
+      if (assistantMessage) {
+        // 更新消息元数据，添加中断状态标记
+        const updatedMetadata = {
+          ...(assistantMessage.metadata || {}),
+          stopped_manually: true, 
+          stopped_at: new Date().toISOString()
+        };
+        
+        // 更新消息状态，添加中断标记
+        updateMessage(currentStreamingId, { 
+          metadata: updatedMetadata, 
+          wasManuallyStopped: true,
+          persistenceStatus: 'pending' // 标记为待保存状态
+        });
+        
+        // 如果数据库ID可用，立即保存消息
+        if (dbConversationUUID) {
+          console.log(`[handleStopProcessing] 保存中断的助手消息，ID=${currentStreamingId}`);
+          saveMessage(assistantMessage, dbConversationUUID).catch(error => {
+            console.error('[handleStopProcessing] 保存中断消息失败:', error);
+          });
+        } else if (difyConversationId) {
+          // 如果数据库ID不可用但有Dify对话ID，尝试查询数据库ID
+          console.log(`[handleStopProcessing] 尝试查询数据库ID后保存中断消息，Dify对话ID=${difyConversationId}`);
+          getConversationByExternalId(difyConversationId).then(dbConversation => {
+            if (dbConversation) {
+              saveMessage(assistantMessage, dbConversation.id).catch(error => {
+                console.error('[handleStopProcessing] 查询后保存中断消息失败:', error);
+              });
+            }
+          }).catch(error => {
+            console.error('[handleStopProcessing] 查询数据库ID失败:', error);
+          });
+        }
+      }
     }
     if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
         setIsWaitingForResponse(false);
@@ -790,7 +834,8 @@ export function useChatInterface() {
     currentUserId, // 添加依赖
     currentAppId,  // 添加依赖
     markAsManuallyStopped, setCurrentTaskId, 
-    appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer
+    appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer, 
+    dbConversationUUID, difyConversationId, updateMessage, saveMessage
   ]);
 
   return {

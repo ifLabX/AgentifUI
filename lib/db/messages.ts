@@ -185,10 +185,18 @@ export function chatMessageToDbMessage(
   // 2. 助手消息的userId必须为null，符合数据库设计
   // 3. 如果没有指定role，根据isUser推断
   // 4. 消息状态默认为'sent'，除非有错误
+  // 5. 如果消息被手动中断，添加相应的元数据标记
   // --- END COMMENT ---
   
   // 构建基础元数据
   const baseMetadata = chatMessage.metadata || {};
+  
+  // 如果消息被手动中断，确保元数据中包含中断标记
+  if (chatMessage.wasManuallyStopped && !baseMetadata.stopped_manually) {
+    baseMetadata.stopped_manually = true;
+    baseMetadata.stopped_at = baseMetadata.stopped_at || new Date().toISOString();
+  }
+  
   // 如果有附件，确保添加到元数据中
   if (chatMessage.attachments && chatMessage.attachments.length > 0) {
     baseMetadata.attachments = chatMessage.attachments;
