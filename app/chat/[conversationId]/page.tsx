@@ -8,9 +8,10 @@ import {
   WelcomeScreen, 
   ChatInputBackdrop, 
   PromptContainer, 
-  ScrollToBottomButton
+  ScrollToBottomButton,
+  MessagesLoadingIndicator,
+  PageLoadingSpinner
 } from '@components/chat';
-import { MessagesLoadingIndicator } from '@components/chat/messages-loading-indicator';
 import { FilePreviewCanvas } from '@components/file-preview/file-preview-canvas';
 import { useChatInterface, useChatStateSync } from '@lib/hooks';
 import { useConversationMessages } from '@lib/hooks/use-conversation-messages';
@@ -59,7 +60,8 @@ export default function ChatPage() {
     isLoadingMore,
     loadMoreMessages,
     setMessagesContainer,
-    error
+    error,
+    isLoadingInitial
   } = useConversationMessages();
   
   // --- BEGIN COMMENT ---
@@ -92,6 +94,9 @@ export default function ChatPage() {
         colors.mainText.tailwind
       )}
     >
+      {/* 不再需要单独的页面级加载指示器，骨架屏已足够 */}
+      {/* <PageLoadingSpinner isLoading={isLoadingInitial} /> */}
+      
       <NavBar />
 
       <div 
@@ -117,20 +122,23 @@ export default function ChatPage() {
           ) : (
             <div 
               ref={setScrollRef}
-              className="h-full overflow-y-auto scroll-smooth"
+              className="h-full overflow-y-auto scroll-smooth chat-scroll-container"
             >
-              {/* 使用消息加载指示器 */}
-              <MessagesLoadingIndicator 
-                loadingState={loadingState}
-                isLoadingMore={isLoadingMore}
-                hasMoreMessages={hasMoreMessages}
-                error={error}
-                onRetry={loadMoreMessages}
-              />
+              {/* 只在非初始加载时显示"加载更多"按钮 */}
+              {!isLoadingInitial && (
+                <MessagesLoadingIndicator 
+                  loadingState={loadingState}
+                  isLoadingMore={isLoadingMore}
+                  hasMoreMessages={hasMoreMessages}
+                  error={error}
+                  onRetry={loadMoreMessages}
+                />
+              )}
               
               <ChatLoader 
                 messages={messages} 
                 isWaitingForResponse={isWaitingForResponse}
+                isLoadingInitial={isLoadingInitial}
               />
             </div>
           )}

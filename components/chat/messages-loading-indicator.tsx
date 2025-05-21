@@ -2,6 +2,7 @@
  * 消息加载指示器组件
  */
 
+import { useEffect, useState, useRef } from 'react';
 import { cn } from '@lib/utils';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { LoadingState } from '@lib/hooks/use-conversation-messages';
@@ -21,20 +22,41 @@ export function MessagesLoadingIndicator({
   error,
   onRetry
 }: MessagesLoadingIndicatorProps) {
-  const { colors } = useThemeColors();
+  const { colors, isDark } = useThemeColors();
+  const [isAtTop, setIsAtTop] = useState(false);
   
-  // 初始加载中但没有更多历史消息时，不显示指示器
-  if (!hasMoreMessages && !error && loadingState !== 'loading') {
-    return null;
-  }
+  // 监听滚动容器的滚动事件
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      const container = e.target as HTMLElement;
+      if (!container) return;
+      
+      // 简单判断：滚动位置小于50px时认为已到顶部
+      setIsAtTop(container.scrollTop < 50);
+    };
+    
+    // 获取滚动容器
+    const scrollContainer = document.querySelector('.chat-scroll-container');
+    
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+      
+      // 初始检查
+      handleScroll({ target: scrollContainer } as unknown as Event);
+      
+      return () => {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, []);
   
-  // 错误状态
+  // 如果有错误，显示错误信息
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-4">
         <div className={cn(
           "rounded-lg px-4 py-3 text-sm",
-          "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100",
+          isDark ? "bg-red-900 text-red-100" : "bg-red-100 text-red-800",
           "mb-3"
         )}>
           <p>加载消息失败: {error.message}</p>
@@ -53,7 +75,7 @@ export function MessagesLoadingIndicator({
     );
   }
   
-  // 加载中
+  // 正在加载中
   if (loadingState === 'loading' && isLoadingMore) {
     return (
       <div className="flex justify-center py-4">
@@ -68,8 +90,8 @@ export function MessagesLoadingIndicator({
     );
   }
   
-  // 有更多消息可加载
-  if (hasMoreMessages && loadingState !== 'loading') {
+  // 只有既有更多消息可加载，又滚动到了顶部，且不在加载过程中，才显示"加载更多"按钮
+  if (hasMoreMessages && isAtTop && loadingState !== 'loading') {
     return (
       <div className="flex justify-center py-4">
         <button

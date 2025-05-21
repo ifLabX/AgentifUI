@@ -4,3 +4,6 @@ export * from './welcome-screen'
 export * from './chat-input-backdrop'
 export * from './prompt-container'
 export * from './scroll-to-bottom-button' 
+export { MessagesLoadingIndicator } from './messages-loading-indicator';
+export { PageLoadingSpinner } from './page-loading-spinner';
+export { MessageSkeleton, MessageSkeletonGroup } from './message-skeleton'; 
