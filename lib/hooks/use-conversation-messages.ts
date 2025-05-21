@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { getMessagesByConversationId } from '@lib/db/messages';
 import { Message } from '@lib/types/database';
 import { useChatStore, ChatMessage } from '@lib/stores/chat-store';
@@ -63,6 +63,10 @@ export function useConversationMessages() {
   const totalMessagesRef = useRef<number>(0);
   // 请求取消控制器，用于取消进行中的请求
   const abortControllerRef = useRef<AbortController | null>(null);
+  // 记录上一个路径，用于检测路由变化
+  const previousPathRef = useRef<string | null>(null);
+  // 记录是否已经加载过的标志，防止重复加载
+  const hasLoadedRef = useRef<{[key: string]: boolean}>({});
   
   // 从chatStore获取当前消息状态和操作方法
   const { messages, addMessage, clearMessages, updateMessage } = useChatStore();
@@ -227,6 +231,17 @@ export function useConversationMessages() {
       // 延迟一点设置状态，确保UI有时间渲染
       setTimeout(() => {
         setLoadingState('success');
+        
+        // 记录该对话已经加载成功，避免重复加载
+        if (dbConvId) {
+          hasLoadedRef.current[dbConvId] = true;
+          
+          // 获取当前路径中的对话ID
+          const pathConversationId = getConversationIdFromPath();
+          if (pathConversationId && pathConversationId !== 'new' && !pathConversationId.includes('temp-')) {
+            hasLoadedRef.current[pathConversationId] = true;
+          }
+        }
         
         // 确保滚动到底部，使用可靠的方法
         resetScrollState();
@@ -401,6 +416,25 @@ export function useConversationMessages() {
    */
   useEffect(() => {
     const externalId = getConversationIdFromPath();
+    const currentMessages = useChatStore.getState().messages;
+    
+    // --- BEGIN COMMENT ---
+    // 检测是否是首次发送消息导致的路由变化
+    // 1. 从 /chat/new 路径或 /chat/temp- 开头的路径切换到正常对话路径
+    // 2. 在这种情况下，不应该清空消息或显示加载状态
+    // --- END COMMENT ---
+    const isFromNewChat = previousPathRef.current === '/chat/new' || 
+                        (previousPathRef.current?.includes('/chat/temp-') ?? false);
+    const isToExistingChat = externalId && externalId !== 'new' && !externalId.includes('temp-');
+    const hasExistingMessages = currentMessages.length > 0;
+    
+    // 首次发送消息的条件: 从新对话路径切换到存在的对话路径，且已有消息
+    const isFirstMessageTransition = isFromNewChat && isToExistingChat && hasExistingMessages;
+    
+    // 记录当前路径用于下次判断
+    previousPathRef.current = pathname;
+    
+    console.log(`[useConversationMessages] 路由变化检测: 是否首次发送=${isFirstMessageTransition}, 从=${isFromNewChat}, 到=${isToExistingChat}, 消息数=${hasExistingMessages}`);
     
     // 获取滚动控制函数
     const resetScrollState = useChatScrollStore.getState().resetScrollState;
@@ -411,6 +445,29 @@ export function useConversationMessages() {
       abortControllerRef.current = null;
     }
     
+    // 如果是首次发送消息导致的路由变化，跳过清空和加载消息的步骤
+    if (isFirstMessageTransition) {
+      console.log(`[useConversationMessages] 首次发送消息导致的路由变化，保留现有消息`)
+      // 跳过重置状态和清空消息的步骤，直接设置加载完成
+      setLoadingState('success');
+      
+      // 记录已经加载过
+      if (externalId) {
+        hasLoadedRef.current[externalId] = true;
+      }
+      
+      // 确保滚动到底部
+      resetScrollState();
+      return;
+    }
+    
+    // 检查是否已经加载过该对话
+    if (externalId && hasLoadedRef.current[externalId]) {
+      console.log(`[useConversationMessages] 已经加载过对话 ${externalId}，跳过重复加载`);
+      return;
+    }
+    
+    // 对于非首次发送消息的路由变化，执行正常的加载逻辑
     // 重置状态以防止状态遗留
     resetLoadingState();
     
