@@ -51,8 +51,12 @@ export function SidebarHeader() {
             setIsWelcomeScreen(true);
             setIsTransitioningToWelcome(true);
             setIsWaitingForResponse(false);
+            // --- BEGIN MODIFIED COMMENT ---
+            // 修正selectItem调用，第一个参数应为'chat'而不是null
+            // 这确保侧边栏状态正确设置，从而影响欢迎屏幕的显示
+            // --- END MODIFIED COMMENT ---
             const { selectItem } = useSidebarStore.getState();
-            selectItem(null, null);
+            selectItem('chat', null);
           }, 50);
           setTimeout(() => {
             useChatStore.getState().clearMessages();

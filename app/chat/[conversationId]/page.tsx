@@ -111,13 +111,13 @@ export default function ChatPage() {
         <div className="flex-1 min-h-0">
           {/* --- BEGIN MODIFIED COMMENT ---
           显示欢迎屏幕的条件：
-          1. 当前路径是 /chat/new 且 没有消息 且 不在提交消息中
+          1. 当前路径是 /chat/new 且 没有消息
           2. 或者是欢迎状态 且 没有消息 且 不在提交消息中
           
-          这里需要特别强调的是，只要有消息，就不应该显示欢迎屏幕，包括在发送第一条消息的过程中。
+          修改后与提示容器的渲染逻辑完全一致，确保在/chat/new路径下且没有消息时显示欢迎屏幕
           --- END MODIFIED COMMENT --- */}
-          {/* 欢迎屏幕只在没有消息且满足条件时显示 */}
-          {(messages.length === 0 && conversationIdFromUrl === 'new' && !isSubmitting) ? (
+          {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示欢迎屏幕 */}
+          {(conversationIdFromUrl === 'new' && messages.length === 0) ? (
             <WelcomeScreen />
           ) : (messages.length === 0 && !isSubmitting && isWelcomeScreen) ? (
             <WelcomeScreen />
