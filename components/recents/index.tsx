@@ -1,0 +1,153 @@
+"use client"
+
+import * as React from "react"
+import { Search, Plus } from "lucide-react"
+import { cn } from "@lib/utils"
+import { useTheme } from "@lib/hooks/use-theme"
+import { useRouter } from "next/navigation"
+import { useChatStore } from "@lib/stores/chat-store"
+import { useChatInputStore } from "@lib/stores/chat-input-store"
+import { useChatTransitionStore } from "@lib/stores/chat-transition-store"
+import { useSidebarStore } from "@lib/stores/sidebar-store"
+import { useSidebarConversations } from "@lib/hooks/use-sidebar-conversations"
+import { RecentsHeader } from "./recents-header"
+import { RecentsList } from "./recents-list"
+
+// --- BEGIN COMMENT ---
+// 历史对话页面组件
+// 显示所有历史对话，支持搜索功能
+// --- END COMMENT ---
+export function Recents() {
+  const { isDark } = useTheme()
+  const [searchQuery, setSearchQuery] = React.useState("")
+  const router = useRouter()
+  
+  // --- BEGIN COMMENT ---
+  // 获取历史对话列表，这里不限制数量（limit=100）
+  // --- END COMMENT ---
+  const { 
+    conversations, 
+    isLoading, 
+    error, 
+    total, 
+    hasMore, 
+    loadMore 
+  } = useSidebarConversations(100)
+  
+  // --- BEGIN COMMENT ---
+  // 处理搜索输入变化
+  // --- END COMMENT ---
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+  
+  // --- BEGIN COMMENT ---
+  // 过滤对话列表，根据搜索查询
+  // --- END COMMENT ---
+  const filteredConversations = React.useMemo(() => {
+    if (!searchQuery.trim()) return conversations
+    
+    const query = searchQuery.toLowerCase().trim()
+    return conversations.filter(conversation => 
+      conversation.title?.toLowerCase().includes(query) ||
+      conversation.last_message_preview?.toLowerCase().includes(query)
+    )
+  }, [conversations, searchQuery])
+  
+  // --- BEGIN COMMENT ---
+  // 处理新对话按钮点击
+  // --- END COMMENT ---
+  const handleNewChat = () => {
+    // 跳转到新对话页面
+    router.push('/chat/new')
+    
+    // 重置状态
+    setTimeout(() => {
+      // 清理消息和重置状态
+      useChatStore.getState().clearMessages()
+      useChatStore.getState().setCurrentConversationId(null)
+      useChatInputStore.getState().setIsWelcomeScreen(true)
+      useChatTransitionStore.getState().setIsTransitioningToWelcome(true)
+      useChatStore.getState().setIsWaitingForResponse(false)
+      
+      // 设置侧边栏状态
+      useSidebarStore.getState().selectItem('chat', null)
+      
+      // 设置标题
+      document.title = '新对话 | if-agent-ui'
+    }, 100)
+  }
+  
+  // --- BEGIN COMMENT ---
+  // 处理对话项点击
+  // --- END COMMENT ---
+  const handleConversationClick = (id: string) => {
+    router.push(`/chat/${id}`)
+  }
+  
+  return (
+    <div className={cn(
+      "flex flex-col h-full w-full overflow-hidden",
+      isDark ? "bg-stone-900" : "bg-white"
+    )}>
+      {/* 在移动端和桌面端都显示头部 */}
+      <RecentsHeader />
+      
+      <div className={cn(
+        "flex flex-col flex-1 overflow-hidden px-4 md:px-8 lg:px-12 py-4",
+        isDark ? "bg-stone-900" : "bg-stone-50"
+      )}>
+        {/* 搜索和新对话按钮 */}
+        <div className="flex items-center justify-between mb-6">
+          <div className={cn(
+            "relative flex-1 max-w-2xl",
+          )}>
+            <div className={cn(
+              "absolute left-3 top-1/2 transform -translate-y-1/2",
+              isDark ? "text-stone-400" : "text-stone-500"
+            )}>
+              <Search className="h-4 w-4" />
+            </div>
+            <input
+              type="text"
+              placeholder="搜索历史对话..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className={cn(
+                "w-full py-2 pl-10 pr-4 rounded-lg text-sm",
+                "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                isDark 
+                  ? "bg-stone-800 text-stone-200 border border-stone-700 focus:ring-stone-600 focus:ring-offset-stone-900" 
+                  : "bg-white text-stone-800 border border-stone-300 focus:ring-stone-400 focus:ring-offset-stone-50"
+              )}
+            />
+          </div>
+          
+          <button
+            onClick={handleNewChat}
+            className={cn(
+              "ml-4 px-4 py-2 rounded-lg flex items-center text-sm font-medium",
+              "transition-all duration-200 ease-in-out",
+              isDark 
+                ? "bg-stone-700 hover:bg-stone-600 text-white border border-stone-600" 
+                : "bg-primary/10 hover:bg-primary/15 text-primary border border-stone-300/50"
+            )}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            新对话
+          </button>
+        </div>
+        
+        {/* 对话列表 */}
+        <RecentsList 
+          conversations={filteredConversations}
+          isLoading={isLoading}
+          onConversationClick={handleConversationClick}
+          hasMore={hasMore}
+          loadMore={loadMore}
+          searchQuery={searchQuery}
+        />
+      </div>
+    </div>
+  )
+}
