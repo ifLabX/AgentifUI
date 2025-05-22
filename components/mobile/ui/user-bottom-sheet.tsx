@@ -169,7 +169,10 @@ export function UserBottomSheet({
             {renderMenuItem(
               <Settings className="w-5 h-5" />,
               "设置",
-              () => console.log("设置")
+              () => {
+                router.push('/settings')
+                onClose()
+              }
             )}
             
             {renderMenuItem(

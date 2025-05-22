@@ -39,7 +39,7 @@ export default function AppearanceSettingsPage() {
     >
       <h1 className="text-2xl font-bold mb-6">外观设置</h1>
       
-      <div className={`space-y-10 max-w-3xl ${colors.cardBackground.tailwind} rounded-lg border ${colors.borderColor.tailwind} p-6`}>
+      <div className={`space-y-10 w-full ${colors.cardBackground.tailwind} rounded-lg border ${colors.borderColor.tailwind} p-6`}>
         {/* 主题选择 */}
         <section>
           <h2 className="text-lg font-medium mb-4">主题</h2>
