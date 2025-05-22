@@ -15,7 +15,7 @@ const supabase = createClient();
 /**
  * 侧边栏会话列表 Hook
  * 
- * @param limit 每页数量，默认20
+ * @param limit 每页数量，默认5
  * @returns 会话列表、加载状态、错误信息和刷新函数
  */
 export function useSidebarConversations(limit: number = 5) {

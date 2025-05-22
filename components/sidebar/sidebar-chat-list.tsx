@@ -30,7 +30,6 @@ export function SidebarChatList({
 }: SidebarChatListProps) {
   const { isExpanded } = useSidebarStore() 
   const isMobile = useMobile()
-  const [showAllChats, setShowAllChats] = React.useState(false)
   const { 
     conversations, 
     isLoading: isLoadingConversations, 
@@ -45,6 +44,18 @@ export function SidebarChatList({
   const pendingChats = React.useMemo(() => {
     return conversations.filter(chat => chat.isPending === true);
   }, [conversations]);
+  
+  // --- BEGIN COMMENT ---
+  // 使用数据库中的历史对话，默认已经限制为5个
+  // 使用 useSidebarConversations 获取的对话列表已经限制为5个
+  // --- END COMMENT ---
+  const visibleUnpinnedChats = unpinnedChats;
+  
+  // --- BEGIN COMMENT ---
+  // 判断是否有更多历史对话（超过5个）
+  // 使用 useCombinedConversations 返回的 total 属性
+  // --- END COMMENT ---
+  const hasMoreChats = conversations.length === 5 || unpinnedChats.length === 5;
   
   const handleRename = React.useCallback(async (chatId: string) => {
     const conversation = conversations.find(c => c.id === chatId);
@@ -106,11 +117,7 @@ export function SidebarChatList({
     }
   }, [conversations, refresh, selectedId, onSelectChat]);
 
-  const visibleUnpinnedChats = React.useMemo(() => {
-    return showAllChats ? unpinnedChats : unpinnedChats.slice(0, 5);
-  }, [unpinnedChats, showAllChats]);
 
-  const hasMoreChats = unpinnedChats.length > 5;
 
   // --- BEGIN COMMENT ---
   // 添加辅助函数，判断聊天项是否应该处于选中状态
@@ -311,24 +318,22 @@ export function SidebarChatList({
             );
           })}
           
-          {/* --- 显示更多/更少按钮 --- */}
+          {/* --- 查看全部按钮 --- */}
           {hasMoreChats && (
-            <button
-              onClick={() => setShowAllChats(!showAllChats)}
-              className={cn(
-                "flex items-center justify-center w-full px-2.5 py-1 text-xs font-medium rounded-md mt-1", /* 减小内边距，增加上边距 */
-                isDark 
-                  ? "text-stone-400 hover:text-stone-200 hover:bg-stone-700/50" 
-                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50",
-                "transition-colors"
-              )}
-            >
-              {showAllChats ? (
-                <><ChevronUp size={12} className="mr-1.5" />显示更少</>
-              ) : (
-                <><ChevronDown size={12} className="mr-1.5" />显示更多 ({unpinnedChats.length - visibleUnpinnedChats.length})</>
-              )}
-            </button>
+            <div className="mt-1">
+              <SidebarListButton
+                icon={<ChevronDown size={12} />}
+                onClick={() => window.location.href = '/chat/recents'} /* 跳转到 /chat/recents 路由 */
+                className={cn(
+                  "w-full",
+                  isDark 
+                    ? "text-stone-400 hover:text-stone-300 hover:bg-stone-700/50" 
+                    : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50"
+                )}
+              >
+                <span className="text-xs font-medium">查看全部</span>
+              </SidebarListButton>
+            </div>
           )}
         </div>
       </div>
