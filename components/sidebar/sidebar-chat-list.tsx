@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit } from "lucide-react"
+import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit, Clock } from "lucide-react"
 import { SidebarListButton } from "./sidebar-list-button" // 使用新的 SidebarListButton 组件
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { ChatSkeleton } from "./chat-skeleton"
@@ -319,19 +319,27 @@ export function SidebarChatList({
           })}
           
           {/* --- 查看全部按钮 --- */}
+          {/* 使用时钟图标，样式与发起新对话按钮类似 */}
           {hasMoreChats && (
             <div className="mt-1">
               <SidebarListButton
-                icon={<ChevronDown size={12} />}
+                icon={
+                  <Clock className={cn(
+                    "h-5 w-5",
+                    isDark
+                      ? "text-gray-400"
+                      : "text-gray-500 group-hover:text-primary"
+                  )} />
+                }
                 onClick={() => window.location.href = '/chat/recents'} /* 跳转到 /chat/recents 路由 */
                 className={cn(
-                  "w-full",
+                  "w-full group font-medium",
                   isDark 
-                    ? "text-stone-400 hover:text-stone-300 hover:bg-stone-700/50" 
-                    : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50"
+                    ? "bg-stone-700 hover:bg-stone-600 border border-stone-600 hover:border-stone-500/80 shadow-sm hover:shadow-md text-gray-100 hover:text-white" 
+                    : "bg-primary/10 hover:bg-primary/15 text-primary shadow-sm hover:shadow-md border border-stone-300/50"
                 )}
               >
-                <span className="text-xs font-medium">查看全部</span>
+                <span className="text-xs font-medium">查看全部历史</span>
               </SidebarListButton>
             </div>
           )}
