@@ -43,26 +43,37 @@ export function SidebarHeader() {
             : "text-gray-500 group-hover:text-primary"
         )} />}
         onClick={() => {
-          router.push('/chat/new');
+          // --- BEGIN COMMENT ---
+          // 检查当前路径是否已经是新对话页面
+          // 如果已经在新对话页面，只重置状态而不进行路由跳转
+          // 避免重复点击导致标题消失的问题
+          // --- END COMMENT ---
+          const isAlreadyOnNewChat = window.location.pathname === '/chat/new';
+          
+          // 如果不在新对话页面，则跳转到新对话页面
+          if (!isAlreadyOnNewChat) {
+            router.push('/chat/new');
+          }
+          
+          // 使用单个 setTimeout 来重置状态，避免重复操作
           setTimeout(() => {
+            // 清理消息和重置状态
             useChatStore.getState().clearMessages();
             clearMessages();
             setCurrentConversationId(null);
             setIsWelcomeScreen(true);
             setIsTransitioningToWelcome(true);
             setIsWaitingForResponse(false);
-            // --- BEGIN MODIFIED COMMENT ---
-            // 修正selectItem调用，第一个参数应为'chat'而不是null
-            // 这确保侧边栏状态正确设置，从而影响欢迎屏幕的显示
-            // --- END MODIFIED COMMENT ---
+            
+            // 设置侧边栏状态
             const { selectItem } = useSidebarStore.getState();
             selectItem('chat', null);
-          }, 50);
-          setTimeout(() => {
-            useChatStore.getState().clearMessages();
-            clearMessages();
-            setIsWelcomeScreen(true);
-          }, 200);
+            
+            // 如果已经在新对话页面，手动设置标题以确保其可见
+            if (isAlreadyOnNewChat) {
+              document.title = '新对话 | if-agent-ui';
+            }
+          }, 100);
         }}
         aria-label="发起新对话"
         className={cn(
