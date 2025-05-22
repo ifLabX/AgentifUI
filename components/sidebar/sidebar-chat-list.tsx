@@ -233,14 +233,13 @@ export function SidebarChatList({
 
   return (
     <div className="flex flex-col space-y-1">
-      {/* --- 响应式标题栏 --- */}
-      {/* 移动端：更紧凑的布局 */}
-      {/* 桌面端：标准间距 */}
+      {/* --- BEGIN COMMENT ---
+      // 近期对话标题栏 - 移除图标，确保文字靠左贴边
+      // --- END COMMENT --- */}
       <div className={cn(
-        "flex items-center px-2.5 py-1 text-xs font-medium", /* 减小内边距，使其更紧凑 */
+        "flex items-center px-2 py-1 text-xs font-medium", /* 减小内边距，确保文字靠左贴边 */
         isDark ? "text-stone-400" : "text-stone-500"
       )}>
-        <MessageSquare size={12} className="mr-1.5" /> {/* 减小图标大小 */}
         近期对话
       </div>
       

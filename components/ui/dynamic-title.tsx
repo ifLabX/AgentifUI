@@ -59,6 +59,9 @@ export function DynamicTitle() {
         if (pathname === '/chat/new') {
           // 新对话页面
           newTitle = '新对话 | ' + baseTitle
+        } else if (pathname === '/chat/recents') {
+          // 历史对话页面
+          newTitle = '历史对话 | ' + baseTitle
         } else if (currentConversationId) {
           // 查找当前对话
           const currentChat = conversations.find(chat => 

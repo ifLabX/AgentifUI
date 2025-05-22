@@ -140,7 +140,7 @@ export function RecentsList({
           "transition-all duration-200 ease-in-out",
           isDark 
             ? "hover:bg-stone-800 border border-stone-800 hover:border-stone-700" 
-            : "hover:bg-stone-100 border border-stone-200 hover:border-stone-300",
+            : "hover:bg-stone-200/70 border border-stone-200 hover:border-stone-400", // 增强浅色模式下的悬停效果，使用更深的stone颜色
           "mb-3"
         )}
         onClick={() => onConversationClick(conversation.external_id || conversation.id || '')}
