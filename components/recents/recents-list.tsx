@@ -1,14 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, Clock, Trash, Edit, Search } from "lucide-react"
+import { MessageSquare, Clock, Trash, Edit, Search, MoreHorizontal } from "lucide-react"
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks/use-theme"
 import { Conversation } from "@lib/types/database"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
-import { MoreButtonV2 } from "@components/ui/more-button-v2"
-import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
+import { useDropdownStore } from "@lib/stores/ui/dropdown-store"
+import { DropdownMenu } from "@components/ui/dropdown-menu"
 
 // --- BEGIN COMMENT ---
 // 历史对话列表组件
@@ -23,6 +23,10 @@ interface RecentsListProps {
   searchQuery: string
 }
 
+// --- BEGIN COMMENT ---
+// 历史对话列表组件
+// 确保组件正确返回 React 元素
+// --- END COMMENT ---
 export function RecentsList({
   conversations,
   isLoading,
@@ -30,7 +34,7 @@ export function RecentsList({
   hasMore,
   loadMore,
   searchQuery
-}: RecentsListProps) {
+}: RecentsListProps): React.ReactElement {
   const { isDark } = useTheme()
   const listRef = React.useRef<HTMLDivElement>(null)
   
@@ -158,41 +162,67 @@ export function RecentsList({
               {date}
             </span>
             
-            {/* 更多操作按钮 */}
+            {/* 更多操作按钮 - 始终可见，不依赖悬停 */}
             <div 
               className={cn(
-                "ml-2 opacity-0 group-hover:opacity-100",
+                "ml-2", // 移除opacity-0和group-hover类，使按钮始终可见
                 "transition-opacity duration-200"
               )}
               onClick={(e) => e.stopPropagation()}
             >
-              <DropdownMenuV2
-                placement="bottom"
-                alignToTriggerBottom={true}
-                minWidth={150}
-                contentClassName={cn(isDark ? "bg-stone-800 border border-stone-700" : "bg-white border border-stone-200")}
-                trigger={
-                  <MoreButtonV2
-                    aria-label="更多选项"
-                    className="transition-opacity"
-                  />
-                }
+              <button
+                onClick={(e) => {
+                  const dropdownId = `recents-dropdown-${conversation.id}`
+                  const buttonRect = e.currentTarget.getBoundingClientRect()
+                  // --- BEGIN COMMENT ---
+                  // 调整下拉菜单的位置，向左偏移一点，确保完全可见
+                  // --- END COMMENT ---
+                  const position = {
+                    top: buttonRect.bottom + 5, // 向下偏移5px，增加间距
+                    left: buttonRect.left - 120 // 向左偏移，使菜单在按钮下方居中显示
+                  }
+                  useDropdownStore.getState().toggleDropdown(dropdownId, position)
+                }}
+                className={cn(
+                  "p-1 rounded-md transition-all duration-200 ease-in-out",
+                  "cursor-pointer",
+                  "hover:bg-black/5 dark:hover:bg-white/10",
+                  "hover:scale-110",
+                  "active:bg-black/10 dark:active:bg-white/20",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                )}
+                data-more-button-id={`recents-dropdown-${conversation.id}`}
+                aria-label="更多选项"
               >
-                <DropdownMenuV2.Item
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+              
+              {/* 下拉菜单内容 */}
+              <DropdownMenu
+                id={`recents-dropdown-${conversation.id}`}
+                minWidth={150}
+                className={cn(
+                  isDark ? "bg-stone-800 border border-stone-700" : "bg-white border border-stone-200",
+                  "shadow-lg rounded-md overflow-hidden" // 增加阴影和圆角
+                )}
+              >
+                <DropdownMenu.Item
                   icon={<Edit className="w-3.5 h-3.5" />}
                   onClick={() => handleRename(conversation)}
+                  className="cursor-pointer"
                 >
                   重命名
-                </DropdownMenuV2.Item>
-                <DropdownMenuV2.Divider />
-                <DropdownMenuV2.Item
+                </DropdownMenu.Item>
+                <DropdownMenu.Divider />
+                <DropdownMenu.Item
                   icon={<Trash className="w-3.5 h-3.5" />}
                   danger
                   onClick={() => handleDelete(conversation)}
+                  className="cursor-pointer"
                 >
                   删除聊天
-                </DropdownMenuV2.Item>
-              </DropdownMenuV2>
+                </DropdownMenu.Item>
+              </DropdownMenu>
             </div>
           </div>
         </div>

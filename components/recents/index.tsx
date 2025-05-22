@@ -10,8 +10,8 @@ import { useChatInputStore } from "@lib/stores/chat-input-store"
 import { useChatTransitionStore } from "@lib/stores/chat-transition-store"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useSidebarConversations } from "@lib/hooks/use-sidebar-conversations"
-import { RecentsHeader } from "./recents-header"
 import { RecentsList } from "./recents-list"
+import { useChatWidth } from "@lib/hooks/use-chat-width"
 
 // --- BEGIN COMMENT ---
 // 历史对话页面组件
@@ -21,9 +21,10 @@ export function Recents() {
   const { isDark } = useTheme()
   const [searchQuery, setSearchQuery] = React.useState("")
   const router = useRouter()
+  const { widthClass, paddingClass } = useChatWidth()
   
   // --- BEGIN COMMENT ---
-  // 获取历史对话列表，这里不限制数量（limit=100）
+  // 获取历史对话列表，默认加载10个，滚动时加载更多
   // --- END COMMENT ---
   const { 
     conversations, 
@@ -32,7 +33,7 @@ export function Recents() {
     total, 
     hasMore, 
     loadMore 
-  } = useSidebarConversations(100)
+  } = useSidebarConversations(10)
   
   // --- BEGIN COMMENT ---
   // 处理搜索输入变化
@@ -90,18 +91,48 @@ export function Recents() {
       "flex flex-col h-full w-full overflow-hidden",
       isDark ? "bg-stone-900" : "bg-white"
     )}>
-      {/* 在移动端和桌面端都显示头部 */}
-      <RecentsHeader />
-      
+      {/* 页面内容区域 - 使用与聊天页面相同的宽度和居中设置 */}
       <div className={cn(
-        "flex flex-col flex-1 overflow-hidden px-4 md:px-8 lg:px-12 py-4",
+        "flex flex-col flex-1 overflow-auto py-4",
         isDark ? "bg-stone-900" : "bg-stone-50"
       )}>
-        {/* 搜索和新对话按钮 */}
-        <div className="flex items-center justify-between mb-6">
-          <div className={cn(
-            "relative flex-1 max-w-2xl",
-          )}>
+        {/* 标题和新对话按钮 - 居中显示 */}
+        <div className={cn(
+          "w-full mx-auto mb-6",
+          widthClass, paddingClass
+        )}>
+          <div className="flex items-center justify-between">
+            <h1 className={cn(
+              "text-2xl font-bold",
+              isDark ? "text-stone-100" : "text-stone-800"
+            )}>
+              历史对话
+            </h1>
+            
+            <button
+              onClick={handleNewChat}
+              className={cn(
+                "px-4 py-2 rounded-lg flex items-center text-sm font-medium",
+                "transition-all duration-200 ease-in-out",
+                "cursor-pointer", // 添加鼠标指针样式
+                "hover:shadow-md hover:-translate-y-0.5", // 悬停时添加阴影和轻微上移效果
+                isDark 
+                  ? "bg-stone-700 hover:bg-stone-600 text-white border border-stone-600" 
+                  : "bg-primary/10 hover:bg-primary/15 text-primary border border-stone-300/50"
+              )}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              新对话
+            </button>
+          </div>
+        </div>
+        
+        {/* 搜索框 - 居中显示 */}
+        <div className={cn(
+          "w-full mx-auto mb-10", // 增加底部间距，为后续添加内容预留空间
+          widthClass, paddingClass
+        )}>
+          <div className="relative w-full">
             <div className={cn(
               "absolute left-3 top-1/2 transform -translate-y-1/2",
               isDark ? "text-stone-400" : "text-stone-500"
@@ -122,31 +153,22 @@ export function Recents() {
               )}
             />
           </div>
-          
-          <button
-            onClick={handleNewChat}
-            className={cn(
-              "ml-4 px-4 py-2 rounded-lg flex items-center text-sm font-medium",
-              "transition-all duration-200 ease-in-out",
-              isDark 
-                ? "bg-stone-700 hover:bg-stone-600 text-white border border-stone-600" 
-                : "bg-primary/10 hover:bg-primary/15 text-primary border border-stone-300/50"
-            )}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            新对话
-          </button>
         </div>
         
-        {/* 对话列表 */}
-        <RecentsList 
-          conversations={filteredConversations}
-          isLoading={isLoading}
-          onConversationClick={handleConversationClick}
-          hasMore={hasMore}
-          loadMore={loadMore}
-          searchQuery={searchQuery}
-        />
+        {/* 对话列表 - 居中显示 */}
+        <div className={cn(
+          "w-full mx-auto",
+          widthClass, paddingClass
+        )}>
+          <RecentsList 
+            conversations={filteredConversations}
+            isLoading={isLoading}
+            onConversationClick={handleConversationClick}
+            hasMore={hasMore}
+            loadMore={loadMore}
+            searchQuery={searchQuery}
+          />
+        </div>
       </div>
     </div>
   )

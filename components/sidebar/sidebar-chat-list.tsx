@@ -9,6 +9,7 @@ import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useMobile } from "@lib/hooks/use-mobile"
 import { useCombinedConversations, CombinedConversation } from "@lib/hooks/use-combined-conversations"
+import { useRouter } from "next/navigation"
 // formatDistanceToNow and zhCN are not needed if we only show title
 // import { formatDistanceToNow } from "date-fns" 
 // import { zhCN } from "date-fns/locale" 
@@ -28,8 +29,9 @@ export function SidebarChatList({
   selectedId,
   onSelectChat 
 }: SidebarChatListProps) {
-  const { isExpanded } = useSidebarStore() 
+  const { isExpanded, lockExpanded } = useSidebarStore() 
   const isMobile = useMobile()
+  const router = useRouter()
   const { 
     conversations, 
     isLoading: isLoadingConversations, 
@@ -137,8 +139,10 @@ export function SidebarChatList({
     const pathname = window.location.pathname;
     
     // 检查当前路由是否是聊天页面
-    // 只有当路由以 /chat/ 开头时，才考虑聊天项的选中状态
+    // 当路由以 /chat/ 开头时，才考虑聊天项的选中状态
+    // 当路由是 /chat/recents 时，不考虑聊天项的选中状态
     if (!pathname.startsWith('/chat/')) return false;
+    if (pathname === '/chat/recents') return false;
     
     // 直接ID匹配
     if (chat.id === selectedId) return true;
@@ -331,7 +335,13 @@ export function SidebarChatList({
                       : "text-gray-500 group-hover:text-primary"
                   )} />
                 }
-                onClick={() => window.location.href = '/chat/recents'} /* 跳转到 /chat/recents 路由 */
+                onClick={() => {
+                  // --- BEGIN COMMENT ---
+                  // 锁定侧边栏展开状态，然后使用router导航
+                  // --- END COMMENT ---
+                  lockExpanded()
+                  router.push('/chat/recents')
+                }}
                 className={cn(
                   "w-full group font-medium",
                   isDark 
