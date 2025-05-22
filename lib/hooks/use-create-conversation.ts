@@ -138,6 +138,10 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 }
                 try {
                   // console.log(`[useCreateConversation] Saving to DB: difyId=${difyConvId}, title=${convTitle}, userId=${currentUserId}, appId=${appId}, tempId=${currentTempConvId}`);
+                  // --- BEGIN COMMENT ---
+                  // 移除 last_message_preview 字段的设置，因为它现在由数据库触发器自动处理
+                  // 触发器只会在助手消息插入时更新此字段，而不是用户消息
+                  // --- END COMMENT ---
                   const localConversation = await dbCreateConversation({
                     user_id: currentUserId,
                     app_id: appId, 
@@ -148,7 +152,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     summary: null,
                     settings: {},
                     status: 'active', 
-                    last_message_preview: payloadData.query.substring(0, 100), 
+                    last_message_preview: null, // 由数据库触发器自动设置
                     metadata: {},
                   });
 

@@ -259,15 +259,18 @@ export async function getMessageByContentAndRole(
   const supabase = createClient();
   
   try {
-    // 使用内容前缀和角色检查消息是否已存在
-    const contentPrefix = content.substring(0, 50); // 取前50个字符作为匹配条件
+    // --- BEGIN COMMENT ---
+    // 使用完整内容进行精确匹配，而不是前缀匹配
+    // 这样可以避免长消息被截断的问题
+    // 尤其是对于助手消息，确保完整的回复内容能够被保存
+    // --- END COMMENT ---
     
     const { data, error } = await supabase
       .from('messages')
       .select('*')
       .eq('conversation_id', conversationId)
       .eq('role', role)
-      .ilike('content', `${contentPrefix}%`) // 使用前缀匹配
+      .eq('content', content) // 使用完整内容精确匹配，而不是前缀匹配
       .maybeSingle();
     
     if (error) {

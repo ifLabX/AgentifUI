@@ -155,13 +155,26 @@ export function useCombinedConversations() {
     const dbRealIds = new Set(dbConversations.map(c => c.external_id || c.id));
     const { removePending } = usePendingConversationStore.getState();
 
-    pendingArray.forEach(p => {
-      if (p.realId && dbRealIds.has(p.realId) &&
-          (p.status === 'persisted_optimistic' || p.status === 'title_resolved')) {
-        console.log(`[useCombinedConversations] Cleaning up fully synced pending item from store: ${p.tempId} (realId: ${p.realId})`);
-        removePending(p.tempId); // remove by tempId, as it's the key in pendingConversations Map
-      }
-    });
+    // --- BEGIN COMMENT ---
+    // 延迟清理临时对话，确保消息已完全保存
+    // 这是为了解决首次创建对话时助手消息被截断的问题
+    // 通过延迟清理，确保流式响应完全结束并且消息已完整保存到数据库
+    // --- END COMMENT ---
+    const cleanupPendingConversations = () => {
+      pendingArray.forEach(p => {
+        if (p.realId && dbRealIds.has(p.realId) &&
+            (p.status === 'persisted_optimistic' || p.status === 'title_resolved')) {
+          console.log(`[useCombinedConversations] Cleaning up fully synced pending item from store: ${p.tempId} (realId: ${p.realId})`);
+          removePending(p.tempId); // remove by tempId, as it's the key in pendingConversations Map
+        }
+      });
+    };
+    
+    // 延迟2秒执行清理，确保消息已完全保存
+    const timeoutId = setTimeout(cleanupPendingConversations, 2000);
+    
+    // 清理定时器
+    return () => clearTimeout(timeoutId);
   }, [dbConversations, pendingArray]);
 
   return {
