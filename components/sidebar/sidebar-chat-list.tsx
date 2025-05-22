@@ -116,8 +116,22 @@ export function SidebarChatList({
   // 添加辅助函数，判断聊天项是否应该处于选中状态
   // 考虑临时ID和正式ID之间的转换情况
   // --- END COMMENT ---
+  // --- BEGIN COMMENT ---
+  // 判断聊天项是否处于选中状态
+  // 1. 检查当前路由是否是聊天页面
+  // 2. 检查ID是否匹配（直接ID或临时ID）
+  // 这样可以确保从聊天页面切换到其他页面时，聊天项不会保持选中状态
+  // --- END COMMENT ---
   const isChatActive = React.useCallback((chat: CombinedConversation) => {
+    // 首先检查是否有选中的ID
     if (!selectedId) return false;
+    
+    // 获取当前路由路径
+    const pathname = window.location.pathname;
+    
+    // 检查当前路由是否是聊天页面
+    // 只有当路由以 /chat/ 开头时，才考虑聊天项的选中状态
+    if (!pathname.startsWith('/chat/')) return false;
     
     // 直接ID匹配
     if (chat.id === selectedId) return true;
