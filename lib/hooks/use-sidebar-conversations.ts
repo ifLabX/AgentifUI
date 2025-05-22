@@ -19,14 +19,12 @@ const supabase = createClient();
  * @returns 会话列表、加载状态、错误信息和刷新函数
  */
 export function useSidebarConversations(limit: number = 5) {
-  // --- BEGIN COMMENT ---
   // 状态定义：
   // conversations: 会话列表
   // isLoading: 加载状态
   // error: 错误信息
   // total: 会话总数
   // hasMore: 是否有更多会话
-  // --- END COMMENT ---
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -64,6 +62,8 @@ export function useSidebarConversations(limit: number = 5) {
     };
   }, []);
 
+  const [prevConversations, setPrevConversations] = useState<Conversation[]>([]);
+  
   // 加载会话列表
   const loadConversations = useCallback(async (reset: boolean = false) => {
     if (!userId) {
@@ -76,10 +76,11 @@ export function useSidebarConversations(limit: number = 5) {
 
     const newOffset = reset ? 0 : offset;
     
-    // --- BEGIN COMMENT ---
-    // 添加调试日志，查看获取对话列表的查询参数
-    // --- END COMMENT ---
-    console.log(`[获取对话列表] 开始获取对话列表，userId: ${userId}, limit: ${limit}, offset: ${newOffset}`);
+    if (reset) {
+      setPrevConversations([]);
+    } else {
+      setPrevConversations(conversations);
+    }
     
     setIsLoading(true);
     try {
@@ -99,7 +100,13 @@ export function useSidebarConversations(limit: number = 5) {
       }
     } catch (err) {
       console.error('加载会话列表失败:', err);
-      setError(err instanceof Error ? err : new Error('加载会话列表失败'));
+      setError(err instanceof Error ? err : new Error(String(err)));
+      
+      // 加载失败时恢复上一次的对话列表，避免界面空白
+      if (prevConversations.length > 0) {
+        console.log('[获取对话列表] 加载失败，恢复上一次的对话列表');
+        setConversations(prevConversations);
+      }
     } finally {
       setIsLoading(false);
     }

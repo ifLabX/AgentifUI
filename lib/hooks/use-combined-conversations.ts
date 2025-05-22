@@ -67,10 +67,24 @@ export function useCombinedConversations() {
     setPendingArray(Array.from(pendingConversations.values()));
   }, [pendingConversations]);
 
+  // --- BEGIN COMMENT ---
+  // 保存上一次的合并对话列表，避免路由切换时闪烁
+  // --- END COMMENT ---
+  const [prevCombinedConversations, setPrevCombinedConversations] = useState<CombinedConversation[]>([]);
+  
   // 整合数据库对话和临时对话
   const combinedConversations = useMemo(() => {
     const finalConversations: CombinedConversation[] = [];
     const dbConvsRealIds = new Set<string>();
+
+    // --- BEGIN COMMENT ---
+    // 如果数据库对话和临时对话都为空，但有上一次的合并对话列表，则直接返回上一次的列表
+    // 这样可以避免在路由切换时侧边栏对话列表闪烁消失
+    // --- END COMMENT ---
+    if (dbConversations.length === 0 && pendingArray.length === 0 && prevCombinedConversations.length > 0) {
+      console.log('[useCombinedConversations] 数据库和临时对话都为空，使用上一次的合并对话列表');
+      return prevCombinedConversations;
+    }
 
     // 1. 处理数据库中的对话
     dbConversations.forEach(dbConv => {
@@ -177,6 +191,15 @@ export function useCombinedConversations() {
     return () => clearTimeout(timeoutId);
   }, [dbConversations, pendingArray]);
 
+  // --- BEGIN COMMENT ---
+  // 当合并对话列表更新时，保存当前状态，用于路由切换时保持侧边栏稳定
+  // --- END COMMENT ---
+  useEffect(() => {
+    if (combinedConversations.length > 0) {
+      setPrevCombinedConversations(combinedConversations);
+    }
+  }, [combinedConversations]);
+  
   return {
     conversations: combinedConversations,
     isLoading: isDbLoading,

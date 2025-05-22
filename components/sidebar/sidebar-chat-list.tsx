@@ -39,13 +39,28 @@ export function SidebarChatList({
     refresh 
   } = useCombinedConversations()
   
+  const [prevLoadedConversations, setPrevLoadedConversations] = React.useState<CombinedConversation[]>([]);
+  
+  // --- BEGIN COMMENT ---
+  // 当对话列表成功加载时，保存当前状态
+  // --- END COMMENT ---
+  React.useEffect(() => {
+    if (!isLoadingConversations && conversations.length > 0) {
+      setPrevLoadedConversations(conversations);
+    }
+  }, [isLoadingConversations, conversations]);
+  
+  const displayConversations = (isLoadingConversations && conversations.length === 0 && prevLoadedConversations.length > 0) 
+    ? prevLoadedConversations 
+    : conversations;
+  
   const unpinnedChats = React.useMemo(() => {
-    return conversations.filter(chat => !chat.isPending);
-  }, [conversations]);
+    return displayConversations.filter(chat => !chat.isPending);
+  }, [displayConversations]);
   
   const pendingChats = React.useMemo(() => {
-    return conversations.filter(chat => chat.isPending === true);
-  }, [conversations]);
+    return displayConversations.filter(chat => chat.isPending === true);
+  }, [displayConversations]);
   
   // --- BEGIN COMMENT ---
   // 使用数据库中的历史对话，默认已经限制为5个
@@ -57,7 +72,7 @@ export function SidebarChatList({
   // 判断是否有更多历史对话（超过5个）
   // 使用 useCombinedConversations 返回的 total 属性
   // --- END COMMENT ---
-  const hasMoreChats = conversations.length === 5 || unpinnedChats.length === 5;
+  const hasMoreChats = displayConversations.length === 5 || unpinnedChats.length === 5;
   
   const handleRename = React.useCallback(async (chatId: string) => {
     const conversation = conversations.find(c => c.id === chatId);
@@ -228,8 +243,10 @@ export function SidebarChatList({
 
   // --- BEGIN COMMENT ---
   // 判断是否显示骨架屏
+  // 只有在首次加载或强制刷新时才显示骨架屏
+  // 如果有上一次成功加载的对话列表，则使用缓存的列表，避免闪烁
   // --- END COMMENT ---
-  const showSkeleton = isLoadingConversations && conversations.length === 0;
+  const showSkeleton = isLoadingConversations && conversations.length === 0 && prevLoadedConversations.length === 0;
 
   return (
     <div className="flex flex-col space-y-1">
