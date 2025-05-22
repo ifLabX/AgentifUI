@@ -18,9 +18,9 @@ export function MessageSkeleton() {
           "rounded-lg p-4 w-full md:w-[85%] lg:w-[75%]",
           colors.userMessageBackground.tailwind
         )}>
-          <div className="h-4 bg-stone-300 dark:bg-stone-600 rounded w-full mb-2"></div>
-          <div className="h-4 bg-stone-300 dark:bg-stone-600 rounded w-[80%] mb-2"></div>
-          <div className="h-4 bg-stone-300 dark:bg-stone-600 rounded w-[50%]"></div>
+          <div className="h-4 bg-stone-300 dark:bg-stone-700 rounded w-full mb-2"></div>
+          <div className="h-4 bg-stone-300 dark:bg-stone-700 rounded w-[80%] mb-2"></div>
+          <div className="h-4 bg-stone-300 dark:bg-stone-700 rounded w-[50%]"></div>
         </div>
       </div>
       

@@ -16,8 +16,18 @@ import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 // 每页加载的消息数量
 const MESSAGES_PER_PAGE = 20;
 
-// 定义加载状态类型
+// --- BEGIN COMMENT ---
+// 定义统一的加载状态类型
+// 包含状态、类型和锁定标志
+// --- END COMMENT ---
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error' | 'complete';
+
+// 加载状态对象类型
+type LoadingStatus = {
+  state: LoadingState;
+  type: 'initial' | 'more' | 'none';
+  isLocked: boolean;
+};
 
 /**
  * 将数据库消息转换为前端消息对象
@@ -47,34 +57,73 @@ export function useConversationMessages() {
   const userId = session?.user?.id;
   
   // --- BEGIN COMMENT ---
-  // 消息加载相关状态
-  // 区分初始加载和加载更多消息的状态，避免骨架屏闪烁
+  // 简化状态管理，使用统一的加载状态对象
+  // 将多个状态变量合并为一个结构化的状态对象
   // --- END COMMENT ---
   const [dbConversationId, setDbConversationId] = useState<string | null>(null);
   const [difyConversationId, setDifyConversationId] = useState<string | null>(null);
-  const [loadingState, setLoadingState] = useState<LoadingState>('idle');
+  const [loading, setLoading] = useState<LoadingStatus>({
+    state: 'idle',
+    type: 'none',
+    isLocked: false
+  });
   const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(true);
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false); // 新增：标记是否正在加载更多历史消息
-  const [isLoadingInitial, setIsLoadingInitial] = useState<boolean>(false); // 新增：标记是否正在进行初始加载
   const [error, setError] = useState<Error | null>(null);
-  const pageRef = useRef<number>(1);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   
-  // 加载锁，防止并发加载
-  const loadingLockRef = useRef<boolean>(false);
-  // 保存当前加载的对话ID，用于检测是否加载了新对话
-  const currentLoadingIdRef = useRef<string | null>(null);
-  // 记录历史消息的总数，用于判断是否还有更多消息
-  const totalMessagesRef = useRef<number>(0);
-  // 请求取消控制器，用于取消进行中的请求
-  const abortControllerRef = useRef<AbortController | null>(null);
-  // 记录上一个路径，用于检测路由变化
-  const previousPathRef = useRef<string | null>(null);
-  // 记录是否已经加载过的标志，防止重复加载
-  const hasLoadedRef = useRef<{[key: string]: boolean}>({});
+  // --- BEGIN COMMENT ---
+  // 合并多个ref到单一对象，提高可维护性
+  // --- END COMMENT ---
+  const loaderState = useRef<{
+    page: number;
+    currentId: string | null;
+    totalMessages: number;
+    loadedConversations: Set<string>;
+    abortController: AbortController | null;
+    previousPath: string | null;
+  }>({
+    page: 1,
+    currentId: null,
+    totalMessages: 0,
+    loadedConversations: new Set(),
+    abortController: null,
+    previousPath: null
+  });
   
   // 从chatStore获取当前消息状态和操作方法
   const { messages, addMessage, clearMessages, updateMessage } = useChatStore();
+  
+  // --- BEGIN COMMENT ---
+  // 添加辅助函数，简化状态管理
+  // --- END COMMENT ---
+  
+  // 开始加载
+  const startLoading = useCallback((type: 'initial' | 'more') => {
+    setLoading(prev => ({ ...prev, state: 'loading', type, isLocked: true }));
+  }, []);
+
+  // 完成加载
+  const finishLoading = useCallback((state: 'success' | 'error' | 'complete' | 'idle') => {
+    setLoading(prev => ({ ...prev, state, type: 'none', isLocked: false }));
+  }, []);
+
+  // 取消当前请求
+  const cancelCurrentRequest = useCallback(() => {
+    if (loaderState.current.abortController) {
+      loaderState.current.abortController.abort();
+      loaderState.current.abortController = null;
+    }
+  }, []);
+
+  // 重置加载状态
+  const resetLoader = useCallback(() => {
+    cancelCurrentRequest();
+    loaderState.current.page = 1;
+    loaderState.current.totalMessages = 0;
+    loaderState.current.currentId = null;
+    setLoading({ state: 'idle', type: 'none', isLocked: false });
+    setError(null);
+  }, [cancelCurrentRequest]);
   
   /**
    * 获取当前路由中的对话ID
@@ -170,9 +219,9 @@ export function useConversationMessages() {
   const loadInitialMessages = useCallback(async (dbConvId: string) => {
     // --- BEGIN COMMENT ---
     // 防止重复加载或者加载已经变更的对话
-    // 增加检查条件，不在初始加载过程中再次触发加载
+    // 使用统一的加载状态对象检查是否正在加载
     // --- END COMMENT ---
-    if (!dbConvId || loadingLockRef.current || isLoadingInitial) {
+    if (!dbConvId || loading.isLocked) {
       return;
     }
     
@@ -180,28 +229,27 @@ export function useConversationMessages() {
     const resetScrollState = useChatScrollStore.getState().resetScrollState;
     
     // 取消任何进行中的请求
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    cancelCurrentRequest();
     
     // 创建新的AbortController
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
+    const controller = new AbortController();
+    loaderState.current.abortController = controller;
+    const signal = controller.signal;
     
     try {
-      // 加锁，防止并发加载
-      loadingLockRef.current = true;
-      
       // --- BEGIN COMMENT ---
-      // 状态管理优化：使用两个单独的状态变量来追踪初始加载和加载更多
+      // 使用统一的状态管理方式设置加载状态
       // --- END COMMENT ---
-      setLoadingState('loading'); // 整体加载状态
-      setIsLoadingInitial(true); // 标记初始加载状态
-      pageRef.current = 1;
+      startLoading('initial');
+      loaderState.current.page = 1;
+      loaderState.current.currentId = dbConvId;
       
       console.log(`[useConversationMessages] 开始加载初始消息，数据库对话ID=${dbConvId}`);
       
-      // 清空当前消息
+      // --- BEGIN COMMENT ---
+      // 在获取消息前先清空当前消息，避免旧消息闪烁
+      // 保持骨架屏状态直到新消息完全加载完成
+      // --- END COMMENT ---
       clearMessages();
       
       // 设置当前数据库对话ID
@@ -211,16 +259,16 @@ export function useConversationMessages() {
       const dbMessages = await getMessagesByConversationId(dbConvId);
       
       // 如果请求已被取消或对话ID已改变，则放弃处理结果
-      if (signal.aborted || currentLoadingIdRef.current !== dbConvId) {
+      if (signal.aborted || loaderState.current.currentId !== dbConvId) {
         console.log(`[useConversationMessages] 请求已取消或对话ID已变更，放弃加载结果`);
-        setIsLoadingInitial(false); // 重置初始加载状态
+        finishLoading('idle'); // 重置加载状态
         return;
       }
       
       // 记录总消息数
-      totalMessagesRef.current = dbMessages.length;
+      loaderState.current.totalMessages = dbMessages.length;
       
-      // 如果消息总数不足一页，就不需要显示"加载更多"按钮
+      // 如果消息总数不足一页，就不需要显示“加载更多”按钮
       if (dbMessages.length <= MESSAGES_PER_PAGE) {
         setHasMoreMessages(false);
       } else {
@@ -229,8 +277,7 @@ export function useConversationMessages() {
       
       if (dbMessages.length === 0) {
         console.log(`[useConversationMessages] 对话无历史消息`);
-        setLoadingState('complete');
-        loadingLockRef.current = false;
+        finishLoading('complete');
         return;
       }
       
@@ -243,33 +290,40 @@ export function useConversationMessages() {
       // 将数据库消息转换为前端消息对象
       const chatMessages = latestMessages.map(dbMessageToChatMessage);
       
-      // 批量添加消息，减少渲染次数
-      useChatStore.setState({ messages: chatMessages });
-      
       console.log(`[useConversationMessages] 加载了${latestMessages.length}条最新消息`);
       
       // --- BEGIN COMMENT ---
-      // 设置加载成功状态，单独管理初始加载状态
-      // 延迟一点设置状态，确保UI有时间渲染
+      // 优化状态更新逻辑，确保骨架屏消失后直接显示新消息，避免闪烁问题
+      // 1. 先批量添加消息到store
+      // 2. 使用requestAnimationFrame确保DOM已更新
+      // 3. 然后再设置加载状态为成功，关闭骨架屏
       // --- END COMMENT ---
-      setTimeout(() => {
-        setLoadingState('success');
-        setIsLoadingInitial(false); // 重置初始加载状态
-        
-        // 记录该对话已经加载成功，避免重复加载
-        if (dbConvId) {
-          hasLoadedRef.current[dbConvId] = true;
-          
-          // 获取当前路径中的对话ID
-          const pathConversationId = getConversationIdFromPath();
-          if (pathConversationId && pathConversationId !== 'new' && !pathConversationId.includes('temp-')) {
-            hasLoadedRef.current[pathConversationId] = true;
-          }
-        }
-        
+      
+      // 批量添加消息，减少渲染次数
+      useChatStore.setState({ messages: chatMessages });
+      
+      // 使用requestAnimationFrame确保DOM已更新后再关闭骨架屏
+      requestAnimationFrame(() => {
         // 确保滚动到底部，使用可靠的方法
         resetScrollState();
-      }, 50);
+        
+        // 再次使用requestAnimationFrame确保上面的操作已完成
+        requestAnimationFrame(() => {
+          // 设置加载成功状态
+          finishLoading('success');
+          
+          // 记录该对话已经加载成功，避免重复加载
+          if (dbConvId) {
+            loaderState.current.loadedConversations.add(dbConvId);
+            
+            // 获取当前路径中的对话ID
+            const pathConversationId = getConversationIdFromPath();
+            if (pathConversationId && pathConversationId !== 'new' && !pathConversationId.includes('temp-')) {
+              loaderState.current.loadedConversations.add(pathConversationId);
+            }
+          }
+        });
+      });
       
     } catch (error) {
       // 如果是取消请求导致的错误，则不处理
@@ -277,10 +331,7 @@ export function useConversationMessages() {
       
       console.error(`[useConversationMessages] 加载初始消息失败:`, error);
       setError(error instanceof Error ? error : new Error(String(error)));
-      setLoadingState('error');
-    } finally {
-      // 解锁
-      loadingLockRef.current = false;
+      finishLoading('error');
     }
   }, [clearMessages, organizeMessages]);
   
@@ -289,15 +340,15 @@ export function useConversationMessages() {
    */
   const loadMoreMessages = useCallback(async () => {
     // --- BEGIN COMMENT ---
-    // 添加额外的检查条件，确保不在初始加载过程中触发加载更多
-    // 防止滚动过程中错误触发骨架屏闪烁
+    // 使用统一的状态对象检查是否可以加载更多消息
+    // 避免在初始加载过程中触发加载更多，防止骨架屏闪烁
     // --- END COMMENT ---
     if (!dbConversationId || 
-        loadingLockRef.current || 
-        loadingState === 'loading' || 
-        loadingState === 'complete' || 
+        loading.isLocked || 
+        loading.state === 'loading' || 
+        loading.state === 'complete' || 
         !hasMoreMessages || 
-        isLoadingInitial) {
+        loading.type === 'initial') {
       return;
     }
     
@@ -312,26 +363,22 @@ export function useConversationMessages() {
     const scrollToBottom = useChatScrollStore.getState().scrollToBottom;
     
     // 取消任何进行中的请求
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    cancelCurrentRequest();
     
     // 创建新的AbortController
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
+    const controller = new AbortController();
+    loaderState.current.abortController = controller;
+    const signal = controller.signal;
     
     try {
-      // 加锁，防止并发加载
-      loadingLockRef.current = true;
-      
       // --- BEGIN COMMENT ---
-      // 状态管理优化：仅在加载更多消息时将状态设置为isLoadingMore
-      // 而不改变主加载状态，避免触发全屏骨架屏闪烁
+      // 使用统一的状态管理方式设置加载状态
+      // 仅在加载更多消息时将状态类型设置为'more'
       // --- END COMMENT ---
-      setIsLoadingMore(true); // 只改变isLoadingMore状态，不改变主加载状态
+      startLoading('more');
       
       // 计算要跳过的消息数
-      const currentPage = pageRef.current;
+      const currentPage = loaderState.current.page;
       const skip = currentPage * MESSAGES_PER_PAGE;
       
       console.log(`[useConversationMessages] 加载更多历史消息，页码=${currentPage+1}，跳过=${skip}`);
@@ -340,20 +387,19 @@ export function useConversationMessages() {
       const allMessages = await getMessagesByConversationId(dbConversationId);
       
       // 如果请求已被取消或对话ID已改变，则放弃处理结果
-      if (signal.aborted || currentLoadingIdRef.current !== dbConversationId) {
+      if (signal.aborted || loaderState.current.currentId !== dbConversationId) {
         console.log(`[useConversationMessages] 请求已取消或对话ID已变更，放弃加载更多结果`);
         return;
       }
       
       // 更新总消息数
-      totalMessagesRef.current = allMessages.length;
+      loaderState.current.totalMessages = allMessages.length;
       
       // 如果已经加载了所有消息
       if (skip >= allMessages.length) {
         setHasMoreMessages(false);
-        setLoadingState('complete');
+        finishLoading('complete');
         console.log(`[useConversationMessages] 没有更多历史消息`);
-        loadingLockRef.current = false;
         return;
       }
       
@@ -368,6 +414,8 @@ export function useConversationMessages() {
       // 检查是否还有更多消息可加载
       if (startIndex === 0) {
         setHasMoreMessages(false);
+        // 如果没有更多消息，设置加载状态为完成
+        finishLoading('complete');
       }
       
       // 记录当前滚动位置
@@ -386,15 +434,14 @@ export function useConversationMessages() {
       useChatStore.setState({ messages: updatedMessages });
       
       // 增加页码
-      pageRef.current = currentPage + 1;
+      loaderState.current.page = currentPage + 1;
       
       console.log(`[useConversationMessages] 加载了${pageMessages.length}条历史消息`);
       
       // --- BEGIN COMMENT ---
-      // 加载完成后同时重置主加载状态和加载更多状态
+      // 加载完成后重置加载状态
       // --- END COMMENT ---
-      setLoadingState('success');
-      setIsLoadingMore(false);
+      finishLoading('success');
       
       // 保持滚动位置，使用更可靠的方式
       if (scrollContainer) {
@@ -417,19 +464,17 @@ export function useConversationMessages() {
     } catch (error) {
       // 如果是取消请求导致的错误，则不处理
       if (signal.aborted) {
-        setIsLoadingMore(false); // 确保取消时也重置状态
         return;
       }
       
       console.error(`[useConversationMessages] 加载更多历史消息失败:`, error);
       setError(error instanceof Error ? error : new Error(String(error)));
-      setLoadingState('error');
-      setIsLoadingMore(false); // 错误时重置加载更多状态
+      finishLoading('error');
     } finally {
-      // 解锁
-      loadingLockRef.current = false;
+      // 解锁加载状态
+      finishLoading('idle');
     }
-  }, [dbConversationId, loadingState, hasMoreMessages, organizeMessages]);
+  }, [dbConversationId, loading, hasMoreMessages, organizeMessages]);
   
   /**
    * 设置消息容器引用，用于滚动检测
@@ -442,7 +487,13 @@ export function useConversationMessages() {
    * 检测滚动到顶部，自动加载更多消息
    */
   const handleScroll = useCallback(() => {
-    if (!messagesContainerRef.current || !hasMoreMessages || loadingState === 'loading' || loadingLockRef.current) {
+    // --- BEGIN COMMENT ---
+    // 使用统一的状态对象检查是否可以加载更多消息
+    // --- END COMMENT ---
+    if (!messagesContainerRef.current || 
+        !hasMoreMessages || 
+        loading.state === 'loading' || 
+        loading.isLocked) {
       return;
     }
     
@@ -452,18 +503,12 @@ export function useConversationMessages() {
     if (scrollTop < scrollThreshold) {
       loadMoreMessages();
     }
-  }, [hasMoreMessages, loadingState, loadMoreMessages]);
+  }, [hasMoreMessages, loading, loadMoreMessages]);
   
-  /**
-   * 重置加载状态，用于对话切换
-   */
-  const resetLoadingState = useCallback(() => {
-    loadingLockRef.current = false;
-    pageRef.current = 1;
-    totalMessagesRef.current = 0;
-    setLoadingState('idle');
-    setError(null);
-  }, []);
+  // --- BEGIN COMMENT ---
+  // 重置加载状态的功能已由resetLoader函数提供
+  // 不再需要单独的resetLoadingState函数
+  // --- END COMMENT ---
   
   /**
    * 路由更改时加载消息
@@ -478,8 +523,8 @@ export function useConversationMessages() {
     // 2. 在这种情况下，不应该清空消息或显示加载状态
     // 3. 增强检测：如果当前有未保存的用户消息和助手正在流式响应的消息，也应该视为首次消息场景
     // --- END COMMENT ---
-    const isFromNewChat = previousPathRef.current === '/chat/new' || 
-                        (previousPathRef.current?.includes('/chat/temp-') ?? false);
+    const isFromNewChat = loaderState.current.previousPath === '/chat/new' || 
+                        (loaderState.current.previousPath?.includes('/chat/temp-') ?? false);
     const isToExistingChat = externalId && externalId !== 'new' && !externalId.includes('temp-');
     const hasExistingMessages = currentMessages.length > 0;
     
@@ -499,7 +544,7 @@ export function useConversationMessages() {
                                     (hasExistingMessages && (hasStreamingMessage || hasPendingUserMessage));
     
     // 记录当前路径用于下次判断
-    previousPathRef.current = pathname;
+    loaderState.current.previousPath = pathname;
     
     console.log(`[useConversationMessages] 路由变化检测: 是否首次发送=${isFirstMessageTransition}, 从=${isFromNewChat}, 到=${isToExistingChat}, 消息数=${hasExistingMessages}`);
     
@@ -507,20 +552,17 @@ export function useConversationMessages() {
     const resetScrollState = useChatScrollStore.getState().resetScrollState;
     
     // 取消任何进行中的请求
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
+    cancelCurrentRequest();
     
     // 如果是首次发送消息导致的路由变化，跳过清空和加载消息的步骤
     if (isFirstMessageTransition) {
       console.log(`[useConversationMessages] 首次发送消息导致的路由变化，保留现有消息`)
       // 跳过重置状态和清空消息的步骤，直接设置加载完成
-      setLoadingState('success');
+      finishLoading('success');
       
       // 记录已经加载过
       if (externalId) {
-        hasLoadedRef.current[externalId] = true;
+        loaderState.current.loadedConversations.add(externalId);
       }
       
       // 确保滚动到底部
@@ -529,20 +571,28 @@ export function useConversationMessages() {
     }
     
     // 检查是否已经加载过该对话
-    if (externalId && hasLoadedRef.current[externalId]) {
+    if (externalId && loaderState.current.loadedConversations.has(externalId)) {
       console.log(`[useConversationMessages] 已经加载过对话 ${externalId}，跳过重复加载`);
       return;
     }
     
+    // --- BEGIN COMMENT ---
     // 对于非首次发送消息的路由变化，执行正常的加载逻辑
-    // 重置状态以防止状态遗留
-    resetLoadingState();
+    // 优化状态更新顺序，避免旧消息闪烁
+    // 1. 先重置状态和清空消息
+    // 2. 然后设置加载状态和初始加载状态
+    // 3. 确保骨架屏显示直到新消息加载完成
+    // --- END COMMENT ---
     
-    // 立即清空消息，避免显示旧消息
+    // --- BEGIN COMMENT ---
+    // 使用统一的状态管理方式重置加载状态
+    // 并清空消息，避免显示旧消息
+    // --- END COMMENT ---
+    resetLoader();
     clearMessages();
     
     // 立即设置加载状态，确保UI显示骨架屏
-    setLoadingState('loading');
+    startLoading('initial');
     
     // 确保滚动回顶部，避免在新对话加载时显示滚动按钮
     resetScrollState();
@@ -550,8 +600,10 @@ export function useConversationMessages() {
     if (externalId) {
       setDifyConversationId(externalId);
       
-      // 设置当前加载的对话ID
-      currentLoadingIdRef.current = externalId;
+      // --- BEGIN COMMENT ---
+      // 使用统一的状态对象设置当前加载的对话ID
+      // --- END COMMENT ---
+      loaderState.current.currentId = externalId;
       
       // 获取数据库对话ID并加载消息
       (async () => {
@@ -559,40 +611,42 @@ export function useConversationMessages() {
         const dbConvId = await fetchDbConversationId(externalId);
         
         // 确保当前路径仍然是请求的对话
-        if (currentLoadingIdRef.current === externalId && dbConvId) {
+        if (loaderState.current.currentId === externalId && dbConvId) {
           // 设置为当前数据库对话ID
-          currentLoadingIdRef.current = dbConvId;
+          loaderState.current.currentId = dbConvId;
           // 加载初始消息
           loadInitialMessages(dbConvId);
-        } else if (currentLoadingIdRef.current === externalId) {
+        } else if (loaderState.current.currentId === externalId) {
           // 没有找到对应的数据库对话ID，设置完成状态
-          setLoadingState('complete');
+          finishLoading('complete');
         }
       })();
     } else {
-      // 清理状态
+      // --- BEGIN COMMENT ---
+      // 使用统一的状态管理方式清理状态
+      // --- END COMMENT ---
       setDifyConversationId(null);
       setDbConversationId(null);
       setHasMoreMessages(true);
-      currentLoadingIdRef.current = null;
-      setLoadingState('idle'); // 如果不是对话页面，重置为idle状态
+      // 如果不是对话页面，重置为idle状态
+      resetLoader();
     }
     
     // 清理函数
     return () => {
+      // --- BEGIN COMMENT ---
+      // 使用统一的状态管理方式清理加载状态
       // 如果组件卸载或路由改变，标记当前加载ID为null
       // 这样可以在异步操作完成后知道上下文已经改变
-      if (currentLoadingIdRef.current === externalId) {
-        currentLoadingIdRef.current = null;
+      // --- END COMMENT ---
+      if (loaderState.current.currentId === externalId) {
+        loaderState.current.currentId = null;
       }
       
       // 取消任何进行中的请求
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
+      cancelCurrentRequest();
     };
-  }, [pathname, fetchDbConversationId, loadInitialMessages, getConversationIdFromPath, resetLoadingState, clearMessages]);
+  }, [pathname, fetchDbConversationId, loadInitialMessages, getConversationIdFromPath, resetLoader, clearMessages]);
   
   /**
    * 添加和移除滚动事件监听器
@@ -610,24 +664,21 @@ export function useConversationMessages() {
     };
   }, [handleScroll]);
   
-  /**
-   * 调试日志，跟踪加载状态变化
-   */
-  useEffect(() => {
-    console.log(`[useConversationMessages] 加载状态变化: ${loadingState}`);
-  }, [loadingState]);
-  
   return {
     dbConversationId,
     difyConversationId,
-    loadingState,
+    loading,
     hasMoreMessages,
     error,
     loadMoreMessages,
     setMessagesContainer,
     // 导出一些有用的状态
-    isLoading: loadingState === 'loading',
-    isLoadingInitial: loadingState === 'loading' && pageRef.current === 1,
-    isLoadingMore: loadingState === 'loading' && pageRef.current > 1
+    isLoading: loading.state === 'loading',
+    // --- BEGIN COMMENT ---
+    // 使用统一的加载状态对象推断初始加载和加载更多状态
+    // 这样可以更精确地控制骨架屏的显示时机，避免闪烁问题
+    // --- END COMMENT ---
+    isLoadingInitial: loading.state === 'loading' && loading.type === 'initial',
+    isLoadingMore: loading.state === 'loading' && loading.type === 'more'
   };
 } 

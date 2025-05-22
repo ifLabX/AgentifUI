@@ -55,7 +55,7 @@ export default function ChatPage() {
   // 使用分页加载钩子获取历史消息
   // --- END COMMENT ---
   const {
-    loadingState,
+    loading,
     hasMoreMessages,
     isLoadingMore,
     loadMoreMessages,
@@ -142,7 +142,7 @@ export default function ChatPage() {
                conversationIdFromUrl !== 'new' && 
                !conversationIdFromUrl.includes('temp-') && (
                 <MessagesLoadingIndicator 
-                  loadingState={loadingState}
+                  loadingState={loading.state}
                   isLoadingMore={isLoadingMore}
                   hasMoreMessages={hasMoreMessages}
                   error={error}
