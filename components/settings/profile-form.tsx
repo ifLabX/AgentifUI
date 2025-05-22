@@ -13,7 +13,9 @@ import { User, Mail, AtSign, Calendar, Check, AlertCircle } from 'lucide-react';
 // 用于在设置页面中编辑用户个人资料
 // --- END COMMENT ---
 interface ProfileFormProps {
-  profile: Profile;
+  profile: Profile & {
+    auth_last_sign_in_at?: string;
+  };
   onSuccess?: () => void;
 }
 
@@ -127,8 +129,8 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           <div className="flex items-center">
             <Mail className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)} />
             <div>
-              <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>账户ID</p>
-              <p className={colors.textColor.tailwind}>{profile.id.substring(0, 8)}...</p>
+              <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>所属企业</p>
+              <p className={colors.textColor.tailwind}>无企业关联</p>
             </div>
           </div>
           
@@ -152,7 +154,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             <Calendar className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)} />
             <div>
               <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>上次登录</p>
-              <p className={colors.textColor.tailwind}>{profile.last_login ? formatDate(profile.last_login) : '未记录'}</p>
+              <p className={colors.textColor.tailwind}>{profile.auth_last_sign_in_at ? formatDate(profile.auth_last_sign_in_at) : '未记录'}</p>
             </div>
           </div>
         </div>

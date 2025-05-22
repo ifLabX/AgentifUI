@@ -45,7 +45,15 @@ export default function ProfileSettingsPage() {
           throw new Error('无法获取用户资料');
         }
         
-        setProfile(profileData);
+        // --- BEGIN COMMENT ---
+        // 将 auth 用户的上次登录时间添加到资料中
+        // --- END COMMENT ---
+        const enhancedProfile = {
+          ...profileData,
+          auth_last_sign_in_at: user.last_sign_in_at
+        };
+        
+        setProfile(enhancedProfile);
       } catch (err) {
         console.error('加载用户资料失败:', err);
         setError(err instanceof Error ? err : new Error('加载用户资料失败'));
