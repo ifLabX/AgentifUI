@@ -4,6 +4,7 @@ import * as React from "react"
 import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit } from "lucide-react"
 import { SidebarButton } from "./sidebar-button"
 import { SidebarChatIcon } from "./sidebar-chat-icon"
+import { ChatSkeleton } from "./chat-skeleton"
 import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useMobile } from "@lib/hooks/use-mobile"
@@ -177,12 +178,20 @@ export function SidebarChatList({
     );
   };
 
+  // --- BEGIN COMMENT ---
+  // 判断是否显示骨架屏
+  // --- END COMMENT ---
+  const showSkeleton = isLoadingConversations && conversations.length === 0;
+
   return (
     <div className="flex flex-col space-y-1">
       <div className="flex items-center px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
         <MessageSquare size={14} className="mr-1.5" />
         近期对话
       </div>
+      
+      {/* 显示骨架屏 */}
+      {showSkeleton && <ChatSkeleton isDark={isDark} count={5} />}
       
       {pendingChats.length > 0 && (
         <div className="mb-2">
