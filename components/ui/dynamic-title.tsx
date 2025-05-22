@@ -36,8 +36,26 @@ export function DynamicTitle() {
     let fallbackTitle = '加载中... | ' + baseTitle
     
     try {
+      // 如果是设置页面
+      if (pathname?.startsWith('/settings')) {
+        // 根据路径设置标题
+        if (pathname === '/settings') {
+          newTitle = '设置 | ' + baseTitle
+        } else if (pathname === '/settings/profile') {
+          newTitle = '个人资料 | ' + baseTitle
+        } else if (pathname === '/settings/account') {
+          newTitle = '账号设置 | ' + baseTitle
+        } else if (pathname === '/settings/appearance') {
+          newTitle = '外观设置 | ' + baseTitle
+        } else {
+          // 其他设置页面
+          const settingName = pathname.split('/').pop() || ''
+          const formattedName = settingName.charAt(0).toUpperCase() + settingName.slice(1)
+          newTitle = `设置 - ${formattedName} | ${baseTitle}`
+        }
+      }
       // 如果是聊天页面
-      if (pathname?.startsWith('/chat')) {
+      else if (pathname?.startsWith('/chat')) {
         if (pathname === '/chat/new') {
           // 新对话页面
           newTitle = '新对话 | ' + baseTitle

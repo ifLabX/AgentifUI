@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@lib/utils"
 import { useSettingsColors } from '@lib/hooks/use-settings-colors'
-import { Settings, User, Palette } from "lucide-react"
+import { Settings, User, Palette, KeyRound, Shield } from "lucide-react"
 
 // --- BEGIN COMMENT ---
 // 定义设置选项，包括图标、标题和路径
@@ -19,6 +19,11 @@ export const settingsNavItems = [
     title: "个人资料",
     href: "/settings/profile",
     icon: User
+  },
+  {
+    title: "账号设置",
+    href: "/settings/account",
+    icon: Shield
   },
   {
     title: "外观",
@@ -46,17 +51,17 @@ export function SettingsSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center px-4 py-3 text-sm rounded-lg",
+                "flex items-center px-4 py-3 rounded-lg",
                 "transition-colors duration-200",
                 isActive 
                   ? `${colors.sidebarItemActive.tailwind} font-medium` 
                   : colors.sidebarItemHover.tailwind
               )}
             >
-              <span className="mr-3">
+              <span className="mr-3 flex-shrink-0">
                 <Icon className="h-5 w-5" />
               </span>
-              {item.title}
+              <span className="text-sm">{item.title}</span>
             </Link>
           )
         })}

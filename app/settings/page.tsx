@@ -14,10 +14,13 @@ import { settingsNavItems } from "@components/settings/settings-sidebar"
 export default function SettingsPage() {
   const { colors } = useSettingsColors();
   
-  // 设置项描述
+  // --- BEGIN COMMENT ---
+  // 设置项描述，为每个设置页面提供说明文本
+  // --- END COMMENT ---
   const settingsDescriptions: Record<string, string> = {
     "/settings": "管理您的个人偏好，自定义应用体验",
     "/settings/profile": "更新个人信息、头像和账号设置",
+    "/settings/account": "管理您的账号安全和登录信息",
     "/settings/appearance": "自定义主题、颜色和界面布局"
   }
   

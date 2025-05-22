@@ -212,7 +212,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               colors.textColor.tailwind
             )}
           >
-            用户名
+            昵称
           </label>
           <div className={cn(
             "flex items-center",
