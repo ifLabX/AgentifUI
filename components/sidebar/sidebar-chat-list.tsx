@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit } from "lucide-react"
-import { SidebarButton } from "./sidebar-button"
+import { SidebarListButton } from "./sidebar-list-button" // 使用新的 SidebarListButton 组件
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { ChatSkeleton } from "./chat-skeleton"
 import { cn } from "@lib/utils"
@@ -149,19 +149,20 @@ export function SidebarChatList({
   // 修改渲染逻辑，确保骨架屏和标题状态下按钮尺寸一致
   // 使用统一的结构和高度，避免切换时的布局跳动
   // 考虑到右侧 more button 的占位，确保骨架屏宽度适当
+  // 优化显示效果，使用更美观的样式
   // --- END COMMENT ---
   const renderChatItemContent = (chat: CombinedConversation, isItemLoading: boolean) => {
     const title = chat.title || '新对话';
     
     // 所有状态下使用相同的高度和结构，确保一致性
     return (
-      <div className="flex items-center h-4 w-full"> {/* 固定高度为 h-4，宽度为 w-full */}
-        {isItemLoading && isExpanded ? (
+      <div className="flex items-center h-3.5 w-full"> {/* 减小高度为 h-3.5，使其更纤细 */}
+        {isItemLoading ? (
           // 骨架屏 - 宽度设置为 w-[85%]，为右侧 more button 预留空间
-          <div className={cn("h-4 w-[85%] animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
+          <div className={cn("h-3.5 w-[85%] animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
         ) : (
-          // 标题文本 - 使用 text-xs 和 leading-4 确保文本高度合适
-          <span className={cn("truncate w-full text-xs leading-4", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>
+          // 标题文本 - 使用更小的文本大小和行高，使其更纤细
+          <span className={cn("truncate w-full text-xs leading-3.5 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>
         )}
       </div>
     );
@@ -170,6 +171,7 @@ export function SidebarChatList({
   // --- BEGIN COMMENT ---
   // 修改 createMoreActions 函数，确保临时 ID 和真正对话 ID 之间切换时布局保持一致
   // 对于临时 ID 的对话，返回禁用状态的 more button 而不是 null，保持布局一致
+  // 优化下拉菜单样式，使其与整体主题更加协调
   // --- END COMMENT ---
   const createMoreActions = (chat: CombinedConversation, itemIsLoading: boolean) => {
     const canPerformActions = !!chat.supabase_pk;
@@ -181,11 +183,15 @@ export function SidebarChatList({
         placement="bottom"
         alignToTriggerBottom={true}
         minWidth={150}
-        contentClassName={cn(isDark ? "bg-stone-800" : "bg-white")}
+        contentClassName={cn(isDark ? "bg-stone-800 border border-stone-700" : "bg-white border border-stone-200")}
         trigger={
           <MoreButtonV2
             aria-label="更多选项"
             disabled={itemIsLoading || !canPerformActions || isTempChat}
+            className={cn(
+              "transition-opacity",
+              itemIsLoading || !canPerformActions || isTempChat ? "opacity-50" : "opacity-100"
+            )}
           />
         }
       >
@@ -216,17 +222,24 @@ export function SidebarChatList({
 
   return (
     <div className="flex flex-col space-y-1">
-      <div className="flex items-center px-3 py-1.5 text-xs text-stone-500 dark:text-stone-400">
-        <MessageSquare size={14} className="mr-1.5" />
+      {/* --- 响应式标题栏 --- */}
+      {/* 移动端：更紧凑的布局 */}
+      {/* 桌面端：标准间距 */}
+      <div className={cn(
+        "flex items-center px-2.5 py-1 text-xs font-medium", /* 减小内边距，使其更紧凑 */
+        isDark ? "text-stone-400" : "text-stone-500"
+      )}>
+        <MessageSquare size={12} className="mr-1.5" /> {/* 减小图标大小 */}
         近期对话
       </div>
       
       {/* 显示骨架屏 */}
       {showSkeleton && <ChatSkeleton isDark={isDark} count={5} />}
       
+      {/* --- 待处理对话列表 --- */}
       {pendingChats.length > 0 && (
-        <div className="mb-2">
-          <div className="space-y-1">
+        <div className="mb-1.5"> {/* 减小底部边距 */}
+          <div className="space-y-0.5 px-2"> {/* 减小列表项之间的间距 */}
             {pendingChats.map(chat => {
               const itemIsLoading = chat.pendingStatus === 'creating' || 
                                  chat.pendingStatus === 'title_fetching' || 
@@ -239,29 +252,27 @@ export function SidebarChatList({
               
               return (
                 <div className="group relative" key={chat.tempId || chat.id}> 
-                  <SidebarButton
+                  {/* 使用新的 SidebarListButton 替代 SidebarButton */}
+                  <SidebarListButton
                     icon={<SidebarChatIcon size="sm" isDark={isDark} />}
                     active={isActive}
                     onClick={() => onSelectChat(chat.id)}
-                    className={cn("w-full", !isExpanded && "justify-center")}
-                    isLoading={itemIsLoading && !isExpanded}
+                    isLoading={itemIsLoading}
                     moreActionsTrigger={
-                       isExpanded ? (
-                        <div className={cn(
-                          "transition-opacity",
-                          // 加载状态下显示占位，但禁用交互
-                          itemIsLoading 
-                            ? "pointer-events-none" // 禁用交互但保持占位
-                            : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 非加载状态下正常显示
-                        )}>
-                           {/* 无论是否加载，都显示 more button，确保布局一致 */}
-                           {createMoreActions(chat, itemIsLoading)}
-                        </div>
-                       ) : null
+                      <div className={cn(
+                        "transition-opacity",
+                        // 加载状态下显示占位，但禁用交互
+                        itemIsLoading 
+                          ? "pointer-events-none" // 禁用交互但保持占位
+                          : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 非加载状态下正常显示
+                      )}>
+                        {/* 无论是否加载，都显示 more button，确保布局一致 */}
+                        {createMoreActions(chat, itemIsLoading)}
+                      </div>
                     }
                   >
-                    {isExpanded ? renderChatItemContent(chat, itemIsLoading) : null}
-                  </SidebarButton>
+                    {renderChatItemContent(chat, itemIsLoading)}
+                  </SidebarListButton>
                 </div>
               );
             })}
@@ -269,8 +280,9 @@ export function SidebarChatList({
         </div>
       )}
       
+      {/* --- 已保存对话列表 --- */}
       <div>
-        <div className="space-y-1">
+        <div className="space-y-0.5 px-2"> {/* 减小列表项之间的间距 */}
           {visibleUnpinnedChats.map(chat => {
             // --- BEGIN COMMENT ---
             // 使用辅助函数判断项目是否应该处于选中状态
@@ -281,38 +293,40 @@ export function SidebarChatList({
 
             return (
               <div className="group relative" key={chat.id}>
-                <SidebarButton
+                {/* 使用新的 SidebarListButton 替代 SidebarButton */}
+                <SidebarListButton
                   icon={<SidebarChatIcon size="sm" isDark={isDark} />}
                   active={isActive}
                   onClick={() => onSelectChat(chat.id)}
-                  className={cn("w-full", !isExpanded && "justify-center")}
-                  isLoading={itemIsLoading && !isExpanded}
+                  isLoading={itemIsLoading}
                   moreActionsTrigger={
-                    isExpanded ? (
-                      <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-                        {createMoreActions(chat, itemIsLoading)}
-                      </div>
-                    ) : null
+                    <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                      {createMoreActions(chat, itemIsLoading)}
+                    </div>
                   }
                 >
-                  {isExpanded ? renderChatItemContent(chat, itemIsLoading) : null}
-                </SidebarButton>
+                  {renderChatItemContent(chat, itemIsLoading)}
+                </SidebarListButton>
               </div>
             );
           })}
+          
+          {/* --- 显示更多/更少按钮 --- */}
           {hasMoreChats && (
             <button
               onClick={() => setShowAllChats(!showAllChats)}
               className={cn(
-                "flex items-center justify-center w-full px-3 py-1.5 text-xs",
-                "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100",
+                "flex items-center justify-center w-full px-2.5 py-1 text-xs font-medium rounded-md mt-1", /* 减小内边距，增加上边距 */
+                isDark 
+                  ? "text-stone-400 hover:text-stone-200 hover:bg-stone-700/50" 
+                  : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50",
                 "transition-colors"
               )}
             >
               {showAllChats ? (
-                <><ChevronUp size={14} className="mr-1.5" />显示更少</>
+                <><ChevronUp size={12} className="mr-1.5" />显示更少</>
               ) : (
-                <><ChevronDown size={14} className="mr-1.5" />显示更多 ({unpinnedChats.length - visibleUnpinnedChats.length})</>
+                <><ChevronDown size={12} className="mr-1.5" />显示更多 ({unpinnedChats.length - visibleUnpinnedChats.length})</>
               )}
             </button>
           )}
