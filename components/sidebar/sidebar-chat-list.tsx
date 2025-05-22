@@ -112,6 +112,23 @@ export function SidebarChatList({
 
   const hasMoreChats = unpinnedChats.length > 5;
 
+  // --- BEGIN COMMENT ---
+  // 添加辅助函数，判断聊天项是否应该处于选中状态
+  // 考虑临时ID和正式ID之间的转换情况
+  // --- END COMMENT ---
+  const isChatActive = React.useCallback((chat: CombinedConversation) => {
+    if (!selectedId) return false;
+    
+    // 直接ID匹配
+    if (chat.id === selectedId) return true;
+    
+    // 临时ID匹配（处理从temp-xxx切换到正式ID的情况）
+    if (chat.tempId && selectedId.includes(chat.tempId)) return true;
+    
+    // 确保不会有误匹配
+    return false;
+  }, [selectedId]);
+
   if (!contentVisible) return null;
   
   // --- BEGIN COMMENT ---
@@ -200,7 +217,11 @@ export function SidebarChatList({
               const itemIsLoading = chat.pendingStatus === 'creating' || 
                                  chat.pendingStatus === 'title_fetching' || 
                                  chat.pendingStatus === 'streaming_message';
-              const isActive = chat.id === selectedId;
+              // --- BEGIN COMMENT ---
+              // 使用辅助函数判断项目是否应该处于选中状态
+              // 处理临时ID和正式ID之间的转换情况
+              // --- END COMMENT ---
+              const isActive = isChatActive(chat);
               
               return (
                 <div className="group relative" key={chat.tempId || chat.id}> 
@@ -237,7 +258,11 @@ export function SidebarChatList({
       <div>
         <div className="space-y-1">
           {visibleUnpinnedChats.map(chat => {
-            const isActive = chat.id === selectedId;
+            // --- BEGIN COMMENT ---
+            // 使用辅助函数判断项目是否应该处于选中状态
+            // 处理已保存对话的选中逻辑，确保精确匹配
+            // --- END COMMENT ---
+            const isActive = isChatActive(chat);
             const itemIsLoading = false; 
 
             return (
