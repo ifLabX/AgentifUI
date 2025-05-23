@@ -75,7 +75,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
         const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
         console.log(`[useCreateConversation] Early highlight: Selecting item in SidebarStore: ${tempConvId}`);
-        selectItem('chat', tempConvId, true); 
+        selectItem('chat', tempConvId, true); // 保持当前展开状态
       } catch (highlightError) {
         console.error('[useCreateConversation] Error during early highlight:', highlightError);
       }
@@ -120,7 +120,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
 
                 const sidebarStoreState = require('@lib/stores/sidebar-store').useSidebarStore.getState();
                 if (sidebarStoreState.selectedId === tempConvId || sidebarStoreState.selectedId === null) {
-                    sidebarStoreState.selectItem('chat', id, true); 
+                    sidebarStoreState.selectItem('chat', id, true); // 保持当前展开状态
                 }
               } catch (error) {
                 console.error('[useCreateConversation] Error updating stores to realId:', error);
@@ -187,10 +187,13 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   updateTitleInPendingStore(tempConvId, finalTitle, true); 
                   await saveConversationToDb(id, finalTitle, tempConvId); 
 
-                  // Ensure selection is on real ID after title resolution
+                  // 只有当前路由确实是这个对话时才更新选中状态
                   try {
-                    const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                    selectItem('chat', id, true); 
+                    const currentPath = window.location.pathname;
+                    if (currentPath === `/chat/${id}`) {
+                      const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                      selectItem('chat', id, true); // 保持当前展开状态
+                    }
                   } catch (error) {
                     console.error('[useCreateConversation] Error selecting item in sidebar after title:', error);
                   }
@@ -201,9 +204,13 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   updateTitleInPendingStore(tempConvId, fallbackTitle, true); 
                   await saveConversationToDb(id, fallbackTitle, tempConvId); 
                   
+                  // 只有当前路由确实是这个对话时才更新选中状态
                   try {
-                    const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-                    selectItem('chat', id, true);
+                    const currentPath = window.location.pathname;
+                    if (currentPath === `/chat/${id}`) {
+                      const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                      selectItem('chat', id, true); // 保持当前展开状态
+                    }
                   } catch (error) {
                     console.error('[useCreateConversation] Error selecting item in sidebar (title fetch failed):', error);
                   }

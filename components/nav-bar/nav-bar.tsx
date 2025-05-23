@@ -22,27 +22,22 @@ import { AvatarButton } from "./avatar-button"
 export function NavBar() {
   const isMobile = useMobile()
   const { colors, isDark } = useThemeColors()
-  const { isExpanded } = useSidebarStore()
+  const { isExpanded, isLocked } = useSidebarStore()
   const { logout } = useLogout()
 
   if (isMobile) {
     return null
   }
-  
-  // 根据主题获取导航栏样式
-  const getNavStyles = () => {
-    if (isDark) {
-      return {
-        dividerColor: "bg-stone-600"
-      };
-    } else {
-      return {
-        dividerColor: "bg-stone-300"
-      };
-    }
-  };
-  
-  const navStyles = getNavStyles();
+
+  // --- BEGIN COMMENT ---
+  // 计算左边距：桌面端始终为sidebar留出空间
+  // 未锁定时：为slim状态留出16的空间
+  // 锁定时：根据展开状态设置相应边距
+  // --- END COMMENT ---
+  const getLeftMargin = () => {
+    if (!isLocked) return "left-0 md:left-16" // 未锁定时为slim状态留出空间
+    return isExpanded ? "left-0 md:left-64" : "left-0 md:left-16"
+  }
 
   return (
     <>
@@ -50,10 +45,10 @@ export function NavBar() {
       <header
         className={cn(
           "fixed top-0 right-4 h-12 z-20", 
-          isExpanded ? "left-0 md:left-64" : "left-0 md:left-16",
+          getLeftMargin(),
+          "transition-[left] duration-300 ease-in-out",
           colors.mainBackground.tailwind,
           "flex items-center justify-between pl-4 pr-2",
-          ""
         )}
       >
         <div className="flex items-center space-x-2">
@@ -63,19 +58,6 @@ export function NavBar() {
           <AvatarButton dropdownId="user-menu" isDark={isDark} />
         </div>
       </header>
-
-      {/* 分割线 */}
-      <div 
-        className={cn(
-          "fixed top-12 h-px", 
-          isExpanded ? "left-0 md:left-64" : "left-0 md:left-16", 
-          "right-0", 
-          "z-20", 
-          "pointer-events-none", 
-          isExpanded ? navStyles.dividerColor : "bg-transparent",
-          ""
-        )}
-      />
 
       {/* 用户菜单 */}
       <DropdownMenu id="user-menu" minWidth={160}>

@@ -50,7 +50,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       setCurrentConversationId(null);
       
       // 同步设置侧边栏选中状态为 null
-      selectItem('chat', null);
+      selectItem('chat', null, true);
       
       // 强制设置欢迎屏幕状态为 true
       setIsWelcomeScreen(true);
@@ -70,7 +70,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       setCurrentConversationId(conversationIdFromUrl);
       
       // 同步设置侧边栏选中状态
-      selectItem('chat', conversationIdFromUrl);
+      selectItem('chat', conversationIdFromUrl, true);
       
       // 关闭欢迎屏幕 - 强制设置为 false，确保刷新页面后不会显示欢迎界面
       setIsWelcomeScreen(false);
@@ -93,7 +93,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
         // 确保侧边栏选中状态正确
         const sidebarState = useSidebarStore.getState();
         if (sidebarState.selectedId !== conversationIdFromUrl || sidebarState.selectedType !== 'chat') {
-          selectItem('chat', conversationIdFromUrl);
+          selectItem('chat', conversationIdFromUrl, true);
         }
       }, 50);
     } else {
@@ -101,7 +101,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       setCurrentConversationId(null);
       
       // 同步设置侧边栏选中状态为 null
-      selectItem('chat', null);
+      selectItem('chat', null, true);
     }
   }, [conversationIdFromUrl, setCurrentConversationId, setIsWelcomeScreen, clearMessages, setIsTransitioningToWelcome, selectItem]);
   
@@ -134,9 +134,9 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
         
         // --- BEGIN COMMENT ---
         // 确保侧边栏选中状态与当前对话ID同步
-        // 避免在提交消息时侧边栏选中状态不正确
+        // 保持当前展开状态
         // --- END COMMENT ---
-        selectItem('chat', currentConvId);
+        selectItem('chat', currentConvId, true);
       }
       
       // 调用原始的 handleSubmit 函数
@@ -149,7 +149,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
       const newConvId = useChatStore.getState().currentConversationId;
       if (newConvId && newConvId !== currentConvId) {
         console.log(`[ChatPageState] 提交后更新对话ID: ${newConvId}`);
-        selectItem('chat', newConvId);
+        selectItem('chat', newConvId, true);
       }
       
       return result;

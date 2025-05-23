@@ -71,8 +71,8 @@ export function Recents() {
       useChatTransitionStore.getState().setIsTransitioningToWelcome(true)
       useChatStore.getState().setIsWaitingForResponse(false)
       
-      // 设置侧边栏状态
-      useSidebarStore.getState().selectItem('chat', null)
+      // 设置侧边栏选中状态 - 保持当前展开状态
+      useSidebarStore.getState().selectItem('chat', null, true)
       
       // 设置标题
       document.title = '新对话 | if-agent-ui'
