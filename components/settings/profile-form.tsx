@@ -6,6 +6,7 @@ import { cn } from '@lib/utils';
 import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { Profile } from '@lib/types/database';
 import { updateUserProfile } from '@lib/db/profiles';
+import { updateProfileCache } from '@lib/hooks/use-profile';
 import { User, Mail, AtSign, Calendar, Check, AlertCircle } from 'lucide-react';
 
 // --- BEGIN COMMENT ---
@@ -60,6 +61,11 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       if (!updatedProfile) {
         throw new Error('更新资料失败');
       }
+      
+      // --- BEGIN COMMENT ---
+      // 更新localStorage缓存，确保在其他页面能立即看到最新数据
+      // --- END COMMENT ---
+      updateProfileCache(updatedProfile, profile.id);
       
       setMessage({
         type: 'success',
