@@ -54,10 +54,9 @@ export function SidebarContent() {
    * @param chatId 聊天项目的ID
    */
   const handleSelectChat = React.useCallback((chatId: number | string) => {
-    // 1. 更新侧边栏选中状态
-    selectItem('chat', chatId)
-    // 2. 确保侧边栏保持展开
-    lockExpanded()
+    // 1. 更新侧边栏选中状态 - 保持当前展开状态
+    selectItem('chat', chatId, true)
+    // 2. 不再调用 lockExpanded，由用户自行控制锁定
     
     // 3. 设置当前对话ID
     setCurrentConversationId(String(chatId))
@@ -65,7 +64,7 @@ export function SidebarContent() {
     setIsWelcomeScreen(false)
     // 5. 路由跳转到对话页面
     router.push(`/chat/${chatId}`)
-  }, [selectItem, lockExpanded, setCurrentConversationId, setIsWelcomeScreen, router])
+  }, [selectItem, setCurrentConversationId, setIsWelcomeScreen, router])
 
 
 

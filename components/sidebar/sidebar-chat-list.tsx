@@ -353,9 +353,8 @@ export function SidebarChatList({
                 }
                 onClick={() => {
                   // --- BEGIN COMMENT ---
-                  // 锁定侧边栏展开状态，然后使用router导航
+                  // 不再锁定侧边栏，保持当前状态，导航到历史页面
                   // --- END COMMENT ---
-                  lockExpanded()
                   router.push('/chat/recents')
                 }}
                 className={cn(
