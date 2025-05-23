@@ -86,8 +86,8 @@ export function SidebarChatList({
     if (!newTitle || newTitle.trim() === '') return;
     try {
       const { renameConversation } = await import('@lib/db/conversations');
-      const success = await renameConversation(supabasePK, newTitle.trim());
-      if (success) {
+      const result = await renameConversation(supabasePK, newTitle.trim());
+      if (result.success) {
         // --- BEGIN COMMENT ---
         // 重命名成功后直接更新页面标题，无需刷新页面
         // --- END COMMENT ---
@@ -98,9 +98,11 @@ export function SidebarChatList({
         
         refresh();
       } else {
+        console.error('重命名对话失败:', result.error);
         alert('重命名会话失败。');
       }
     } catch (error) {
+      console.error('重命名对话操作出错:', error);
       alert('操作出错，请稍后再试。');
     }
   }, [conversations, refresh]);
@@ -117,8 +119,8 @@ export function SidebarChatList({
     if (!confirmed) return;
     try {
       const { deleteConversation } = await import('@lib/db/conversations');
-      const success = await deleteConversation(supabasePK);
-      if (success) {
+      const result = await deleteConversation(supabasePK);
+      if (result.success) {
         refresh();
         // --- BEGIN COMMENT ---
         // 删除对话后直接路由到 /chat/new
@@ -127,9 +129,11 @@ export function SidebarChatList({
           window.location.href = '/chat/new';
         }
       } else {
+        console.error('删除对话失败:', result.error);
         alert('删除会话失败。');
       }
     } catch (error) {
+      console.error('删除对话操作出错:', error);
       alert('操作出错，请稍后再试。');
     }
   }, [conversations, refresh, selectedId, onSelectChat]);

@@ -77,14 +77,17 @@ export class RealtimeService {
       };
 
       // 配置订阅
+      const subscriptionConfig = {
+        event: config.event,
+        schema: config.schema,
+        table: config.table,
+        ...(config.filter && { filter: config.filter })
+      };
+
+      // 配置订阅
       channel.on(
-        'postgres_changes',
-        {
-          event: config.event,
-          schema: config.schema,
-          table: config.table,
-          ...(config.filter && { filter: config.filter })
-        },
+        'postgres_changes' as any, // 临时类型转换，避免TypeScript类型错误
+        subscriptionConfig,
         compositeHandler
       );
 

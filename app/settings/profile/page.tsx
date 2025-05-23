@@ -40,20 +40,22 @@ export default function ProfileSettingsPage() {
         }
         
         // 获取用户资料
-        const profileData = await getCurrentUserProfile();
-        if (!profileData) {
-          throw new Error('无法获取用户资料');
+        const result = await getCurrentUserProfile();
+        if (result.success && result.data) {
+          // --- BEGIN COMMENT ---
+          // 将 auth 用户的上次登录时间添加到资料中
+          // --- END COMMENT ---
+          const enhancedProfile = {
+            ...result.data,
+            auth_last_sign_in_at: user.last_sign_in_at
+          };
+          
+          setProfile(enhancedProfile);
+        } else if (result.success && !result.data) {
+          throw new Error('用户资料不存在');
+        } else {
+          throw new Error(result.error?.message || '无法获取用户资料');
         }
-        
-        // --- BEGIN COMMENT ---
-        // 将 auth 用户的上次登录时间添加到资料中
-        // --- END COMMENT ---
-        const enhancedProfile = {
-          ...profileData,
-          auth_last_sign_in_at: user.last_sign_in_at
-        };
-        
-        setProfile(enhancedProfile);
       } catch (err) {
         console.error('加载用户资料失败:', err);
         setError(err instanceof Error ? err : new Error('加载用户资料失败'));

@@ -52,29 +52,29 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       setMessage(null);
       
       // 更新用户资料
-      const updatedProfile = await updateUserProfile(profile.id, {
+      const result = await updateUserProfile(profile.id, {
         full_name: formData.full_name,
         username: formData.username,
         avatar_url: formData.avatar_url,
       });
       
-      if (!updatedProfile) {
-        throw new Error('更新资料失败');
-      }
-      
-      // --- BEGIN COMMENT ---
-      // 更新localStorage缓存，确保在其他页面能立即看到最新数据
-      // --- END COMMENT ---
-      updateProfileCache(updatedProfile, profile.id);
-      
-      setMessage({
-        type: 'success',
-        text: '个人资料已更新'
-      });
-      
-      // 调用成功回调
-      if (onSuccess) {
-        onSuccess();
+      if (result.success && result.data) {
+        // --- BEGIN COMMENT ---
+        // 更新localStorage缓存，确保在其他页面能立即看到最新数据
+        // --- END COMMENT ---
+        updateProfileCache(result.data, profile.id);
+        
+        setMessage({
+          type: 'success',
+          text: '个人资料已更新'
+        });
+        
+        // 调用成功回调
+        if (onSuccess) {
+          onSuccess();
+        }
+      } else {
+        throw new Error(result.error?.message || '更新资料失败');
       }
     } catch (error: any) {
       setMessage({

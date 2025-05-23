@@ -3,7 +3,7 @@
  * 
  * 本文件导出所有数据库查询相关的函数
  * 使用时可以从这个文件统一导入所需的函数
-  * 
+ * 
  * 新增：统一数据服务、缓存服务、实时订阅服务
  * 兼容：保留原有函数的导出，同时提供新的优化版本
  */
@@ -37,7 +37,13 @@ export {
 } from '@lib/types/result';
 
 // --- BEGIN COMMENT ---
-// 兼容性导      出：保留原有函数接口
+// 导入服务实例，用于内部函数使用
+// --- END COMMENT ---
+import { cacheService as cacheServiceInstance } from '@lib/services/cache-service';
+import { realtimeService as realtimeServiceInstance } from '@lib/services/realtime-service';
+
+// --- BEGIN COMMENT ---
+// 兼容性导出：保留原有函数接口
 // 这些函数已经内部升级为使用新的数据服务，但保持相同的API
 // --- END COMMENT ---
 
@@ -137,43 +143,43 @@ export {
  * 清除所有缓存
  */
 export function clearAllCache(): void {
-  cacheService.clear();
+  cacheServiceInstance.clear();
 }
 
 /**
  * 清除指定表的缓存
  */
 export function clearTableCache(table: string): number {
-  return cacheService.deletePattern(`${table}:*`);
+  return cacheServiceInstance.deletePattern(`${table}:*`);
 }
 
 /**
  * 获取缓存统计信息
  */
 export function getCacheStats() {
-  return cacheService.getStats();
+  return cacheServiceInstance.getStats();
 }
 
 /**
  * 获取实时订阅统计信息
  */
 export function getRealtimeStats() {
-  return realtimeService.getStats();
+  return realtimeServiceInstance.getStats();
 }
 
 /**
  * 清理所有实时订阅
  */
 export function cleanupRealtimeSubscriptions(): void {
-  realtimeService.unsubscribeAll();
+  realtimeServiceInstance.unsubscribeAll();
 }
 
 /**
  * 批量清理资源（缓存 + 订阅）
  */
 export function cleanupAllResources(): void {
-  cacheService.clear();
-  realtimeService.unsubscribeAll();
+  cacheServiceInstance.clear();
+  realtimeServiceInstance.unsubscribeAll();
   console.log('[数据库服务] 已清理所有缓存和实时订阅');
 }
 
@@ -189,7 +195,7 @@ export function debugServiceStatus(): void {
     console.group('[数据库服务状态]');
     console.log('缓存统计:', getCacheStats());
     console.log('实时订阅统计:', getRealtimeStats());
-    console.log('订阅列表:', realtimeService.listSubscriptions());
+    console.log('订阅列表:', realtimeServiceInstance.listSubscriptions());
     console.groupEnd();
   }
 }

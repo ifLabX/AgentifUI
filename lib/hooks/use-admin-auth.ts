@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@lib/supabase/client';
+import { getCurrentUserProfile } from '@lib/db'; // 使用新的优化数据库接口
+import { useSupabaseAuth } from '@lib/supabase/hooks';
 
 export interface AdminAuthResult {
   isAdmin: boolean;
@@ -10,6 +11,7 @@ export interface AdminAuthResult {
 
 /**
  * 用于检查用户是否为管理员的 Hook
+ * 更新为使用新的数据服务和Result类型
  * 
  * @returns 管理员权限检查结果
  * 
@@ -25,7 +27,7 @@ export interface AdminAuthResult {
  */
 export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult {
   const router = useRouter();
-  const supabase = createClient();
+  const { session } = useSupabaseAuth();
   
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,10 +39,8 @@ export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult
         setIsLoading(true);
         setError(null);
         
-        // 获取当前会话
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (!session) {
+        // 检查是否有有效的用户会话
+        if (!session?.user) {
           // 如果用户未登录，设置为非管理员
           setIsAdmin(false);
           
@@ -54,36 +54,33 @@ export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult
           return;
         }
         
-        // 首先直接查询所有 profiles 记录，来确认表是否存在数据
-        const { data: allProfiles, error: allProfilesError } = await supabase
-          .from('profiles')
-          .select('*')
-          .limit(5);
+        // --- BEGIN COMMENT ---
+        // 使用新的数据服务获取当前用户资料
+        // getCurrentUserProfile 已经包含了缓存和错误处理
+        // --- END COMMENT ---
+        const result = await getCurrentUserProfile();
         
-        // 然后查询当前用户的 profile
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*') // 选择所有字段以便调试
-          .eq('id', session.user.id)
-          .single();
-        
-        if (profileError) {
-          throw profileError;
-        }
-        
-        // 检查角色是否为 admin
-        const isUserAdmin = profile?.role === 'admin';
-        
-        setIsAdmin(isUserAdmin);
-        
-        // 如果不是管理员且需要重定向
-        if (!isUserAdmin && redirectOnFailure) {
-          // 使用 setTimeout 延迟重定向，让错误信息有时间显示
-          setTimeout(() => {
-            // 已登录但不是管理员，跳转到首页
-            router.push('/');
-          }, 3000); // 延迟 3 秒
-        } else if (isUserAdmin) {
+        if (result.success && result.data) {
+          // 检查角色是否为 admin
+          const isUserAdmin = result.data.role === 'admin';
+          
+          setIsAdmin(isUserAdmin);
+          
+          // 如果不是管理员且需要重定向
+          if (!isUserAdmin && redirectOnFailure) {
+            // 使用 setTimeout 延迟重定向，让错误信息有时间显示
+            setTimeout(() => {
+              // 已登录但不是管理员，跳转到首页
+              router.push('/');
+            }, 3000); // 延迟 3 秒
+          }
+        } else if (result.success && !result.data) {
+          // 用户资料不存在
+          setIsAdmin(false);
+          throw new Error('用户资料不存在');
+        } else {
+          // 查询失败
+          throw new Error(result.error?.message || '检查管理员状态时出错');
         }
       } catch (err) {
         console.error('检查管理员状态时出错:', err);
@@ -95,7 +92,7 @@ export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult
     }
     
     checkAdminStatus();
-  }, [supabase, router, redirectOnFailure]);
+  }, [session, router, redirectOnFailure]);
   
   return { isAdmin, isLoading, error };
 }

@@ -2,15 +2,16 @@
  * 对话消息加载钩子
  * 
  * 提供消息的分页加载、历史记录查询和滚动加载功能
+ * 更新为使用新的统一数据服务和messageService
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { getMessagesByConversationId } from '@lib/db/messages';
+import { messageService } from '@lib/services/message-service';
+import { getConversationByExternalId } from '@lib/db/conversations';
 import { Message } from '@lib/types/database';
 import { useChatStore, ChatMessage } from '@lib/stores/chat-store';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
-import { getConversationByExternalId } from '@lib/db/conversations';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 
 // 每页加载的消息数量
@@ -188,25 +189,30 @@ export function useConversationMessages() {
   }, [sortMessagesByTime]);
   
   /**
-   * 从Dify对话ID获取数据库对话ID
+   * 从Dify对话ID获取数据库对话ID（使用新的优化接口）
    */
   const fetchDbConversationId = useCallback(async (externalId: string) => {
     try {
       console.log(`[useConversationMessages] 查询外部ID为 ${externalId} 的对话记录`);
       
-      const dbConversation = await getConversationByExternalId(externalId);
+      const result = await getConversationByExternalId(externalId);
       
-      if (dbConversation) {
-        console.log(`[useConversationMessages] 找到对话记录，数据库ID=${dbConversation.id}`);
-        setDbConversationId(dbConversation.id);
-        return dbConversation.id;
-      } else {
+      if (result.success && result.data) {
+        console.log(`[useConversationMessages] 找到对话记录，数据库ID=${result.data.id}`);
+        setDbConversationId(result.data.id);
+        return result.data.id;
+      } else if (result.success && !result.data) {
         console.log(`[useConversationMessages] 未找到外部ID为 ${externalId} 的对话记录`);
+        setDbConversationId(null);
+        return null;
+      } else {
+        console.error(`[useConversationMessages] 查询对话记录失败:`, result.error);
+        setError(result.error || new Error('查询对话记录失败'));
         setDbConversationId(null);
         return null;
       }
     } catch (error) {
-      console.error(`[useConversationMessages] 查询对话记录失败:`, error);
+      console.error(`[useConversationMessages] 查询对话记录异常:`, error);
       setError(error instanceof Error ? error : new Error(String(error)));
       setDbConversationId(null);
       return null;
@@ -214,7 +220,7 @@ export function useConversationMessages() {
   }, []);
   
   /**
-   * 加载初始消息（最新的N条）
+   * 加载初始消息（使用新的messageService）
    */
   const loadInitialMessages = useCallback(async (dbConvId: string) => {
     // --- BEGIN COMMENT ---
@@ -255,8 +261,10 @@ export function useConversationMessages() {
       // 设置当前数据库对话ID
       setDbConversationId(dbConvId);
       
-      // 获取所有消息
-      const dbMessages = await getMessagesByConversationId(dbConvId);
+      // --- BEGIN COMMENT ---
+      // 使用新的messageService获取最新消息
+      // --- END COMMENT ---
+      const result = await messageService.getLatestMessages(dbConvId, MESSAGES_PER_PAGE, { cache: true });
       
       // 如果请求已被取消或对话ID已改变，则放弃处理结果
       if (signal.aborted || loaderState.current.currentId !== dbConvId) {
@@ -265,10 +273,19 @@ export function useConversationMessages() {
         return;
       }
       
+      if (!result.success) {
+        console.error(`[useConversationMessages] 加载初始消息失败:`, result.error);
+        setError(result.error);
+        finishLoading('error');
+        return;
+      }
+      
+      const dbMessages = result.data;
+      
       // 记录总消息数
       loaderState.current.totalMessages = dbMessages.length;
       
-      // 如果消息总数不足一页，就不需要显示“加载更多”按钮
+      // 如果消息总数不足一页，就不需要显示"加载更多"按钮
       if (dbMessages.length <= MESSAGES_PER_PAGE) {
         setHasMoreMessages(false);
       } else {
@@ -336,7 +353,7 @@ export function useConversationMessages() {
   }, [clearMessages, organizeMessages]);
   
   /**
-   * 加载更多历史消息（向前翻页）
+   * 加载更多历史消息（使用新的messageService）
    */
   const loadMoreMessages = useCallback(async () => {
     // --- BEGIN COMMENT ---
@@ -383,14 +400,26 @@ export function useConversationMessages() {
       
       console.log(`[useConversationMessages] 加载更多历史消息，页码=${currentPage+1}，跳过=${skip}`);
       
-      // 获取所有消息
-      const allMessages = await getMessagesByConversationId(dbConversationId);
+      // --- BEGIN COMMENT ---
+      // 使用新的messageService获取所有消息，然后手动分页
+      // 这是临时方案，后续可以优化为真正的游标分页
+      // --- END COMMENT ---
+      const result = await messageService.getLatestMessages(dbConversationId, 1000, { cache: true }); // 获取大量消息用于分页
       
       // 如果请求已被取消或对话ID已改变，则放弃处理结果
       if (signal.aborted || loaderState.current.currentId !== dbConversationId) {
         console.log(`[useConversationMessages] 请求已取消或对话ID已变更，放弃加载更多结果`);
         return;
       }
+      
+      if (!result.success) {
+        console.error(`[useConversationMessages] 加载更多消息失败:`, result.error);
+        setError(result.error);
+        finishLoading('error');
+        return;
+      }
+      
+      const allMessages = result.data;
       
       // 更新总消息数
       loaderState.current.totalMessages = allMessages.length;

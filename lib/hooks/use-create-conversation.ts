@@ -6,7 +6,7 @@ import { renameConversation } from '@lib/services/dify/conversation-service';
 import type { DifyChatRequestPayload } from '@lib/services/dify/types';
 import { useSupabaseAuth } from '@lib/supabase/hooks'; // For userId
 // import { useCurrentAppStore } from '@lib/stores/current-app-store'; // appId is passed as param
-import { createConversation as dbCreateConversation } from '@lib/db'; // DB function
+import { createConversation } from '@lib/db'; // 使用新的优化版本
 import { useChatStore } from '@lib/stores/chat-store'; // To set local conversation ID
 
 interface UseCreateConversationReturn {
@@ -139,10 +139,10 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 try {
                   // console.log(`[useCreateConversation] Saving to DB: difyId=${difyConvId}, title=${convTitle}, userId=${currentUserId}, appId=${appId}, tempId=${currentTempConvId}`);
                   // --- BEGIN COMMENT ---
+                  // 使用新的createConversation接口，处理Result类型
                   // 移除 last_message_preview 字段的设置，因为它现在由数据库触发器自动处理
-                  // 触发器只会在助手消息插入时更新此字段，而不是用户消息
                   // --- END COMMENT ---
-                  const localConversation = await dbCreateConversation({
+                  const result = await createConversation({
                     user_id: currentUserId,
                     app_id: appId, 
                     external_id: difyConvId,
@@ -156,7 +156,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     metadata: {},
                   });
 
-                  if (localConversation && localConversation.id) {
+                  if (result.success && result.data) {
+                    const localConversation = result.data;
                     // console.log(`[useCreateConversation] Saved to DB successfully. Local ID: ${localConversation.id}, Dify ID: ${difyConvId}`);
                     // setCurrentChatConversationId(difyConvId); // Already set to real ID or temp ID
                     setSupabasePKInPendingStore(difyConvId, localConversation.id); 
@@ -171,7 +172,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
                       onDbIdCreated(difyConvId, localConversation.id);
                     }
                   } else {
-                    throw new Error("Failed to save conversation to local DB or local ID not returned.");
+                    console.error(`[useCreateConversation] 创建对话失败:`, result.error);
+                    throw new Error(result.error?.message || "Failed to save conversation to local DB or local ID not returned.");
                   }
                 } catch (dbError) {
                   console.error(`[useCreateConversation] Error saving conversation (difyId: ${difyConvId}) to DB:`, dbError);

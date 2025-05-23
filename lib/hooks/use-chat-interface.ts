@@ -106,17 +106,20 @@ export function useChatInterface() {
         try {
           console.log(`[路由监听] 开始查询外部ID为 ${pathConversationId} 的对话记录`);
           
-          const dbConversation = await getConversationByExternalId(pathConversationId);
+          const result = await getConversationByExternalId(pathConversationId);
           
-          if (dbConversation) {
-            console.log(`[路由监听] 找到对话记录，数据库ID=${dbConversation.id}`);
-            setDbConversationUUID(dbConversation.id);
-          } else {
+          if (result.success && result.data) {
+            console.log(`[路由监听] 找到对话记录，数据库ID=${result.data.id}`);
+            setDbConversationUUID(result.data.id);
+          } else if (result.success && !result.data) {
             console.log(`[路由监听] 未找到外部ID为 ${pathConversationId} 的对话记录`);
+            setDbConversationUUID(null);
+          } else {
+            console.error(`[路由监听] 查询对话记录失败:`, result.error);
             setDbConversationUUID(null);
           }
         } catch (error) {
-          console.error(`[路由监听] 查询对话记录失败:`, error);
+          console.error(`[路由监听] 查询对话记录异常:`, error);
           setDbConversationUUID(null);
         }
       };
@@ -315,10 +318,10 @@ export function useChatInterface() {
           // 注意：initiate函数内部已经创建了数据库记录，所以这里可以直接查询
           // --- END COMMENT ---
           try {
-            const dbConversation = await getConversationByExternalId(finalRealConvId);
+            const result = await getConversationByExternalId(finalRealConvId);
             
-            if (dbConversation) {
-              finalDbConvUUID = dbConversation.id;
+            if (result.success && result.data) {
+              finalDbConvUUID = result.data.id;
               setDbConversationUUID(finalDbConvUUID);
             } else {
               finalDbConvUUID = null;
@@ -351,10 +354,10 @@ export function useChatInterface() {
           // 如果没有数据库对话ID，但有Dify对话ID，尝试查询
           try {
             
-            const dbConversation = await getConversationByExternalId(difyConversationId);
+            const result = await getConversationByExternalId(difyConversationId);
             
-            if (dbConversation) {
-              finalDbConvUUID = dbConversation.id;
+            if (result.success && result.data) {
+              finalDbConvUUID = result.data.id;
               setDbConversationUUID(finalDbConvUUID);
             } else {
               finalDbConvUUID = null;
@@ -408,9 +411,9 @@ export function useChatInterface() {
               // 如果获取到了新的Dify对话ID，需要重新查询数据库对话ID
               if (!finalDbConvUUID) {
                 // 异步查询，不阻塞流式处理
-                getConversationByExternalId(newlyFetchedConvId).then(dbConv => {
-                  if (dbConv) {
-                    finalDbConvUUID = dbConv.id;
+                getConversationByExternalId(newlyFetchedConvId).then(result => {
+                  if (result.success && result.data) {
+                    finalDbConvUUID = result.data.id;
                     setDbConversationUUID(finalDbConvUUID);
                   }
                 }).catch(err => {
@@ -431,10 +434,10 @@ export function useChatInterface() {
           // 如果获取到了新的Dify对话ID，需要重新查询数据库对话ID
           if (!finalDbConvUUID && finalRealConvId !== difyConversationId) {
             try {
-              const dbConversation = await getConversationByExternalId(finalRealConvId);
+              const result = await getConversationByExternalId(finalRealConvId);
               
-              if (dbConversation) {
-                finalDbConvUUID = dbConversation.id;
+              if (result.success && result.data) {
+                finalDbConvUUID = result.data.id;
                 setDbConversationUUID(finalDbConvUUID);
                 console.log(`[handleSubmit] 找到数据库对话ID: ${finalDbConvUUID}`);
               } else {
@@ -582,16 +585,16 @@ export function useChatInterface() {
         // 尝试从Dify对话ID再次查询数据库对话ID
         if (finalRealConvId) {
           console.log(`[handleSubmit] 尝试最后一次查询数据库对话ID，Dify对话ID=${finalRealConvId}`);
-          getConversationByExternalId(finalRealConvId).then(dbConv => {
-            if (dbConv && dbConv.id) {
-              console.log(`[handleSubmit] 查询到数据库对话ID，开始保存消息，ID=${dbConv.id}`);
+          getConversationByExternalId(finalRealConvId).then(result => {
+            if (result.success && result.data) {
+              console.log(`[handleSubmit] 查询到数据库对话ID，开始保存消息，ID=${result.data.id}`);
               // 设置数据库对话ID
-              finalDbConvUUID = dbConv.id;
-              setDbConversationUUID(dbConv.id);
+              finalDbConvUUID = result.data.id;
+              setDbConversationUUID(result.data.id);
               
               // 保存用户消息和助手消息
               if (userMessage && userMessage.persistenceStatus !== 'saved') {
-                saveMessage(userMessage, dbConv.id).catch(err => {
+                saveMessage(userMessage, result.data.id).catch(err => {
                   console.error('[handleSubmit] 二次查询后保存用户消息失败:', err);
                 });
               }
@@ -599,7 +602,7 @@ export function useChatInterface() {
               if (assistantMessageId) {
                 const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
                 if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
-                  saveMessage(assistantMessage, dbConv.id).catch(err => {
+                  saveMessage(assistantMessage, result.data.id).catch(err => {
                     console.error('[handleSubmit] 二次查询后保存助手消息失败:', err);
                   });
                 }
@@ -806,9 +809,9 @@ export function useChatInterface() {
         } else if (difyConversationId) {
           // 如果数据库ID不可用但有Dify对话ID，尝试查询数据库ID
           console.log(`[handleStopProcessing] 尝试查询数据库ID后保存中断消息，Dify对话ID=${difyConversationId}`);
-          getConversationByExternalId(difyConversationId).then(dbConversation => {
-            if (dbConversation) {
-              saveMessage(assistantMessage, dbConversation.id).catch(error => {
+          getConversationByExternalId(difyConversationId).then(result => {
+            if (result.success && result.data) {
+              saveMessage(assistantMessage, result.data.id).catch(error => {
                 console.error('[handleStopProcessing] 查询后保存中断消息失败:', error);
               });
             }
