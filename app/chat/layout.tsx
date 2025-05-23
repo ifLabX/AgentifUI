@@ -13,7 +13,7 @@ interface ChatLayoutProps {
 }
 
 export default function ChatLayout({ children }: ChatLayoutProps) {
-  const { isExpanded, isMobileNavVisible, isMounted, setMounted } = useSidebarStore() // Restored isMobileNavVisible just in case
+  const { isExpanded, isLocked, isMounted, setMounted } = useSidebarStore()
   const isMobile = useMobile()
   
   // 在组件挂载后设置状态
@@ -21,43 +21,36 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
     setMounted()
   }, [setMounted])
 
+  // --- BEGIN COMMENT ---
+  // 计算主内容区域的左边距
+  // 仅在桌面端且侧边栏锁定时，根据展开状态设置边距
+  // 悬停展开时不设置边距（覆盖模式）
+  // --- END COMMENT ---
+  const getMainMarginLeft = () => {
+    if (isMobile) return "ml-0"
+    if (!isLocked) return "ml-16" // 未锁定时保持slim状态的边距
+    return isExpanded ? "ml-64" : "ml-16"
+  }
+
   return (
     <div className="flex min-h-screen h-full bg-stone-100 dark:bg-stone-800">
-      {/* 
-        移动端导航按钮 - 仅在客户端挂载后显示 
-        使用mobile类只在移动设备上显示
-      */}
-      <div className="md:hidden">
-        {isMounted && <MobileNavButton />}
-      </div>
+      {/* 侧边栏 - 始终渲染，由内部控制显示/隐藏 */}
+      <Sidebar />
       
       {/* 
-        侧边栏 - 使用CSS媒体查询控制初始显示:
-        - 在移动设备(md以下)：只有在isMounted且isExpanded时才显示
-        - 在桌面设备(md及以上)：始终显示
+        移动端导航按钮 - 仅在客户端挂载后显示 
       */}
-      <div className={cn(
-        // 桌面设备上始终显示
-        "md:block",
-        // 移动设备上根据状态控制显示
-        "hidden",
-        isMobile && isMounted && isExpanded ? "block" : "hidden"
-      )}>
-        <div className="fixed top-0 left-0 h-full z-30">
-          <Sidebar />
-        </div>
+      <div className="md:hidden fixed top-4 left-4 z-50">
+        {isMounted && <MobileNavButton />}
       </div>
       
       {/* 主内容区域 - 确保聊天页面有固定高度和正确的滚动行为 */}
       <main
         className={cn(
-          "flex-1 overflow-auto h-screen", // 保持固定高度和溢出滚动
-          // 桌面端根据侧边栏状态设置margin
-          isExpanded ? "md:ml-64" : "md:ml-16",
-          // 移动设备不设置margin
-          "ml-0",
+          "w-full h-screen overflow-auto", // 使用 w-full 而不是 flex-1
+          getMainMarginLeft(),
           // 过渡效果
-          "transition-all duration-300 ease-in-out"
+          "transition-[margin-left] duration-300 ease-in-out"
         )}
       >
         <div className="h-full p-0">{children}</div>
