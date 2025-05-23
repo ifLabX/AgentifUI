@@ -24,6 +24,7 @@ import { useFilePreviewStore } from '@lib/stores/ui/file-preview-store';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
 import { cn } from '@lib/utils';
 import { NavBar } from '@components/nav-bar/nav-bar';
+import { useProfile } from '@lib/hooks/use-profile';
 
 export default function ChatPage() {
   const params = useParams<{ conversationId: string }>();
@@ -86,6 +87,13 @@ export default function ChatPage() {
     setMessagesContainer(element);
   };
 
+  // --- BEGIN COMMENT ---
+  // 只在 /chat/new 路由下调用 useProfile，其他路由不需要
+  // 优先从 localStorage 缓存中获取数据，避免显示 loading 状态
+  // --- END COMMENT ---
+  const isNewChat = conversationIdFromUrl === 'new';
+  const { profile, isLoading: isProfileLoading } = isNewChat ? useProfile() : { profile: null, isLoading: false };
+
   return (
     <div 
       className={cn(
@@ -94,11 +102,7 @@ export default function ChatPage() {
         colors.mainText.tailwind
       )}
     >
-      {/* 不再需要单独的页面级加载指示器，骨架屏已足够 */}
-      {/* <PageLoadingSpinner isLoading={isLoadingInitial} /> */}
-      
       <NavBar />
-
       <div 
         className={cn(
           "relative flex-1 flex flex-col overflow-hidden min-h-0",
@@ -108,6 +112,20 @@ export default function ChatPage() {
         )}
         style={{ '--chat-input-height': chatInputHeightVar } as React.CSSProperties}
       >
+        {/* --- BEGIN COMMENT ---
+        页面级 loading，仅遮挡主内容区，不遮挡 sidebar。
+        只在 /chat/new 路由下显示 loading 状态
+        --- END COMMENT --- */}
+        {isNewChat && isProfileLoading && (
+          <div className={cn(
+            "absolute inset-0 z-40 flex items-center justify-center",
+            isDark ? "bg-stone-900" : "bg-stone-100",
+            "backdrop-blur-sm"
+          )}>
+            <div className="w-8 h-8 animate-spin rounded-full border-4 border-t-transparent border-gray-500" />
+          </div>
+        )}
+
         <div className="flex-1 min-h-0">
           {/* --- BEGIN MODIFIED COMMENT ---
           显示欢迎屏幕的条件：
@@ -118,16 +136,16 @@ export default function ChatPage() {
           --- END MODIFIED COMMENT --- */}
           {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示欢迎屏幕 */}
           {(conversationIdFromUrl === 'new' && messages.length === 0) ? (
-            <WelcomeScreen />
+            <WelcomeScreen username={profile?.username} />
           ) : (messages.length === 0 && !isSubmitting && isWelcomeScreen) ? (
-            <WelcomeScreen />
+            <WelcomeScreen username={profile?.username} />
           ) : (
             <div 
               ref={setScrollRef}
               className="h-full overflow-y-auto scroll-smooth chat-scroll-container"
             >
               {/* --- BEGIN COMMENT ---
-              显示“加载更多”按钮或加载指示器的条件：
+              显示"加载更多"按钮或加载指示器的条件：
               1. 非初始加载状态(避免与初始骨架屏重叠)
               2. 非新对话或临时对话路径
               3. 确实有更多消息可加载
