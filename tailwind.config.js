@@ -2,8 +2,9 @@
 module.exports = {
   darkMode: 'class', // 使用类切换，而不是媒体查询
   content: [
-    './app/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -13,7 +14,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-geist-sans)'],
-        mono: ['var(--font-geist-mono)'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Monaco', 'Consolas', 'Liberation Mono', 'Menlo', 'monospace'],
       },
       animation: {
         'slide-in-down': 'slideInDown 0.3s ease-out forwards',
@@ -49,7 +50,12 @@ module.exports = {
           '50%': { opacity: 0 },
         },
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 } 

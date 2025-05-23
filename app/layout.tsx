@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import { TooltipContainer } from "@components/ui/tooltip";
 import "./globals.css";
 import "../styles/markdown-variables.css";
@@ -10,15 +10,9 @@ import { ClientLayout } from "./layouts/client-layout";
 import { cn } from "@lib/utils";
 import { Providers } from "./providers"; // 确保导入 Providers 组件
 import { DynamicTitle } from "@components/ui/dynamic-title"; // 导入动态标题组件
-import { StagewiseToolbarWrapper } from "@components/dev/stagewise-toolbar"; // 导入 Stagewise 工具栏组件
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -42,12 +36,10 @@ export default function RootLayout({
         <Providers> { /* 使用 Providers 包裹 */ }
           {/* 添加 DynamicTitle 组件，确保它能在所有页面中生效 */}
           <DynamicTitle />
-          <ClientLayout fontClasses={`${geistSans.variable} ${geistMono.variable}`}>
+          <ClientLayout fontClasses={geistSans.variable}>
             {children}
             <TooltipContainer />
             <NotificationBar />
-            {/* Stagewise 工具栏组件，仅在开发环境中渲染 */}
-            <StagewiseToolbarWrapper />
           </ClientLayout>
         </Providers>
       </body>
