@@ -311,7 +311,38 @@ export const ChatInput = ({
     // 确保在非欢迎屏幕（即实际聊天界面）时，或者即使用户要求任何时候都聚焦
     // 当前逻辑：只要组件挂载就尝试聚焦
     useFocusManager.getState().focusInput();
-  }, []); // 空依赖数组确保只在挂载时运行一次
+  }, []);
+
+  // --- BEGIN COMMENT ---
+  // 监听欢迎界面状态变化，确保切换到新对话时自动聚焦
+  // 这解决了从临时对话切换到新对话时焦点丢失的问题
+  // --- END COMMENT ---
+  useEffect(() => {
+    // 当切换到欢迎界面时（新对话），自动聚焦输入框
+    // 添加短暂延迟确保界面过渡完成
+    if (isWelcomeScreen) {
+      const timer = setTimeout(() => {
+        useFocusManager.getState().focusInput();
+      }, 150); // 150ms延迟，确保过渡动画完成
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isWelcomeScreen]);
+
+  // --- BEGIN COMMENT ---
+  // 监听外部传入的isWelcomeScreen prop变化
+  // 确保当组件接收到新的欢迎界面状态时也能正确聚焦
+  // --- END COMMENT ---
+  useEffect(() => {
+    // 当外部传入的欢迎界面状态变为true时，自动聚焦输入框
+    if (externalIsWelcomeScreen) {
+      const timer = setTimeout(() => {
+        useFocusManager.getState().focusInput();
+      }, 150); // 150ms延迟，确保过渡动画完成
+      
+      return () => clearTimeout(timer);
+    }
+  }, [externalIsWelcomeScreen]);
   
   // --- BEGIN 中文注释 --- 文件类型选择处理 ---
   // 处理文件类型选择后的文件上传
