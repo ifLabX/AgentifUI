@@ -15,7 +15,7 @@ globs:
 
 这些是 `gw` 脚本的核心，专为典型的功能开发流程设计：
 
-1.  **`gw new <分支名> [--local] [基础分支]`**: **开始新任务**
+1.  **`gw start <分支名> [--local] [基础分支]`**: **开始新任务**
     *   **作用:** 从最新的主分支 (`master` 或 `main`，脚本自动检测) 或指定的基础分支创建并切换到一个新的功能分支。
     *   **流程:**
         1.  (默认) 切换到基础分支 (如 `master`)。
@@ -23,9 +23,9 @@ globs:
         3.  执行 `git checkout -b <新分支名>` 创建并切换。
     *   **`--local` 选项**: 如果添加了 `--local` 标志，则会跳过第 2 步的 `pull --rebase`，直接基于本地的基础分支状态创建新分支。适用于离线或想基于特定本地提交点开始的情况。
     *   **示例:**
-        *   `gw new feature/user-login` (从最新的主分支创建)
-        *   `gw new hotfix/issue-123 develop` (从 `develop` 分支创建)
-        *   `gw new quick-test --local` (从本地的最新主分支创建，不拉取更新)
+        *   `gw start feature/user-login` (从最新的主分支创建)
+        *   `gw start hotfix/issue-123 develop` (从 `develop` 分支创建)
+        *   `gw start quick-test --local` (从本地的最新主分支创建，不拉取更新)
 
 2.  **`gw save [-m "消息"] [-e] [文件...]`**: **保存开发进度**
     *   **作用:** 快速添加变更并提交。
@@ -41,12 +41,12 @@ globs:
         *   `gw save -m "修复登录按钮样式"` (添加所有变更，直接提交)
         *   `gw save -e src/api.js` (添加指定文件，打开命令行编辑器)
 
-3.  **`gw sync`**: **同步开发分支**
+3.  **`gw update`**: **同步开发分支**
     *   **作用:** 将主分支的最新变更整合到你当前的开发分支，保持同步，减少最终合并冲突。
     *   **流程:** 暂存本地变更 (如有) -> 切换到主分支 -> 拉取最新代码 (`git pull`) -> 切换回原分支 -> 变基 (`git rebase`) -> 尝试恢复暂存。
     *   **注意:** 如果 Rebase 过程中出现冲突，脚本会停止并提示你手动解决。
 
-4.  **`gw finish [-n|--no-switch]`**: **完成分支开发，准备 PR/MR**
+4.  **`gw submit [-n|--no-switch]`**: **完成分支开发，准备 PR/MR**
     *   **作用:** 完成当前分支的开发工作，将其推送到远程仓库，为创建 Pull Request 或 Merge Request 做准备。
     *   **流程:** 检查未提交变更 (提示处理) -> 推送当前分支到远程 (`git push`，自动处理首次推送的 `-u` 选项) -> **默认询问**是否切换回主分支并更新 -> (若使用 `-n` 或 `--no-switch` 参数，则**跳过**切换步骤)。
     *   **关键:** 此命令执行成功后，你需要**手动**去代码托管平台 (GitHub/GitLab) 创建 PR/MR。
@@ -67,7 +67,7 @@ globs:
 1.  **开始:** (确保在主分支并最新)
     ```bash
     gw checkout master && gw pull # 或者 gw checkout main && gw pull
-    gw new feature/avatar
+    gw start feature/avatar
     ```
 2.  **开发 & 保存:** (小步提交)
     ```bash
@@ -80,12 +80,12 @@ globs:
     ```
 3.  **保持同步 (可选，推荐):** (定期与主分支同步)
     ```bash
-    gw sync
+    gw update
     # (如果遇到冲突，手动解决后 git add . && git rebase --continue)
     ```
 4.  **完成 & 准备 PR:**
     ```bash
-    gw finish
+    gw submit
     # (然后去 GitHub/GitLab 创建 PR)
     ```
 5.  **PR 合并后清理:**
