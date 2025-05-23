@@ -6,7 +6,7 @@ import { useTheme, useChatWidth, useChatBottomSpacing } from "@lib/hooks"
 import { UserMessage, AssistantMessage } from "./messages"
 import { ChatMessage } from '@lib/stores/chat-store';
 import { TypingDots } from "@components/ui/typing-dots";
-import { MessageSkeletonGroup } from "./message-skeleton";
+import { MessageSkeleton } from "./message-skeleton";
 import { useChatScrollStore } from "@lib/stores/chat-scroll-store"
 
 interface ChatLoaderProps {
@@ -118,7 +118,7 @@ export const ChatLoader = ({
       >
         {isLoadingInitial ? (
           // 显示骨架屏
-          <MessageSkeletonGroup />
+          <MessageSkeleton />
         ) : (
           <>
             {messages.map((msg) => (
