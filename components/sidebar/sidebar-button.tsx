@@ -12,6 +12,7 @@ interface SidebarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   moreActionsTrigger?: React.ReactNode
   isDisabled?: boolean 
   children?: React.ReactNode
+  disableLockBehavior?: boolean
 }
 
 export function SidebarButton({ 
@@ -23,6 +24,7 @@ export function SidebarButton({
   moreActionsTrigger,
   isDisabled = false,
   children,
+  disableLockBehavior = false,
   ...props 
 }: SidebarButtonProps) {
   const { isExpanded, lockExpanded } = useSidebarStore()
@@ -30,7 +32,11 @@ export function SidebarButton({
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDisabled) return;
-    lockExpanded()
+    
+    if (!disableLockBehavior) {
+      lockExpanded()
+    }
+    
     onClick?.(e)
   }
 
@@ -38,7 +44,11 @@ export function SidebarButton({
     if (isDisabled) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      lockExpanded();
+      
+      if (!disableLockBehavior) {
+        lockExpanded();
+      }
+      
       const mockEvent = { ...e, type: 'click' } as unknown as React.MouseEvent<HTMLDivElement>; 
       onClick?.(mockEvent);
     }

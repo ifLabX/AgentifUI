@@ -9,7 +9,7 @@ import { cn } from "@lib/utils"
 import { useEffect, useState } from "react"
 
 export function SidebarContainer() {
-  const { isExpanded, setHovering, isMounted } = useSidebarStore()
+  const { isExpanded, isLocked, isHovering, setHovering, isMounted, getSidebarWidth } = useSidebarStore()
   const { colors, isDark } = useThemeColors()
   const isMobile = useMobile()
 
@@ -30,13 +30,13 @@ export function SidebarContainer() {
   const getSidebarStyles = () => {
     if (isDark) {
       return {
-        shadow: "shadow-lg shadow-black/30",
+        shadow: "shadow-xl shadow-black/40",
         border: "border-r-stone-700/50",
         text: "text-stone-300"
       }
     } else {
       return {
-        shadow: "shadow-lg shadow-stone-300/50",
+        shadow: "shadow-xl shadow-stone-300/60",
         border: "border-r-stone-300/60",
         text: "text-stone-700"
       }
@@ -45,27 +45,50 @@ export function SidebarContainer() {
 
   const styles = getSidebarStyles()
 
+  // --- BEGIN COMMENT ---
+  // 计算z-index：
+  // - 移动端：始终使用高z-index
+  // - 桌面端：区分锁定和非锁定状态，非锁定时需要更高优先级覆盖其他内容
+  // --- END COMMENT ---
+  const getZIndex = () => {
+    if (isMobile) return "z-50"
+    // 桌面端：非锁定状态使用更高z-index，确保覆盖settings等页面内容
+    if (!isLocked) return "z-45" // 比settings sidebar的z-40更高
+    // 锁定状态使用较低z-index，不需要覆盖其他内容
+    return "z-30"
+  }
+
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col border-r",
-        // 只对宽度添加过渡效果
-        "transition-[width] duration-300 ease-in-out",
+        "fixed top-0 left-0 h-full flex flex-col border-r",
+        // 过渡效果 - 移动端使用transform过渡，桌面端使用width过渡
+        isMobile 
+          ? "transition-transform duration-300 ease-in-out" 
+          : "transition-[width] duration-300 ease-in-out",
         
-        // Responsive width adjustments
-        isExpanded ? "md:w-64" : "md:w-16",
-        "w-0", // Initial width for mobile
-        isMobile && isMounted && isExpanded ? "w-64" : "w-0", // Apply width on mobile only when mounted and expanded
+        // 宽度设置 - 始终保持固定宽度
+        isExpanded ? "w-64" : "w-16",
         
-        "z-20 fixed md:relative",
+        // 移动端的显示/隐藏逻辑
+        isMobile && !isExpanded && "-translate-x-full",
+        isMobile && isExpanded && "translate-x-0",
+        
+        // 桌面端始终显示
+        !isMobile && "translate-x-0",
+        
+        // 移动端未挂载时隐藏，避免初始闪烁
+        isMobile && !isMounted && "opacity-0",
+        
+        // Z-index 设置
+        getZIndex(),
+        
+        // 主题样式
         colors.sidebarBackground.tailwind,
         "backdrop-blur-sm",
-        
-        // 使用预计算的主题样式
         styles.shadow,
         styles.border,
         styles.text,
-       
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

@@ -8,6 +8,7 @@ interface SidebarState {
   // 基础状态
   // --- END COMMENT ---
   isExpanded: boolean // 侧边栏是否展开
+  isLocked: boolean // 侧边栏是否被锁定（区别于悬停展开）
   isHovering: boolean // 鼠标是否悬停在侧边栏上
   hoverTimeoutId: number | null // 悬停展开/收起的计时器ID
   clickCooldown: boolean // 点击后防止悬停立即触发的冷却状态
@@ -47,8 +48,8 @@ interface SidebarState {
   showMobileNav: () => void
   hideMobileNav: () => void
   toggleMobileNav: () => void
-  // 选中状态管理方法
-  selectItem: (type: SelectedItemType, id: string | number | null) => void
+  // 选中状态管理方法 - 修改为可选是否改变展开状态
+  selectItem: (type: SelectedItemType, id: string | number | null, keepCurrentExpandState?: boolean) => void
   clearSelection: () => void
 }
 
@@ -57,6 +58,7 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
   // 基础状态
   // --- END COMMENT ---
   isExpanded: false,
+  isLocked: false, // 新增锁定状态
   isHovering: false,
   hoverTimeoutId: null,
   clickCooldown: false,
@@ -130,34 +132,48 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
       }
 
       // --- BEGIN COMMENT ---
-      // 设置点击冷却以防止悬停立即触发
+      // 重新设计锁定逻辑：
+      // 1. 如果当前未锁定，则锁定并展开
+      // 2. 如果当前已锁定且展开，则解锁并收起
+      // 3. 如果当前已锁定且收起，则展开（保持锁定）
       // --- END COMMENT ---
-      const willBeCollapsed = !state.isExpanded
+      let newIsExpanded: boolean;
+      let newIsLocked: boolean;
+
+      if (!state.isLocked) {
+        // 当前未锁定，锁定并展开
+        newIsExpanded = true;
+        newIsLocked = true;
+      } else if (state.isExpanded) {
+        // 当前已锁定且展开，解锁并收起
+        newIsExpanded = false;
+        newIsLocked = false;
+      } else {
+        // 当前已锁定且收起，展开（保持锁定）
+        newIsExpanded = true;
+        newIsLocked = true;
+      }
 
       // --- BEGIN COMMENT ---
-      // 如果我们正在折叠，设置一个冷却时间以防止立即悬停展开
-      // --- END MODIFIED COMMENT ---
-      if (state.isExpanded) {
+      // 设置点击冷却以防止悬停立即触发
+      // --- END COMMENT ---
+      if (newIsExpanded === false) {
         setTimeout(() => {
           set({ clickCooldown: false })
-        }, 300) // --- BEGIN MODIFIED COMMENT ---
-        // 点击关闭后 300 毫秒冷却时间
-        // --- END MODIFIED COMMENT ---
+        }, 200) // 缩短冷却时间
       }
 
       // 当收起侧边栏时，立即隐藏内容
-      if (state.isExpanded) {
+      if (!newIsExpanded) {
         set({ contentVisible: false })
       }
 
       return {
-        isExpanded: !state.isExpanded,
+        isExpanded: newIsExpanded,
+        isLocked: newIsLocked,
         isHovering: false,
         hoverTimeoutId: null,
-        // --- BEGIN MODIFIED COMMENT ---
-        // 仅在折叠时设置冷却
-        // --- END MODIFIED COMMENT ---
-        clickCooldown: state.isExpanded, 
+        clickCooldown: !newIsExpanded, // 仅在收起时设置冷却
       }
     })
   },
@@ -184,9 +200,9 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
       }
 
       // --- BEGIN COMMENT ---
-      // 如果我们已经处于点击展开状态，则悬停时不改变任何东西
+      // 如果侧边栏已锁定，则悬停不改变状态
       // --- END COMMENT ---
-      if (state.isExpanded && !state.isHovering) {
+      if (state.isLocked) {
         return { hoverTimeoutId: null }
       }
 
@@ -196,32 +212,28 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
       if (hovering && !state.isExpanded) {
         const timeoutId = window.setTimeout(() => {
           // --- BEGIN COMMENT ---
-          // 仅当我们仍在悬停且不处于冷却状态时才展开
+          // 仅当我们仍在悬停且不处于冷却状态且未锁定时才展开
           // --- END COMMENT ---
-          if (!get().clickCooldown) {
+          if (!get().clickCooldown && !get().isLocked) {
             set({ isHovering: true, isExpanded: true, hoverTimeoutId: null })
           }
-        }, 200) // --- BEGIN MODIFIED COMMENT ---
-        // 展开前延迟 200 毫秒
-        // --- END MODIFIED COMMENT ---
+        }, 150) // 缩短悬停展开延迟
 
         return { hoverTimeoutId: timeoutId }
       }
 
       // --- BEGIN COMMENT ---
-      // 对于悬停移出，添加更长的延迟
+      // 对于悬停移出，只有在悬停展开状态下才折叠
       // --- END COMMENT ---
-      if (!hovering && state.isHovering) {
+      if (!hovering && state.isHovering && !state.isLocked) {
         const timeoutId = window.setTimeout(() => {
           set({ 
             isHovering: false, 
             isExpanded: false, 
             hoverTimeoutId: null,
-            contentVisible: false // 当收起侧边栏时，隐藏内容
+            contentVisible: false
           })
-        }, 300) // --- BEGIN MODIFIED COMMENT ---
-        // 折叠前延迟 300 毫秒
-        // --- END MODIFIED COMMENT ---
+        }, 200) // 缩短悬停关闭延迟
 
         return { hoverTimeoutId: timeoutId }
       }
@@ -233,7 +245,7 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
   lockExpanded: () => {
     const state = get()
     // --- BEGIN COMMENT ---
-    // 清除任何待处理的悬停超时
+    // 这个方法已废弃，锁定逻辑由 toggleSidebar 处理
     // --- END COMMENT ---
     if (state.hoverTimeoutId) {
       clearTimeout(state.hoverTimeoutId)
@@ -278,22 +290,26 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
   },
 
   // --- BEGIN COMMENT ---
-  // 选中状态管理方法
+  // 选中状态管理方法 - 支持保持当前展开状态
   // --- END COMMENT ---
-  selectItem: (type: SelectedItemType, id: string | number | null) => {
-    set({ 
-      selectedType: type, 
-      selectedId: id,
-      // --- BEGIN MODIFIED COMMENT ---
-      // 确保侧边栏保持展开状态
-      // --- END MODIFIED COMMENT ---
-      isExpanded: true,
-      isHovering: false,
-      // --- BEGIN MODIFIED COMMENT ---
-      // 确保选择项后内容可见
-      // --- END MODIFIED COMMENT ---
-      contentVisible: true 
-    })
+  selectItem: (type: SelectedItemType, id: string | number | null, keepCurrentExpandState: boolean = false) => {
+    const currentState = get()
+    
+    // 更新选中状态
+    const updates: Partial<SidebarState> = {
+      selectedType: type,
+      selectedId: id
+    }
+    
+    // 如果不保持当前状态，且不是锁定状态，则不改变展开状态
+    if (!keepCurrentExpandState && !currentState.isLocked) {
+      // 保持当前的展开/收起状态
+    } else if (!keepCurrentExpandState && currentState.isLocked) {
+      // 如果是锁定状态，确保展开并显示内容
+      updates.contentVisible = true
+    }
+    
+    set(updates)
   },
 
   clearSelection: () => {
