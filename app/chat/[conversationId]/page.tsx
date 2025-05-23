@@ -22,6 +22,8 @@ import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useChatScroll } from '@lib/hooks/use-chat-scroll';
 import { useFilePreviewStore } from '@lib/stores/ui/file-preview-store';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
+import { useSidebarStore } from '@lib/stores/sidebar-store';
+import { useMobile } from '@lib/hooks';
 import { cn } from '@lib/utils';
 import { NavBar } from '@components/nav-bar/nav-bar';
 import { useProfile } from '@lib/hooks/use-profile';
@@ -29,6 +31,12 @@ import { useProfile } from '@lib/hooks/use-profile';
 export default function ChatPage() {
   const params = useParams<{ conversationId: string }>();
   const conversationIdFromUrl = params.conversationId;
+  
+  // --- BEGIN COMMENT ---
+  // 获取sidebar状态和mobile状态，用于计算backdrop边距
+  // --- END COMMENT ---
+  const { isExpanded, isLocked } = useSidebarStore();
+  const isMobile = useMobile();
   
   // --- BEGIN COMMENT ---
   // 使用 useChatPageState hook 管理聊天页面状态
@@ -77,6 +85,15 @@ export default function ChatPage() {
   const chatInputHeightVar = `${inputHeight || 80}px`;
   
   // --- BEGIN COMMENT ---
+  // 计算backdrop的左边距，响应sidebar状态变化
+  // --- END COMMENT ---
+  const getBackdropMarginLeft = () => {
+    if (isMobile) return "ml-0";
+    if (!isLocked) return "ml-16"; // 未锁定时为slim状态留出空间
+    return isExpanded ? "ml-64" : "ml-16";
+  };
+  
+  // --- BEGIN COMMENT ---
   // 合并scrollRef和setMessagesContainer
   // --- END COMMENT ---
   const setScrollRef = (element: HTMLDivElement | null) => {
@@ -89,7 +106,7 @@ export default function ChatPage() {
 
   // --- BEGIN COMMENT ---
   // 只在 /chat/new 路由下调用 useProfile，其他路由不需要
-  // 优先从 localStorage 缓存中获取数据，避免显示 loading 状态
+  // 使用缓存机制，避免loading状态和闪烁
   // --- END COMMENT ---
   const isNewChat = conversationIdFromUrl === 'new';
   const { profile, isLoading: isProfileLoading } = isNewChat ? useProfile() : { profile: null, isLoading: false };
@@ -115,10 +132,13 @@ export default function ChatPage() {
         {/* --- BEGIN COMMENT ---
         页面级 loading，仅遮挡主内容区，不遮挡 sidebar。
         只在 /chat/new 路由下显示 loading 状态
+        根据sidebar状态调整遮罩的左边距
         --- END COMMENT --- */}
         {isNewChat && isProfileLoading && (
           <div className={cn(
-            "absolute inset-0 z-40 flex items-center justify-center",
+            "absolute inset-0 z-35 flex items-center justify-center",
+            // 调整左边距，避免覆盖sidebar
+            getBackdropMarginLeft(),
             isDark ? "bg-stone-900" : "bg-stone-100",
             "backdrop-blur-sm"
           )}>
@@ -126,18 +146,16 @@ export default function ChatPage() {
           </div>
         )}
 
+        {/* 主要内容 */}
         <div className="flex-1 min-h-0">
-          {/* --- BEGIN MODIFIED COMMENT ---
+          {/* --- BEGIN COMMENT ---
           显示欢迎屏幕的条件：
-          1. 当前路径是 /chat/new 且 没有消息
-          2. 或者是欢迎状态 且 没有消息 且 不在提交消息中
-          
-          修改后与提示容器的渲染逻辑完全一致，确保在/chat/new路径下且没有消息时显示欢迎屏幕
-          --- END MODIFIED COMMENT --- */}
-          {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示欢迎屏幕 */}
-          {(conversationIdFromUrl === 'new' && messages.length === 0) ? (
+          1. 新聊天页面且没有消息
+          2. 或者欢迎状态且没有消息且不在提交中
+          --- END COMMENT --- */}
+          {isNewChat && messages.length === 0 ? (
             <WelcomeScreen username={profile?.username} />
-          ) : (messages.length === 0 && !isSubmitting && isWelcomeScreen) ? (
+          ) : messages.length === 0 && !isSubmitting && isWelcomeScreen ? (
             <WelcomeScreen username={profile?.username} />
           ) : (
             <div 
@@ -191,14 +209,12 @@ export default function ChatPage() {
           isTransitioningToWelcome={isTransitioningToWelcome}
         />
         
-        {/* --- BEGIN MODIFIED COMMENT ---
+        {/* --- BEGIN COMMENT ---
         显示提示模板容器的条件：
-        1. 当前是欢迎屏幕状态 或 当前URL路径是 /chat/new
-        2. 且 不在提交消息中
-        --- END MODIFIED COMMENT --- */}
-        {/* 强制判断路径条件，确保在 /chat/new 路径下且没有消息时显示提示容器 */}
-        {(conversationIdFromUrl === 'new' && messages.length === 0) && <PromptContainer />}
-        {/* 原有条件作为备用 */}
+        1. 新聊天页面且没有消息
+        2. 或者欢迎状态且没有消息且不在提交中
+        --- END COMMENT --- */}
+        {(isNewChat && messages.length === 0) && <PromptContainer />}
         {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <PromptContainer />}
       </div>
       
