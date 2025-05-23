@@ -30,7 +30,7 @@ interface LoadingState {
 
 // 预定义的页面列表
 // 注意: 这只是初始页面列表，可以通过 registerPage 动态添加新页面
-const DEFAULT_PAGES = ['profile', 'chat', 'about', 'home'];
+const DEFAULT_PAGES = ['settings', 'chat', 'about'];
 
 // 初始状态
 const createInitialState = () => {
