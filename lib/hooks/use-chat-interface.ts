@@ -160,7 +160,6 @@ export function useChatInterface() {
     // 记录开始时间，用于性能分析
     // --- END COMMENT ---
     const startTime = Date.now();
-    console.log(`[handleSubmit] 开始处理消息提交，时间=${new Date(startTime).toISOString()}`);
     
     isSubmittingRef.current = true;
     setIsWaitingForResponse(true);
@@ -181,8 +180,6 @@ export function useChatInterface() {
       attachments: messageAttachments,
       persistenceStatus: 'pending' // 设置持久化状态为等待保存
     });
-    
-    console.log(`[handleSubmit] 添加用户消息，ID=${userMessage.id}`);
 
     if (isWelcomeScreen) {
       setIsWelcomeScreen(false);
@@ -263,7 +260,6 @@ export function useChatInterface() {
         // 2. 获取Dify对话ID (finalRealConvId)
         // 3. 查询数据库对话ID (finalDbConvUUID)
         // --- END COMMENT ---
-        console.log('[handleSubmit] 开始创建新对话');
         
         const creationResult = await initiateNewConversation(
           basePayloadForNewConversation,
@@ -279,7 +275,6 @@ export function useChatInterface() {
             
             // 保存用户消息
             if (userMessage && userMessage.persistenceStatus !== 'saved') {
-              console.log(`[handleSubmit] 立即保存用户消息，ID=${userMessage.id}, 数据库对话ID=${dbId}`);
               saveMessage(userMessage, dbId).catch(err => {
                 console.error('[handleSubmit] 保存用户消息失败:', err);
               });
@@ -289,7 +284,6 @@ export function useChatInterface() {
             if (assistantMessageId) {
               const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
               if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
-                console.log(`[handleSubmit] 立即保存助手消息，ID=${assistantMessageId}, 数据库对话ID=${dbId}`);
                 saveMessage(assistantMessage, dbId).catch(err => {
                   console.error('[handleSubmit] 保存助手消息失败:', err);
                 });
@@ -307,8 +301,6 @@ export function useChatInterface() {
         finalRealConvId = creationResult.realConvId;
         finalTaskId = creationResult.taskId;
 
-        console.log(`[handleSubmit] 新对话创建成功，Dify对话ID=${finalRealConvId}`);
-
         if (finalRealConvId) {
           // 更新UI和路由
           if (useChatStore.getState().currentConversationId !== finalRealConvId) {
@@ -323,16 +315,12 @@ export function useChatInterface() {
           // 注意：initiate函数内部已经创建了数据库记录，所以这里可以直接查询
           // --- END COMMENT ---
           try {
-            console.log(`[handleSubmit] 开始查询新对话的数据库ID，Dify对话ID=${finalRealConvId}`);
-            
             const dbConversation = await getConversationByExternalId(finalRealConvId);
             
             if (dbConversation) {
               finalDbConvUUID = dbConversation.id;
               setDbConversationUUID(finalDbConvUUID);
-              console.log(`[handleSubmit] 找到新对话的数据库ID: ${finalDbConvUUID}`);
             } else {
-              console.warn(`[handleSubmit] 未找到新对话的数据库记录，Dify对话ID=${finalRealConvId}`);
               finalDbConvUUID = null;
             }
           } catch (dbError) {
@@ -352,7 +340,6 @@ export function useChatInterface() {
         // 2. 调用Dify API发送消息
         // 3. 更新各种ID和状态
         // --- END COMMENT ---
-        console.log('[handleSubmit] 处理现有对话消息');
         
         // --- BEGIN COMMENT ---
         // 获取数据库对话ID，这是消息持久化的关键
@@ -360,20 +347,16 @@ export function useChatInterface() {
         if (dbConversationUUID) {
           // 如果已经有数据库对话ID，直接使用
           finalDbConvUUID = dbConversationUUID;
-          console.log(`[handleSubmit] 使用现有数据库对话ID: ${finalDbConvUUID}`);
         } else if (difyConversationId) {
           // 如果没有数据库对话ID，但有Dify对话ID，尝试查询
           try {
-            console.log(`[handleSubmit] 开始查询现有对话的数据库ID，Dify对话ID=${difyConversationId}`);
             
             const dbConversation = await getConversationByExternalId(difyConversationId);
             
             if (dbConversation) {
               finalDbConvUUID = dbConversation.id;
               setDbConversationUUID(finalDbConvUUID);
-              console.log(`[handleSubmit] 找到现有对话的数据库ID: ${finalDbConvUUID}`);
             } else {
-              console.warn(`[handleSubmit] 未找到现有对话的数据库记录，Dify对话ID=${difyConversationId}`);
               finalDbConvUUID = null;
             }
           } catch (dbError) {
@@ -407,8 +390,6 @@ export function useChatInterface() {
           auto_generate_name: false, 
         };
         
-        console.log(`[handleSubmit] 调用Dify API发送消息，Dify对话ID=${difyConversationId}`);
-        
         const streamServiceResponse = await streamDifyChat(
           difyPayload,
           currentAppId, // 使用动态获取的 currentAppId
@@ -431,7 +412,6 @@ export function useChatInterface() {
                   if (dbConv) {
                     finalDbConvUUID = dbConv.id;
                     setDbConversationUUID(finalDbConvUUID);
-                    console.log(`[handleSubmit] 回调中找到数据库对话ID: ${finalDbConvUUID}`);
                   }
                 }).catch(err => {
                   console.error('[handleSubmit] 回调中查询数据库对话ID失败:', err);
@@ -444,8 +424,6 @@ export function useChatInterface() {
         finalRealConvId = streamServiceResponse.getConversationId() || difyConversationId || undefined; // Fallback to currentConvId
         finalTaskId = streamServiceResponse.getTaskId() || undefined;
         
-        console.log(`[handleSubmit] Dify API响应成功，finalRealConvId=${finalRealConvId}`);
-        
         // 更新Dify对话ID
         if (finalRealConvId && finalRealConvId !== difyConversationId) {
           setDifyConversationId(finalRealConvId);
@@ -453,8 +431,6 @@ export function useChatInterface() {
           // 如果获取到了新的Dify对话ID，需要重新查询数据库对话ID
           if (!finalDbConvUUID && finalRealConvId !== difyConversationId) {
             try {
-              console.log(`[handleSubmit] 开始查询新获取的Dify对话ID对应的数据库ID: ${finalRealConvId}`);
-              
               const dbConversation = await getConversationByExternalId(finalRealConvId);
               
               if (dbConversation) {
@@ -725,10 +701,9 @@ export function useChatInterface() {
             try {
               // 使用侧边栏存储的 selectItem 方法选中当前对话
               const { selectItem } = require('@lib/stores/sidebar-store').useSidebarStore.getState();
-              console.log(`[流式响应结束] 骨架屏消失，高亮对话: ${currentConvId}`);
               selectItem('chat', currentConvId);
             } catch (error) {
-              console.error('[流式响应结束] 高亮对话失败:', error);
+              console.error('[流式响应结束] 高亮对话失败:', error); 
             }
           }
           
