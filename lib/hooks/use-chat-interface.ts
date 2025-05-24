@@ -4,7 +4,7 @@ import { useChatInputStore } from '@lib/stores/chat-input-store';
 import { useChatStore, selectIsProcessing, ChatMessage } from '@lib/stores/chat-store';
 import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service';
 import { useSupabaseAuth } from '@lib/supabase/hooks'; // 假设 Supabase Auth Hook
-import { useCurrentAppStore } from '@lib/stores/current-app-store'; // 引入新的 App Store
+import { useCurrentApp } from '@lib/hooks/use-current-app'; // 使用新的 hook
 import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse } from '@lib/services/dify/types';
 import { useCreateConversation } from './use-create-conversation';
 import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
@@ -27,11 +27,18 @@ export function useChatInterface() {
   const { isWelcomeScreen, setIsWelcomeScreen } = useChatInputStore();
 
   // --- BEGIN COMMENT ---
-  // 获取认证状态和当前应用ID
+  // 获取认证状态和当前应用信息，使用新的 hook
   // --- END COMMENT ---
   const { session } = useSupabaseAuth();
   const currentUserId = session?.user?.id;
-  const { currentAppId, isLoadingAppId, errorLoadingAppId, currentAppInstance } = useCurrentAppStore();
+  const { 
+    currentAppId, 
+    currentAppInstance, 
+    isLoading: isLoadingAppId, 
+    error: errorLoadingAppId,
+    hasCurrentApp,
+    isReady: isAppReady
+  } = useCurrentApp();
   // --- END COMMENT ---
 
   const messages = useChatStore(state => state.messages);

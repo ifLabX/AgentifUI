@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { PlusIcon, ArrowUpIcon, Square, Loader2 } from "lucide-react"
 import { useChatWidth, useInputHeightReset } from "@lib/hooks"
 import { useSupabaseAuth } from "@lib/supabase/hooks"; 
-import { useCurrentAppStore } from "@lib/stores/current-app-store";
+import { useCurrentApp } from "@lib/hooks/use-current-app";
 import { useChatLayoutStore } from "@lib/stores/chat-layout-store"
 import { useChatInputStore } from "@lib/stores/chat-input-store"
 import { useChatScrollStore } from "@lib/stores/chat-scroll-store"
@@ -153,7 +153,13 @@ export const ChatInput = ({
   // --- BEGIN 中文注释 --- 用户ID和应用ID信息 ---
   const { session } = useSupabaseAuth();
   const currentUserId = session?.user?.id;
-  const { currentAppId, isLoadingAppId, errorLoadingAppId } = useCurrentAppStore();
+  const { 
+    currentAppId, 
+    isLoading: isLoadingAppId, 
+    error: errorLoadingAppId,
+    hasCurrentApp,
+    isReady: isAppReady
+  } = useCurrentApp();
   // --- END 中文注释 ---
 
   // --- BEGIN COMMENT ---

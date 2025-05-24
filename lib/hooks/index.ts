@@ -10,3 +10,4 @@ export * from './use-chat-width';
 export * from './use-mobile';
 export * from './use-theme';
 export * from './use-mounted';
+export * from './use-current-app';
