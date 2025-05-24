@@ -11,6 +11,7 @@ export function RegisterForm() {
   const supabase = createClient();
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -46,6 +47,7 @@ export function RegisterForm() {
         options: {
           data: {
             full_name: formData.name,
+            username: formData.username || undefined, // 如果为空则不传递
           },
         },
       });
@@ -66,7 +68,7 @@ export function RegisterForm() {
       <div className="text-center">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">注册账号</h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          加入我们，开始探索AI教育的无限可能
+          加入我们，开始探索AI应用的无限可能
         </p>
       </div>
 
@@ -91,6 +93,22 @@ export function RegisterForm() {
               className="block w-full px-4 py-3 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
               placeholder="您的姓名"
               value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              昵称 <span className="text-gray-500 text-xs">(可选)</span>
+            </label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              autoComplete="username"
+              className="block w-full px-4 py-3 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
+              placeholder="您的昵称（可选）"
+              value={formData.username}
               onChange={handleChange}
             />
           </div>
