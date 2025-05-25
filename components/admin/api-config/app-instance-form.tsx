@@ -15,6 +15,7 @@ import {
   Divider
 } from '@mui/material';
 import { ServiceInstance } from '@lib/types/database';
+import { useAdminFormStore } from '@lib/stores/admin-form-store';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
@@ -36,16 +37,11 @@ export default function AppInstanceForm({
   error
 }: AppInstanceFormProps) {
   const { isDark } = useTheme();
-  const [formData, setFormData] = useState<Partial<ServiceInstance>>({
-    provider_id: providerId,
-    instance_id: '',
-    name: '',
-    display_name: '',
-    description: '',
-    is_default: false,
-    api_path: '',
-  });
-
+  
+  // 使用持久化的表单状态
+  const { formData, updateFormData } = useAdminFormStore();
+  
+  // API密钥仍然使用本地状态，出于安全考虑不持久化
   const [apiKey, setApiKey] = useState('');
   
   // 获取当前主题的颜色
@@ -90,9 +86,6 @@ export default function AppInstanceForm({
     if (instance) {
       // 确保所有字段都有值
       const updatedFormData = {
-        // 先复制原始实例数据
-        ...instance,
-        // 确保必要字段存在
         provider_id: providerId,
         instance_id: instance.instance_id || '',
         name: instance.name || '',
@@ -100,21 +93,24 @@ export default function AppInstanceForm({
         display_name: instance.display_name || instance.name || '',
         // 如果 description 不存在，使用空字符串
         description: instance.description || '',
+        api_key: '', // API密钥不回填，出于安全考虑
+        api_path: instance.api_path || '',
         // 如果 is_default 不存在，使用 false
         is_default: Boolean(instance.is_default),
-        api_path: instance.api_path || '',
       };
       
-      setFormData(updatedFormData);
+      updateFormData(updatedFormData);
+    } else {
+      // 新建模式，确保provider_id正确设置
+      updateFormData({ provider_id: providerId });
     }
-  }, [instance, providerId]);
+  }, [instance, providerId, updateFormData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev: Partial<ServiceInstance>) => ({
-      ...prev,
+    updateFormData({
       [name]: type === 'checkbox' ? checked : value,
-    }));
+    });
   };
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
