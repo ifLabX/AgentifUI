@@ -12,6 +12,24 @@ import "katex/dist/katex.min.css"
 import type { Components } from "react-markdown"
 // --- BEGIN MODIFIED COMMENT ---
 // 导入原子化的 Markdown 组件和思考块相关组件
+// 
+// 文本样式系统说明：
+// 本组件使用了专门的CSS类系统来控制助手消息的文本显示效果：
+// 
+// 1. 行间距控制层级：
+//    - 基础行间距: 1.35 (紧凑，用于列表等)
+//    - 段落行间距: 1.9 (宽松，提高可读性)
+//    - 标题行间距: 1.25 (最紧凑，突出层次)
+// 
+// 2. 段落间距控制：
+//    - 当前设置: 0.1em (很小的分隔间距)
+//    - 可在 styles/markdown.css 的 .assistant-message-content p 中调整
+// 
+// 3. 样式文件位置：
+//    - 主要样式: styles/markdown.css (第277-340行)
+//    - 样式类名: .assistant-message-content
+// 
+// 如需调整文本密度或间距，请修改对应的CSS文件而非此组件。
 // --- END MODIFIED COMMENT ---
 import { 
   ThinkBlockHeader, 
@@ -186,7 +204,11 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
     // 为其他 HTML 元素（如 p, ul, ol, li, h1-h6, a, hr）添加现代化样式
     // --- END MODIFIED COMMENT ---
     p({ children, ...props }) {
-      return <p className="my-0" {...props}>{children}</p>; // 完全去除段落间的间距
+      // 段落元素的渲染配置
+      // my-0: 移除 Tailwind 默认的段落边距，防止与 assistant-message-content 样式冲突
+      // 实际的段落间距和行间距由 styles/markdown.css 中的 .assistant-message-content p 样式控制
+      // 这样做可以确保样式的一致性和可维护性
+      return <p className="my-0" {...props}>{children}</p>;
     },
     ul({ children, ...props }) {
       return <ul className="my-2.5 ml-6 list-disc space-y-1" {...props}>{children}</ul>;
@@ -238,13 +260,28 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
 
       {mainContent && (
         // --- BEGIN MODIFIED COMMENT ---
-        // 优化主内容区域的整体字体样式
-        // - 设置基础字体大小 (text-base) 和行高 (leading-relaxed)
+        // 助手消息主内容区域样式配置
+        // 
+        // 关键样式类说明：
+        // - markdown-body: 基础 Markdown 渲染样式 (定义在 styles/markdown.css)
+        // - assistant-message-content: 专用行间距控制类 (定义在 styles/markdown.css:277-340)
+        //   · 提供精确的段落内行间距 (line-height: 1.9) 和段落间距 (margin: 0 0 0.1em 0)
+        //   · 覆盖默认的 markdown-body 样式，实现更好的文本可读性
+        //   · 如需调整文本密度，请修改 styles/markdown.css 中对应的 CSS 变量
+        // - text-base: Tailwind 基础字体大小 (16px)
+        // 
+        // 颜色主题：
+        // - 亮色模式：text-gray-800 (深灰色，柔和易读)
+        // - 暗色模式：text-gray-200 (浅灰色，护眼舒适)
+        // 
+        // 间距控制：
+        // - 有思考块：pt-1 pb-2 (上边距小，下边距适中)
+        // - 无思考块：py-2 (上下边距一致)
         // --- END MODIFIED COMMENT ---
         <div className={cn(
-          "w-full markdown-body main-content-area text-base leading-relaxed",
-          isDark ? "text-gray-200" : "text-gray-800", // 更柔和的文本颜色
-          !hasThinkBlock ? "py-2" : "pt-1 pb-2" // 调整无思考块时的padding
+          "w-full markdown-body main-content-area assistant-message-content text-base",
+          isDark ? "text-gray-200" : "text-gray-800", // 根据主题切换文本颜色
+          !hasThinkBlock ? "py-2" : "pt-1 pb-2" // 根据是否有思考块调整垂直间距
         )}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
