@@ -121,13 +121,39 @@ export function RecentsList({
   // --- END COMMENT ---
   const handleConversationItemClick = (conversation: Conversation) => {
     const conversationId = conversation.external_id || conversation.id || ''
-    
-    // --- BEGIN COMMENT ---
-    // 立即设置页面标题，与侧边栏聊天列表保持一致的逻辑
-    // --- END COMMENT ---
     const title = conversation.title || '新对话'
     const baseTitle = 'if-agent-ui'
-    document.title = `${title} | ${baseTitle}`
+    const fullTitle = `${title} | ${baseTitle}`
+    
+    // --- BEGIN COMMENT ---
+    // 立即设置页面标题
+    // --- END COMMENT ---
+    document.title = fullTitle
+    
+    // --- BEGIN COMMENT ---
+    // 设置一个保护机制，防止其他组件在短时间内覆盖这个标题
+    // 使用一个定时器来持续监控和保护标题
+    // --- END COMMENT ---
+    let protectionCount = 0
+    const maxProtectionAttempts = 10 // 最多保护10次
+    const protectionInterval = 100 // 每100ms检查一次
+    
+    const protectTitle = () => {
+      if (protectionCount >= maxProtectionAttempts) {
+        return // 停止保护
+      }
+      
+      if (document.title !== fullTitle) {
+        console.log(`[RecentsTitle] 检测到标题被覆盖，恢复为: ${fullTitle}`)
+        document.title = fullTitle
+      }
+      
+      protectionCount++
+      setTimeout(protectTitle, protectionInterval)
+    }
+    
+    // 开始保护标题
+    setTimeout(protectTitle, protectionInterval)
     
     // 调用父组件的点击处理函数
     onConversationClick(conversationId)
