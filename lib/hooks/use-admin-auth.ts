@@ -27,11 +27,12 @@ export interface AdminAuthResult {
  */
 export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult {
   const router = useRouter();
-  const { session } = useSupabaseAuth();
+  const { session, loading: sessionLoading } = useSupabaseAuth();
   
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [hasRedirected, setHasRedirected] = useState(false);
   
   useEffect(() => {
     async function checkAdminStatus() {
@@ -39,17 +40,20 @@ export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult
         setIsLoading(true);
         setError(null);
         
+        // 等待session加载完成
+        if (sessionLoading) {
+          return;
+        }
+        
         // 检查是否有有效的用户会话
         if (!session?.user) {
           // 如果用户未登录，设置为非管理员
           setIsAdmin(false);
           
-          // 如果需要重定向，跳转到登录页面
-          if (redirectOnFailure) {
-            // 使用 setTimeout 延迟重定向，让错误信息有时间显示
-            setTimeout(() => {
-              router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
-            }, 3000); // 延迟 3 秒
+          // 如果需要重定向且还没有重定向过，立即跳转到登录页面
+          if (redirectOnFailure && !hasRedirected) {
+            setHasRedirected(true);
+            router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
           }
           return;
         }
@@ -67,12 +71,10 @@ export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult
           setIsAdmin(isUserAdmin);
           
           // 如果不是管理员且需要重定向
-          if (!isUserAdmin && redirectOnFailure) {
-            // 使用 setTimeout 延迟重定向，让错误信息有时间显示
-            setTimeout(() => {
-              // 已登录但不是管理员，跳转到首页
-              router.push('/');
-            }, 3000); // 延迟 3 秒
+          if (!isUserAdmin && redirectOnFailure && !hasRedirected) {
+            setHasRedirected(true);
+            // 已登录但不是管理员，立即跳转到首页
+            router.push('/');
           }
         } else if (result.success && !result.data) {
           // 用户资料不存在
@@ -92,7 +94,7 @@ export function useAdminAuth(redirectOnFailure: boolean = true): AdminAuthResult
     }
     
     checkAdminStatus();
-  }, [session, router, redirectOnFailure]);
+  }, [session, sessionLoading, router, redirectOnFailure, hasRedirected]);
   
   return { isAdmin, isLoading, error };
 }
