@@ -185,18 +185,26 @@ export function useCreateConversation(): UseCreateConversationReturn {
               };
 
               // --- BEGIN COMMENT ---
-              // 使用立即执行的异步函数处理数据库记录创建
-              // 这避免了在非异步回调中使用await的问题
+              // 立即创建数据库记录，确保在流式响应期间就能获得数据库ID
+              // 这解决了首次助手消息无法保存的时序问题
               // --- END COMMENT ---
-              (async () => {
+              const createDbRecordImmediately = async () => {
                 // 立即创建数据库记录，使用临时标题
                 const tempTitle = "创建中...";
                 console.log(`[useCreateConversation] 立即创建数据库记录，Dify对话ID=${id}`);
                 const dbId = await saveConversationToDb(id, tempTitle, tempConvId);
                 
-                // 异步获取正式标题并更新数据库记录
-                renameConversation(appId, id, { user: userIdentifier, auto_generate: true })
-                  .then(async renameResponse => { 
+                if (!dbId) {
+                  console.error(`[useCreateConversation] 数据库记录创建失败，无法保存消息`);
+                  return;
+                }
+                
+                // --- BEGIN COMMENT ---
+                // 异步获取正式标题并更新数据库记录，但不阻塞当前流程
+                // --- END COMMENT ---
+                const updateTitleAsync = async () => {
+                  try {
+                    const renameResponse = await renameConversation(appId, id, { user: userIdentifier, auto_generate: true });
                     const finalTitle = (renameResponse && renameResponse.name) ? renameResponse.name : "新对话";
                     console.log(`[useCreateConversation] 标题获取成功，更新数据库记录: ${finalTitle}`);
                     updateTitleInPendingStore(tempConvId, finalTitle, true);
@@ -222,8 +230,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     } catch (error) {
                       console.error('[useCreateConversation] Error selecting item in sidebar after title:', error);
                     }
-                  })
-                  .catch(async renameError => { 
+                  } catch (renameError) {
                     console.error(`[useCreateConversation] 标题获取失败，使用默认标题:`, renameError);
                     const fallbackTitle = "新对话";
                     updateTitleInPendingStore(tempConvId, fallbackTitle, true);
@@ -249,8 +256,19 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     } catch (error) {
                       console.error('[useCreateConversation] Error selecting item in sidebar (title fetch failed):', error);
                     }
-                  });
-              })().catch(error => {
+                  }
+                };
+                
+                // 异步执行标题更新，不阻塞当前流程
+                updateTitleAsync().catch(error => {
+                  console.error('[useCreateConversation] 标题更新过程发生错误:', error);
+                });
+              };
+              
+              // --- BEGIN COMMENT ---
+              // 立即执行数据库记录创建，确保在流式响应期间就能获得数据库ID
+              // --- END COMMENT ---
+              createDbRecordImmediately().catch(error => {
                 console.error('[useCreateConversation] 数据库记录创建过程发生错误:', error);
               });
             }
