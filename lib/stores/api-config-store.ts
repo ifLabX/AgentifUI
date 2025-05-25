@@ -237,6 +237,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         }, 100);
       }
       
+      // 清理服务端缓存，确保所有用户都能获取到最新配置
+      try {
+        await fetch('/api/admin/clear-cache', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}) // 清理所有应用配置相关缓存
+        });
+        console.log('[API配置] 服务端缓存已清理');
+      } catch (error) {
+        console.error('[API配置] 清理服务端缓存失败:', error);
+        // 不抛出错误，因为这不应该阻止主要操作
+      }
+      
       // 重新加载数据
       await get().loadConfigData();
       
@@ -467,6 +480,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           console.error('[API配置] 强制刷新前端应用缓存失败:', error);
         });
       }, 100);
+      
+      // 清理服务端缓存，确保所有用户都能获取到最新配置
+      try {
+        await fetch('/api/admin/clear-cache', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}) // 清理所有应用配置相关缓存
+        });
+        console.log('[API配置] 服务端缓存已清理');
+      } catch (error) {
+        console.error('[API配置] 清理服务端缓存失败:', error);
+        // 不抛出错误，因为这不应该阻止主要操作
+      }
       
       // 清空输入
       set({ newApiKey: '', isUpdating: false });
