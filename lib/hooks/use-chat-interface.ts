@@ -64,9 +64,11 @@ export function useChatInterface() {
   // 状态管理：
   // difyConversationId: Dify对话ID（外部ID），用于路由和 API 调用
   // dbConversationUUID: 数据库对话ID（内部ID），用于消息持久化
+  // currentSessionDbId: 当前会话的数据库ID，用于解决回调时序问题
   // --- END COMMENT ---
   const [difyConversationId, setDifyConversationId] = useState<string | null>(null);
   const [dbConversationUUID, setDbConversationUUID] = useState<string | null>(null);
+  const [currentSessionDbId, setCurrentSessionDbId] = useState<string | null>(null);
 
   const isSubmittingRef = useRef(false);
   // --- BEGIN COMMENT ---
@@ -167,9 +169,22 @@ export function useChatInterface() {
     // --- END COMMENT ---
 
     // --- BEGIN COMMENT ---
+    // 防止重复提交的保护机制
+    // --- END COMMENT ---
+    if (isSubmittingRef.current) {
+      console.warn(`[handleSubmit] 检测到重复提交，忽略此次请求`);
+      return;
+    }
+    
+    // --- BEGIN COMMENT ---
     // 记录开始时间，用于性能分析
     // --- END COMMENT ---
     const startTime = Date.now();
+    
+    // --- BEGIN COMMENT ---
+    // 重置当前会话的数据库ID，确保每次提交都有干净的状态
+    // --- END COMMENT ---
+    setCurrentSessionDbId(null);
     
     isSubmittingRef.current = true;
     setIsWaitingForResponse(true);
@@ -206,12 +221,18 @@ export function useChatInterface() {
 
     
     // --- BEGIN MODIFIED COMMENT ---
-    // 修改判断新对话的逻辑，使用difyConversationId而不是currentConvId
+    // 修改判断新对话的逻辑，确保在整个函数执行过程中保持一致
     // 1. 如果 URL 是 /chat/new 或者包含 temp-，则是新对话
     // 2. 如果没有difyConversationId，也视为新对话
+    // 3. 使用函数开始时的状态，避免在执行过程中状态变化导致逻辑混乱
     // --- END MODIFIED COMMENT ---
     const urlIndicatesNew = window.location.pathname === '/chat/new' || window.location.pathname.includes('/chat/temp-');
-    const isNewConversationFlow = urlIndicatesNew || !difyConversationId;
+    const initialDifyConversationId = difyConversationId; // 捕获初始状态
+    const isNewConversationFlow = urlIndicatesNew || !initialDifyConversationId;
+    
+    // --- BEGIN COMMENT ---
+    // 对话流程判断逻辑已优化，确保在整个函数执行过程中保持一致
+    // --- END COMMENT ---
     
 
 
@@ -279,8 +300,11 @@ export function useChatInterface() {
           (difyId, dbId) => {
             console.log(`[handleSubmit] 收到数据库对话ID回调：difyId=${difyId}, dbId=${dbId}`);
             
-            // 立即设置数据库对话ID
-            finalDbConvUUID = dbId;
+            // --- BEGIN COMMENT ---
+            // 使用React状态管理数据库ID，确保在整个组件中都能访问到最新值
+            // 这解决了闭包导致的变量更新问题
+            // --- END COMMENT ---
+            setCurrentSessionDbId(dbId);
             setDbConversationUUID(dbId);
             
             // 保存用户消息
@@ -290,15 +314,11 @@ export function useChatInterface() {
               });
             }
             
-            // 如果助手消息已创建，也保存助手消息
-            if (assistantMessageId) {
-              const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
-              if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
-                saveMessage(assistantMessage, dbId).catch(err => {
-                  console.error('[handleSubmit] 保存助手消息失败:', err);
-                });
-              }
-            }
+            // --- BEGIN COMMENT ---
+            // 不要在回调中保存助手消息，因为此时流式响应可能还在进行中
+            // 助手消息的保存应该在流式响应完全结束后进行
+            // 这样可以确保保存的是完整的消息内容，而不是截断的内容
+            // --- END COMMENT ---
           }
         );
 
@@ -550,17 +570,19 @@ export function useChatInterface() {
       }
       
       // --- BEGIN COMMENT ---
-      // 消息持久化逻辑：
-      // 1. 只有在获取到有效的数据库对话ID后，才能保存消息
-      // 2. 先保存用户消息，再保存助手消息
+      // 消息持久化逻辑（优化版本）：
+      // 1. 优先使用React状态中的数据库ID（currentSessionDbId）
+      // 2. 如果没有，则使用局部变量或查询获取
+      // 3. 简化逻辑，避免复杂的时序处理
       // --- END COMMENT ---
-      if (finalDbConvUUID) {
-        console.log(`[handleSubmit] 流式响应结束，开始保存消息，数据库对话ID=${finalDbConvUUID}`);
-        
+      
+      // --- BEGIN COMMENT ---
+      // 定义保存消息的通用函数，避免代码重复
+      // --- END COMMENT ---
+      const saveMessagesWithDbId = (dbId: string) => {
         // 保存用户消息
         if (userMessage && userMessage.persistenceStatus !== 'saved') {
-          console.log(`[handleSubmit] 保存用户消息，ID=${userMessage.id}, 数据库对话ID=${finalDbConvUUID}`);
-          saveMessage(userMessage, finalDbConvUUID).catch(err => {
+          saveMessage(userMessage, dbId).catch(err => {
             console.error('[handleSubmit] 保存用户消息失败:', err);
           });
         }
@@ -568,65 +590,114 @@ export function useChatInterface() {
         // 保存助手消息
         if (assistantMessageId) {
           // --- BEGIN COMMENT ---
-          // 流式响应结束后，添加延迟确保消息内容已完全更新
-          // 这是为了解决首次创建对话时助手消息被截断的问题
-          // 修复：捕获当前的数据库对话ID，避免闭包问题
+          // 使用延迟保存确保消息内容已完整更新
+          // 包含重试机制处理流式状态
           // --- END COMMENT ---
-          console.log(`[handleSubmit] 准备保存助手消息，ID=${assistantMessageId}, 数据库对话ID=${finalDbConvUUID}`);
-          
-          // 捕获当前的数据库对话ID，避免闭包问题
-          const currentDbConvId = finalDbConvUUID;
-          
-          // 延迟1秒保存，确保消息内容已完整更新
           setTimeout(() => {
             // 重新获取最新的消息对象，确保内容是完整的
             const finalAssistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
-            // 确保数据库对话ID和消息都存在
-            if (finalAssistantMessage && finalAssistantMessage.persistenceStatus !== 'saved' && currentDbConvId) {
-              console.log(`[handleSubmit] 延迟保存助手消息，ID=${assistantMessageId}, 内容长度=${finalAssistantMessage.text.length}, 数据库ID=${currentDbConvId}`);
-              saveMessage(finalAssistantMessage, currentDbConvId).catch(err => {
+            // 确保数据库对话ID和消息都存在，并且消息不是流式状态
+            if (finalAssistantMessage && 
+                finalAssistantMessage.persistenceStatus !== 'saved' && 
+                !finalAssistantMessage.isStreaming && 
+                dbId) {
+              saveMessage(finalAssistantMessage, dbId).catch(err => {
                 console.error('[handleSubmit] 保存助手消息失败:', err);
               });
-            } else {
-              console.warn(`[handleSubmit] 无法保存助手消息: 消息=${!!finalAssistantMessage}, 状态=${finalAssistantMessage?.persistenceStatus}, 数据库ID=${currentDbConvId}`);
-            }
-          }, 1000);
-        }
-      } else {
-        console.warn(`[handleSubmit] 流式响应结束，但未获取到数据库对话ID，消息无法保存`);
-        
-        // 尝试从Dify对话ID再次查询数据库对话ID
-        if (finalRealConvId) {
-          console.log(`[handleSubmit] 尝试最后一次查询数据库对话ID，Dify对话ID=${finalRealConvId}`);
-          getConversationByExternalId(finalRealConvId).then(result => {
-            if (result.success && result.data) {
-              console.log(`[handleSubmit] 查询到数据库对话ID，开始保存消息，ID=${result.data.id}`);
-              // 设置数据库对话ID
-              finalDbConvUUID = result.data.id;
-              setDbConversationUUID(result.data.id);
-              
-              // 保存用户消息和助手消息
-              if (userMessage && userMessage.persistenceStatus !== 'saved') {
-                saveMessage(userMessage, result.data.id).catch(err => {
-                  console.error('[handleSubmit] 二次查询后保存用户消息失败:', err);
-                });
-              }
-              
-              if (assistantMessageId) {
-                const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
-                if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
-                  saveMessage(assistantMessage, result.data.id).catch(err => {
-                    console.error('[handleSubmit] 二次查询后保存助手消息失败:', err);
+            } else if (finalAssistantMessage && finalAssistantMessage.isStreaming) {
+              // 如果消息仍在流式状态，再等待一段时间
+              setTimeout(() => {
+                const retryAssistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
+                if (retryAssistantMessage && 
+                    retryAssistantMessage.persistenceStatus !== 'saved' && 
+                    !retryAssistantMessage.isStreaming && 
+                    dbId) {
+                  saveMessage(retryAssistantMessage, dbId).catch(err => {
+                    console.error('[handleSubmit] 重试保存助手消息失败:', err);
                   });
                 }
-              }
+              }, 500);
             } else {
-              console.error(`[handleSubmit] 最终查询仍未获取到数据库对话ID，无法保存消息`);
+              console.warn(`[handleSubmit] 无法保存助手消息: 消息=${!!finalAssistantMessage}, 状态=${finalAssistantMessage?.persistenceStatus}, 流式=${finalAssistantMessage?.isStreaming}, 数据库ID=${dbId}`);
             }
-          }).catch(err => {
-            console.error('[handleSubmit] 二次查询数据库对话ID失败:', err);
-          });
+          }, 300);
         }
+      };
+      
+      // --- BEGIN COMMENT ---
+      // 新的保存策略：
+      // 1. 优先使用React状态中的数据库ID（currentSessionDbId）
+      // 2. 对于新对话，如果回调还没执行，等待一段时间
+      // 3. 如果有finalRealConvId，主动查询数据库ID
+      // 4. 最后使用现有的数据库ID
+      // --- END COMMENT ---
+      const effectiveDbId = currentSessionDbId || finalDbConvUUID || dbConversationUUID;
+      
+      if (effectiveDbId) {
+        saveMessagesWithDbId(effectiveDbId);
+      } else if (isNewConversationFlow) {
+        // --- BEGIN COMMENT ---
+        // 对于新对话，如果没有数据库ID，等待回调执行
+        // 这解决了回调时序问题
+        // --- END COMMENT ---
+        // --- BEGIN COMMENT ---
+        // 新对话流程：等待数据库ID回调执行
+        // 这解决了回调时序问题，确保消息能够正确保存
+        // --- END COMMENT ---
+        
+        let retryCount = 0;
+        const maxRetries = 10; // 最多等待1秒（100ms * 10）
+        
+        const waitForDbId = () => {
+          const currentDbId = currentSessionDbId || dbConversationUUID;
+          
+          if (currentDbId) {
+            saveMessagesWithDbId(currentDbId);
+          } else if (retryCount < maxRetries) {
+            retryCount++;
+            setTimeout(waitForDbId, 100);
+          } else {
+            // --- BEGIN COMMENT ---
+            // 等待超时，尝试使用当前的Dify对话ID查询数据库
+            // --- END COMMENT ---
+            const currentDifyId = difyConversationId || useChatStore.getState().currentConversationId;
+            
+            if (currentDifyId && currentDifyId !== 'temp-' && !currentDifyId.startsWith('temp-')) {
+              getConversationByExternalId(currentDifyId).then(result => {
+                if (result.success && result.data) {
+                  setCurrentSessionDbId(result.data.id);
+                  setDbConversationUUID(result.data.id);
+                  saveMessagesWithDbId(result.data.id);
+                } else {
+                  console.error(`[handleSubmit] 查询数据库对话失败，消息无法保存`);
+                }
+              }).catch(err => {
+                console.error('[handleSubmit] 查询数据库对话异常:', err);
+              });
+            } else {
+              console.error(`[handleSubmit] 无有效的Dify对话ID，消息无法保存`);
+            }
+          }
+        };
+        
+        // 立即开始等待
+        waitForDbId();
+        
+      } else if (finalRealConvId) {
+        // 现有对话流程，主动查询数据库ID
+        getConversationByExternalId(finalRealConvId).then(result => {
+          if (result.success && result.data) {
+            setCurrentSessionDbId(result.data.id);
+            setDbConversationUUID(result.data.id);
+            saveMessagesWithDbId(result.data.id);
+          } else {
+            console.error(`[handleSubmit] 查询数据库对话失败，无法保存消息`);
+          }
+        }).catch(err => {
+          console.error('[handleSubmit] 查询数据库对话异常:', err);
+        });
+      } else {
+        console.warn(`[handleSubmit] 流式响应结束，但没有有效的对话ID，消息无法保存`);
       }
 
 
@@ -745,7 +816,7 @@ export function useChatInterface() {
     addMessage, setIsWaitingForResponse, isWelcomeScreen, setIsWelcomeScreen,
     appendMessageChunk, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
     setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer,
-    initiateNewConversation, updatePendingStatus, difyConversationId
+    initiateNewConversation, updatePendingStatus, difyConversationId, currentSessionDbId, dbConversationUUID
   ]);
 
   const handleStopProcessing = useCallback(async () => {
