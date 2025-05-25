@@ -22,14 +22,30 @@ export default function ApiConfigHeader() {
   const handleForceRefresh = async () => {
     setIsRefreshing(true);
     try {
+      // 1. 清理服务端缓存
+      const cacheResponse = await fetch('/api/admin/clear-cache', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      
+      if (!cacheResponse.ok) {
+        throw new Error('清理服务端缓存失败');
+      }
+      
+      const cacheResult = await cacheResponse.json();
+      console.log('[管理界面] 服务端缓存清理结果:', cacheResult);
+      
+      // 2. 刷新前端应用缓存
       await forceRefreshApp();
+      
       setNotification({
         open: true,
-        message: '应用缓存已强制刷新',
+        message: `缓存已全面刷新 (服务端清理${cacheResult.clearedCount}项，前端已重新加载)`,
         severity: 'success'
       });
     } catch (error) {
-      console.error('强制刷新应用缓存时出错:', error);
+      console.error('强制刷新缓存时出错:', error);
       setNotification({
         open: true,
         message: error instanceof Error ? error.message : '强制刷新失败',
