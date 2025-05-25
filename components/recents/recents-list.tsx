@@ -59,6 +59,18 @@ export function RecentsList({
       const success = await onRename(conversation.id, newTitle.trim())
       
       if (success) {
+        // --- BEGIN COMMENT ---
+        // 重命名成功后，如果当前页面标题包含旧标题，则更新为新标题
+        // 与侧边栏聊天列表保持一致的逻辑
+        // --- END COMMENT ---
+        const currentTitle = document.title
+        const oldTitle = conversation.title || '新对话'
+        const baseTitle = 'if-agent-ui'
+        
+        if (currentTitle.includes(oldTitle)) {
+          document.title = `${newTitle.trim()} | ${baseTitle}`
+        }
+        
         // 刷新列表以显示新标题
         onRefresh()
       } else {
@@ -105,6 +117,23 @@ export function RecentsList({
   }
   
   // --- BEGIN COMMENT ---
+  // 处理对话项点击，包含标题设置逻辑
+  // --- END COMMENT ---
+  const handleConversationItemClick = (conversation: Conversation) => {
+    const conversationId = conversation.external_id || conversation.id || ''
+    
+    // --- BEGIN COMMENT ---
+    // 立即设置页面标题，与侧边栏聊天列表保持一致的逻辑
+    // --- END COMMENT ---
+    const title = conversation.title || '新对话'
+    const baseTitle = 'if-agent-ui'
+    document.title = `${title} | ${baseTitle}`
+    
+    // 调用父组件的点击处理函数
+    onConversationClick(conversationId)
+  }
+  
+  // --- BEGIN COMMENT ---
   // 渲染对话项
   // --- END COMMENT ---
   const renderConversationItem = (conversation: Conversation) => {
@@ -123,7 +152,7 @@ export function RecentsList({
             : "hover:bg-stone-200/70 border border-stone-200 hover:border-stone-400", // 增强浅色模式下的悬停效果，使用更深的stone颜色
           "mb-3"
         )}
-        onClick={() => onConversationClick(conversation.external_id || conversation.id || '')}
+        onClick={() => handleConversationItemClick(conversation)}
       >
         {/* 标题和日期 */}
         <div className="flex items-center justify-between mb-2">
