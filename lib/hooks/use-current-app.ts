@@ -22,6 +22,7 @@ export function useCurrentApp() {
     clearCurrentApp,
     initializeDefaultAppId,
     refreshCurrentApp,
+    forceRefreshDefaultApp,
   } = useCurrentAppStore();
 
   // --- BEGIN COMMENT ---
@@ -55,6 +56,14 @@ export function useCurrentApp() {
     }
   }, [refreshCurrentApp]);
 
+  const forceRefreshApp = useCallback(async () => {
+    try {
+      await forceRefreshDefaultApp();
+    } catch (error) {
+      console.error('强制刷新应用失败:', error);
+    }
+  }, [forceRefreshDefaultApp]);
+
   return {
     // 状态
     currentAppId,
@@ -71,6 +80,7 @@ export function useCurrentApp() {
     resetApp,
     initializeApp,
     refreshApp,
+    forceRefreshApp,
   };
 }
 

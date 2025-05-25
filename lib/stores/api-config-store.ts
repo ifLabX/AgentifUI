@@ -5,6 +5,9 @@ import { createClient } from '@lib/supabase/client';
 import { Provider, ServiceInstance, ApiKey } from '@lib/types/database';
 import { Result } from '@lib/types/result';
 
+// 导入当前应用store，用于清除前端应用缓存
+import { useCurrentAppStore } from './current-app-store';
+
 // --- BEGIN COMMENT ---
 // 重新导出类型定义，供其他组件使用
 // --- END COMMENT ---
@@ -220,6 +223,18 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           
           handleResult(newKeyResult, '创建 API 密钥');
         }
+      }
+      
+      // 如果更新了默认应用，强制刷新前端应用缓存
+      if (instance.is_default) {
+        console.log('[API配置] 检测到默认应用更新，强制刷新前端应用缓存');
+        const { forceRefreshDefaultApp } = useCurrentAppStore.getState();
+        // 异步执行，不阻塞当前操作
+        setTimeout(() => {
+          forceRefreshDefaultApp().catch(error => {
+            console.error('[API配置] 强制刷新前端应用缓存失败:', error);
+          });
+        }, 100);
       }
       
       // 重新加载数据
@@ -442,6 +457,16 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           set({ apiKeys: [...apiKeys, newKey] });
         }
       }
+      
+      // 强制刷新前端应用缓存，确保使用新的默认应用
+      console.log('[API配置] 更新Dify配置完成，强制刷新前端应用缓存');
+      const { forceRefreshDefaultApp } = useCurrentAppStore.getState();
+      // 异步执行，不阻塞当前操作
+      setTimeout(() => {
+        forceRefreshDefaultApp().catch(error => {
+          console.error('[API配置] 强制刷新前端应用缓存失败:', error);
+        });
+      }, 100);
       
       // 清空输入
       set({ newApiKey: '', isUpdating: false });

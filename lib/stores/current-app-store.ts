@@ -12,8 +12,9 @@ interface CurrentAppState {
   errorLoadingAppId: string | null;
   setCurrentAppId: (appId: string, instance: ServiceInstance) => void;
   clearCurrentApp: () => void;
-  initializeDefaultAppId: () => Promise<void>;
+  initializeDefaultAppId: (forceRefresh?: boolean) => Promise<void>;
   refreshCurrentApp: () => Promise<void>;
+  forceRefreshDefaultApp: () => Promise<void>;
 }
 
 // --- BEGIN COMMENT ---
@@ -54,9 +55,9 @@ export const useCurrentAppStore = create<CurrentAppState>()(
         });
       },
       
-      initializeDefaultAppId: async () => {
-        // 防止重复初始化或在已加载时再次加载
-        if (get().currentAppId || get().isLoadingAppId) {
+      initializeDefaultAppId: async (forceRefresh = false) => {
+        // 防止重复初始化，除非强制刷新
+        if (!forceRefresh && (get().currentAppId || get().isLoadingAppId)) {
           return;
         }
         
@@ -157,6 +158,22 @@ export const useCurrentAppStore = create<CurrentAppState>()(
             errorLoadingAppId: errorMessage 
           });
         }
+      },
+      
+      // --- BEGIN COMMENT ---
+      // 强制刷新默认应用，清除缓存并重新获取最新的默认应用
+      // --- END COMMENT ---
+      forceRefreshDefaultApp: async () => {
+        // 清除当前应用状态
+        set({
+          currentAppId: null,
+          currentAppInstance: null,
+          isLoadingAppId: false,
+          errorLoadingAppId: null,
+        });
+        
+        // 强制重新初始化
+        await get().initializeDefaultAppId(true);
       },
     }),
     {

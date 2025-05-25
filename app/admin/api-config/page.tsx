@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useAdminAuth } from '@lib/hooks/use-admin-auth';
 import { useApiConfigStore, ServiceInstance } from '@lib/stores/api-config-store';
+import { useAdminFormStore } from '@lib/stores/admin-form-store';
 import AdminLayout from '@components/admin/admin-layout';
 import { ApiConfigSkeleton } from '@components/ui/skeleton';
 
@@ -33,13 +34,24 @@ export default function ApiConfigPage() {
     deleteAppInstance
   } = useApiConfigStore();
   
+  // 使用持久化表单状态
+  const {
+    tabValue,
+    isAddingInstance,
+    editingInstance,
+    formData,
+    setTabValue,
+    setIsAddingInstance,
+    setEditingInstance,
+    updateFormData,
+    clearFormData,
+    resetFormState,
+  } = useAdminFormStore();
+  
   // 防止页面闪烁，在完全加载前始终显示加载状态
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
   
-  // 组件状态
-  const [tabValue, setTabValue] = useState(0);
-  const [isAddingInstance, setIsAddingInstance] = useState(false);
-  const [editingInstance, setEditingInstance] = useState<ServiceInstance | null>(null);
+  // 非持久化的临时状态
   const [processingInstance, setProcessingInstance] = useState(false);
   const [instanceError, setInstanceError] = useState<Error | null>(null);
   
@@ -74,14 +86,14 @@ export default function ApiConfigPage() {
   // 添加应用实例
   const handleAddInstance = () => {
     setEditingInstance(null);
+    clearFormData(); // 清空表单数据
     setIsAddingInstance(true);
     setInstanceError(null);
   };
   
   // 编辑应用实例
   const handleEditInstance = (instance: ServiceInstance) => {
-    setEditingInstance(instance);
-    setIsAddingInstance(true);
+    setEditingInstance(instance); // 这会自动填充表单数据
     setInstanceError(null);
   };
   
@@ -161,9 +173,10 @@ export default function ApiConfigPage() {
       
       // 重新加载数据已在函数内完成
       
-      // 关闭表单
+      // 关闭表单并清空数据
       setIsAddingInstance(false);
       setEditingInstance(null);
+      clearFormData();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '保存应用实例时出错';
       console.error('保存应用实例时出错:', error);
@@ -183,6 +196,7 @@ export default function ApiConfigPage() {
   const handleCancelInstance = () => {
     setIsAddingInstance(false);
     setEditingInstance(null);
+    clearFormData(); // 清空表单数据
     setInstanceError(null);
   };
   
