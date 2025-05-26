@@ -18,11 +18,13 @@ export function useCurrentApp() {
     currentAppInstance,
     isLoadingAppId,
     errorLoadingAppId,
+    isValidating, // 新增：验证状态
     setCurrentAppId,
     clearCurrentApp,
     initializeDefaultAppId,
     refreshCurrentApp,
     validateAndRefreshConfig, // 新增：验证并刷新配置
+    switchToApp, // 新增：切换app
   } = useCurrentAppStore();
 
   // --- BEGIN COMMENT ---
@@ -59,15 +61,16 @@ export function useCurrentApp() {
   // --- BEGIN COMMENT ---
   // 新增：强制等待App配置就绪的方法
   // 解决时序问题：确保在使用appId前，配置已完全加载
+  // 支持切换到指定app
   // --- END COMMENT ---
-  const ensureAppReady = useCallback(async (): Promise<{
+  const ensureAppReady = useCallback(async (targetAppId?: string): Promise<{
     appId: string;
     instance: ServiceInstance;
   }> => {
-    console.log('[ensureAppReady] 开始确保App配置就绪');
+    console.log(`[ensureAppReady] 开始确保App配置就绪${targetAppId ? `, 目标app: ${targetAppId}` : ''}`);
     
     // 🎯 新增：先验证配置有效性，确保与数据库同步
-    if (currentAppId && currentAppInstance && !isLoadingAppId) {
+    if (currentAppId && currentAppInstance && !isLoadingAppId && !targetAppId) {
       console.log('[ensureAppReady] 验证配置有效性...');
       try {
         await validateAndRefreshConfig();
@@ -88,6 +91,29 @@ export function useCurrentApp() {
           appId: currentAppId,
           instance: currentAppInstance
         };
+      }
+    }
+    
+    // 如果指定了targetAppId且与当前不同，切换到目标app
+    if (targetAppId && targetAppId !== currentAppId) {
+      console.log(`[ensureAppReady] 切换到目标app: ${targetAppId}`);
+      try {
+        await validateAndRefreshConfig(targetAppId);
+        
+        // 切换后重新获取状态
+        const updatedState = useCurrentAppStore.getState();
+        if (updatedState.currentAppId && updatedState.currentAppInstance) {
+          console.log(`[ensureAppReady] app切换完成，返回: ${updatedState.currentAppId}`);
+          return {
+            appId: updatedState.currentAppId,
+            instance: updatedState.currentAppInstance
+          };
+        } else {
+          throw new Error(`切换到app ${targetAppId} 后状态异常`);
+        }
+      } catch (error) {
+        console.error(`[ensureAppReady] 切换到app ${targetAppId} 失败:`, error);
+        throw new Error(`切换到app ${targetAppId} 失败: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
     
@@ -159,11 +185,24 @@ export function useCurrentApp() {
     throw new Error('App配置状态异常：无法获取有效的应用配置，请检查数据库中是否存在默认的Dify应用实例');
   }, [currentAppId, currentAppInstance, isLoadingAppId, errorLoadingAppId, initializeDefaultAppId, validateAndRefreshConfig]);
 
+  // --- BEGIN COMMENT ---
+  // 新增：切换到指定app的便捷方法
+  // --- END COMMENT ---
+  const switchToSpecificApp = useCallback(async (appId: string) => {
+    try {
+      await switchToApp(appId);
+    } catch (error) {
+      console.error('切换app失败:', error);
+      throw error;
+    }
+  }, [switchToApp]);
+
   return {
     // 状态
     currentAppId,
     currentAppInstance,
     isLoading: isLoadingAppId,
+    isValidating, // 新增：验证状态
     error: errorLoadingAppId,
     
     // 计算属性
@@ -176,6 +215,8 @@ export function useCurrentApp() {
     initializeApp,
     refreshApp,
     ensureAppReady, // 新增方法
+    switchToSpecificApp, // 新增：切换到指定app
+    validateConfig: validateAndRefreshConfig, // 暴露验证方法
   };
 }
 

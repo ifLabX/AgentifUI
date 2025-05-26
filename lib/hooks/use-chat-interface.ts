@@ -615,14 +615,38 @@ export function useChatInterface() {
           
           // 重新获取最新的消息对象，确保内容是完整的
           const finalAssistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
-          // 确保数据库对话ID和消息都存在
-          if (finalAssistantMessage && finalAssistantMessage.persistenceStatus !== 'saved') {
-            console.log(`[handleSubmit] 开始保存助手消息，内容长度=${finalAssistantMessage.text.length}, 数据库ID=${currentDbConvId}`);
-            saveMessage(finalAssistantMessage, currentDbConvId).catch(err => {
-              console.error('[handleSubmit] 保存助手消息失败:', err);
-            });
+          
+          // 🎯 修复：确保助手消息被正确finalize，然后保存
+          if (finalAssistantMessage) {
+            // 如果消息仍在流式传输状态，先finalize它
+            if (finalAssistantMessage.isStreaming) {
+              console.log(`[handleSubmit] 助手消息仍在流式状态，先finalize: ${assistantMessageId}`);
+              finalizeStreamingMessage(assistantMessageId);
+            }
+            
+            // 检查消息是否需要保存（更宽松的条件）
+            const needsSaving = !finalAssistantMessage.db_id && 
+                               finalAssistantMessage.persistenceStatus !== 'saved' &&
+                               finalAssistantMessage.text.trim().length > 0;
+                               
+            if (needsSaving) {
+              console.log(`[handleSubmit] 开始保存助手消息，内容长度=${finalAssistantMessage.text.length}, 数据库ID=${currentDbConvId}`);
+              
+              // 更新消息状态为待保存
+              updateMessage(assistantMessageId, { persistenceStatus: 'pending' });
+              
+              saveMessage(finalAssistantMessage, currentDbConvId).catch(err => {
+                console.error('[handleSubmit] 保存助手消息失败:', err);
+                // 保存失败时更新状态
+                if (assistantMessageId) {
+                  updateMessage(assistantMessageId, { persistenceStatus: 'error' });
+                }
+              });
+            } else {
+              console.log(`[handleSubmit] 助手消息无需保存: 已有db_id=${!!finalAssistantMessage.db_id}, 状态=${finalAssistantMessage.persistenceStatus}, 内容长度=${finalAssistantMessage.text.length}`);
+            }
           } else {
-            console.warn(`[handleSubmit] 无法保存助手消息: 消息=${!!finalAssistantMessage}, 状态=${finalAssistantMessage?.persistenceStatus}, 数据库ID=${currentDbConvId}`);
+            console.warn(`[handleSubmit] 未找到助手消息: ${assistantMessageId}`);
           }
         }
       } else {

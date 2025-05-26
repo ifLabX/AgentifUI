@@ -156,6 +156,7 @@ export const ChatInput = ({
   const { 
     currentAppId, 
     isLoading: isLoadingAppId, 
+    isValidating: isValidatingAppConfig, // 新增：验证状态
     error: errorLoadingAppId,
     hasCurrentApp,
     isReady: isAppReady
@@ -403,6 +404,12 @@ export const ChatInput = ({
   // --- 计算按钮禁用状态 (依赖 store) ---
   const isUploading = attachments.some(f => f.status === 'uploading');
   const hasError = attachments.some(f => f.status === 'error');
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：计算是否正在验证App配置
+  // 在验证期间显示spinner状态，但不禁用按钮（因为用户可能想取消）
+  // --- END COMMENT ---
+  const isValidatingConfig = isValidatingAppConfig;
 
   // --- BEGIN COMMENT ---
   // 优先使用外部传入的欢迎屏幕状态，如果没有则使用内部状态
@@ -454,7 +461,7 @@ export const ChatInput = ({
           <div className="flex-none">
             <ChatButton
               icon={
-                isWaiting ? (
+                isWaiting || isValidatingConfig ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : isProcessing ? (
                   <Square className="h-5 w-5" />
@@ -471,8 +478,14 @@ export const ChatInput = ({
                 (!isProcessing && !message.trim())
               }
               isDark={isDark}
-              ariaLabel={isProcessing ? "停止生成" : (isUploading ? "正在上传..." : (hasError ? "部分附件上传失败" : "发送消息"))}
-              forceActiveStyle={isWaiting}
+              ariaLabel={
+                isValidatingConfig ? "正在验证应用配置..." : 
+                isProcessing ? "停止生成" : 
+                isUploading ? "正在上传..." : 
+                hasError ? "部分附件上传失败" : 
+                "发送消息"
+              }
+              forceActiveStyle={isWaiting || isValidatingConfig}
             />
           </div>
         </ChatButtonArea>

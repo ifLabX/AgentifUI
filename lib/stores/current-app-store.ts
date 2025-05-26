@@ -12,11 +12,13 @@ interface CurrentAppState {
   isLoadingAppId: boolean;
   errorLoadingAppId: string | null;
   lastValidatedAt: number | null; // 新增：最后验证时间戳
+  isValidating: boolean; // 新增：是否正在验证配置
   setCurrentAppId: (appId: string, instance: ServiceInstance) => void;
   clearCurrentApp: () => void;
   initializeDefaultAppId: () => Promise<void>;
   refreshCurrentApp: () => Promise<void>;
-  validateAndRefreshConfig: () => Promise<void>; // 新增：验证并刷新配置
+  validateAndRefreshConfig: (targetAppId?: string) => Promise<void>; // 修改：支持验证特定app
+  switchToApp: (appId: string) => Promise<void>; // 新增：切换到指定app
 }
 
 // --- BEGIN COMMENT ---
@@ -33,6 +35,7 @@ export const useCurrentAppStore = create<CurrentAppState>()(
       isLoadingAppId: false,
       errorLoadingAppId: null,
       lastValidatedAt: null, // 新增：最后验证时间戳
+      isValidating: false, // 新增：是否正在验证配置
       
       setCurrentAppId: (appId, instance) => {
         set({ 
@@ -170,31 +173,42 @@ export const useCurrentAppStore = create<CurrentAppState>()(
       // --- BEGIN COMMENT ---
       // 新增：验证并刷新配置方法
       // 检查当前配置是否仍然有效，如果无效则重新获取
+      // 支持验证特定app或默认app
       // 用于解决管理端配置变更后的同步问题
       // --- END COMMENT ---
-      validateAndRefreshConfig: async () => {
+      validateAndRefreshConfig: async (targetAppId?: string) => {
         const currentState = get();
         
-        // 如果没有当前配置，直接初始化
-        if (!currentState.currentAppId || !currentState.currentAppInstance) {
-          await get().initializeDefaultAppId();
-          return;
-        }
-        
-        // 检查是否需要验证（避免频繁验证）
-        const now = Date.now();
-        const lastValidated = currentState.lastValidatedAt || 0;
-        const VALIDATION_INTERVAL = 30 * 1000; // 30秒验证间隔
-        
-        if (now - lastValidated < VALIDATION_INTERVAL) {
-          console.log('[validateAndRefreshConfig] 验证间隔未到，跳过验证');
-          return;
-        }
-        
-        console.log('[validateAndRefreshConfig] 开始验证配置有效性...');
+        // 设置验证状态
+        set({ isValidating: true });
         
         try {
-          // 重新获取默认服务实例，验证配置是否仍然有效
+          // 如果指定了targetAppId，则切换到该app
+          if (targetAppId && targetAppId !== currentState.currentAppId) {
+            console.log(`[validateAndRefreshConfig] 切换到指定app: ${targetAppId}`);
+            await get().switchToApp(targetAppId);
+            return;
+          }
+          
+          // 如果没有当前配置，直接初始化
+          if (!currentState.currentAppId || !currentState.currentAppInstance) {
+            await get().initializeDefaultAppId();
+            return;
+          }
+          
+          // 检查是否需要验证（避免频繁验证）
+          const now = Date.now();
+          const lastValidated = currentState.lastValidatedAt || 0;
+          const VALIDATION_INTERVAL = 30 * 1000; // 30秒验证间隔
+          
+          if (now - lastValidated < VALIDATION_INTERVAL && !targetAppId) {
+            console.log('[validateAndRefreshConfig] 验证间隔未到，跳过验证');
+            return;
+          }
+          
+          console.log('[validateAndRefreshConfig] 开始验证配置有效性...');
+          
+          // 获取提供商信息
           const providerResult = await getProviderByName(DIFY_PROVIDER_NAME);
           
           if (!providerResult.success || !providerResult.data) {
@@ -203,19 +217,66 @@ export const useCurrentAppStore = create<CurrentAppState>()(
             return;
           }
           
-          const defaultInstanceResult = await getDefaultServiceInstance(providerResult.data.id);
+          // 🎯 修改：支持验证特定app实例，而不仅仅是默认app
+          let targetInstance: any = null;
           
-          if (!defaultInstanceResult.success || !defaultInstanceResult.data) {
-            console.warn('[validateAndRefreshConfig] 默认服务实例不存在，清除当前配置');
-            get().clearCurrentApp();
-            return;
+          if (targetAppId) {
+            // 如果指定了targetAppId，查找该特定实例
+            const { createClient } = await import('../supabase/client');
+            const supabase = createClient();
+            
+            const { data: specificInstance, error: specificError } = await supabase
+              .from('service_instances')
+              .select('*')
+              .eq('provider_id', providerResult.data.id)
+              .eq('instance_id', targetAppId)
+              .single();
+              
+            if (specificError || !specificInstance) {
+              throw new Error(`未找到指定的app实例: ${targetAppId}`);
+            }
+            
+            targetInstance = specificInstance;
+          } else {
+            // 如果没有指定targetAppId，验证当前app是否仍然存在
+            const { createClient } = await import('../supabase/client');
+            const supabase = createClient();
+            
+            const { data: currentInstance, error: currentError } = await supabase
+              .from('service_instances')
+              .select('*')
+              .eq('provider_id', providerResult.data.id)
+              .eq('instance_id', currentState.currentAppId)
+              .single();
+              
+            if (currentError || !currentInstance) {
+              // 当前app不存在，fallback到默认app
+              console.warn(`[validateAndRefreshConfig] 当前app ${currentState.currentAppId} 不存在，fallback到默认app`);
+              const defaultInstanceResult = await getDefaultServiceInstance(providerResult.data.id);
+              
+              if (!defaultInstanceResult.success || !defaultInstanceResult.data) {
+                console.warn('[validateAndRefreshConfig] 默认服务实例也不存在，清除当前配置');
+                get().clearCurrentApp();
+                return;
+              }
+              
+              targetInstance = defaultInstanceResult.data;
+            } else {
+              targetInstance = currentInstance;
+            }
           }
           
-          const latestInstance = defaultInstanceResult.data;
-          
-          // 检查当前配置是否与最新配置一致
-          if (currentState.currentAppId !== latestInstance.instance_id ||
-              currentState.currentAppInstance?.id !== latestInstance.id) {
+          // 检查当前配置是否与目标配置一致
+          // 🎯 修复：不仅检查ID，还要检查实例的详细信息是否有变化
+          const needsUpdate = 
+            currentState.currentAppId !== targetInstance.instance_id ||
+            currentState.currentAppInstance?.id !== targetInstance.id ||
+            currentState.currentAppInstance?.display_name !== targetInstance.display_name ||
+            currentState.currentAppInstance?.description !== targetInstance.description ||
+            currentState.currentAppInstance?.name !== targetInstance.name ||
+            JSON.stringify(currentState.currentAppInstance?.config || {}) !== JSON.stringify(targetInstance.config || {});
+            
+          if (needsUpdate) {
             console.log('[validateAndRefreshConfig] 配置已变更，更新为最新配置');
             
             // --- BEGIN COMMENT ---
@@ -224,13 +285,13 @@ export const useCurrentAppStore = create<CurrentAppState>()(
             if (currentState.currentAppId) {
               clearDifyConfigCache(currentState.currentAppId);
             }
-            if (latestInstance.instance_id !== currentState.currentAppId) {
-              clearDifyConfigCache(latestInstance.instance_id);
+            if (targetInstance.instance_id !== currentState.currentAppId) {
+              clearDifyConfigCache(targetInstance.instance_id);
             }
             
             set({
-              currentAppId: latestInstance.instance_id,
-              currentAppInstance: latestInstance,
+              currentAppId: targetInstance.instance_id,
+              currentAppInstance: targetInstance,
               lastValidatedAt: now,
               errorLoadingAppId: null
             });
@@ -248,8 +309,72 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           const errorMessage = error instanceof Error ? error.message : String(error);
           set({ 
             errorLoadingAppId: `配置验证失败: ${errorMessage}。当前使用缓存配置，请检查网络连接。`,
-            lastValidatedAt: now // 即使失败也更新时间戳，避免频繁重试
+            lastValidatedAt: Date.now() // 即使失败也更新时间戳，避免频繁重试
           });
+        } finally {
+          // 清除验证状态
+          set({ isValidating: false });
+        }
+      },
+
+      // --- BEGIN COMMENT ---
+      // 新增：切换到指定app的方法
+      // 支持切换到任意app，而不仅仅是默认app
+      // --- END COMMENT ---
+      switchToApp: async (appId: string) => {
+        console.log(`[switchToApp] 开始切换到app: ${appId}`);
+        
+        set({ isLoadingAppId: true, errorLoadingAppId: null });
+        
+        try {
+          // 获取提供商信息
+          const providerResult = await getProviderByName(DIFY_PROVIDER_NAME);
+          
+          if (!providerResult.success || !providerResult.data) {
+            throw new Error(`获取提供商"${DIFY_PROVIDER_NAME}"失败`);
+          }
+          
+          // 查找指定的app实例
+          const { createClient } = await import('../supabase/client');
+          const supabase = createClient();
+          
+          const { data: targetInstance, error: targetError } = await supabase
+            .from('service_instances')
+            .select('*')
+            .eq('provider_id', providerResult.data.id)
+            .eq('instance_id', appId)
+            .single();
+            
+          if (targetError || !targetInstance) {
+            throw new Error(`未找到app实例: ${appId}`);
+          }
+          
+          // 清除旧的配置缓存
+          const currentState = get();
+          if (currentState.currentAppId) {
+            clearDifyConfigCache(currentState.currentAppId);
+          }
+          clearDifyConfigCache(appId);
+          
+          // 更新状态
+          set({
+            currentAppId: targetInstance.instance_id,
+            currentAppInstance: targetInstance,
+            isLoadingAppId: false,
+            errorLoadingAppId: null,
+            lastValidatedAt: Date.now()
+          });
+          
+          console.log(`[switchToApp] 成功切换到app: ${appId}`);
+          
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.error(`[switchToApp] 切换app失败:`, error);
+          set({ 
+            isLoadingAppId: false, 
+            errorLoadingAppId: `切换app失败: ${errorMessage}` 
+          });
+          throw error; // 重新抛出错误，让调用者处理
         }
       },
     }),
