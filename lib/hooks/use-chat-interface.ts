@@ -165,6 +165,7 @@ export function useChatInterface() {
     // --- BEGIN COMMENT ---
     // 🎯 核心修改：强制等待App配置就绪，解决时序问题
     // 移除原有的简单检查，改为主动等待配置加载完成
+    // 新增错误恢复机制，提供用户友好的反馈
     // --- END COMMENT ---
     let appConfig: { appId: string; instance: ServiceInstance };
     try {
@@ -173,7 +174,18 @@ export function useChatInterface() {
       console.log(`[handleSubmit] App配置就绪: ${appConfig.appId}`);
     } catch (error) {
       console.error('[handleSubmit] App配置获取失败:', error);
-      // TODO: 可以通过 useNotificationStore 显示提示
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 错误恢复机制：添加错误消息到聊天界面，提供用户反馈
+      // --- END COMMENT ---
+      const errorMessage = error instanceof Error ? error.message : '应用配置获取失败';
+      addMessage({ 
+        text: `抱歉，无法获取应用配置: ${errorMessage}。请检查网络连接或联系管理员。`, 
+        isUser: false, 
+        error: errorMessage,
+        persistenceStatus: 'error' // 标记为错误状态，不尝试保存
+      });
+      
       return;
     }
 
@@ -774,6 +786,7 @@ export function useChatInterface() {
 
     // --- BEGIN COMMENT ---
     // 🎯 核心修改：强制等待App配置就绪，解决时序问题
+    // 新增错误恢复机制：停止操作失败时仍然尝试本地停止
     // --- END COMMENT ---
     let appConfig: { appId: string; instance: ServiceInstance };
     try {
@@ -782,7 +795,28 @@ export function useChatInterface() {
       console.log(`[handleStopProcessing] App配置就绪: ${appConfig.appId}`);
     } catch (error) {
       console.error('[handleStopProcessing] App配置获取失败:', error);
-      return;
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 错误恢复机制：即使App配置获取失败，也要尝试本地停止流式响应
+      // 这确保用户界面能够响应停止操作，避免界面卡死
+      // --- END COMMENT ---
+      console.warn('[handleStopProcessing] App配置获取失败，仅执行本地停止操作');
+      
+      if (currentStreamingId) {
+        if (appendTimerRef.current) { 
+          clearTimeout(appendTimerRef.current);
+          appendTimerRef.current = null;
+        }
+        flushChunkBuffer(currentStreamingId); 
+        markAsManuallyStopped(currentStreamingId);
+        
+        // 更新UI状态
+        if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
+          setIsWaitingForResponse(false);
+        }
+      }
+      
+      return; // 不执行远程停止操作
     }
 
     if (currentStreamingId) {

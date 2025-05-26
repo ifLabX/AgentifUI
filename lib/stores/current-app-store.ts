@@ -241,10 +241,13 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           
         } catch (error) {
           console.error('[validateAndRefreshConfig] 验证配置时出错:', error);
-          // 验证失败时不清除配置，只记录错误
+          // --- BEGIN COMMENT ---
+          // 🎯 错误恢复机制：验证失败时不清除配置，只记录错误
+          // 这确保即使数据库暂时不可用，用户仍能使用缓存的配置
+          // --- END COMMENT ---
           const errorMessage = error instanceof Error ? error.message : String(error);
           set({ 
-            errorLoadingAppId: `配置验证失败: ${errorMessage}`,
+            errorLoadingAppId: `配置验证失败: ${errorMessage}。当前使用缓存配置，请检查网络连接。`,
             lastValidatedAt: now // 即使失败也更新时间戳，避免频繁重试
           });
         }

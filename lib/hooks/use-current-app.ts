@@ -156,7 +156,7 @@ export function useCurrentApp() {
     }
     
     // 理论上不应该到达这里
-    throw new Error('App配置状态异常');
+    throw new Error('App配置状态异常：无法获取有效的应用配置，请检查数据库中是否存在默认的Dify应用实例');
   }, [currentAppId, currentAppInstance, isLoadingAppId, errorLoadingAppId, initializeDefaultAppId, validateAndRefreshConfig]);
 
   return {
