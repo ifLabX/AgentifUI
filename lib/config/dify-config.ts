@@ -128,31 +128,16 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
     .eq('instance_id', appId)
     .single();
     
-  // 如果没找到特定实例，尝试使用默认实例
-  if (instanceError || !instance) {
-    if (appId !== 'default') {
-      const { data: defaultInstance, error: defaultInstanceError } = await supabase
-        .from('service_instances')
-        .select('*')
-        .eq('provider_id', provider.id)
-        .eq('is_default', true)
-        .single();
-        
-      if (defaultInstanceError || !defaultInstance) {
-        console.error('No default service instance found for Dify');
-        return null;
-      }
-    } else {
-      console.error(`No service instance found for Dify app "${appId}"`);
-      return null;
-    }
-  }
-  
-  // 3. 获取服务实例的 ID
+  // --- BEGIN COMMENT ---
+  // 🎯 修复：移除对"default"的特殊处理，统一逻辑
+  // 如果没找到特定实例，都尝试使用is_default=true的实例作为fallback
+  // --- END COMMENT ---
   let serviceInstance = instance;
   
-  // 如果没有找到实例，且请求的是非默认实例，尝试使用默认实例
-  if (!serviceInstance && appId !== 'default') {
+  // 如果没有找到指定的实例，尝试使用默认实例作为fallback
+  if (instanceError || !serviceInstance) {
+    console.log(`[获取Dify配置] 未找到实例ID为 "${appId}" 的服务实例，尝试使用默认实例`);
+    
     const { data: defaultInstance, error: defaultInstanceError } = await supabase
       .from('service_instances')
       .select('*')
@@ -161,11 +146,12 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
       .single();
       
     if (defaultInstanceError || !defaultInstance) {
-      console.error('No default service instance found for Dify');
+      console.error(`[获取Dify配置] 未找到默认服务实例，appId: ${appId}`);
       return null;
     }
     
     serviceInstance = defaultInstance;
+    console.log(`[获取Dify配置] 使用默认实例: ${defaultInstance.instance_id} (原请求: ${appId})`);
   }
   
   if (!serviceInstance) {

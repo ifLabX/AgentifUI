@@ -308,20 +308,17 @@ export function useChatInterface() {
             
             // 保存用户消息
             if (userMessage && userMessage.persistenceStatus !== 'saved') {
+              console.log(`[handleSubmit] 回调中保存用户消息，ID=${userMessage.id}, 数据库对话ID=${dbId}`);
               saveMessage(userMessage, dbId).catch(err => {
-                console.error('[handleSubmit] 保存用户消息失败:', err);
+                console.error('[handleSubmit] 回调中保存用户消息失败:', err);
               });
             }
             
-            // 如果助手消息已创建，也保存助手消息
-            if (assistantMessageId) {
-              const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
-              if (assistantMessage && assistantMessage.persistenceStatus !== 'saved') {
-                saveMessage(assistantMessage, dbId).catch(err => {
-                  console.error('[handleSubmit] 保存助手消息失败:', err);
-                });
-              }
-            }
+            // --- BEGIN COMMENT ---
+            // 🎯 简化修复：在回调中保存用户消息，助手消息在流式响应结束后保存
+            // 这样确保时序正确，避免复杂的定时器逻辑
+            // --- END COMMENT ---
+            console.log(`[handleSubmit] 数据库ID回调完成，用户消息已保存，助手消息将在流式响应结束后保存`);
           }
         );
 
@@ -576,14 +573,34 @@ export function useChatInterface() {
       // 消息持久化逻辑：
       // 1. 只有在获取到有效的数据库对话ID后，才能保存消息
       // 2. 先保存用户消息，再保存助手消息
+      // 🎯 修复：确保数据库ID的获取逻辑更加健壮
       // --- END COMMENT ---
-      if (finalDbConvUUID) {
-        console.log(`[handleSubmit] 流式响应结束，开始保存消息，数据库对话ID=${finalDbConvUUID}`);
+      
+      // 🎯 修复：重新获取最新的数据库对话ID，确保不会因为作用域问题丢失
+      let currentDbConvId = finalDbConvUUID || dbConversationUUID;
+      
+      // 如果还是没有数据库ID，尝试从当前状态重新查询
+      if (!currentDbConvId && finalRealConvId) {
+        console.log(`[handleSubmit] 重新查询数据库对话ID，Dify对话ID=${finalRealConvId}`);
+        try {
+          const result = await getConversationByExternalId(finalRealConvId);
+          if (result.success && result.data) {
+            currentDbConvId = result.data.id;
+            setDbConversationUUID(currentDbConvId);
+            console.log(`[handleSubmit] 重新查询成功，数据库对话ID=${currentDbConvId}`);
+          }
+        } catch (error) {
+          console.error(`[handleSubmit] 重新查询数据库对话ID失败:`, error);
+        }
+      }
+      
+      if (currentDbConvId) {
+        console.log(`[handleSubmit] 流式响应结束，开始保存消息，数据库对话ID=${currentDbConvId}`);
         
         // 保存用户消息
         if (userMessage && userMessage.persistenceStatus !== 'saved') {
-          console.log(`[handleSubmit] 保存用户消息，ID=${userMessage.id}, 数据库对话ID=${finalDbConvUUID}`);
-          saveMessage(userMessage, finalDbConvUUID).catch(err => {
+          console.log(`[handleSubmit] 保存用户消息，ID=${userMessage.id}, 数据库对话ID=${currentDbConvId}`);
+          saveMessage(userMessage, currentDbConvId).catch(err => {
             console.error('[handleSubmit] 保存用户消息失败:', err);
           });
         }
@@ -591,29 +608,22 @@ export function useChatInterface() {
         // 保存助手消息
         if (assistantMessageId) {
           // --- BEGIN COMMENT ---
-          // 流式响应结束后，添加延迟确保消息内容已完全更新
-          // 这是为了解决首次创建对话时助手消息被截断的问题
-          // 修复：捕获当前的数据库对话ID，避免闭包问题
+          // 流式响应结束后，立即保存助手消息，不再延迟
+          // 因为流式响应已经结束，消息内容应该是完整的
           // --- END COMMENT ---
-          console.log(`[handleSubmit] 准备保存助手消息，ID=${assistantMessageId}, 数据库对话ID=${finalDbConvUUID}`);
+          console.log(`[handleSubmit] 立即保存助手消息，ID=${assistantMessageId}, 数据库对话ID=${currentDbConvId}`);
           
-          // 捕获当前的数据库对话ID，避免闭包问题
-          const currentDbConvId = finalDbConvUUID;
-          
-          // 延迟1秒保存，确保消息内容已完整更新
-          setTimeout(() => {
-            // 重新获取最新的消息对象，确保内容是完整的
-            const finalAssistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
-            // 确保数据库对话ID和消息都存在
-            if (finalAssistantMessage && finalAssistantMessage.persistenceStatus !== 'saved' && currentDbConvId) {
-              console.log(`[handleSubmit] 延迟保存助手消息，ID=${assistantMessageId}, 内容长度=${finalAssistantMessage.text.length}, 数据库ID=${currentDbConvId}`);
-              saveMessage(finalAssistantMessage, currentDbConvId).catch(err => {
-                console.error('[handleSubmit] 保存助手消息失败:', err);
-              });
-            } else {
-              console.warn(`[handleSubmit] 无法保存助手消息: 消息=${!!finalAssistantMessage}, 状态=${finalAssistantMessage?.persistenceStatus}, 数据库ID=${currentDbConvId}`);
-            }
-          }, 1000);
+          // 重新获取最新的消息对象，确保内容是完整的
+          const finalAssistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
+          // 确保数据库对话ID和消息都存在
+          if (finalAssistantMessage && finalAssistantMessage.persistenceStatus !== 'saved') {
+            console.log(`[handleSubmit] 开始保存助手消息，内容长度=${finalAssistantMessage.text.length}, 数据库ID=${currentDbConvId}`);
+            saveMessage(finalAssistantMessage, currentDbConvId).catch(err => {
+              console.error('[handleSubmit] 保存助手消息失败:', err);
+            });
+          } else {
+            console.warn(`[handleSubmit] 无法保存助手消息: 消息=${!!finalAssistantMessage}, 状态=${finalAssistantMessage?.persistenceStatus}, 数据库ID=${currentDbConvId}`);
+          }
         }
       } else {
         console.warn(`[handleSubmit] 流式响应结束，但未获取到数据库对话ID，消息无法保存`);
