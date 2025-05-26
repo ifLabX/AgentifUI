@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { getProviderByName, getDefaultServiceInstance } from '@lib/db';
 import { Result } from '@lib/types/result';
 import type { ServiceInstance, Provider } from '@lib/types/database';
+import { clearDifyConfigCache } from '@lib/config/dify-config'; // 新增：导入缓存清除函数
 
 interface CurrentAppState {
   currentAppId: string | null;
@@ -216,6 +217,17 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           if (currentState.currentAppId !== latestInstance.instance_id ||
               currentState.currentAppInstance?.id !== latestInstance.id) {
             console.log('[validateAndRefreshConfig] 配置已变更，更新为最新配置');
+            
+            // --- BEGIN COMMENT ---
+            // 🎯 配置变更时清除Dify配置缓存，确保API调用使用最新配置
+            // --- END COMMENT ---
+            if (currentState.currentAppId) {
+              clearDifyConfigCache(currentState.currentAppId);
+            }
+            if (latestInstance.instance_id !== currentState.currentAppId) {
+              clearDifyConfigCache(latestInstance.instance_id);
+            }
+            
             set({
               currentAppId: latestInstance.instance_id,
               currentAppInstance: latestInstance,

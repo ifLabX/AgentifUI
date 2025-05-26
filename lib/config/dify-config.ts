@@ -9,23 +9,59 @@ export interface DifyAppConfig {
   description?: string;
 }
 
+// --- BEGIN COMMENT ---
 // 缓存配置，避免重复请求
+// 新增缓存管理功能，支持手动清除和验证
+// --- END COMMENT ---
 const configCache: Record<string, { config: DifyAppConfig, timestamp: number }> = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5分钟缓存
+const CACHE_TTL = 2 * 60 * 1000; // 缩短为2分钟缓存，提高配置变更响应速度
+
+/**
+ * 清除指定appId的配置缓存
+ * @param appId 应用ID，如果不提供则清除所有缓存
+ */
+export const clearDifyConfigCache = (appId?: string): void => {
+  if (appId) {
+    delete configCache[appId];
+    console.log(`[Dify配置缓存] 已清除 ${appId} 的缓存`);
+  } else {
+    Object.keys(configCache).forEach(key => delete configCache[key]);
+    console.log('[Dify配置缓存] 已清除所有缓存');
+  }
+};
+
+/**
+ * 强制刷新指定appId的配置缓存
+ * @param appId 应用ID
+ * @returns 刷新后的配置
+ */
+export const refreshDifyConfigCache = async (appId: string): Promise<DifyAppConfig | null> => {
+  console.log(`[Dify配置缓存] 强制刷新 ${appId} 的配置`);
+  clearDifyConfigCache(appId);
+  return await getDifyAppConfig(appId);
+};
 
 /**
  * 获取 Dify 应用配置
- * 从数据库获取配置
+ * 从数据库获取配置，支持缓存和强制刷新
  * @param appId Dify 应用 ID
+ * @param forceRefresh 是否强制刷新，跳过缓存
  * @returns Dify 应用配置，包含 apiKey 和 apiUrl
  */
 export const getDifyAppConfig = async (
   appId: string,
+  forceRefresh: boolean = false
 ): Promise<DifyAppConfig | null> => {
+  
+  // 如果强制刷新，清除缓存
+  if (forceRefresh) {
+    clearDifyConfigCache(appId);
+  }
   
   // 检查缓存
   const cached = configCache[appId];
-  if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+  if (cached && (Date.now() - cached.timestamp < CACHE_TTL) && !forceRefresh) {
+    console.log(`[获取Dify配置] 使用缓存配置: ${appId}`);
     return cached.config;
   }
   
