@@ -22,6 +22,7 @@ export function useCurrentApp() {
     clearCurrentApp,
     initializeDefaultAppId,
     refreshCurrentApp,
+    validateAndRefreshConfig, // 新增：验证并刷新配置
   } = useCurrentAppStore();
 
   // --- BEGIN COMMENT ---
@@ -65,13 +66,29 @@ export function useCurrentApp() {
   }> => {
     console.log('[ensureAppReady] 开始确保App配置就绪');
     
-    // 如果当前已有有效配置，直接返回
+    // 🎯 新增：先验证配置有效性，确保与数据库同步
     if (currentAppId && currentAppInstance && !isLoadingAppId) {
-      console.log(`[ensureAppReady] 当前配置有效，直接返回: ${currentAppId}`);
-      return {
-        appId: currentAppId,
-        instance: currentAppInstance
-      };
+      console.log('[ensureAppReady] 验证配置有效性...');
+      try {
+        await validateAndRefreshConfig();
+        
+        // 验证后重新获取状态
+        const updatedState = useCurrentAppStore.getState();
+        if (updatedState.currentAppId && updatedState.currentAppInstance) {
+          console.log(`[ensureAppReady] 配置验证完成，返回: ${updatedState.currentAppId}`);
+          return {
+            appId: updatedState.currentAppId,
+            instance: updatedState.currentAppInstance
+          };
+        }
+      } catch (error) {
+        console.warn('[ensureAppReady] 配置验证失败，继续使用当前配置:', error);
+        // 验证失败时仍然使用当前配置，避免阻塞用户操作
+        return {
+          appId: currentAppId,
+          instance: currentAppInstance
+        };
+      }
     }
     
     // 如果正在加载，等待加载完成
@@ -140,7 +157,7 @@ export function useCurrentApp() {
     
     // 理论上不应该到达这里
     throw new Error('App配置状态异常');
-  }, [currentAppId, currentAppInstance, isLoadingAppId, errorLoadingAppId, initializeDefaultAppId]);
+  }, [currentAppId, currentAppInstance, isLoadingAppId, errorLoadingAppId, initializeDefaultAppId, validateAndRefreshConfig]);
 
   return {
     // 状态

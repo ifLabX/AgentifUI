@@ -10,10 +10,12 @@ interface CurrentAppState {
   currentAppInstance: ServiceInstance | null;
   isLoadingAppId: boolean;
   errorLoadingAppId: string | null;
+  lastValidatedAt: number | null; // 新增：最后验证时间戳
   setCurrentAppId: (appId: string, instance: ServiceInstance) => void;
   clearCurrentApp: () => void;
   initializeDefaultAppId: () => Promise<void>;
   refreshCurrentApp: () => Promise<void>;
+  validateAndRefreshConfig: () => Promise<void>; // 新增：验证并刷新配置
 }
 
 // --- BEGIN COMMENT ---
@@ -29,13 +31,15 @@ export const useCurrentAppStore = create<CurrentAppState>()(
       currentAppInstance: null,
       isLoadingAppId: false,
       errorLoadingAppId: null,
+      lastValidatedAt: null, // 新增：最后验证时间戳
       
       setCurrentAppId: (appId, instance) => {
         set({ 
           currentAppId: appId, 
           currentAppInstance: instance, 
           isLoadingAppId: false, 
-          errorLoadingAppId: null 
+          errorLoadingAppId: null,
+          lastValidatedAt: Date.now() // 更新验证时间戳
         });
         // --- BEGIN COMMENT ---
         // TODO (后续): 当 appId 改变时，可能需要触发相关数据的重新加载，
@@ -51,6 +55,7 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           currentAppInstance: null,
           isLoadingAppId: false,
           errorLoadingAppId: null,
+          lastValidatedAt: null, // 清除验证时间戳
         });
       },
       
@@ -87,6 +92,7 @@ export const useCurrentAppStore = create<CurrentAppState>()(
               currentAppId: defaultInstanceResult.data.instance_id,
               currentAppInstance: defaultInstanceResult.data,
               isLoadingAppId: false,
+              lastValidatedAt: Date.now(), // 设置验证时间戳
             });
           } else {
             // --- BEGIN COMMENT ---
@@ -141,6 +147,7 @@ export const useCurrentAppStore = create<CurrentAppState>()(
               currentAppId: defaultInstanceResult.data.instance_id,
               currentAppInstance: defaultInstanceResult.data,
               isLoadingAppId: false,
+              lastValidatedAt: Date.now(), // 设置验证时间戳
             });
           } else {
             const errorMessage = "未找到默认服务实例";
@@ -155,6 +162,78 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           set({ 
             isLoadingAppId: false, 
             errorLoadingAppId: errorMessage 
+          });
+        }
+      },
+
+      // --- BEGIN COMMENT ---
+      // 新增：验证并刷新配置方法
+      // 检查当前配置是否仍然有效，如果无效则重新获取
+      // 用于解决管理端配置变更后的同步问题
+      // --- END COMMENT ---
+      validateAndRefreshConfig: async () => {
+        const currentState = get();
+        
+        // 如果没有当前配置，直接初始化
+        if (!currentState.currentAppId || !currentState.currentAppInstance) {
+          await get().initializeDefaultAppId();
+          return;
+        }
+        
+        // 检查是否需要验证（避免频繁验证）
+        const now = Date.now();
+        const lastValidated = currentState.lastValidatedAt || 0;
+        const VALIDATION_INTERVAL = 30 * 1000; // 30秒验证间隔
+        
+        if (now - lastValidated < VALIDATION_INTERVAL) {
+          console.log('[validateAndRefreshConfig] 验证间隔未到，跳过验证');
+          return;
+        }
+        
+        console.log('[validateAndRefreshConfig] 开始验证配置有效性...');
+        
+        try {
+          // 重新获取默认服务实例，验证配置是否仍然有效
+          const providerResult = await getProviderByName(DIFY_PROVIDER_NAME);
+          
+          if (!providerResult.success || !providerResult.data) {
+            console.warn('[validateAndRefreshConfig] 提供商不存在，清除当前配置');
+            get().clearCurrentApp();
+            return;
+          }
+          
+          const defaultInstanceResult = await getDefaultServiceInstance(providerResult.data.id);
+          
+          if (!defaultInstanceResult.success || !defaultInstanceResult.data) {
+            console.warn('[validateAndRefreshConfig] 默认服务实例不存在，清除当前配置');
+            get().clearCurrentApp();
+            return;
+          }
+          
+          const latestInstance = defaultInstanceResult.data;
+          
+          // 检查当前配置是否与最新配置一致
+          if (currentState.currentAppId !== latestInstance.instance_id ||
+              currentState.currentAppInstance?.id !== latestInstance.id) {
+            console.log('[validateAndRefreshConfig] 配置已变更，更新为最新配置');
+            set({
+              currentAppId: latestInstance.instance_id,
+              currentAppInstance: latestInstance,
+              lastValidatedAt: now,
+              errorLoadingAppId: null
+            });
+          } else {
+            console.log('[validateAndRefreshConfig] 配置仍然有效，更新验证时间戳');
+            set({ lastValidatedAt: now });
+          }
+          
+        } catch (error) {
+          console.error('[validateAndRefreshConfig] 验证配置时出错:', error);
+          // 验证失败时不清除配置，只记录错误
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          set({ 
+            errorLoadingAppId: `配置验证失败: ${errorMessage}`,
+            lastValidatedAt: now // 即使失败也更新时间戳，避免频繁重试
           });
         }
       },
