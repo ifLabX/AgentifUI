@@ -6,6 +6,7 @@ import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-s
 import { useSupabaseAuth } from '@lib/supabase/hooks'; // 假设 Supabase Auth Hook
 import { useCurrentApp } from '@lib/hooks/use-current-app'; // 使用新的 hook
 import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse } from '@lib/services/dify/types';
+import type { ServiceInstance } from '@lib/types/database';
 import { useCreateConversation } from './use-create-conversation';
 import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
 import { useChatMessages } from './use-chat-messages';
@@ -37,7 +38,8 @@ export function useChatInterface() {
     isLoading: isLoadingAppId, 
     error: errorLoadingAppId,
     hasCurrentApp,
-    isReady: isAppReady
+    isReady: isAppReady,
+    ensureAppReady // 新增：强制等待App配置就绪的方法
   } = useCurrentApp();
   // --- END COMMENT ---
 
@@ -152,19 +154,28 @@ export function useChatInterface() {
     }
 
     // --- BEGIN COMMENT ---
-    // 在提交前检查用户是否登录，AppId 是否有效
+    // 在提交前检查用户是否登录
     // --- END COMMENT ---
     if (!currentUserId) {
       console.error("useChatInterface.handleSubmit: User not authenticated.");
       // TODO: 可以通过 useNotificationStore 显示提示
       return;
     }
-    if (!currentAppId || isLoadingAppId) {
-      console.error(`useChatInterface.handleSubmit: App ID not ready (current: ${currentAppId}, loading: ${isLoadingAppId}).`);
+
+    // --- BEGIN COMMENT ---
+    // 🎯 核心修改：强制等待App配置就绪，解决时序问题
+    // 移除原有的简单检查，改为主动等待配置加载完成
+    // --- END COMMENT ---
+    let appConfig: { appId: string; instance: ServiceInstance };
+    try {
+      console.log('[handleSubmit] 开始等待App配置就绪...');
+      appConfig = await ensureAppReady();
+      console.log(`[handleSubmit] App配置就绪: ${appConfig.appId}`);
+    } catch (error) {
+      console.error('[handleSubmit] App配置获取失败:', error);
       // TODO: 可以通过 useNotificationStore 显示提示
       return;
     }
-    // --- END COMMENT ---
 
     // --- BEGIN COMMENT ---
     // 记录开始时间，用于性能分析
@@ -273,7 +284,7 @@ export function useChatInterface() {
         
         const creationResult = await initiateNewConversation(
           basePayloadForNewConversation,
-          currentAppId, // 使用动态获取的 currentAppId
+          appConfig.appId, // 使用确保就绪的 appId
           currentUserId, // 显式传递 userIdentifier
           // 添加数据库ID回调
           (difyId, dbId) => {
@@ -402,7 +413,7 @@ export function useChatInterface() {
         
         const streamServiceResponse = await streamDifyChat(
           difyPayload,
-          currentAppId, // 使用动态获取的 currentAppId
+          appConfig.appId, // 使用确保就绪的 appId
           (newlyFetchedConvId) => { 
             if (newlyFetchedConvId && difyConversationId !== newlyFetchedConvId) {
               // 更新Dify对话ID
@@ -741,7 +752,7 @@ export function useChatInterface() {
     }
   }, [
     currentUserId, // 替换 currentUserIdentifier
-    currentAppId,  // 添加 currentAppId
+    ensureAppReady, // 替换 currentAppId，使用强制等待方法
     addMessage, setIsWaitingForResponse, isWelcomeScreen, setIsWelcomeScreen,
     appendMessageChunk, finalizeStreamingMessage, markAsManuallyStopped, setMessageError,
     setCurrentConversationId, setCurrentTaskId, router, currentPathname, flushChunkBuffer,
@@ -754,17 +765,25 @@ export function useChatInterface() {
     const currentTaskId = state.currentTaskId;
     
     // --- BEGIN COMMENT ---
-    // 检查用户是否登录，AppId 是否有效
+    // 检查用户是否登录
     // --- END COMMENT ---
     if (!currentUserId) {
       console.error("useChatInterface.handleStopProcessing: User not authenticated.");
       return;
     }
-    if (!currentAppId) { // isLoadingAppId 检查可能也需要，但停止操作通常是紧急的
-      console.error(`useChatInterface.handleStopProcessing: App ID not available (current: ${currentAppId}).`);
+
+    // --- BEGIN COMMENT ---
+    // 🎯 核心修改：强制等待App配置就绪，解决时序问题
+    // --- END COMMENT ---
+    let appConfig: { appId: string; instance: ServiceInstance };
+    try {
+      console.log('[handleStopProcessing] 开始等待App配置就绪...');
+      appConfig = await ensureAppReady();
+      console.log(`[handleStopProcessing] App配置就绪: ${appConfig.appId}`);
+    } catch (error) {
+      console.error('[handleStopProcessing] App配置获取失败:', error);
       return;
     }
-    // --- END COMMENT ---
 
     if (currentStreamingId) {
       if (appendTimerRef.current) { 
@@ -783,7 +802,7 @@ export function useChatInterface() {
 
       if (currentTaskId) {
         try {
-          await stopDifyStreamingTask(currentAppId, currentTaskId, currentUserId); // 使用动态 appId 和 userId
+          await stopDifyStreamingTask(appConfig.appId, currentTaskId, currentUserId); // 使用确保就绪的 appId
           setCurrentTaskId(null); 
         } catch (error) {
           console.error(`[handleStopProcessing] Error calling stopDifyStreamingTask:`, error);
@@ -839,7 +858,7 @@ export function useChatInterface() {
     }
   }, [
     currentUserId, // 添加依赖
-    currentAppId,  // 添加依赖
+    ensureAppReady, // 替换 currentAppId，使用强制等待方法
     markAsManuallyStopped, setCurrentTaskId, 
     appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer, 
     dbConversationUUID, difyConversationId, updateMessage, saveStoppedAssistantMessage
