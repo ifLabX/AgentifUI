@@ -5,11 +5,7 @@ import { cn } from "@lib/utils"
 import { useMobile } from "@lib/hooks"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
-import { useDropdownStore } from "@lib/stores/ui/dropdown-store"
-import { useLogout } from "@lib/hooks/use-logout"
-import { DropdownMenu } from "@components/ui/dropdown-menu"
-import { Settings, LogOut } from "lucide-react"
-import { AvatarButton } from "./avatar-button"
+import { DesktopUserAvatar } from "./desktop-user-avatar"
 import { AppSelector } from "./app-selector"
 
 /**
@@ -22,9 +18,8 @@ import { AppSelector } from "./app-selector"
  */
 export function NavBar() {
   const isMobile = useMobile()
-  const { colors, isDark } = useThemeColors()
+  const { colors } = useThemeColors()
   const { isExpanded, isLocked } = useSidebarStore()
-  const { logout } = useLogout()
 
   if (isMobile) {
     return null
@@ -62,22 +57,9 @@ export function NavBar() {
         </div>
         
         <div className="flex items-center">
-          <AvatarButton dropdownId="user-menu" isDark={isDark} />
+          <DesktopUserAvatar />
         </div>
       </header>
-
-      {/* 用户菜单 */}
-      <DropdownMenu id="user-menu" minWidth={160}>
-        <DropdownMenu.Item icon={<Settings size={14} />}>设置</DropdownMenu.Item>
-        <DropdownMenu.Divider />
-        <DropdownMenu.Item 
-          icon={<LogOut size={14} />} 
-          danger 
-          onClick={logout}
-        >
-          退出登录
-        </DropdownMenu.Item>
-      </DropdownMenu>
     </>
   )
 }
