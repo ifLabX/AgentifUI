@@ -123,7 +123,7 @@ function createSpacedLayout(): WelcomeLayoutConfig {
     inputOffsetFromCenter: -120, // 大屏幕也适当上移
     minSpacing: {
       welcomeTextToInput: 0, // 增加间距
-      promptToInput: 30, // 增加间距
+      promptToInput: 50, // 增加间距
       welcomeTextToPrompt: 40, // 增加间距
     },
     estimatedHeights: {
