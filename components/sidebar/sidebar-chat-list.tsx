@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation"
 // import { zhCN } from "date-fns/locale" 
 import { MoreButtonV2 } from "@components/ui/more-button-v2" 
 import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
+import { TypeWriter } from "@components/ui/typewriter"
+import { usePendingConversationStore } from "@lib/stores/pending-conversation-store"
 
 interface SidebarChatListProps {
   isDark: boolean
@@ -38,6 +40,12 @@ export function SidebarChatList({
     error, 
     refresh 
   } = useCombinedConversations()
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：打字机效果相关Actions
+  // --- END COMMENT ---
+  const updateTypewriterDisplay = usePendingConversationStore((state) => state.updateTypewriterDisplay);
+  const completeTitleTypewriter = usePendingConversationStore((state) => state.completeTitleTypewriter);
   
   const [prevLoadedConversations, setPrevLoadedConversations] = React.useState<CombinedConversation[]>([]);
   
@@ -176,13 +184,19 @@ export function SidebarChatList({
   if (!contentVisible) return null;
   
   // --- BEGIN COMMENT ---
-  // 修改渲染逻辑，确保骨架屏和标题状态下按钮尺寸一致
+  // 🎯 修改渲染逻辑，集成TypeWriter组件实现打字机效果
   // 使用统一的结构和高度，避免切换时的布局跳动
   // 考虑到右侧 more button 的占位，确保骨架屏宽度适当
-  // 优化显示效果，使用更美观的样式
   // --- END COMMENT ---
   const renderChatItemContent = (chat: CombinedConversation, isItemLoading: boolean) => {
     const title = chat.title || '新对话';
+    
+    // --- BEGIN COMMENT ---
+    // 🎯 检查是否需要使用打字机效果
+    // --- END COMMENT ---
+    const shouldUseTypewriter = chat.isPending && 
+                               chat.titleTypewriterState?.shouldStartTyping && 
+                               chat.titleTypewriterState?.targetTitle;
     
     // 所有状态下使用相同的高度和结构，确保一致性
     return (
@@ -190,6 +204,22 @@ export function SidebarChatList({
         {isItemLoading ? (
           // 骨架屏 - 宽度设置为 w-[85%]，为右侧 more button 预留空间
           <div className={cn("h-3.5 w-[85%] animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
+        ) : shouldUseTypewriter ? (
+          // --- BEGIN COMMENT ---
+          // 🎯 使用TypeWriter组件显示打字机效果
+          // --- END COMMENT ---
+          <TypeWriter
+            text={chat.titleTypewriterState!.targetTitle}
+            speed={30} // 较快的打字速度
+            delay={200} // 短暂延迟
+            className={cn("truncate w-full text-xs leading-3.5 font-medium", isDark ? "text-gray-200" : "text-stone-700")}
+            onComplete={() => {
+              // --- BEGIN COMMENT ---
+              // 🎯 打字完成后更新store状态
+              // --- END COMMENT ---
+              completeTitleTypewriter(chat.id);
+            }}
+          />
         ) : (
           // 标题文本 - 使用更小的文本大小和行高，使其更纤细
           <span className={cn("truncate w-full text-xs leading-3.5 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>

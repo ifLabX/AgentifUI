@@ -36,6 +36,12 @@ export function useCreateConversation(): UseCreateConversationReturn {
   const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus);
   const markAsOptimistic = usePendingConversationStore((state) => state.markAsOptimistic);
   const setSupabasePKInPendingStore = usePendingConversationStore((state) => state.setSupabasePK);
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：打字机效果相关Actions
+  // --- END COMMENT ---
+  const startTitleTypewriter = usePendingConversationStore((state) => state.startTitleTypewriter);
+  const completeTitleTypewriter = usePendingConversationStore((state) => state.completeTitleTypewriter);
 
   const { session } = useSupabaseAuth();
   const currentUserId = session?.user?.id;
@@ -198,8 +204,12 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 renameConversation(appId, id, { user: userIdentifier, auto_generate: true })
                   .then(async renameResponse => { 
                     const finalTitle = (renameResponse && renameResponse.name) ? renameResponse.name : "新对话";
-                    console.log(`[useCreateConversation] 标题获取成功，更新数据库记录: ${finalTitle}`);
-                    updateTitleInPendingStore(tempConvId, finalTitle, true);
+                    console.log(`[useCreateConversation] 标题获取成功，启动打字机效果: ${finalTitle}`);
+                    
+                    // --- BEGIN COMMENT ---
+                    // 🎯 启动打字机效果而不是直接更新标题
+                    // --- END COMMENT ---
+                    startTitleTypewriter(tempConvId, finalTitle);
                     
                     // 更新数据库中的标题
                     if (dbId && finalTitle !== tempTitle) {
@@ -226,7 +236,11 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   .catch(async renameError => { 
                     console.error(`[useCreateConversation] 标题获取失败，使用默认标题:`, renameError);
                     const fallbackTitle = "新对话";
-                    updateTitleInPendingStore(tempConvId, fallbackTitle, true);
+                    
+                    // --- BEGIN COMMENT ---
+                    // 🎯 启动打字机效果显示默认标题
+                    // --- END COMMENT ---
+                    startTitleTypewriter(tempConvId, fallbackTitle);
                     
                     // 更新数据库中的标题
                     if (dbId) {
@@ -295,6 +309,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
       updateStatusInPendingStore, 
       markAsOptimistic,
       setSupabasePKInPendingStore,
+      startTitleTypewriter,
+      completeTitleTypewriter,
       currentUserId,
       setCurrentChatConversationId,
     ]

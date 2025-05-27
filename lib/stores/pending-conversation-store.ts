@@ -12,6 +12,16 @@ export interface PendingConversation {
   createdAt: string; // 创建时间
   updatedAt: string; // 最后更新时间
   supabase_pk?: string; // 数据库主键 (Supabase ID)，当已存入DB但仍在pending状态时使用
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：打字机效果相关状态
+  // --- END COMMENT ---
+  titleTypewriterState?: {
+    isTyping: boolean; // 是否正在打字
+    targetTitle: string; // 目标标题（完整标题）
+    displayTitle: string; // 当前显示的标题（可能是部分标题）
+    shouldStartTyping: boolean; // 是否应该开始打字效果
+  };
 }
 
 // --- BEGIN COMMENT ---
@@ -34,6 +44,13 @@ interface PendingConversationState {
   removePending: (id: string) => void; // id 可以是 tempId 或 realId
   markAsOptimistic: (id: string) => void; // 将对话标记为乐观持久化状态
   setSupabasePK: (id: string, supabasePK: string) => void; // 设置已存入DB的pending对话的Supabase PK
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：打字机效果相关Actions
+  // --- END COMMENT ---
+  startTitleTypewriter: (id: string, targetTitle: string) => void; // 开始标题打字机效果
+  updateTypewriterDisplay: (id: string, displayTitle: string) => void; // 更新打字机显示的标题
+  completeTitleTypewriter: (id: string) => void; // 完成标题打字机效果
   
   // --- BEGIN COMMENT ---
   // Selectors / Getters (可选，但推荐，以便在 store 外部安全地访问状态)
@@ -223,6 +240,110 @@ export const usePendingConversationStore = create<PendingConversationState>((set
         return { pendingConversations: newMap };
       }
       console.warn(`[PendingConversationStore] setSupabasePK: 未找到ID: ${id}`);
+      return state;
+    });
+  },
+
+  // --- BEGIN COMMENT ---
+  // 🎯 实现打字机效果相关Actions
+  // --- END COMMENT ---
+  startTitleTypewriter: (id: string, targetTitle: string) => {
+    set((state) => {
+      const newMap = new Map(state.pendingConversations);
+      let entryKey: string | undefined = id;
+      let entry = newMap.get(id); // 尝试按 tempId 查找
+
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
+        for (const [key, value] of newMap.entries()) {
+          if (value.realId === id) {
+            entry = value;
+            entryKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (entry && entryKey) {
+        newMap.set(entryKey, { 
+          ...entry, 
+          titleTypewriterState: {
+            isTyping: true,
+            targetTitle,
+            displayTitle: entry.title, // 从当前标题开始
+            shouldStartTyping: true
+          },
+          updatedAt: new Date().toISOString() 
+        });
+        return { pendingConversations: newMap };
+      }
+      console.warn(`[PendingConversationStore] startTitleTypewriter: 未找到ID: ${id}`);
+      return state;
+    });
+  },
+
+  updateTypewriterDisplay: (id: string, displayTitle: string) => {
+    set((state) => {
+      const newMap = new Map(state.pendingConversations);
+      let entryKey: string | undefined = id;
+      let entry = newMap.get(id); // 尝试按 tempId 查找
+
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
+        for (const [key, value] of newMap.entries()) {
+          if (value.realId === id) {
+            entry = value;
+            entryKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (entry && entryKey && entry.titleTypewriterState) {
+        newMap.set(entryKey, { 
+          ...entry, 
+          titleTypewriterState: {
+            ...entry.titleTypewriterState,
+            displayTitle,
+            shouldStartTyping: false // 已经开始打字，不需要再次触发
+          },
+          updatedAt: new Date().toISOString() 
+        });
+        return { pendingConversations: newMap };
+      }
+      return state;
+    });
+  },
+
+  completeTitleTypewriter: (id: string) => {
+    set((state) => {
+      const newMap = new Map(state.pendingConversations);
+      let entryKey: string | undefined = id;
+      let entry = newMap.get(id); // 尝试按 tempId 查找
+
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
+        for (const [key, value] of newMap.entries()) {
+          if (value.realId === id) {
+            entry = value;
+            entryKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (entry && entryKey && entry.titleTypewriterState) {
+        const finalTitle = entry.titleTypewriterState.targetTitle;
+        newMap.set(entryKey, { 
+          ...entry, 
+          title: finalTitle, // 更新最终标题
+          titleTypewriterState: {
+            ...entry.titleTypewriterState,
+            isTyping: false,
+            displayTitle: finalTitle,
+            shouldStartTyping: false
+          },
+          updatedAt: new Date().toISOString() 
+        });
+        return { pendingConversations: newMap };
+      }
       return state;
     });
   },

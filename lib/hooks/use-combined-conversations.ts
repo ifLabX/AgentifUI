@@ -32,6 +32,16 @@ export interface CombinedConversation extends Partial<Conversation> {
   pendingStatus?: PendingConversation['status']; // 临时对话状态
   tempId?: string; // 临时 ID
   supabase_pk?: string; // 数据库主键 (Supabase ID)
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：打字机效果相关状态
+  // --- END COMMENT ---
+  titleTypewriterState?: {
+    isTyping: boolean; // 是否正在打字
+    targetTitle: string; // 目标标题（完整标题）
+    displayTitle: string; // 当前显示的标题（可能是部分标题）
+    shouldStartTyping: boolean; // 是否应该开始打字效果
+  };
 }
 
 /**
@@ -134,6 +144,11 @@ export function useCombinedConversations() {
         pendingStatus: pending.status,
         tempId: pending.tempId,
         supabase_pk: pending.supabase_pk, // Use supabase_pk from pending store if available
+        
+        // --- BEGIN COMMENT ---
+        // 🎯 映射打字机效果状态
+        // --- END COMMENT ---
+        titleTypewriterState: pending.titleTypewriterState
       });
     });
     
