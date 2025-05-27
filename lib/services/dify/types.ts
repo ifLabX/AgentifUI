@@ -439,3 +439,93 @@ export interface GetConversationVariablesResponse {
 }
 
 // --- END CONVERSATIONS API TYPES ---
+
+// --- BEGIN COMMENT ---
+// 应用参数相关类型定义 (GET /parameters)
+// --- END COMMENT ---
+
+/** 用户输入表单控件 - 文本输入 */
+export interface DifyTextInputControl {
+  label: string; // 控件展示标签名
+  variable: string; // 控件 ID
+  required: boolean; // 是否必填
+  max_length?: number; // 最大长度限制
+  default: string; // 默认值
+}
+
+/** 用户输入表单控件 - 段落文本输入 */
+export interface DifyParagraphControl {
+  label: string; // 控件展示标签名
+  variable: string; // 控件 ID
+  required: boolean; // 是否必填
+  default: string; // 默认值
+}
+
+/** 用户输入表单控件 - 下拉选择 */
+export interface DifySelectControl {
+  label: string; // 控件展示标签名
+  variable: string; // 控件 ID
+  required: boolean; // 是否必填
+  default: string; // 默认值
+  options: string[]; // 选项值列表
+}
+
+/** 用户输入表单项 */
+export interface DifyUserInputFormItem {
+  'text-input'?: DifyTextInputControl;
+  'paragraph'?: DifyParagraphControl;
+  'select'?: DifySelectControl;
+}
+
+/** 图片上传配置 */
+export interface DifyImageUploadConfig {
+  enabled: boolean; // 是否开启
+  number_limits: number; // 图片数量限制，默认 3
+  transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表，必选一个
+}
+
+/** 文件上传配置 */
+export interface DifyFileUploadConfig {
+  image: DifyImageUploadConfig; // 图片设置，当前仅支持图片类型：png, jpg, jpeg, webp, gif
+}
+
+/** 系统参数配置 */
+export interface DifySystemParameters {
+  file_size_limit: number; // 文档上传大小限制 (MB)
+  image_file_size_limit: number; // 图片文件上传大小限制 (MB)
+  audio_file_size_limit: number; // 音频文件上传大小限制 (MB)
+  video_file_size_limit: number; // 视频文件上传大小限制 (MB)
+}
+
+/** 回答后推荐问题配置 */
+export interface DifySuggestedQuestionsAfterAnswer {
+  enabled: boolean; // 是否开启
+}
+
+/** 语音转文本配置 */
+export interface DifySpeechToText {
+  enabled: boolean; // 是否开启
+}
+
+/** 引用和归属配置 */
+export interface DifyRetrieverResourceConfig {
+  enabled: boolean; // 是否开启
+}
+
+/** 标记回复配置 */
+export interface DifyAnnotationReply {
+  enabled: boolean; // 是否开启
+}
+
+/** 获取应用参数响应 */
+export interface DifyAppParametersResponse {
+  opening_statement: string; // 开场白
+  suggested_questions: string[]; // 开场推荐问题列表
+  suggested_questions_after_answer: DifySuggestedQuestionsAfterAnswer; // 启用回答后给出推荐问题
+  speech_to_text: DifySpeechToText; // 语音转文本
+  retriever_resource: DifyRetrieverResourceConfig; // 引用和归属
+  annotation_reply: DifyAnnotationReply; // 标记回复
+  user_input_form: DifyUserInputFormItem[]; // 用户输入表单配置
+  file_upload: DifyFileUploadConfig; // 文件上传配置
+  system_parameters: DifySystemParameters; // 系统参数
+}
