@@ -43,7 +43,7 @@ import {
   MarkdownBlockquote,
 } from "@components/chat/markdown-block";
 import { AssistantMessageActions } from '@components/chat/message-actions';
-import { StreamingMarkdown } from './streaming-markdown';
+import { StreamingText } from './streaming-markdown';
 
 const extractThinkContent = (rawContent: string): {
   hasThinkBlock: boolean;
@@ -252,10 +252,19 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
             isOpen={isOpen} 
             onToggle={toggleOpen} 
           />
-          <ThinkBlockContent 
-            markdownContent={thinkContent}
-            isOpen={isOpen}
-          />
+          <StreamingText
+            content={thinkContent}
+            isStreaming={isStreaming && !thinkClosed}
+            isComplete={thinkClosed || !isStreaming}
+            typewriterSpeed={100}
+          >
+            {(displayedThinkContent) => (
+              <ThinkBlockContent 
+                markdownContent={displayedThinkContent}
+                isOpen={isOpen}
+              />
+            )}
+          </StreamingText>
         </>
       )}
 
@@ -273,23 +282,22 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
           isDark ? "text-gray-200" : "text-gray-800", // 根据主题切换文本颜色
           !hasThinkBlock ? "py-2" : "pt-1 pb-2" // 根据是否有思考块调整垂直间距
         )}>
-          {isStreaming ? (
-            // 🎯 流式状态：使用StreamingMarkdown组件
-            <StreamingMarkdown
-              content={mainContent}
-              isStreaming={isStreaming}
-              isComplete={wasManuallyStopped}
-              typewriterSpeed={60} // 可调整打字速度
-            />
-          ) : (
-            // 🎯 非流式状态：使用原有的ReactMarkdown
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm, remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeRaw]}
-              components={mainMarkdownComponents} 
-              children={mainContent}
-            />
-          )}
+          <StreamingText
+            content={mainContent}
+            isStreaming={isStreaming}
+            isComplete={!isStreaming}
+            typewriterSpeed={80}
+          >
+            {(displayedContent) => (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeKatex, rehypeRaw]}
+                components={mainMarkdownComponents}
+              >
+                {displayedContent}
+              </ReactMarkdown>
+            )}
+          </StreamingText>
           
           {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，添加-mt-4来减少与消息内容的间距 */}
           <AssistantMessageActions
