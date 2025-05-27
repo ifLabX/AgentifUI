@@ -2,6 +2,30 @@ import { useTheme as useNextTheme } from 'next-themes'; // 别名导入以区分
 import { useEffect, useState } from 'react';
 
 // --- BEGIN COMMENT ---
+// 从localStorage同步获取初始主题状态，避免闪烁
+// 这个函数在客户端立即执行，不依赖React状态
+// --- END COMMENT ---
+const getInitialTheme = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    // 首先检查localStorage中的主题设置
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') return true;
+    if (storedTheme === 'light') return false;
+    
+    // 如果是system或未设置，检查系统偏好
+    if (storedTheme === 'system' || !storedTheme) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+// --- BEGIN COMMENT ---
 // 自定义 useTheme Hook
 // 内部封装了 next-themes 的 useTheme Hook，提供与项目之前使用习惯兼容的接口
 // 并处理了客户端水合问题以确保 isDark 状态在初始渲染时的正确性
@@ -15,19 +39,20 @@ export function useTheme() {
   } = useNextTheme();
 
   // --- BEGIN COMMENT ---
-  // 状态用于跟踪组件是否已在客户端挂载
-  // 这是为了防止在 React 水合（hydration）完成前计算 isDark
-  // 从而避免服务端和客户端初始渲染不一致导致的警告或界面闪烁
+  // 使用初始主题状态，避免闪烁
+  // 在客户端立即获取正确的主题状态，而不是等待mounted
   // --- END COMMENT ---
   const [mounted, setMounted] = useState(false);
+  const [initialDark] = useState(() => getInitialTheme());
+  
   useEffect(() => setMounted(true), []);
 
   // --- BEGIN COMMENT ---
   // 计算 isDark 状态
-  // 仅在组件挂载后 (mounted 为 true) 才进行计算
-  // 在挂载前返回 false 作为默认值，避免 undefined 导致的类型错误
+  // 在挂载前使用初始主题状态，挂载后使用resolvedTheme
+  // 这样可以避免初始渲染时的主题闪烁
   // --- END COMMENT ---
-  const isDark = mounted ? resolvedTheme === 'dark' : false;
+  const isDark = mounted ? resolvedTheme === 'dark' : initialDark;
 
   // --- BEGIN COMMENT ---
   // 提供一个便捷的切换函数，用于在亮色和暗色之间切换
