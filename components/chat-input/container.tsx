@@ -2,9 +2,10 @@
 
 import { cn } from "@lib/utils"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
+import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
 
 // --- BEGIN MODIFIED COMMENT ---
-// 容器组件
+// 容器组件 - 使用智能布局系统
 // --- END MODIFIED COMMENT ---
 interface ChatContainerProps {
   children: React.ReactNode
@@ -20,8 +21,6 @@ interface ChatContainerProps {
   isTransitioningToWelcome?: boolean
 }
 
-// 定义欢迎界面时的向上偏移量
-const INPUT_VERTICAL_SHIFT = "5rem"; 
 // 定义对话界面距离底部的距离
 const INPUT_BOTTOM_MARGIN = "1rem";
 
@@ -34,9 +33,10 @@ export const ChatContainer = ({
   isTransitioningToWelcome = false
 }: ChatContainerProps) => {
   // --- BEGIN COMMENT ---
-  // 获取主题颜色
+  // 获取主题颜色和智能布局位置
   // --- END COMMENT ---
   const { colors } = useThemeColors();
+  const { input: inputPosition } = useWelcomeLayout();
   
   // --- BEGIN MODIFIED COMMENT ---
   // 基本样式，包括绝对定位和宽度
@@ -50,14 +50,16 @@ export const ChatContainer = ({
     className,
   );
 
+  // --- BEGIN COMMENT ---
   // 动态计算样式，根据当前状态决定定位和变形
-  // 简化过渡效果，使用闪烁效果而非滑动
+  // 欢迎界面使用智能布局系统，对话界面保持原有逻辑
+  // --- END COMMENT ---
   const dynamicStyles: React.CSSProperties = isWelcomeScreen 
     ? { 
-        // 欢迎界面：基于顶部定位，并通过 transform 居中和上移
-        top: `50%`, 
+        // 欢迎界面：使用智能布局系统计算的位置
+        top: inputPosition.top, 
         bottom: 'auto', // 确保 bottom 无效
-        transform: `translate(-50%, calc(-50% - ${INPUT_VERTICAL_SHIFT}))`,
+        transform: inputPosition.transform,
         // 统一使用闪烁效果
         transition: 'opacity 100ms ease-in-out'
       }

@@ -3,27 +3,25 @@
 import React, { useMemo, useState, useEffect } from "react"
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks"
-import { useChatLayoutStore, INITIAL_INPUT_HEIGHT } from "@lib/stores/chat-layout-store"
 import { TypeWriter } from "@components/ui/typewriter"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useAppParameters } from "@lib/hooks/use-app-parameters"
+import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
 
 interface WelcomeScreenProps {
   className?: string
   username?: string | null
 }
 
-// 定义欢迎页文本内容的向上偏移，在这里修改垂直高度
-const WELCOME_TEXT_SHIFT = "-8rem"; // 示例偏移值（根据需要调整）
-
 export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { isDark } = useTheme()
-  const { inputHeight } = useChatLayoutStore()
   const [finalText, setFinalText] = useState("")
   const [shouldStartTyping, setShouldStartTyping] = useState(false)
   
-  // 计算基于输入框高度增加的半个偏移量（用于外部容器）
-  const offsetY = Math.max(0, (inputHeight - INITIAL_INPUT_HEIGHT) / 2)
+  // --- BEGIN COMMENT ---
+  // 使用智能布局系统获取欢迎文字的位置
+  // --- END COMMENT ---
+  const { welcomeText: welcomePosition, needsCompactLayout } = useWelcomeLayout()
 
   // --- BEGIN COMMENT ---
   // 获取当前应用ID和应用参数
@@ -75,52 +73,71 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
 
   return (
     <div 
-      className={cn("flex flex-col items-center h-full transition-transform duration-200 ease-in-out", className)}
-      // 这个变换处理基于输入框高度的动态移动
-      style={{ transform: `translateY(-${offsetY}px)` }}
+      className={cn(
+        "flex flex-col items-center justify-center text-center",
+        // --- BEGIN COMMENT ---
+        // 根据是否需要紧凑布局调整文字大小
+        // --- END COMMENT ---
+        needsCompactLayout ? "text-lg" : "text-2xl",
+        className
+      )}
+      style={welcomePosition}
     >
-      {/* 内部包装器应用静态向上偏移，而不改变边距 */}
-      <div style={{ transform: `translateY(${WELCOME_TEXT_SHIFT})` }}>
-        <div className="text-center max-w-md px-4 mt-[30vh]"> {/* 保持原始边距 */}
-          <h2 className="text-2xl font-bold mb-2">
-            {shouldStartTyping ? (
-              <TypeWriter 
-                text={finalText}
-                speed={50} // 主标题稍慢
-                delay={300} // 延迟开始，给页面加载一点时间
-                waitingEffect={finalText.endsWith("...")} // 只有等待状态才显示效果
-                className="text-2xl font-bold"
-              />
-            ) : (
-              <div className="flex items-center justify-center">
-                {/* --- BEGIN COMMENT ---
-                使用统一的较宽skeleton，适应动态开场白可能较长的情况
-                --- END COMMENT --- */}
-                <div className="h-7 w-60 bg-stone-200/60 dark:bg-stone-700/60 rounded animate-pulse"></div>
-              </div>
-            )}
-          </h2>
-          <p className={`${isDark ? "text-gray-400" : "text-gray-500"} mt-4`}>
-            {shouldStartTyping && (
-              <TypeWriter 
-                text="在下方输入框中输入消息开始聊天"
-                speed={20} // 副标题更快
-                delay={
-                  // --- BEGIN COMMENT ---
-                  // 根据主标题内容调整副标题的延迟时间
-                  // 动态开场白通常更长，需要更多时间
-                  // --- END COMMENT ---
-                  parameters?.opening_statement 
-                    ? Math.max(2500, finalText.length * 60) // 动态开场白：基于长度计算延迟
-                    : finalText.endsWith("...") 
-                      ? 1500 // 等待状态
-                      : 2200 // 用户名问候
-                }
-                className={`${isDark ? "text-gray-400" : "text-gray-500"}`}
-              />
-            )}
-          </p>
-        </div>
+      <div className="w-full">
+        <h2 className={cn(
+          "font-bold mb-2",
+          needsCompactLayout ? "text-lg" : "text-2xl"
+        )}>
+          {shouldStartTyping ? (
+            <TypeWriter 
+              text={finalText}
+              speed={50} // 主标题稍慢
+              delay={300} // 延迟开始，给页面加载一点时间
+              waitingEffect={finalText.endsWith("...")} // 只有等待状态才显示效果
+              className={cn(
+                "font-bold",
+                needsCompactLayout ? "text-lg" : "text-2xl"
+              )}
+            />
+          ) : (
+            <div className="flex items-center justify-center">
+              {/* --- BEGIN COMMENT ---
+              使用统一的较宽skeleton，适应动态开场白可能较长的情况
+              根据紧凑布局调整skeleton大小
+              --- END COMMENT --- */}
+              <div className={cn(
+                "bg-stone-200/60 dark:bg-stone-700/60 rounded animate-pulse",
+                needsCompactLayout ? "h-6 w-48" : "h-7 w-60"
+              )}></div>
+            </div>
+          )}
+        </h2>
+        <p className={cn(
+          isDark ? "text-gray-400" : "text-gray-500",
+          needsCompactLayout ? "mt-2 text-sm" : "mt-4"
+        )}>
+          {shouldStartTyping && (
+            <TypeWriter 
+              text="在下方输入框中输入消息开始聊天"
+              speed={20} // 副标题更快
+              delay={
+                // --- BEGIN COMMENT ---
+                // 根据主标题内容调整副标题的延迟时间
+                // 动态开场白通常更长，需要更多时间
+                // --- END COMMENT ---
+                parameters?.opening_statement 
+                  ? Math.max(2500, finalText.length * 60) // 动态开场白：基于长度计算延迟
+                  : finalText.endsWith("...") 
+                    ? 1500 // 等待状态
+                    : 2200 // 用户名问候
+              }
+              className={cn(
+                isDark ? "text-gray-400" : "text-gray-500",
+                needsCompactLayout ? "text-sm" : ""
+              )}
+            />
+          )}
+        </p>
       </div>
     </div>
   )
