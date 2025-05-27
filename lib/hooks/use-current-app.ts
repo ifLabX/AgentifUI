@@ -19,6 +19,7 @@ export function useCurrentApp() {
     isLoadingAppId,
     errorLoadingAppId,
     isValidating, // 新增：验证状态
+    isValidatingForMessage, // 🎯 新增：消息发送时的验证状态
     setCurrentAppId,
     clearCurrentApp,
     initializeDefaultAppId,
@@ -73,7 +74,7 @@ export function useCurrentApp() {
     if (currentAppId && currentAppInstance && !isLoadingAppId && !targetAppId) {
       console.log('[ensureAppReady] 验证配置有效性...');
       try {
-        await validateAndRefreshConfig();
+        await validateAndRefreshConfig(undefined, 'general'); // 🎯 指定为一般验证，不触发消息spinner
         
         // 验证后重新获取状态
         const updatedState = useCurrentAppStore.getState();
@@ -98,7 +99,7 @@ export function useCurrentApp() {
     if (targetAppId && targetAppId !== currentAppId) {
       console.log(`[ensureAppReady] 切换到目标app: ${targetAppId}`);
       try {
-        await validateAndRefreshConfig(targetAppId);
+        await validateAndRefreshConfig(targetAppId, 'switch'); // 🎯 指定为切换上下文
         
         // 切换后重新获取状态
         const updatedState = useCurrentAppStore.getState();
@@ -203,6 +204,7 @@ export function useCurrentApp() {
     currentAppInstance,
     isLoading: isLoadingAppId,
     isValidating, // 新增：验证状态
+    isValidatingForMessage, // 🎯 新增：消息发送时的验证状态
     error: errorLoadingAppId,
     
     // 计算属性

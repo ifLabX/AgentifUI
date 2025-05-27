@@ -13,11 +13,12 @@ interface CurrentAppState {
   errorLoadingAppId: string | null;
   lastValidatedAt: number | null; // 新增：最后验证时间戳
   isValidating: boolean; // 新增：是否正在验证配置
+  isValidatingForMessage: boolean; // 🎯 新增：专门用于消息发送时的验证状态
   setCurrentAppId: (appId: string, instance: ServiceInstance) => void;
   clearCurrentApp: () => void;
   initializeDefaultAppId: () => Promise<void>;
   refreshCurrentApp: () => Promise<void>;
-  validateAndRefreshConfig: (targetAppId?: string) => Promise<void>; // 修改：支持验证特定app
+  validateAndRefreshConfig: (targetAppId?: string, context?: 'message' | 'switch' | 'general') => Promise<void>; // 🎯 修改：添加上下文参数
   switchToApp: (appId: string) => Promise<void>; // 新增：切换到指定app
 }
 
@@ -36,6 +37,7 @@ export const useCurrentAppStore = create<CurrentAppState>()(
       errorLoadingAppId: null,
       lastValidatedAt: null, // 新增：最后验证时间戳
       isValidating: false, // 新增：是否正在验证配置
+      isValidatingForMessage: false, // 🎯 新增：专门用于消息发送时的验证状态
       
       setCurrentAppId: (appId, instance) => {
         set({ 
@@ -60,6 +62,8 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           isLoadingAppId: false,
           errorLoadingAppId: null,
           lastValidatedAt: null, // 清除验证时间戳
+          isValidating: false, // 🎯 清除验证状态
+          isValidatingForMessage: false, // 🎯 清除消息验证状态
         });
       },
       
@@ -176,11 +180,17 @@ export const useCurrentAppStore = create<CurrentAppState>()(
       // 支持验证特定app或默认app
       // 用于解决管理端配置变更后的同步问题
       // --- END COMMENT ---
-      validateAndRefreshConfig: async (targetAppId?: string) => {
+      validateAndRefreshConfig: async (targetAppId?: string, context: 'message' | 'switch' | 'general' = 'general') => {
         const currentState = get();
         
-        // 设置验证状态
-        set({ isValidating: true });
+        // --- BEGIN COMMENT ---
+        // 🎯 根据上下文设置不同的验证状态
+        // --- END COMMENT ---
+        if (context === 'message') {
+          set({ isValidating: true, isValidatingForMessage: true });
+        } else {
+          set({ isValidating: true, isValidatingForMessage: false });
+        }
         
         try {
           // 如果指定了targetAppId，则切换到该app
@@ -312,8 +322,10 @@ export const useCurrentAppStore = create<CurrentAppState>()(
             lastValidatedAt: Date.now() // 即使失败也更新时间戳，避免频繁重试
           });
         } finally {
-          // 清除验证状态
-          set({ isValidating: false });
+          // --- BEGIN COMMENT ---
+          // 🎯 清除所有验证状态
+          // --- END COMMENT ---
+          set({ isValidating: false, isValidatingForMessage: false });
         }
       },
 

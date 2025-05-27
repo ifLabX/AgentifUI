@@ -31,8 +31,9 @@ export function AppSelector() {
     try {
       // --- BEGIN COMMENT ---
       // 🎯 使用 validateConfig 进行应用切换，现在参数已预缓存
+      // 指定为切换上下文，不触发消息输入框的spinner
       // --- END COMMENT ---
-      await validateConfig(newAppId);
+      await validateConfig(newAppId, 'switch');
       
       // --- BEGIN COMMENT ---
       // 切换成功后清理聊天状态

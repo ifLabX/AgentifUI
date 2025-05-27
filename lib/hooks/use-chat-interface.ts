@@ -196,7 +196,7 @@ export function useChatInterface() {
       if (conversationAppId) {
         console.log(`[handleSubmit] 历史对话，使用原始appId: ${conversationAppId}`);
         // 对于历史对话，验证并切换到原始app
-        await validateConfig(conversationAppId);
+        await validateConfig(conversationAppId, 'message'); // 🎯 指定为消息发送上下文
         appConfig = await ensureAppReady();
         
         // 验证是否成功切换到目标app

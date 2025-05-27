@@ -157,6 +157,7 @@ export const ChatInput = ({
     currentAppId, 
     isLoading: isLoadingAppId, 
     isValidating: isValidatingAppConfig, // 新增：验证状态
+    isValidatingForMessage: isValidatingForMessageOnly, // 🎯 新增：专门用于消息发送的验证状态
     error: errorLoadingAppId,
     hasCurrentApp,
     isReady: isAppReady
@@ -435,10 +436,10 @@ export const ChatInput = ({
   const hasError = attachments.some(f => f.status === 'error');
   
   // --- BEGIN COMMENT ---
-  // 🎯 新增：计算是否正在验证App配置
-  // 在验证期间显示spinner状态，但不禁用按钮（因为用户可能想取消）
+  // 🎯 修改：只有消息发送时的验证才显示spinner
+  // 应用切换时的验证不影响输入框状态
   // --- END COMMENT ---
-  const isValidatingConfig = isValidatingAppConfig;
+  const isValidatingConfig = isValidatingForMessageOnly;
 
   // --- BEGIN COMMENT ---
   // 优先使用外部传入的欢迎屏幕状态，如果没有则使用内部状态
