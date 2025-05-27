@@ -118,7 +118,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
           {shouldStartTyping ? (
             <TypeWriter 
               text={finalText}
-              speed={50} // 主标题稍慢
+              speed={30} // 主标题稍慢
               delay={300} // 延迟开始，给页面加载一点时间
               waitingEffect={finalText.endsWith("...")} // 只有等待状态才显示效果
               className={cn(

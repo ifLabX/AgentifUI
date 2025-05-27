@@ -20,14 +20,13 @@ export function TypeWriter({
 }: TypeWriterProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [isWaiting, setIsWaiting] = useState(false);
+  const [revealProgress, setRevealProgress] = useState(0);
+  const [isComplete, setIsComplete] = useState(false); // 添加完成状态
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const indexRef = useRef(0);
   const targetTextRef = useRef('');
-  const lastCompletedTextRef = useRef(''); // 记录上次完成的文本
+  const lastCompletedTextRef = useRef('');
 
-  // --- BEGIN COMMENT ---
-  // 清理定时器的函数
-  // --- END COMMENT ---
   const clearTimeouts = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -35,31 +34,26 @@ export function TypeWriter({
     }
   };
 
-  // --- BEGIN COMMENT ---
-  // 检查是否是续写（新文本是上次完成文本的扩展）
-  // --- END COMMENT ---
   const isContinuation = (newText: string, lastCompletedText: string) => {
     if (!lastCompletedText) return false;
     
-    // 移除等待标识符（如...）后比较
     const cleanLastText = lastCompletedText.replace(/\.\.\.$/, '');
     return newText.startsWith(cleanLastText) && newText.length > cleanLastText.length;
   };
 
-  // --- BEGIN COMMENT ---
-  // 智能打字逻辑：支持续写和重新开始
-  // --- END COMMENT ---
   const startTyping = (targetText: string, startFrom = 0) => {
     clearTimeouts();
     targetTextRef.current = targetText;
     indexRef.current = startFrom;
     setIsWaiting(false);
+    setIsComplete(false); // 重置完成状态
     
-    // 如果从中间开始，先设置当前显示的文本
+    setDisplayedText(targetText);
+    
     if (startFrom > 0) {
-      setDisplayedText(targetText.substring(0, startFrom));
+      setRevealProgress((startFrom / targetText.length) * 100);
     } else {
-      setDisplayedText('');
+      setRevealProgress(0);
     }
     
     const typeNextChar = () => {
@@ -67,16 +61,17 @@ export function TypeWriter({
       const currentIndex = indexRef.current;
       
       if (currentIndex < currentTarget.length) {
-        const newDisplayText = currentTarget.substring(0, currentIndex + 1);
-        setDisplayedText(newDisplayText);
+        const progress = ((currentIndex + 1) / currentTarget.length) * 100;
+        setRevealProgress(progress);
         indexRef.current++;
         
         timeoutRef.current = setTimeout(typeNextChar, speed);
       } else {
-        // 打字完成
+        // 🎯 打字完成：确保完全显示
+        setRevealProgress(100);
+        setIsComplete(true); // 标记为完成
         lastCompletedTextRef.current = currentTarget;
         
-        // 检查是否需要等待效果
         if (waitingEffect && currentTarget.endsWith('...')) {
           setIsWaiting(true);
         }
@@ -87,48 +82,74 @@ export function TypeWriter({
       }
     };
 
-    // 开始打字
     timeoutRef.current = setTimeout(typeNextChar, startFrom === 0 ? delay : 200);
   };
 
-  // --- BEGIN COMMENT ---
-  // 监听文本变化，智能判断是续写还是重新开始
-  // --- END COMMENT ---
   useEffect(() => {
     if (!text) return;
     
     const lastCompleted = lastCompletedTextRef.current;
     
     if (lastCompleted && isContinuation(text, lastCompleted)) {
-      // 续写模式：从完成的文本位置继续
       const cleanLastText = lastCompleted.replace(/\.\.\.$/, '');
       startTyping(text, cleanLastText.length);
     } else {
-      // 重新开始模式
       lastCompletedTextRef.current = '';
       startTyping(text, 0);
     }
     
     return () => clearTimeouts();
-  }, [text]); // 只依赖text变化
+  }, [text]);
 
-  // --- BEGIN COMMENT ---
-  // 组件卸载时清理定时器
-  // --- END COMMENT ---
   useEffect(() => {
     return () => clearTimeouts();
   }, []);
+
+  // 🎨 智能渐变逻辑：完成时完全显示，进行中时有渐变
+  const getMaskStyle = () => {
+    if (isComplete) {
+      // ✅ 完成状态：全部文字完整显示
+      return {
+        WebkitMask: 'none',
+        mask: 'none'
+      };
+    }
+    
+    // 🎨 进行中：带渐变效果
+    const solidEnd = Math.max(0, revealProgress - 8);  // 完全显示的部分
+    const fadeEnd = revealProgress;                    // 渐变结束点
+    
+    return {
+      WebkitMask: `linear-gradient(90deg, 
+        black 0%, 
+        black ${solidEnd}%, 
+        rgba(0,0,0,0.6) ${(solidEnd + fadeEnd) / 2}%, 
+        rgba(0,0,0,0.2) ${fadeEnd}%, 
+        transparent ${fadeEnd}%, 
+        transparent 100%
+      )`,
+      mask: `linear-gradient(90deg, 
+        black 0%, 
+        black ${solidEnd}%, 
+        rgba(0,0,0,0.6) ${(solidEnd + fadeEnd) / 2}%, 
+        rgba(0,0,0,0.2) ${fadeEnd}%, 
+        transparent ${fadeEnd}%, 
+        transparent 100%
+      )`
+    };
+  };
 
   return (
     <span className={cn("inline-block", className)}>
       <span 
         className={cn(
-          "transition-all duration-300",
+          "transition-all duration-75 ease-out",
           isWaiting && waitingEffect && "animate-pulse opacity-60"
         )}
+        style={getMaskStyle()}
       >
         {displayedText}
       </span>
     </span>
   );
-} 
+}
