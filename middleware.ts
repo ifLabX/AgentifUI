@@ -61,7 +61,9 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = pathname === '/' || 
                          pathname === '/login' || 
                          pathname === '/about' || 
-                         pathname.startsWith('/register');
+                         pathname.startsWith('/register') ||
+                         pathname === '/forgot-password' ||
+                         pathname === '/reset-password';
   
   // 启用路由保护逻辑，确保未登录用户无法访问受保护的路由
   if (!session && !isAuthRoute && !isApiRoute && !isPublicRoute) {

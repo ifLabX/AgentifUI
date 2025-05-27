@@ -11,6 +11,7 @@ import { useTheme } from '@lib/hooks/use-theme';
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered');
+  const resetSuccess = searchParams.get('reset');
   const { isDark } = useTheme();
   const [mounted, setMounted] = useState(false);
   
@@ -24,18 +25,18 @@ export default function LoginPage() {
     if (isDark) {
       return {
         bgColor: 'bg-stone-800',
-        alertBg: 'bg-green-900',
-        alertBorder: 'border-green-800',
-        alertText: 'text-green-300',
-        iconColor: 'text-green-400'
+        alertBg: 'bg-stone-800/50',
+        alertBorder: 'border-stone-600',
+        alertText: 'text-stone-300',
+        iconColor: 'text-stone-400'
       };
     } else {
       return {
         bgColor: 'bg-stone-100',
-        alertBg: 'bg-green-50',
-        alertBorder: 'border-green-200',
-        alertText: 'text-green-700',
-        iconColor: 'text-green-600'
+        alertBg: 'bg-stone-50',
+        alertBorder: 'border-stone-300',
+        alertText: 'text-stone-700',
+        iconColor: 'text-stone-600'
       };
     }
   };
@@ -56,10 +57,24 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Alert className={`max-w-md ${colors.alertBg} ${colors.alertBorder}`}>
-            <CheckCircle className={`h-4 w-4 ${colors.iconColor} mr-2`} />
+          <Alert className={`max-w-md border-l-4 ${colors.alertBg} ${colors.alertBorder}`}>
+            <CheckCircle className={`h-4 w-4 ${colors.iconColor}`} />
             <AlertDescription className={colors.alertText}>
               注册成功！请查看您的邮箱以验证账户，然后登录。
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
+      {resetSuccess === 'success' && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Alert className={`max-w-md border-l-4 ${colors.alertBg} ${colors.alertBorder}`}>
+            <CheckCircle className={`h-4 w-4 ${colors.iconColor}`} />
+            <AlertDescription className={colors.alertText}>
+              密码重置成功！请使用新密码登录。
             </AlertDescription>
           </Alert>
         </motion.div>
