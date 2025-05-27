@@ -6,8 +6,13 @@ on:
   pull_request:
     branches: [ master ]
   schedule:
-    # 每天凌晨2点运行安全检查
     - cron: '0 2 * * *'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 
 jobs:
   dependency-scan:
