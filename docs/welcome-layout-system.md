@@ -223,7 +223,147 @@ A: 检查以下几点：
 4. **考虑内容长度**：为动态内容预留足够的空间
 5. **保持可访问性**：确保所有组件都能被正确访问和操作
 
+## 添加新组件到欢迎界面
+
+### 快速添加常见组件
+
+系统提供了几个便捷函数来快速添加常见组件：
+
+```tsx
+import { 
+  addNotificationComponent,
+  addActionButtons,
+  addStatusIndicator 
+} from '@lib/config/welcome-layout';
+
+// 添加通知组件（在欢迎文字上方）
+const configWithNotification = addNotificationComponent(40);
+
+// 添加操作按钮组（在提示按钮下方）
+const configWithActions = addActionButtons(50);
+
+// 添加状态指示器（在输入框上方）
+const configWithStatus = addStatusIndicator(30);
+```
+
+### 自定义添加新组件
+
+使用 `addComponent` 函数添加完全自定义的组件：
+
+```tsx
+import { addComponent } from '@lib/config/welcome-layout';
+
+// 添加自定义组件
+const customConfig = addComponent('myCustomComponent', {
+  height: 60, // 组件高度
+  spacing: { 
+    myComponentToInput: 25, // 到输入框的间距
+    myComponentToOther: 15  // 到其他组件的间距
+  },
+  positioning: 'below-input', // 位置：above-welcome | below-input | above-input | below-prompt | custom
+  priority: 4, // 优先级（数字越小优先级越高）
+  customOffset: 100 // 自定义偏移（仅当positioning为custom时使用）
+});
+```
+
+### 组件定位选项
+
+- `above-welcome`: 在欢迎文字上方
+- `below-input`: 在输入框下方
+- `above-input`: 在输入框上方
+- `below-prompt`: 在提示按钮下方
+- `custom`: 自定义位置（需要提供customOffset）
+
+### 在组件中使用新布局
+
+```tsx
+import { useWelcomeLayout } from '@lib/hooks/use-welcome-layout';
+
+function MyNewComponent() {
+  const { extensions } = useWelcomeLayout();
+  
+  // 获取自定义组件的位置
+  const myComponentPosition = extensions.myCustomComponent;
+  
+  if (!myComponentPosition) return null;
+  
+  return (
+    <div 
+      className="absolute left-1/2"
+      style={{
+        top: myComponentPosition.top,
+        transform: myComponentPosition.transform,
+        zIndex: myComponentPosition.zIndex
+      }}
+    >
+      {/* 组件内容 */}
+    </div>
+  );
+}
+```
+
+### 组合多个组件
+
+```tsx
+import { 
+  addNotificationComponent,
+  addActionButtons,
+  addComponent 
+} from '@lib/config/welcome-layout';
+
+// 链式添加多个组件
+let config = addNotificationComponent(40);
+config = addActionButtons(50, config); // 传入之前的配置作为基础
+config = addComponent('customWidget', {
+  height: 35,
+  spacing: { widgetToPrompt: 20 },
+  positioning: 'above-input',
+  priority: 2
+}, config);
+```
+
+## 文字尺寸说明
+
+### 主标题尺寸
+- **正常模式**: `text-2xl` (24px)
+- **紧凑模式**: `text-xl` (20px)
+
+### 副标题尺寸
+- **正常模式**: `text-sm` (14px)
+- **紧凑模式**: `text-xs` (12px)
+
+### Skeleton宽度
+- **正常模式**: `w-96` (384px) - 更宽，避免长文本换行
+- **紧凑模式**: `w-80` (320px) - 适应小屏幕
+
+### 主标题最大宽度
+- **正常模式**: `max-w-2xl` (672px) - 支持较长的动态开场白
+- **紧凑模式**: `max-w-sm` (384px) - 适应小屏幕
+
+## 移动端优化
+
+系统会在小屏幕设备上自动：
+
+1. **启用紧凑布局** (< 700px 高度或 < 640px 宽度)
+2. **减小文字尺寸** (主标题xl，副标题xs)
+3. **调整间距** (确保副标题不被遮挡)
+4. **优化输入框位置** (适中偏移，确保内容可见)
+
 ## 更新日志
+
+### v1.1.0
+- 修复副标题尺寸过大问题
+- 优化skeleton宽度与输入框匹配
+- 改进移动端布局，确保副标题可见
+- 添加新组件管理系统
+- 提供便捷的组件添加函数
+- 支持组件优先级和自定义定位
+
+### v1.1.1
+- 修复主标题最大宽度问题，避免过短换行
+- 将整体布局上移，优化视觉平衡
+- 动态调整欢迎文字容器最大宽度
+- 优化skeleton宽度，更好支持长文本
 
 ### v1.0.0
 - 初始版本

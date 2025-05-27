@@ -75,18 +75,22 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     <div 
       className={cn(
         "flex flex-col items-center justify-center text-center",
-        // --- BEGIN COMMENT ---
-        // 根据是否需要紧凑布局调整文字大小
-        // --- END COMMENT ---
-        needsCompactLayout ? "text-lg" : "text-2xl",
         className
       )}
       style={welcomePosition}
     >
       <div className="w-full">
+        {/* --- BEGIN COMMENT ---
+        主标题容器：设置最大宽度与输入框匹配，避免过短换行
+        --- END COMMENT --- */}
         <h2 className={cn(
-          "font-bold mb-2",
-          needsCompactLayout ? "text-lg" : "text-2xl"
+          "font-bold mb-2 mx-auto",
+          // --- BEGIN COMMENT ---
+          // 主标题尺寸：紧凑模式稍小，正常模式保持原有大小
+          // 设置最大宽度与输入框匹配，避免过短换行
+          // --- END COMMENT ---
+          needsCompactLayout ? "text-xl max-w-sm" : "text-2xl max-w-2xl",
+          "leading-tight" // 紧凑行高
         )}>
           {shouldStartTyping ? (
             <TypeWriter 
@@ -95,26 +99,29 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
               delay={300} // 延迟开始，给页面加载一点时间
               waitingEffect={finalText.endsWith("...")} // 只有等待状态才显示效果
               className={cn(
-                "font-bold",
-                needsCompactLayout ? "text-lg" : "text-2xl"
+                "font-bold leading-tight",
+                needsCompactLayout ? "text-xl max-w-sm" : "text-2xl max-w-2xl"
               )}
             />
           ) : (
             <div className="flex items-center justify-center">
               {/* --- BEGIN COMMENT ---
-              使用统一的较宽skeleton，适应动态开场白可能较长的情况
-              根据紧凑布局调整skeleton大小
+              skeleton宽度与输入框宽度保持一致，避免过短导致换行
               --- END COMMENT --- */}
-              <div className={cn(
-                "bg-stone-200/60 dark:bg-stone-700/60 rounded animate-pulse",
-                needsCompactLayout ? "h-6 w-48" : "h-7 w-60"
-              )}></div>
+                              <div className={cn(
+                  "bg-stone-200/60 dark:bg-stone-700/60 rounded animate-pulse",
+                  // 使用更宽的skeleton，与输入框宽度匹配，避免换行
+                  needsCompactLayout ? "h-6 w-80" : "h-7 w-96"
+                )}></div>
             </div>
           )}
         </h2>
         <p className={cn(
           isDark ? "text-gray-400" : "text-gray-500",
-          needsCompactLayout ? "mt-2 text-sm" : "mt-4"
+          // --- BEGIN COMMENT ---
+          // 副标题尺寸：紧凑模式使用xs，正常模式使用sm，避免过大
+          // --- END COMMENT ---
+          needsCompactLayout ? "mt-1 text-xs" : "mt-4 text-sm"
         )}>
           {shouldStartTyping && (
             <TypeWriter 
@@ -133,7 +140,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
               }
               className={cn(
                 isDark ? "text-gray-400" : "text-gray-500",
-                needsCompactLayout ? "text-sm" : ""
+                needsCompactLayout ? "text-xs" : "text-sm"
               )}
             />
           )}

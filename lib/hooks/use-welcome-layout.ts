@@ -27,6 +27,17 @@ interface WelcomeLayoutPositions {
   
   // 是否需要调整布局（当空间不足时）
   needsCompactLayout: boolean;
+  
+  // --- BEGIN COMMENT ---
+  // 扩展组件位置：支持动态添加新组件
+  // --- END COMMENT ---
+  extensions: {
+    [componentName: string]: {
+      top: string;
+      transform: string;
+      zIndex?: number;
+    };
+  };
 }
 
 /**
@@ -42,11 +53,12 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, calc(-50% - 200px))',
-      maxWidth: '28rem',
+      maxWidth: '42rem', // 默认更宽的最大宽度
       padding: '0 1rem',
     },
     promptContainer: { top: 'calc(50% + 120px)', transform: 'translateX(-50%)' },
     needsCompactLayout: false,
+    extensions: {},
   });
 
   // --- BEGIN COMMENT ---
@@ -128,7 +140,7 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
         top: '50%',
         left: '50%',
         transform: `translate(-50%, calc(-50% + ${finalWelcomeTextY - viewportHeight / 2}px))`,
-        maxWidth: '28rem',
+        maxWidth: needsCompactLayout ? '20rem' : '42rem', // 动态调整最大宽度
         padding: '0 1rem',
       },
       promptContainer: {
@@ -136,6 +148,7 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
         transform: 'translateX(-50%)',
       },
       needsCompactLayout,
+      extensions: {},
     };
     
     setPositions(newPositions);
