@@ -239,6 +239,60 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
           {children}
         </a>
       );
+    },
+    
+    // --- BEGIN COMMENT ---
+    // 图片处理：将图片渲染为链接形式，避免加载抖动问题
+    // 如果图片已经在链接内（嵌套a标签），则只显示文本，避免HTML错误
+    // --- END COMMENT ---
+    img({ src, alt, node, ...props }: any) {
+      // 确保src是字符串类型
+      const imageUrl = typeof src === 'string' ? src : '';
+      
+      // 检查是否在链接内部（检查父级节点）
+      const isInsideLink = node?.parent?.tagName === 'a';
+      
+      if (isInsideLink) {
+        // 如果在链接内，只显示文本，不创建新链接
+        return (
+          <span 
+            className="inline-flex items-center gap-1 px-1 py-0.5 rounded text-sm font-medium"
+            style={{
+              color: 'var(--md-think-content-text)',
+              opacity: 0.9
+            }}
+            title={alt || "图片"}
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            [{alt || "图片"}]
+          </span>
+        );
+      }
+      
+      // 不在链接内，创建图片链接
+      return (
+        <a 
+          href={imageUrl}
+          className="inline-flex items-center gap-1 px-2 py-1 rounded border text-sm"
+          style={{
+            borderColor: 'var(--md-think-content-border)',
+            backgroundColor: 'var(--md-think-content-bg)',
+            color: 'var(--md-think-content-text)',
+            opacity: 0.9
+          }}
+          target="_blank" 
+          rel="noopener noreferrer"
+          title={alt || "查看图片"}
+          {...props}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {alt || "图片链接"}
+        </a>
+      );
     }
   };
 
