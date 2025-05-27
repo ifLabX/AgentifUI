@@ -219,7 +219,7 @@ export default function ChatPage() {
         {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <PromptContainer />}
       </div>
       
-      <FilePreviewCanvas />
+      <FilePreviewCanvas /> 
     </div>
   );
 } 

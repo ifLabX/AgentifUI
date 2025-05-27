@@ -36,7 +36,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
   const updateStatusInPendingStore = usePendingConversationStore((state) => state.updateStatus);
   const markAsOptimistic = usePendingConversationStore((state) => state.markAsOptimistic);
   const setSupabasePKInPendingStore = usePendingConversationStore((state) => state.setSupabasePK);
-  
+
   // --- BEGIN COMMENT ---
   // 🎯 新增：打字机效果相关Actions
   // --- END COMMENT ---

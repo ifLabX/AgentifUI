@@ -47,6 +47,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
 
   // --- BEGIN COMMENT ---
   // 获取当前应用ID和应用参数
+  // 🎯 现在使用优化后的批量缓存机制
   // --- END COMMENT ---
   const { currentAppId } = useCurrentApp()
   const { parameters, isLoading: isParametersLoading, error: parametersError } = useAppParameters(currentAppId)
@@ -54,9 +55,15 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   // --- BEGIN COMMENT ---
   // 智能处理欢迎文字的显示逻辑
   // 优先级：动态开场白 > 用户名问候 > 默认文字
-  // 包含错误处理和fallback机制
+  // 🎯 优化：应用切换时立即重置状态，使用批量缓存快速显示
   // --- END COMMENT ---
   useEffect(() => {
+    // --- BEGIN COMMENT ---
+    // 🎯 应用切换时立即重置状态，准备显示新内容
+    // --- END COMMENT ---
+    setShouldStartTyping(false);
+    setFinalText("");
+
     // 如果还在加载profile或应用参数，等待
     if (username === undefined || (currentAppId && isParametersLoading)) {
       return;
@@ -68,12 +75,15 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     // 优先使用动态开场白（如果获取成功且不为空）
     if (parameters?.opening_statement && !parametersError) {
       welcomeText = parameters.opening_statement;
+      console.log('[WelcomeScreen] 使用应用开场白:', welcomeText.substring(0, 50) + '...');
     } else if (username) {
       // 如果没有开场白但有用户名，使用用户名问候
       welcomeText = `${getTimeBasedGreeting()}，${username}`;
+      console.log('[WelcomeScreen] 使用用户名问候:', welcomeText);
     } else {
       // 都没有的话使用默认问候
       welcomeText = getTimeBasedGreeting();
+      console.log('[WelcomeScreen] 使用默认问候:', welcomeText);
     }
     
     // --- BEGIN COMMENT ---
@@ -84,11 +94,16 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
       console.warn('[WelcomeScreen] 获取应用参数失败，使用fallback文字:', parametersError);
     }
     
-    // 等待一下确保数据稳定（避免缓存+数据库的双重更新）
+    // --- BEGIN COMMENT ---
+    // 🎯 优化延迟：如果是从缓存获取的参数，减少延迟时间
+    // 应用切换时应该能立即显示，因为参数已预缓存
+    // --- END COMMENT ---
+    const delay = isParametersLoading ? 300 : 100; // 缓存命中时更快显示
+    
     const timer = setTimeout(() => {
       setFinalText(welcomeText);
       setShouldStartTyping(true);
-    }, 300); // 稍微减少延迟，因为现在有更多数据要等待
+    }, delay);
     
     return () => clearTimeout(timer);
   }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError]);
