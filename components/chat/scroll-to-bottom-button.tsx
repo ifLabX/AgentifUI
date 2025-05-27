@@ -47,7 +47,7 @@ export const ScrollToBottomButton = () => {
         // --- BEGIN MODIFIED COMMENT ---
         // 基础样式 (移除 all transition, 添加 transform transition)
         // --- END MODIFIED COMMENT ---
-        'rounded-full p-1.5 shadow-md transition-transform duration-150 ease-in-out', // 仅保留 transform 过渡
+        'rounded-full p-1.5 shadow-md transition-transform duration-150 ease-in-out cursor-pointer', // 仅保留 transform 过渡
         
         // 颜色主题
         colors.userMessageBackground.tailwind,
