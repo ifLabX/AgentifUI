@@ -262,27 +262,27 @@ export async function getUserOrganization(userId: string): Promise<Result<{ orga
         )
       `)
       .eq('user_id', userId)
-      .single();
-
+      .maybeSingle(); // 使用 maybeSingle 而不是 single，避免无数据时报错
+    
     if (error) {
-      // 如果是PGRST116错误，表示用户未关联任何企业
-      if (error.code === 'PGRST116') {
-        return success(null);
-      }
-      return failure(new Error(`获取用户企业信息失败: ${error.message}`));
+      // 静默处理企业查询错误，避免影响主流程
+      console.warn(`获取用户企业信息时发生错误: ${error.message}`, error);
+      return success(null);
     }
-
+    
+    // 如果没有数据或组织信息为空
     if (!data || !data.organizations) {
       return success(null);
     }
-
+    
     return success({
       organization: data.organizations,
       role: data.role
     });
   } catch (err) {
-    console.error('获取用户企业信息时发生错误:', err);
-    return failure(err instanceof Error ? err : new Error('获取用户企业信息失败'));
+    // 静默处理异常，不影响用户资料的获取
+    console.warn('获取用户企业信息时发生异常:', err);
+    return success(null);
   }
 }
 
