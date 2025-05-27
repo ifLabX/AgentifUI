@@ -43,6 +43,7 @@ import {
   MarkdownBlockquote,
 } from "@components/chat/markdown-block";
 import { AssistantMessageActions } from '@components/chat/message-actions';
+import { StreamingMarkdown } from './streaming-markdown';
 
 const extractThinkContent = (rawContent: string): {
   hasThinkBlock: boolean;
@@ -262,33 +263,33 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
         // --- BEGIN MODIFIED COMMENT ---
         // 助手消息主内容区域样式配置
         // 
-        // 关键样式类说明：
-        // - markdown-body: 基础 Markdown 渲染样式 (定义在 styles/markdown.css)
-        // - assistant-message-content: 专用行间距控制类 (定义在 styles/markdown.css:277-340)
-        //   · 提供精确的段落内行间距 (line-height: 1.9) 和段落间距 (margin: 0 0 0.1em 0)
-        //   · 覆盖默认的 markdown-body 样式，实现更好的文本可读性
-        //   · 如需调整文本密度，请修改 styles/markdown.css 中对应的 CSS 变量
-        // - text-base: Tailwind 基础字体大小 (16px)
-        // 
-        // 颜色主题：
-        // - 亮色模式：text-gray-800 (深灰色，柔和易读)
-        // - 暗色模式：text-gray-200 (浅灰色，护眼舒适)
-        // 
-        // 间距控制：
-        // - 有思考块：pt-1 pb-2 (上边距小，下边距适中)
-        // - 无思考块：py-2 (上下边距一致)
+        // 🎯 新增流式渲染支持：
+        // - 使用StreamingMarkdown组件实现丝滑的打字机效果
+        // - 保持原有的Markdown渲染能力和样式
+        // - 根据isStreaming状态自动切换渲染模式
         // --- END MODIFIED COMMENT ---
         <div className={cn(
           "w-full markdown-body main-content-area assistant-message-content text-base",
           isDark ? "text-gray-200" : "text-gray-800", // 根据主题切换文本颜色
           !hasThinkBlock ? "py-2" : "pt-1 pb-2" // 根据是否有思考块调整垂直间距
         )}>
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[rehypeKatex, rehypeRaw]}
-            components={mainMarkdownComponents} 
-            children={mainContent}
-          />
+          {isStreaming ? (
+            // 🎯 流式状态：使用StreamingMarkdown组件
+            <StreamingMarkdown
+              content={mainContent}
+              isStreaming={isStreaming}
+              isComplete={wasManuallyStopped}
+              typewriterSpeed={60} // 可调整打字速度
+            />
+          ) : (
+            // 🎯 非流式状态：使用原有的ReactMarkdown
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex, rehypeRaw]}
+              components={mainMarkdownComponents} 
+              children={mainContent}
+            />
+          )}
           
           {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，添加-mt-4来减少与消息内容的间距 */}
           <AssistantMessageActions

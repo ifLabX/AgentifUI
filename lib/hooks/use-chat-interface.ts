@@ -18,9 +18,10 @@ import { getConversationByExternalId } from '@lib/db/conversations';
 // --- END COMMENT ---
 
 // --- BEGIN COMMENT ---
-// 毫秒，批量处理数据块的持续时间
+// 🎯 优化流式体验：减少批量更新间隔，提高响应性
+// 从100ms降低到30ms，让流式效果更加丝滑
 // --- END COMMENT ---
-const CHUNK_APPEND_INTERVAL = 100; 
+const CHUNK_APPEND_INTERVAL = 30; 
 
 export function useChatInterface() {
   const router = useRouter();
@@ -552,7 +553,15 @@ export function useChatInterface() {
         if (assistantMessageId) {
           if (useChatStore.getState().streamingMessageId === assistantMessageId) {
             chunkBufferRef.current += answerChunk; 
-            if (Date.now() - lastAppendTime >= CHUNK_APPEND_INTERVAL || chunkBufferRef.current.includes('\n\n') || chunkBufferRef.current.length > 500) {
+            // --- BEGIN COMMENT ---
+            // 🎯 优化流式更新条件：
+            // 1. 时间间隔：30ms（更频繁的更新）
+            // 2. 内容触发：遇到换行或长度超过200字符（更小的批次）
+            // 3. 确保每个字符都能及时显示
+            // --- END COMMENT ---
+            if (Date.now() - lastAppendTime >= CHUNK_APPEND_INTERVAL || 
+                chunkBufferRef.current.includes('\n') || 
+                chunkBufferRef.current.length > 200) {
               flushChunkBuffer(assistantMessageId);
               lastAppendTime = Date.now(); 
             } else if (!appendTimerRef.current) {
