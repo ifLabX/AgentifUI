@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCurrentUserProfile, getUserProfileById } from '@lib/db'; // 使用新的优化数据库接口
+import { getCurrentUserProfile, getUserProfileById, getUserOrganization } from '@lib/db'; // 使用新的优化数据库接口
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 import { useLoadingStore, PageKey } from '../stores/loading-store';
 
@@ -11,6 +11,14 @@ export interface Profile {
   avatar_url: string | null;
   updated_at: string | null;
   created_at: string | null;
+  // 企业信息
+  organization?: {
+    id: string;
+    name: string;
+    logo_url: string | null;
+    created_at: string;
+  } | null;
+  organization_role?: string | null;
 }
 
 // localStorage缓存相关常量
@@ -146,7 +154,34 @@ export function useProfile(userId?: string): UseProfileResult {
       }
       
       if (result.success && result.data) {
-        const newProfile = result.data as Profile;
+        let newProfile = result.data as Profile;
+        
+        // 同时获取用户的企业信息
+        try {
+          const orgResult = await getUserOrganization(targetUserId);
+          if (orgResult.success && orgResult.data) {
+            newProfile = {
+              ...newProfile,
+              organization: orgResult.data.organization,
+              organization_role: orgResult.data.role
+            };
+          } else {
+            // 用户没有关联企业
+            newProfile = {
+              ...newProfile,
+              organization: null,
+              organization_role: null
+            };
+          }
+        } catch (orgError) {
+          console.warn('获取企业信息失败，将忽略此错误:', orgError);
+          // 企业信息获取失败不影响主流程，设置为null
+          newProfile = {
+            ...newProfile,
+            organization: null,
+            organization_role: null
+          };
+        }
         
         // 更新状态和缓存
         setProfile(newProfile);

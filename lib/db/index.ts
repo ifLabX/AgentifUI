@@ -90,7 +90,8 @@ export {
   getAdminUsers,
   updateUserProfile,
   setUserAsAdmin,
-  isUserAdmin
+  isUserAdmin,
+  getUserOrganization
 } from './profiles';
 
 // 兼容版本（保持原有API）
@@ -101,7 +102,8 @@ export {
   getAdminUsersLegacy,
   updateUserProfileLegacy,
   setUserAsAdminLegacy,
-  isUserAdminLegacy
+  isUserAdminLegacy,
+  getUserOrganizationLegacy
 } from './profiles';
 
 // 对话相关函数

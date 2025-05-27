@@ -25,11 +25,11 @@ export async function getCurrentUserProfile(): Promise<Result<Profile | null>> {
   // 使用新的数据服务和缓存机制
   // --- END COMMENT ---
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     return success(null);
   }
-  
+
   return getUserProfileById(user.id);
 }
 
@@ -240,4 +240,57 @@ export async function setUserAsAdminLegacy(userId: string): Promise<boolean> {
 export async function isUserAdminLegacy(userId: string): Promise<boolean> {
   const result = await isUserAdmin(userId);
   return result.success ? result.data : false;
+}
+
+/**
+ * 获取用户的企业信息（优化版本）
+ * @param userId 用户ID
+ * @returns 用户所属企业的信息Result，如果未关联企业则返回null
+ */
+export async function getUserOrganization(userId: string): Promise<Result<{ organization: any; role: string } | null>> {
+  try {
+    // 查询用户在org_members表中的记录，同时联查organizations表
+    const { data, error } = await supabase
+      .from('org_members')
+      .select(`
+        role,
+        organizations (
+          id,
+          name,
+          logo_url,
+          created_at
+        )
+      `)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      // 如果是PGRST116错误，表示用户未关联任何企业
+      if (error.code === 'PGRST116') {
+        return success(null);
+      }
+      return failure(new Error(`获取用户企业信息失败: ${error.message}`));
+    }
+
+    if (!data || !data.organizations) {
+      return success(null);
+    }
+
+    return success({
+      organization: data.organizations,
+      role: data.role
+    });
+  } catch (err) {
+    console.error('获取用户企业信息时发生错误:', err);
+    return failure(err instanceof Error ? err : new Error('获取用户企业信息失败'));
+  }
+}
+
+/**
+ * 获取用户的企业信息（兼容版本）
+ * @deprecated 请使用 getUserOrganization() 并处理Result类型
+ */
+export async function getUserOrganizationLegacy(userId: string): Promise<{ organization: any; role: string } | null> {
+  const result = await getUserOrganization(userId);
+  return result.success ? result.data : null;
 }
