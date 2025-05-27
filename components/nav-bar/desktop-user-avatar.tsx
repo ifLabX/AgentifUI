@@ -57,6 +57,7 @@ export function DesktopUserAvatar() {
     const [profile, setProfile] = useState(() => getUserFromCache());
     const [currentTheme, setCurrentTheme] = useState(() => getThemeFromCache());
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
@@ -136,13 +137,20 @@ export function DesktopUserAvatar() {
     const toggleDropdown = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDropdownOpen((prev) => !prev);
+        setIsDropdownOpen((prev) => {
+            if (prev) {
+                // 关闭菜单时重置悬停状态
+                setHoveredItem(null);
+            }
+            return !prev;
+        });
     };
 
     // 处理菜单项点击
     const handleMenuItemClick = (action: () => void) => {
         action();
         setIsDropdownOpen(false);
+        setHoveredItem(null);
     };
 
     // 处理退出登录
@@ -150,6 +158,7 @@ export function DesktopUserAvatar() {
         await logout();
         setProfile(null);
         setIsDropdownOpen(false);
+        setHoveredItem(null);
     };
 
     // 菜单项定义
@@ -203,20 +212,9 @@ export function DesktopUserAvatar() {
                             <img
                                 src={avatarUrl}
                                 alt={`${userName}的头像`}
+                                className="w-8 h-8 rounded-full object-cover transition-transform duration-200 hover:scale-105"
                                 style={{
-                                    width: "32px",
-                                    height: "32px",
-                                    borderRadius: "50%",
-                                    objectFit: "cover",
-                                    transition: "transform 0.2s",
                                     border: "none",
-                                }}
-                                onMouseEnter={(e) => {
-                                    (e.target as HTMLImageElement).style.transform =
-                                        "scale(1.05)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    (e.target as HTMLImageElement).style.transform = "scale(1)";
                                 }}
                                 onError={(e) => {
                                     // 头像加载失败时隐藏图片
@@ -225,25 +223,10 @@ export function DesktopUserAvatar() {
                             />
                         ) : (
                             <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium text-sm transition-transform duration-200 hover:scale-105"
                                 style={{
-                                    width: "32px",
-                                    height: "32px",
-                                    borderRadius: "50%",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "white",
-                                    fontWeight: "500",
-                                    fontSize: "14px",
                                     backgroundColor: getAvatarBgColor(userName),
-                                    transition: "transform 0.2s",
                                     border: "none",
-                                }}
-                                onMouseEnter={(e) => {
-                                    (e.target as HTMLDivElement).style.transform = "scale(1.05)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    (e.target as HTMLDivElement).style.transform = "scale(1)";
                                 }}
                             >
                                 {getInitials(userName)}
@@ -355,41 +338,41 @@ export function DesktopUserAvatar() {
 
                             {/* 菜单项 */}
                             <div className="space-y-1">
-                                {menuItems.map((item, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleMenuItemClick(item.action)}
-                                        className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left cursor-pointer transition-colors duration-150 focus:outline-none"
-                                        style={{
-                                            backgroundColor: "transparent",
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            (e.target as HTMLButtonElement).style.backgroundColor =
-                                                effectiveTheme
-                                                    ? "rgba(68, 64, 60, 0.5)"
-                                                    : "rgba(231, 229, 228, 1)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            (e.target as HTMLButtonElement).style.backgroundColor =
-                                                "transparent";
-                                        }}
-                                    >
-                                        <item.icon
-                                            className="h-4 w-4"
+                                {menuItems.map((item, index) => {
+                                    const itemKey = `menu-${index}`;
+                                    const isHovered = hoveredItem === itemKey;
+                                    
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleMenuItemClick(item.action)}
+                                            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left cursor-pointer transition-colors duration-150 focus:outline-none"
                                             style={{
-                                                color: effectiveTheme ? "#a8a29e" : "#57534e",
-                                            }}
-                                        />
-                                        <span
-                                            className="flex-1 text-sm"
-                                            style={{
+                                                backgroundColor: isHovered 
+                                                    ? (effectiveTheme ? "rgba(68, 64, 60, 0.5)" : "rgba(231, 229, 228, 1)")
+                                                    : "transparent",
                                                 color: effectiveTheme ? "#d6d3d1" : "#44403c",
                                             }}
+                                            onMouseEnter={() => setHoveredItem(itemKey)}
+                                            onMouseLeave={() => setHoveredItem(null)}
                                         >
-                                            {item.label}
-                                        </span>
-                                    </button>
-                                ))}
+                                            <item.icon
+                                                className="h-4 w-4"
+                                                style={{
+                                                    color: effectiveTheme ? "#a8a29e" : "#57534e",
+                                                }}
+                                            />
+                                            <span
+                                                className="flex-1 text-sm"
+                                                style={{
+                                                    color: effectiveTheme ? "#d6d3d1" : "#44403c",
+                                                }}
+                                            >
+                                                {item.label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
                             </div>
 
                             {/* 分割线 */}
@@ -406,18 +389,12 @@ export function DesktopUserAvatar() {
                                 className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left cursor-pointer transition-colors duration-150 focus:outline-none"
                                 style={{
                                     color: "#dc2626",
-                                    backgroundColor: "transparent",
+                                    backgroundColor: hoveredItem === "logout" 
+                                        ? (effectiveTheme ? "rgba(153, 27, 27, 0.2)" : "rgba(254, 226, 226, 1)")
+                                        : "transparent",
                                 }}
-                                onMouseEnter={(e) => {
-                                    (e.target as HTMLButtonElement).style.backgroundColor =
-                                        effectiveTheme
-                                            ? "rgba(153, 27, 27, 0.2)"
-                                            : "rgba(254, 226, 226, 1)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    (e.target as HTMLButtonElement).style.backgroundColor =
-                                        "transparent";
-                                }}
+                                onMouseEnter={() => setHoveredItem("logout")}
+                                onMouseLeave={() => setHoveredItem(null)}
                             >
                                 <LogOut className="h-4 w-4" />
                                 <span className="text-sm">退出登录</span>
@@ -454,16 +431,10 @@ export function DesktopUserAvatar() {
                                     }
                                     className="w-full py-3 px-4 rounded-xl font-semibold text-center text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                                     style={{
-                                        backgroundColor: "#57534e",
+                                        backgroundColor: hoveredItem === "login" ? "#44403c" : "#57534e",
                                     }}
-                                    onMouseEnter={(e) => {
-                                        (e.target as HTMLButtonElement).style.backgroundColor =
-                                            "#44403c";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        (e.target as HTMLButtonElement).style.backgroundColor =
-                                            "#57534e";
-                                    }}
+                                    onMouseEnter={() => setHoveredItem("login")}
+                                    onMouseLeave={() => setHoveredItem(null)}
                                 >
                                     登录
                                 </button>
@@ -474,23 +445,14 @@ export function DesktopUserAvatar() {
                                     }
                                     className="w-full py-3 px-4 rounded-xl font-medium text-center shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
                                     style={{
-                                        backgroundColor: effectiveTheme ? "#44403c" : "#f5f5f4",
+                                        backgroundColor: hoveredItem === "register" 
+                                            ? (effectiveTheme ? "#57534e" : "#d6d3d1")
+                                            : (effectiveTheme ? "#44403c" : "#f5f5f4"),
                                         color: effectiveTheme ? "#e7e5e4" : "#44403c",
-                                        border: `1px solid ${effectiveTheme ? "#57534e" : "#d6d3d1"
-                                            }`,
+                                        border: `1px solid ${effectiveTheme ? "#57534e" : "#d6d3d1"}`,
                                     }}
-                                    onMouseEnter={(e) => {
-                                        const btn = e.target as HTMLButtonElement;
-                                        btn.style.backgroundColor = effectiveTheme
-                                            ? "#57534e"
-                                            : "#d6d3d1";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        const btn = e.target as HTMLButtonElement;
-                                        btn.style.backgroundColor = effectiveTheme
-                                            ? "#44403c"
-                                            : "#f5f5f4";
-                                    }}
+                                    onMouseEnter={() => setHoveredItem("register")}
+                                    onMouseLeave={() => setHoveredItem(null)}
                                 >
                                     注册新账户
                                 </button>
