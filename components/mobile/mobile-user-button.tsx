@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks/use-theme"
 import { User } from "lucide-react"
 import { useMobile } from "@lib/hooks/use-mobile"
 import { UserBottomSheet } from "./ui/user-bottom-sheet"
-import { createClient } from "@lib/supabase/client"
+import { useProfile } from "@lib/hooks/use-profile"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 
 /**
@@ -19,57 +19,13 @@ export function MobileUserButton() {
   const isMobile = useMobile()
   const { isExpanded } = useSidebarStore()
   const [isOpen, setIsOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
-  const [userName, setUserName] = useState<string | null>("用户")
-  const supabase = createClient()
   
-  // 检查用户登录状态
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession()
-      setIsLoggedIn(!!data.session)
-
-      // 获取用户信息
-      if (data.session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('username, full_name')
-          .eq('id', data.session.user.id)
-          .single();
-          
-        if (profile) {
-          setUserName(profile.full_name || profile.username || "用户");
-        }
-      }
-
-      // 监听认证状态变化
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          setIsLoggedIn(!!session)
-          
-          if (session) {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('username, full_name')
-              .eq('id', session.user.id)
-              .single();
-              
-            if (profile) {
-              setUserName(profile.full_name || profile.username || "用户");
-            }
-          } else {
-            setUserName("登录/注册");
-          }
-        }
-      )
-
-      return () => {
-        authListener.subscription.unsubscribe()
-      }
-    }
-
-    checkAuth()
-  }, [supabase])
+  // 使用 useProfile hook 获取用户信息
+  const { profile } = useProfile()
+  
+  // 从 profile 中提取用户信息
+  const isLoggedIn = !!profile
+  const userName = profile?.full_name || profile?.username || (isLoggedIn ? "用户" : "登录/注册")
   
   // 打开底部弹出框
   const handleOpenBottomSheet = () => {

@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { BottomSheet } from "./bottom-sheet"
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks/use-theme"
-import { Settings, Sun, Moon, LogOut, User, MessageSquare, Shield, UserCircle } from "lucide-react"
+import { Settings, Sun, Moon, LogOut, User, Clock, Shield, UserCircle } from "lucide-react"
 import { useLogout } from "@lib/hooks/use-logout"
 import { useRouter } from "next/navigation"
-import { createClient } from "@lib/supabase/client"
+import { useProfile } from "@lib/hooks/use-profile"
 
 interface UserBottomSheetProps {
   isOpen: boolean
@@ -29,37 +29,44 @@ export function UserBottomSheet({
   const { isDark, toggleTheme } = useTheme()
   const { logout } = useLogout()
   const router = useRouter()
-  const supabase = createClient()
-  const [userName, setUserName] = useState<string>("用户")
-  const [userEmail, setUserEmail] = useState<string>("")
   
-  // 获取用户信息
-  useEffect(() => {
-    if (!isLoggedIn) return
+  // 使用 useProfile hook 获取用户信息
+  const { profile } = useProfile()
+  
+  // 从 profile 中提取用户信息
+  const userName = profile?.full_name || profile?.username || "用户"
+  const userCompany = profile?.organization?.name || "无企业关联"
+  const avatarUrl = profile?.avatar_url
+  
+  // 生成用户头像的首字母
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
+  
+  // 根据用户名生成一致的石色系背景颜色
+  const getAvatarBgColor = (name: string) => {
+    const colors = [
+      '#78716c', // stone-500
+      '#57534e', // stone-600
+      '#44403c', // stone-700
+      '#64748b', // slate-500
+      '#475569', // slate-600
+      '#6b7280', // gray-500
+      '#4b5563', // gray-600
+      '#737373'  // neutral-500
+    ]
     
-    const fetchUserProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      
-      // 设置邮箱
-      if (user.email) {
-        setUserEmail(user.email)
-      }
-      
-      // 获取更多用户资料
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('username, full_name')
-        .eq('id', user.id)
-        .single()
-      
-      if (profile) {
-        setUserName(profile.full_name || profile.username || "用户")
-      }
+    let hash = 0
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash)
     }
-    
-    fetchUserProfile()
-  }, [isLoggedIn, supabase])
+    return colors[Math.abs(hash) % colors.length]
+  }
   
   // 处理登录
   const handleLogin = () => {
@@ -121,16 +128,27 @@ export function UserBottomSheet({
             isDark ? "bg-stone-700/50" : "bg-stone-100",
             "shadow-sm"
           )}>
-            <div className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center",
-              isDark ? "bg-stone-600" : "bg-stone-200",
-              "shadow-md"
-            )}>
-              <UserCircle className={cn(
-                "w-8 h-8",
-                isDark ? "text-stone-300" : "text-stone-600"
-              )} />
-            </div>
+            {/* 头像 - 与桌面端保持一致 */}
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={`${userName}的头像`}
+                className="w-12 h-12 rounded-full object-cover shadow-md"
+                onError={(e) => {
+                  // 头像加载失败时隐藏图片
+                  (e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+            ) : (
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-medium shadow-md"
+                style={{
+                  backgroundColor: getAvatarBgColor(userName)
+                }}
+              >
+                {getInitials(userName)}
+              </div>
+            )}
             <div className="ml-4 overflow-hidden">
               <div className={cn(
                 "font-medium truncate",
@@ -138,14 +156,12 @@ export function UserBottomSheet({
               )}>
                 {userName}
               </div>
-              {userEmail && (
-                <div className={cn(
-                  "text-sm truncate max-w-[200px]",
-                  isDark ? "text-stone-400" : "text-stone-500"
-                )}>
-                  {userEmail}
-                </div>
-              )}
+              <div className={cn(
+                "text-sm truncate max-w-[200px]",
+                isDark ? "text-stone-400" : "text-stone-500"
+              )}>
+                {userCompany}
+              </div>
             </div>
           </div>
           
@@ -158,10 +174,10 @@ export function UserBottomSheet({
             "mb-2"
           )}>
             {renderMenuItem(
-              <MessageSquare className="w-5 h-5" />,
-              "我的对话",
+              <Clock className="w-5 h-5" />,
+              "历史对话",
               () => {
-                router.push('/chat')
+                router.push('/chat/recents')
                 onClose()
               }
             )}
