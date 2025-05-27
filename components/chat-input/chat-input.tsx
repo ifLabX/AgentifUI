@@ -163,14 +163,34 @@ export const ChatInput = ({
   } = useCurrentApp();
   // --- END 中文注释 ---
 
-  // 提交消息（实现乐观 UI：先清空，失败再恢复）
+  // --- BEGIN COMMENT ---
+  // 🎯 修复：监听isWaiting状态变化来清空输入框
+  // 当验证成功并开始等待响应时立即清空，而不是等待整个流式响应结束
+  // 使用ref来避免在清空过程中重复触发
+  // --- END COMMENT ---
+  const previousIsWaitingRef = useRef(isWaiting);
+  
+  useEffect(() => {
+    // 只有当isWaiting从false变为true时才清空（验证成功并开始等待响应）
+    if (isWaiting && !previousIsWaitingRef.current) {
+      console.log("[ChatInput] 检测到isWaiting变为true，清空输入框");
+      clearMessage();
+      clearAttachments();
+      useChatScrollStore.getState().scrollToBottom('smooth');
+    }
+    
+    // 更新previous值
+    previousIsWaitingRef.current = isWaiting;
+  }, [isWaiting, clearMessage, clearAttachments]);
+
+  // 提交消息（修复清空时机：通过监听isWaiting状态变化来清空）
   const handleLocalSubmit = async () => {
     // --- BEGIN 中文注释 --- 状态暂存与恢复逻辑 ---
     let savedMessage = "";
     let savedAttachments: AttachmentFile[] = [];
     // --- END 中文注释 ---
     try {
-      // 1. 暂存当前状态 (在清空和调用 onSubmit 前)
+      // 1. 暂存当前状态 (在调用 onSubmit 前)
       savedMessage = message;
       savedAttachments = useAttachmentStore.getState().files;
       console.log("[ChatInput] 暂存状态", { savedMessage, savedAttachments });
@@ -191,19 +211,20 @@ export const ChatInput = ({
 
       // 3. 检查是否可以提交 (使用暂存的消息)
       if (savedMessage.trim() && onSubmit) {
-        // --- BEGIN 中文注释 --- 乐观 UI：立即清空 ---
-        clearMessage();
-        clearAttachments();
-        useChatScrollStore.getState().scrollToBottom('smooth'); // 滚动到底部
-        // --- END 中文注释 ---
+        // --- BEGIN COMMENT ---
+        // 🎯 修复：不再在这里清空，而是通过监听isWaiting状态变化来清空
+        // 这样在验证成功后立即清空，而不是等待整个流式响应结束
+        // --- END COMMENT ---
         
-        // --- BEGIN 中文注释 --- 调用可能抛出错误的提交函数 (使用暂存的消息和组装好的文件)
+        // --- BEGIN 中文注释 --- 调用提交函数，清空操作由useEffect监听isWaiting状态变化处理
         await onSubmit(savedMessage, filesToSend);
         // --- END 中文注释 ---
         
-        // --- BEGIN 中文注释 --- 提交成功，无需额外操作，因为已提前清空 ---
-        console.log("[ChatInput] 提交成功 (已提前清空)");
-        // --- END 中文注释 ---
+        // --- BEGIN COMMENT ---
+        // 🎯 修复：清空操作已移到useEffect中，这里不再需要
+        // --- END COMMENT ---
+        
+        console.log("[ChatInput] 提交成功");
       } else {
         // 如果因为消息为空不能提交，理论上按钮已禁用，但以防万一
         console.log("[ChatInput] 没有可提交的消息内容。");
@@ -211,6 +232,10 @@ export const ChatInput = ({
     } catch (error) {
       // --- BEGIN 中文注释 --- 提交失败，恢复状态 ---
       console.error("[ChatInput] 消息提交失败，执行回滚", error);
+      // --- BEGIN COMMENT ---
+      // 🎯 修复：如果验证失败（isWaiting没有变为true），需要恢复状态
+      // 如果验证成功但后续失败，输入框已经被清空，也需要恢复
+      // --- END COMMENT ---
       setMessage(savedMessage);
       useAttachmentStore.getState().setFiles(savedAttachments);
       // 调用通知 Store 显示错误消息
@@ -233,6 +258,9 @@ export const ChatInput = ({
     return 'custom';
   }
 
+  // --- BEGIN COMMENT ---
+  // 🎯 修复：在回车提交前，增加验证状态检查
+  // --- END COMMENT ---
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isComposing) {
       e.preventDefault();
@@ -241,6 +269,7 @@ export const ChatInput = ({
       // 在回车提交前，进行与按钮禁用逻辑完全一致的检查
       const shouldBlockSubmit = 
         isWaiting || // 正在等待响应
+        isValidatingAppConfig || // 🎯 新增：正在验证配置
         isProcessing || // 正在处理上一条消息
         attachments.some(f => f.status === 'uploading') || // 有文件正在上传
         attachments.some(f => f.status === 'error') || // 有文件上传失败
@@ -470,9 +499,10 @@ export const ChatInput = ({
                 )
               }
               variant="submit"
-              onClick={isWaiting ? undefined : (isProcessing ? onStop : handleLocalSubmit)}
+              onClick={isWaiting || isValidatingConfig ? undefined : (isProcessing ? onStop : handleLocalSubmit)}
               disabled={
                 isWaiting ||
+                isValidatingConfig || // 🎯 新增：验证期间禁用按钮
                 isUploading ||
                 hasError ||
                 (!isProcessing && !message.trim())
