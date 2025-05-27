@@ -232,7 +232,41 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
     h4({ children, ...props }) {
       return <h4 className="text-base font-semibold mt-2.5 mb-0.5" {...props}>{children}</h4>;
     },
-    a({ children, href, ...props }) {
+    a({ children, href, node, ...props }: any) {
+      // --- BEGIN COMMENT ---
+      // 检查链接是否包含图片：如果包含图片，将其渲染为图片链接样式
+      // 避免嵌套 <a> 标签导致的 HTML 错误
+      // --- END COMMENT ---
+      const hasImageChild = node?.children?.some((child: any) => child.tagName === 'img');
+      
+      if (hasImageChild) {
+        // 如果链接包含图片，使用特殊的图片链接样式
+        const imageChild = node.children.find((child: any) => child.tagName === 'img');
+        const alt = imageChild?.properties?.alt || '图片链接';
+        
+        return (
+          <a 
+            href={href}
+            className={cn(
+              "inline-flex items-center gap-1 px-2 py-1 rounded border text-sm no-underline",
+              isDark 
+                ? "border-gray-600 bg-gray-800 text-sky-400 hover:text-sky-300 hover:border-gray-500" 
+                : "border-gray-300 bg-gray-50 text-sky-600 hover:text-sky-700 hover:border-gray-400"
+            )}
+            target="_blank" 
+            rel="noopener noreferrer"
+            title={`点击查看: ${alt}`}
+            {...props}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {alt}
+          </a>
+        );
+      }
+      
+      // 普通链接的处理
       return <a href={href} className={cn("underline", isDark ? "text-sky-400 hover:text-sky-300" : "text-sky-600 hover:text-sky-700")} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
     },
     hr({ ...props }) {
@@ -240,34 +274,21 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
     },
     // --- BEGIN COMMENT ---
     // 图片处理：将图片渲染为链接形式，避免加载抖动问题
-    // 如果图片已经在链接内（嵌套a标签），则只显示文本，避免HTML错误
+    // 如果图片在链接内，由 a 组件统一处理，这里返回 null 避免重复渲染
     // --- END COMMENT ---
     img({ src, alt, node, ...props }: any) {
       // 确保src是字符串类型
       const imageUrl = typeof src === 'string' ? src : '';
       
-      // 检查是否在链接内部（检查父级节点）
+      // 检查是否在链接内部（由父级 a 组件处理）
       const isInsideLink = node?.parent?.tagName === 'a';
       
       if (isInsideLink) {
-        // 如果在链接内，只显示文本，不创建新链接
-        return (
-          <span 
-            className={cn(
-              "inline-flex items-center gap-1 px-1 py-0.5 rounded text-sm font-medium",
-              isDark ? "text-sky-400" : "text-sky-600"
-            )}
-            title={alt || "图片"}
-          >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            [{alt || "图片"}]
-          </span>
-        );
+        // 如果在链接内，返回 null，由父级 a 组件处理
+        return null;
       }
       
-      // 不在链接内，创建图片链接
+      // 独立的图片，创建图片链接
       return (
         <a 
           href={imageUrl} 
