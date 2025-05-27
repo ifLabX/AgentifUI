@@ -13,15 +13,37 @@ interface WelcomeScreenProps {
   username?: string | null
 }
 
+// 北京时间获取方式
+const getTimeBasedGreeting = () => {
+  const now = new Date();
+  const beijingTime = new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    hour: 'numeric',
+    hour12: false
+  }).format(now);
+  
+  const hour = parseInt(beijingTime);
+  
+  if (hour >= 6 && hour < 12) {
+    return "早上好";
+  } else if (hour >= 12 && hour < 18) {
+    return "下午好";
+  } else if (hour >= 18 && hour < 22) {
+    return "晚上好";
+  } else {
+    return "夜深了";
+  }
+};
+
 export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { isDark } = useTheme()
   const [finalText, setFinalText] = useState("")
   const [shouldStartTyping, setShouldStartTyping] = useState(false)
   
   // --- BEGIN COMMENT ---
-  // 使用智能布局系统获取欢迎文字的位置
+  // 使用智能布局系统获取欢迎文字的位置和标题样式
   // --- END COMMENT ---
-  const { welcomeText: welcomePosition, needsCompactLayout } = useWelcomeLayout()
+  const { welcomeText: welcomePosition, welcomeTextTitle, needsCompactLayout } = useWelcomeLayout()
 
   // --- BEGIN COMMENT ---
   // 获取当前应用ID和应用参数
@@ -39,7 +61,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     if (username === undefined || (currentAppId && isParametersLoading)) {
       return;
     }
-    
+
     // 确定最终显示的文字
     let welcomeText = "";
     
@@ -48,10 +70,10 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
       welcomeText = parameters.opening_statement;
     } else if (username) {
       // 如果没有开场白但有用户名，使用用户名问候
-      welcomeText = `你好，${username}`;
+      welcomeText = `${getTimeBasedGreeting()}，${username}`;
     } else {
       // 都没有的话使用默认问候
-      welcomeText = "你好";
+      welcomeText = getTimeBasedGreeting();
     }
     
     // --- BEGIN COMMENT ---
@@ -72,26 +94,27 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError]);
 
   return (
-    <div 
-      className={cn(
-        "flex flex-col items-center justify-center text-center",
-        className
-      )}
-      style={welcomePosition}
-    >
+      <div 
+        className={cn(
+          "flex flex-col items-center justify-center text-center",
+          className
+        )}
+        style={welcomePosition}
+      >
+
       <div className="w-full">
         {/* --- BEGIN COMMENT ---
-        主标题容器：设置最大宽度与输入框匹配，避免过短换行
+        主标题容器：使用Hook提供的最高优先级宽度设置
         --- END COMMENT --- */}
-        <h2 className={cn(
-          "font-bold mb-2 mx-auto",
-          // --- BEGIN COMMENT ---
-          // 主标题尺寸：紧凑模式稍小，正常模式保持原有大小
-          // 设置最大宽度与输入框匹配，避免过短换行
-          // --- END COMMENT ---
-          needsCompactLayout ? "text-xl max-w-sm" : "text-2xl max-w-2xl",
-          "leading-tight" // 紧凑行高
-        )}>
+        <h2 
+          className={cn(
+            "font-bold mb-2 mx-auto",
+            needsCompactLayout ? "text-xl" : "text-2xl",
+            "leading-tight"
+          )}
+          style={welcomeTextTitle}
+        >
+
           {shouldStartTyping ? (
             <TypeWriter 
               text={finalText}
@@ -100,23 +123,28 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
               waitingEffect={finalText.endsWith("...")} // 只有等待状态才显示效果
               className={cn(
                 "font-bold leading-tight",
-                needsCompactLayout ? "text-xl max-w-sm" : "text-2xl max-w-2xl"
+                needsCompactLayout ? "text-xl" : "text-3xl"
               )}
             />
           ) : (
             <div className="flex items-center justify-center">
               {/* --- BEGIN COMMENT ---
-              skeleton宽度与输入框宽度保持一致，避免过短导致换行
+              skeleton宽度：使用Hook提供的动态宽度，确保与标题宽度一致
               --- END COMMENT --- */}
-                              <div className={cn(
+              <div 
+                className={cn(
                   "bg-stone-200/60 dark:bg-stone-700/60 rounded animate-pulse",
-                  // 使用更宽的skeleton，与输入框宽度匹配，避免换行
-                  needsCompactLayout ? "h-6 w-80" : "h-7 w-96"
-                )}></div>
+                  needsCompactLayout ? "h-6" : "h-7"
+                )}
+                style={{
+                  width: `calc(${welcomeTextTitle.maxWidth} - 20rem)`, // 减去padding
+                  maxWidth: '90vw' // 确保不超出视口
+                }}
+              ></div>
             </div>
           )}
         </h2>
-        <p className={cn(
+        {/* <p className={cn(
           isDark ? "text-gray-400" : "text-gray-500",
           // --- BEGIN COMMENT ---
           // 副标题尺寸：紧凑模式使用xs，正常模式使用sm，避免过大
@@ -144,7 +172,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
               )}
             />
           )}
-        </p>
+        </p> */}
       </div>
     </div>
   )
