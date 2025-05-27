@@ -130,6 +130,40 @@ export const lightSettingsColors = {
     rgb: 'rgb(231, 229, 228), rgb(245, 245, 244), rgb(231, 229, 228)',
     hex: '#e7e5e4, #f5f5f4, #e7e5e4',
   },
+  
+  // 返回按钮样式
+  backButton: {
+    background: {
+      tailwind: 'bg-stone-100',
+      rgb: 'rgb(245, 245, 244)',
+      hex: '#f5f5f4',
+    },
+    backgroundHover: {
+      tailwind: 'hover:bg-stone-200',
+      rgb: 'rgb(231, 229, 228)',
+      hex: '#e7e5e4',
+    },
+    text: {
+      tailwind: 'text-stone-700',
+      rgb: 'rgb(68, 64, 60)',
+      hex: '#44403c',
+    },
+    textHover: {
+      tailwind: 'hover:text-stone-900',
+      rgb: 'rgb(28, 25, 23)',
+      hex: '#1c1917',
+    },
+    border: {
+      tailwind: 'border-stone-200',
+      rgb: 'rgb(231, 229, 228)',
+      hex: '#e7e5e4',
+    },
+    borderHover: {
+      tailwind: 'hover:border-stone-300',
+      rgb: 'rgb(214, 211, 209)',
+      hex: '#d6d3d1',
+    },
+  },
 };
 
 // 暗色模式颜色
@@ -258,6 +292,40 @@ export const darkSettingsColors = {
     tailwind: 'from-stone-700 via-stone-600 to-stone-700',
     rgb: 'rgb(68, 64, 60), rgb(87, 83, 78), rgb(68, 64, 60)',
     hex: '#44403c, #57534e, #44403c',
+  },
+  
+  // 返回按钮样式
+  backButton: {
+    background: {
+      tailwind: 'bg-stone-800',
+      rgb: 'rgb(41, 37, 36)',
+      hex: '#292524',
+    },
+    backgroundHover: {
+      tailwind: 'hover:bg-stone-700',
+      rgb: 'rgb(68, 64, 60)',
+      hex: '#44403c',
+    },
+    text: {
+      tailwind: 'text-stone-300',
+      rgb: 'rgb(214, 211, 209)',
+      hex: '#d6d3d1',
+    },
+    textHover: {
+      tailwind: 'hover:text-stone-200',
+      rgb: 'rgb(231, 229, 228)',
+      hex: '#e7e5e4',
+    },
+    border: {
+      tailwind: 'border-stone-700',
+      rgb: 'rgb(68, 64, 60)',
+      hex: '#44403c',
+    },
+    borderHover: {
+      tailwind: 'hover:border-stone-600',
+      rgb: 'rgb(87, 83, 78)',
+      hex: '#57534e',
+    },
   },
 };
 
