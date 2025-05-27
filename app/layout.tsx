@@ -43,7 +43,36 @@ export default function RootLayout({
             <NotificationBar />
           </ClientLayout>
         </Providers>
-        {process.env.SHARE_STAGEWISE_TOOLBAR === "true" && <StagewiseToolbarWrapper />}
+        {process.env.ENABLE_STAGEWISE_TOOLBAR === "true" && process.env.NODE_ENV === "development" && <StagewiseToolbarWrapper />}
+        {process.env.ENABLE_DIFY_IFRAME === "true" && process.env.NODE_ENV === "development" && (
+          <>
+            {/* --- BEGIN COMMENT ---
+              Dify 聊天小窗脚本与样式，仅在客户端渲染，避免 SSR 报错。
+              - window 相关操作需在浏览器端执行
+              - 使用 next/script 保证安全插入
+            --- END COMMENT --- */}
+            <style>{`
+              #dify-chatbot-bubble-button {
+                background-color: #1C64F2 !important;
+              }
+              #dify-chatbot-bubble-window {
+                width: 24rem !important;
+                height: 40rem !important;
+              }
+            `}</style>
+            {/* 使用 next/script 动态插入脚本，防止 SSR 报错 */}
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.difyChatbotConfig = { token: 'urziAMc7a6bhScA3', systemVariables: {} };`
+              }}
+            />
+            <script
+              src="https://udify.app/embed.min.js"
+              id="urziAMc7a6bhScA3"
+              defer
+            />
+          </>
+        )}
       </body>
     </html>
   );
