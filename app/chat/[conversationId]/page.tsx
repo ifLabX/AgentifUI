@@ -133,6 +133,7 @@ export default function ChatPage() {
         页面级 loading，仅遮挡主内容区，不遮挡 sidebar。
         只在 /chat/new 路由下显示 loading 状态
         根据sidebar状态调整遮罩的左边距
+        只有在profile还在初始加载时才显示页面级loading
         --- END COMMENT --- */}
         {isNewChat && isProfileLoading && (
           <div className={cn(
@@ -218,7 +219,7 @@ export default function ChatPage() {
         {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <PromptContainer />}
       </div>
       
-      <FilePreviewCanvas /> 
+      <FilePreviewCanvas />
     </div>
   );
 } 
