@@ -12,9 +12,15 @@ import {
   Alert,
   AlertTitle,
   Grid,
-  Divider
+  Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  Autocomplete
 } from '@mui/material';
-import { ServiceInstance } from '@lib/types/database';
+import { ServiceInstance, ServiceInstanceConfig } from '@lib/types/database';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
@@ -44,9 +50,27 @@ export default function AppInstanceForm({
     description: '',
     is_default: false,
     api_path: '',
+    config: {
+      app_metadata: {
+        app_type: 'model',
+        is_common_model: false,
+        is_marketplace_app: false,
+        tags: [],
+        model_type: '',
+        icon_url: '',
+        brief_description: ''
+      }
+    }
   });
 
   const [apiKey, setApiKey] = useState('');
+  
+  // 🎯 预定义的标签选项
+  const predefinedTags = [
+    '对话助手', '文本生成', '代码助手', '翻译工具', 
+    '数据分析', '创意写作', '学习辅导', '商务助手',
+    'GPT-4', 'GPT-3.5', 'Claude', '通义千问'
+  ];
   
   // 获取当前主题的颜色
   const getThemeColors = () => {
@@ -88,7 +112,10 @@ export default function AppInstanceForm({
   // 如果是编辑模式，加载现有实例数据
   useEffect(() => {
     if (instance) {
-      // 确保所有字段都有值
+      // 🎯 确保config和app_metadata结构完整
+      const existingConfig = instance.config || {};
+      const existingAppMetadata = existingConfig.app_metadata || {};
+      
       const updatedFormData = {
         // 先复制原始实例数据
         ...instance,
@@ -103,6 +130,20 @@ export default function AppInstanceForm({
         // 如果 is_default 不存在，使用 false
         is_default: Boolean(instance.is_default),
         api_path: instance.api_path || '',
+        // 确保config结构完整
+        config: {
+          ...existingConfig,
+          app_metadata: {
+            app_type: existingAppMetadata.app_type || 'model',
+            is_common_model: Boolean(existingAppMetadata.is_common_model),
+            is_marketplace_app: Boolean(existingAppMetadata.is_marketplace_app),
+            tags: Array.isArray(existingAppMetadata.tags) ? existingAppMetadata.tags : [],
+            model_type: existingAppMetadata.model_type || '',
+            icon_url: existingAppMetadata.icon_url || '',
+            brief_description: existingAppMetadata.brief_description || '',
+            ...existingAppMetadata
+          }
+        }
       };
       
       setFormData(updatedFormData);
@@ -115,6 +156,25 @@ export default function AppInstanceForm({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  };
+
+  // 🎯 处理app_metadata字段的变化
+  const handleMetadataChange = (field: string, value: any) => {
+    setFormData((prev: Partial<ServiceInstance>) => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        app_metadata: {
+          ...prev.config?.app_metadata,
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  // 🎯 处理标签变化
+  const handleTagsChange = (_: any, newTags: string[]) => {
+    handleMetadataChange('tags', newTags);
   };
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -257,7 +317,151 @@ export default function AppInstanceForm({
               borderColor: colors.dividerColor,
               opacity: 0.8
             }} />
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
+              应用元数据配置
+            </Typography>
+          </Box>
+          
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+            <Box>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="app-type-label">应用类型</InputLabel>
+                <Select
+                  labelId="app-type-label"
+                  id="app_type"
+                  value={formData.config?.app_metadata?.app_type || 'model'}
+                  label="应用类型"
+                  onChange={(e) => handleMetadataChange('app_type', e.target.value)}
+                  sx={{
+                    bgcolor: colors.inputBg,
+                    borderRadius: '0.5rem',
+                  }}
+                >
+                  <MenuItem value="model">模型切换</MenuItem>
+                  <MenuItem value="marketplace">应用市场</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            
+            <Box>
+              <TextField
+                margin="normal"
+                fullWidth
+                id="model_type"
+                label="模型类型"
+                value={formData.config?.app_metadata?.model_type || ''}
+                onChange={(e) => handleMetadataChange('model_type', e.target.value)}
+                placeholder="例如: GPT-4, Claude-3"
+                helperText="如果是模型类型应用，请指定模型"
+              />
+            </Box>
+          </Box>
+          
+          <Box sx={{ mt: 2 }}>
+            <Autocomplete
+              multiple
+              id="tags"
+              options={predefinedTags}
+              freeSolo
+              value={formData.config?.app_metadata?.tags || []}
+              onChange={handleTagsChange}
+              renderTags={(value: readonly string[], getTagProps) =>
+                value.map((option: string, index: number) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={option}
+                    sx={{
+                      bgcolor: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(37, 99, 235, 0.1)',
+                      borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(37, 99, 235, 0.3)',
+                      color: isDark ? 'rgb(147, 197, 253)' : 'rgb(37, 99, 235)'
+                    }}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="应用标签"
+                  placeholder="选择或输入标签"
+                  helperText="用于分类和搜索，可以选择预设标签或输入自定义标签"
+                />
+              )}
+            />
+          </Box>
+          
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mt: 2 }}>
+            <Box>
+              <TextField
+                margin="normal"
+                fullWidth
+                id="icon_url"
+                label="应用图标URL"
+                value={formData.config?.app_metadata?.icon_url || ''}
+                onChange={(e) => handleMetadataChange('icon_url', e.target.value)}
+                placeholder="https://example.com/icon.png"
+                helperText="可选，应用的图标地址"
+              />
+            </Box>
+            
+            <Box>
+              <TextField
+                margin="normal"
+                fullWidth
+                id="brief_description"
+                label="简介"
+                value={formData.config?.app_metadata?.brief_description || ''}
+                onChange={(e) => handleMetadataChange('brief_description', e.target.value)}
+                placeholder="简短描述应用功能"
+                helperText="用于应用市场显示的简短描述"
+              />
+            </Box>
+          </Box>
+          
+          <Box sx={{ mt: 2, display: 'flex', gap: 3 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.config?.app_metadata?.is_common_model || false}
+                  onChange={(e) => handleMetadataChange('is_common_model', e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="常用模型"
+              sx={{ 
+                '& .MuiFormControlLabel-label': { 
+                  fontSize: '0.875rem',
+                  color: isDark ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)'
+                } 
+              }}
+            />
+            
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.config?.app_metadata?.is_marketplace_app || false}
+                  onChange={(e) => handleMetadataChange('is_marketplace_app', e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="应用市场应用"
+              sx={{ 
+                '& .MuiFormControlLabel-label': { 
+                  fontSize: '0.875rem',
+                  color: isDark ? 'rgb(209, 213, 219)' : 'rgb(55, 65, 81)'
+                } 
+              }}
+            />
+          </Box>
+          
+          <Box sx={{ mt: 2 }}>
+            <Divider sx={{ 
+              my: 2.5,
+              borderColor: colors.dividerColor,
+              opacity: 0.8
+            }} />
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
               API 配置
             </Typography>
           </Box>
