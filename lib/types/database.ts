@@ -146,6 +146,83 @@ export interface ServiceInstanceConfig {
     [key: string]: any;
   };
   
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：Dify应用参数配置（替代API调用）
+  // 这些参数原本需要调用Dify API获取，现在可以直接在数据库中配置
+  // --- END COMMENT ---
+  dify_parameters?: {
+    // 开场白配置
+    opening_statement?: string;
+    
+    // 推荐问题列表
+    suggested_questions?: string[];
+    
+    // 用户输入表单配置
+    user_input_form?: Array<{
+      paragraph?: {
+        label: string;
+        variable: string;
+        required: boolean;
+        default: string;
+      };
+    }>;
+    
+    // 文件上传配置
+    file_upload?: {
+      image?: {
+        enabled: boolean;
+        number_limits: number;
+        detail: string;
+      };
+    };
+    
+    // 语音转文字配置
+    speech_to_text?: {
+      enabled: boolean;
+    };
+    
+    // 文字转语音配置
+    text_to_speech?: {
+      enabled: boolean;
+    };
+    
+    // 检索资源配置
+    retriever_resource?: {
+      enabled: boolean;
+    };
+    
+    // 标注回复配置
+    annotation_reply?: {
+      enabled: boolean;
+    };
+    
+    // 系统参数配置
+    system_parameters?: Record<string, any>;
+  };
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 同步元数据 - 用于跟踪与Dify的同步状态
+  // --- END COMMENT ---
+  sync_metadata?: {
+    // 最后同步时间
+    last_sync_at?: string;
+    
+    // Dify版本（用于检测变更）
+    dify_version?: string;
+    
+    // 同步状态
+    sync_status?: 'success' | 'failed' | 'pending';
+    
+    // 最后同步错误信息
+    last_error?: string;
+    
+    // 同步频率配置（分钟）
+    sync_interval?: number;
+    
+    // 是否启用自动同步
+    auto_sync_enabled?: boolean;
+  };
+  
   // 其他配置
   [key: string]: any;
 }
