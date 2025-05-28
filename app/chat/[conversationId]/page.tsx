@@ -140,7 +140,10 @@ export default function ChatPage() {
             "absolute inset-0 z-35 flex items-center justify-center",
             // 调整左边距，避免覆盖sidebar
             getBackdropMarginLeft(),
-            isDark ? "bg-stone-900" : "bg-stone-100",
+            // --- BEGIN COMMENT ---
+            // 使用主题颜色配置，确保与page-loading-spinner一致
+            // --- END COMMENT ---
+            colors.mainBackground.tailwind,
             "backdrop-blur-sm"
           )}>
             <div className="w-8 h-8 animate-spin rounded-full border-4 border-t-transparent border-gray-500" />
