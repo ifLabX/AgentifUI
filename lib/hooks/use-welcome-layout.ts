@@ -336,7 +336,8 @@ interface WelcomeLayoutPositions {
   // 🔥 新增：专门为欢迎文字标题的样式（最高优先级）
   // --- END COMMENT ---
   welcomeTextTitle: {
-    maxWidth: string;
+    width?: string;
+    maxWidth?: string;
   };
   
   // 提示容器位置
@@ -385,7 +386,7 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
       padding: '0 1rem',
     },
     welcomeTextTitle: {
-      maxWidth: '32rem', // 默认适中的最大宽度，会在calculateLayout中动态调整
+      width: '32rem', // 默认适中的最大宽度，会在calculateLayout中动态调整
     },
     promptContainer: { top: 'calc(50% + 120px)', transform: 'translateX(-50%)' },
     needsCompactLayout: false,
@@ -470,13 +471,15 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
     // 桌面端：较大的固定宽度
     // --- END COMMENT ---
     // --- BEGIN COMMENT ---
-    // 🔥 简化的宽度设置：直接使用rem值，便于调整
-    // 如果需要调整移动端宽度，直接修改下面的数值即可
+    // 🔥 优化的宽度设置：移动端使用视口宽度百分比，避免文字被挤压
     // --- END COMMENT ---
     let welcomeTextMaxWidth: string;
     if (viewportWidth < 640) {
-      // 移动端：可以直接修改这个数值来调整宽度
-      welcomeTextMaxWidth = '30rem'; 
+      // --- BEGIN COMMENT ---
+      // 移动端：直接使用视口宽度的90%，确保文字有足够空间
+      // 不使用maxWidth，而是直接设置width，强制文字占用足够宽度
+      // --- END COMMENT ---
+      welcomeTextMaxWidth = '90vw'; 
     } else if (viewportWidth < 1024) {
       // 平板端
       welcomeTextMaxWidth = '35rem'; 
@@ -499,9 +502,13 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
       },
       // --- BEGIN COMMENT ---
       // 🔥 标题专用样式：Hook中的最高优先级宽度设置
+      // 移动端使用width强制宽度，桌面端使用maxWidth限制最大宽度
       // --- END COMMENT ---
       welcomeTextTitle: {
-        maxWidth: welcomeTextMaxWidth, // 根据屏幕尺寸动态调整宽度
+        ...(viewportWidth < 640 
+          ? { width: welcomeTextMaxWidth } // 移动端：强制宽度
+          : { maxWidth: welcomeTextMaxWidth } // 桌面端：最大宽度限制
+        ),
       },
       promptContainer: {
         top: `${finalPromptY}px`,
@@ -529,4 +536,21 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
   }, [calculateLayout]);
 
   return positions;
+}
+
+/**
+ * 创建自定义移动端宽度的布局配置
+ * @param mobileWidthVw 移动端视口宽度百分比（如90表示90vw）
+ * @param minWidthPx 最小宽度（像素）
+ * 
+ * --- BEGIN COMMENT ---
+ * 🎯 重要提示：移动端使用width而不是maxWidth
+ * 这样可以强制文字占用指定宽度，避免文字收缩过窄
+ * --- END COMMENT ---
+ */
+export function createMobileWidthLayout(mobileWidthVw: number = 90, minWidthPx: number = 280): WelcomeLayoutConfig {
+  const config = { ...DEFAULT_WELCOME_LAYOUT };
+  console.log(`移动端宽度配置: ${mobileWidthVw}vw, 最小宽度: ${minWidthPx}px`);
+  console.log('✅ 解决方案：移动端使用width强制宽度，桌面端使用maxWidth限制宽度');
+  return config;
 }

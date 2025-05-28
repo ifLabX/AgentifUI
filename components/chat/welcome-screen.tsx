@@ -171,7 +171,11 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
                   needsCompactLayout ? "h-6" : "h-7"
                 )}
                 style={{
-                  width: `calc(${welcomeTextTitle.maxWidth} - 20rem)`, // 减去padding
+                  width: welcomeTextTitle.width 
+                    ? `calc(${welcomeTextTitle.width} - 2rem)` // 移动端：基于强制宽度减去padding
+                    : welcomeTextTitle.maxWidth 
+                      ? `calc(${welcomeTextTitle.maxWidth} - 8rem)` // 桌面端：基于最大宽度减去padding
+                      : '80vw', // 回退方案
                   maxWidth: '90vw' // 确保不超出视口
                 }}
               ></div>
