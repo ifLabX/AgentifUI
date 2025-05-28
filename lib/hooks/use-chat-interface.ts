@@ -644,11 +644,13 @@ export function useChatInterface() {
       if (currentDbConvId) {
         console.log(`[handleSubmit] 流式响应结束，开始保存消息，数据库对话ID=${currentDbConvId}`);
         
-        // --- BEGIN COMMENT ---
-        // 🎯 修复：移除用户消息的重复保存逻辑
-        // 用户消息已在回调中保存（新对话）或在现有对话中不需要重复保存
-        // 只保存助手消息，避免概率性重复保存问题
-        // --- END COMMENT ---
+        // 保存用户消息
+        if (userMessage && userMessage.persistenceStatus !== 'saved') {
+          console.log(`[handleSubmit] 保存用户消息，ID=${userMessage.id}, 数据库对话ID=${currentDbConvId}`);
+          saveMessage(userMessage, currentDbConvId).catch(err => {
+            console.error('[handleSubmit] 保存用户消息失败:', err);
+          });
+        }
         
         // 保存助手消息
         if (assistantMessageId) {
@@ -707,10 +709,12 @@ export function useChatInterface() {
               finalDbConvUUID = result.data.id;
               setDbConversationUUID(result.data.id);
               
-              // --- BEGIN COMMENT ---
-              // 🎯 修复：移除用户消息的重复保存逻辑
-              // 用户消息已在回调中保存，这里只保存助手消息
-              // --- END COMMENT ---
+              // 保存用户消息和助手消息
+              if (userMessage && userMessage.persistenceStatus !== 'saved') {
+                saveMessage(userMessage, result.data.id).catch(err => {
+                  console.error('[handleSubmit] 二次查询后保存用户消息失败:', err);
+                });
+              }
               
               if (assistantMessageId) {
                 const assistantMessage = useChatStore.getState().messages.find(m => m.id === assistantMessageId);
@@ -772,12 +776,9 @@ export function useChatInterface() {
         
         // 如果有数据库对话ID，尝试保存用户消息和错误占位助手消息
         if (finalDbConvUUID) {
-          // --- BEGIN COMMENT ---
-          // 🎯 修复：智能用户消息保存逻辑（避免重复保存）
-          // 只在新对话且回调可能未触发的情况下才保存用户消息
-          // --- END COMMENT ---
-          if (userMessage && userMessage.persistenceStatus !== 'saved' && isNewConversationFlow) {
-            console.log(`[handleSubmit] 错误处理中保存用户消息（新对话），ID=${userMessage.id}`);
+          // 保存用户消息
+          if (userMessage && userMessage.persistenceStatus !== 'saved') {
+            console.log(`[handleSubmit] 错误处理中保存用户消息，ID=${userMessage.id}`);
             saveMessage(userMessage, finalDbConvUUID).catch(err => {
               console.error('[handleSubmit] 错误处理中保存用户消息失败:', err);
             });
