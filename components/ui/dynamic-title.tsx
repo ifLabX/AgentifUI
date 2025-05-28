@@ -54,6 +54,26 @@ export function DynamicTitle() {
           newTitle = `设置 - ${formattedName} | ${baseTitle}`
         }
       }
+      else if (pathname?.startsWith('/login')) {
+        newTitle = '登录 | ' + baseTitle
+      }
+      else if (pathname?.startsWith('/register')) {
+        newTitle = '注册 | ' + baseTitle
+      }
+      else if (pathname?.startsWith('/reset-password')) {
+        newTitle = '重置密码 | ' + baseTitle
+      }
+      else if (pathname?.startsWith('/about')) {
+        newTitle = '关于 | ' + baseTitle
+      }
+
+      else if (pathname?.startsWith('/forgot-password')) {
+        newTitle = '忘记密码 | ' + baseTitle
+      }
+      else if (pathname?.startsWith('/admin')) {
+        newTitle = '管理后台 | ' + baseTitle
+      }
+
       // 如果是聊天页面
       else if (pathname?.startsWith('/chat')) {
         if (pathname === '/chat/new') {
