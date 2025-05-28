@@ -105,7 +105,7 @@ export function Recents() {
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <h1 className={cn(
-                "text-2xl font-bold",
+                "text-2xl font-bold font-serif",
                 isDark ? "text-stone-100" : "text-stone-800"
               )}>
                 历史对话

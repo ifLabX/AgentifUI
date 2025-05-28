@@ -35,7 +35,7 @@ export function RecentsHeader() {
         </button>
         
         <h1 className={cn(
-          "text-xl font-medium",
+          "text-xl font-medium font-serif",
           isDark ? "text-stone-100" : "text-stone-800"
         )}>
           历史对话
