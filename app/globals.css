@@ -136,7 +136,12 @@ html, body {
     font-weight: 600;
   }
 
-  /* 🎯 欢迎屏幕使用装饰字体，中英文都更优雅 */
+  /* 🎯 欢迎屏幕使用衬线字体，所有文本都更优雅 */
+  .welcome-screen, .welcome-screen * {
+    font-family: var(--font-crimson), var(--font-noto-serif), Georgia, serif !important;
+  }
+
+  /* 🎯 欢迎屏幕标题使用装饰字体 */
   .welcome-screen h1, .welcome-screen h2, .welcome-screen h3,
   .welcome-screen h4, .welcome-screen h5, .welcome-screen h6 {
     font-family: var(--font-playfair), var(--font-noto-serif), serif !important;

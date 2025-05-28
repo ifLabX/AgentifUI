@@ -107,7 +107,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                 )}
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">返回</span>
+                <span className="hidden sm:inline font-serif">返回</span>
               </button>
             </div>
 
