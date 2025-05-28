@@ -53,20 +53,19 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { parameters, isLoading: isParametersLoading, error: parametersError, source } = useAppParameters(currentAppId)
 
   // --- BEGIN COMMENT ---
-  // 智能处理欢迎文字的显示逻辑
-  // 优先级：动态开场白 > 用户名问候 > 默认文字
-  // 🎯 优化：数据库优先策略让加载更快，减少等待时间
+  // 🎯 纯数据库策略的欢迎文字显示逻辑
+  // 数据库有配置 → 使用开场白
+  // 数据库无配置 → 用户名问候 → 默认问候
   // --- END COMMENT ---
   useEffect(() => {
     // --- BEGIN COMMENT ---
-    // 🎯 应用切换时立即重置状态，准备显示新内容
+    // 应用切换时立即重置状态，准备显示新内容
     // --- END COMMENT ---
     setShouldStartTyping(false);
     setFinalText("");
 
     // --- BEGIN COMMENT ---
-    // 🎯 优化的加载逻辑：数据库优先策略让大部分情况下无需等待
-    // 只有在真正需要等待时才显示加载状态
+    // 等待用户信息加载完成
     // --- END COMMENT ---
     if (username === undefined) {
       console.log('[WelcomeScreen] 等待用户信息加载...');
@@ -74,45 +73,47 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     }
     
     // --- BEGIN COMMENT ---
-    // 🎯 新策略：由于数据库优先，大部分情况下可以立即获得参数
-    // 只在确实需要等待API调用时才显示加载状态
+    // 如果有应用ID，等待数据库参数加载完成
     // --- END COMMENT ---
-    if (currentAppId && isParametersLoading && !parameters) {
-      console.log('[WelcomeScreen] 等待应用参数加载...', { 
-        currentAppId, 
-        source,
-        hasParameters: !!parameters 
-      });
+    if (currentAppId && isParametersLoading) {
+      console.log('[WelcomeScreen] 等待数据库参数加载...', { currentAppId });
       return;
     }
 
-    // 确定最终显示的文字
+    // --- BEGIN COMMENT ---
+    // 🎯 确定最终显示的文字 - 纯数据库策略
+    // --- END COMMENT ---
     let welcomeText = "";
     
-    // 优先使用动态开场白（如果获取成功且不为空）
     if (currentAppId && parameters?.opening_statement && !parametersError) {
+      // --- BEGIN COMMENT ---
+      // 情况1：数据库中有应用的开场白配置
+      // --- END COMMENT ---
       welcomeText = parameters.opening_statement;
-      console.log('[WelcomeScreen] 使用应用开场白:', {
+      console.log('[WelcomeScreen] 使用数据库开场白:', {
         appId: currentAppId,
-        source,
+        source: 'database',
         text: welcomeText.substring(0, 50) + '...'
       });
     } else if (username) {
-      // 如果没有开场白但有用户名，使用用户名问候
+      // --- BEGIN COMMENT ---
+      // 情况2：数据库无开场白配置，但有用户名 → 时间问候
+      // --- END COMMENT ---
       welcomeText = `${getTimeBasedGreeting()}，${username}`;
-      console.log('[WelcomeScreen] 使用用户名问候:', welcomeText);
+      console.log('[WelcomeScreen] 数据库无开场白，使用用户名问候:', welcomeText);
     } else {
-      // 都没有的话使用默认问候
+      // --- BEGIN COMMENT ---
+      // 情况3：都没有 → 默认时间问候
+      // --- END COMMENT ---
       welcomeText = getTimeBasedGreeting();
       console.log('[WelcomeScreen] 使用默认问候:', welcomeText);
     }
     
     // --- BEGIN COMMENT ---
-    // 如果获取应用参数失败，记录错误但不影响用户体验
-    // 自动fallback到用户名问候或默认问候
+    // 如果数据库查询出错但不影响显示，记录日志
     // --- END COMMENT ---
     if (parametersError && currentAppId) {
-      console.warn('[WelcomeScreen] 获取应用参数失败，使用fallback文字:', {
+      console.warn('[WelcomeScreen] 数据库参数查询失败，已fallback到用户问候:', {
         appId: currentAppId,
         error: parametersError,
         fallbackText: welcomeText
@@ -120,18 +121,15 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     }
     
     // --- BEGIN COMMENT ---
-    // 🎯 优化延迟：数据库优先策略让延迟几乎为0
-    // 只有API fallback时才需要短暂延迟
+    // 🎯 数据库查询很快，极短延迟后立即显示
     // --- END COMMENT ---
-    const delay = (source === 'database' || !isParametersLoading) ? 50 : 200; // 数据库来源几乎立即显示
-    
     const timer = setTimeout(() => {
       setFinalText(welcomeText);
       setShouldStartTyping(true);
-    }, delay);
+    }, 50); // 极短延迟，确保状态更新完成
     
     return () => clearTimeout(timer);
-  }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError, source]);
+  }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError]);
 
   return (
       <div 

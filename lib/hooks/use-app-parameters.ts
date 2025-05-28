@@ -7,16 +7,16 @@ interface UseAppParametersState {
   isLoading: boolean;
   error: string | null;
   lastUpdated?: Date;
-  source?: 'database' | 'api';
+  source?: 'database';
 }
 
 /**
- * 应用参数Hook - 数据库优先策略
+ * 应用参数Hook - 纯数据库策略
  * 
  * 🎯 核心策略：
- * 1. 优先使用数据库中的本地配置（instant loading）
- * 2. Fallback到Dify API调用（compatibility）
- * 3. 智能缓存减少重复请求
+ * 1. 仅使用数据库中的本地配置（instant loading）
+ * 2. 无数据时返回null，由组件层面处理fallback逻辑
+ * 3. 通过管理界面的同步调度器管理数据
  * 
  * @param instanceId 应用实例ID
  * @returns 应用参数状态
@@ -56,11 +56,11 @@ export function useAppParameters(instanceId: string | null): UseAppParametersSta
 
         if (result.success) {
           setState({
-            parameters: result.data,
+            parameters: result.data, // 可能为null
             isLoading: false,
             error: null,
             lastUpdated: new Date(),
-            source: 'database' // 服务会自动处理数据库/API选择
+            source: 'database'
           });
         } else {
           setState({

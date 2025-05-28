@@ -22,9 +22,9 @@ import { success, failure } from '@lib/types/result';
 
 interface AppParametersCache {
   [appId: string]: {
-    data: DifyAppParametersResponse;
+    data: DifyAppParametersResponse | null;
     timestamp: number;
-    source: 'database' | 'api';
+    source: 'database';
   };
 }
 
@@ -89,7 +89,7 @@ function getCachedParameters(appId: string): DifyAppParametersResponse | null {
     return null;
   }
   
-  return cached.data;
+  return cached.data; // 可能为null
 }
 
 /**
@@ -97,8 +97,8 @@ function getCachedParameters(appId: string): DifyAppParametersResponse | null {
  */
 function setCachedParameters(
   appId: string, 
-  data: DifyAppParametersResponse, 
-  source: 'database' | 'api'
+  data: DifyAppParametersResponse | null, 
+  source: 'database'
 ) {
   parametersCache[appId] = {
     data,
@@ -109,11 +109,11 @@ function setCachedParameters(
 
 class AppParametersService {
   /**
-   * 智能获取应用参数：数据库优先 + API fallback
+   * 纯数据库模式获取应用参数
    * @param instanceId 应用实例ID
-   * @returns 应用参数的Result
+   * @returns 应用参数的Result，无数据时返回null
    */
-  async getAppParameters(instanceId: string): Promise<Result<DifyAppParametersResponse>> {
+  async getAppParameters(instanceId: string): Promise<Result<DifyAppParametersResponse | null>> {
     try {
       // 1. 检查内存缓存
       const cached = getCachedParameters(instanceId);
@@ -122,7 +122,7 @@ class AppParametersService {
         return success(cached);
       }
 
-      // 2. 优先从数据库获取
+      // 2. 仅从数据库获取
       console.log('[AppParametersService] 从数据库获取应用参数:', instanceId);
       const dbResult = await getAppParametersFromDb(instanceId);
       
@@ -135,20 +135,9 @@ class AppParametersService {
         }
       }
 
-      // 3. Fallback到API调用
-      console.log('[AppParametersService] 从API获取应用参数:', instanceId);
-      const apiResult = await getDifyAppParameters(instanceId);
-      
-      // 缓存API结果
-      setCachedParameters(instanceId, apiResult, 'api');
-      
-      console.log('[AppParametersService] API参数获取成功:', {
-        instanceId,
-        hasOpeningStatement: !!apiResult.opening_statement,
-        suggestedQuestionsCount: apiResult.suggested_questions?.length || 0
-      });
-
-      return success(apiResult);
+      // 3. 数据库无数据，返回null（不再fallback到API）
+      console.log('[AppParametersService] 数据库无应用参数，返回null:', instanceId);
+      return success(null);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '获取应用参数失败';
@@ -296,7 +285,7 @@ class AppParametersService {
     hasParameters: boolean;
     cacheInfo?: {
       cached: boolean;
-      source?: 'database' | 'api';
+      source?: 'database';
       age?: number;
     };
   }>> {
@@ -319,7 +308,7 @@ class AppParametersService {
         hasParameters: baseResult.hasParameters,
         cacheInfo: undefined as {
           cached: boolean;
-          source?: 'database' | 'api';
+          source?: 'database';
           age?: number;
         } | undefined
       };
@@ -371,8 +360,7 @@ class AppParametersService {
     return {
       total: entries.length,
       bySource: {
-        database: entries.filter(([, cache]) => cache.source === 'database').length,
-        api: entries.filter(([, cache]) => cache.source === 'api').length
+        database: entries.filter(([, cache]) => cache.source === 'database').length
       },
       byAge: {
         fresh: entries.filter(([, cache]) => now - cache.timestamp < 5 * 60 * 1000).length,

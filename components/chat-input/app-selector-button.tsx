@@ -45,7 +45,8 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   }, [fetchApps]);
 
   // --- BEGIN COMMENT ---
-  // 🎯 新增：当应用列表加载完成后，批量预缓存模型应用的参数
+  // 🎯 应用列表加载完成后，批量同步模型应用的参数到数据库
+  // 确保WelcomeScreen能从数据库获取到开场白配置
   // --- END COMMENT ---
   useEffect(() => {
     const performBatchSync = async () => {
@@ -73,14 +74,15 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
           .map(app => app.id);
 
         if (modelAppIds.length > 0) {
-          console.log(`[app-selector-button] 开始批量同步 ${modelAppIds.length} 个模型应用的参数`);
+          console.log(`[app-selector-button] 开始批量同步 ${modelAppIds.length} 个模型应用的参数到数据库`);
           try {
             // --- BEGIN COMMENT ---
             // 🎯 使用appParametersService的批量同步方法
+            // 将Dify API的参数同步到数据库中，供后续纯数据库查询使用
             // --- END COMMENT ---
             const result = await appParametersService.batchSync(modelAppIds);
             if (result.success) {
-              console.log('[app-selector-button] 批量同步完成');
+              console.log('[app-selector-button] 批量同步到数据库完成');
             } else {
               console.warn('[app-selector-button] 批量同步部分失败:', result.error);
             }
@@ -122,7 +124,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   // 🎯 乐观UI：应用切换处理
   // 立即关闭下拉菜单，显示切换后的应用名称，右侧显示小spinner
   // 修改：确保在操作完成后恢复输入框焦点
-  // 🎯 新增：在切换前预缓存目标应用的参数
+  // 🎯 新增：在切换前同步目标应用的参数到数据库
   // --- END COMMENT ---
   const handleAppChange = async (newAppId: string) => {
     if (newAppId === currentAppId) {
@@ -142,19 +144,22 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       setIsOptimisticSwitching(true);
       
       // --- BEGIN COMMENT ---
-      // 🎯 新增：在切换前预缓存目标应用的参数
-      // 在后台静默缓存，不阻塞切换过程
+      // 🎯 修改：在切换前确保目标应用的参数已同步到数据库
+      // 这样WelcomeScreen就能立即从数据库获取开场白
       // --- END COMMENT ---
-      appParametersService.getAppParameters(newAppId)
-        .then(() => {
-          console.log(`[app-selector-button] 成功预缓存应用 ${newAppId} 的参数`);
-        })
-        .catch((error) => {
-          console.warn(`[app-selector-button] 预缓存应用 ${newAppId} 参数失败，但不影响切换:`, error);
-        });
+      try {
+        const syncResult = await appParametersService.syncFromDify(newAppId);
+        if (syncResult.success) {
+          console.log(`[app-selector-button] 成功同步应用 ${newAppId} 的参数到数据库`);
+        } else {
+          console.warn(`[app-selector-button] 同步应用 ${newAppId} 参数到数据库失败:`, syncResult.error);
+        }
+      } catch (error) {
+        console.warn(`[app-selector-button] 同步应用 ${newAppId} 参数到数据库异常，但不影响切换:`, error);
+      }
       
       // --- BEGIN COMMENT ---
-      // 🎯 使用 validateConfig 进行应用切换，现在参数已预缓存
+      // 🎯 使用 validateConfig 进行应用切换，现在参数已在数据库中
       // 指定为切换上下文，不触发消息输入框的spinner
       // --- END COMMENT ---
       await validateConfig(newAppId, 'switch');
@@ -166,7 +171,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       
       // --- BEGIN COMMENT ---
       // 🎯 使用Next.js路由进行页面跳转，避免硬刷新
-      // 这样可以保持应用状态，包括预缓存的参数
+      // 这样可以保持应用状态，包括数据库中的参数
       // --- END COMMENT ---
       router.push('/chat/new');
       
