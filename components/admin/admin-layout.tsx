@@ -8,10 +8,11 @@ import { useChatWidth } from '@lib/hooks/use-chat-width'
 import { cn } from '@lib/utils'
 import { 
   Settings, 
-  Database,
   Menu,
   X,
   Home,
+  Pin,
+  PinOff,
   ChevronRight
 } from 'lucide-react'
 
@@ -29,7 +30,6 @@ interface MenuItem {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()
   const { isDark } = useTheme()
-  const { widthClass, paddingClass } = useChatWidth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // 管理菜单项
@@ -38,13 +38,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       text: 'API 配置', 
       icon: Settings, 
       href: '/admin/api-config',
-      description: '管理应用实例和API密钥'
-    },
-    { 
-      text: '同步调度', 
-      icon: Database, 
-      href: '/admin/sync-scheduler',
-      description: '管理自动同步调度器'
+      description: '管理应用实例和配置参数'
     }
   ]
 
@@ -71,7 +65,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           ? "bg-stone-900/80 border-stone-700" 
           : "bg-stone-50/80 border-stone-200"
       )}>
-        <div className={cn("w-full mx-auto", widthClass, paddingClass, "py-4")}>
+        <div className="w-full px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo和标题 */}
             <div className="flex items-center gap-3">
@@ -114,106 +108,105 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </header>
 
-      <div className={cn("w-full mx-auto", widthClass, paddingClass)}>
-        <div className="flex flex-col lg:flex-row gap-8 py-8">
-          
-          {/* --- BEGIN COMMENT ---
-          侧边栏导航 - 桌面端固定，移动端可折叠
-          --- END COMMENT --- */}
-          <aside className={cn(
-            "lg:w-80 lg:flex-shrink-0",
-            // 移动端展开/收起状态
-            isMobileMenuOpen ? "block" : "hidden lg:block"
-          )}>
-            <div className={cn(
-              "sticky top-24 rounded-xl border p-6",
-              isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
-            )}>
-              {/* 面包屑导航 */}
-              <nav className="mb-6">
-                <ol className="flex items-center space-x-2 text-sm">
-                  {getBreadcrumbs().map((crumb, index) => (
-                    <li key={crumb.href} className="flex items-center">
-                      {index > 0 && (
-                        <ChevronRight className="h-3 w-3 text-stone-400 mx-2" />
-                      )}
-                      <Link
-                        href={crumb.href}
-                        className={cn(
-                          "transition-colors",
-                          index === getBreadcrumbs().length - 1
-                            ? isDark ? "text-stone-100" : "text-stone-900"
-                            : isDark ? "text-stone-400 hover:text-stone-200" : "text-stone-500 hover:text-stone-700"
-                        )}
-                      >
-                        {crumb.text}
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
-              </nav>
-
-              {/* 导航菜单 */}
-              <nav className="space-y-2">
-                <h2 className={cn(
-                  "text-sm font-medium mb-4",
-                  isDark ? "text-stone-300" : "text-stone-600"
-                )}>
-                  管理功能
-                </h2>
-                {menuItems.map((item) => {
-                  const isActive = pathname.startsWith(item.href)
-                  const Icon = item.icon
-                  
-                  return (
+      {/* --- BEGIN COMMENT ---
+      主要内容区域 - 全宽度布局
+      --- END COMMENT --- */}
+      <div className="flex h-[calc(100vh-73px)]">
+        
+        {/* --- BEGIN COMMENT ---
+        侧边栏导航 - 固定宽度，桌面端固定，移动端可折叠
+        --- END COMMENT --- */}
+        <aside className={cn(
+          "w-80 flex-shrink-0 border-r",
+          isDark ? "border-stone-700 bg-stone-800" : "border-stone-200 bg-white",
+          // 移动端展开/收起状态
+          isMobileMenuOpen ? "block" : "hidden lg:block"
+        )}>
+          <div className="h-full flex flex-col p-6">
+            {/* 面包屑导航 */}
+            <nav className="mb-6">
+              <ol className="flex items-center space-x-2 text-sm">
+                {getBreadcrumbs().map((crumb, index) => (
+                  <li key={crumb.href} className="flex items-center">
+                    {index > 0 && (
+                      <ChevronRight className="h-3 w-3 text-stone-400 mx-2" />
+                    )}
                     <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      href={crumb.href}
                       className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg transition-all group",
-                        isActive
-                          ? isDark 
-                            ? "bg-stone-700 text-stone-100 border border-stone-600" 
-                            : "bg-stone-100 text-stone-900 border border-stone-300"
-                          : isDark
-                            ? "hover:bg-stone-700 text-stone-300 hover:text-stone-100"
-                            : "hover:bg-stone-50 text-stone-600 hover:text-stone-900"
+                        "transition-colors",
+                        index === getBreadcrumbs().length - 1
+                          ? isDark ? "text-stone-100" : "text-stone-900"
+                          : isDark ? "text-stone-400 hover:text-stone-200" : "text-stone-500 hover:text-stone-700"
                       )}
                     >
-                      <Icon className={cn(
-                        "h-5 w-5 mt-0.5 transition-colors",
-                        isActive 
-                          ? "text-blue-500" 
-                          : "text-stone-400 group-hover:text-stone-500"
-                      )} />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm">
-                          {item.text}
-                        </div>
-                        {item.description && (
-                          <div className={cn(
-                            "text-xs mt-1",
-                            isDark ? "text-stone-400" : "text-stone-500"
-                          )}>
-                            {item.description}
-                          </div>
-                        )}
-                      </div>
+                      {crumb.text}
                     </Link>
-                  )
-                })}
-              </nav>
-            </div>
-          </aside>
+                  </li>
+                ))}
+              </ol>
+            </nav>
 
-          {/* --- BEGIN COMMENT ---
-          主内容区域
-          --- END COMMENT --- */}
-          <main className="flex-1 min-w-0">
-            {children}
-          </main>
-        </div>
+            {/* 导航菜单 */}
+            <nav className="space-y-2">
+              <h2 className={cn(
+                "text-sm font-medium mb-4",
+                isDark ? "text-stone-300" : "text-stone-600"
+              )}>
+                管理功能
+              </h2>
+              {menuItems.map((item) => {
+                const isActive = pathname.startsWith(item.href)
+                const Icon = item.icon
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-start gap-3 p-3 rounded-lg transition-all group",
+                      isActive
+                        ? isDark 
+                          ? "bg-stone-700 text-stone-100 border border-stone-600" 
+                          : "bg-stone-100 text-stone-900 border border-stone-300"
+                        : isDark
+                          ? "hover:bg-stone-700 text-stone-300 hover:text-stone-100"
+                          : "hover:bg-stone-50 text-stone-600 hover:text-stone-900"
+                    )}
+                  >
+                    <Icon className={cn(
+                      "h-5 w-5 mt-0.5 transition-colors",
+                      isActive 
+                        ? "text-blue-500" 
+                        : "text-stone-400 group-hover:text-stone-500"
+                    )} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">
+                        {item.text}
+                      </div>
+                      {item.description && (
+                        <div className={cn(
+                          "text-xs mt-1",
+                          isDark ? "text-stone-400" : "text-stone-500"
+                        )}>
+                          {item.description}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
+            </nav>
+          </div>
+        </aside>
+
+        {/* --- BEGIN COMMENT ---
+        主内容区域 - 占满剩余空间
+        --- END COMMENT --- */}
+        <main className="flex-1 overflow-hidden">
+          {children}
+        </main>
       </div>
 
       {/* --- BEGIN COMMENT ---

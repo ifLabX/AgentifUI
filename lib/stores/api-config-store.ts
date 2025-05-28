@@ -77,42 +77,26 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
   newApiUrl: '',
   isUpdating: false,
   
-  // 创建新的应用实例
+  // 创建应用实例
   createAppInstance: async (instance, apiKey) => {
     try {
-      // 验证必要字段
-      if (!instance.provider_id) {
-        throw new Error('提供商 ID 不能为空');
-      }
-      
-      if (!instance.instance_id) {
-        throw new Error('应用 ID 不能为空');
-      }
-      
-      // 检查应用 ID 是否已存在
-      const existingInstanceResult = await getServiceInstanceByInstanceId(instance.provider_id, instance.instance_id);
-      const existingInstance = handleResult(existingInstanceResult, '检查应用实例');
-        
-      if (existingInstance) {
-        throw new Error(`应用 ID "${instance.instance_id}" 已存在`);
-      }
-      
-      // 🎯 修复：正确保存config字段
-      const configToSave = instance.config || {};
-      
       // 创建服务实例
       const newInstanceResult = await createServiceInstance({
-        provider_id: instance.provider_id,
-        name: instance.name || instance.display_name || 'New Instance',
-        display_name: instance.display_name || null,
-        description: instance.description || null,
-        instance_id: instance.instance_id,
+        provider_id: instance.provider_id || '1', // 默认提供商ID
+        name: instance.name || instance.display_name || '',
+        display_name: instance.display_name || '',
+        description: instance.description || '',
+        instance_id: instance.instance_id || '',
         api_path: instance.api_path || '',
         is_default: instance.is_default || false,
-        config: configToSave // 🎯 修复：使用表单提交的config数据
+        config: instance.config || {}
       });
       
       const newInstance = handleResult(newInstanceResult, '创建服务实例');
+      
+      // 更新本地状态 - 添加新实例到列表
+      const { serviceInstances } = get();
+      set({ serviceInstances: [...serviceInstances, newInstance] });
       
       // 如果提供了 API 密钥，则加密并存储
       if (apiKey) {
@@ -134,7 +118,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         // 创建 API 密钥 - 传递isEncrypted=true表示密钥已通过API端点加密
         const newApiKeyResult = await createApiKey({
           service_instance_id: newInstance.id,
-          provider_id: instance.provider_id,
+          provider_id: newInstance.provider_id,
           key_value: encryptedKey,
           is_default: true,
           usage_count: 0,
@@ -142,11 +126,12 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           last_used_at: null
         }, true); // 标记密钥已加密
         
-        handleResult(newApiKeyResult, '创建 API 密钥');
+        const newApiKey = handleResult(newApiKeyResult, '创建 API 密钥');
+        
+        // 更新本地状态 - 添加新密钥到列表
+        const { apiKeys } = get();
+        set({ apiKeys: [...apiKeys, newApiKey] });
       }
-      
-      // 重新加载数据
-      await get().loadConfigData();
       
       return newInstance;
     } catch (error) {
@@ -181,6 +166,14 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       
       const updatedInstance = handleResult(updatedInstanceResult, '更新服务实例');
       
+      // 更新本地状态 - 更新实例列表中的对应项
+      const { serviceInstances } = get();
+      set({ 
+        serviceInstances: serviceInstances.map(si => 
+          si.id === id ? updatedInstance : si
+        ) 
+      });
+      
       // 如果提供了 API 密钥，则加密并存储/更新
       if (apiKey) {
         // 加密 API 密钥
@@ -211,7 +204,15 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             true // 标记密钥已加密
           );
           
-          handleResult(updatedKeyResult, '更新 API 密钥');
+          const updatedKey = handleResult(updatedKeyResult, '更新 API 密钥');
+          
+          // 更新本地状态 - 更新密钥列表中的对应项
+          const { apiKeys } = get();
+          set({
+            apiKeys: apiKeys.map(k => 
+              k.id === existingKey.id ? updatedKey : k
+            )
+          });
         } else {
           // 创建新密钥 - 使用更新后的 createApiKey 函数
           // 传递 isEncrypted=true 表示密钥已经通过API端点加密
@@ -225,12 +226,13 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             last_used_at: null
           }, true); // 标记密钥已加密
           
-          handleResult(newKeyResult, '创建 API 密钥');
+          const newKey = handleResult(newKeyResult, '创建 API 密钥');
+          
+          // 更新本地状态 - 添加新密钥到列表
+          const { apiKeys } = get();
+          set({ apiKeys: [...apiKeys, newKey] });
         }
       }
-      
-      // 重新加载数据
-      await get().loadConfigData();
       
       return updatedInstance;
     } catch (error) {
@@ -257,14 +259,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       if (existingKey) {
         const deletedResult = await deleteApiKey(existingKey.id);
         handleResult(deletedResult, '删除 API 密钥');
+        
+        // 更新本地状态 - 从密钥列表中移除
+        const { apiKeys } = get();
+        set({ apiKeys: apiKeys.filter(k => k.id !== existingKey.id) });
       }
       
       // 删除服务实例
       const deletedResult = await deleteServiceInstance(id);
       handleResult(deletedResult, '删除服务实例');
       
-      // 重新加载数据
-      await get().loadConfigData();
+      // 更新本地状态 - 从实例列表中移除
+      const { serviceInstances } = get();
+      set({ serviceInstances: serviceInstances.filter(si => si.id !== id) });
     } catch (error) {
       console.error('删除应用实例时出错:', error);
       throw error;

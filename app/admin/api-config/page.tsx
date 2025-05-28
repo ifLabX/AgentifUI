@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAdminAuth } from '@lib/hooks/use-admin-auth';
 import { useApiConfigStore, ServiceInstance } from '@lib/stores/api-config-store';
-import AdminLayout from '@components/admin/admin-layout';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import {
@@ -15,53 +14,25 @@ import {
   CheckCircle,
   XCircle,
   Key,
-  Shield,
   Database,
   Eye,
   EyeOff,
   Save,
-  X
+  X,
+  FileText,
+  Globe,
+  Zap,
+  Shield
 } from 'lucide-react';
 
-// 导入拆分后的组件
-import ApiConfigHeader from '@components/admin/api-config/api-config-header';
-import ApiKeyInfo from '@components/admin/api-config/api-key-info';
-import ApiConfigTabs from '@components/admin/api-config/api-config-tabs';
-import ApiConfigContent from '@components/admin/api-config/api-config-content';
-import FeedbackNotification from '@components/admin/api-config/feedback-notification';
-import { AuthError, AccessDenied, DataError } from '@components/admin/api-config/error-display';
+// 导入AdminLayout
+import AdminLayout from '@components/admin/admin-layout';
 
 interface FeedbackState {
   open: boolean;
   message: string;
   severity: 'success' | 'error' | 'info' | 'warning';
 }
-
-// 加载状态组件
-const LoadingSkeleton = () => {
-  const { isDark } = useTheme();
-  
-  return (
-    <div className="space-y-6">
-      <div className={cn(
-        "h-8 rounded animate-pulse",
-        isDark ? "bg-stone-800" : "bg-stone-200"
-      )} />
-      <div className={cn(
-        "h-32 rounded-lg animate-pulse",
-        isDark ? "bg-stone-800" : "bg-stone-200"
-      )} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[1, 2].map(i => (
-          <div key={i} className={cn(
-            "h-24 rounded-lg animate-pulse",
-            isDark ? "bg-stone-800" : "bg-stone-200"
-          )} />
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // Toast通知组件
 const Toast = ({ feedback, onClose }: { feedback: FeedbackState; onClose: () => void }) => {
@@ -93,63 +64,31 @@ const Toast = ({ feedback, onClose }: { feedback: FeedbackState; onClose: () => 
   );
 };
 
-// 错误显示组件
-const ErrorDisplay = ({ error, type }: { error: Error; type: 'auth' | 'data' | 'access' }) => {
+// 加载状态组件
+const LoadingSkeleton = () => {
   const { isDark } = useTheme();
   
-  const getErrorContent = () => {
-    switch (type) {
-      case 'auth':
-        return {
-          title: '认证失败',
-          description: '无法验证您的管理员权限，请重新登录。',
-          icon: Shield
-        };
-      case 'access':
-        return {
-          title: '访问被拒绝',
-          description: '您没有访问管理后台的权限。',
-          icon: Shield
-        };
-      case 'data':
-        return {
-          title: '数据加载失败',
-          description: '无法加载配置数据，请检查网络连接或稍后重试。',
-          icon: Database
-        };
-    }
-  };
-  
-  const { title, description, icon: Icon } = getErrorContent();
-  
   return (
-    <AdminLayout>
-      <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="h-full p-6">
+      <div className="space-y-6">
         <div className={cn(
-          "text-center p-8 rounded-xl border",
-          isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
-        )}>
-          <Icon className="h-16 w-16 mx-auto mb-4 text-red-500" />
-          <h2 className={cn(
-            "text-xl font-bold mb-2",
-            isDark ? "text-stone-100" : "text-stone-900"
-          )}>
-            {title}
-          </h2>
-          <p className={cn(
-            "text-sm mb-4",
-            isDark ? "text-stone-400" : "text-stone-600"
-          )}>
-            {description}
-          </p>
-          <p className={cn(
-            "text-xs p-2 rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200"
-          )}>
-            {error.message}
-          </p>
+          "h-8 rounded animate-pulse",
+          isDark ? "bg-stone-700" : "bg-stone-200"
+        )} />
+        <div className={cn(
+          "h-32 rounded-lg animate-pulse",
+          isDark ? "bg-stone-700" : "bg-stone-200"
+        )} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className={cn(
+              "h-24 rounded-lg animate-pulse",
+              isDark ? "bg-stone-700" : "bg-stone-200"
+            )} />
+          ))}
         </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 
@@ -172,9 +111,70 @@ const InstanceForm = ({
     instance_id: instance?.instance_id || '',
     display_name: instance?.display_name || '',
     description: instance?.description || '',
-    apiKey: ''
+    api_path: instance?.api_path || '',
+    apiKey: '',
+    // 添加dify配置
+    config: {
+      api_url: instance?.config?.api_url || '',
+      app_metadata: {
+        app_type: instance?.config?.app_metadata?.app_type || 'model',
+        is_common_model: instance?.config?.app_metadata?.is_common_model || false,
+        tags: instance?.config?.app_metadata?.tags || [],
+      },
+      dify_parameters: {
+        opening_statement: instance?.config?.dify_parameters?.opening_statement || '',
+        suggested_questions: instance?.config?.dify_parameters?.suggested_questions || [],
+        file_upload: instance?.config?.dify_parameters?.file_upload || {
+          image: { enabled: false, number_limits: 3, detail: 'high' }
+        }
+      }
+    }
   });
   const [showApiKey, setShowApiKey] = useState(false);
+  
+  // 添加建议问题
+  const addSuggestedQuestion = () => {
+    setFormData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        dify_parameters: {
+          ...prev.config.dify_parameters,
+          suggested_questions: [...prev.config.dify_parameters.suggested_questions, '']
+        }
+      }
+    }));
+  };
+  
+  // 更新建议问题
+  const updateSuggestedQuestion = (index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        dify_parameters: {
+          ...prev.config.dify_parameters,
+          suggested_questions: prev.config.dify_parameters.suggested_questions.map((q, i) => 
+            i === index ? value : q
+          )
+        }
+      }
+    }));
+  };
+  
+  // 删除建议问题
+  const removeSuggestedQuestion = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        dify_parameters: {
+          ...prev.config.dify_parameters,
+          suggested_questions: prev.config.dify_parameters.suggested_questions.filter((_, i) => i !== index)
+        }
+      }
+    }));
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,73 +183,86 @@ const InstanceForm = ({
   
   return (
     <div className={cn(
-      "rounded-xl border p-6",
-      isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
+      "rounded-xl border p-6 mb-6",
+      isDark ? "bg-stone-800 border-stone-600" : "bg-white border-stone-200"
     )}>
       <h3 className={cn(
-        "text-lg font-bold mb-4",
+        "text-lg font-bold mb-6",
         isDark ? "text-stone-100" : "text-stone-900"
       )}>
         {isEditing ? '编辑应用实例' : '添加应用实例'}
       </h3>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className={cn(
-            "block text-sm font-medium mb-2",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            应用 ID *
-          </label>
-          <input
-            type="text"
-            value={formData.instance_id}
-            onChange={(e) => setFormData(prev => ({ ...prev, instance_id: e.target.value }))}
-            className={cn(
-              "w-full px-3 py-2 rounded-lg border",
-              isDark 
-                ? "bg-stone-700 border-stone-600 text-stone-200" 
-                : "bg-white border-stone-300 text-stone-800"
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* 基础配置 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <label className={cn(
+              "block text-sm font-medium mb-2",
+              isDark ? "text-stone-300" : "text-stone-700"
+            )}>
+              应用 ID (instance_id) *
+            </label>
+            <input
+              type="text"
+              value={formData.instance_id}
+              onChange={(e) => setFormData(prev => ({ ...prev, instance_id: e.target.value }))}
+              className={cn(
+                "w-full px-3 py-2 rounded-lg border font-serif",
+                isDark 
+                  ? "bg-stone-700 border-stone-600 text-stone-200" 
+                  : "bg-white border-stone-300 text-stone-800",
+                isEditing && "bg-stone-100 dark:bg-stone-800 cursor-not-allowed"
+              )}
+              placeholder="输入应用 ID"
+              required
+              disabled={isEditing}
+            />
+            {isEditing && (
+              <p className={cn(
+                "text-xs mt-1",
+                isDark ? "text-stone-400" : "text-stone-500"
+              )}>
+                应用 ID 创建后不可修改
+              </p>
             )}
-            placeholder="输入 Dify 应用 ID"
-            required
-          />
+          </div>
+          
+          <div>
+            <label className={cn(
+              "block text-sm font-medium mb-2",
+              isDark ? "text-stone-300" : "text-stone-700"
+            )}>
+              显示名称 (display_name) *
+            </label>
+            <input
+              type="text"
+              value={formData.display_name}
+              onChange={(e) => setFormData(prev => ({ ...prev, display_name: e.target.value }))}
+              className={cn(
+                "w-full px-3 py-2 rounded-lg border font-serif",
+                isDark 
+                  ? "bg-stone-700 border-stone-600 text-stone-200" 
+                  : "bg-white border-stone-300 text-stone-800"
+              )}
+              placeholder="输入显示名称"
+              required
+            />
+          </div>
         </div>
-        
+
         <div>
           <label className={cn(
             "block text-sm font-medium mb-2",
             isDark ? "text-stone-300" : "text-stone-700"
           )}>
-            显示名称 *
-          </label>
-          <input
-            type="text"
-            value={formData.display_name}
-            onChange={(e) => setFormData(prev => ({ ...prev, display_name: e.target.value }))}
-            className={cn(
-              "w-full px-3 py-2 rounded-lg border",
-              isDark 
-                ? "bg-stone-700 border-stone-600 text-stone-200" 
-                : "bg-white border-stone-300 text-stone-800"
-            )}
-            placeholder="输入显示名称"
-            required
-          />
-        </div>
-        
-        <div>
-          <label className={cn(
-            "block text-sm font-medium mb-2",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            描述
+            描述 (description)
           </label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
             className={cn(
-              "w-full px-3 py-2 rounded-lg border",
+              "w-full px-3 py-2 rounded-lg border font-serif",
               isDark 
                 ? "bg-stone-700 border-stone-600 text-stone-200" 
                 : "bg-white border-stone-300 text-stone-800"
@@ -258,39 +271,174 @@ const InstanceForm = ({
             rows={3}
           />
         </div>
-        
-        <div>
-          <label className={cn(
-            "block text-sm font-medium mb-2",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            API 密钥 {!isEditing && '*'}
-          </label>
-          <div className="relative">
+
+        {/* API配置 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <label className={cn(
+              "block text-sm font-medium mb-2",
+              isDark ? "text-stone-300" : "text-stone-700"
+            )}>
+              API URL (config.api_url) *
+            </label>
             <input
-              type={showApiKey ? "text" : "password"}
-              value={formData.apiKey}
-              onChange={(e) => setFormData(prev => ({ ...prev, apiKey: e.target.value }))}
+              type="url"
+              value={formData.config.api_url}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                config: {
+                  ...prev.config,
+                  api_url: e.target.value
+                }
+              }))}
               className={cn(
-                "w-full px-3 py-2 pr-10 rounded-lg border",
+                "w-full px-3 py-2 rounded-lg border font-serif",
                 isDark 
                   ? "bg-stone-700 border-stone-600 text-stone-200" 
                   : "bg-white border-stone-300 text-stone-800"
               )}
-              placeholder={isEditing ? "留空则不更新 API 密钥" : "输入 API 密钥"}
-              required={!isEditing}
+              placeholder="https://api.dify.ai/v1"
+              required
             />
-            <button
-              type="button"
-              onClick={() => setShowApiKey(!showApiKey)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2"
-            >
-              {showApiKey ? (
-                <EyeOff className="h-4 w-4 text-stone-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-stone-500" />
+          </div>
+
+          <div>
+            <label className={cn(
+              "block text-sm font-medium mb-2",
+              isDark ? "text-stone-300" : "text-stone-700"
+            )}>
+              API 密钥 (key_value) {!isEditing && '*'}
+            </label>
+            <div className="relative">
+              <input
+                type={showApiKey ? "text" : "password"}
+                value={formData.apiKey}
+                onChange={(e) => setFormData(prev => ({ ...prev, apiKey: e.target.value }))}
+                className={cn(
+                  "w-full px-3 py-2 pr-10 rounded-lg border font-serif",
+                  isDark 
+                    ? "bg-stone-700 border-stone-600 text-stone-200" 
+                    : "bg-white border-stone-300 text-stone-800"
+                )}
+                placeholder={isEditing ? "留空则不更新 API 密钥" : "输入 API 密钥"}
+                required={!isEditing}
+              />
+              <button
+                type="button"
+                onClick={() => setShowApiKey(!showApiKey)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {showApiKey ? (
+                  <EyeOff className="h-4 w-4 text-stone-500" />
+                ) : (
+                  <Eye className="h-4 w-4 text-stone-500" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 应用参数配置 */}
+        <div className="space-y-4">
+          <h4 className={cn(
+            "text-md font-semibold",
+            isDark ? "text-stone-200" : "text-stone-800"
+          )}>
+            应用参数配置
+          </h4>
+          
+          <div>
+            <label className={cn(
+              "block text-sm font-medium mb-2",
+              isDark ? "text-stone-300" : "text-stone-700"
+            )}>
+              开场白 (config.dify_parameters.opening_statement)
+            </label>
+            <textarea
+              value={formData.config.dify_parameters.opening_statement}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                config: {
+                  ...prev.config,
+                  dify_parameters: {
+                    ...prev.config.dify_parameters,
+                    opening_statement: e.target.value
+                  }
+                }
+              }))}
+              className={cn(
+                "w-full px-3 py-2 rounded-lg border font-serif",
+                isDark 
+                  ? "bg-stone-700 border-stone-600 text-stone-200" 
+                  : "bg-white border-stone-300 text-stone-800"
               )}
-            </button>
+              placeholder="输入应用的开场白..."
+              rows={4}
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className={cn(
+                "block text-sm font-medium",
+                isDark ? "text-stone-300" : "text-stone-700"
+              )}>
+                建议问题 (config.dify_parameters.suggested_questions)
+              </label>
+              <button
+                type="button"
+                onClick={addSuggestedQuestion}
+                className={cn(
+                  "flex items-center gap-1 px-3 py-1 rounded-md text-sm transition-colors",
+                  isDark 
+                    ? "bg-stone-700 hover:bg-stone-600 text-stone-300" 
+                    : "bg-stone-200 hover:bg-stone-300 text-stone-700"
+                )}
+              >
+                <Plus className="h-4 w-4" />
+                添加问题
+              </button>
+            </div>
+            
+            <div className="space-y-2">
+              {formData.config.dify_parameters.suggested_questions.map((question, index) => (
+                <div key={index} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={question}
+                    onChange={(e) => updateSuggestedQuestion(index, e.target.value)}
+                    className={cn(
+                      "flex-1 px-3 py-2 rounded-lg border font-serif",
+                      isDark 
+                        ? "bg-stone-700 border-stone-600 text-stone-200" 
+                        : "bg-white border-stone-300 text-stone-800"
+                    )}
+                    placeholder={`建议问题 ${index + 1}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeSuggestedQuestion(index)}
+                    className={cn(
+                      "p-2 rounded-lg transition-colors",
+                      isDark 
+                        ? "hover:bg-stone-700 text-stone-400" 
+                        : "hover:bg-stone-200 text-stone-600"
+                    )}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              
+              {formData.config.dify_parameters.suggested_questions.length === 0 && (
+                <p className={cn(
+                  "text-sm text-center py-4",
+                  isDark ? "text-stone-400" : "text-stone-500"
+                )}>
+                  暂无建议问题，点击上方"添加问题"按钮添加
+                </p>
+              )}
+            </div>
           </div>
         </div>
         
@@ -322,340 +470,279 @@ const InstanceForm = ({
 };
 
 export default function ApiConfigPage() {
-  // 使用管理员权限检查 hook
-  const { isAdmin, isLoading: isAuthLoading, error: authError } = useAdminAuth();
-  const { isDark } = useTheme();
-  
-  // 使用 API 配置 store
   const { 
+    isAdmin, 
+    isLoading: authLoading, 
+    error: authError 
+  } = useAdminAuth();
+  
+  const {
+    serviceInstances: instances,
     providers,
-    serviceInstances,
-    apiKeys,
-    loadConfigData, 
-    isLoading: isDataLoading,
-    error: dataError,
-    updateDifyConfig,
-    createAppInstance,
-    updateAppInstance,
-    deleteAppInstance
+    isLoading: instancesLoading,
+    loadConfigData: loadInstances,
+    deleteAppInstance: deleteInstance,
+    createAppInstance: addInstance,
+    updateAppInstance: updateInstance
   } = useApiConfigStore();
   
-  // 防止页面闪烁，在完全加载前始终显示加载状态
-  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+  const { isDark } = useTheme();
   
-  // 组件状态
-  const [isAddingInstance, setIsAddingInstance] = useState(false);
-  const [editingInstance, setEditingInstance] = useState<ServiceInstance | null>(null);
-  const [processingInstance, setProcessingInstance] = useState(false);
-  const [instanceError, setInstanceError] = useState<Error | null>(null);
-  
-  // 操作反馈状态
-  const [feedback, setFeedback] = useState<FeedbackState>({ open: false, message: '', severity: 'info' });
-  
-  // 找到 Dify 提供商
-  const difyProvider = providers.find(p => p.name === 'Dify');
-  
-  // 加载配置数据
+  const [selectedInstance, setSelectedInstance] = useState<ServiceInstance | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackState>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+  const [isInitialMount, setIsInitialMount] = useState(true);
+
+  // 加载实例数据 - 只在首次加载时执行
   useEffect(() => {
-    if (isAdmin) {
-      loadConfigData().then(() => {
-        setTimeout(() => {
-          setIsFullyLoaded(true);
-        }, 300);
+    if (isAdmin && !hasInitiallyLoaded && isInitialMount) {
+      loadInstances().finally(() => {
+        setHasInitiallyLoaded(true);
+        setIsInitialMount(false);
       });
+    } else if (isAdmin && isInitialMount) {
+      // 如果已经有数据，直接标记为已加载
+      setHasInitiallyLoaded(true);
+      setIsInitialMount(false);
     }
-  }, [isAdmin, loadConfigData]);
-  
-  // 显示成功反馈
+  }, [isAdmin, hasInitiallyLoaded, isInitialMount, loadInstances]);
+
+  // --- 提示相关函数 ---
   const showFeedback = (message: string, severity: FeedbackState['severity'] = 'info') => {
     setFeedback({ open: true, message, severity });
-    setTimeout(() => setFeedback(prev => ({ ...prev, open: false })), 3000);
   };
-  
-  // 添加应用实例
+
+  const handleCloseFeedback = () => {
+    setFeedback({ open: false, message: '', severity: 'info' });
+  };
+
+  // --- 实例操作函数 ---
+  const handleSelectInstance = async (instance: ServiceInstance) => {
+    // 简化选择逻辑，不需要异步操作
+    setSelectedInstance(instance);
+  };
+
   const handleAddInstance = () => {
-    setEditingInstance(null);
-    setIsAddingInstance(true);
-    setInstanceError(null);
+    setSelectedInstance(null);
+    setShowAddForm(true);
   };
-  
-  // 编辑应用实例
-  const handleEditInstance = (instance: ServiceInstance) => {
-    setEditingInstance(instance);
-    setIsAddingInstance(true);
-    setInstanceError(null);
-  };
-  
-  // 删除应用实例
+
   const handleDeleteInstance = async (instanceId: string) => {
-    if (!window.confirm('确定要删除这个应用实例吗？此操作不可恢复。')) {
+    if (!confirm('确定要删除此应用实例吗？此操作不可撤销。')) {
       return;
     }
-    
-    setProcessingInstance(true);
-    setInstanceError(null);
-    
+
+    setIsProcessing(true);
     try {
-      await deleteAppInstance(instanceId);
-      showFeedback('应用实例已成功删除', 'success');
+      // 找到要删除的实例对象
+      const instanceToDelete = instances.find(inst => inst.instance_id === instanceId);
+      if (!instanceToDelete) {
+        throw new Error('未找到要删除的实例');
+      }
+      
+      await deleteInstance(instanceToDelete.id); // 使用数据库ID
+      
+      // 如果删除的是当前选中的实例，清除选择
+      if (selectedInstance?.instance_id === instanceId) {
+        setSelectedInstance(null);
+      }
+      
+      showFeedback('应用实例删除成功', 'success');
+      
+      // 删除后不需要全局重新加载，store会自动更新状态
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '删除应用实例时出错';
-      setInstanceError(error instanceof Error ? error : new Error(errorMessage));
-      showFeedback(errorMessage, 'error');
+      console.error('删除失败:', error);
+      showFeedback('删除应用实例失败', 'error');
     } finally {
-      setProcessingInstance(false);
+      setIsProcessing(false);
     }
   };
-  
-  // 保存应用实例
-  const handleSaveInstance = async (formData: any) => {
-    setProcessingInstance(true);
-    setInstanceError(null);
-    
-    try {
-      const { apiKey, ...instanceData } = formData;
-      
-      if (!instanceData.instance_id) {
-        throw new Error('应用 ID 不能为空');
-      }
-      
-      if (!instanceData.display_name) {
-        throw new Error('显示名称不能为空');
-      }
-      
-      if (!instanceData.name) {
-        instanceData.name = instanceData.display_name;
-      }
-      
-      if (editingInstance) {
-        await updateAppInstance(editingInstance.id, instanceData, apiKey);
-        showFeedback(`应用实例 "${instanceData.display_name}" 已成功更新`, 'success');
-      } else {
-        await createAppInstance(instanceData, apiKey);
-        showFeedback(`应用实例 "${instanceData.display_name}" 已成功创建`, 'success');
-      }
-      
-      setIsAddingInstance(false);
-      setEditingInstance(null);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '保存应用实例时出错';
-      console.error('保存应用实例时出错:', error);
-      setInstanceError(error instanceof Error ? error : new Error(errorMessage));
-      showFeedback(errorMessage, 'error');
-    } finally {
-      setProcessingInstance(false);
-    }
-  };
-  
-  // 取消添加/编辑
-  const handleCancelInstance = () => {
-    setIsAddingInstance(false);
-    setEditingInstance(null);
-    setInstanceError(null);
-  };
-  
-  // 关闭反馈通知
-  const handleCloseFeedback = () => {
-    setFeedback(prev => ({ ...prev, open: false }));
-  };
-  
-  // 显示加载状态
-  if (isAuthLoading || isDataLoading || !isFullyLoaded) {
+
+  // --- 错误处理 ---
+  if (authError) {
     return (
       <AdminLayout>
-        <div className="font-serif">
-          <LoadingSkeleton />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className={cn(
+            "text-center p-8 rounded-xl border",
+            isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
+          )}>
+            <Shield className="h-16 w-16 mx-auto mb-4 text-red-500" />
+            <h2 className={cn(
+              "text-xl font-bold mb-2",
+              isDark ? "text-stone-100" : "text-stone-900"
+            )}>
+              认证失败
+            </h2>
+            <p className={cn(
+              "text-sm mb-4",
+              isDark ? "text-stone-400" : "text-stone-600"
+            )}>
+              无法验证您的管理员权限，请重新登录。
+            </p>
+            <p className={cn(
+              "text-xs p-2 rounded bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200"
+            )}>
+              {authError.message}
+            </p>
+          </div>
         </div>
       </AdminLayout>
     );
   }
-  
-  // 显示错误信息
-  if (authError) {
-    return <ErrorDisplay error={authError} type="auth" />;
+
+  // 只在真正的初次加载时显示骨架屏
+  if (authLoading || (isInitialMount && instancesLoading && !hasInitiallyLoaded)) {
+    return (
+      <AdminLayout>
+        <LoadingSkeleton />
+      </AdminLayout>
+    );
   }
-  
-  // 显示访问被拒绝信息
+
   if (!isAdmin) {
-    return <ErrorDisplay error={new Error('访问被拒绝')} type="access" />;
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className={cn(
+            "text-center p-8 rounded-xl border",
+            isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
+          )}>
+            <Shield className="h-16 w-16 mx-auto mb-4 text-red-500" />
+            <h2 className={cn(
+              "text-xl font-bold mb-2",
+              isDark ? "text-stone-100" : "text-stone-900"
+            )}>
+              访问被拒绝
+            </h2>
+            <p className={cn(
+              "text-sm mb-4",
+              isDark ? "text-stone-400" : "text-stone-600"
+            )}>
+              您没有访问管理后台的权限。
+            </p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
   }
-  
-  // 显示数据加载错误
-  if (dataError) {
-    return <ErrorDisplay error={dataError} type="data" />;
-  }
-  
-  // 显示 API 配置管理界面
+
   return (
     <AdminLayout>
-      <div className="font-serif space-y-8">
-        {/* --- BEGIN COMMENT ---
-        页面标题和描述
-        --- END COMMENT --- */}
-        <div className="space-y-2">
-          <h1 className={cn(
-            "text-3xl md:text-4xl font-bold flex items-center gap-3",
-            isDark ? "text-stone-100" : "text-stone-800"
-          )}>
-            <Settings className="h-8 w-8 md:h-10 md:w-10" />
-            API 配置管理
-          </h1>
-          <p className={cn(
-            "text-base md:text-lg",
-            isDark ? "text-stone-400" : "text-stone-600"
-          )}>
-            管理 Dify 应用实例和 API 密钥配置
-          </p>
-        </div>
-
-        {/* --- BEGIN COMMENT ---
-        API密钥安全提示
-        --- END COMMENT --- */}
-        <div className={cn(
-          "p-4 rounded-lg border-l-4 border-blue-500",
-          isDark ? "bg-blue-900/20 text-blue-200" : "bg-blue-50 text-blue-800"
-        )}>
-          <div className="flex items-center gap-2 mb-2">
-            <Key className="h-5 w-5" />
-            <span className="font-medium">API 密钥安全说明</span>
-          </div>
-          <ul className="text-sm space-y-1">
-            <li>• API 密钥采用单向加密存储，无法查看已保存的密钥</li>
-            <li>• 编辑实例时留空 API 密钥字段将保留现有密钥</li>
-            <li>• 请妥善保管您的 API 密钥，避免泄露</li>
-          </ul>
-        </div>
-
-        {/* --- BEGIN COMMENT ---
-        应用实例列表
-        --- END COMMENT --- */}
-        <div className={cn(
-          "rounded-xl border",
-          isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
-        )}>
-          <div className="p-6 border-b border-stone-200 dark:border-stone-700">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h2 className={cn(
-                  "text-xl font-bold",
-                  isDark ? "text-stone-100" : "text-stone-900"
-                )}>
-                  应用实例
-                </h2>
-                <p className={cn(
-                  "text-sm mt-1",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  管理已配置的 Dify 应用实例
-                </p>
+      <div className="h-full flex">
+        {/* 左侧应用列表 */}
+        <div className="w-80 flex-shrink-0">
+          <div className="p-4 border-b border-stone-200 dark:border-stone-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={cn(
+                "font-bold text-lg",
+                isDark ? "text-stone-100" : "text-stone-900"
+              )}>
+                应用实例
+              </h2>
+              <div className="flex items-center gap-2">
+                {/* 局部加载指示器 */}
+                {instancesLoading && hasInitiallyLoaded && (
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                )}
+                <button
+                  onClick={handleAddInstance}
+                  className={cn(
+                    "p-2 rounded-lg transition-colors",
+                    isDark 
+                      ? "bg-stone-800 hover:bg-stone-700 text-stone-300" 
+                      : "bg-white hover:bg-stone-100 text-stone-600"
+                  )}
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
               </div>
-              <button
-                onClick={handleAddInstance}
-                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                添加应用实例
-              </button>
+            </div>
+            <div className={cn(
+              "text-sm",
+              isDark ? "text-stone-400" : "text-stone-600"
+            )}>
+              共 {instances.length} 个应用
             </div>
           </div>
-
-          <div className="p-6">
-            {/* 添加/编辑表单 */}
-            {isAddingInstance && (
-              <div className="mb-6">
-                <InstanceForm
-                  instance={editingInstance}
-                  isEditing={!!editingInstance}
-                  onSave={handleSaveInstance}
-                  onCancel={handleCancelInstance}
-                  isProcessing={processingInstance}
-                />
-              </div>
-            )}
-
-            {/* 实例列表 */}
-            {serviceInstances.length === 0 ? (
-              <div className="text-center py-12">
-                <Database className="h-12 w-12 mx-auto mb-4 text-stone-400" />
-                <h3 className={cn(
-                  "text-lg font-medium mb-2",
-                  isDark ? "text-stone-100" : "text-stone-900"
-                )}>
-                  暂无应用实例
-                </h3>
+          
+          <div className="flex-1 overflow-y-auto">
+            {instances.length === 0 ? (
+              <div className="p-4 text-center">
+                <Database className="h-12 w-12 mx-auto mb-3 text-stone-400" />
                 <p className={cn(
-                  "text-sm mb-4",
+                  "text-sm",
                   isDark ? "text-stone-400" : "text-stone-600"
                 )}>
-                  点击上方按钮添加第一个 Dify 应用实例
+                  暂无应用实例
                 </p>
+                <button
+                  onClick={handleAddInstance}
+                  className="mt-2 text-sm text-blue-500 hover:text-blue-600"
+                >
+                  添加第一个应用
+                </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {serviceInstances.map((instance) => (
+              <div className="p-2">
+                {instances.map((instance) => (
                   <div
-                    key={instance.id}
+                    key={instance.instance_id}
                     className={cn(
-                      "p-4 rounded-lg border transition-all hover:shadow-md",
-                      isDark ? "bg-stone-750 border-stone-600" : "bg-stone-50 border-stone-200"
+                      "p-3 rounded-lg mb-2 cursor-pointer transition-all group",
+                      selectedInstance?.instance_id === instance.instance_id
+                        ? isDark 
+                          ? "bg-stone-800 border border-stone-600" 
+                          : "bg-white border border-stone-300 shadow-sm"
+                        : isDark
+                          ? "hover:bg-stone-800/50"
+                          : "hover:bg-white/50"
                     )}
+                    onClick={() => handleSelectInstance(instance)}
                   >
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <h3 className={cn(
-                          "font-medium truncate",
-                          isDark ? "text-stone-100" : "text-stone-900"
-                        )}>
-                          {instance.display_name}
-                        </h3>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Globe className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                          <h3 className={cn(
+                            "font-medium text-sm truncate",
+                            isDark ? "text-stone-100" : "text-stone-900"
+                          )}>
+                            {instance.display_name}
+                          </h3>
+                        </div>
                         <p className={cn(
-                          "text-sm text-stone-500 truncate",
+                          "text-xs truncate",
                           isDark ? "text-stone-400" : "text-stone-600"
                         )}>
-                          ID: {instance.instance_id}
+                          {instance.description || instance.instance_id}
                         </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className={cn(
+                            "text-xs px-2 py-1 rounded",
+                            "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          )}>
+                            活跃
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex gap-2 ml-4">
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
-                          onClick={() => handleEditInstance(instance)}
-                          className={cn(
-                            "p-2 rounded transition-colors",
-                            isDark ? "hover:bg-stone-600 text-stone-300" : "hover:bg-stone-200 text-stone-600"
-                          )}
-                          title="编辑"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteInstance(instance.instance_id);
+                          }}
+                          className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
                         >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteInstance(instance.id)}
-                          className="p-2 rounded transition-colors hover:bg-red-100 text-red-600 dark:hover:bg-red-900/20"
-                          title="删除"
-                        >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3 text-red-500" />
                         </button>
                       </div>
-                    </div>
-                    
-                    {instance.description && (
-                      <p className={cn(
-                        "text-sm mb-3",
-                        isDark ? "text-stone-300" : "text-stone-700"
-                      )}>
-                        {instance.description}
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500" />
-                        <span className="text-sm text-stone-500">
-                          已配置
-                        </span>
-                      </div>
-                      
-                      <span className="text-xs text-stone-400">
-                        {new Date(instance.created_at).toLocaleDateString('zh-CN')}
-                      </span>
                     </div>
                   </div>
                 ))}
@@ -664,7 +751,121 @@ export default function ApiConfigPage() {
           </div>
         </div>
         
-        {/* 操作反馈通知 */}
+        {/* 右侧配置面板 */}
+        <div className="flex-1 flex flex-col">
+          {showAddForm ? (
+            <div className="flex-1 overflow-y-auto p-6">
+              <InstanceForm
+                instance={null}
+                isEditing={false}
+                onSave={(data) => {
+                  setIsProcessing(true);
+                  // 获取有效的provider_id
+                  const defaultProviderId = providers.find(p => p.name === 'Dify')?.id || 
+                                          providers[0]?.id || 
+                                          '1'; // 最后的备选方案
+                  addInstance({
+                    ...data,
+                    provider_id: defaultProviderId
+                  }, data.apiKey)
+                    .then(() => {
+                      showFeedback('应用实例创建成功', 'success');
+                      setShowAddForm(false);
+                    })
+                    .catch((error) => {
+                      console.error('创建失败:', error);
+                      showFeedback('创建应用实例失败', 'error');
+                    })
+                    .finally(() => {
+                      setIsProcessing(false);
+                    });
+                }}
+                onCancel={() => {
+                  setShowAddForm(false);
+                }}
+                isProcessing={isProcessing}
+              />
+            </div>
+          ) : selectedInstance ? (
+            <>
+              <div className="p-6 border-b border-stone-200 dark:border-stone-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className={cn(
+                      "text-xl font-bold",
+                      isDark ? "text-stone-100" : "text-stone-900"
+                    )}>
+                      {selectedInstance.display_name}
+                    </h2>
+                    <p className={cn(
+                      "text-sm mt-1",
+                      isDark ? "text-stone-400" : "text-stone-600"
+                    )}>
+                      {selectedInstance.description || selectedInstance.instance_id}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedInstance(null)}
+                    className={cn(
+                      "p-2 rounded-lg transition-colors",
+                      isDark 
+                        ? "hover:bg-stone-700 text-stone-400" 
+                        : "hover:bg-stone-100 text-stone-600"
+                    )}
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-6">
+                <InstanceForm
+                  instance={selectedInstance}
+                  isEditing={true}
+                  onSave={(data) => {
+                    setIsProcessing(true);
+                    updateInstance(selectedInstance.id, data, data.apiKey)
+                      .then(() => {
+                        showFeedback('应用实例更新成功', 'success');
+                        setSelectedInstance(null);
+                      })
+                      .catch((error) => {
+                        console.error('更新失败:', error);
+                        showFeedback('更新应用实例失败', 'error');
+                      })
+                      .finally(() => {
+                        setIsProcessing(false);
+                      });
+                  }}
+                  onCancel={() => {
+                    setSelectedInstance(null);
+                  }}
+                  isProcessing={isProcessing}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <Settings className="h-16 w-16 mx-auto mb-4 text-stone-400" />
+                <h3 className={cn(
+                  "text-lg font-medium mb-2",
+                  isDark ? "text-stone-300" : "text-stone-700"
+                )}>
+                  选择应用实例
+                </h3>
+                <p className={cn(
+                  "text-sm",
+                  isDark ? "text-stone-400" : "text-stone-600"
+                )}>
+                  从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Toast通知 */}
         <Toast feedback={feedback} onClose={handleCloseFeedback} />
       </div>
     </AdminLayout>
