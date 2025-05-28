@@ -77,7 +77,7 @@ export default function RootLayout({
         {/* Removed the manually added theme initialization script */}
         {/* Let next-themes handle the initial theme setting */}
       </head>
-      <body className="font-sans">
+      <body>
         <Providers> { /* 使用 Providers 包裹 */ }
           {/* 添加 DynamicTitle 组件，确保它能在所有页面中生效 */}
           <DynamicTitle />

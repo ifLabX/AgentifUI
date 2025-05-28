@@ -63,14 +63,6 @@ export function ClientLayout({ children, fontClasses }: ClientLayoutProps) {
   
   return (
     <div className={layoutClass}>
-      {/* --- BEGIN COMMENT ---
-      🎯 开发环境下显示预加载进度（可选）
-      --- END COMMENT --- */}
-      {process.env.NODE_ENV === 'development' && isPreloading && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-blue-500 text-white text-xs px-4 py-1 text-center">
-          预加载应用参数中... {progress.loaded}/{progress.total} ({progress.percentage}%)
-        </div>
-      )}
       {children}
     </div>
   );
