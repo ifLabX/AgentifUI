@@ -104,7 +104,7 @@ export default function AccountSettingsPage() {
           "border",
           colors.borderColor.tailwind,
           colors.cardBackground.tailwind,
-          "p-6 mb-6"
+          "p-6 mb-8"
         )}>
           <div className={cn(
             "h-6 w-32 mb-6",
@@ -138,37 +138,38 @@ export default function AccountSettingsPage() {
         </div>
         
         <div className={cn(
-          "w-full rounded-lg",
-          "border",
+          "p-6 rounded-lg border",
           colors.borderColor.tailwind,
-          colors.cardBackground.tailwind,
-          "p-6"
+          colors.cardBackground.tailwind
         )}>
-          <div className={cn(
-            "h-6 w-32 mb-6",
-            colors.skeletonBackground.tailwind,
-            "animate-pulse rounded-md"
-          )}></div>
+          <h3 className={cn(
+            "text-lg font-medium mb-4 font-serif",
+            colors.textColor.tailwind
+          )}>安全设置</h3>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <div className={cn(
-                "w-5 h-5 mr-2",
-                colors.skeletonBackground.tailwind,
-                "animate-pulse rounded-full"
-              )}></div>
-              <div className={cn(
-                "h-4 w-32",
-                colors.skeletonBackground.tailwind,
-                "animate-pulse rounded-md"
-              )}></div>
+                "flex items-center font-serif",
+                colors.textColor.tailwind
+              )}>
+                <LogOut className="w-5 h-5 mr-2" />
+                <span>退出当前账号</span>
+              </div>
+              
+              <button
+                disabled
+                className={cn(
+                  "px-3 py-2 rounded-lg",
+                  "text-sm font-serif",
+                  "bg-stone-300 dark:bg-stone-600",
+                  "text-stone-500 dark:text-stone-400",
+                  "cursor-not-allowed"
+                )}
+              >
+                退出登录
+              </button>
             </div>
-            
-            <div className={cn(
-              "h-8 w-24",
-              "bg-stone-800 dark:bg-stone-700",
-              "rounded-lg"
-            )}></div>
           </div>
         </div>
       </motion.div>
