@@ -16,7 +16,10 @@ import {
   XCircle,
   AlertCircle,
   Database,
-  WifiOff
+  WifiOff,
+  Info,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 
 interface SyncStatus {
@@ -29,6 +32,87 @@ interface ToastState {
   show: boolean
   message: string
   type: 'success' | 'error' | 'info'
+}
+
+// --- BEGIN COMMENT ---
+// 使用说明组件
+// --- END COMMENT ---
+const UsageGuide = () => {
+  const { isDark } = useTheme()
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  return (
+    <div className={cn(
+      "rounded-xl border mb-8",
+      isDark ? "bg-stone-800 border-stone-700" : "bg-blue-50 border-blue-200"
+    )}>
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={cn(
+          "w-full p-4 flex items-center justify-between text-left transition-colors",
+          isDark ? "hover:bg-stone-700" : "hover:bg-blue-100"
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <Info className="h-5 w-5 text-blue-500" />
+          <span className={cn(
+            "font-medium",
+            isDark ? "text-stone-100" : "text-blue-900"
+          )}>
+            📖 同步调度器使用指南
+          </span>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="h-5 w-5 text-blue-500" />
+        ) : (
+          <ChevronDown className="h-5 w-5 text-blue-500" />
+        )}
+      </button>
+      
+      {isExpanded && (
+        <div className={cn(
+          "px-4 pb-4 border-t",
+          isDark ? "border-stone-700 text-stone-300" : "border-blue-200 text-blue-800"
+        )}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div>
+              <h4 className="font-medium mb-3 flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                基本配置
+              </h4>
+              <ul className="space-y-2 text-sm">
+                <li>• <strong>启用开关</strong>：控制自动同步功能的总开关</li>
+                <li>• <strong>同步间隔</strong>：自动同步的时间间隔（建议30-120分钟）</li>
+                <li>• <strong>批次大小</strong>：每次同步处理的应用数量</li>
+                <li>• <strong>重试次数</strong>：同步失败时的自动重试次数</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-3 flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                核心功能
+              </h4>
+              <ul className="space-y-2 text-sm">
+                <li>• <strong>数据库优先</strong>：优先使用本地数据库，提升响应速度</li>
+                <li>• <strong>API备用</strong>：数据库无数据时自动从Dify API获取</li>
+                <li>• <strong>定期同步</strong>：自动保持数据库与Dify的同步</li>
+                <li>• <strong>手动触发</strong>：支持立即执行一次同步操作</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-6 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+            <p className="text-sm">
+              <strong>💡 使用建议：</strong>
+              首次使用时建议先手动触发一次同步，将现有应用参数导入数据库，然后根据应用更新频率配置合适的同步间隔。
+              对于频繁更新的应用，建议设置较短的同步间隔（30-60分钟）。
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function SyncSchedulerPage() {
@@ -238,6 +322,11 @@ export default function SyncSchedulerPage() {
             )}
           </p>
         </div>
+
+        {/* --- BEGIN COMMENT ---
+        使用说明
+        --- END COMMENT --- */}
+        <UsageGuide />
 
         {/* --- BEGIN COMMENT ---
         连接错误提示
