@@ -309,7 +309,7 @@ export function DesktopUserAvatar() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p
-                                            className="text-sm font-semibold truncate"
+                                            className="text-sm font-semibold truncate font-serif"
                                             style={{
                                                 color: effectiveTheme ? "#f5f5f4" : "#1c1917",
                                             }}
@@ -317,7 +317,7 @@ export function DesktopUserAvatar() {
                                             {userName}
                                         </p>
                                         <p
-                                            className="text-xs truncate"
+                                            className="text-xs truncate font-serif"
                                             style={{
                                                 color: effectiveTheme ? "#a8a29e" : "#78716c",
                                             }}
@@ -363,7 +363,7 @@ export function DesktopUserAvatar() {
                                                 }}
                                             />
                                             <span
-                                                className="flex-1 text-sm"
+                                                className="flex-1 text-sm font-serif"
                                                 style={{
                                                     color: effectiveTheme ? "#d6d3d1" : "#44403c",
                                                 }}
@@ -397,7 +397,7 @@ export function DesktopUserAvatar() {
                                 onMouseLeave={() => setHoveredItem(null)}
                             >
                                 <LogOut className="h-4 w-4" />
-                                <span className="text-sm">退出登录</span>
+                                <span className="text-sm font-serif">退出登录</span>
                             </button>
                         </>
                     ) : (
@@ -418,8 +418,8 @@ export function DesktopUserAvatar() {
                                         color: effectiveTheme ? "#a8a29e" : "#78716c",
                                     }}
                                 />
-                                <p className="font-medium">登录以使用更多功能</p>
-                                <p className="text-sm mt-1 opacity-75">
+                                <p className="font-medium font-serif">登录以使用更多功能</p>
+                                <p className="text-sm mt-1 opacity-75 font-serif">
                                     访问您的对话历史和个人设置
                                 </p>
                             </div>
@@ -429,7 +429,7 @@ export function DesktopUserAvatar() {
                                     onClick={() =>
                                         handleMenuItemClick(() => router.push("/login"))
                                     }
-                                    className="w-full py-3 px-4 rounded-xl font-semibold text-center text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                                    className="w-full py-3 px-4 rounded-xl font-semibold text-center text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] font-serif"
                                     style={{
                                         backgroundColor: hoveredItem === "login" ? "#44403c" : "#57534e",
                                     }}
@@ -443,7 +443,7 @@ export function DesktopUserAvatar() {
                                     onClick={() =>
                                         handleMenuItemClick(() => router.push("/register"))
                                     }
-                                    className="w-full py-3 px-4 rounded-xl font-medium text-center shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
+                                    className="w-full py-3 px-4 rounded-xl font-medium text-center shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] font-serif"
                                     style={{
                                         backgroundColor: hoveredItem === "register" 
                                             ? (effectiveTheme ? "#57534e" : "#d6d3d1")

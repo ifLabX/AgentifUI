@@ -39,7 +39,7 @@ export function SettingsSidebar() {
   return (
     <div className="h-full py-6">
       <div className="px-4 mb-6">
-        <h2 className="text-xl font-semibold">设置</h2>
+        <h2 className="text-xl font-semibold font-serif">设置</h2>
       </div>
       <nav className="space-y-1">
         {settingsNavItems.map((item) => {
@@ -61,7 +61,7 @@ export function SettingsSidebar() {
               <span className="mr-3 flex-shrink-0">
                 <Icon className="h-5 w-5" />
               </span>
-              <span className="text-sm">{item.title}</span>
+              <span className="text-sm font-serif">{item.title}</span>
             </Link>
           )
         })}

@@ -56,7 +56,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
         colors.cardBackground.tailwind
       )}>
         <h3 className={cn(
-          "text-lg font-medium mb-4",
+          "text-lg font-medium mb-4 font-serif",
           colors.textColor.tailwind
         )}>账号信息</h3>
         
@@ -70,8 +70,8 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                 <Shield className={cn("w-5 h-5", colors.secondaryTextColor.tailwind)} />
               </div>
               <div className="ml-4">
-                <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>登录邮箱</p>
-                <p className={colors.textColor.tailwind}>{email}</p>
+                <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>登录邮箱</p>
+                <p className={cn("font-serif", colors.textColor.tailwind)}>{email}</p>
               </div>
             </div>
           )}
@@ -85,8 +85,8 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                 <Key className={cn("w-5 h-5", colors.secondaryTextColor.tailwind)} />
               </div>
               <div className="ml-4">
-                <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>认证方式</p>
-                <p className={colors.textColor.tailwind}>{authSource}</p>
+                <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>认证方式</p>
+                <p className={cn("font-serif", colors.textColor.tailwind)}>{authSource}</p>
               </div>
             </div>
           )}
@@ -100,7 +100,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
         colors.cardBackground.tailwind
       )}>
         <h3 className={cn(
-          "text-lg font-medium mb-4",
+          "text-lg font-medium mb-4 font-serif",
           colors.textColor.tailwind
         )}>安全设置</h3>
         
@@ -117,13 +117,13 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
               )}
             >
               <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
-              <span>确定要退出登录吗？</span>
+              <span className="font-serif">确定要退出登录吗？</span>
             </motion.div>
           ) : null}
           
           <div className="flex items-center justify-between">
             <div className={cn(
-              "flex items-center",
+              "flex items-center font-serif",
               colors.textColor.tailwind
             )}>
               <LogOut className="w-5 h-5 mr-2" />
@@ -138,7 +138,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                     "px-3 py-2 rounded-lg",
                     "transition-all duration-200",
                     "cursor-pointer",
-                    "text-sm",
+                    "text-sm font-serif",
                     colors.buttonBackground.tailwind,
                     colors.buttonBorder.tailwind,
                     colors.textColor.tailwind,
@@ -157,7 +157,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                   "px-3 py-2 rounded-lg",
                   "transition-all duration-200",
                   "cursor-pointer",
-                  "text-sm",
+                  "text-sm font-serif",
                   showConfirm 
                     ? `bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700` 
                     : `${colors.primaryButtonBackground.tailwind} ${colors.primaryButtonHover.tailwind} ${colors.primaryButtonText.tailwind}`

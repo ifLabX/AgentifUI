@@ -125,7 +125,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           ) : (
             <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
           )}
-          <span>{message.text}</span>
+          <span className="font-serif">{message.text}</span>
         </motion.div>
       )}
 
@@ -138,7 +138,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         )}
       >
         <h3
-          className={cn("text-lg font-medium mb-4", colors.textColor.tailwind)}
+          className={cn("text-lg font-medium mb-4 font-serif", colors.textColor.tailwind)}
         >
           账户信息
         </h3>
@@ -149,10 +149,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)}
             />
             <div>
-              <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>
+              <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
                 所属企业
               </p>
-              <p className={colors.textColor.tailwind}>
+              <p className={cn("font-serif", colors.textColor.tailwind)}>
                 {profile.organization?.name || "无企业关联"}
               </p>
             </div>
@@ -163,10 +163,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)}
             />
             <div>
-              <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>
+              <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
                 注册时间
               </p>
-              <p className={colors.textColor.tailwind}>
+              <p className={cn("font-serif", colors.textColor.tailwind)}>
                 {formatDate(profile.created_at)}
               </p>
             </div>
@@ -177,10 +177,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)}
             />
             <div>
-              <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>
+              <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
                 账户角色
               </p>
-              <p className={colors.textColor.tailwind}>
+              <p className={cn("font-serif", colors.textColor.tailwind)}>
                 {profile.role === "admin" ? "管理员" : "普通用户"}
               </p>
             </div>
@@ -191,10 +191,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)}
             />
             <div>
-              <p className={cn("text-sm", colors.secondaryTextColor.tailwind)}>
+              <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
                 上次登录
               </p>
-              <p className={colors.textColor.tailwind}>
+              <p className={cn("font-serif", colors.textColor.tailwind)}>
                 {profile.auth_last_sign_in_at
                   ? formatDate(profile.auth_last_sign_in_at)
                   : "未记录"}
@@ -206,7 +206,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
 
       {/* 个人资料表单 */}
       <div className="space-y-6">
-        <h3 className={cn("text-lg font-medium", colors.textColor.tailwind)}>
+        <h3 className={cn("text-lg font-medium font-serif", colors.textColor.tailwind)}>
           编辑个人资料
         </h3>
 
@@ -215,7 +215,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           <label
             htmlFor="full_name"
             className={cn(
-              "block text-sm font-medium",
+              "block text-sm font-medium font-serif",
               colors.textColor.tailwind
             )}
           >
@@ -255,7 +255,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           <label
             htmlFor="username"
             className={cn(
-              "block text-sm font-medium",
+              "block text-sm font-medium font-serif",
               colors.textColor.tailwind
             )}
           >
@@ -295,7 +295,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           <label
             htmlFor="avatar_url"
             className={cn(
-              "block text-sm font-medium",
+              "block text-sm font-medium font-serif",
               colors.textColor.tailwind
             )}
           >
@@ -325,7 +325,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               placeholder="请输入头像图片URL"
             />
           </div>
-          <p className={cn("text-xs", colors.secondaryTextColor.tailwind)}>
+          <p className={cn("text-xs font-serif", colors.secondaryTextColor.tailwind)}>
             输入有效的图片URL，建议使用正方形图片
           </p>
         </div>

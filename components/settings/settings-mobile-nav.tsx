@@ -44,7 +44,7 @@ export function SettingsMobileNav() {
           colors.sidebarItemActive.tailwind
         )}
       >
-        <span className="flex items-center">
+        <span className="flex items-center font-serif">
           {currentItem.icon && (
             <span className="mr-3">
               {currentItem.icon && <currentItem.icon className="h-5 w-5" />}
@@ -84,7 +84,7 @@ export function SettingsMobileNav() {
                   <span className="mr-3">
                     <Icon className="h-5 w-5" />
                   </span>
-                  {item.title}
+                  <span className="font-serif">{item.title}</span>
                 </button>
               )
             })}

@@ -34,9 +34,9 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6">设置</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">设置</h1>
         
-        <p className={`${colors.secondaryTextColor.tailwind} mb-8`}>
+        <p className={`${colors.secondaryTextColor.tailwind} mb-8 font-serif`}>
           管理您的个人偏好，自定义应用体验
         </p>
         
@@ -60,8 +60,8 @@ export default function SettingsPage() {
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-medium mb-1">{item.title}</h3>
-                  <p className={`text-sm ${colors.secondaryTextColor.tailwind}`}>
+                  <h3 className="font-medium mb-1 font-serif">{item.title}</h3>
+                  <p className={`text-sm ${colors.secondaryTextColor.tailwind} font-serif`}>
                     {settingsDescriptions[item.href] || ""}
                   </p>
                 </div>

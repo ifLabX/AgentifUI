@@ -37,13 +37,13 @@ export default function AppearanceSettingsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold mb-6">外观设置</h1>
+      <h1 className="text-2xl font-bold mb-6 font-serif">外观设置</h1>
       
       <div className={`space-y-10 w-full ${colors.cardBackground.tailwind} rounded-lg border ${colors.borderColor.tailwind} p-6`}>
         {/* 主题选择 */}
         <section>
-          <h2 className="text-lg font-medium mb-4">主题</h2>
-          <p className={`${colors.secondaryTextColor.tailwind} mb-6`}>
+          <h2 className="text-lg font-medium mb-4 font-serif">主题</h2>
+          <p className={`${colors.secondaryTextColor.tailwind} mb-6 font-serif`}>
             选择您偏好的显示模式
           </p>
           
