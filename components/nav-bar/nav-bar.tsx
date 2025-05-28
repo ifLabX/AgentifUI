@@ -6,6 +6,7 @@ import { useMobile } from "@lib/hooks"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { DesktopUserAvatar } from "./desktop-user-avatar"
+import { ConversationTitleButton } from "./conversation-title-button"
 
 /**
  * 桌面端顶部导航栏组件
@@ -13,6 +14,7 @@ import { DesktopUserAvatar } from "./desktop-user-avatar"
  * - 仅在桌面视图显示 (md 及以上)
  * - 使用石色(stone)调色板，与应用整体风格一致
  * - 右上角显示用户头像按钮，点击弹出下拉菜单
+ * - 左侧显示当前对话标题按钮（仅在历史对话页面）
  * - 布局会根据侧边栏的展开/收起状态动态调整左边距
  */
 export function NavBar() {
@@ -47,7 +49,10 @@ export function NavBar() {
         )}
       >
         <div className="flex items-center space-x-2">
-          {/* 左侧空间预留给未来的导航元素 */}
+          {/* --- BEGIN MODIFIED COMMENT ---
+          左侧：当前对话标题按钮，支持动态隐藏策略，仅在历史对话页面显示
+          --- END MODIFIED COMMENT --- */}
+          <ConversationTitleButton />
         </div>
         
         <div className="flex items-center">
