@@ -1,19 +1,25 @@
 import { useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { useAppListStore } from '@lib/stores/app-list-store';
+import { useSupabaseAuth } from '@lib/supabase/hooks';
 
 /**
  * 应用参数预加载Hook
  * 
- * 🎯 用途：
- * 1. 在应用启动时预加载所有应用的参数
- * 2. 提供手动触发预加载的方法
- * 3. 监控预加载状态
+ * 🎯 优化后的用途：
+ * 1. 只在登录状态下预加载
+ * 2. 只在需要app的页面预加载
+ * 3. 提供手动触发预加载的方法
+ * 4. 监控预加载状态
  * 
  * 使用场景：
  * - 在根组件或布局组件中使用
- * - 在用户可能需要切换应用的页面中使用
+ * - 自动检测页面类型和登录状态
  */
 export function useAppParametersPreloader() {
+  const pathname = usePathname();
+  const { session } = useSupabaseAuth();
+  
   const { 
     apps,
     parametersCache,
@@ -25,9 +31,43 @@ export function useAppParametersPreloader() {
   } = useAppListStore();
 
   // --- BEGIN COMMENT ---
-  // 检查是否需要预加载
+  // 🎯 检查是否为需要app的页面
+  // --- END COMMENT ---
+  const isAppRelatedPage = useCallback(() => {
+    if (!pathname) return false;
+    
+    const appPages = ['/chat', '/app'];
+    return appPages.some(page => pathname.startsWith(page));
+  }, [pathname]);
+
+  // --- BEGIN COMMENT ---
+  // 🎯 检查是否应该激活预加载
+  // 只有在登录状态且在相关页面时才激活
+  // --- END COMMENT ---
+  const shouldActivatePreloader = useCallback(() => {
+    // 检查是否已登录
+    if (!session?.user) {
+      console.log('[Preloader] 用户未登录，跳过预加载');
+      return false;
+    }
+    
+    // 检查是否在需要app的页面
+    if (!isAppRelatedPage()) {
+      console.log('[Preloader] 当前页面不需要app，跳过预加载:', pathname);
+      return false;
+    }
+    
+    return true;
+  }, [session?.user, isAppRelatedPage, pathname]);
+
+  // --- BEGIN COMMENT ---
+  // 🎯 检查是否需要预加载数据
+  // 只有在激活状态下才检查数据
   // --- END COMMENT ---
   const shouldPreload = useCallback(() => {
+    // 首先检查是否应该激活预加载
+    if (!shouldActivatePreloader()) return false;
+    
     // 如果没有应用列表，需要先获取应用列表
     if (apps.length === 0) return true;
     
@@ -43,37 +83,50 @@ export function useAppParametersPreloader() {
     if (apps.length !== Object.keys(parametersCache).length) return true;
     
     return false;
-  }, [apps.length, parametersCache, lastParametersFetchTime]);
+  }, [shouldActivatePreloader, apps.length, parametersCache, lastParametersFetchTime]);
 
   // --- BEGIN COMMENT ---
-  // 手动触发预加载
+  // 🎯 非阻塞预加载
+  // 使用setTimeout确保不阻塞主线程和页面跳转
   // --- END COMMENT ---
   const triggerPreload = useCallback(async () => {
+    // 再次检查是否应该预加载（防止状态变化）
+    if (!shouldActivatePreloader()) {
+      console.log('[Preloader] 预加载条件不满足，取消预加载');
+      return;
+    }
+    
     try {
-      console.log('[useAppParametersPreloader] 手动触发预加载');
+      console.log('[Preloader] 开始非阻塞预加载');
       
       // 确保有应用列表
       if (apps.length === 0) {
-        console.log('[useAppParametersPreloader] 先获取应用列表');
+        console.log('[Preloader] 先获取应用列表');
         await fetchApps();
       }
       
       // 获取所有应用参数
       await fetchAllAppParameters();
       
-      console.log('[useAppParametersPreloader] 预加载完成');
+      console.log('[Preloader] 预加载完成');
     } catch (error) {
-      console.error('[useAppParametersPreloader] 预加载失败:', error);
+      console.error('[Preloader] 预加载失败:', error);
     }
-  }, [apps.length, fetchApps, fetchAllAppParameters]);
+  }, [shouldActivatePreloader, apps.length, fetchApps, fetchAllAppParameters]);
 
   // --- BEGIN COMMENT ---
-  // 自动预加载：在Hook初始化时检查是否需要预加载
+  // 🎯 自动预加载：使用setTimeout实现非阻塞
   // --- END COMMENT ---
   useEffect(() => {
     if (shouldPreload() && !isLoadingParameters) {
-      console.log('[useAppParametersPreloader] 自动触发预加载');
-      triggerPreload();
+      console.log('[Preloader] 触发非阻塞预加载');
+      
+      // 使用setTimeout确保不阻塞主线程
+      const timeoutId = setTimeout(() => {
+        triggerPreload();
+      }, 0);
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [shouldPreload, isLoadingParameters, triggerPreload]);
 
@@ -117,6 +170,9 @@ export function useAppParametersPreloader() {
     isPreloading: isLoadingParameters,
     preloadError: parametersError,
     apps,
+    
+    // 🎯 新增：预加载激活状态
+    isActive: shouldActivatePreloader(),
     
     // 进度信息
     progress: getPreloadProgress(),
