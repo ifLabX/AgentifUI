@@ -2,6 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
+import { useCurrentApp } from '@lib/hooks/use-current-app';
 
 /**
  * 应用参数预加载Hook
@@ -9,8 +10,9 @@ import { useSupabaseAuth } from '@lib/supabase/hooks';
  * 🎯 优化后的用途：
  * 1. 只在登录状态下预加载
  * 2. 只在需要app的页面预加载
- * 3. 提供手动触发预加载的方法
- * 4. 监控预加载状态
+ * 3. 分层预加载：立即加载关键应用，延迟加载其他应用
+ * 4. 提供手动触发预加载的方法
+ * 5. 监控预加载状态
  * 
  * 使用场景：
  * - 在根组件或布局组件中使用
@@ -19,6 +21,7 @@ import { useSupabaseAuth } from '@lib/supabase/hooks';
 export function useAppParametersPreloader() {
   const pathname = usePathname();
   const { session } = useSupabaseAuth();
+  const { currentAppId } = useCurrentApp();
   
   const { 
     apps,
@@ -27,6 +30,7 @@ export function useAppParametersPreloader() {
     parametersError,
     fetchApps,
     fetchAllAppParameters,
+    fetchAppParameters,
     lastParametersFetchTime
   } = useAppListStore();
 
@@ -61,6 +65,41 @@ export function useAppParametersPreloader() {
   }, [session?.user, isAppRelatedPage, pathname]);
 
   // --- BEGIN COMMENT ---
+  // 🎯 分类应用：关键应用 vs 其他应用
+  // --- END COMMENT ---
+  const categorizeApps = useCallback(() => {
+    const criticalApps: string[] = [];
+    const otherApps: string[] = [];
+    
+    apps.forEach(app => {
+      const metadata = app.config?.app_metadata;
+      
+      // 当前应用始终是关键应用
+      if (app.instance_id === currentAppId) {
+        criticalApps.push(app.instance_id);
+        return;
+      }
+      
+      // 常用模型是关键应用
+      if (metadata?.is_common_model) {
+        criticalApps.push(app.instance_id);
+        return;
+      }
+      
+      // 模型类型的应用优先级较高
+      if (metadata?.app_type === 'model') {
+        criticalApps.push(app.instance_id);
+        return;
+      }
+      
+      // 其他应用（主要是应用市场应用）
+      otherApps.push(app.instance_id);
+    });
+    
+    return { criticalApps, otherApps };
+  }, [apps, currentAppId]);
+
+  // --- BEGIN COMMENT ---
   // 🎯 检查是否需要预加载数据
   // 只有在激活状态下才检查数据
   // --- END COMMENT ---
@@ -71,23 +110,24 @@ export function useAppParametersPreloader() {
     // 如果没有应用列表，需要先获取应用列表
     if (apps.length === 0) return true;
     
-    // 如果没有任何参数缓存，需要预加载
-    if (Object.keys(parametersCache).length === 0) return true;
+    // 检查关键应用是否已缓存
+    const { criticalApps } = categorizeApps();
+    const criticalAppsCached = criticalApps.every(appId => parametersCache[appId]);
+    
+    if (!criticalAppsCached) return true;
     
     // 如果缓存过期（超过5分钟），需要重新加载
     const CACHE_DURATION = 5 * 60 * 1000;
     const isExpired = Date.now() - lastParametersFetchTime > CACHE_DURATION;
     if (isExpired) return true;
     
-    // 如果应用数量与缓存数量不匹配，可能有新应用
-    if (apps.length !== Object.keys(parametersCache).length) return true;
-    
     return false;
-  }, [shouldActivatePreloader, apps.length, parametersCache, lastParametersFetchTime]);
+  }, [shouldActivatePreloader, apps.length, categorizeApps, parametersCache, lastParametersFetchTime]);
 
   // --- BEGIN COMMENT ---
-  // 🎯 非阻塞预加载
-  // 使用setTimeout确保不阻塞主线程和页面跳转
+  // 🎯 分层预加载策略
+  // 1. 立即加载关键应用（当前app + 常用模型 + 模型类型应用）
+  // 2. 延迟加载其他应用（应用市场应用等）
   // --- END COMMENT ---
   const triggerPreload = useCallback(async () => {
     // 再次检查是否应该预加载（防止状态变化）
@@ -97,7 +137,7 @@ export function useAppParametersPreloader() {
     }
     
     try {
-      console.log('[Preloader] 开始非阻塞预加载');
+      console.log('[Preloader] 开始分层预加载');
       
       // 确保有应用列表
       if (apps.length === 0) {
@@ -105,21 +145,58 @@ export function useAppParametersPreloader() {
         await fetchApps();
       }
       
-      // 获取所有应用参数
-      await fetchAllAppParameters();
+      const { criticalApps, otherApps } = categorizeApps();
       
-      console.log('[Preloader] 预加载完成');
+      // 第一层：立即加载关键应用
+      if (criticalApps.length > 0) {
+        console.log('[Preloader] 立即加载关键应用:', criticalApps);
+        
+        // 并行加载关键应用
+        const criticalPromises = criticalApps.map(appId => 
+          fetchAppParameters(appId).catch((error: any) => {
+            console.warn(`[Preloader] 加载关键应用 ${appId} 失败:`, error);
+            return null;
+          })
+        );
+        
+        await Promise.allSettled(criticalPromises);
+        console.log('[Preloader] 关键应用加载完成');
+      }
+      
+      // 第二层：延迟加载其他应用（非阻塞）
+      if (otherApps.length > 0) {
+        console.log('[Preloader] 延迟加载其他应用:', otherApps);
+        
+        // 使用setTimeout延迟加载，避免阻塞主线程
+        setTimeout(async () => {
+          try {
+            const otherPromises = otherApps.map(appId => 
+              fetchAppParameters(appId).catch((error: any) => {
+                console.warn(`[Preloader] 加载应用 ${appId} 失败:`, error);
+                return null;
+              })
+            );
+            
+            await Promise.allSettled(otherPromises);
+            console.log('[Preloader] 其他应用加载完成');
+          } catch (error) {
+            console.warn('[Preloader] 其他应用加载过程中出错:', error);
+          }
+        }, 1000); // 延迟1秒加载
+      }
+      
+      console.log('[Preloader] 分层预加载策略执行完成');
     } catch (error) {
       console.error('[Preloader] 预加载失败:', error);
     }
-  }, [shouldActivatePreloader, apps.length, fetchApps, fetchAllAppParameters]);
+  }, [shouldActivatePreloader, apps.length, fetchApps, categorizeApps, fetchAppParameters]);
 
   // --- BEGIN COMMENT ---
   // 🎯 自动预加载：使用setTimeout实现非阻塞
   // --- END COMMENT ---
   useEffect(() => {
     if (shouldPreload() && !isLoadingParameters) {
-      console.log('[Preloader] 触发非阻塞预加载');
+      console.log('[Preloader] 触发分层预加载');
       
       // 使用setTimeout确保不阻塞主线程
       const timeoutId = setTimeout(() => {
@@ -134,14 +211,33 @@ export function useAppParametersPreloader() {
   // 计算预加载进度
   // --- END COMMENT ---
   const getPreloadProgress = useCallback(() => {
-    if (apps.length === 0) return { loaded: 0, total: 0, percentage: 0 };
+    if (apps.length === 0) return { 
+      loaded: 0, 
+      total: 0, 
+      percentage: 0,
+      criticalLoaded: 0,
+      criticalTotal: 0,
+      criticalCompleted: false
+    };
     
+    const { criticalApps } = categorizeApps();
     const loaded = Object.keys(parametersCache).length;
     const total = apps.length;
     const percentage = total > 0 ? Math.round((loaded / total) * 100) : 0;
     
-    return { loaded, total, percentage };
-  }, [apps.length, parametersCache]);
+    const criticalLoaded = criticalApps.filter(appId => parametersCache[appId]).length;
+    const criticalTotal = criticalApps.length;
+    const criticalCompleted = criticalTotal > 0 && criticalLoaded === criticalTotal;
+    
+    return { 
+      loaded, 
+      total, 
+      percentage,
+      criticalLoaded,
+      criticalTotal,
+      criticalCompleted
+    };
+  }, [apps.length, parametersCache, categorizeApps]);
 
   // --- BEGIN COMMENT ---
   // 检查特定应用的参数是否已缓存
@@ -173,6 +269,9 @@ export function useAppParametersPreloader() {
     
     // 🎯 新增：预加载激活状态
     isActive: shouldActivatePreloader(),
+    
+    // 🎯 新增：关键应用加载状态
+    isCriticalAppsLoaded: getPreloadProgress().criticalCompleted,
     
     // 进度信息
     progress: getPreloadProgress(),

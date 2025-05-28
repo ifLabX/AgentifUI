@@ -1,9 +1,14 @@
 import { create } from 'zustand';
 import type { DifyAppParametersResponse } from '@lib/services/dify/types';
+import type { ServiceInstanceConfig } from '@lib/types/database';
 
 interface AppInfo {
   id: string;
   name: string;
+  instance_id: string;
+  display_name?: string;
+  description?: string;
+  config?: ServiceInstanceConfig;
 }
 
 // 🎯 新增：应用参数缓存接口
@@ -31,6 +36,7 @@ interface AppListState {
   
   // 🎯 新增：应用参数相关方法
   fetchAllAppParameters: () => Promise<void>;
+  fetchAppParameters: (appId: string) => Promise<void>;
   getAppParameters: (appId: string) => DifyAppParametersResponse | null;
   clearParametersCache: () => void;
 }
@@ -189,5 +195,43 @@ export const useAppListStore = create<AppListState>((set, get) => ({
       lastParametersFetchTime: 0,
       parametersError: null
     });
+  },
+
+  // 🎯 新增：获取单个应用的参数
+  fetchAppParameters: async (appId: string) => {
+    const now = Date.now();
+    const state = get();
+    const cached = state.parametersCache[appId];
+    
+    // 检查缓存是否仍然有效
+    if (cached && (now - cached.timestamp < CACHE_DURATION)) {
+      console.log(`[AppListStore] 应用 ${appId} 参数缓存仍然有效，跳过获取`);
+      return;
+    }
+    
+    try {
+      console.log(`[AppListStore] 开始获取应用 ${appId} 的参数`);
+      
+      const { getDifyAppParameters } = await import('@lib/services/dify/app-service');
+      const parameters = await getDifyAppParameters(appId);
+      
+      // 更新缓存
+      set({
+        parametersCache: {
+          ...state.parametersCache,
+          [appId]: {
+            data: parameters,
+            timestamp: now
+          }
+        }
+      });
+      
+      console.log(`[AppListStore] 成功获取应用 ${appId} 的参数`);
+      
+    } catch (error: any) {
+      console.error(`[AppListStore] 获取应用 ${appId} 参数失败:`, error);
+      // 单个应用失败不影响其他操作，不设置全局错误状态
+      throw error;
+    }
   }
 })); 

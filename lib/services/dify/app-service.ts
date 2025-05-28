@@ -1,10 +1,18 @@
 import { getProviderByName } from '@lib/db';
 import type { DifyAppParametersResponse, DifyApiError } from './types';
+import type { ServiceInstanceConfig } from '@lib/types/database';
 
 /**
  * 获取所有可用的Dify应用
  */
-export async function getAllDifyApps(): Promise<Array<{id: string, name: string}>> {
+export async function getAllDifyApps(): Promise<Array<{
+  id: string;
+  name: string;
+  instance_id: string;
+  display_name?: string;
+  description?: string;
+  config?: ServiceInstanceConfig;
+}>> {
   try {
     // 获取Dify提供商
     const providerResult = await getProviderByName('Dify');
@@ -18,7 +26,7 @@ export async function getAllDifyApps(): Promise<Array<{id: string, name: string}
     
     const { data: instances, error } = await supabase
       .from('service_instances')
-      .select('instance_id, display_name, name')
+      .select('instance_id, display_name, name, description, config')
       .eq('provider_id', providerResult.data.id)
       .order('display_name');
       
@@ -28,7 +36,11 @@ export async function getAllDifyApps(): Promise<Array<{id: string, name: string}
     
     return instances?.map(instance => ({
       id: instance.instance_id,
-      name: instance.display_name || instance.name
+      name: instance.display_name || instance.name,
+      instance_id: instance.instance_id,
+      display_name: instance.display_name,
+      description: instance.description,
+      config: instance.config as ServiceInstanceConfig
     })) || [];
     
   } catch (error) {
