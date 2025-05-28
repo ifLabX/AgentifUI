@@ -232,6 +232,7 @@ export function SidebarChatList({
               text={chat.titleTypewriterState!.targetTitle}
               speed={30} // 较快的打字速度
               delay={200} // 短暂延迟
+              className="font-serif text-xs leading-4 font-medium"
               onComplete={() => {
                 // --- BEGIN COMMENT ---
                 // 🎯 打字完成后更新store状态

@@ -144,6 +144,7 @@ export function TypeWriter({
       <span 
         className={cn(
           "transition-all duration-75 ease-out",
+          className,
           isWaiting && waitingEffect && "animate-pulse opacity-60"
         )}
         style={getMaskStyle()}
