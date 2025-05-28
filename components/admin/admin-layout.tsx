@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             --- END COMMENT --- */}
             <div className="flex items-center gap-3">
               <Link 
-                href="/" 
+                href="/chat/new" 
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
                   isDark 
@@ -93,7 +93,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 )}
               >
                 <Home className="h-4 w-4" />
-                <span className="text-sm hidden sm:inline">返回主页</span>
+                <span className="text-sm hidden sm:inline">返回对话</span>
               </Link>
               
               {/* 移动端菜单按钮 */}

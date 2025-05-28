@@ -156,7 +156,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
               <div 
                 className={cn(
                   isDark
-                    ? "bg-stone-800/80"
+                    ? "bg-stone-700/80"
                     : "bg-stone-200/60",
                   "rounded animate-pulse",
                   needsCompactLayout ? "h-6" : "h-7"
