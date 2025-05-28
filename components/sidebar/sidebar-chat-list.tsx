@@ -181,6 +181,25 @@ export function SidebarChatList({
     return false;
   }, [selectedId]);
 
+  // --- BEGIN COMMENT ---
+  // 🎯 处理侧边栏不可见时的打字机效果
+  // 如果侧边栏内容不可见，但有待处理的打字机效果，直接完成它们
+  // --- END COMMENT ---
+  React.useEffect(() => {
+    if (!contentVisible) {
+      // 查找所有需要打字机效果的对话
+      const chatsNeedingTypewriter = pendingChats.filter(chat => 
+        chat.titleTypewriterState?.shouldStartTyping && 
+        chat.titleTypewriterState?.targetTitle
+      );
+      
+      // 直接完成所有打字机效果
+      chatsNeedingTypewriter.forEach(chat => {
+        completeTitleTypewriter(chat.id);
+      });
+    }
+  }, [contentVisible, pendingChats, completeTitleTypewriter]);
+
   if (!contentVisible) return null;
   
   // --- BEGIN COMMENT ---
