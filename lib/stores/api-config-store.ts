@@ -97,6 +97,9 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         throw new Error(`应用 ID "${instance.instance_id}" 已存在`);
       }
       
+      // 🎯 修复：正确保存config字段
+      const configToSave = instance.config || {};
+      
       // 创建服务实例
       const newInstanceResult = await createServiceInstance({
         provider_id: instance.provider_id,
@@ -106,7 +109,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         instance_id: instance.instance_id,
         api_path: instance.api_path || '',
         is_default: instance.is_default || false,
-        config: {}
+        config: configToSave // 🎯 修复：使用表单提交的config数据
       });
       
       const newInstance = handleResult(newInstanceResult, '创建服务实例');
@@ -163,13 +166,17 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         throw new Error('未找到要更新的应用实例');
       }
       
+      // 🎯 修复：正确处理config字段的更新
+      const configToSave = instance.config !== undefined ? instance.config : existingInstance.config;
+      
       // 更新服务实例
       const updatedInstanceResult = await updateServiceInstance(id, {
         name: instance.name || instance.display_name || existingInstance.name,
         display_name: instance.display_name !== undefined ? instance.display_name : existingInstance.display_name,
         description: instance.description !== undefined ? instance.description : existingInstance.description,
         api_path: instance.api_path || existingInstance.api_path,
-        is_default: instance.is_default !== undefined ? instance.is_default : existingInstance.is_default
+        is_default: instance.is_default !== undefined ? instance.is_default : existingInstance.is_default,
+        config: configToSave // 🎯 修复：正确更新config字段
       });
       
       const updatedInstance = handleResult(updatedInstanceResult, '更新服务实例');

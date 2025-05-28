@@ -66,6 +66,7 @@ export function useAppParametersPreloader() {
 
   // --- BEGIN COMMENT ---
   // 🎯 分类应用：关键应用 vs 其他应用
+  // 优化：为config为空的应用提供更智能的默认分类
   // --- END COMMENT ---
   const categorizeApps = useCallback(() => {
     const criticalApps: string[] = [];
@@ -80,21 +81,65 @@ export function useAppParametersPreloader() {
         return;
       }
       
-      // 常用模型是关键应用
-      if (metadata?.is_common_model) {
-        criticalApps.push(app.instance_id);
-        return;
+      // 如果有元数据配置，按配置分类
+      if (metadata) {
+        // 常用模型是关键应用
+        if (metadata.is_common_model) {
+          criticalApps.push(app.instance_id);
+          return;
+        }
+        
+        // 模型类型的应用优先级较高
+        if (metadata.app_type === 'model') {
+          criticalApps.push(app.instance_id);
+          return;
+        }
+        
+        // 应用市场应用归为其他应用
+        if (metadata.app_type === 'marketplace' || metadata.is_marketplace_app) {
+          otherApps.push(app.instance_id);
+          return;
+        }
       }
       
-      // 模型类型的应用优先级较高
-      if (metadata?.app_type === 'model') {
-        criticalApps.push(app.instance_id);
-        return;
+      // 🎯 新增：为没有配置的应用提供智能默认分类
+      // 如果没有元数据配置，根据应用名称和ID进行启发式分类
+      if (!metadata || Object.keys(metadata).length === 0) {
+        const appName = (app.display_name || app.name || app.instance_id).toLowerCase();
+        
+        // 根据名称关键词判断是否为模型类型
+        const modelKeywords = ['gpt', 'claude', 'gemini', 'llama', 'qwen', '通义', '模型', 'model', 'chat', '对话'];
+        const isLikelyModel = modelKeywords.some(keyword => appName.includes(keyword));
+        
+        // 根据名称关键词判断是否为应用市场应用
+        const marketplaceKeywords = ['翻译', 'translate', '代码', 'code', '助手', 'assistant', '工具', 'tool', '生成', 'generate'];
+        const isLikelyMarketplace = marketplaceKeywords.some(keyword => appName.includes(keyword));
+        
+        if (isLikelyModel && !isLikelyMarketplace) {
+          // 可能是模型，归为关键应用
+          criticalApps.push(app.instance_id);
+          console.log(`[Preloader] 应用 ${app.instance_id} 无配置，根据名称"${appName}"推断为模型类型，归为关键应用`);
+          return;
+        } else if (isLikelyMarketplace) {
+          // 可能是应用市场应用，归为其他应用
+          otherApps.push(app.instance_id);
+          console.log(`[Preloader] 应用 ${app.instance_id} 无配置，根据名称"${appName}"推断为应用市场类型，归为其他应用`);
+          return;
+        } else {
+          // 无法判断，默认归为关键应用（保守策略）
+          criticalApps.push(app.instance_id);
+          console.log(`[Preloader] 应用 ${app.instance_id} 无配置且无法从名称"${appName}"推断类型，默认归为关键应用`);
+          return;
+        }
       }
       
-      // 其他应用（主要是应用市场应用）
-      otherApps.push(app.instance_id);
+      // 兜底：其他情况归为关键应用（保守策略）
+      criticalApps.push(app.instance_id);
     });
+    
+    console.log(`[Preloader] 应用分类完成 - 关键应用: ${criticalApps.length}个, 其他应用: ${otherApps.length}个`);
+    console.log(`[Preloader] 关键应用列表:`, criticalApps);
+    console.log(`[Preloader] 其他应用列表:`, otherApps);
     
     return { criticalApps, otherApps };
   }, [apps, currentAppId]);
