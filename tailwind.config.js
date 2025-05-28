@@ -13,7 +13,31 @@ module.exports = {
         foreground: 'var(--foreground)',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)'],
+        // --- BEGIN COMMENT ---
+        // 🎯 Claude 风格的中英文字体配置
+        // sans: Inter + 思源黑体 - 现代简洁的界面字体
+        // serif: Crimson Pro + 思源宋体 - 优雅易读的阅读字体
+        // display: Playfair Display + 思源黑体 - 装饰性标题字体
+        // --- END COMMENT ---
+        sans: [
+          'var(--font-inter)', 
+          'var(--font-noto-sans)', 
+          '-apple-system', 
+          'BlinkMacSystemFont', 
+          'system-ui', 
+          'sans-serif'
+        ],
+        serif: [
+          'var(--font-crimson)', 
+          'var(--font-noto-serif)', 
+          'Georgia', 
+          'serif'
+        ], 
+        display: [
+          'var(--font-playfair)', 
+          'var(--font-noto-sans)', 
+          'serif'
+        ],
         mono: ['ui-monospace', 'SFMono-Regular', 'Monaco', 'Consolas', 'Liberation Mono', 'Menlo', 'monospace'],
       },
       animation: {

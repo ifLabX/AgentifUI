@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Inter, Crimson_Pro, Playfair_Display, Noto_Sans_SC, Noto_Serif_SC } from "next/font/google";
 import { TooltipContainer } from "@components/ui/tooltip";
 import "./globals.css";
 import "../styles/markdown-variables.css";
@@ -12,9 +12,42 @@ import { Providers } from "./providers"; // 确保导入 Providers 组件
 import { DynamicTitle } from "@components/ui/dynamic-title"; // 导入动态标题组件
 import { StagewiseToolbarWrapper } from "@components/dev/stagewise-toolbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// --- BEGIN COMMENT ---
+// 🎯 Claude 风格的中英文字体配置
+// Inter + 思源黑体：现代简洁的界面字体
+// Crimson Pro + 思源宋体：优雅易读的阅读字体  
+// Playfair Display：装饰性标题字体
+// --- END COMMENT ---
+const inter = Inter({ 
+  subsets: ['latin'], 
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const notoSansSC = Noto_Sans_SC({ 
+  subsets: ['latin'], 
+  weight: ['300', '400', '500', '700'],
+  variable: '--font-noto-sans',
+  display: 'swap',
+});
+
+const crimsonPro = Crimson_Pro({ 
+  subsets: ['latin'], 
+  variable: '--font-crimson',
+  display: 'swap',
+});
+
+const notoSerifSC = Noto_Serif_SC({ 
+  subsets: ['latin'],
+  weight: ['400', '500', '700'], 
+  variable: '--font-noto-serif',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({ 
+  subsets: ['latin'], 
+  variable: '--font-playfair',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -27,17 +60,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // --- BEGIN COMMENT ---
+  // 🎯 组合所有字体变量类名，确保在整个应用中可用
+  // --- END COMMENT ---
+  const fontClasses = cn(
+    inter.variable,
+    notoSansSC.variable,
+    crimsonPro.variable,
+    notoSerifSC.variable,
+    playfair.variable
+  );
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" className={fontClasses} suppressHydrationWarning>
       <head>
         {/* Removed the manually added theme initialization script */}
         {/* Let next-themes handle the initial theme setting */}
       </head>
-      <body>
+      <body className="font-sans">
         <Providers> { /* 使用 Providers 包裹 */ }
           {/* 添加 DynamicTitle 组件，确保它能在所有页面中生效 */}
           <DynamicTitle />
-          <ClientLayout fontClasses={geistSans.variable}>
+          <ClientLayout fontClasses={fontClasses}>
             {children}
             <TooltipContainer />
             <NotificationBar />
