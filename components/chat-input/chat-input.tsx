@@ -15,6 +15,7 @@ import { ChatButton } from "./button"
 import { ChatTextInput } from "./text-input"
 import { ChatContainer } from "./container"
 import { ChatButtonArea, ChatTextArea } from "./layout"
+import { AppSelectorButton } from "./app-selector-button"
 import { create } from "zustand"
 import { TooltipWrapper } from "@components/ui/tooltip-wrapper"
 import { uploadDifyFile } from "@lib/services/dify/file-service"
@@ -488,7 +489,12 @@ export const ChatInput = ({
               ariaLabel="添加附件"
             />
           </div>
-          <div className="flex-none">
+          
+          {/* --- BEGIN COMMENT ---
+          中间区域：应用选择器按钮，可以向左延伸
+          --- END COMMENT --- */}
+          <div className="flex-1 flex justify-end items-center space-x-2">
+            <AppSelectorButton />
             <ChatButton
               icon={
                 isWaiting || isValidatingConfig ? (
