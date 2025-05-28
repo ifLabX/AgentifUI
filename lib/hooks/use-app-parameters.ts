@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getDifyAppParameters } from '@lib/services/dify/app-service';
-import { useAppListStore } from '@lib/stores/app-list-store';
 import type { DifyAppParametersResponse } from '@lib/services/dify/types';
 
 interface UseAppParametersState {
@@ -11,8 +10,8 @@ interface UseAppParametersState {
 }
 
 // --- BEGIN COMMENT ---
-// 🎯 保留原有的单独缓存机制作为fallback
-// 主要使用app-list-store的批量缓存
+// 🎯 简化的应用参数Hook - 作为fallback机制
+// 用于向后兼容和在数据库方案不可用时的备用方案
 // --- END COMMENT ---
 interface CachedParameters {
   data: DifyAppParametersResponse;
@@ -24,12 +23,12 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5分钟
 const parametersCache = new Map<string, CachedParameters>();
 
 /**
- * 获取应用参数的Hook
+ * 获取应用参数的Hook（简化版 - 作为fallback）
  * 
- * 🎯 优化策略：
- * 1. 优先使用app-list-store的批量缓存（更高效）
- * 2. Fallback到原有的单独获取机制（兼容性）
- * 3. 支持手动刷新功能
+ * 🎯 用途：
+ * 1. 作为数据库优先方案的fallback机制
+ * 2. 保持API兼容性，减少重构工作
+ * 3. 在数据库方案不可用时提供基本功能
  * 
  * @param appId - 应用ID，如果为null则不发起请求
  * @returns 应用参数状态和重新获取函数
@@ -40,17 +39,7 @@ export function useAppParameters(appId: string | null): UseAppParametersState {
   const [error, setError] = useState<string | null>(null);
 
   // --- BEGIN COMMENT ---
-  // 🎯 使用app-list-store的批量缓存和获取方法
-  // --- END COMMENT ---
-  const { 
-    getAppParameters: getFromBatchCache,
-    fetchAllAppParameters: triggerBatchFetch,
-    isLoadingParameters: isBatchLoading,
-    parametersError: batchError
-  } = useAppListStore();
-
-  // --- BEGIN COMMENT ---
-  // 检查单独缓存是否有效（作为fallback）
+  // 检查缓存是否有效
   // --- END COMMENT ---
   const getCachedParameters = useCallback((id: string): DifyAppParametersResponse | null => {
     const cached = parametersCache.get(id);
@@ -66,7 +55,7 @@ export function useAppParameters(appId: string | null): UseAppParametersState {
   }, []);
 
   // --- BEGIN COMMENT ---
-  // 设置单独缓存（作为fallback）
+  // 设置缓存
   // --- END COMMENT ---
   const setCachedParameters = useCallback((id: string, data: DifyAppParametersResponse) => {
     parametersCache.set(id, {
@@ -77,33 +66,18 @@ export function useAppParameters(appId: string | null): UseAppParametersState {
   }, []);
 
   // --- BEGIN COMMENT ---
-  // 🎯 智能获取应用参数：优先使用批量缓存，fallback到单独获取
+  // 🎯 简化的获取应用参数逻辑
   // --- END COMMENT ---
   const fetchParameters = useCallback(async (id: string, forceRefresh: boolean = false) => {
     try {
       setError(null);
 
-      // --- BEGIN COMMENT ---
-      // 🎯 策略1：优先检查批量缓存（app-list-store）
-      // --- END COMMENT ---
+      // 检查缓存（除非强制刷新）
       if (!forceRefresh) {
-        const batchCached = getFromBatchCache(id);
-        if (batchCached) {
-          console.log('[useAppParameters] 使用批量缓存的应用参数:', id);
-          setParameters(batchCached);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // --- BEGIN COMMENT ---
-      // 🎯 策略2：检查单独缓存（fallback）
-      // --- END COMMENT ---
-      if (!forceRefresh) {
-        const individualCached = getCachedParameters(id);
-        if (individualCached) {
-          console.log('[useAppParameters] 使用单独缓存的应用参数:', id);
-          setParameters(individualCached);
+        const cached = getCachedParameters(id);
+        if (cached) {
+          console.log('[useAppParameters] 使用缓存的应用参数:', id);
+          setParameters(cached);
           setIsLoading(false);
           return;
         }
@@ -111,30 +85,11 @@ export function useAppParameters(appId: string | null): UseAppParametersState {
 
       setIsLoading(true);
 
-      // --- BEGIN COMMENT ---
-      // 🎯 策略3：尝试触发批量获取（可能会获取到目标参数）
-      // --- END COMMENT ---
-      if (!forceRefresh && !isBatchLoading) {
-        console.log('[useAppParameters] 触发批量获取应用参数');
-        await triggerBatchFetch();
-        
-        // 批量获取后再次检查缓存
-        const batchCachedAfter = getFromBatchCache(id);
-        if (batchCachedAfter) {
-          console.log('[useAppParameters] 批量获取后找到应用参数:', id);
-          setParameters(batchCachedAfter);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // --- BEGIN COMMENT ---
-      // 🎯 策略4：单独获取（最后的fallback）
-      // --- END COMMENT ---
-      console.log('[useAppParameters] 单独获取应用参数:', id);
+      // 从API获取参数
+      console.log('[useAppParameters] 从API获取应用参数:', id);
       const result = await getDifyAppParameters(id);
       
-      // 同时缓存到单独缓存中
+      // 缓存结果
       setCachedParameters(id, result);
       setParameters(result);
       
@@ -152,7 +107,7 @@ export function useAppParameters(appId: string | null): UseAppParametersState {
     } finally {
       setIsLoading(false);
     }
-  }, [getFromBatchCache, getCachedParameters, setCachedParameters, triggerBatchFetch, isBatchLoading]);
+  }, [getCachedParameters, setCachedParameters]);
 
   // --- BEGIN COMMENT ---
   // 重新获取函数，供外部调用
@@ -176,16 +131,10 @@ export function useAppParameters(appId: string | null): UseAppParametersState {
     fetchParameters(appId);
   }, [appId, fetchParameters]);
 
-  // --- BEGIN COMMENT ---
-  // 🎯 合并批量获取的loading状态和错误状态
-  // --- END COMMENT ---
-  const finalIsLoading = isLoading || (isBatchLoading && !parameters);
-  const finalError = error || (batchError && !parameters ? batchError : null);
-
   return {
     parameters,
-    isLoading: finalIsLoading,
-    error: finalError,
+    isLoading,
+    error,
     refetch
   };
 } 
