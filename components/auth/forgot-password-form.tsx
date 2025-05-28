@@ -63,21 +63,21 @@ export function ForgotPasswordForm() {
   // --- 邮件发送成功状态的UI ---
   if (isEmailSent) {
     return (
-      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all font-serif">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
             <Mail className="w-8 h-8 text-stone-600 dark:text-stone-400" />
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent font-serif">
             邮件已发送
           </h2>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-            我们已向 <span className="font-medium text-stone-700 dark:text-stone-300">{email}</span> 发送了重置密码链接
+          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-serif">
+            我们已向 <span className="font-medium text-stone-700 dark:text-stone-300 font-serif">{email}</span> 发送了重置密码链接
           </p>
         </div>
 
         <div className="space-y-4">
-          <div className="p-4 bg-stone-50 text-stone-700 rounded-lg text-sm border-l-4 border-stone-400 dark:bg-stone-800/50 dark:text-stone-300 dark:border-stone-600">
+          <div className="p-4 bg-stone-50 text-stone-700 rounded-lg text-sm border-l-4 border-stone-400 dark:bg-stone-800/50 dark:text-stone-300 dark:border-stone-600 font-serif">
             <ul className="space-y-1">
               <li>• 请检查您的邮箱收件箱</li>
               <li>• 重置链接有效期为1小时</li>
@@ -89,7 +89,7 @@ export function ForgotPasswordForm() {
             <Button
               type="button"
               variant="outline"
-              className="flex-1"
+              className="flex-1 font-serif"
               onClick={() => {
                 setIsEmailSent(false);
                 setEmail('');
@@ -100,7 +100,7 @@ export function ForgotPasswordForm() {
             </Button>
             <Button
               type="button"
-              className="flex-1"
+              className="flex-1 font-serif"
               onClick={() => router.push('/login')}
             >
               返回登录
@@ -113,25 +113,25 @@ export function ForgotPasswordForm() {
 
   // --- 主要的忘记密码表单UI ---
   return (
-    <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
+    <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all font-serif">
       <div className="text-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent font-serif">
           忘记密码
         </h2>
-        <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+        <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-serif">
           输入您的邮箱地址，我们将发送重置密码的链接
         </p>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm border-l-4 border-red-500 dark:bg-red-900/30 dark:text-red-400">
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm border-l-4 border-red-500 dark:bg-red-900/30 dark:text-red-400 font-serif">
           {error}
         </div>
       )}
 
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1 font-serif">
             邮箱地址
           </label>
           <input
@@ -140,7 +140,7 @@ export function ForgotPasswordForm() {
             type="email"
             autoComplete="email"
             required
-            className="block w-full px-4 py-3 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
+            className="block w-full px-4 py-3 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white font-serif"
             placeholder="your@email.com"
             value={email}
             onChange={handleEmailChange}
@@ -151,7 +151,7 @@ export function ForgotPasswordForm() {
           <Button 
             type="submit" 
             isLoading={isLoading}
-            className="w-full h-12 text-base"
+            className="w-full h-12 text-base font-serif"
             variant="gradient"
           >
             {isLoading ? '发送中...' : '发送重置链接'}
@@ -162,7 +162,7 @@ export function ForgotPasswordForm() {
       <div className="mt-6">
         <Link 
           href="/login" 
-          className="flex items-center justify-center text-sm text-stone-700 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300 transition-colors"
+          className="flex items-center justify-center text-sm text-stone-700 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300 transition-colors font-serif"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           返回登录

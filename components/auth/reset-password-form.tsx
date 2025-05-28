@@ -186,15 +186,15 @@ export function ResetPasswordForm() {
   // --- Token验证中的加载状态 ---
   if (isTokenValid === null) {
     return (
-      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all font-serif">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center animate-pulse">
             <div className="w-8 h-8 bg-stone-300 dark:bg-stone-600 rounded-full"></div>
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent font-serif">
             验证中...
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 font-serif">
             正在验证重置链接的有效性
           </p>
         </div>
@@ -205,21 +205,21 @@ export function ResetPasswordForm() {
   // --- Token无效状态 ---
   if (isTokenValid === false) {
     return (
-      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all font-serif">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-stone-600 dark:text-stone-400" />
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent font-serif">
             链接无效
           </h2>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-serif">
             重置链接已失效或不正确
           </p>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm border-l-4 border-red-500 dark:bg-red-900/30 dark:text-red-400">
+          <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm border-l-4 border-red-500 dark:bg-red-900/30 dark:text-red-400 font-serif">
             {error}
           </div>
         )}
@@ -227,7 +227,7 @@ export function ResetPasswordForm() {
         <div className="flex flex-col gap-3">
           <Button
             type="button"
-            className="w-full"
+            className="w-full font-serif"
             onClick={() => router.push('/forgot-password')}
           >
             重新申请重置密码
@@ -235,7 +235,7 @@ export function ResetPasswordForm() {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full font-serif"
             onClick={() => router.push('/login')}
           >
             返回登录
@@ -248,27 +248,27 @@ export function ResetPasswordForm() {
   // --- 重置成功状态 ---
   if (isSuccess) {
     return (
-      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
+      <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all font-serif">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
             <CheckCircle className="w-8 h-8 text-stone-600 dark:text-stone-400" />
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent font-serif">
             重置成功
           </h2>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-serif">
             密码已成功更新，正在跳转至登录页面...
           </p>
         </div>
 
         <div className="space-y-4">
-          <div className="p-4 bg-stone-50 text-stone-700 rounded-lg text-sm border-l-4 border-stone-400 dark:bg-stone-800/50 dark:text-stone-300 dark:border-stone-600">
+          <div className="p-4 bg-stone-50 text-stone-700 rounded-lg text-sm border-l-4 border-stone-400 dark:bg-stone-800/50 dark:text-stone-300 dark:border-stone-600 font-serif">
             请使用新密码登录您的账户
           </div>
 
           <Button
             type="button"
-            className="w-full"
+            className="w-full font-serif"
             onClick={() => router.push('/login')}
           >
             立即登录
@@ -280,18 +280,18 @@ export function ResetPasswordForm() {
 
   // --- 主要的重置密码表单 ---
   return (
-    <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all">
+    <div className="w-full max-w-md p-6 sm:p-8 space-y-6 sm:space-y-8 bg-stone-50 rounded-xl shadow-lg border border-stone-200 dark:bg-stone-900 dark:border-stone-800 transition-all font-serif">
       <div className="text-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text text-transparent font-serif">
           重置密码
         </h2>
-        <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+        <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-serif">
           请输入您的新密码
         </p>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm border-l-4 border-red-500 dark:bg-red-900/30 dark:text-red-400">
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm border-l-4 border-red-500 dark:bg-red-900/30 dark:text-red-400 font-serif">
           {error}
         </div>
       )}
@@ -300,7 +300,7 @@ export function ResetPasswordForm() {
         <div className="space-y-5">
           {/* --- 新密码输入 --- */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1 font-serif">
               新密码
             </label>
             <div className="relative">
@@ -310,7 +310,7 @@ export function ResetPasswordForm() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                className="block w-full px-4 py-3 pr-10 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
+                className="block w-full px-4 py-3 pr-10 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white font-serif"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
@@ -327,14 +327,14 @@ export function ResetPasswordForm() {
                 )}
               </button>
             </div>
-            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400 font-serif">
               密码长度至少6位
             </p>
           </div>
 
           {/* --- 确认新密码输入 --- */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1 font-serif">
               确认新密码
             </label>
             <div className="relative">
@@ -344,7 +344,7 @@ export function ResetPasswordForm() {
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                className="block w-full px-4 py-3 pr-10 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white"
+                className="block w-full px-4 py-3 pr-10 bg-white border border-stone-300 rounded-lg shadow-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all dark:bg-stone-800 dark:border-stone-700 dark:text-white font-serif"
                 placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -368,7 +368,7 @@ export function ResetPasswordForm() {
           <Button 
             type="submit" 
             isLoading={isLoading}
-            className="w-full h-12 text-base"
+            className="w-full h-12 text-base font-serif"
             variant="gradient"
           >
             {isLoading ? '更新中...' : '更新密码'}
@@ -379,7 +379,7 @@ export function ResetPasswordForm() {
       <div className="mt-6 text-center">
         <Link 
           href="/login" 
-          className="text-sm text-stone-700 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300 transition-colors"
+          className="text-sm text-stone-700 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300 transition-colors font-serif"
         >
           返回登录
         </Link>

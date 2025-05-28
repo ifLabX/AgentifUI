@@ -50,7 +50,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className={`min-h-screen w-full flex flex-col items-center justify-center gap-4 py-12 px-4 sm:px-6 lg:px-8 ${colors.bgColor}`}>
+    <main className={`min-h-screen w-full flex flex-col items-center justify-center gap-4 py-12 px-4 sm:px-6 lg:px-8 ${colors.bgColor} font-serif`}>
       {registered && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -59,7 +59,7 @@ export default function LoginPage() {
         >
           <Alert className={`max-w-md border-l-4 ${colors.alertBg} ${colors.alertBorder}`}>
             <CheckCircle className={`h-4 w-4 ${colors.iconColor}`} />
-            <AlertDescription className={colors.alertText}>
+            <AlertDescription className={`${colors.alertText} font-serif`}>
               注册成功！请查看您的邮箱以验证账户，然后登录。
             </AlertDescription>
           </Alert>
@@ -73,7 +73,7 @@ export default function LoginPage() {
         >
           <Alert className={`max-w-md border-l-4 ${colors.alertBg} ${colors.alertBorder}`}>
             <CheckCircle className={`h-4 w-4 ${colors.iconColor}`} />
-            <AlertDescription className={colors.alertText}>
+            <AlertDescription className={`${colors.alertText} font-serif`}>
               密码重置成功！请使用新密码登录。
             </AlertDescription>
           </Alert>

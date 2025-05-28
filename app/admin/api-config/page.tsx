@@ -195,7 +195,7 @@ export default function ApiConfigPage() {
   if (isAuthLoading || isDataLoading || !isFullyLoaded) {
     return (
       <AdminLayout>
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3 }} className="font-serif">
           {/* 使用骨架屏代替简单的加载指示器 */}
           <ApiConfigSkeleton />
         </Box>
@@ -229,39 +229,41 @@ export default function ApiConfigPage() {
   // 显示 API 配置管理界面
   return (
     <AdminLayout>
-      {/* 标题和描述 */}
-      <ApiConfigHeader />
-      
-      {/* API密钥单向配置的提示信息 */}
-      <ApiKeyInfo />
-      
-      {/* 标签页切换 */}
-      <ApiConfigTabs value={tabValue} onChange={handleTabChange} />
-      
-      {/* 根据标签页显示相应内容 */}
-      {tabValue === 0 && (
-        <ApiConfigContent
-          isAddingInstance={isAddingInstance}
-          editingInstance={editingInstance}
-          providerId={difyProvider?.id || ''}
-          serviceInstances={serviceInstances}
-          processingInstance={processingInstance}
-          instanceError={instanceError}
-          onAddInstance={handleAddInstance}
-          onEditInstance={handleEditInstance}
-          onDeleteInstance={handleDeleteInstance}
-          onSaveInstance={handleSaveInstance}
-          onCancelInstance={handleCancelInstance}
+      <div className="font-serif">
+        {/* 标题和描述 */}
+        <ApiConfigHeader />
+        
+        {/* API密钥单向配置的提示信息 */}
+        <ApiKeyInfo />
+        
+        {/* 标签页切换 */}
+        <ApiConfigTabs value={tabValue} onChange={handleTabChange} />
+        
+        {/* 根据标签页显示相应内容 */}
+        {tabValue === 0 && (
+          <ApiConfigContent
+            isAddingInstance={isAddingInstance}
+            editingInstance={editingInstance}
+            providerId={difyProvider?.id || ''}
+            serviceInstances={serviceInstances}
+            processingInstance={processingInstance}
+            instanceError={instanceError}
+            onAddInstance={handleAddInstance}
+            onEditInstance={handleEditInstance}
+            onDeleteInstance={handleDeleteInstance}
+            onSaveInstance={handleSaveInstance}
+            onCancelInstance={handleCancelInstance}
+          />
+        )}
+        
+        {/* 操作反馈通知 */}
+        <FeedbackNotification
+          open={feedback.open}
+          message={feedback.message}
+          severity={feedback.severity}
+          onClose={handleCloseFeedback}
         />
-      )}
-      
-      {/* 操作反馈通知 */}
-      <FeedbackNotification
-        open={feedback.open}
-        message={feedback.message}
-        severity={feedback.severity}
-        onClose={handleCloseFeedback}
-      />
+      </div>
     </AdminLayout>
   );
 }

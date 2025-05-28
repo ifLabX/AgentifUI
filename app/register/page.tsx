@@ -32,7 +32,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className={`min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${colors.bgColor}`}>
+    <main className={`min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${colors.bgColor} font-serif`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
