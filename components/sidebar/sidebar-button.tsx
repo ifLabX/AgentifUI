@@ -65,6 +65,7 @@ export function SidebarButton({
         "outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         isDark ? "focus-visible:ring-blue-500 focus-visible:ring-offset-gray-900" : "focus-visible:ring-primary focus-visible:ring-offset-background",
         "border border-transparent",
+        "h-10 min-h-[2.5rem]",
         isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
         !isDark && !isDisabled && [
           "text-stone-600",
@@ -87,17 +88,22 @@ export function SidebarButton({
     >
       <div className="flex flex-1 items-center min-w-0">
         {isLoading ? (
-          <span className={cn("flex h-5 w-5 items-center justify-center")}>
+          <span className={cn("flex h-5 w-5 items-center justify-center flex-shrink-0")}>
             <div className={cn("h-4 w-4 animate-pulse rounded-full", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
           </span>
         ) : (
-          <span className={cn("flex h-5 w-5 items-center justify-center -ml-0.5", 
-          isDark ? "text-gray-400" : "text-gray-500",)}>
+          <span className={cn(
+            "flex h-5 w-5 items-center justify-center -ml-0.5 flex-shrink-0", 
+            isDark ? "text-gray-400" : "text-gray-500",
+          )}>
             {icon}
           </span>
         )}
         {isExpanded && children && (
-          <div className="ml-2 flex-1 min-w-0 truncate"> 
+          <div className={cn(
+            "ml-2 flex-1 min-w-0 truncate",
+            "flex items-center leading-none"
+          )}> 
             {children}
           </div>
         )}

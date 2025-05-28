@@ -25,7 +25,7 @@ export function SidebarHeader() {
     <div className={cn(
       "flex flex-col gap-2 py-4 px-3",
     )}>
-      {/* 展开/关闭按钮 - 不使用 SidebarButton 避免 lockExpanded 的干扰 */}
+      {/* 展开/关闭按钮 - 修复serif字体导致的垂直对齐问题 */}
       <div
         role="button"
         tabIndex={0}
@@ -47,6 +47,7 @@ export function SidebarHeader() {
           "outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
           isDark ? "focus-visible:ring-blue-500 focus-visible:ring-offset-gray-900" : "focus-visible:ring-primary focus-visible:ring-offset-background",
           "border border-transparent",
+          "h-10 min-h-[2.5rem]",
           isDark ? [
             "text-gray-200",
             "hover:bg-stone-600 hover:shadow-md hover:border-stone-500/50",
@@ -60,8 +61,10 @@ export function SidebarHeader() {
         )}
       >
         <div className="flex flex-1 items-center min-w-0">
-          <span className={cn("flex h-5 w-5 items-center justify-center -ml-0.5", 
-          isDark ? "text-gray-400" : "text-gray-500",)}>
+          <span className={cn(
+            "flex h-5 w-5 items-center justify-center -ml-0.5 flex-shrink-0", 
+            isDark ? "text-gray-400" : "text-gray-500",
+          )}>
             {/* 
               图标显示逻辑：
               - 未锁定：显示PanelLeft（不带箭头）
@@ -71,7 +74,10 @@ export function SidebarHeader() {
             {isLocked && isExpanded ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
           </span>
           {isExpanded && (
-            <div className="ml-2 flex-1 min-w-0 truncate font-serif">
+            <div className={cn(
+              "ml-2 flex-1 min-w-0 truncate font-serif",
+              "flex items-center leading-none"
+            )}>
               {!isLocked 
                 ? "锁定侧栏" 
                 : (isExpanded ? "解锁并收起" : "展开侧栏")
