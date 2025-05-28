@@ -187,11 +187,11 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
           />
           
           {/* --- BEGIN MODIFIED COMMENT ---
-          下拉选项：完全模仿app-selector的样式和布局
+          下拉选项：完全模仿app-selector的样式和布局，增加纵向空间防止悬停效果溢出
           --- END MODIFIED COMMENT --- */}
           <div className={cn(
-            "absolute top-full left-0 mt-1 min-w-[8rem] max-w-[16rem]",
-            "rounded-md shadow-lg z-20",
+            "absolute top-full left-0 mt-1 min-w-[10rem] max-w-[18rem]",
+            "rounded-md shadow-lg z-20 overflow-hidden",
             "border",
             isDark 
               ? "bg-stone-700/95 border-stone-600/80 backdrop-blur-sm" 
@@ -202,7 +202,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
               onClick={handleRename}
               disabled={isOperating}
               className={cn(
-                "w-full text-left px-3 py-2 text-sm font-serif",
+                "w-full text-left px-4 py-3 text-sm font-serif",
                 "transition-colors duration-150 whitespace-nowrap",
                 "flex items-center space-x-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -215,13 +215,13 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
                   : "hover:bg-stone-200/60 text-stone-600"
               )}
             >
-              <Edit className="w-3.5 h-3.5 flex-shrink-0" />
+              <Edit className="w-4 h-4 flex-shrink-0" />
               <span>重命名</span>
             </button>
             
             {/* 分隔线 */}
             <div className={cn(
-              "h-px mx-1",
+              "h-px mx-2",
               isDark ? "bg-stone-600/50" : "bg-stone-300/50"
             )} />
             
@@ -230,20 +230,21 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
               onClick={handleDelete}
               disabled={isOperating}
               className={cn(
-                "w-full text-left px-3 py-2 text-sm font-serif",
+                "w-full text-left px-4 py-3 text-sm font-serif",
                 "transition-colors duration-150 whitespace-nowrap",
                 "flex items-center space-x-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 // --- BEGIN MODIFIED COMMENT ---
-                // 添加cursor pointer控制
+                // 添加cursor pointer控制，增加下边距防止悬停效果溢出
                 // --- END MODIFIED COMMENT ---
                 !isOperating ? "cursor-pointer" : "",
+                "mb-1",
                 isDark 
                   ? "hover:bg-red-900/30 text-red-400 hover:text-red-300" 
                   : "hover:bg-red-50 text-red-600 hover:text-red-700"
               )}
             >
-              <Trash className="w-3.5 h-3.5 flex-shrink-0" />
+              <Trash className="w-4 h-4 flex-shrink-0" />
               <span>删除对话</span>
             </button>
           </div>
