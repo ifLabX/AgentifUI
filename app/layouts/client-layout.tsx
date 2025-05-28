@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@lib/utils';
-import { useAppParametersPreloader } from '@lib/hooks/use-app-parameters-preloader';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -19,12 +18,6 @@ export function ClientLayout({ children, fontClasses }: ClientLayoutProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isChatPage = pathname?.startsWith('/chat');
-  
-  // --- BEGIN COMMENT ---
-  // 🎯 启动应用参数预加载（非阻塞）
-  // 现在会自动检测登录状态和页面类型，只在需要时预加载
-  // --- END COMMENT ---
-  useAppParametersPreloader();
   
   useEffect(() => {
     setMounted(true);
