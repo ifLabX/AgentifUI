@@ -17,7 +17,7 @@ interface AccountSettingsProps {
 }
 
 export function AccountSettings({ email, authSource }: AccountSettingsProps) {
-  const { colors } = useSettingsColors();
+  const { colors, isDark } = useSettingsColors();
   const { logout } = useLogout();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -65,7 +65,9 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
             <div className="flex items-center">
               <div className={cn(
                 "w-10 h-10 rounded-full flex items-center justify-center",
-                "bg-stone-100 dark:bg-stone-800"
+                colors.buttonBackground.tailwind,
+                colors.borderColor.tailwind,
+                "border"
               )}>
                 <Shield className={cn("w-5 h-5", colors.secondaryTextColor.tailwind)} />
               </div>
@@ -80,7 +82,9 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
             <div className="flex items-center">
               <div className={cn(
                 "w-10 h-10 rounded-full flex items-center justify-center",
-                "bg-stone-100 dark:bg-stone-800"
+                colors.buttonBackground.tailwind,
+                colors.borderColor.tailwind,
+                "border"
               )}>
                 <Key className={cn("w-5 h-5", colors.secondaryTextColor.tailwind)} />
               </div>
@@ -112,8 +116,9 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "p-4 rounded-lg mb-4 flex items-center border",
-                "bg-red-50 text-red-700 border-red-200",
-                "dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
+                isDark 
+                  ? "bg-red-900/20 text-red-300 border-red-800" 
+                  : "bg-red-50 text-red-700 border-red-200"
               )}
             >
               <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
@@ -159,7 +164,10 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                   "cursor-pointer",
                   "text-sm font-serif",
                   showConfirm 
-                    ? `bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700` 
+                    ? (isDark 
+                        ? "bg-red-600 hover:bg-red-700 text-white" 
+                        : "bg-red-600 hover:bg-red-700 text-white"
+                      )
                     : `${colors.primaryButtonBackground.tailwind} ${colors.primaryButtonHover.tailwind} ${colors.primaryButtonText.tailwind}`
                 )}
               >
