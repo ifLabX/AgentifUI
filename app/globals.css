@@ -155,10 +155,44 @@ html, body {
 
   .font-serif {
     font-family: var(--font-crimson), var(--font-noto-serif), Georgia, serif !important;
+    /* --- 字体大小和行高调整 --- */
+    /* 解决 Crimson Pro 和思源宋体字符高度不匹配的问题 */
+    font-size-adjust: 0.52; /* 调整字体大小以匹配 x-height */
+    line-height: 1.6; /* 增加行高以改善可读性 */
+    letter-spacing: 0.01em; /* 轻微增加字符间距 */
   }
 
   .font-display {
     font-family: var(--font-playfair), var(--font-noto-sans), serif !important;
+  }
+
+  /* 🎯 输入框和表单元素的字体优化 */
+  input, textarea, select, button {
+    font-family: var(--font-crimson), var(--font-noto-serif), Georgia, serif !important;
+    font-size-adjust: 0.52;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+
+  /* 🎯 特别优化输入框中的字体显示 */
+  input[type="text"], input[type="email"], input[type="password"], 
+  input[type="search"], input[type="url"], input[type="tel"], 
+  input[type="number"], textarea {
+    /* 确保输入框内的文字大小一致 */
+    font-size: inherit;
+    font-size-adjust: 0.52;
+    line-height: 1.5;
+    /* 改善中英文混排的视觉效果 */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 🎯 占位符文本的字体调整 */
+  ::placeholder {
+    font-family: var(--font-crimson), var(--font-noto-serif), Georgia, serif !important;
+    font-size-adjust: 0.52;
+    opacity: 0.6;
   }
 
   /* 🎯 阅读内容使用衬线字体 */
@@ -186,6 +220,49 @@ html, body {
   .force-font-mono {
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
     font-feature-settings: 'liga' 0, 'calt' 0 !important;
+  }
+
+  /* 🎯 字体大小调整工具类 */
+  .font-size-adjust-serif {
+    font-size-adjust: 0.52 !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.01em !important;
+  }
+
+  .font-size-adjust-input {
+    font-size-adjust: 0.52 !important;
+    line-height: 1.5 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+}
+
+/* 🎯 中英文字体混排优化 */
+@supports (font-size-adjust: 1) {
+  /* 对支持 font-size-adjust 的浏览器进行优化 */
+  .font-serif, .font-serif * {
+    font-size-adjust: 0.52;
+  }
+  
+  /* 输入框特别优化 */
+  input.font-serif, textarea.font-serif,
+  .font-serif input, .font-serif textarea {
+    font-size-adjust: 0.52;
+    line-height: 1.5;
+  }
+}
+
+/* 🎯 不支持 font-size-adjust 的浏览器回退方案 */
+@supports not (font-size-adjust: 1) {
+  /* 使用相对字体大小调整 */
+  .font-serif {
+    font-size: 1.02em; /* 轻微增大英文字体 */
+  }
+  
+  /* 中文字符保持原始大小 */
+  .font-serif :lang(zh), .font-serif :lang(zh-CN) {
+    font-size: 0.98em;
   }
 }
 
