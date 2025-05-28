@@ -209,6 +209,22 @@ html, body {
   .markdown-body h4, .markdown-body h5, .markdown-body h6 {
     font-family: var(--font-playfair), var(--font-noto-sans), serif !important;
   }
+
+  /* 🎯 助手消息内容的字体大小调整 - 解决中英文字体大小不一致问题 */
+  .assistant-message-content, .assistant-message-content * {
+    font-size-adjust: 0.52 !important;
+    letter-spacing: 0.01em !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+
+  /* 🎯 助手消息中的代码块保持等宽字体，不应用字体大小调整 */
+  .assistant-message-content code, .assistant-message-content pre,
+  .assistant-message-content code *, .assistant-message-content pre * {
+    font-size-adjust: none !important;
+    letter-spacing: normal !important;
+  }
 }
 
 /* 🔥 最后的保险 - 仅在必要时使用 */
@@ -251,6 +267,17 @@ html, body {
     font-size-adjust: 0.52;
     line-height: 1.5;
   }
+
+  /* 助手消息内容优化 */
+  .assistant-message-content, .assistant-message-content * {
+    font-size-adjust: 0.52;
+  }
+
+  /* 助手消息中的代码块不应用字体大小调整 */
+  .assistant-message-content code, .assistant-message-content pre,
+  .assistant-message-content code *, .assistant-message-content pre * {
+    font-size-adjust: none;
+  }
 }
 
 /* 🎯 不支持 font-size-adjust 的浏览器回退方案 */
@@ -262,6 +289,16 @@ html, body {
   
   /* 中文字符保持原始大小 */
   .font-serif :lang(zh), .font-serif :lang(zh-CN) {
+    font-size: 0.98em;
+  }
+
+  /* 助手消息内容的回退方案 */
+  .assistant-message-content {
+    font-size: 1.02em; /* 轻微增大英文字体 */
+  }
+  
+  /* 助手消息中的中文字符保持原始大小 */
+  .assistant-message-content :lang(zh), .assistant-message-content :lang(zh-CN) {
     font-size: 0.98em;
   }
 }
