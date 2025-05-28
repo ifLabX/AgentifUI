@@ -17,6 +17,7 @@ import { MoreButtonV2 } from "@components/ui/more-button-v2"
 import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
 import { TypeWriter } from "@components/ui/typewriter"
 import { usePendingConversationStore } from "@lib/stores/pending-conversation-store"
+import { ConfirmDialog, InputDialog } from '@components/ui'
 
 interface SidebarChatListProps {
   isDark: boolean
@@ -46,6 +47,14 @@ export function SidebarChatList({
   // --- END COMMENT ---
   const updateTypewriterDisplay = usePendingConversationStore((state) => state.updateTypewriterDisplay);
   const completeTitleTypewriter = usePendingConversationStore((state) => state.completeTitleTypewriter);
+  
+  // --- BEGIN COMMENT ---
+  // Dialog状态管理
+  // --- END COMMENT ---
+  const [showRenameDialog, setShowRenameDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [isOperating, setIsOperating] = React.useState(false);
+  const [selectedConversation, setSelectedConversation] = React.useState<CombinedConversation | null>(null);
   
   const [prevLoadedConversations, setPrevLoadedConversations] = React.useState<CombinedConversation[]>([]);
   
@@ -85,26 +94,37 @@ export function SidebarChatList({
   const handleRename = React.useCallback(async (chatId: string) => {
     const conversation = conversations.find(c => c.id === chatId);
     if (!conversation) return;
-    const supabasePK = conversation.supabase_pk;
+    
+    setSelectedConversation(conversation);
+    setShowRenameDialog(true);
+  }, [conversations]);
+  
+  const handleRenameConfirm = React.useCallback(async (newTitle: string) => {
+    if (!selectedConversation) return;
+    
+    const supabasePK = selectedConversation.supabase_pk;
     if (!supabasePK) {
       alert("对话数据正在同步中，请稍后再尝试重命名。");
+      setShowRenameDialog(false);
       return;
     }
-    const newTitle = window.prompt('请输入新的会话名称', conversation.title || '新对话');
-    if (!newTitle || newTitle.trim() === '') return;
+    
+    setIsOperating(true);
     try {
       const { renameConversation } = await import('@lib/db/conversations');
       const result = await renameConversation(supabasePK, newTitle.trim());
+      
       if (result.success) {
         // --- BEGIN COMMENT ---
         // 重命名成功后直接更新页面标题，无需刷新页面
         // --- END COMMENT ---
-        if (selectedId === chatId) {
+        if (selectedId === selectedConversation.id) {
           const baseTitle = 'AgentifUI';
           document.title = `${newTitle.trim()} | ${baseTitle}`;
         }
         
         refresh();
+        setShowRenameDialog(false);
       } else {
         console.error('重命名对话失败:', result.error);
         alert('重命名会话失败。');
@@ -112,30 +132,43 @@ export function SidebarChatList({
     } catch (error) {
       console.error('重命名对话操作出错:', error);
       alert('操作出错，请稍后再试。');
+    } finally {
+      setIsOperating(false);
     }
-  }, [conversations, refresh]);
+  }, [selectedConversation, selectedId, refresh]);
   
   const handleDelete = React.useCallback(async (chatId: string) => {
     const conversation = conversations.find(c => c.id === chatId);
     if (!conversation) return;
-    const supabasePK = conversation.supabase_pk;
+    
+    setSelectedConversation(conversation);
+    setShowDeleteDialog(true);
+  }, [conversations]);
+  
+  const handleDeleteConfirm = React.useCallback(async () => {
+    if (!selectedConversation) return;
+    
+    const supabasePK = selectedConversation.supabase_pk;
     if (!supabasePK) {
       alert("对话数据正在同步中，请稍后再尝试删除。");
+      setShowDeleteDialog(false);
       return;
     }
-    const confirmed = window.confirm(`确定要删除会话 "${conversation.title || '新对话'}" 吗？此操作无法撤销。`);
-    if (!confirmed) return;
+    
+    setIsOperating(true);
     try {
       const { deleteConversation } = await import('@lib/db/conversations');
       const result = await deleteConversation(supabasePK);
+      
       if (result.success) {
         refresh();
         // --- BEGIN COMMENT ---
         // 删除对话后直接路由到 /chat/new
         // --- END COMMENT ---
-        if (selectedId === chatId) {
+        if (selectedId === selectedConversation.id) {
           window.location.href = '/chat/new';
         }
+        setShowDeleteDialog(false);
       } else {
         console.error('删除对话失败:', result.error);
         alert('删除会话失败。');
@@ -143,8 +176,10 @@ export function SidebarChatList({
     } catch (error) {
       console.error('删除对话操作出错:', error);
       alert('操作出错，请稍后再试。');
+    } finally {
+      setIsOperating(false);
     }
-  }, [conversations, refresh, selectedId, onSelectChat]);
+  }, [selectedConversation, selectedId, refresh]);
 
 
 
@@ -305,36 +340,78 @@ export function SidebarChatList({
   // const showSkeleton = false;
 
   return (
-    <div className="flex flex-col space-y-1">
-      {/* --- BEGIN COMMENT ---
-      // 近期对话标题栏 - 移除图标，确保文字靠左贴边
-      // --- END COMMENT --- */}
-      <div className={cn(
-        "flex items-center px-2 py-1 text-xs font-medium font-serif", /* 减小内边距，确保文字靠左贴边 */
-        isDark ? "text-stone-400" : "text-stone-500"
-      )}>
-        近期对话
-      </div>
-      
-      {/* 显示骨架屏 */}
-      {/* {showSkeleton && <ChatSkeleton isDark={isDark} count={5} />} */}
-      
-      {/* --- 待处理对话列表 --- */}
-      {pendingChats.length > 0 && (
-        <div className="mb-1.5"> {/* 减小底部边距 */}
+    <>
+      <div className="flex flex-col space-y-1">
+        {/* --- BEGIN COMMENT ---
+        // 近期对话标题栏 - 移除图标，确保文字靠左贴边
+        // --- END COMMENT --- */}
+        <div className={cn(
+          "flex items-center px-2 py-1 text-xs font-medium font-serif", /* 减小内边距，确保文字靠左贴边 */
+          isDark ? "text-stone-400" : "text-stone-500"
+        )}>
+          近期对话
+        </div>
+        
+        {/* 显示骨架屏 */}
+        {/* {showSkeleton && <ChatSkeleton isDark={isDark} count={5} />} */}
+        
+        {/* --- 待处理对话列表 --- */}
+        {pendingChats.length > 0 && (
+          <div className="mb-1.5"> {/* 减小底部边距 */}
+            <div className="space-y-0.5 px-2"> {/* 减小列表项之间的间距 */}
+              {pendingChats.map(chat => {
+                const itemIsLoading = chat.pendingStatus === 'creating' || 
+                                   chat.pendingStatus === 'title_fetching' || 
+                                   chat.pendingStatus === 'streaming_message';
+                // --- BEGIN COMMENT ---
+                // 使用辅助函数判断项目是否应该处于选中状态
+                // 处理临时ID和正式ID之间的转换情况
+                // --- END COMMENT ---
+                const isActive = isChatActive(chat);
+                
+                return (
+                  <div className="group relative" key={chat.tempId || chat.id}> 
+                    {/* 使用新的 SidebarListButton 替代 SidebarButton */}
+                    <SidebarListButton
+                      icon={<SidebarChatIcon size="sm" isDark={isDark} />}
+                      active={isActive}
+                      onClick={() => onSelectChat(chat.id)}
+                      isLoading={itemIsLoading}
+                      moreActionsTrigger={
+                        <div className={cn(
+                          "transition-opacity",
+                          // 加载状态下显示占位，但禁用交互
+                          itemIsLoading 
+                            ? "pointer-events-none" // 禁用交互但保持占位
+                            : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 非加载状态下正常显示
+                        )}>
+                          {/* 无论是否加载，都显示 more button，确保布局一致 */}
+                          {createMoreActions(chat, itemIsLoading)}
+                        </div>
+                      }
+                    >
+                      {renderChatItemContent(chat, itemIsLoading)}
+                    </SidebarListButton>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        
+        {/* --- 已保存对话列表 --- */}
+        <div>
           <div className="space-y-0.5 px-2"> {/* 减小列表项之间的间距 */}
-            {pendingChats.map(chat => {
-              const itemIsLoading = chat.pendingStatus === 'creating' || 
-                                 chat.pendingStatus === 'title_fetching' || 
-                                 chat.pendingStatus === 'streaming_message';
+            {visibleUnpinnedChats.map(chat => {
               // --- BEGIN COMMENT ---
               // 使用辅助函数判断项目是否应该处于选中状态
-              // 处理临时ID和正式ID之间的转换情况
+              // 处理已保存对话的选中逻辑，确保精确匹配
               // --- END COMMENT ---
               const isActive = isChatActive(chat);
-              
+              const itemIsLoading = false; 
+
               return (
-                <div className="group relative" key={chat.tempId || chat.id}> 
+                <div className="group relative" key={chat.id}>
                   {/* 使用新的 SidebarListButton 替代 SidebarButton */}
                   <SidebarListButton
                     icon={<SidebarChatIcon size="sm" isDark={isDark} />}
@@ -342,14 +419,7 @@ export function SidebarChatList({
                     onClick={() => onSelectChat(chat.id)}
                     isLoading={itemIsLoading}
                     moreActionsTrigger={
-                      <div className={cn(
-                        "transition-opacity",
-                        // 加载状态下显示占位，但禁用交互
-                        itemIsLoading 
-                          ? "pointer-events-none" // 禁用交互但保持占位
-                          : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 非加载状态下正常显示
-                      )}>
-                        {/* 无论是否加载，都显示 more button，确保布局一致 */}
+                      <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                         {createMoreActions(chat, itemIsLoading)}
                       </div>
                     }
@@ -359,73 +429,71 @@ export function SidebarChatList({
                 </div>
               );
             })}
-          </div>
-        </div>
-      )}
-      
-      {/* --- 已保存对话列表 --- */}
-      <div>
-        <div className="space-y-0.5 px-2"> {/* 减小列表项之间的间距 */}
-          {visibleUnpinnedChats.map(chat => {
-            // --- BEGIN COMMENT ---
-            // 使用辅助函数判断项目是否应该处于选中状态
-            // 处理已保存对话的选中逻辑，确保精确匹配
-            // --- END COMMENT ---
-            const isActive = isChatActive(chat);
-            const itemIsLoading = false; 
-
-            return (
-              <div className="group relative" key={chat.id}>
-                {/* 使用新的 SidebarListButton 替代 SidebarButton */}
+            
+            {/* --- 查看全部按钮 --- */}
+            {/* 使用时钟图标，样式与发起新对话按钮类似 */}
+            {hasMoreChats && (
+              <div className="mt-1">
                 <SidebarListButton
-                  icon={<SidebarChatIcon size="sm" isDark={isDark} />}
-                  active={isActive}
-                  onClick={() => onSelectChat(chat.id)}
-                  isLoading={itemIsLoading}
-                  moreActionsTrigger={
-                    <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-                      {createMoreActions(chat, itemIsLoading)}
-                    </div>
+                  icon={
+                    <Clock className={cn(
+                      "h-5 w-5",
+                      isDark
+                        ? "text-gray-400"
+                        : "text-gray-500 group-hover:text-primary"
+                    )} />
                   }
+                  onClick={() => {
+                    // --- BEGIN COMMENT ---
+                    // 不再锁定侧边栏，保持当前状态，导航到历史页面
+                    // --- END COMMENT ---
+                    router.push('/chat/recents')
+                  }}
+                  className={cn(
+                    "w-full group font-medium",
+                    isDark 
+                      ? "bg-stone-700 hover:bg-stone-600 border border-stone-600 hover:border-stone-500/80 shadow-sm hover:shadow-md text-gray-100 hover:text-white" 
+                      : "bg-primary/10 hover:bg-primary/15 text-primary shadow-sm hover:shadow-md border border-stone-300/50"
+                  )}
                 >
-                  {renderChatItemContent(chat, itemIsLoading)}
+                  <span className="text-xs font-medium font-serif">查看全部历史</span>
                 </SidebarListButton>
               </div>
-            );
-          })}
-          
-          {/* --- 查看全部按钮 --- */}
-          {/* 使用时钟图标，样式与发起新对话按钮类似 */}
-          {hasMoreChats && (
-            <div className="mt-1">
-              <SidebarListButton
-                icon={
-                  <Clock className={cn(
-                    "h-5 w-5",
-                    isDark
-                      ? "text-gray-400"
-                      : "text-gray-500 group-hover:text-primary"
-                  )} />
-                }
-                onClick={() => {
-                  // --- BEGIN COMMENT ---
-                  // 不再锁定侧边栏，保持当前状态，导航到历史页面
-                  // --- END COMMENT ---
-                  router.push('/chat/recents')
-                }}
-                className={cn(
-                  "w-full group font-medium",
-                  isDark 
-                    ? "bg-stone-700 hover:bg-stone-600 border border-stone-600 hover:border-stone-500/80 shadow-sm hover:shadow-md text-gray-100 hover:text-white" 
-                    : "bg-primary/10 hover:bg-primary/15 text-primary shadow-sm hover:shadow-md border border-stone-300/50"
-                )}
-              >
-                <span className="text-xs font-medium font-serif">查看全部历史</span>
-              </SidebarListButton>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* --- BEGIN COMMENT ---
+      重命名对话框
+      --- END COMMENT --- */}
+      <InputDialog
+        isOpen={showRenameDialog}
+        onClose={() => !isOperating && setShowRenameDialog(false)}
+        onConfirm={handleRenameConfirm}
+        title="重命名对话"
+        label="对话名称"
+        placeholder="输入新的对话名称"
+        defaultValue={selectedConversation?.title || '新对话'}
+        confirmText="确认重命名"
+        isLoading={isOperating}
+        maxLength={50}
+      />
+
+      {/* --- BEGIN COMMENT ---
+      删除确认对话框
+      --- END COMMENT --- */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => !isOperating && setShowDeleteDialog(false)}
+        onConfirm={handleDeleteConfirm}
+        title="删除对话"
+        message={`确定要删除会话 "${selectedConversation?.title || '新对话'}" 吗？此操作无法撤销。`}
+        confirmText="确认删除"
+        variant="danger"
+        icon="delete"
+        isLoading={isOperating}
+      />
+    </>
   );
 }

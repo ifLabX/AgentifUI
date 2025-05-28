@@ -9,6 +9,7 @@ import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
 import { useDropdownStore } from "@lib/stores/ui/dropdown-store"
 import { DropdownMenu } from "@components/ui/dropdown-menu"
+import { ConfirmDialog, InputDialog } from '@components/ui'
 
 // --- BEGIN COMMENT ---
 // 历史对话列表组件
@@ -43,6 +44,14 @@ export function RecentsList({
   const listRef = React.useRef<HTMLDivElement>(null)
   
   // --- BEGIN COMMENT ---
+  // Dialog状态管理
+  // --- END COMMENT ---
+  const [showRenameDialog, setShowRenameDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [isOperating, setIsOperating] = React.useState(false);
+  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(null);
+  
+  // --- BEGIN COMMENT ---
   // 移除滚动加载更多功能，因为现在加载所有对话
   // --- END COMMENT ---
   
@@ -52,32 +61,40 @@ export function RecentsList({
   const handleRename = async (conversation: Conversation) => {
     if (!conversation.id) return
     
-    const newTitle = window.prompt('请输入新的会话名称', conversation.title || '新对话')
-    if (!newTitle || newTitle.trim() === '') return
+    setSelectedConversation(conversation);
+    setShowRenameDialog(true);
+  }
+  
+  const handleRenameConfirm = async (newTitle: string) => {
+    if (!selectedConversation?.id) return;
     
+    setIsOperating(true);
     try {
-      const success = await onRename(conversation.id, newTitle.trim())
+      const success = await onRename(selectedConversation.id, newTitle.trim());
       
       if (success) {
         // --- BEGIN COMMENT ---
         // 重命名成功后，如果当前页面标题包含旧标题，则更新为新标题
         // 与侧边栏聊天列表保持一致的逻辑
         // --- END COMMENT ---
-        const currentTitle = document.title
-        const oldTitle = conversation.title || '新对话'
-        const baseTitle = 'AgentifUI'
+        const currentTitle = document.title;
+        const oldTitle = selectedConversation.title || '新对话';
+        const baseTitle = 'AgentifUI';
         
         if (currentTitle.includes(oldTitle)) {
-          document.title = `${newTitle.trim()} | ${baseTitle}`
+          document.title = `${newTitle.trim()} | ${baseTitle}`;
         }
         
         // 刷新列表以显示新标题
-        onRefresh()
+        onRefresh();
+        setShowRenameDialog(false);
       } else {
-        alert('重命名会话失败。')
+        alert('重命名会话失败。');
       }
     } catch (error) {
-      alert('操作出错，请稍后再试。')
+      alert('操作出错，请稍后再试。');
+    } finally {
+      setIsOperating(false);
     }
   }
   
@@ -87,20 +104,28 @@ export function RecentsList({
   const handleDelete = async (conversation: Conversation) => {
     if (!conversation.id) return
     
-    const confirmed = window.confirm(`确定要删除会话 "${conversation.title || '新对话'}" 吗？此操作无法撤销。`)
-    if (!confirmed) return
+    setSelectedConversation(conversation);
+    setShowDeleteDialog(true);
+  }
+  
+  const handleDeleteConfirm = async () => {
+    if (!selectedConversation?.id) return;
     
+    setIsOperating(true);
     try {
-      const success = await onDelete(conversation.id)
+      const success = await onDelete(selectedConversation.id);
       
       if (success) {
         // 刷新列表以更新显示
-        onRefresh()
+        onRefresh();
+        setShowDeleteDialog(false);
       } else {
-        alert('删除会话失败。')
+        alert('删除会话失败。');
       }
     } catch (error) {
-      alert('操作出错，请稍后再试。')
+      alert('操作出错，请稍后再试。');
+    } finally {
+      setIsOperating(false);
     }
   }
   
@@ -274,67 +299,100 @@ export function RecentsList({
   }
   
   return (
-    <div 
-      ref={listRef}
-      className="flex-1 overflow-y-auto pr-1"
-    >
-      {isLoading && conversations.length === 0 ? (
-        // 加载状态
-        <div className="flex flex-col space-y-4">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div 
-              key={index}
-              className={cn(
-                "h-24 rounded-lg animate-pulse",
-                isDark ? "bg-stone-800" : "bg-stone-200"
-              )}
-            />
-          ))}
-        </div>
-      ) : conversations.length === 0 ? (
-        // 空状态
-        <div className={cn(
-          "flex flex-col items-center justify-center h-full",
-          isDark ? "text-stone-400" : "text-stone-500"
-        )}>
-          {searchQuery ? (
-            <>
-              <Search className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-lg font-medium">没有找到匹配的对话</p>
-              <p className="text-sm mt-2">尝试使用不同的搜索词</p>
-            </>
-          ) : (
-            <>
-              <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-lg font-medium">暂无历史对话</p>
-              <p className="text-sm mt-2">开始一个新对话吧</p>
-            </>
-          )}
-        </div>
-      ) : (
-        // 对话列表
-        <div className="flex flex-col">
-          {conversations.map(renderConversationItem)}
-          
-          {/* --- BEGIN COMMENT ---
-          // 显示对话总数信息，在列表底部
-          // --- END COMMENT --- */}
-          {conversations.length > 0 && (
-            <div className={cn(
-              "flex items-center justify-center py-6 mt-4 border-t",
-              isDark ? "text-stone-500 border-stone-700" : "text-stone-500 border-stone-200"
-            )}>
-              <Clock className="h-4 w-4 mr-2" />
-              <span className="text-sm">
-                {searchQuery ? 
-                  `搜索结果：${conversations.length} 个对话` : 
-                  `共 ${total} 个历史对话`
-                }
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    <>
+      <div 
+        ref={listRef}
+        className="flex-1 overflow-y-auto pr-1"
+      >
+        {isLoading && conversations.length === 0 ? (
+          // 加载状态
+          <div className="flex flex-col space-y-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div 
+                key={index}
+                className={cn(
+                  "h-24 rounded-lg animate-pulse",
+                  isDark ? "bg-stone-800" : "bg-stone-200"
+                )}
+              />
+            ))}
+          </div>
+        ) : conversations.length === 0 ? (
+          // 空状态
+          <div className={cn(
+            "flex flex-col items-center justify-center h-full",
+            isDark ? "text-stone-400" : "text-stone-500"
+          )}>
+            {searchQuery ? (
+              <>
+                <Search className="h-12 w-12 mb-4 opacity-50" />
+                <p className="text-lg font-medium">没有找到匹配的对话</p>
+                <p className="text-sm mt-2">尝试使用不同的搜索词</p>
+              </>
+            ) : (
+              <>
+                <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
+                <p className="text-lg font-medium">暂无历史对话</p>
+                <p className="text-sm mt-2">开始一个新对话吧</p>
+              </>
+            )}
+          </div>
+        ) : (
+          // 对话列表
+          <div className="flex flex-col">
+            {conversations.map(renderConversationItem)}
+            
+            {/* --- BEGIN COMMENT ---
+            // 显示对话总数信息，在列表底部
+            // --- END COMMENT --- */}
+            {conversations.length > 0 && (
+              <div className={cn(
+                "flex items-center justify-center py-6 mt-4 border-t",
+                isDark ? "text-stone-500 border-stone-700" : "text-stone-500 border-stone-200"
+              )}>
+                <Clock className="h-4 w-4 mr-2" />
+                <span className="text-sm">
+                  {searchQuery ? 
+                    `搜索结果：${conversations.length} 个对话` : 
+                    `共 ${total} 个历史对话`
+                  }
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* --- BEGIN COMMENT ---
+      重命名对话框
+      --- END COMMENT --- */}
+      <InputDialog
+        isOpen={showRenameDialog}
+        onClose={() => !isOperating && setShowRenameDialog(false)}
+        onConfirm={handleRenameConfirm}
+        title="重命名对话"
+        label="对话名称"
+        placeholder="输入新的对话名称"
+        defaultValue={selectedConversation?.title || '新对话'}
+        confirmText="确认重命名"
+        isLoading={isOperating}
+        maxLength={50}
+      />
+
+      {/* --- BEGIN COMMENT ---
+      删除确认对话框
+      --- END COMMENT --- */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => !isOperating && setShowDeleteDialog(false)}
+        onConfirm={handleDeleteConfirm}
+        title="删除对话"
+        message={`确定要删除会话 "${selectedConversation?.title || '新对话'}" 吗？此操作无法撤销。`}
+        confirmText="确认删除"
+        variant="danger"
+        icon="delete"
+        isLoading={isOperating}
+      />
+    </>
   )
 }
