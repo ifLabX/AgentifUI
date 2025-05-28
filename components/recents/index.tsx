@@ -120,7 +120,7 @@ export function Recents() {
                 {isLoading ? (
                   <span className="flex items-center">
                     <span className={cn(
-                      "w-3 h-3 rounded-full animate-pulse mr-2 inline-block",
+                      "w-3 h-3 rounded-full animate-pulse mr-2 inline-block font-serif",
                       isDark ? "bg-stone-600" : "bg-stone-400"
                     )} />
                     正在加载对话记录...
