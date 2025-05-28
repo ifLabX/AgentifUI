@@ -155,7 +155,10 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
               --- END COMMENT --- */}
               <div 
                 className={cn(
-                  "bg-stone-200/60 dark:bg-stone-700/60 rounded animate-pulse",
+                  isDark
+                    ? "bg-stone-800/80"
+                    : "bg-stone-200/60",
+                  "rounded animate-pulse",
                   needsCompactLayout ? "h-6" : "h-7"
                 )}
                 style={{
