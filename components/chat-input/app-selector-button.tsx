@@ -14,6 +14,11 @@ import { ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 // --- END COMMENT ---
 import { useFocusManager } from './chat-input';
 
+// --- BEGIN COMMENT ---
+// 🎯 新增：导入新的应用参数服务
+// --- END COMMENT ---
+import { appParametersService } from '@lib/services/app-parameters-service';
+
 interface AppSelectorButtonProps {
   className?: string;
 }
@@ -38,6 +43,56 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   useEffect(() => {
     fetchApps();
   }, [fetchApps]);
+
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：当应用列表加载完成后，批量预缓存模型应用的参数
+  // --- END COMMENT ---
+  useEffect(() => {
+    const performBatchSync = async () => {
+      if (!isLoading && apps.length > 0) {
+        // 过滤出模型类型的应用ID
+        const modelAppIds = apps
+          .filter(app => {
+            const metadata = app.config?.app_metadata;
+            
+            // 如果有元数据配置，检查是否为模型类型
+            if (metadata) {
+              return metadata.app_type === 'model';
+            }
+            
+            // 如果没有元数据配置，根据名称进行启发式判断
+            const appName = (app.display_name || app.name || app.instance_id).toLowerCase();
+            const modelKeywords = ['gpt', 'claude', 'gemini', 'llama', 'qwen', '通义', '模型', 'model', 'chat', '对话'];
+            const marketplaceKeywords = ['翻译', 'translate', '代码', 'code', '助手', 'assistant', '工具', 'tool', '生成', 'generate'];
+            
+            const isLikelyModel = modelKeywords.some(keyword => appName.includes(keyword));
+            const isLikelyMarketplace = marketplaceKeywords.some(keyword => appName.includes(keyword));
+            
+            return isLikelyModel && !isLikelyMarketplace;
+          })
+          .map(app => app.id);
+
+        if (modelAppIds.length > 0) {
+          console.log(`[app-selector-button] 开始批量同步 ${modelAppIds.length} 个模型应用的参数`);
+          try {
+            // --- BEGIN COMMENT ---
+            // 🎯 使用appParametersService的批量同步方法
+            // --- END COMMENT ---
+            const result = await appParametersService.batchSync(modelAppIds);
+            if (result.success) {
+              console.log('[app-selector-button] 批量同步完成');
+            } else {
+              console.warn('[app-selector-button] 批量同步部分失败:', result.error);
+            }
+          } catch (error) {
+            console.warn('[app-selector-button] 批量同步失败，但不影响用户操作:', error);
+          }
+        }
+      }
+    };
+
+    performBatchSync();
+  }, [isLoading, apps]);
 
   // --- BEGIN COMMENT ---
   // 🎯 过滤出模型类型的应用
@@ -67,6 +122,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   // 🎯 乐观UI：应用切换处理
   // 立即关闭下拉菜单，显示切换后的应用名称，右侧显示小spinner
   // 修改：确保在操作完成后恢复输入框焦点
+  // 🎯 新增：在切换前预缓存目标应用的参数
   // --- END COMMENT ---
   const handleAppChange = async (newAppId: string) => {
     if (newAppId === currentAppId) {
@@ -84,6 +140,18 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       
       // 开始乐观切换状态
       setIsOptimisticSwitching(true);
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 新增：在切换前预缓存目标应用的参数
+      // 在后台静默缓存，不阻塞切换过程
+      // --- END COMMENT ---
+      appParametersService.getAppParameters(newAppId)
+        .then(() => {
+          console.log(`[app-selector-button] 成功预缓存应用 ${newAppId} 的参数`);
+        })
+        .catch((error) => {
+          console.warn(`[app-selector-button] 预缓存应用 ${newAppId} 参数失败，但不影响切换:`, error);
+        });
       
       // --- BEGIN COMMENT ---
       // 🎯 使用 validateConfig 进行应用切换，现在参数已预缓存

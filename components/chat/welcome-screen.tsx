@@ -5,7 +5,7 @@ import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks"
 import { TypeWriter } from "@components/ui/typewriter"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
-import { useAppParameters } from "@lib/hooks/use-app-parameters"
+import { useAppParametersV2 } from "@lib/hooks/use-app-parameters-v2"
 import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
 
 interface WelcomeScreenProps {
@@ -46,16 +46,16 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { welcomeText: welcomePosition, welcomeTextTitle, needsCompactLayout } = useWelcomeLayout()
 
   // --- BEGIN COMMENT ---
-  // 获取当前应用ID和应用参数
-  // 🎯 现在使用优化后的批量缓存机制
+  // 🎯 使用新的数据库优先的应用参数Hook
+  // 替代原有的useAppParameters，获得更好的性能和用户体验
   // --- END COMMENT ---
   const { currentAppId } = useCurrentApp()
-  const { parameters, isLoading: isParametersLoading, error: parametersError } = useAppParameters(currentAppId)
+  const { parameters, isLoading: isParametersLoading, error: parametersError, source } = useAppParametersV2(currentAppId)
 
   // --- BEGIN COMMENT ---
   // 智能处理欢迎文字的显示逻辑
   // 优先级：动态开场白 > 用户名问候 > 默认文字
-  // 🎯 优化：确保只有当前app的参数加载完成后才显示，避免显示错误的欢迎文字
+  // 🎯 优化：数据库优先策略让加载更快，减少等待时间
   // --- END COMMENT ---
   useEffect(() => {
     // --- BEGIN COMMENT ---
@@ -65,26 +65,24 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     setFinalText("");
 
     // --- BEGIN COMMENT ---
-    // 🎯 关键检查：确保必须等当前app的参数加载完成
-    // 如果有currentAppId但参数还在加载中，必须等待
-    // 这样可以避免显示错误的欢迎文字（比如上一个app的开场白）
+    // 🎯 优化的加载逻辑：数据库优先策略让大部分情况下无需等待
+    // 只有在真正需要等待时才显示加载状态
     // --- END COMMENT ---
     if (username === undefined) {
       console.log('[WelcomeScreen] 等待用户信息加载...');
       return;
     }
     
-    if (currentAppId && isParametersLoading) {
-      console.log('[WelcomeScreen] 等待当前应用参数加载完成...', currentAppId);
-      return;
-    }
-
     // --- BEGIN COMMENT ---
-    // 🎯 新增：如果有currentAppId但没有参数且没有错误，说明参数还未开始加载
-    // 这种情况下也需要等待，避免显示fallback文字
+    // 🎯 新策略：由于数据库优先，大部分情况下可以立即获得参数
+    // 只在确实需要等待API调用时才显示加载状态
     // --- END COMMENT ---
-    if (currentAppId && !parameters && !parametersError) {
-      console.log('[WelcomeScreen] 当前应用参数尚未加载，等待...', currentAppId);
+    if (currentAppId && isParametersLoading && !parameters) {
+      console.log('[WelcomeScreen] 等待应用参数加载...', { 
+        currentAppId, 
+        source,
+        hasParameters: !!parameters 
+      });
       return;
     }
 
@@ -94,7 +92,11 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     // 优先使用动态开场白（如果获取成功且不为空）
     if (currentAppId && parameters?.opening_statement && !parametersError) {
       welcomeText = parameters.opening_statement;
-      console.log('[WelcomeScreen] 使用应用开场白:', welcomeText.substring(0, 50) + '...');
+      console.log('[WelcomeScreen] 使用应用开场白:', {
+        appId: currentAppId,
+        source,
+        text: welcomeText.substring(0, 50) + '...'
+      });
     } else if (username) {
       // 如果没有开场白但有用户名，使用用户名问候
       welcomeText = `${getTimeBasedGreeting()}，${username}`;
@@ -110,14 +112,18 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     // 自动fallback到用户名问候或默认问候
     // --- END COMMENT ---
     if (parametersError && currentAppId) {
-      console.warn('[WelcomeScreen] 获取应用参数失败，使用fallback文字:', parametersError);
+      console.warn('[WelcomeScreen] 获取应用参数失败，使用fallback文字:', {
+        appId: currentAppId,
+        error: parametersError,
+        fallbackText: welcomeText
+      });
     }
     
     // --- BEGIN COMMENT ---
-    // 🎯 优化延迟：如果是从缓存获取的参数，减少延迟时间
-    // 应用切换时应该能立即显示，因为参数已预缓存
+    // 🎯 优化延迟：数据库优先策略让延迟几乎为0
+    // 只有API fallback时才需要短暂延迟
     // --- END COMMENT ---
-    const delay = isParametersLoading ? 300 : 100; // 缓存命中时更快显示
+    const delay = (source === 'database' || !isParametersLoading) ? 50 : 200; // 数据库来源几乎立即显示
     
     const timer = setTimeout(() => {
       setFinalText(welcomeText);
@@ -125,7 +131,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     }, delay);
     
     return () => clearTimeout(timer);
-  }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError]);
+  }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError, source]);
 
   return (
       <div 
