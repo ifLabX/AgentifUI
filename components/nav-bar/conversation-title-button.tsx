@@ -60,11 +60,23 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
       return foundInCombined;
     }
     
-    // 如果在Combined Conversations中找不到，说明这个对话可能不在sidebar的前5个中
-    // 返回一个基础的对话对象，标题从URL参数或chat store中获取
+    // --- BEGIN COMMENT ---
+    // 如果在Combined Conversations中找不到，尝试从document.title中提取标题
+    // 这样可以避免不必要的API调用，特别是从recents页面点击进来的情况
+    // --- END COMMENT ---
+    const getTitleFromDocument = () => {
+      const docTitle = document.title;
+      const baseTitle = 'AgentifUI';
+      if (docTitle.includes(' | ') && docTitle.endsWith(` | ${baseTitle}`)) {
+        return docTitle.replace(` | ${baseTitle}`, '');
+      }
+      return '对话'; // 默认标题
+    };
+    
+    // 返回一个基础的对话对象，标题从document.title中获取
     return {
       id: currentConversationId,
-      title: '对话', // 默认标题，后续会通过API获取真实标题
+      title: getTitleFromDocument(),
       external_id: currentConversationId,
       user_id: undefined,
       created_at: '',
@@ -75,15 +87,13 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
   }, [conversations, currentConversationId]);
 
   // --- BEGIN COMMENT ---
-  // 当找到的对话没有supabase_pk时，尝试通过API获取完整的对话信息
+  // 当找到的对话没有supabase_pk时，静默在后台获取完整的对话信息（不显示loading）
   // --- END COMMENT ---
   const [fullConversationData, setFullConversationData] = React.useState<CombinedConversation | null>(null);
-  const [isLoadingFullData, setIsLoadingFullData] = React.useState(false);
   
   React.useEffect(() => {
     if (currentConversation && !currentConversation.supabase_pk && currentConversationId) {
-      // 异步获取完整的对话信息
-      setIsLoadingFullData(true);
+      // 静默在后台获取完整的对话信息，不显示loading状态
       const fetchFullConversation = async () => {
         try {
           const { getConversationByExternalId } = await import('@lib/db/conversations');
@@ -93,7 +103,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
             const dbConversation = result.data;
             setFullConversationData({
               ...currentConversation,
-              title: dbConversation.title || '新对话',
+              title: dbConversation.title || currentConversation.title, // 保留已有标题作为备选
               supabase_pk: dbConversation.id,
               user_id: dbConversation.user_id,
               created_at: dbConversation.created_at,
@@ -110,15 +120,13 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
           }
         } catch (error) {
           console.error('获取对话信息失败:', error);
-        } finally {
-          setIsLoadingFullData(false);
+          // 失败时保持当前状态，不影响用户体验
         }
       };
       
       fetchFullConversation();
     } else {
       setFullConversationData(null);
-      setIsLoadingFullData(false);
     }
   }, [currentConversation, currentConversationId]);
 
@@ -144,7 +152,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
     
     const supabasePK = finalConversation.supabase_pk;
     if (!supabasePK) {
-      alert("对话数据正在同步中，请稍后再尝试重命名。");
+      alert("正在获取对话详细信息，请稍后再尝试重命名。");
       setShowRenameDialog(false);
       return;
     }
@@ -201,7 +209,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
     
     const supabasePK = finalConversation.supabase_pk;
     if (!supabasePK) {
-      alert("对话数据正在同步中，请稍后再尝试删除。");
+      alert("正在获取对话详细信息，请稍后再尝试删除。");
       setShowDeleteDialog(false);
       return;
     }
@@ -255,29 +263,29 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
         --- END COMMENT --- */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          disabled={isOperating || isLoadingFullData}
+          disabled={isOperating}
           className={cn(
             "flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-serif",
             "transition-colors duration-200",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "h-8 min-h-[2rem]",
             // --- BEGIN MODIFIED COMMENT ---
-            // cursor控制：只有在下拉框关闭且未操作且未加载时显示pointer
+            // cursor控制：只有在下拉框关闭且未操作时显示pointer
             // --- END MODIFIED COMMENT ---
-            !isOpen && !isOperating && !isLoadingFullData ? "cursor-pointer" : "",
+            !isOpen && !isOperating ? "cursor-pointer" : "",
             isDark 
               ? "hover:bg-stone-800/50 text-stone-300" 
               : "hover:bg-stone-100 text-stone-600"
           )}
         >
           {/* --- BEGIN MODIFIED COMMENT ---
-          对话标题：移除左侧图标，只显示标题文本，加载时显示loading状态
+          对话标题：显示标题文本，只在操作时显示loading状态
           --- END MODIFIED COMMENT --- */}
           <span className={cn(
             "font-serif whitespace-nowrap",
             "flex items-center leading-none"
           )}>
-            {isLoadingFullData ? (
+            {isOperating ? (
               <>
                 <div className={cn(
                   "w-3 h-3 rounded-full animate-pulse mr-2 inline-block",
@@ -327,16 +335,16 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
               {/* 重命名选项 */}
               <button
                 onClick={handleRename}
-                disabled={isOperating || isLoadingFullData}
+                disabled={isOperating}
                 className={cn(
                   "w-full text-left px-4 py-3 text-sm font-serif",
                   "transition-colors duration-150 whitespace-nowrap",
                   "flex items-center space-x-2",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
                   // --- BEGIN MODIFIED COMMENT ---
-                  // 添加cursor pointer控制，加载时也禁用
+                  // 添加cursor pointer控制
                   // --- END MODIFIED COMMENT ---
-                  !isOperating && !isLoadingFullData ? "cursor-pointer" : "",
+                  !isOperating ? "cursor-pointer" : "",
                   isDark 
                     ? "hover:bg-stone-600/60 text-stone-300" 
                     : "hover:bg-stone-200/60 text-stone-600"
@@ -355,16 +363,16 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
               {/* 删除选项 */}
               <button
                 onClick={handleDelete}
-                disabled={isOperating || isLoadingFullData}
+                disabled={isOperating}
                 className={cn(
                   "w-full text-left px-4 py-3 text-sm font-serif",
                   "transition-colors duration-150 whitespace-nowrap",
                   "flex items-center space-x-2",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
                   // --- BEGIN MODIFIED COMMENT ---
-                  // 添加cursor pointer控制，增加下边距防止悬停效果溢出，加载时也禁用
+                  // 添加cursor pointer控制
                   // --- END MODIFIED COMMENT ---
-                  !isOperating && !isLoadingFullData ? "cursor-pointer" : "",
+                  !isOperating ? "cursor-pointer" : "",
                   "mb-1",
                   isDark 
                     ? "hover:bg-red-900/30 text-red-400 hover:text-red-300" 
