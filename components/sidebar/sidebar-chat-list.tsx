@@ -208,7 +208,7 @@ export function SidebarChatList({
           // --- BEGIN COMMENT ---
           // 🎯 使用TypeWriter组件显示打字机效果，包装在h4标签中以应用装饰字体
           // --- END COMMENT ---
-          <h4 className={cn("truncate w-full text-xs leading-4 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>
+          <h4 className={cn("truncate w-full text-xs leading-4 font-medium font-serif", isDark ? "text-gray-200" : "text-stone-700")}>
             <TypeWriter
               text={chat.titleTypewriterState!.targetTitle}
               speed={30} // 较快的打字速度
@@ -223,7 +223,7 @@ export function SidebarChatList({
           </h4>
         ) : (
           // 标题文本 - 使用h4标签以应用装饰字体，与历史对话页面保持一致
-          <h4 className={cn("truncate w-full text-xs leading-4 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>{title}</h4>
+          <h4 className={cn("truncate w-full text-xs leading-4 font-medium font-serif", isDark ? "text-gray-200" : "text-stone-700")}>{title}</h4>
         )}
       </div>
     );

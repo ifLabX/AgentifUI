@@ -225,6 +225,15 @@ html, body {
     font-size-adjust: none !important;
     letter-spacing: normal !important;
   }
+
+  /* 🎯 侧边栏中使用衬线字体的元素的字体大小调整 */
+  .font-serif {
+    font-size-adjust: 0.52 !important;
+    letter-spacing: 0.01em !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
 }
 
 /* 🔥 最后的保险 - 仅在必要时使用 */
