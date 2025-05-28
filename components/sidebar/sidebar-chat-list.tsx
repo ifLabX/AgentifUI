@@ -8,7 +8,7 @@ import { SidebarChatIcon } from "./sidebar-chat-icon"
 import { cn } from "@lib/utils"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useMobile } from "@lib/hooks/use-mobile"
-import { useCombinedConversations, CombinedConversation } from "@lib/hooks/use-combined-conversations"
+import { useCombinedConversations, CombinedConversation, conversationEvents } from "@lib/hooks/use-combined-conversations"
 import { useRouter } from "next/navigation"
 // formatDistanceToNow and zhCN are not needed if we only show title
 // import { formatDistanceToNow } from "date-fns" 
@@ -124,6 +124,10 @@ export function SidebarChatList({
         }
         
         refresh();
+        // --- BEGIN COMMENT ---
+        // 触发全局同步事件，通知所有组件数据已更新
+        // --- END COMMENT ---
+        conversationEvents.emit();
         setShowRenameDialog(false);
       } else {
         console.error('重命名对话失败:', result.error);
@@ -165,6 +169,10 @@ export function SidebarChatList({
         // --- BEGIN COMMENT ---
         // 删除对话后直接路由到 /chat/new
         // --- END COMMENT ---
+        // --- BEGIN COMMENT ---
+        // 触发全局同步事件，通知所有组件数据已更新
+        // --- END COMMENT ---
+        conversationEvents.emit();
         if (selectedId === selectedConversation.id) {
           window.location.href = '/chat/new';
         }

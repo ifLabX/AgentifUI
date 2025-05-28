@@ -12,6 +12,7 @@ import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useAllConversations } from "@lib/hooks/use-all-conversations"
 import { RecentsList } from "./recents-list"
 import { useChatWidth } from "@lib/hooks/use-chat-width"
+import { conversationEvents } from "@lib/hooks/use-combined-conversations"
 
 // --- BEGIN COMMENT ---
 // 历史对话页面组件
@@ -35,6 +36,19 @@ export function Recents() {
     deleteConversation,
     renameConversation
   } = useAllConversations()
+  
+  // --- BEGIN COMMENT ---
+  // 监听全局对话数据更新事件
+  // --- END COMMENT ---
+  React.useEffect(() => {
+    const unsubscribe = conversationEvents.subscribe(() => {
+      refresh();
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, [refresh]);
   
   // --- BEGIN COMMENT ---
   // 处理搜索输入变化

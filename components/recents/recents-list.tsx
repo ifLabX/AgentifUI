@@ -10,6 +10,7 @@ import { zhCN } from "date-fns/locale"
 import { useDropdownStore } from "@lib/stores/ui/dropdown-store"
 import { DropdownMenu } from "@components/ui/dropdown-menu"
 import { ConfirmDialog, InputDialog } from '@components/ui'
+import { conversationEvents } from '@lib/hooks/use-combined-conversations'
 
 // --- BEGIN COMMENT ---
 // 历史对话列表组件
@@ -87,6 +88,10 @@ export function RecentsList({
         
         // 刷新列表以显示新标题
         onRefresh();
+        // --- BEGIN COMMENT ---
+        // 触发全局同步事件，通知所有组件数据已更新
+        // --- END COMMENT ---
+        conversationEvents.emit();
         setShowRenameDialog(false);
       } else {
         alert('重命名会话失败。');
@@ -118,6 +123,10 @@ export function RecentsList({
       if (success) {
         // 刷新列表以更新显示
         onRefresh();
+        // --- BEGIN COMMENT ---
+        // 触发全局同步事件，通知所有组件数据已更新
+        // --- END COMMENT ---
+        conversationEvents.emit();
         setShowDeleteDialog(false);
       } else {
         alert('删除会话失败。');

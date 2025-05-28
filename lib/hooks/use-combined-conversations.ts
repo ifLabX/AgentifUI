@@ -177,7 +177,25 @@ export function useCombinedConversations() {
     refreshDbConversations();
     // 强制刷新 pendingArray
     setPendingArray(Array.from(pendingConversations.values()));
+    // --- BEGIN COMMENT ---
+    // 触发全局刷新事件，通知其他组件数据已更新
+    // --- END COMMENT ---
+    conversationEvents.emit();
   };
+
+  // --- BEGIN COMMENT ---
+  // 监听全局刷新事件
+  // --- END COMMENT ---
+  useEffect(() => {
+    const unsubscribe = conversationEvents.subscribe(() => {
+      refreshDbConversations();
+      setPendingArray(Array.from(pendingConversations.values()));
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, [refreshDbConversations, pendingConversations]);
 
   // Effect to clean up fully synced pending conversations from PendingConversationStore
   useEffect(() => {
@@ -222,3 +240,21 @@ export function useCombinedConversations() {
     refresh
   };
 }
+
+// --- BEGIN COMMENT ---
+// 全局事件系统，用于同步对话数据更新
+// --- END COMMENT ---
+class ConversationEventEmitter {
+  private listeners: Set<() => void> = new Set();
+  
+  subscribe(callback: () => void) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  }
+  
+  emit() {
+    this.listeners.forEach(callback => callback());
+  }
+}
+
+export const conversationEvents = new ConversationEventEmitter();
