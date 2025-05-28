@@ -104,6 +104,7 @@ export function PromptButton({
       {icon || defaultIcon}
       <span className={cn(
         "transition-colors duration-300",
+        "font-serif",
         // 仅在亮色模式下悬停时改变文本颜色
         !isDark && "group-hover:text-stone-700",
         styles.text

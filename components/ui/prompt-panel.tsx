@@ -55,6 +55,7 @@ export function PromptPanel({
       )}>
         <h3 className={cn(
           "text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2",
+          "font-serif",
           isDark ? "text-stone-200" : "text-stone-800"
         )}>
           <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-stone-500" />
@@ -102,10 +103,10 @@ export function PromptPanel({
                 )}>
                   {template.isSelected ? <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : template.icon}
                 </span>
-                <span className="font-medium text-xs sm:text-sm">{template.title}</span>
+                <span className="font-medium text-xs sm:text-sm font-serif">{template.title}</span>
               </div>
               <p className={cn(
-                "text-xs line-clamp-2",
+                "text-xs line-clamp-2 font-serif",
                 template.isSelected
                   ? isDark ? "text-stone-200" : "text-stone-700"
                   : isDark ? "text-stone-400" : "text-stone-500"

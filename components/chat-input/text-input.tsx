@@ -112,6 +112,7 @@ export const ChatTextInput = forwardRef<HTMLTextAreaElement, ChatTextInputProps>
       className={cn(
         "w-full resize-none border-0 bg-transparent focus:ring-0 focus:outline-none",
         "min-h-[48px] overflow-y-auto",
+        "font-serif",
         isDark ? `${colors.mainText.tailwind} placeholder:text-stone-400` : "text-gray-900 placeholder:text-gray-500",
         className,
       )}

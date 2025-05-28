@@ -271,7 +271,7 @@ export function PopoverItem({ icon, children, onClick, className, danger = false
           {icon}
         </span>
       )}
-      <span className="truncate font-medium leading-5 mt-px">{children}</span>
+      <span className="truncate font-medium leading-5 mt-px font-serif">{children}</span>
     </button>
   )
 }

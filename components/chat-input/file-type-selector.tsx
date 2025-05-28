@@ -104,7 +104,7 @@ export const FileTypeSelector = ({
       <div className="px-1 py-1">
         {isLoading ? (
           <div className={cn(
-            "flex items-center justify-center py-4",
+            "flex items-center justify-center py-4 font-serif",
             isDark ? "text-gray-400" : "text-gray-500"
           )}>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -112,7 +112,7 @@ export const FileTypeSelector = ({
           </div>
         ) : error ? (
           <div className={cn(
-            "px-3 py-2 text-sm",
+            "px-3 py-2 text-sm font-serif",
             isDark ? "text-red-300" : "text-red-500"
           )}>
             加载文件类型失败

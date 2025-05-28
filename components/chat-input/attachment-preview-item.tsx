@@ -131,7 +131,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
       <div className="flex-grow min-w-0">
         <p
           className={cn(
-            "text-sm font-medium truncate",
+            "text-sm font-medium truncate font-serif",
             isDark ? "text-stone-100" : "text-stone-900",
           )}
         >
@@ -139,7 +139,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({ at
         </p>
         <p
           className={cn(
-            "text-xs",
+            "text-xs font-serif",
             isDark ? "text-stone-400" : "text-stone-500",
           )}
         >
