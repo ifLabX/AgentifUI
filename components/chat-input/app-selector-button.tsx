@@ -135,8 +135,10 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
           "disabled:opacity-50 disabled:cursor-not-allowed",
           // --- BEGIN MODIFIED COMMENT ---
           // 添加固定高度和垂直居中对齐，确保serif字体垂直居中
+          // cursor控制：只有在下拉框关闭且未验证时显示pointer
           // --- END MODIFIED COMMENT ---
           "h-8 min-h-[2rem]",
+          !isOpen && !isValidating ? "cursor-pointer" : "",
           isDark 
             ? "hover:bg-stone-800/50 text-stone-300" 
             : "hover:bg-stone-100 text-stone-600"
@@ -207,8 +209,9 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
                     // --- BEGIN MODIFIED COMMENT ---
                     // 移除truncate，允许显示完整的应用名称
                     // 使用whitespace-nowrap防止换行，但允许水平滚动
+                    // 添加cursor pointer
                     // --- END MODIFIED COMMENT ---
-                    "whitespace-nowrap",
+                    "whitespace-nowrap cursor-pointer",
                     isDark 
                       ? "hover:bg-stone-600/60" 
                       : "hover:bg-stone-200/60",

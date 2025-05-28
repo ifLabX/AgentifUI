@@ -7,7 +7,7 @@ import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { useAllConversations } from '@lib/hooks/use-all-conversations';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
-import { ChevronDown, ChevronUp, Edit, Trash, MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronUp, Edit, Trash } from 'lucide-react';
 
 interface ConversationTitleButtonProps {
   className?: string;
@@ -134,7 +134,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
       className
     )}>
       {/* --- BEGIN COMMENT ---
-      主按钮：完全模仿app-selector的样式
+      主按钮：优化样式，移除左侧图标，添加cursor控制逻辑
       --- END COMMENT --- */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -144,15 +144,18 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
           "transition-colors duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           "h-8 min-h-[2rem]",
+          // --- BEGIN MODIFIED COMMENT ---
+          // cursor控制：只有在下拉框关闭且未操作时显示pointer
+          // --- END MODIFIED COMMENT ---
+          !isOpen && !isOperating ? "cursor-pointer" : "",
           isDark 
             ? "hover:bg-stone-800/50 text-stone-300" 
             : "hover:bg-stone-100 text-stone-600"
         )}
       >
-        {/* --- BEGIN COMMENT ---
-        对话标题：使用消息图标 + 标题文本
-        --- END COMMENT --- */}
-        <MessageSquare className="h-3 w-3 flex-shrink-0" />
+        {/* --- BEGIN MODIFIED COMMENT ---
+        对话标题：移除左侧图标，只显示标题文本
+        --- END MODIFIED COMMENT --- */}
         <span className={cn(
           "font-serif whitespace-nowrap",
           "flex items-center leading-none"
@@ -173,7 +176,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
       </button>
 
       {/* --- BEGIN COMMENT ---
-      下拉菜单：模仿app-selector和recents-list的样式
+      下拉菜单：完全模仿app-selector的样式
       --- END COMMENT --- */}
       {isOpen && (
         <>
@@ -183,7 +186,9 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
             onClick={() => setIsOpen(false)}
           />
           
-          {/* 下拉选项 */}
+          {/* --- BEGIN MODIFIED COMMENT ---
+          下拉选项：完全模仿app-selector的样式和布局
+          --- END MODIFIED COMMENT --- */}
           <div className={cn(
             "absolute top-full left-0 mt-1 min-w-[8rem] max-w-[16rem]",
             "rounded-md shadow-lg z-20",
@@ -201,6 +206,10 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
                 "transition-colors duration-150 whitespace-nowrap",
                 "flex items-center space-x-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
+                // --- BEGIN MODIFIED COMMENT ---
+                // 添加cursor pointer控制
+                // --- END MODIFIED COMMENT ---
+                !isOperating ? "cursor-pointer" : "",
                 isDark 
                   ? "hover:bg-stone-600/60 text-stone-300" 
                   : "hover:bg-stone-200/60 text-stone-600"
@@ -225,6 +234,10 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
                 "transition-colors duration-150 whitespace-nowrap",
                 "flex items-center space-x-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
+                // --- BEGIN MODIFIED COMMENT ---
+                // 添加cursor pointer控制
+                // --- END MODIFIED COMMENT ---
+                !isOperating ? "cursor-pointer" : "",
                 isDark 
                   ? "hover:bg-red-900/30 text-red-400 hover:text-red-300" 
                   : "hover:bg-red-50 text-red-600 hover:text-red-700"
