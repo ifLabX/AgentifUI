@@ -6,17 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@lib/supabase/client';
 import { useTheme } from '@lib/hooks/use-theme';
-import { useAdminAuth } from '@lib/hooks/use-admin-auth';
-import { Settings } from 'lucide-react';
-import { cn } from '@lib/utils';
+import { AdminButton } from '@components/admin/admin-button';
 
 export function Home() {
   const router = useRouter();
   const { isDark } = useTheme();
   const supabase = createClient();
-  
-  // 检查管理员权限，不自动重定向
-  const { isAdmin, isLoading: adminLoading } = useAdminAuth(false);
 
   const handleStartClick = async () => {
     try {
@@ -41,11 +36,6 @@ export function Home() {
     router.push('/about');
   };
 
-  // 管理员入口点击处理
-  const handleAdminClick = () => {
-    router.push('/admin/api-config');
-  };
-
   // 根据主题获取颜色
   const getColors = () => {
     if (isDark) {
@@ -58,8 +48,7 @@ export function Home() {
         primaryButton: 'bg-stone-600 hover:bg-stone-500 text-gray-100',
         secondaryButton: 'border-stone-500 text-gray-200 hover:bg-stone-600',
         featureIconBg: 'bg-stone-600',
-        featureTextColor: 'text-gray-300',
-        adminButton: 'bg-stone-700/80 hover:bg-stone-600/90 border-stone-600 text-stone-200'
+        featureTextColor: 'text-gray-300'
       };
     } else {
       return {
@@ -71,8 +60,7 @@ export function Home() {
         primaryButton: 'bg-stone-800 hover:bg-stone-700 text-gray-100',
         secondaryButton: 'border-stone-400 text-stone-800 hover:bg-stone-200',
         featureIconBg: 'bg-stone-200',
-        featureTextColor: 'text-stone-700',
-        adminButton: 'bg-stone-100/80 hover:bg-stone-200/90 border-stone-300 text-stone-700'
+        featureTextColor: 'text-stone-700'
       };
     }
   };
@@ -82,28 +70,10 @@ export function Home() {
   return (
     <AnimatePresence>
       <div className="w-full py-12 px-4 sm:px-6 lg:px-8 relative">
-        {/* 管理员入口按钮 - 右上角固定位置 */}
-        {isAdmin && !adminLoading && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
-            className="fixed top-6 right-6 z-50"
-          >
-            <button
-              onClick={handleAdminClick}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg border backdrop-blur-sm",
-                "transition-all duration-200 hover:scale-105 font-serif",
-                "shadow-lg hover:shadow-xl",
-                colors.adminButton
-              )}
-            >
-              <Settings className="h-4 w-4" />
-              <span className="text-sm font-medium">管理面板</span>
-            </button>
-          </motion.div>
-        )}
+        {/* --- BEGIN COMMENT ---
+        管理员入口按钮，仅对管理员用户显示
+        --- END COMMENT --- */}
+        <AdminButton variant="floating" />
 
         <motion.div 
           initial={{ opacity: 0 }}

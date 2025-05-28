@@ -7,6 +7,7 @@ import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { DesktopUserAvatar } from "./desktop-user-avatar"
 import { ConversationTitleButton } from "./conversation-title-button"
+import { AdminButton } from "@components/admin/admin-button"
 
 /**
  * 桌面端顶部导航栏组件
@@ -15,6 +16,7 @@ import { ConversationTitleButton } from "./conversation-title-button"
  * - 使用石色(stone)调色板，与应用整体风格一致
  * - 右上角显示用户头像按钮，点击弹出下拉菜单
  * - 左侧显示当前对话标题按钮（仅在历史对话页面）
+ * - 管理员用户在头像左侧显示管理按钮
  * - 布局会根据侧边栏的展开/收起状态动态调整左边距
  */
 export function NavBar() {
@@ -55,7 +57,15 @@ export function NavBar() {
           <ConversationTitleButton />
         </div>
         
-        <div className="flex items-center">
+        <div className="flex items-center gap-3">
+          {/* --- BEGIN COMMENT ---
+          管理员按钮，仅对管理员用户显示
+          --- END COMMENT --- */}
+          <AdminButton variant="navbar" />
+          
+          {/* --- BEGIN COMMENT ---
+          用户头像按钮
+          --- END COMMENT --- */}
           <DesktopUserAvatar />
         </div>
       </header>
