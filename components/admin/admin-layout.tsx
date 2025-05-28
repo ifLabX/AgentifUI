@@ -67,19 +67,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       )}>
         <div className="w-full px-4 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo和标题 */}
+            {/* --- BEGIN COMMENT ---
+            左侧：标题和面包屑
+            --- END COMMENT --- */}
             <div className="flex items-center gap-3">
-              <Link 
-                href="/" 
-                className={cn(
-                  "flex items-center gap-2 transition-colors",
-                  isDark ? "text-stone-300 hover:text-stone-100" : "text-stone-600 hover:text-stone-900"
-                )}
-              >
-                <Home className="h-5 w-5" />
-                <span className="text-sm">返回主页</span>
-              </Link>
-              <ChevronRight className="h-4 w-4 text-stone-400" />
               <h1 className={cn(
                 "text-xl md:text-2xl font-bold",
                 isDark ? "text-stone-100" : "text-stone-900"
@@ -88,22 +79,40 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </h1>
             </div>
 
-            {/* 移动端菜单按钮 */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={cn(
-                "lg:hidden p-2 rounded-lg transition-colors",
-                isDark 
-                  ? "hover:bg-stone-800 text-stone-300" 
-                  : "hover:bg-stone-200 text-stone-600"
-              )}
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </button>
+            {/* --- BEGIN COMMENT ---
+            右侧：返回主页按钮和移动端菜单
+            --- END COMMENT --- */}
+            <div className="flex items-center gap-3">
+              <Link 
+                href="/" 
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+                  isDark 
+                    ? "text-stone-300 hover:text-stone-100 hover:bg-stone-800" 
+                    : "text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+                )}
+              >
+                <Home className="h-4 w-4" />
+                <span className="text-sm hidden sm:inline">返回主页</span>
+              </Link>
+              
+              {/* 移动端菜单按钮 */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={cn(
+                  "lg:hidden p-2 rounded-lg transition-colors",
+                  isDark 
+                    ? "hover:bg-stone-800 text-stone-300" 
+                    : "hover:bg-stone-200 text-stone-600"
+                )}
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -178,7 +187,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     <Icon className={cn(
                       "h-5 w-5 mt-0.5 transition-colors",
                       isActive 
-                        ? "text-blue-500" 
+                        ? isDark ? "text-stone-100" : "text-stone-900"
                         : "text-stone-400 group-hover:text-stone-500"
                     )} />
                     <div className="flex-1 min-w-0">
