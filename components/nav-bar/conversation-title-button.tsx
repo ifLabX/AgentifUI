@@ -309,17 +309,16 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
           <>
             {/* 背景遮罩 */}
             <div 
-              className="fixed inset-0 z-40" 
+              className="fixed inset-0 z-[90]" 
               onClick={() => setIsOpen(false)}
             />
             
             {/* --- BEGIN MODIFIED COMMENT ---
-            下拉选项：缩小横向宽度，位置从chevron图标开始，左侧收窄一点，右侧不变
-            使用z-[60]确保在sidebar上方显示
+            下拉选项：改为左侧对齐，避免与sidebar冲突，缩小横向宽度
             --- END MODIFIED COMMENT --- */}
             <div className={cn(
-              "absolute top-full right-0 mt-1 min-w-[8rem] max-w-[12rem]",
-              "rounded-md shadow-lg z-[60] overflow-hidden",
+              "absolute top-full left-0 mt-1 min-w-[8rem] max-w-[12rem]",
+              "rounded-md shadow-lg z-[95] overflow-hidden",
               "border",
               isDark 
                 ? "bg-stone-700/95 border-stone-600/80 backdrop-blur-sm" 
