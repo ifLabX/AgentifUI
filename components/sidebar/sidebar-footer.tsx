@@ -26,7 +26,7 @@ export function SidebarFooter() {
         aria-label="设置"
         className="group"
       >
-        设置
+        <span className="font-serif">设置</span>
       </SidebarButton>}
       {!isMobile && <SidebarButton
         icon={<HelpCircle className={cn(
@@ -36,7 +36,7 @@ export function SidebarFooter() {
         aria-label="帮助"
         className="group"
       >
-        帮助
+        <span className="font-serif">帮助</span>
       </SidebarButton>}
       
       {isMobile && <MobileUserButton />}

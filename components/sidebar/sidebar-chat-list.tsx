@@ -290,7 +290,7 @@ export function SidebarChatList({
       // 近期对话标题栏 - 移除图标，确保文字靠左贴边
       // --- END COMMENT --- */}
       <div className={cn(
-        "flex items-center px-2 py-1 text-xs font-medium", /* 减小内边距，确保文字靠左贴边 */
+        "flex items-center px-2 py-1 text-xs font-medium font-serif", /* 减小内边距，确保文字靠左贴边 */
         isDark ? "text-stone-400" : "text-stone-500"
       )}>
         近期对话
@@ -400,7 +400,7 @@ export function SidebarChatList({
                     : "bg-primary/10 hover:bg-primary/15 text-primary shadow-sm hover:shadow-md border border-stone-300/50"
                 )}
               >
-                <span className="text-xs font-medium">查看全部历史</span>
+                <span className="text-xs font-medium font-serif">查看全部历史</span>
               </SidebarListButton>
             </div>
           )}

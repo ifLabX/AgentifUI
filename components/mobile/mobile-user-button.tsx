@@ -89,7 +89,7 @@ export function MobileUserButton() {
 
         {/* 右侧文字，只在展开时显示 */}
         {isExpanded && (
-          <span className="ml-3 truncate">
+          <span className="ml-3 truncate font-serif">
             {isLoggedIn ? userName : "登录/注册"}
           </span>
         )}

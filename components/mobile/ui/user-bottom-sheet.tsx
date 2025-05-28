@@ -110,7 +110,7 @@ export function UserBottomSheet({
       )}
     >
       <span className="mr-3 flex-shrink-0">{icon}</span>
-      <span className="font-medium">{label}</span>
+      <span className="font-medium font-serif">{label}</span>
     </button>
   )
   
@@ -151,13 +151,13 @@ export function UserBottomSheet({
             )}
             <div className="ml-4 overflow-hidden">
               <div className={cn(
-                "font-medium truncate",
+                "font-medium truncate font-serif",
                 isDark ? "text-white" : "text-stone-800"
               )}>
                 {userName}
               </div>
               <div className={cn(
-                "text-sm truncate max-w-[200px]",
+                "text-sm truncate max-w-[200px] font-serif",
                 isDark ? "text-stone-400" : "text-stone-500"
               )}>
                 {userCompany}
@@ -231,13 +231,13 @@ export function UserBottomSheet({
               "w-16 h-16 mx-auto mb-3",
               isDark ? "text-stone-400" : "text-stone-500"
             )} />
-            <p>登录以使用更多功能</p>
+            <p className="font-serif">登录以使用更多功能</p>
           </div>
           
           <button
             onClick={handleLogin}
             className={cn(
-              "w-full py-3 px-4 rounded-lg font-medium text-center",
+              "w-full py-3 px-4 rounded-lg font-medium text-center font-serif",
               isDark 
                 ? "bg-blue-600 hover:bg-blue-700 text-white" 
                 : "bg-blue-500 hover:bg-blue-600 text-white",
@@ -250,7 +250,7 @@ export function UserBottomSheet({
           <button
             onClick={handleRegister}
             className={cn(
-              "w-full py-3 px-4 rounded-lg font-medium text-center",
+              "w-full py-3 px-4 rounded-lg font-medium text-center font-serif",
               isDark 
                 ? "bg-stone-700 hover:bg-stone-600 text-stone-200" 
                 : "bg-stone-200 hover:bg-stone-300 text-stone-700",

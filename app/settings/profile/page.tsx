@@ -83,7 +83,7 @@ export default function ProfileSettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6">个人资料</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">个人资料</h1>
         
         <div className={cn(
           "rounded-lg p-6",
@@ -91,8 +91,8 @@ export default function ProfileSettingsPage() {
           "bg-red-50 dark:bg-red-900/20",
           "text-red-700 dark:text-red-300"
         )}>
-          <h2 className="text-lg font-medium mb-4 text-red-800 dark:text-red-200">加载资料时出错</h2>
-          <p className="mb-4">{error.message}</p>
+          <h2 className="text-lg font-medium mb-4 text-red-800 dark:text-red-200 font-serif">加载资料时出错</h2>
+          <p className="mb-4 font-serif">{error.message}</p>
           <button 
             onClick={() => window.location.reload()}
             className={cn(
@@ -100,7 +100,8 @@ export default function ProfileSettingsPage() {
               "bg-red-100 dark:bg-red-800/50",
               "hover:bg-red-200 dark:hover:bg-red-700/50",
               "text-red-800 dark:text-red-200",
-              "transition-colors duration-200"
+              "transition-colors duration-200",
+              "font-serif"
             )}
           >
             重试
@@ -118,7 +119,7 @@ export default function ProfileSettingsPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6">个人资料</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">个人资料</h1>
         
         <div className={cn(
           "w-full rounded-lg",
@@ -203,7 +204,7 @@ export default function ProfileSettingsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold mb-6">个人资料</h1>
+      <h1 className="text-2xl font-bold mb-6 font-serif">个人资料</h1>
       
       {profile && (
         <div className={cn(
@@ -222,9 +223,9 @@ export default function ProfileSettingsPage() {
               <UserCircle className="w-12 h-12 text-stone-500 dark:text-stone-400" />
             </div>
             <div className="ml-4">
-              <h2 className="text-lg font-medium">{profile.full_name || profile.username || '用户'}</h2>
+              <h2 className="text-lg font-medium font-serif">{profile.full_name || profile.username || '用户'}</h2>
               <p className={cn(
-                "text-sm",
+                "text-sm font-serif",
                 colors.secondaryTextColor.tailwind
               )}>
                 {profile.role === 'admin' ? '管理员' : '用户'}

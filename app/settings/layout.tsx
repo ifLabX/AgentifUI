@@ -102,22 +102,22 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                   colors.backButton.border.tailwind,
                   colors.backButton.borderHover.tailwind,
                   "shadow-sm hover:shadow-md",
-                  "text-sm font-medium",
+                  "text-sm font-medium font-serif",
                   "transform hover:scale-[1.02] active:scale-[0.98]"
                 )}
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">返回</span>
               </button>
-          </div>
+            </div>
 
-          {/* 设置页面内容 */}
-          <div className="p-4 md:p-8">
-            {children}
+            {/* 设置页面内容 */}
+            <div className="p-4 md:p-8">
+              {children}
+            </div>
           </div>
         </div>
+      </main>
     </div>
-      </main >
-    </div >
   )
 }

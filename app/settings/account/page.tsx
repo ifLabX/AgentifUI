@@ -61,7 +61,7 @@ export default function AccountSettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6">账号设置</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">账号设置</h1>
         
         <div className={cn(
           "rounded-lg p-6",
@@ -69,8 +69,8 @@ export default function AccountSettingsPage() {
           "bg-red-50 dark:bg-red-900/20",
           "text-red-700 dark:text-red-300"
         )}>
-          <h2 className="text-lg font-medium mb-4 text-red-800 dark:text-red-200">加载账号信息时出错</h2>
-          <p className="mb-4">{error.message}</p>
+          <h2 className="text-lg font-medium mb-4 text-red-800 dark:text-red-200 font-serif">加载账号信息时出错</h2>
+          <p className="mb-4 font-serif">{error.message}</p>
           <button 
             onClick={() => window.location.reload()}
             className={cn(
@@ -78,7 +78,8 @@ export default function AccountSettingsPage() {
               "bg-red-100 dark:bg-red-800/50",
               "hover:bg-red-200 dark:hover:bg-red-700/50",
               "text-red-800 dark:text-red-200",
-              "transition-colors duration-200"
+              "transition-colors duration-200",
+              "font-serif"
             )}
           >
             重试
@@ -96,7 +97,7 @@ export default function AccountSettingsPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6">账号设置</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">账号设置</h1>
         
         <div className={cn(
           "w-full rounded-lg",
@@ -180,7 +181,7 @@ export default function AccountSettingsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold mb-6">账号设置</h1>
+      <h1 className="text-2xl font-bold mb-6 font-serif">账号设置</h1>
       
       <AccountSettings 
         email={userEmail || undefined}

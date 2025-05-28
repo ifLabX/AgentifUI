@@ -71,7 +71,7 @@ export function SidebarHeader() {
             {isLocked && isExpanded ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
           </span>
           {isExpanded && (
-            <div className="ml-2 flex-1 min-w-0 truncate">
+            <div className="ml-2 flex-1 min-w-0 truncate font-serif">
               {!isLocked 
                 ? "锁定侧栏" 
                 : (isExpanded ? "解锁并收起" : "展开侧栏")
@@ -132,7 +132,7 @@ export function SidebarHeader() {
             : "bg-primary/10 hover:bg-primary/15 text-primary shadow-sm hover:shadow-md"
         )}
       >
-        发起新对话
+        <span className="font-serif">发起新对话</span>
       </SidebarButton>
     </div>
   )
