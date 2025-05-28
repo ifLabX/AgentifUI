@@ -4,29 +4,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@lib/utils";
 import { useThemeColors } from "@lib/hooks/use-theme-colors";
 import { useLogout } from "@lib/hooks/use-logout";
+import { useProfile } from "@lib/hooks/use-profile";
 import { useRouter } from "next/navigation";
 import { Settings, LogOut, Clock, UserCircle, Info } from "lucide-react";
-
-// 直接从localStorage获取缓存的用户信息
-const getUserFromCache = () => {
-    if (typeof window === "undefined") return null;
-
-    try {
-        const cached = localStorage.getItem("user_profile_cache");
-        if (!cached) return null;
-
-        const cacheData = JSON.parse(cached);
-
-        // 检查是否过期（5分钟）
-        if (Date.now() - cacheData.timestamp > 5 * 60 * 1000) {
-            return null;
-        }
-
-        return cacheData.profile;
-    } catch {
-        return null;
-    }
-};
 
 // 直接从localStorage获取主题设置
 const getThemeFromCache = () => {
@@ -44,7 +24,7 @@ const getThemeFromCache = () => {
  * 桌面端用户头像菜单组件
  * 特点：
  * - 纯圆形头像设计，无外框
- * - 直接从localStorage读取缓存，避免闪烁
+ * - 使用useProfile hook获取用户信息，确保与认证状态同步
  * - 使用内联样式确保主题一致性
  * - 优化的渲染性能，减少重新渲染
  */
@@ -52,9 +32,10 @@ export function DesktopUserAvatar() {
     const { colors, isDark } = useThemeColors();
     const { logout } = useLogout();
     const router = useRouter();
-
-    // 直接使用缓存数据，避免useProfile的loading状态
-    const [profile, setProfile] = useState(() => getUserFromCache());
+    
+    // 使用useProfile hook获取用户信息，自动处理缓存和认证状态同步
+    const { profile } = useProfile();
+    
     const [currentTheme, setCurrentTheme] = useState(() => getThemeFromCache());
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -62,21 +43,20 @@ export function DesktopUserAvatar() {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
-    // 监听localStorage变化更新数据
+    // 只监听主题变化，用户信息由useProfile hook管理
     useEffect(() => {
-        const handleStorageChange = () => {
-            setProfile(getUserFromCache());
+        const handleThemeChange = () => {
             setCurrentTheme(getThemeFromCache());
         };
 
         // 监听storage事件
-        window.addEventListener("storage", handleStorageChange);
+        window.addEventListener("storage", handleThemeChange);
 
-        // 定期检查缓存更新
-        const interval = setInterval(handleStorageChange, 1000);
+        // 定期检查主题更新
+        const interval = setInterval(handleThemeChange, 5000);
 
         return () => {
-            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("storage", handleThemeChange);
             clearInterval(interval);
         };
     }, []);
@@ -156,7 +136,6 @@ export function DesktopUserAvatar() {
     // 处理退出登录
     const handleLogout = async () => {
         await logout();
-        setProfile(null);
         setIsDropdownOpen(false);
         setHoveredItem(null);
     };
