@@ -122,10 +122,10 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
 
   return (
     <div className={cn("relative", className)}>
-      {/* --- BEGIN COMMENT ---
+      {/* --- BEGIN MODIFIED COMMENT ---
       主按钮：无边框无背景，serif字体，stone配色
-      可以向左延伸，右侧距离固定
-      --- END COMMENT --- */}
+      移除宽度限制，允许向左扩展显示完整名称
+      --- END MODIFIED COMMENT --- */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isValidating}
@@ -133,15 +133,23 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
           "flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-serif",
           "transition-colors duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
+          // --- BEGIN MODIFIED COMMENT ---
+          // 添加固定高度和垂直居中对齐，确保serif字体垂直居中
+          // --- END MODIFIED COMMENT ---
+          "h-8 min-h-[2rem]",
           isDark 
             ? "hover:bg-stone-800/50 text-stone-300" 
             : "hover:bg-stone-100 text-stone-600"
         )}
       >
-        {/* --- BEGIN COMMENT ---
-        应用名称：可以向左延伸，使用truncate防止过长
-        --- END COMMENT --- */}
-        <span className="truncate max-w-[4rem] sm:max-w-[5rem] md:max-w-[6rem] font-serif">
+        {/* --- BEGIN MODIFIED COMMENT ---
+        应用名称：移除宽度限制和truncate，允许显示完整名称
+        添加垂直居中对齐确保serif字体正确显示
+        --- END MODIFIED COMMENT --- */}
+        <span className={cn(
+          "font-serif whitespace-nowrap",
+          "flex items-center leading-none"
+        )}>
           {currentAppName}
         </span>
         
@@ -170,9 +178,11 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
             onClick={() => setIsOpen(false)}
           />
           
-          {/* 下拉选项 */}
+          {/* --- BEGIN MODIFIED COMMENT ---
+          下拉选项：调整定位，确保与按钮左对齐，允许更宽的下拉菜单
+          --- END MODIFIED COMMENT --- */}
           <div className={cn(
-            "absolute bottom-full left-0 mb-1 min-w-[8rem] max-w-[12rem]",
+            "absolute bottom-full left-0 mb-1 min-w-[8rem] max-w-[16rem]",
             "rounded-md shadow-lg z-20 max-h-48 overflow-y-auto",
             "border",
             isDark 
@@ -193,7 +203,12 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
                   onClick={() => handleAppChange(app.id)}
                   className={cn(
                     "w-full text-left px-3 py-2 text-sm font-serif",
-                    "transition-colors duration-150 truncate",
+                    "transition-colors duration-150",
+                    // --- BEGIN MODIFIED COMMENT ---
+                    // 移除truncate，允许显示完整的应用名称
+                    // 使用whitespace-nowrap防止换行，但允许水平滚动
+                    // --- END MODIFIED COMMENT ---
+                    "whitespace-nowrap",
                     isDark 
                       ? "hover:bg-stone-600/60" 
                       : "hover:bg-stone-200/60",
