@@ -5,7 +5,6 @@ import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks"
 import { TypeWriter } from "@components/ui/typewriter"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
-import { useAppParameters } from "@lib/hooks/use-app-parameters"
 import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
 
 interface WelcomeScreenProps {
@@ -46,11 +45,10 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { welcomeText: welcomePosition, welcomeTextTitle, needsCompactLayout } = useWelcomeLayout()
 
   // --- BEGIN COMMENT ---
-  // 🎯 使用新的数据库优先的应用参数Hook
-  // 替代原有的useAppParameters，获得更好的性能和用户体验
+  // 🎯 直接从当前应用实例获取开场白配置
+  // 完全基于数据库，无任何API调用
   // --- END COMMENT ---
-  const { currentAppId } = useCurrentApp()
-  const { parameters, isLoading: isParametersLoading, error: parametersError, source } = useAppParameters(currentAppId)
+  const { currentAppInstance } = useCurrentApp()
 
   // --- BEGIN COMMENT ---
   // 🎯 纯数据库策略的欢迎文字显示逻辑
@@ -73,26 +71,23 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     }
     
     // --- BEGIN COMMENT ---
-    // 如果有应用ID，等待数据库参数加载完成
-    // --- END COMMENT ---
-    if (currentAppId && isParametersLoading) {
-      console.log('[WelcomeScreen] 等待数据库参数加载...', { currentAppId });
-      return;
-    }
-
-    // --- BEGIN COMMENT ---
     // 🎯 确定最终显示的文字 - 纯数据库策略
     // --- END COMMENT ---
     let welcomeText = "";
     
-    if (currentAppId && parameters?.opening_statement && !parametersError) {
+    // --- BEGIN COMMENT ---
+    // 🎯 从数据库config字段直接获取开场白
+    // --- END COMMENT ---
+    const openingStatement = currentAppInstance?.config?.dify_parameters?.opening_statement;
+    
+    if (openingStatement && openingStatement.trim()) {
       // --- BEGIN COMMENT ---
       // 情况1：数据库中有应用的开场白配置
       // --- END COMMENT ---
-      welcomeText = parameters.opening_statement;
+      welcomeText = openingStatement.trim();
       console.log('[WelcomeScreen] 使用数据库开场白:', {
-        appId: currentAppId,
-        source: 'database',
+        appId: currentAppInstance?.instance_id,
+        source: 'database_config',
         text: welcomeText.substring(0, 50) + '...'
       });
     } else if (username) {
@@ -110,17 +105,6 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     }
     
     // --- BEGIN COMMENT ---
-    // 如果数据库查询出错但不影响显示，记录日志
-    // --- END COMMENT ---
-    if (parametersError && currentAppId) {
-      console.warn('[WelcomeScreen] 数据库参数查询失败，已fallback到用户问候:', {
-        appId: currentAppId,
-        error: parametersError,
-        fallbackText: welcomeText
-      });
-    }
-    
-    // --- BEGIN COMMENT ---
     // 🎯 数据库查询很快，极短延迟后立即显示
     // --- END COMMENT ---
     const timer = setTimeout(() => {
@@ -129,7 +113,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     }, 50); // 极短延迟，确保状态更新完成
     
     return () => clearTimeout(timer);
-  }, [username, parameters?.opening_statement, currentAppId, isParametersLoading, parametersError]);
+  }, [username, currentAppInstance?.config?.dify_parameters?.opening_statement, currentAppInstance?.instance_id]);
 
   return (
       <div 
@@ -186,35 +170,6 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
             </div>
           )}
         </h2>
-        {/* <p className={cn(
-          isDark ? "text-gray-400" : "text-gray-500",
-          // --- BEGIN COMMENT ---
-          // 副标题尺寸：紧凑模式使用xs，正常模式使用sm，避免过大
-          // --- END COMMENT ---
-          needsCompactLayout ? "mt-1 text-xs" : "mt-4 text-sm"
-        )}>
-          {shouldStartTyping && (
-            <TypeWriter 
-              text="在下方输入框中输入消息开始聊天"
-              speed={20} // 副标题更快
-              delay={
-                // --- BEGIN COMMENT ---
-                // 根据主标题内容调整副标题的延迟时间
-                // 动态开场白通常更长，需要更多时间
-                // --- END COMMENT ---
-                parameters?.opening_statement 
-                  ? Math.max(2500, finalText.length * 60) // 动态开场白：基于长度计算延迟
-                  : finalText.endsWith("...") 
-                    ? 1500 // 等待状态
-                    : 2200 // 用户名问候
-              }
-              className={cn(
-                isDark ? "text-gray-400" : "text-gray-500",
-                needsCompactLayout ? "text-xs" : "text-sm"
-              )}
-            />
-          )}
-        </p> */}
       </div>
     </div>
   )

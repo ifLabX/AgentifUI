@@ -14,18 +14,13 @@ import { ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 // --- END COMMENT ---
 import { useFocusManager } from './chat-input';
 
-// --- BEGIN COMMENT ---
-// 🎯 新增：导入新的应用参数服务
-// --- END COMMENT ---
-import { appParametersService } from '@lib/services/app-parameters-service';
-
 interface AppSelectorButtonProps {
   className?: string;
 }
 
 export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   const router = useRouter();
-  const { currentAppId, validateConfig, isValidating } = useCurrentApp();
+  const { currentAppId, switchToSpecificApp } = useCurrentApp();
   const { apps, fetchApps, isLoading } = useAppListStore();
   const { clearMessages } = useChatStore();
   const { isDark } = useTheme();
@@ -38,63 +33,11 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   const { focusInput } = useFocusManager();
 
   // --- BEGIN COMMENT ---
-  // 🎯 获取可用的app列表，现在会自动触发批量参数获取
+  // 获取可用的app列表
   // --- END COMMENT ---
   useEffect(() => {
     fetchApps();
   }, [fetchApps]);
-
-  // --- BEGIN COMMENT ---
-  // 🎯 应用列表加载完成后，批量同步模型应用的参数到数据库
-  // 确保WelcomeScreen能从数据库获取到开场白配置
-  // --- END COMMENT ---
-  useEffect(() => {
-    const performBatchSync = async () => {
-      if (!isLoading && apps.length > 0) {
-        // 过滤出模型类型的应用ID
-        const modelAppIds = apps
-          .filter(app => {
-            const metadata = app.config?.app_metadata;
-            
-            // 如果有元数据配置，检查是否为模型类型
-            if (metadata) {
-              return metadata.app_type === 'model';
-            }
-            
-            // 如果没有元数据配置，根据名称进行启发式判断
-            const appName = (app.display_name || app.name || app.instance_id).toLowerCase();
-            const modelKeywords = ['gpt', 'claude', 'gemini', 'llama', 'qwen', '通义', '模型', 'model', 'chat', '对话'];
-            const marketplaceKeywords = ['翻译', 'translate', '代码', 'code', '助手', 'assistant', '工具', 'tool', '生成', 'generate'];
-            
-            const isLikelyModel = modelKeywords.some(keyword => appName.includes(keyword));
-            const isLikelyMarketplace = marketplaceKeywords.some(keyword => appName.includes(keyword));
-            
-            return isLikelyModel && !isLikelyMarketplace;
-          })
-          .map(app => app.id);
-
-        if (modelAppIds.length > 0) {
-          console.log(`[app-selector-button] 开始批量同步 ${modelAppIds.length} 个模型应用的参数到数据库`);
-          try {
-            // --- BEGIN COMMENT ---
-            // 🎯 使用appParametersService的批量同步方法
-            // 将Dify API的参数同步到数据库中，供后续纯数据库查询使用
-            // --- END COMMENT ---
-            const result = await appParametersService.batchSync(modelAppIds);
-            if (result.success) {
-              console.log('[app-selector-button] 批量同步到数据库完成');
-            } else {
-              console.warn('[app-selector-button] 批量同步部分失败:', result.error);
-            }
-          } catch (error) {
-            console.warn('[app-selector-button] 批量同步失败，但不影响用户操作:', error);
-          }
-        }
-      }
-    };
-
-    performBatchSync();
-  }, [isLoading, apps]);
 
   // --- BEGIN COMMENT ---
   // 🎯 过滤出模型类型的应用
@@ -121,10 +64,8 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   });
 
   // --- BEGIN COMMENT ---
-  // 🎯 乐观UI：应用切换处理
-  // 立即关闭下拉菜单，显示切换后的应用名称，右侧显示小spinner
-  // 修改：确保在操作完成后恢复输入框焦点
-  // 🎯 新增：在切换前同步目标应用的参数到数据库
+  // 🎯 纯乐观UI应用切换：立即更新UI，无任何API调用
+  // 发送消息时的验证会在handleSubmit中自动触发
   // --- END COMMENT ---
   const handleAppChange = async (newAppId: string) => {
     if (newAppId === currentAppId) {
@@ -140,29 +81,14 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       // 立即关闭下拉菜单
       setIsOpen(false);
       
-      // 开始乐观切换状态
+      // 开始乐观切换状态（显示spinner）
       setIsOptimisticSwitching(true);
       
       // --- BEGIN COMMENT ---
-      // 🎯 修改：在切换前确保目标应用的参数已同步到数据库
-      // 这样WelcomeScreen就能立即从数据库获取开场白
+      // 🎯 纯乐观UI：使用switchToSpecificApp方法进行切换
+      // 这个方法会处理从AppInfo到ServiceInstance的转换
       // --- END COMMENT ---
-      try {
-        const syncResult = await appParametersService.syncFromDify(newAppId);
-        if (syncResult.success) {
-          console.log(`[app-selector-button] 成功同步应用 ${newAppId} 的参数到数据库`);
-        } else {
-          console.warn(`[app-selector-button] 同步应用 ${newAppId} 参数到数据库失败:`, syncResult.error);
-        }
-      } catch (error) {
-        console.warn(`[app-selector-button] 同步应用 ${newAppId} 参数到数据库异常，但不影响切换:`, error);
-      }
-      
-      // --- BEGIN COMMENT ---
-      // 🎯 使用 validateConfig 进行应用切换，现在参数已在数据库中
-      // 指定为切换上下文，不触发消息输入框的spinner
-      // --- END COMMENT ---
-      await validateConfig(newAppId, 'switch');
+      await switchToSpecificApp(newAppId);
       
       // --- BEGIN COMMENT ---
       // 切换成功后清理聊天状态
@@ -171,7 +97,6 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       
       // --- BEGIN COMMENT ---
       // 🎯 使用Next.js路由进行页面跳转，避免硬刷新
-      // 这样可以保持应用状态，包括数据库中的参数
       // --- END COMMENT ---
       router.push('/chat/new');
       
@@ -257,7 +182,6 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       --- END MODIFIED COMMENT --- */}
       <button
         onClick={handleToggleDropdown}
-        disabled={isValidating}
         // --- BEGIN COMMENT ---
         // 添加onMouseDown防止按钮点击时输入框失去焦点
         // --- END COMMENT ---
@@ -265,13 +189,12 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
         className={cn(
           "flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-serif",
           "transition-colors duration-200",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
           // --- BEGIN MODIFIED COMMENT ---
           // 添加固定高度和垂直居中对齐，确保serif字体垂直居中
-          // cursor控制：只有在下拉框关闭且未验证时显示pointer
+          // cursor控制：只有在下拉框关闭时显示pointer
           // --- END MODIFIED COMMENT ---
           "h-8 min-h-[2rem]",
-          !isOpen && !isValidating ? "cursor-pointer" : "",
+          !isOpen ? "cursor-pointer" : "",
           isDark 
             ? "hover:bg-stone-800/50 text-stone-300" 
             : "hover:bg-stone-100 text-stone-600"
