@@ -1,140 +1,148 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getDifyAppParameters } from '@lib/services/dify/app-service';
+import { useState, useEffect } from 'react';
+import { appParametersService } from '@lib/services/app-parameters-service';
 import type { DifyAppParametersResponse } from '@lib/services/dify/types';
 
 interface UseAppParametersState {
   parameters: DifyAppParametersResponse | null;
   isLoading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  lastUpdated?: Date;
+  source?: 'database' | 'api';
 }
-
-// --- BEGIN COMMENT ---
-// 🎯 简化的应用参数Hook - 作为fallback机制
-// 用于向后兼容和在数据库方案不可用时的备用方案
-// --- END COMMENT ---
-interface CachedParameters {
-  data: DifyAppParametersResponse;
-  timestamp: number;
-  appId: string;
-}
-
-const CACHE_DURATION = 5 * 60 * 1000; // 5分钟
-const parametersCache = new Map<string, CachedParameters>();
 
 /**
- * 获取应用参数的Hook（简化版 - 作为fallback）
+ * 应用参数Hook - 数据库优先策略
  * 
- * 🎯 用途：
- * 1. 作为数据库优先方案的fallback机制
- * 2. 保持API兼容性，减少重构工作
- * 3. 在数据库方案不可用时提供基本功能
+ * 🎯 核心策略：
+ * 1. 优先使用数据库中的本地配置（instant loading）
+ * 2. Fallback到Dify API调用（compatibility）
+ * 3. 智能缓存减少重复请求
  * 
- * @param appId - 应用ID，如果为null则不发起请求
- * @returns 应用参数状态和重新获取函数
+ * @param instanceId 应用实例ID
+ * @returns 应用参数状态
  */
-export function useAppParameters(appId: string | null): UseAppParametersState {
-  const [parameters, setParameters] = useState<DifyAppParametersResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function useAppParameters(instanceId: string | null): UseAppParametersState {
+  const [state, setState] = useState<UseAppParametersState>({
+    parameters: null,
+    isLoading: false,
+    error: null
+  });
 
-  // --- BEGIN COMMENT ---
-  // 检查缓存是否有效
-  // --- END COMMENT ---
-  const getCachedParameters = useCallback((id: string): DifyAppParametersResponse | null => {
-    const cached = parametersCache.get(id);
-    if (!cached) return null;
-    
-    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION;
-    if (isExpired) {
-      parametersCache.delete(id);
-      return null;
-    }
-    
-    return cached.data;
-  }, []);
-
-  // --- BEGIN COMMENT ---
-  // 设置缓存
-  // --- END COMMENT ---
-  const setCachedParameters = useCallback((id: string, data: DifyAppParametersResponse) => {
-    parametersCache.set(id, {
-      data,
-      timestamp: Date.now(),
-      appId: id
-    });
-  }, []);
-
-  // --- BEGIN COMMENT ---
-  // 🎯 简化的获取应用参数逻辑
-  // --- END COMMENT ---
-  const fetchParameters = useCallback(async (id: string, forceRefresh: boolean = false) => {
-    try {
-      setError(null);
-
-      // 检查缓存（除非强制刷新）
-      if (!forceRefresh) {
-        const cached = getCachedParameters(id);
-        if (cached) {
-          console.log('[useAppParameters] 使用缓存的应用参数:', id);
-          setParameters(cached);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      setIsLoading(true);
-
-      // 从API获取参数
-      console.log('[useAppParameters] 从API获取应用参数:', id);
-      const result = await getDifyAppParameters(id);
-      
-      // 缓存结果
-      setCachedParameters(id, result);
-      setParameters(result);
-      
-      console.log('[useAppParameters] 成功获取应用参数:', {
-        appId: id,
-        hasOpeningStatement: !!result.opening_statement,
-        suggestedQuestionsCount: result.suggested_questions?.length || 0
-      });
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '获取应用参数失败';
-      console.error('[useAppParameters] 获取应用参数失败:', err);
-      setError(errorMessage);
-      setParameters(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [getCachedParameters, setCachedParameters]);
-
-  // --- BEGIN COMMENT ---
-  // 重新获取函数，供外部调用
-  // --- END COMMENT ---
-  const refetch = useCallback(async () => {
-    if (!appId) return;
-    await fetchParameters(appId, true); // 强制刷新
-  }, [appId, fetchParameters]);
-
-  // --- BEGIN COMMENT ---
-  // 当appId变化时自动获取参数
-  // --- END COMMENT ---
   useEffect(() => {
-    if (!appId) {
-      setParameters(null);
-      setIsLoading(false);
-      setError(null);
+    if (!instanceId) {
+      setState({
+        parameters: null,
+        isLoading: false,
+        error: null
+      });
       return;
     }
 
-    fetchParameters(appId);
-  }, [appId, fetchParameters]);
+    let cancelled = false;
+
+    const fetchParameters = async () => {
+      if (cancelled) return;
+
+      setState(prev => ({
+        ...prev,
+        isLoading: true,
+        error: null
+      }));
+
+      try {
+        const result = await appParametersService.getAppParameters(instanceId);
+        
+        if (cancelled) return;
+
+        if (result.success) {
+          setState({
+            parameters: result.data,
+            isLoading: false,
+            error: null,
+            lastUpdated: new Date(),
+            source: 'database' // 服务会自动处理数据库/API选择
+          });
+        } else {
+          setState({
+            parameters: null,
+            isLoading: false,
+            error: result.error.message,
+            lastUpdated: new Date()
+          });
+        }
+      } catch (error) {
+        if (cancelled) return;
+        
+        setState({
+          parameters: null,
+          isLoading: false,
+          error: error instanceof Error ? error.message : '获取应用参数失败',
+          lastUpdated: new Date()
+        });
+      }
+    };
+
+    fetchParameters();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [instanceId]);
+
+  return state;
+}
+
+/**
+ * 应用参数同步Hook
+ * 提供手动同步功能和同步状态查询
+ */
+export function useAppParametersSync(instanceId: string | null) {
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+
+  const syncFromDify = async () => {
+    if (!instanceId || isSyncing) return;
+
+    setIsSyncing(true);
+    setSyncError(null);
+
+    try {
+      const result = await appParametersService.syncFromDify(instanceId);
+      
+      if (result.success) {
+        setLastSyncTime(new Date());
+        console.log(`[useAppParametersSync] 同步成功: ${instanceId}`);
+      } else {
+        setSyncError(result.error.message);
+        console.error(`[useAppParametersSync] 同步失败: ${instanceId}`, result.error);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '同步失败';
+      setSyncError(errorMessage);
+      console.error(`[useAppParametersSync] 同步异常: ${instanceId}`, error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const getSyncStatus = async () => {
+    if (!instanceId) return null;
+
+    try {
+      const result = await appParametersService.getSyncStatus(instanceId);
+      return result.success ? result.data : null;
+    } catch (error) {
+      console.error(`[useAppParametersSync] 获取状态失败: ${instanceId}`, error);
+      return null;
+    }
+  };
 
   return {
-    parameters,
-    isLoading,
-    error,
-    refetch
+    isSyncing,
+    syncError,
+    lastSyncTime,
+    syncFromDify,
+    getSyncStatus
   };
 } 

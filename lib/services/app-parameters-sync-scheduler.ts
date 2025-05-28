@@ -13,7 +13,10 @@ import { getAppInstancesForSync } from '@lib/db';
 import type { Result } from '@lib/types/result';
 import { success, failure } from '@lib/types/result';
 
-interface SyncConfig {
+// --- BEGIN COMMENT ---
+// 导出类型定义供外部使用
+// --- END COMMENT ---
+export interface SyncConfig {
   interval: number; // 同步间隔（分钟）
   maxRetries: number; // 最大重试次数
   retryDelay: number; // 重试延迟（毫秒）
@@ -21,7 +24,7 @@ interface SyncConfig {
   enabled: boolean; // 是否启用
 }
 
-interface SchedulerStats {
+export interface SchedulerStats {
   lastSyncTime?: Date;
   totalSyncs: number;
   successfulSyncs: number;
@@ -275,6 +278,3 @@ class AppParametersSyncScheduler {
 
 // 导出单例实例
 export const syncScheduler = new AppParametersSyncScheduler();
-
-// 导出类型
-export type { SyncConfig, SchedulerStats }; 

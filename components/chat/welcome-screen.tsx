@@ -5,7 +5,7 @@ import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks"
 import { TypeWriter } from "@components/ui/typewriter"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
-import { useAppParametersV2 } from "@lib/hooks/use-app-parameters-v2"
+import { useAppParameters } from "@lib/hooks/use-app-parameters"
 import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
 
 interface WelcomeScreenProps {
@@ -50,7 +50,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   // 替代原有的useAppParameters，获得更好的性能和用户体验
   // --- END COMMENT ---
   const { currentAppId } = useCurrentApp()
-  const { parameters, isLoading: isParametersLoading, error: parametersError, source } = useAppParametersV2(currentAppId)
+  const { parameters, isLoading: isParametersLoading, error: parametersError, source } = useAppParameters(currentAppId)
 
   // --- BEGIN COMMENT ---
   // 智能处理欢迎文字的显示逻辑
