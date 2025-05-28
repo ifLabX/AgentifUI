@@ -114,6 +114,42 @@ export interface Provider {
   updated_at: string;
 }
 
+// --- BEGIN COMMENT ---
+// 🎯 服务实例配置类型定义
+// 用于规范ServiceInstance.config字段的结构
+// --- END COMMENT ---
+export interface ServiceInstanceConfig {
+  // 应用元数据配置
+  app_metadata?: {
+    // 应用类型：模型切换 | 应用市场
+    app_type?: 'model' | 'marketplace';
+    
+    // 是否为常用模型（用于优先预加载）
+    is_common_model?: boolean;
+    
+    // 是否为应用市场应用
+    is_marketplace_app?: boolean;
+    
+    // 应用标签（用于分类和搜索）
+    tags?: string[];
+    
+    // 模型类型（如果是模型类型的应用）
+    model_type?: string;
+    
+    // 应用图标URL
+    icon_url?: string;
+    
+    // 应用简介
+    brief_description?: string;
+    
+    // 其他自定义元数据
+    [key: string]: any;
+  };
+  
+  // 其他配置
+  [key: string]: any;
+}
+
 export interface ServiceInstance {
   id: string;
   provider_id: string;
@@ -123,7 +159,7 @@ export interface ServiceInstance {
   instance_id: string;
   api_path: string;
   is_default: boolean;
-  config: Record<string, any>;
+  config: ServiceInstanceConfig;
   created_at: string;
   updated_at: string;
 }
