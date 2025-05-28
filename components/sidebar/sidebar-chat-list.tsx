@@ -200,29 +200,30 @@ export function SidebarChatList({
     
     // 所有状态下使用相同的高度和结构，确保一致性
     return (
-      <div className="flex items-center h-3.5 w-full"> {/* 减小高度为 h-3.5，使其更纤细 */}
+      <div className="flex items-center h-4 w-full"> {/* 增加高度为 h-4，防止字母下降部被裁切 */}
         {isItemLoading ? (
           // 骨架屏 - 宽度设置为 w-[85%]，为右侧 more button 预留空间
-          <div className={cn("h-3.5 w-[85%] animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
+          <div className={cn("h-4 w-[85%] animate-pulse rounded-md", isDark ? "bg-stone-600" : "bg-stone-400", "opacity-80")} />
         ) : shouldUseTypewriter ? (
           // --- BEGIN COMMENT ---
-          // 🎯 使用TypeWriter组件显示打字机效果
+          // 🎯 使用TypeWriter组件显示打字机效果，包装在h4标签中以应用装饰字体
           // --- END COMMENT ---
-          <TypeWriter
-            text={chat.titleTypewriterState!.targetTitle}
-            speed={30} // 较快的打字速度
-            delay={200} // 短暂延迟
-            className={cn("truncate w-full text-xs leading-3.5 font-medium", isDark ? "text-gray-200" : "text-stone-700")}
-            onComplete={() => {
-              // --- BEGIN COMMENT ---
-              // 🎯 打字完成后更新store状态
-              // --- END COMMENT ---
-              completeTitleTypewriter(chat.id);
-            }}
-          />
+          <h4 className={cn("truncate w-full text-xs leading-4 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>
+            <TypeWriter
+              text={chat.titleTypewriterState!.targetTitle}
+              speed={30} // 较快的打字速度
+              delay={200} // 短暂延迟
+              onComplete={() => {
+                // --- BEGIN COMMENT ---
+                // 🎯 打字完成后更新store状态
+                // --- END COMMENT ---
+                completeTitleTypewriter(chat.id);
+              }}
+            />
+          </h4>
         ) : (
-          // 标题文本 - 使用更小的文本大小和行高，使其更纤细
-          <span className={cn("truncate w-full text-xs leading-3.5 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>{title}</span>
+          // 标题文本 - 使用h4标签以应用装饰字体，与历史对话页面保持一致
+          <h4 className={cn("truncate w-full text-xs leading-4 font-medium", isDark ? "text-gray-200" : "text-stone-700")}>{title}</h4>
         )}
       </div>
     );

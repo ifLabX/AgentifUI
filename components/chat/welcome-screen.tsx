@@ -111,7 +111,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   return (
       <div 
         className={cn(
-          "flex flex-col items-center justify-center text-center",
+          "welcome-screen flex flex-col items-center justify-center text-center",
           className
         )}
         style={welcomePosition}

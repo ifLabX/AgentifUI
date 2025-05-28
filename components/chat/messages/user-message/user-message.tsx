@@ -59,6 +59,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
         <div
           className={cn(
             "max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed",
+            "markdown-body assistant-message-content",
             isDark 
               ? "bg-stone-700/90 text-stone-100" 
               : "bg-stone-200 text-stone-800",

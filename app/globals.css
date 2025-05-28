@@ -16,6 +16,7 @@ body.render-ready {
   opacity: 1;
   transition: opacity 0.2s;
 }
+
 :root {
   --background: #f5f5f4; /* stone-100 */
   --foreground: #1c1917; /* stone-900 */
@@ -42,7 +43,6 @@ body.render-ready {
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
-
 
   --page-height: auto; /* 默认高度为自动 */
   --page-overflow: visible; /* 默认溢出为可见 */
@@ -94,10 +94,53 @@ html, body {
     transition: opacity 0.2s;
   }
 
-  /* 🎯 标题使用装饰字体 */
+  /* 🔥 代码字体最高优先级 - 覆盖全局字体 */
+  .font-mono, code, pre, kbd, samp, tt,
+  .hljs, .hljs *,
+  .token, .token *,
+  [class*="language-"], [class*="language-"] *,
+  [data-language], [data-language] *,
+  .code, .code *,
+  .codehilite, .codehilite *,
+  .highlight, .highlight *,
+  .sourceCode, .sourceCode *,
+  pre *, code *,
+  .prism-code, .prism-code *,
+  .token.comment, .token.prolog, .token.doctype, .token.cdata,
+  .token.punctuation, .token.property, .token.tag, .token.constant,
+  .token.symbol, .token.deleted, .token.boolean, .token.number,
+  .token.selector, .token.attr-name, .token.string, .token.char,
+  .token.builtin, .token.inserted, .token.operator, .token.entity,
+  .token.url, .token.variable, .token.atrule, .token.attr-value,
+  .token.function, .token.class-name, .token.keyword,
+  .vscode-highlight, .vscode-highlight *,
+  .cm-editor, .cm-editor *,
+  .CodeMirror, .CodeMirror *,
+  /* 行内代码也要保护 */
+  p code, li code, td code, th code, span code,
+  div code:not(.hljs), span code:not(.token),
+  /* markdown 中的代码 */
+  .markdown-body code, .markdown-body pre,
+  .markdown-body code *, .markdown-body pre *,
+  .prose code, .prose pre,
+  .prose code *, .prose pre *,
+  article code, article pre,
+  article code *, article pre * {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
+    font-feature-settings: 'liga' 0, 'calt' 0 !important;
+  }
+
+  /* 🎯 标题使用装饰字体，但排除欢迎屏幕 */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-playfair), var(--font-noto-sans), serif !important;
     font-weight: 600;
+  }
+
+  /* 🎯 欢迎屏幕使用装饰字体，中英文都更优雅 */
+  .welcome-screen h1, .welcome-screen h2, .welcome-screen h3,
+  .welcome-screen h4, .welcome-screen h5, .welcome-screen h6 {
+    font-family: var(--font-playfair), var(--font-noto-serif), serif !important;
+    font-weight: 700;
   }
 
   /* 🎯 特殊字体类 */
@@ -133,6 +176,11 @@ html, body {
 @layer utilities {
   .force-font-sans {
     font-family: var(--font-inter), var(--font-noto-sans), system-ui, sans-serif !important;
+  }
+  
+  .force-font-mono {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
+    font-feature-settings: 'liga' 0, 'calt' 0 !important;
   }
 }
 
@@ -230,4 +278,3 @@ body.default-page {
 .animate-slide-in-down {
   animation: slideInDown 200ms ease-out forwards;
 }
-
