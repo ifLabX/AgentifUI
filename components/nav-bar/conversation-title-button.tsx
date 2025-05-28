@@ -266,7 +266,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
           disabled={isOperating}
           className={cn(
             "flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-serif",
-            "transition-colors duration-200",
+            "transition-all duration-200 ease-in-out",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "h-8 min-h-[2rem]",
             // --- BEGIN MODIFIED COMMENT ---
@@ -274,8 +274,8 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
             // --- END MODIFIED COMMENT ---
             !isOpen && !isOperating ? "cursor-pointer" : "",
             isDark 
-              ? "hover:bg-stone-800/50 text-stone-300" 
-              : "hover:bg-stone-100 text-stone-600"
+              ? "hover:bg-stone-700/50 hover:shadow-stone-800/20 hover:shadow-sm text-stone-300 active:bg-stone-600/50" 
+              : "hover:bg-stone-200/80 hover:shadow-stone-300/50 hover:shadow-sm text-stone-600 active:bg-stone-300/50"
           )}
         >
           {/* --- BEGIN MODIFIED COMMENT ---
