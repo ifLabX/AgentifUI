@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Settings } from 'lucide-react'
 import { cn } from '@lib/utils'
 import { useTheme } from '@lib/hooks/use-theme'
-import { useAdminAuth } from '@lib/hooks/use-admin-auth'
+import { useProfile } from '@lib/hooks/use-profile'
 
 interface AdminButtonProps {
   variant?: 'floating' | 'navbar'
@@ -16,7 +16,7 @@ interface AdminButtonProps {
  * 特点：
  * - 支持两种变体：floating（首页右上角浮动）和navbar（导航栏内嵌）
  * - 使用isDark适配主题颜色
- * - 包含权限检查，只有管理员用户才显示
+ * - 使用useProfile hook检查管理员权限，利用localStorage缓存
  * - 带有动画效果和hover交互
  */
 export function AdminButton({ variant = 'floating' }: AdminButtonProps) {
@@ -24,9 +24,9 @@ export function AdminButton({ variant = 'floating' }: AdminButtonProps) {
   const { isDark } = useTheme()
   
   // --- BEGIN COMMENT ---
-  // 检查管理员权限，不自动重定向
+  // 使用useProfile hook获取用户信息，包含缓存机制
   // --- END COMMENT ---
-  const { isAdmin, isLoading: adminLoading } = useAdminAuth(false)
+  const { profile, isLoading } = useProfile()
 
   // --- BEGIN COMMENT ---
   // 管理员入口点击处理
@@ -47,9 +47,14 @@ export function AdminButton({ variant = 'floating' }: AdminButtonProps) {
   }
 
   // --- BEGIN COMMENT ---
+  // 检查是否为管理员：profile存在且role为admin
+  // --- END COMMENT ---
+  const isAdmin = profile?.role === 'admin'
+
+  // --- BEGIN COMMENT ---
   // 如果不是管理员或正在加载，不显示按钮
   // --- END COMMENT ---
-  if (!isAdmin || adminLoading) {
+  if (!isAdmin || isLoading) {
     return null
   }
 

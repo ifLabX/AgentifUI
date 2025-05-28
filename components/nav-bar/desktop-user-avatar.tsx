@@ -6,7 +6,7 @@ import { useThemeColors } from "@lib/hooks/use-theme-colors";
 import { useLogout } from "@lib/hooks/use-logout";
 import { useProfile } from "@lib/hooks/use-profile";
 import { useRouter } from "next/navigation";
-import { Settings, LogOut, Clock, UserCircle, Info } from "lucide-react";
+import { Settings, LogOut, Clock, UserCircle, Info, Shield } from "lucide-react";
 
 // 直接从localStorage获取主题设置
 const getThemeFromCache = () => {
@@ -158,6 +158,20 @@ export function DesktopUserAvatar() {
             action: () => router.push("/about"),
         },
     ];
+
+    // 管理员专用菜单项，仅对管理员用户显示
+    const adminMenuItems = [
+        {
+            icon: Shield,
+            label: "管理后台",
+            action: () => router.push("/admin/api-config"),
+        },
+    ];
+
+    // 根据用户角色合并菜单项
+    const allMenuItems = profile?.role === 'admin' 
+        ? [...menuItems, ...adminMenuItems]
+        : menuItems;
 
     const isLoggedIn = !!profile;
     const userName = profile?.full_name || profile?.username || "用户";
@@ -317,7 +331,7 @@ export function DesktopUserAvatar() {
 
                             {/* 菜单项 */}
                             <div className="space-y-1">
-                                {menuItems.map((item, index) => {
+                                {allMenuItems.map((item, index) => {
                                     const itemKey = `menu-${index}`;
                                     const isHovered = hoveredItem === itemKey;
                                     

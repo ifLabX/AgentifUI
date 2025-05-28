@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCurrentUserProfile, getUserProfileById, getUserOrganization } from '@lib/db'; // 使用新的优化数据库接口
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 import { useLoadingStore, PageKey } from '../stores/loading-store';
+import type { UserRole } from '@lib/types/database';
 
 // 定义资料类型
 export interface Profile {
@@ -9,6 +10,7 @@ export interface Profile {
   full_name: string | null;
   username: string | null;
   avatar_url: string | null;
+  role: UserRole;
   updated_at: string | null;
   created_at: string | null;
   // 企业信息
