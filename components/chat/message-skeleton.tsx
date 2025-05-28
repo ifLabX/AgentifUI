@@ -11,7 +11,14 @@ export function MessageSkeleton() {
   const { colors, isDark } = useThemeColors();
 
   return (
-    <div className="relative flex flex-col gap-8 w-full py-6 px-4 animate-pulse">
+    <div 
+      className="relative flex flex-col gap-8 w-full py-6 px-4 animate-pulse"
+      style={{
+        background: isDark
+          ? "linear-gradient(to bottom, rgba(41, 37, 36, 1), rgba(41, 37, 36, 0.3))"
+          : "linear-gradient(to bottom, rgba(245, 245, 245, 1), rgba(245, 245, 245, 0.3))"
+      }}
+    >
       {/* 用户消息骨架 */}
       <div className="flex justify-end">
         <div className={cn(
@@ -28,7 +35,7 @@ export function MessageSkeleton() {
       <div className="flex justify-start">
         <div className={cn(
           "rounded-xl px-4 py-3 w-4/5 max-w-[600px]",
-          isDark ? "bg-stone-800" : "bg-white shadow-sm"
+          isDark ? "bg-stone-900 border border-stone-700" : "bg-white shadow-sm"
         )}>
           <div className="h-4 rounded bg-stone-400/40 mb-2 w-full"></div>
           <div className="h-4 rounded bg-stone-400/40 mb-2 w-[90%]"></div>
@@ -36,15 +43,6 @@ export function MessageSkeleton() {
           <div className="h-4 rounded bg-stone-400/40 w-[50%]"></div>
         </div>
       </div>
-
-      {/* 底部渐变遮罩 */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-           style={{
-             background: isDark
-               ? "linear-gradient(to bottom, transparent, #171717)"
-               : "linear-gradient(to bottom, transparent, #f5f5f5)"
-           }}
-      />
     </div>
   );
 }
