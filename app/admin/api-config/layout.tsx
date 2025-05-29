@@ -194,10 +194,10 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                   className={cn(
                     "p-2.5 rounded-lg mb-2 cursor-pointer group",
                     "transition-colors duration-150 ease-in-out",
-                    "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                    "focus:outline-none focus:ring-2",
                     selectedInstanceId === instance.instance_id
                       ? isDark
-                        ? "bg-stone-700 border border-stone-600"
+                        ? "bg-stone-700 border border-stone-600 focus:ring-stone-600"
                         : "bg-stone-100 border border-stone-300"
                       : isDark
                         ? "hover:bg-stone-800/50 focus:ring-stone-600"
