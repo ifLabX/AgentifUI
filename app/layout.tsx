@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Crimson_Pro, Playfair_Display, Noto_Sans_SC, Noto_Serif_SC } from "next/font/google";
 import { TooltipContainer } from "@components/ui/tooltip";
+import { Toaster } from 'react-hot-toast';
 import "./globals.css";
 import "../styles/markdown-variables.css";
 import "../styles/markdown.css";
@@ -85,6 +86,30 @@ export default function RootLayout({
             {children}
             <TooltipContainer />
             <NotificationBar />
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'var(--toast-bg)',
+                  color: 'var(--toast-text)',
+                  border: '1px solid var(--toast-border)',
+                  fontFamily: 'var(--font-noto-serif)',
+                },
+                success: {
+                  iconTheme: {
+                    primary: '#10b981',
+                    secondary: '#ffffff',
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: '#ef4444',
+                    secondary: '#ffffff',
+                  },
+                },
+              }}
+            />
           </ClientLayout>
         </Providers>
         {process.env.ENABLE_STAGEWISE_TOOLBAR === "true" && process.env.NODE_ENV === "development" && <StagewiseToolbarWrapper />}

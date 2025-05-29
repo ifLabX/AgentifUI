@@ -46,6 +46,13 @@ body.render-ready {
 
   --page-height: auto; /* 默认高度为自动 */
   --page-overflow: visible; /* 默认溢出为可见 */
+
+  /* --- BEGIN COMMENT ---
+  Toast通知颜色变量
+  --- END COMMENT --- */
+  --toast-bg: 255 255 255;
+  --toast-text: 15 23 42;
+  --toast-border: 226 232 240;
 }
 
 @theme inline {
@@ -57,6 +64,55 @@ body.render-ready {
 .dark {
   --background: #292524; /* stone-800 */
   --foreground: #f3f4f6; /* gray-100 */
+
+  /* 卡片背景 */
+  --card: 2 6 23;
+  --card-foreground: 248 250 252;
+  
+  /* 弹出层背景 */
+  --popover: 2 6 23;
+  --popover-foreground: 248 250 252;
+  
+  /* 主色调 */
+  --primary: 248 250 252;
+  --primary-foreground: 15 23 42;
+  
+  /* 次要色 */
+  --secondary: 30 41 59;
+  --secondary-foreground: 248 250 252;
+  
+  /* 静音色 */
+  --muted: 30 41 59;
+  --muted-foreground: 148 163 184;
+  
+  /* 强调色 */
+  --accent: 30 41 59;
+  --accent-foreground: 248 250 252;
+  
+  /* 破坏性操作色 */
+  --destructive: 220 38 38;
+  --destructive-foreground: 248 250 252;
+  
+  /* 边框色 */
+  --border: 30 41 59;
+  --input: 30 41 59;
+  
+  /* 焦点环色 */
+  --ring: 147 197 253;
+  
+  /* 图表色调 */
+  --chart-1: 34 197 94;
+  --chart-2: 59 130 246;
+  --chart-3: 168 85 247;
+  --chart-4: 245 158 11;
+  --chart-5: 239 68 68;
+  
+  /* --- BEGIN COMMENT ---
+  深色模式Toast通知颜色变量
+  --- END COMMENT --- */
+  --toast-bg: 30 41 59;
+  --toast-text: 248 250 252;
+  --toast-border: 51 65 85;
 }
 
 /* 系统偏好设置（仅作为初始值） */
