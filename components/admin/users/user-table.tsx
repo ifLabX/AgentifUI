@@ -16,6 +16,7 @@ import {
   Square
 } from 'lucide-react'
 import { useTheme } from '@lib/hooks/use-theme'
+import { useProfile } from '@lib/hooks/use-profile'
 import { cn } from '@lib/utils'
 import { Dropdown } from '@components/ui/dropdown'
 import type { EnhancedUser } from '@lib/db/users'
@@ -46,6 +47,64 @@ export const UserTable: React.FC<UserTableProps> = ({
   onChangeStatus
 }) => {
   const { isDark } = useTheme()
+  const { profile: currentUserProfile } = useProfile() // 获取当前用户信息
+
+  // --- BEGIN COMMENT ---
+  // 检查是否可以更改用户角色（防止管理员降级其他管理员）
+  // --- END COMMENT ---
+  const canChangeUserRole = (targetUser: EnhancedUser, newRole: 'admin' | 'manager' | 'user') => {
+    // 如果当前用户不是管理员，不允许任何角色更改
+    if (currentUserProfile?.role !== 'admin') {
+      return false
+    }
+    
+    // 防止管理员修改自己的角色
+    if (targetUser.id === currentUserProfile?.id) {
+      return false
+    }
+    
+    // 防止非超级管理员降级其他管理员
+    if (targetUser.role === 'admin' && newRole !== 'admin') {
+      return false
+    }
+    
+    return true
+  }
+
+  // --- BEGIN COMMENT ---
+  // 检查是否可以删除用户（防止删除管理员账号）
+  // --- END COMMENT ---
+  const canDeleteUser = (targetUser: EnhancedUser) => {
+    // 如果当前用户不是管理员，不允许删除
+    if (currentUserProfile?.role !== 'admin') {
+      return false
+    }
+    
+    // 防止删除自己
+    if (targetUser.id === currentUserProfile?.id) {
+      return false
+    }
+    
+    // 防止删除其他管理员
+    if (targetUser.role === 'admin') {
+      return false
+    }
+    
+    return true
+  }
+
+  // --- BEGIN COMMENT ---
+  // 检查是否可以编辑用户
+  // --- END COMMENT ---
+  const canEditUser = (targetUser: EnhancedUser) => {
+    // 管理员可以编辑所有用户（包括自己）
+    if (currentUserProfile?.role === 'admin') {
+      return true
+    }
+    
+    // 其他角色只能编辑自己
+    return targetUser.id === currentUserProfile?.id
+  }
 
   // --- BEGIN COMMENT ---
   // 获取角色显示信息 - 使用stone主题配色
@@ -430,11 +489,14 @@ export const UserTable: React.FC<UserTableProps> = ({
                         {/* --- 编辑用户 --- */}
                         <button
                           onClick={() => onEditUser(user)}
+                          disabled={!canEditUser(user)}
                           className={cn(
                             "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
-                            isDark 
-                              ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
-                              : "text-stone-700 hover:bg-stone-100 hover:text-stone-900"
+                            !canEditUser(user)
+                              ? (isDark ? "text-stone-600 cursor-not-allowed" : "text-stone-400 cursor-not-allowed")
+                              : (isDark 
+                                  ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
+                                  : "text-stone-700 hover:bg-stone-100 hover:text-stone-900")
                           )}
                         >
                           <Edit2 className="h-4 w-4" />
@@ -456,14 +518,17 @@ export const UserTable: React.FC<UserTableProps> = ({
                         
                         {(['admin', 'manager', 'user'] as const).map((role) => {
                           const roleInfo = getRoleInfo(role)
+                          const canChange = canChangeUserRole(user, role)
+                          const isCurrent = user.role === role
+                          
                           return (
                             <button
                               key={role}
                               onClick={() => onChangeRole(user, role)}
-                              disabled={user.role === role}
+                              disabled={!canChange || isCurrent}
                               className={cn(
                                 "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
-                                user.role === role 
+                                (!canChange || isCurrent)
                                   ? (isDark ? "text-stone-600 cursor-not-allowed" : "text-stone-400 cursor-not-allowed")
                                   : (isDark 
                                       ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
@@ -472,8 +537,14 @@ export const UserTable: React.FC<UserTableProps> = ({
                             >
                               {roleInfo.icon}
                               {roleInfo.label}
-                              {user.role === role && (
+                              {isCurrent && (
                                 <span className="ml-auto text-xs">(当前)</span>
+                              )}
+                              {!canChange && !isCurrent && user.id === currentUserProfile?.id && (
+                                <span className="ml-auto text-xs">(自己)</span>
+                              )}
+                              {!canChange && !isCurrent && user.role === 'admin' && user.id !== currentUserProfile?.id && (
+                                <span className="ml-auto text-xs">(管理员)</span>
                               )}
                             </button>
                           )
@@ -494,14 +565,16 @@ export const UserTable: React.FC<UserTableProps> = ({
                         
                         {(['active', 'suspended', 'pending'] as const).map((status) => {
                           const statusInfo = getStatusInfo(status)
+                          const isCurrent = user.status === status
+                          
                           return (
                             <button
                               key={status}
                               onClick={() => onChangeStatus(user, status)}
-                              disabled={user.status === status}
+                              disabled={isCurrent}
                               className={cn(
                                 "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
-                                user.status === status 
+                                isCurrent
                                   ? (isDark ? "text-stone-600 cursor-not-allowed" : "text-stone-400 cursor-not-allowed")
                                   : (isDark 
                                       ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
@@ -510,7 +583,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             >
                               {statusInfo.icon}
                               {statusInfo.label}
-                              {user.status === status && (
+                              {isCurrent && (
                                 <span className="ml-auto text-xs">(当前)</span>
                               )}
                             </button>
@@ -525,15 +598,24 @@ export const UserTable: React.FC<UserTableProps> = ({
                         {/* --- 删除用户 --- */}
                         <button
                           onClick={() => onDeleteUser(user)}
+                          disabled={!canDeleteUser(user)}
                           className={cn(
                             "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
-                            isDark 
-                              ? "text-red-400 hover:bg-red-900/20 hover:text-red-300" 
-                              : "text-red-600 hover:bg-red-50 hover:text-red-700"
+                            !canDeleteUser(user)
+                              ? (isDark ? "text-stone-600 cursor-not-allowed" : "text-stone-400 cursor-not-allowed")
+                              : (isDark 
+                                  ? "text-red-400 hover:bg-red-900/20 hover:text-red-300" 
+                                  : "text-red-600 hover:bg-red-50 hover:text-red-700")
                           )}
                         >
                           <Trash2 className="h-4 w-4" />
                           删除用户
+                          {!canDeleteUser(user) && user.id === currentUserProfile?.id && (
+                            <span className="ml-auto text-xs">(自己)</span>
+                          )}
+                          {!canDeleteUser(user) && user.role === 'admin' && user.id !== currentUserProfile?.id && (
+                            <span className="ml-auto text-xs">(管理员)</span>
+                          )}
                         </button>
                       </div>
                     </Dropdown>

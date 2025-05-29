@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { useUserManagementStore } from '@lib/stores/user-management-store'
+import { useProfile } from '@lib/hooks/use-profile'
 import { cn } from '@lib/utils'
 import { UserStatsCards } from '@components/admin/users/user-stats-cards'
 import { UserFiltersComponent } from '@components/admin/users/user-filters'
@@ -23,6 +24,7 @@ import {
 
 export default function UsersManagementPage() {
   const { isDark } = useTheme()
+  const { profile: currentUserProfile } = useProfile() // 获取当前用户信息
   
   // --- BEGIN COMMENT ---
   // 从用户管理store获取状态和操作
@@ -49,6 +51,83 @@ export default function UsersManagementPage() {
     batchChangeStatus,
     clearError
   } = useUserManagementStore()
+
+  // --- BEGIN COMMENT ---
+  // 检查是否可以更改用户角色（防止管理员降级其他管理员）
+  // --- END COMMENT ---
+  const canChangeUserRole = (targetUser: any, newRole: 'admin' | 'manager' | 'user') => {
+    // 如果当前用户不是管理员，不允许任何角色更改
+    if (currentUserProfile?.role !== 'admin') {
+      return false
+    }
+    
+    // 防止管理员修改自己的角色
+    if (targetUser.id === currentUserProfile?.id) {
+      toast.error('不能修改自己的角色')
+      return false
+    }
+    
+    // 防止非超级管理员降级其他管理员
+    if (targetUser.role === 'admin' && newRole !== 'admin') {
+      toast.error('不能降级其他管理员的权限')
+      return false
+    }
+    
+    return true
+  }
+
+  // --- BEGIN COMMENT ---
+  // 检查是否可以删除用户（防止删除管理员账号）
+  // --- END COMMENT ---
+  const canDeleteUser = (targetUser: any) => {
+    // 如果当前用户不是管理员，不允许删除
+    if (currentUserProfile?.role !== 'admin') {
+      return false
+    }
+    
+    // 防止删除自己
+    if (targetUser.id === currentUserProfile?.id) {
+      toast.error('不能删除自己的账号')
+      return false
+    }
+    
+    // 防止删除其他管理员
+    if (targetUser.role === 'admin') {
+      toast.error('不能删除其他管理员账号')
+      return false
+    }
+    
+    return true
+  }
+
+  // --- BEGIN COMMENT ---
+  // 检查批量操作是否包含受保护的用户
+  // --- END COMMENT ---
+  const canBatchChangeRole = (newRole: 'admin' | 'manager' | 'user') => {
+    if (currentUserProfile?.role !== 'admin') {
+      return false
+    }
+    
+    const selectedUsers = users.filter(user => selectedUserIds.includes(user.id))
+    
+    // 检查是否包含当前用户
+    const includesSelf = selectedUsers.some(user => user.id === currentUserProfile?.id)
+    if (includesSelf) {
+      toast.error('不能在批量操作中包含自己')
+      return false
+    }
+    
+    // 检查是否试图降级其他管理员
+    const hasAdminBeingDowngraded = selectedUsers.some(user => 
+      user.role === 'admin' && newRole !== 'admin'
+    )
+    if (hasAdminBeingDowngraded) {
+      toast.error('不能在批量操作中降级其他管理员')
+      return false
+    }
+    
+    return true
+  }
 
   // --- BEGIN COMMENT ---
   // 页面初始化时加载数据
@@ -101,9 +180,13 @@ export default function UsersManagementPage() {
   }
 
   // --- BEGIN COMMENT ---
-  // 处理用户角色更改
+  // 处理用户角色更改（带安全检查）
   // --- END COMMENT ---
   const handleChangeRole = async (user: any, role: 'admin' | 'manager' | 'user') => {
+    if (!canChangeUserRole(user, role)) {
+      return
+    }
+    
     const success = await changeUserRole(user.id, role)
     if (success) {
       toast.success(`已将 ${user.full_name || user.email} 的角色更改为${
@@ -125,9 +208,13 @@ export default function UsersManagementPage() {
   }
 
   // --- BEGIN COMMENT ---
-  // 处理用户删除
+  // 处理用户删除（带安全检查）
   // --- END COMMENT ---
   const handleDeleteUser = async (user: any) => {
+    if (!canDeleteUser(user)) {
+      return
+    }
+    
     if (window.confirm(`确定要删除用户 ${user.full_name || user.email} 吗？此操作不可撤销。`)) {
       const success = await removeUser(user.id)
       if (success) {
@@ -137,9 +224,13 @@ export default function UsersManagementPage() {
   }
 
   // --- BEGIN COMMENT ---
-  // 处理批量角色更改
+  // 处理批量角色更改（带安全检查）
   // --- END COMMENT ---
   const handleBatchChangeRole = async (role: 'admin' | 'manager' | 'user') => {
+    if (!canBatchChangeRole(role)) {
+      return
+    }
+    
     const success = await batchChangeRole(role)
     if (success) {
       toast.success(`已批量更改 ${selectedUserIds.length} 个用户的角色`)
@@ -355,6 +446,20 @@ export default function UsersManagementPage() {
               >
                 <Shield className="h-3 w-3" />
                 设为管理员
+              </button>
+              
+              <button
+                onClick={() => handleBatchChangeRole('manager')}
+                disabled={loading.batchOperating}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors font-serif",
+                  isDark
+                    ? "bg-amber-600 text-white hover:bg-amber-700"
+                    : "bg-amber-600 text-white hover:bg-amber-700"
+                )}
+              >
+                <Crown className="h-3 w-3" />
+                设为经理
               </button>
               
               <button
