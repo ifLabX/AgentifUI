@@ -27,6 +27,7 @@ export function DynamicTitle() {
   
   // 基础应用名称
   const baseTitle = 'AgentifUI'
+  
   useEffect(() => {
     // 标记开始更新标题
     setIsUpdating(true)
@@ -66,14 +67,28 @@ export function DynamicTitle() {
       else if (pathname?.startsWith('/about')) {
         newTitle = '关于 | ' + baseTitle
       }
-
       else if (pathname?.startsWith('/forgot-password')) {
         newTitle = '忘记密码 | ' + baseTitle
       }
       else if (pathname?.startsWith('/admin')) {
-        newTitle = '管理后台 | ' + baseTitle
+        // 管理后台页面
+        if (pathname === '/admin') {
+          newTitle = '管理后台 | ' + baseTitle
+        } else if (pathname === '/admin/users') {
+          newTitle = '用户管理 | ' + baseTitle
+        } else if (pathname === '/admin/api-config') {
+          newTitle = 'API配置 | ' + baseTitle
+        } else if (pathname === '/admin/security') {
+          newTitle = '安全设置 | ' + baseTitle
+        } else if (pathname === '/admin/analytics') {
+          newTitle = '数据分析 | ' + baseTitle
+        } else {
+          // 其他管理页面
+          const adminSection = pathname.split('/').pop() || ''
+          const formattedName = adminSection.charAt(0).toUpperCase() + adminSection.slice(1)
+          newTitle = `管理后台 - ${formattedName} | ${baseTitle}`
+        }
       }
-
       // 如果是聊天页面
       else if (pathname?.startsWith('/chat')) {
         if (pathname === '/chat/new') {
@@ -94,7 +109,7 @@ export function DynamicTitle() {
             newTitle = `${chatTitle} | ${baseTitle}`
             
             // 不管是临时ID还是正在加载的对话，都使用相同的标题格式
-            // 根据用户要求，不显示“(加载中...)”标记
+            // 根据用户要求，不显示"(加载中...)"标记
             newTitle = `${chatTitle} | ${baseTitle}`
           } else if (isLoading) {
             // 如果对话列表正在加载，显示加载状态
@@ -144,3 +159,4 @@ export function DynamicTitle() {
   // 这个组件不渲染任何内容
   return null
 }
+
