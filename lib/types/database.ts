@@ -149,6 +149,7 @@ export interface ServiceInstanceConfig {
   // --- BEGIN COMMENT ---
   // 🎯 新增：Dify应用参数配置（替代API调用）
   // 这些参数原本需要调用Dify API获取，现在可以直接在数据库中配置
+  // 使用标准的Dify API接口规范
   // --- END COMMENT ---
   dify_parameters?: {
     // 开场白配置
@@ -157,47 +158,14 @@ export interface ServiceInstanceConfig {
     // 推荐问题列表
     suggested_questions?: string[];
     
-    // 用户输入表单配置
-    user_input_form?: Array<{
-      paragraph?: {
-        label: string;
-        variable: string;
-        required: boolean;
-        default: string;
-      };
-    }>;
-    
     // 文件上传配置
     file_upload?: {
       image?: {
         enabled: boolean;
         number_limits: number;
-        detail: string;
+        transfer_methods: ('remote_url' | 'local_file')[];
       };
     };
-    
-    // 语音转文字配置
-    speech_to_text?: {
-      enabled: boolean;
-    };
-    
-    // 文字转语音配置
-    text_to_speech?: {
-      enabled: boolean;
-    };
-    
-    // 检索资源配置
-    retriever_resource?: {
-      enabled: boolean;
-    };
-    
-    // 标注回复配置
-    annotation_reply?: {
-      enabled: boolean;
-    };
-    
-    // 系统参数配置
-    system_parameters?: Record<string, any>;
   };
   
   // --- BEGIN COMMENT ---
