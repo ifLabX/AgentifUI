@@ -32,7 +32,7 @@ export function AdminButton({ variant = 'floating' }: AdminButtonProps) {
   // 管理员入口点击处理
   // --- END COMMENT ---
   const handleAdminClick = () => {
-    router.push('/admin/api-config')
+    router.push('/admin')
   }
 
   // --- BEGIN COMMENT ---

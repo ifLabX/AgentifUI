@@ -164,7 +164,7 @@ export function DesktopUserAvatar() {
         {
             icon: Shield,
             label: "管理后台",
-            action: () => router.push("/admin/api-config"),
+            action: () => router.push("/admin"),
         },
     ];
 
