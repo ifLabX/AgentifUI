@@ -612,7 +612,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
             className="fixed inset-0 z-60 bg-black/30 backdrop-blur-sm cursor-pointer"
             onClick={() => setShowFileUploadModal(false)}
           />
-          <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-60 w-[420px] max-h-[70vh] flex flex-col">
+          <div className="fixed left-1/2 top-20 transform -translate-x-1/2 z-60 w-[420px] max-h-[calc(100vh-6rem)] flex flex-col">
             <div className={cn(
               "rounded-xl border shadow-2xl flex flex-col max-h-full",
               isDark 

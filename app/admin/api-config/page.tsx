@@ -296,7 +296,7 @@ const InstanceForm = ({
                   }
                 }))}
                 className={cn(
-                  "flex items-center gap-3 p-3 rounded-lg border transition-colors",
+                  "flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer",
                   formData.config.app_metadata.app_type === 'model'
                     ? isDark
                       ? "border-stone-500 bg-stone-700/50"
@@ -352,7 +352,7 @@ const InstanceForm = ({
                   }
                 }))}
                 className={cn(
-                  "flex items-center gap-3 p-3 rounded-lg border transition-colors",
+                  "flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer",
                   formData.config.app_metadata.app_type === 'marketplace'
                     ? isDark
                       ? "border-stone-500 bg-stone-700/50"
