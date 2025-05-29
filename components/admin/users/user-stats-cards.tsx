@@ -153,31 +153,29 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats, isLoading
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mb-4">
         {[...Array(8)].map((_, index) => (
           <div
             key={index}
             className={cn(
-              "p-4 rounded-xl border animate-pulse",
+              "p-3 rounded-lg border animate-pulse",
               isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
             )}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col space-y-2">
+              <div className={cn(
+                "w-8 h-8 rounded-lg",
+                isDark ? "bg-stone-700" : "bg-stone-100"
+              )} />
+              <div>
                 <div className={cn(
-                  "w-10 h-10 rounded-lg",
-                  isDark ? "bg-stone-700" : "bg-stone-100"
+                  "h-3 w-12 rounded mb-1",
+                  isDark ? "bg-stone-700" : "bg-stone-200"
                 )} />
-                <div>
-                  <div className={cn(
-                    "h-4 w-16 rounded mb-2",
-                    isDark ? "bg-stone-700" : "bg-stone-200"
-                  )} />
-                  <div className={cn(
-                    "h-6 w-12 rounded",
-                    isDark ? "bg-stone-700" : "bg-stone-200"
-                  )} />
-                </div>
+                <div className={cn(
+                  "h-4 w-8 rounded",
+                  isDark ? "bg-stone-700" : "bg-stone-200"
+                )} />
               </div>
             </div>
           </div>
@@ -187,7 +185,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats, isLoading
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mb-4">
       {statCards.map((card, index) => {
         const colors = getColorClasses(card.color)
         
@@ -195,20 +193,20 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats, isLoading
           <div
             key={index}
             className={cn(
-              "p-4 rounded-xl border transition-all duration-200 hover:shadow-lg",
+              "p-3 rounded-lg border transition-all duration-200 hover:shadow-md",
               colors.bg,
               colors.border
             )}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col space-y-2">
               {/* --- BEGIN COMMENT ---
-              图标容器
+              图标
               --- END COMMENT --- */}
               <div className={cn(
-                "p-2 rounded-lg",
+                "w-8 h-8 rounded-lg flex items-center justify-center",
                 colors.iconBg
               )}>
-                <div className={colors.icon}>
+                <div className={cn("scale-75", colors.icon)}>
                   {card.icon}
                 </div>
               </div>
@@ -216,15 +214,15 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats, isLoading
               {/* --- BEGIN COMMENT ---
               数据内容
               --- END COMMENT --- */}
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0">
                 <p className={cn(
-                  "text-sm font-serif font-medium mb-1",
+                  "text-xs font-serif font-medium mb-1 truncate",
                   isDark ? "text-stone-400" : "text-stone-600"
                 )}>
                   {card.title}
                 </p>
                 <p className={cn(
-                  "text-2xl font-bold font-serif",
+                  "text-lg font-bold font-serif",
                   isDark ? "text-stone-100" : "text-stone-900"
                 )}>
                   {card.value}
@@ -236,23 +234,17 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats, isLoading
                 {card.trend && (
                   <div className="flex items-center gap-1 mt-1">
                     {card.trend.isPositive ? (
-                      <TrendingUp className="h-3 w-3 text-green-500" />
+                      <TrendingUp className="h-2.5 w-2.5 text-green-500" />
                     ) : (
-                      <TrendingDown className="h-3 w-3 text-red-500" />
+                      <TrendingDown className="h-2.5 w-2.5 text-red-500" />
                     )}
                     <span className={cn(
-                      "text-xs font-serif",
+                      "text-xs font-serif truncate",
                       card.trend.isPositive 
                         ? "text-green-600" 
                         : "text-red-600"
                     )}>
                       {card.trend.value}%
-                    </span>
-                    <span className={cn(
-                      "text-xs font-serif",
-                      isDark ? "text-stone-500" : "text-stone-400"
-                    )}>
-                      {card.trend.label}
                     </span>
                   </div>
                 )}

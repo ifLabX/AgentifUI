@@ -7,7 +7,7 @@ import { useTheme } from '@lib/hooks/use-theme'
 import { useThemeColors } from '@lib/hooks/use-theme-colors'
 import { cn } from '@lib/utils'
 import { 
-  Settings, 
+  Key, 
   Menu,
   Home,
   ChevronRight,
@@ -56,8 +56,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       description: '管理后台概览'
     },
     { 
-      text: 'API 配置', 
-      icon: Settings, 
+      text: 'API 密钥', 
+      icon: Key, 
       href: '/admin/api-config',
       description: '管理应用实例和配置参数'
     },

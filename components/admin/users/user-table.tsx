@@ -253,7 +253,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               )}>
                 注册时间
               </th>
-              <th className="w-16 px-4 py-4"></th>
+              <th className="w-32 px-4 py-4"></th>
             </tr>
           </thead>
           

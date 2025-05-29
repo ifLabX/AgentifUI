@@ -1,7 +1,7 @@
 "use client"
 
-import React from 'react'
-import { Search, Filter, RotateCcw, Users, UserCheck, UserX, Clock, Shield, Crown, UserIcon } from 'lucide-react'
+import React, { useState } from 'react'
+import { Search, Filter, RotateCcw, Users, UserCheck, UserX, Clock, Shield, Crown, UserIcon, ChevronDown, ChevronUp, Settings } from 'lucide-react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import type { UserFilters } from '@lib/db/users'
@@ -18,6 +18,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
   onReset
 }) => {
   const { isDark } = useTheme()
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // --- BEGIN COMMENT ---
   // 角色选项
@@ -68,88 +69,27 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
   }
 
   // --- BEGIN COMMENT ---
-  // 检查是否有活跃的筛选条件
+  // 检查是否有活跃的筛选条件（除了搜索）
   // --- END COMMENT ---
-  const hasActiveFilters = filters.role || filters.status || filters.auth_source || filters.search
+  const hasActiveFilters = filters.role || filters.status || filters.auth_source
+  const hasSearchFilter = filters.search
 
   return (
     <div className={cn(
-      "p-6 rounded-lg border mb-6 transition-colors",
-      isDark ? "bg-stone-800/50 border-stone-700" : "bg-white border-stone-200"
+      "rounded-xl border backdrop-blur-sm mb-4",
+      isDark 
+        ? "bg-stone-900/80 border-stone-700/50" 
+        : "bg-white/90 border-stone-200/50"
     )}>
       {/* --- BEGIN COMMENT ---
-      筛选器标题行 - 优化对齐和间距
+      搜索栏 - 始终显示
       --- END COMMENT --- */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "p-2 rounded-lg",
-            isDark ? "bg-stone-700" : "bg-stone-100"
-          )}>
-            <Filter className={cn(
-              "h-5 w-5",
-              isDark ? "text-stone-300" : "text-stone-600"
-            )} />
-          </div>
-          <div>
-            <h3 className={cn(
-              "text-lg font-semibold font-serif",
-              isDark ? "text-stone-100" : "text-stone-900"
-            )}>
-              筛选和搜索
-            </h3>
-            <p className={cn(
-              "text-sm font-serif",
-              isDark ? "text-stone-400" : "text-stone-600"
-            )}>
-              使用下方条件筛选用户列表
-            </p>
-          </div>
-          {hasActiveFilters && (
-            <span className={cn(
-              "ml-4 px-3 py-1 text-xs rounded-full font-serif border",
-              isDark 
-                ? "bg-stone-600/50 text-stone-300 border-stone-600" 
-                : "bg-stone-100 text-stone-700 border-stone-300"
-            )}>
-              已应用筛选
-            </span>
-          )}
-        </div>
-        
-        {hasActiveFilters && (
-          <button
-            onClick={onReset}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-all duration-200 font-serif border",
-              isDark
-                ? "text-stone-300 hover:text-stone-100 hover:bg-stone-700 border-stone-600 hover:border-stone-500"
-                : "text-stone-600 hover:text-stone-800 hover:bg-stone-50 border-stone-300 hover:border-stone-400"
-            )}
-          >
-            <RotateCcw className="h-4 w-4" />
-            重置筛选
-          </button>
-        )}
-      </div>
-
-      {/* --- BEGIN COMMENT ---
-      筛选表单 - 优化网格布局和对齐
-      --- END COMMENT --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* --- BEGIN COMMENT ---
-        搜索框 - 在大屏幕上占两列宽度
-        --- END COMMENT --- */}
-        <div className="xl:col-span-2">
-          <label className={cn(
-            "block text-sm font-medium mb-3 font-serif",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            搜索用户
-          </label>
-          <div className="relative">
+      <div className="p-4">
+        <div className="flex items-center gap-4">
+          {/* --- 搜索框 --- */}
+          <div className="flex-1 relative">
             <Search className={cn(
-              "absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5",
+              "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4",
               isDark ? "text-stone-400" : "text-stone-500"
             )} />
             <input
@@ -158,148 +98,229 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
               value={filters.search || ''}
               onChange={handleSearchChange}
               className={cn(
-                "w-full pl-11 pr-4 py-3 rounded-lg border transition-all duration-200 font-serif",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                "w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm font-serif placeholder-opacity-60",
+                "focus:outline-none focus:ring-2 focus:ring-offset-1",
                 isDark
-                  ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400 focus:border-stone-500 focus:ring-stone-500/20 focus:ring-offset-stone-800"
-                  : "bg-white border-stone-300 text-stone-900 placeholder-stone-500 focus:border-stone-400 focus:ring-stone-400/20 focus:ring-offset-white"
+                  ? "bg-stone-800/50 border-stone-600 text-stone-100 placeholder-stone-500 focus:ring-stone-500/30 focus:ring-offset-stone-900"
+                  : "bg-stone-50/50 border-stone-300 text-stone-900 placeholder-stone-500 focus:ring-stone-400/30 focus:ring-offset-white",
+                "transition-all duration-200"
               )}
             />
           </div>
-        </div>
 
-        {/* --- BEGIN COMMENT ---
-        角色筛选
-        --- END COMMENT --- */}
-        <div>
-          <label className={cn(
-            "block text-sm font-medium mb-3 font-serif",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            角色权限
-          </label>
-          <select
-            value={filters.role || ''}
-            onChange={(e) => onFiltersChange({ role: e.target.value as any || undefined })}
+          {/* --- 展开/收起按钮 --- */}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
             className={cn(
-              "w-full px-3 py-3 rounded-lg border transition-all duration-200 font-serif",
-              "focus:outline-none focus:ring-2 focus:ring-offset-2",
+              "flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-200",
               isDark
-                ? "bg-stone-700 border-stone-600 text-stone-100 focus:border-stone-500 focus:ring-stone-500/20 focus:ring-offset-stone-800"
-                : "bg-white border-stone-300 text-stone-900 focus:border-stone-400 focus:ring-stone-400/20 focus:ring-offset-white"
+                ? "text-stone-300 hover:text-stone-100 hover:bg-stone-700/50 border-stone-600 hover:border-stone-500"
+                : "text-stone-600 hover:text-stone-800 hover:bg-stone-50 border-stone-300 hover:border-stone-400"
             )}
           >
-            {roleOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* --- BEGIN COMMENT ---
-        状态筛选
-        --- END COMMENT --- */}
-        <div>
-          <label className={cn(
-            "block text-sm font-medium mb-3 font-serif",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            账户状态
-          </label>
-          <select
-            value={filters.status || ''}
-            onChange={(e) => onFiltersChange({ status: e.target.value as any || undefined })}
-            className={cn(
-              "w-full px-3 py-3 rounded-lg border transition-all duration-200 font-serif",
-              "focus:outline-none focus:ring-2 focus:ring-offset-2",
-              isDark
-                ? "bg-stone-700 border-stone-600 text-stone-100 focus:border-stone-500 focus:ring-stone-500/20 focus:ring-offset-stone-800"
-                : "bg-white border-stone-300 text-stone-900 focus:border-stone-400 focus:ring-stone-400/20 focus:ring-offset-white"
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">高级筛选</span>
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
             )}
-          >
-            {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* --- BEGIN COMMENT ---
-        认证来源筛选
-        --- END COMMENT --- */}
-        <div>
-          <label className={cn(
-            "block text-sm font-medium mb-3 font-serif",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            认证来源
-          </label>
-          <select
-            value={filters.auth_source || ''}
-            onChange={(e) => onFiltersChange({ auth_source: e.target.value || undefined })}
-            className={cn(
-              "w-full px-3 py-3 rounded-lg border transition-all duration-200 font-serif",
-              "focus:outline-none focus:ring-2 focus:ring-offset-2",
-              isDark
-                ? "bg-stone-700 border-stone-600 text-stone-100 focus:border-stone-500 focus:ring-stone-500/20 focus:ring-offset-stone-800"
-                : "bg-white border-stone-300 text-stone-900 focus:border-stone-400 focus:ring-stone-400/20 focus:ring-offset-white"
+            {(hasActiveFilters || hasSearchFilter) && (
+              <div className={cn(
+                "w-2 h-2 rounded-full ml-1",
+                isDark ? "bg-emerald-400" : "bg-emerald-500"
+              )} />
             )}
-          >
-            {authSourceOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+          </button>
 
-        {/* --- BEGIN COMMENT ---
-        排序选择 - 分为两个并排的下拉框
-        --- END COMMENT --- */}
-        <div className="lg:col-span-2 xl:col-span-1">
-          <label className={cn(
-            "block text-sm font-medium mb-3 font-serif",
-            isDark ? "text-stone-300" : "text-stone-700"
-          )}>
-            排序方式
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <select
-              value={filters.sortBy || 'created_at'}
-              onChange={(e) => onFiltersChange({ sortBy: e.target.value as any })}
+          {/* --- 重置按钮 --- */}
+          {(hasActiveFilters || hasSearchFilter) && (
+            <button
+              onClick={onReset}
               className={cn(
-                "px-3 py-3 rounded-lg border transition-all duration-200 font-serif",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                "flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border",
                 isDark
-                  ? "bg-stone-700 border-stone-600 text-stone-100 focus:border-stone-500 focus:ring-stone-500/20 focus:ring-offset-stone-800"
-                  : "bg-white border-stone-300 text-stone-900 focus:border-stone-400 focus:ring-stone-400/20 focus:ring-offset-white"
+                  ? "text-stone-300 hover:text-stone-100 hover:bg-stone-700/50 border-stone-600 hover:border-stone-500"
+                  : "text-stone-600 hover:text-stone-800 hover:bg-stone-50 border-stone-300 hover:border-stone-400"
               )}
             >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filters.sortOrder || 'desc'}
-              onChange={(e) => onFiltersChange({ sortOrder: e.target.value as any })}
-              className={cn(
-                "px-3 py-3 rounded-lg border transition-all duration-200 font-serif",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                isDark
-                  ? "bg-stone-700 border-stone-600 text-stone-100 focus:border-stone-500 focus:ring-stone-500/20 focus:ring-offset-stone-800"
-                  : "bg-white border-stone-300 text-stone-900 focus:border-stone-400 focus:ring-stone-400/20 focus:ring-offset-white"
-              )}
-            >
-              <option value="desc">降序</option>
-              <option value="asc">升序</option>
-            </select>
-          </div>
+              <RotateCcw className="h-4 w-4" />
+              <span className="hidden sm:inline">重置</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* --- BEGIN COMMENT ---
+      可折叠的高级筛选区域
+      --- END COMMENT --- */}
+      {isExpanded && (
+        <div className={cn(
+          "border-t px-4 pb-4",
+          isDark ? "border-stone-700/50" : "border-stone-200/50"
+        )}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+            {/* --- 角色筛选 --- */}
+            <div>
+              <label className={cn(
+                "block text-xs font-semibold mb-2 font-serif uppercase tracking-wider",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                角色权限
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.role || ''}
+                  onChange={(e) => onFiltersChange({ role: e.target.value as any || undefined })}
+                  className={cn(
+                    "w-full appearance-none px-3 py-2 rounded-lg border text-sm font-serif cursor-pointer",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                    isDark
+                      ? "bg-stone-800/50 border-stone-600 text-stone-100 focus:ring-stone-500/30 focus:ring-offset-stone-900"
+                      : "bg-stone-50/50 border-stone-300 text-stone-900 focus:ring-stone-400/30 focus:ring-offset-white",
+                    "transition-all duration-200"
+                  )}
+                >
+                  {roleOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className={cn(
+                  "absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 pointer-events-none",
+                  isDark ? "text-stone-500" : "text-stone-400"
+                )} />
+              </div>
+            </div>
+
+            {/* --- 状态筛选 --- */}
+            <div>
+              <label className={cn(
+                "block text-xs font-semibold mb-2 font-serif uppercase tracking-wider",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                账户状态
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.status || ''}
+                  onChange={(e) => onFiltersChange({ status: e.target.value as any || undefined })}
+                  className={cn(
+                    "w-full appearance-none px-3 py-2 rounded-lg border text-sm font-serif cursor-pointer",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                    isDark
+                      ? "bg-stone-800/50 border-stone-600 text-stone-100 focus:ring-stone-500/30 focus:ring-offset-stone-900"
+                      : "bg-stone-50/50 border-stone-300 text-stone-900 focus:ring-stone-400/30 focus:ring-offset-white",
+                    "transition-all duration-200"
+                  )}
+                >
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className={cn(
+                  "absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 pointer-events-none",
+                  isDark ? "text-stone-500" : "text-stone-400"
+                )} />
+              </div>
+            </div>
+
+            {/* --- 认证来源筛选 --- */}
+            <div>
+              <label className={cn(
+                "block text-xs font-semibold mb-2 font-serif uppercase tracking-wider",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                认证来源
+              </label>
+              <div className="relative">
+                <select
+                  value={filters.auth_source || ''}
+                  onChange={(e) => onFiltersChange({ auth_source: e.target.value || undefined })}
+                  className={cn(
+                    "w-full appearance-none px-3 py-2 rounded-lg border text-sm font-serif cursor-pointer",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                    isDark
+                      ? "bg-stone-800/50 border-stone-600 text-stone-100 focus:ring-stone-500/30 focus:ring-offset-stone-900"
+                      : "bg-stone-50/50 border-stone-300 text-stone-900 focus:ring-stone-400/30 focus:ring-offset-white",
+                    "transition-all duration-200"
+                  )}
+                >
+                  {authSourceOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className={cn(
+                  "absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 pointer-events-none",
+                  isDark ? "text-stone-500" : "text-stone-400"
+                )} />
+              </div>
+            </div>
+
+            {/* --- 排序选择 --- */}
+            <div>
+              <label className={cn(
+                "block text-xs font-semibold mb-2 font-serif uppercase tracking-wider",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                排序方式
+              </label>
+              <div className="space-y-2">
+                <div className="relative">
+                  <select
+                    value={filters.sortBy || 'created_at'}
+                    onChange={(e) => onFiltersChange({ sortBy: e.target.value as any })}
+                    className={cn(
+                      "w-full appearance-none px-3 py-1.5 rounded-lg border text-sm font-serif cursor-pointer",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                      isDark
+                        ? "bg-stone-800/50 border-stone-600 text-stone-100 focus:ring-stone-500/30 focus:ring-offset-stone-900"
+                        : "bg-stone-50/50 border-stone-300 text-stone-900 focus:ring-stone-400/30 focus:ring-offset-white",
+                      "transition-all duration-200"
+                    )}
+                  >
+                    {sortOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className={cn(
+                    "absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 pointer-events-none",
+                    isDark ? "text-stone-500" : "text-stone-400"
+                  )} />
+                </div>
+                <div className="relative">
+                  <select
+                    value={filters.sortOrder || 'desc'}
+                    onChange={(e) => onFiltersChange({ sortOrder: e.target.value as any })}
+                    className={cn(
+                      "w-full appearance-none px-3 py-1.5 rounded-lg border text-sm font-serif cursor-pointer",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                      isDark
+                        ? "bg-stone-800/50 border-stone-600 text-stone-100 focus:ring-stone-500/30 focus:ring-offset-stone-900"
+                        : "bg-stone-50/50 border-stone-300 text-stone-900 focus:ring-stone-400/30 focus:ring-offset-white",
+                      "transition-all duration-200"
+                    )}
+                  >
+                    <option value="desc">最新在前</option>
+                    <option value="asc">最旧在前</option>
+                  </select>
+                  <ChevronDown className={cn(
+                    "absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 pointer-events-none",
+                    isDark ? "text-stone-500" : "text-stone-400"
+                  )} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 

@@ -233,7 +233,7 @@ export default function UsersManagementPage() {
       {/* --- BEGIN COMMENT ---
       页面标题和操作栏
       --- END COMMENT --- */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className={cn(
             "text-3xl font-bold font-serif mb-2",
@@ -283,8 +283,8 @@ export default function UsersManagementPage() {
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-serif",
               isDark
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                ? "bg-stone-600 text-white hover:bg-stone-700"
+                : "bg-stone-700 text-white hover:bg-stone-800"
             )}
           >
             <Plus className="h-4 w-4" />
@@ -315,14 +315,14 @@ export default function UsersManagementPage() {
       --- END COMMENT --- */}
       {selectedUserIds.length > 0 && (
         <div className={cn(
-          "p-4 rounded-xl border mb-6",
-          isDark ? "bg-blue-500/10 border-blue-500/20" : "bg-blue-50 border-blue-200"
+          "p-4 rounded-xl border mb-4",
+          isDark ? "bg-stone-500/10 border-stone-500/20" : "bg-stone-50 border-stone-200"
         )}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className={cn(
                 "text-sm font-medium font-serif",
-                isDark ? "text-blue-400" : "text-blue-700"
+                isDark ? "text-stone-300" : "text-stone-700"
               )}>
                 已选择 {selectedUserIds.length} 个用户
               </span>
@@ -331,8 +331,8 @@ export default function UsersManagementPage() {
                 className={cn(
                   "text-xs px-2 py-1 rounded transition-colors font-serif",
                   isDark 
-                    ? "text-blue-400 hover:bg-blue-500/20" 
-                    : "text-blue-600 hover:bg-blue-100"
+                    ? "text-stone-400 hover:bg-stone-500/20" 
+                    : "text-stone-600 hover:bg-stone-100"
                 )}
               >
                 取消选择
