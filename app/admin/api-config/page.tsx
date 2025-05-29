@@ -120,6 +120,7 @@ const InstanceForm = ({
   });
   const [showApiKey, setShowApiKey] = useState(false);
   const [showDifyPanel, setShowDifyPanel] = useState(false);
+  const [setAsDefault, setSetAsDefault] = useState(false);
   
   useEffect(() => {
     if (instance) {
@@ -161,7 +162,7 @@ const InstanceForm = ({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    onSave({ ...formData, setAsDefault });
   };
 
   const handleDifyParametersSave = (difyConfig: any) => {
@@ -190,43 +191,71 @@ const InstanceForm = ({
           </h3>
           
           <div className="flex items-center gap-3">
-            {/* 设置默认应用按钮 - 在编辑模式时总是显示 */}
-            {isEditing && instance && (
+            {/* 设为默认应用按钮 */}
+            {isEditing ? (
+              /* 编辑模式：显示当前状态并允许修改 */
+              instance && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // --- 简化逻辑：直接使用实时状态 ---
+                    if (isCurrentDefault) {
+                      return // 已经是默认应用，无需操作
+                    }
+                    
+                    if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
+                      // 直接调用store的方法
+                      if (instance.id) {
+                        useApiConfigStore.getState().setDefaultInstance(instance.id)
+                          .then(() => {
+                            showFeedback('默认应用设置成功', 'success')
+                          })
+                          .catch((error) => {
+                            console.error('设置默认应用失败:', error)
+                            showFeedback('设置默认应用失败', 'error')
+                          })
+                      } else {
+                        showFeedback('实例ID不存在，无法设置为默认应用', 'error')
+                      }
+                    }
+                  }}
+                  disabled={isCurrentDefault}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-lg transition-all",
+                    "border",
+                    isCurrentDefault
+                      ? "cursor-not-allowed opacity-60"
+                      : "cursor-pointer hover:scale-105",
+                    isCurrentDefault
+                      ? isDark
+                        ? "border-stone-600/50 bg-stone-700/30 text-stone-400"
+                        : "border-stone-300/50 bg-stone-100/50 text-stone-500"
+                      : isDark
+                        ? "border-stone-600 bg-stone-700 hover:bg-stone-600 text-stone-300"
+                        : "border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700"
+                  )}
+                >
+                  <Star className={cn(
+                    "h-4 w-4",
+                    isCurrentDefault && "fill-current"
+                  )} />
+                  <span className="text-sm font-medium font-serif">
+                    {isCurrentDefault ? '默认应用' : '设为默认'}
+                  </span>
+                </button>
+              )
+            ) : (
+              /* 添加模式：允许选择是否设为默认 */
               <button
                 type="button"
-                onClick={() => {
-                  // --- 简化逻辑：直接使用实时状态 ---
-                  if (isCurrentDefault) {
-                    return // 已经是默认应用，无需操作
-                  }
-                  
-                  if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
-                    // 直接调用store的方法
-                    if (instance.id) {
-                      useApiConfigStore.getState().setDefaultInstance(instance.id)
-                        .then(() => {
-                          showFeedback('默认应用设置成功', 'success')
-                        })
-                        .catch((error) => {
-                          console.error('设置默认应用失败:', error)
-                          showFeedback('设置默认应用失败', 'error')
-                        })
-                    } else {
-                      showFeedback('实例ID不存在，无法设置为默认应用', 'error')
-                    }
-                  }
-                }}
-                disabled={isCurrentDefault}
+                onClick={() => setSetAsDefault(!setAsDefault)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all",
-                  "border",
-                  isCurrentDefault
-                    ? "cursor-not-allowed opacity-60"
-                    : "cursor-pointer hover:scale-105",
-                  isCurrentDefault
+                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all cursor-pointer",
+                  "border hover:scale-105",
+                  setAsDefault
                     ? isDark
-                      ? "border-stone-600/50 bg-stone-700/30 text-stone-400"
-                      : "border-stone-300/50 bg-stone-100/50 text-stone-500"
+                      ? "border-stone-500 bg-stone-600 text-stone-200"
+                      : "border-stone-400 bg-stone-200 text-stone-800"
                     : isDark
                       ? "border-stone-600 bg-stone-700 hover:bg-stone-600 text-stone-300"
                       : "border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700"
@@ -234,10 +263,10 @@ const InstanceForm = ({
               >
                 <Star className={cn(
                   "h-4 w-4",
-                  isCurrentDefault && "fill-current"
+                  setAsDefault && "fill-current"
                 )} />
                 <span className="text-sm font-medium font-serif">
-                  {isCurrentDefault ? '默认应用' : '设为默认'}
+                  {setAsDefault ? '将设为默认' : '设为默认'}
                 </span>
               </button>
             )}
@@ -691,12 +720,30 @@ export default function ApiConfigPage() {
               const defaultProviderId = providers.find(p => p.name === 'Dify')?.id || 
                                       providers[0]?.id || 
                                       '1'
+              
+              // --- 提取setAsDefault状态和其他数据 ---
+              const { setAsDefault, ...instanceData } = data
+              
               addInstance({
-                ...data,
+                ...instanceData,
                 provider_id: defaultProviderId
               }, data.apiKey)
-                .then(() => {
+                .then((newInstance) => {
                   showFeedback('应用实例创建成功', 'success')
+                  
+                  // --- 如果选择了设为默认，则在创建成功后设置为默认应用 ---
+                  if (setAsDefault && newInstance?.id) {
+                    return useApiConfigStore.getState().setDefaultInstance(newInstance.id)
+                      .then(() => {
+                        showFeedback('应用实例已设为默认应用', 'success')
+                      })
+                      .catch((error) => {
+                        console.error('设置默认应用失败:', error)
+                        showFeedback('应用创建成功，但设置默认应用失败', 'warning')
+                      })
+                  }
+                })
+                .then(() => {
                   handleClearSelection()
                 })
                 .catch((error) => {
