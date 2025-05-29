@@ -115,7 +115,8 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   }
 
   const handleSetDefaultInstance = async (instanceId: string) => {
-    const instanceToSet = instances.find(inst => inst.instance_id === instanceId)
+    // --- 修复：使用数据库ID查找实例 ---
+    const instanceToSet = instances.find(inst => inst.id === instanceId)
     if (!instanceToSet) {
       alert('未找到要设置的实例')
       return
@@ -303,7 +304,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            handleSetDefaultInstance(instance.instance_id)
+                            handleSetDefaultInstance(instance.id)
                           }}
                           disabled={isProcessing}
                           className={cn(

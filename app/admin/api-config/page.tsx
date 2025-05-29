@@ -188,9 +188,8 @@ const InstanceForm = ({
                 type="button"
                 onClick={() => {
                   if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
-                    // 触发设置默认应用的事件
                     window.dispatchEvent(new CustomEvent('setInstanceAsDefault', {
-                      detail: { instanceId: instance.instance_id }
+                      detail: { instanceId: instance.id }
                     }))
                   }
                 }}
