@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from "react"
 import { cn } from "@lib/utils"
 import { useAttachmentStore } from "@lib/stores/attachment-store"
+import { useFileTypes } from "@lib/hooks/use-file-types"
 import { AttachmentPreviewItem } from "./attachment-preview-item"
 
 // --- BEGIN COMMENT ---
@@ -19,6 +20,7 @@ interface AttachmentPreviewBarProps {
 // --- END COMMENT ---
 export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({ isDark = false, onHeightChange, onRetryUpload }) => {
   const files = useAttachmentStore((state) => state.files)
+  const { uploadConfig } = useFileTypes()
   const containerRef = useRef<HTMLDivElement>(null)
 
   // --- BEGIN MODIFICATION ---
@@ -76,6 +78,19 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({ isDa
   }, [files.length, onHeightChange]); // 依赖文件数量变化
   // --- END MODIFICATION ---
 
+  // --- BEGIN COMMENT ---
+  // 如果没有文件，返回空的容器
+  // --- END COMMENT ---
+  if (files.length === 0) {
+    return (
+      <div
+        ref={containerRef}
+        className="overflow-hidden transition-[height] duration-300 ease-in-out"
+        style={{ height: 0 }}
+      />
+    )
+  }
+
   return (
     <div
       ref={containerRef}
@@ -89,15 +104,34 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({ isDa
       {/* --- BEGIN COMMENT ---
       // 内层容器用于 padding 和 flex 布局，ResizeObserver 监听这个元素
       // --- END COMMENT ---*/}
-      <div className="px-3 pt-3 pb-2 flex flex-wrap gap-2"> {/* 调整 padding */}
-        {files.map((file) => (
-          <AttachmentPreviewItem 
-            key={file.id} 
-            attachment={file} 
-            isDark={isDark} 
-            onRetry={onRetryUpload} 
-          />
-        ))}
+      <div className="px-3 pt-3 pb-2">
+        {/* --- BEGIN COMMENT ---
+        // 如果超出数量限制，显示警告信息
+        // --- END COMMENT --- */}
+        {uploadConfig.enabled && uploadConfig.maxFiles > 0 && files.length > uploadConfig.maxFiles && (
+          <div className={cn(
+            "mb-2 px-3 py-2 rounded-lg text-sm font-serif",
+            isDark 
+              ? "bg-orange-900/30 border border-orange-500/30 text-orange-300" 
+              : "bg-orange-100 border border-orange-300 text-orange-700"
+          )}>
+            已超出文件数量限制 ({files.length}/{uploadConfig.maxFiles})，请删除部分文件
+          </div>
+        )}
+        
+        {/* --- BEGIN COMMENT ---
+        // 文件列表容器
+        // --- END COMMENT --- */}
+        <div className="flex flex-wrap gap-2">
+          {files.map((file) => (
+            <AttachmentPreviewItem 
+              key={file.id} 
+              attachment={file} 
+              isDark={isDark} 
+              onRetry={onRetryUpload} 
+            />
+          ))}
+        </div>
       </div>
     </div>
   )

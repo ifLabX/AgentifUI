@@ -6,4 +6,4 @@
 // --- END COMMENT ---
 
 export { useFileTypesFromConfig as useFileTypes } from './use-file-types-from-config'
-export type { FileType } from './use-file-types-from-config' 
+export type { FileType, FileUploadConfig } from './use-file-types-from-config' 

@@ -8,6 +8,7 @@ import { hideActiveTooltip } from "@components/ui/tooltip"
 import { useFileTypes } from "@lib/hooks/use-file-types"
 import { useTheme } from "@lib/hooks/use-theme"
 import { useMobile } from "@lib/hooks/use-mobile"
+import { useAttachmentStore } from "@lib/stores/attachment-store"
 import { ChatButton } from "./button"
 import { cn } from "@lib/utils"
 
@@ -27,10 +28,36 @@ export const FileTypeSelector = ({
   ariaLabel = "添加附件",
   className
 }: FileTypeSelectorProps) => {
-  const { fileTypes, isLoading, error } = useFileTypes()
+  const { fileTypes, uploadConfig, isLoading, error } = useFileTypes()
   const { isDark } = useTheme()
   const isMobile = useMobile()
   const [isOpen, setIsOpen] = useState(false)
+  const attachmentFiles = useAttachmentStore((state) => state.files)
+  
+  // --- BEGIN COMMENT ---
+  // 检查是否可以上传文件的逻辑
+  // 考虑管理界面配置和当前已上传文件数量
+  // --- END COMMENT ---
+  const canUpload = uploadConfig.enabled && uploadConfig.maxFiles > 0
+  const hasReachedLimit = attachmentFiles.length >= uploadConfig.maxFiles
+  const isDisabled = disabled || !canUpload || hasReachedLimit
+  
+  // 生成tooltip内容
+  const getTooltipContent = () => {
+    if (!uploadConfig.enabled) {
+      return "文件上传功能未启用"
+    }
+    if (uploadConfig.maxFiles === 0) {
+      return "文件上传数量限制为0"
+    }
+    if (!uploadConfig.hasFileTypes) {
+      return "未配置支持的文件类型"
+    }
+    if (hasReachedLimit) {
+      return `已达到最大文件数量限制 (${uploadConfig.maxFiles})`
+    }
+    return `添加附件 (${attachmentFiles.length}/${uploadConfig.maxFiles})`
+  }
   
   // 创建文件输入引用回调
   const fileInputCallback = useCallback((fileInput: HTMLInputElement | null, accept: string) => {
@@ -53,6 +80,11 @@ export const FileTypeSelector = ({
   
   // 处理文件类型选择
   const handleFileTypeSelect = (accept: string) => {
+    // 再次检查是否可以上传
+    if (isDisabled) {
+      return
+    }
+    
     // 创建临时文件输入框
     const fileInput = document.createElement("input")
     fileInput.type = "file"
@@ -68,23 +100,34 @@ export const FileTypeSelector = ({
   // 创建触发器按钮，并用 Tooltip 包裹
   const triggerButton = (
     <TooltipWrapper 
-      content={
-        <>
-          添加附件
-        </>
-      }
+      content={getTooltipContent()}
       id="file-type-selector-tooltip"
       placement="top" 
     >
       <ChatButton
-        icon={<Paperclip className="h-4 w-4" />}
+        icon={
+          !canUpload ? (
+            <Paperclip className="h-4 w-4" />
+          ) : (
+            <Paperclip className="h-4 w-4" />
+          )
+        }
         isDark={isDark}
         ariaLabel={ariaLabel}
-        disabled={disabled}
-        className={className}
+        disabled={isDisabled}
+        className={cn(
+          className,
+          !canUpload && "opacity-50",
+          hasReachedLimit && "opacity-75"
+        )}
       />
     </TooltipWrapper>
   )
+  
+  // 如果配置不允许上传，直接返回禁用按钮
+  if (!canUpload) {
+    return triggerButton
+  }
   
   return (
     <Popover
@@ -92,14 +135,17 @@ export const FileTypeSelector = ({
       placement="top"
       isOpen={isOpen}
       onOpenChange={(open) => {
+        if (isDisabled) {
+          return
+        }
         setIsOpen(open)
         if (open) {
           hideActiveTooltip();
         }
       }}
-      minWidth={180}
-      offsetX={isMobile ? undefined : 108} // 在移动设备上使用默认值，桌面设备上使用自定义值
-      offsetY={isMobile ? undefined : 42} // 在移动设备上使用默认值，桌面设备上微调垂直位置
+      minWidth={170} // 减小宽度从180到160
+      offsetX={isMobile ? undefined : 105} // 相应调整偏移量
+      offsetY={isMobile ? undefined : 42}
     >
       <div className="px-1 py-1">
         {isLoading ? (
@@ -117,16 +163,59 @@ export const FileTypeSelector = ({
           )}>
             加载文件类型失败
           </div>
+        ) : fileTypes.length === 0 ? (
+          <div className={cn(
+            "px-3 py-2 text-sm font-serif text-center",
+            isDark ? "text-gray-400" : "text-gray-500"
+          )}>
+            未配置文件类型
+          </div>
         ) : (
-          fileTypes.map((type) => (
-            <PopoverItem
-              key={type.title}
-              icon={type.icon}
-              onClick={() => handleFileTypeSelect(type.acceptString)}
-            >
-              {type.title}
-            </PopoverItem>
-          ))
+          <>
+            {/* --- BEGIN COMMENT ---
+            // 显示上传配置信息
+            // --- END COMMENT --- */}
+            <div className={cn(
+              "px-3 py-1 text-xs font-serif border-b mb-1",
+              isDark ? "text-gray-400 border-gray-600" : "text-gray-500 border-gray-200"
+            )}>
+              {uploadConfig.maxFiles > 0 ? (
+                <>最多上传 {uploadConfig.maxFiles} 个文件</>
+              ) : (
+                <>无上传限制</>
+              )}
+              {hasReachedLimit && (
+                <div className={cn(
+                  "text-xs mt-1",
+                  isDark ? "text-orange-400" : "text-orange-600"
+                )}>
+                  已达上限 ({attachmentFiles.length}/{uploadConfig.maxFiles})
+                </div>
+              )}
+            </div>
+            
+            {fileTypes.map((type) => (
+              <PopoverItem
+                key={type.title}
+                icon={type.icon}
+                onClick={() => handleFileTypeSelect(type.acceptString)}
+                disabled={hasReachedLimit}
+                className={cn(
+                  hasReachedLimit && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <div className="flex flex-col">
+                  <span>{type.title}</span>
+                  <span className={cn(
+                    "text-xs font-serif",
+                    isDark ? "text-gray-400" : "text-gray-500"
+                  )}>
+                    {type.maxSize}
+                  </span>
+                </div>
+              </PopoverItem>
+            ))}
+          </>
         )}
       </div>
     </Popover>
