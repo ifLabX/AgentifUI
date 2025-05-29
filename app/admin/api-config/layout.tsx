@@ -70,12 +70,19 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       handleSetDefaultInstance(instanceId)
     }
 
+    const handleReloadInstances = () => {
+      // 重新加载服务实例数据
+      loadInstances()
+    }
+
     window.addEventListener('addFormToggled', handleAddFormToggled as EventListener)
     window.addEventListener('setInstanceAsDefault', handleSetInstanceAsDefault as EventListener)
+    window.addEventListener('reloadInstances', handleReloadInstances)
     
     return () => {
       window.removeEventListener('addFormToggled', handleAddFormToggled as EventListener)
       window.removeEventListener('setInstanceAsDefault', handleSetInstanceAsDefault as EventListener)
+      window.removeEventListener('reloadInstances', handleReloadInstances)
     }
   }, [])
 
@@ -115,12 +122,19 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   }
 
   const handleSetDefaultInstance = async (instanceId: string) => {
+    // --- 添加调试信息 ---
+    console.log('设置默认应用 - 传入ID:', instanceId)
+    console.log('当前所有实例:', instances.map(inst => ({ id: inst.id, instance_id: inst.instance_id, display_name: inst.display_name })))
+    
     // --- 修复：使用数据库ID查找实例 ---
     const instanceToSet = instances.find(inst => inst.id === instanceId)
     if (!instanceToSet) {
+      console.error('未找到实例，传入ID:', instanceId)
       alert('未找到要设置的实例')
       return
     }
+
+    console.log('找到实例:', instanceToSet)
 
     if (instanceToSet.is_default) {
       return // 已经是默认应用，无需操作

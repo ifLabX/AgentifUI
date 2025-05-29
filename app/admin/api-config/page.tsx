@@ -592,9 +592,12 @@ export default function ApiConfigPage() {
 
     const handleDefaultInstanceChanged = (event: CustomEvent) => {
       const { instanceId } = event.detail
-      if (selectedInstance?.instance_id === instanceId) {
+      if (selectedInstance?.id === instanceId) {
         showFeedback('默认应用设置成功', 'success')
       }
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('reloadInstances'))
+      }, 100)
     }
 
     window.addEventListener('selectInstance', handleSelectInstance as EventListener)
