@@ -557,6 +557,15 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
               "p-6 border-t flex-shrink-0",
               isDark ? "border-stone-700" : "border-stone-200"
             )}>
+              {hasChanges && (
+                <p className={cn(
+                  "text-xs text-center mb-3 font-serif",
+                  isDark ? "text-stone-400" : "text-stone-600"
+                )}>
+                  您有未保存的更改
+                </p>
+              )}
+              
               <div className="flex gap-3">
                 <button
                   onClick={handleReset}
@@ -591,15 +600,6 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   保存
                 </button>
               </div>
-              
-              {hasChanges && (
-                <p className={cn(
-                  "text-xs text-center mt-3 font-serif",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  您有未保存的更改
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -612,7 +612,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
             className="fixed inset-0 z-60 bg-black/30 backdrop-blur-sm cursor-pointer"
             onClick={() => setShowFileUploadModal(false)}
           />
-          <div className="fixed inset-x-4 top-16 bottom-16 z-60 flex items-center justify-center">
+          <div className="fixed inset-x-4 top-8 bottom-20 z-60 flex items-center justify-center">
             <div className="w-full max-w-[420px] max-h-full flex flex-col">
               <div className={cn(
                 "rounded-xl border shadow-2xl flex flex-col h-full",
