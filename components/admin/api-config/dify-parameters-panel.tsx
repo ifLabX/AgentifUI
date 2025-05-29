@@ -22,8 +22,11 @@ import {
   Music,
   Video,
   File,
-  ExternalLink
+  ExternalLink,
+  Circle,
+  Check
 } from 'lucide-react';
+import { FILE_TYPE_CONFIG } from "@lib/constants/file-types";
 
 interface DifyParametersPanelProps {
   isOpen: boolean;
@@ -32,35 +35,6 @@ interface DifyParametersPanelProps {
   onSave: (config: DifyParametersSimplifiedConfig) => void;
   instanceName?: string;
 }
-
-// --- 文件类型配置 ---
-const FILE_TYPE_CONFIG = {
-  "文档": {
-    icon: FileText,
-    extensions: ["txt", "md", "mdx", "markdown", "pdf", "html", "xlsx", "xls", "doc", "docx", "csv", "eml", "msg", "pptx", "ppt", "xml", "epub"],
-    maxSize: "15.00MB"
-  },
-  "图片": {
-    icon: Image,
-    extensions: ["jpg", "jpeg", "png", "gif", "webp", "svg"],
-    maxSize: "10.00MB"
-  },
-  "音频": {
-    icon: Music,
-    extensions: ["mp3", "m4a", "wav", "amr", "mpga"],
-    maxSize: "50.00MB"
-  },
-  "视频": {
-    icon: Video,
-    extensions: ["mp4", "mov", "mpeg", "webm"],
-    maxSize: "100.00MB"
-  },
-  "其他文件类型": {
-    icon: File,
-    extensions: [],
-    maxSize: "指定其他文件类型"
-  }
-};
 
 const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   isOpen,
