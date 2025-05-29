@@ -85,15 +85,23 @@ const InstanceForm = ({
   isEditing, 
   onSave, 
   onCancel, 
-  isProcessing 
+  isProcessing,
+  showFeedback
 }: {
   instance: Partial<ServiceInstance> | null
   isEditing: boolean
   onSave: (data: any) => void
   onCancel: () => void
   isProcessing: boolean
+  showFeedback: (message: string, severity: 'success' | 'error' | 'info' | 'warning') => void
 }) => {
   const { isDark } = useTheme();
+  const { serviceInstances } = useApiConfigStore();
+  
+  // --- 获取当前实例的最新状态 ---
+  const currentInstance = instance ? serviceInstances.find(inst => inst.id === instance.id) : null;
+  const isCurrentDefault = currentInstance?.is_default || false;
+  
   const [formData, setFormData] = useState({
     instance_id: instance?.instance_id || '',
     display_name: instance?.display_name || '',
@@ -187,23 +195,35 @@ const InstanceForm = ({
               <button
                 type="button"
                 onClick={() => {
-                  // --- 统一逻辑：直接调用layout的设置默认应用函数 ---
-                  if (!instance.is_default) {
-                    if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
-                      window.dispatchEvent(new CustomEvent('directSetDefault', {
-                        detail: { instanceId: instance.id }
-                      }))
+                  // --- 简化逻辑：直接使用实时状态 ---
+                  if (isCurrentDefault) {
+                    return // 已经是默认应用，无需操作
+                  }
+                  
+                  if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
+                    // 直接调用store的方法
+                    if (instance.id) {
+                      useApiConfigStore.getState().setDefaultInstance(instance.id)
+                        .then(() => {
+                          showFeedback('默认应用设置成功', 'success')
+                        })
+                        .catch((error) => {
+                          console.error('设置默认应用失败:', error)
+                          showFeedback('设置默认应用失败', 'error')
+                        })
+                    } else {
+                      showFeedback('实例ID不存在，无法设置为默认应用', 'error')
                     }
                   }
                 }}
-                disabled={instance.is_default}
+                disabled={isCurrentDefault}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-lg transition-all",
                   "border",
-                  instance.is_default
+                  isCurrentDefault
                     ? "cursor-not-allowed opacity-60"
                     : "cursor-pointer hover:scale-105",
-                  instance.is_default
+                  isCurrentDefault
                     ? isDark
                       ? "border-stone-600/50 bg-stone-700/30 text-stone-400"
                       : "border-stone-300/50 bg-stone-100/50 text-stone-500"
@@ -214,10 +234,10 @@ const InstanceForm = ({
               >
                 <Star className={cn(
                   "h-4 w-4",
-                  instance.is_default && "fill-current"
+                  isCurrentDefault && "fill-current"
                 )} />
                 <span className="text-sm font-medium font-serif">
-                  {instance.is_default ? '默认应用' : '设为默认'}
+                  {isCurrentDefault ? '默认应用' : '设为默认'}
                 </span>
               </button>
             )}
@@ -689,6 +709,7 @@ export default function ApiConfigPage() {
             }}
             onCancel={handleClearSelection}
             isProcessing={isProcessing}
+            showFeedback={showFeedback}
           />
         </div>
       ) : selectedInstance ? (
@@ -744,6 +765,7 @@ export default function ApiConfigPage() {
             }}
             onCancel={handleClearSelection}
             isProcessing={isProcessing}
+            showFeedback={showFeedback}
           />
         </div>
       ) : (
