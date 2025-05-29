@@ -82,45 +82,87 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   const [enabledFileTypes, setEnabledFileTypes] = useState<Set<string>>(new Set(['图片']));
   const [customFileTypes, setCustomFileTypes] = useState<string>(''); // 新增：自定义文件类型
 
+  // --- 初始状态保存（用于取消操作） ---
+  const [initialFileUploadState, setInitialFileUploadState] = useState({
+    fileUploadEnabled: false,
+    uploadMethod: 'both' as 'local' | 'url' | 'both',
+    maxFiles: 3,
+    enabledFileTypes: new Set<string>(['图片']),
+    customFileTypes: ''
+  });
+
   useEffect(() => {
     setLocalConfig(config);
     setHasChanges(false);
-    // 检查是否已有文件上传配置
-    const hasFileUpload = !!(config.file_upload?.image?.enabled || 
-                            config.file_upload?.document?.enabled || 
-                            config.file_upload?.audio?.enabled || 
-                            config.file_upload?.video?.enabled);
-    setFileUploadEnabled(hasFileUpload);
     
     // 初始化文件上传配置状态
-    if (config.file_upload) {
-      // 从现有配置中获取最大文件数（取所有类型中的最大值）
-      const maxLimits = Math.max(
-        config.file_upload.image?.number_limits || 0,
-        config.file_upload.document?.number_limits || 0,
-        config.file_upload.audio?.number_limits || 0,
-        config.file_upload.video?.number_limits || 0
-      );
-      setMaxFiles(maxLimits || 3);
+    const initializeFileUploadState = () => {
+      const fileUploadConfig = config.file_upload;
+      const hasFileUpload = !!(fileUploadConfig?.image?.enabled || 
+                              fileUploadConfig?.document?.enabled || 
+                              fileUploadConfig?.audio?.enabled || 
+                              fileUploadConfig?.video?.enabled ||
+                              fileUploadConfig?.other?.enabled);
       
-      // 根据transfer_methods设置上传方式（以图片配置为准）
-      const methods = config.file_upload.image?.transfer_methods || [];
-      if (methods.includes('local_file') && methods.includes('remote_url')) {
-        setUploadMethod('both');
-      } else if (methods.includes('local_file')) {
-        setUploadMethod('local');
-      } else if (methods.includes('remote_url')) {
-        setUploadMethod('url');
+      let uploadMethodValue: 'local' | 'url' | 'both' = 'both';
+      let maxFilesValue = 3;
+      const enabledTypesSet = new Set<string>();
+      let customFileTypesValue = '';
+      
+      if (hasFileUpload && fileUploadConfig) {
+        // 从任一启用的文件类型获取通用配置
+        const firstEnabledConfig = fileUploadConfig.image || fileUploadConfig.document || 
+                                  fileUploadConfig.audio || fileUploadConfig.video || 
+                                  fileUploadConfig.other;
+        
+        if (firstEnabledConfig) {
+          maxFilesValue = firstEnabledConfig.number_limits || 3;
+          const methods = firstEnabledConfig.transfer_methods || [];
+          if (methods.includes('local_file') && methods.includes('remote_url')) {
+            uploadMethodValue = 'both';
+          } else if (methods.includes('local_file')) {
+            uploadMethodValue = 'local';
+          } else if (methods.includes('remote_url')) {
+            uploadMethodValue = 'url';
+          }
+        }
+        
+        // 设置启用的文件类型
+        if (fileUploadConfig.image?.enabled) enabledTypesSet.add('图片');
+        if (fileUploadConfig.document?.enabled) enabledTypesSet.add('文档');
+        if (fileUploadConfig.audio?.enabled) enabledTypesSet.add('音频');
+        if (fileUploadConfig.video?.enabled) enabledTypesSet.add('视频');
+        if (fileUploadConfig.other?.enabled) {
+          enabledTypesSet.add('其他文件类型');
+          customFileTypesValue = (fileUploadConfig.other as any).custom_extensions?.join(', ') || '';
+        }
       }
       
-      // 设置启用的文件类型
-      const enabledTypes = new Set<string>();
-      if (config.file_upload.image?.enabled) enabledTypes.add('图片');
-      if (config.file_upload.document?.enabled) enabledTypes.add('文档');
-      if (config.file_upload.audio?.enabled) enabledTypes.add('音频');
-      if (config.file_upload.video?.enabled) enabledTypes.add('视频');
-      setEnabledFileTypes(enabledTypes);
-    }
+      // 如果没有启用任何类型，默认启用图片
+      if (enabledTypesSet.size === 0) {
+        enabledTypesSet.add('图片');
+      }
+      
+      const newState = {
+        fileUploadEnabled: hasFileUpload,
+        uploadMethod: uploadMethodValue,
+        maxFiles: maxFilesValue,
+        enabledFileTypes: enabledTypesSet,
+        customFileTypes: customFileTypesValue
+      };
+      
+      // 设置当前状态
+      setFileUploadEnabled(newState.fileUploadEnabled);
+      setUploadMethod(newState.uploadMethod);
+      setMaxFiles(newState.maxFiles);
+      setEnabledFileTypes(newState.enabledFileTypes);
+      setCustomFileTypes(newState.customFileTypes);
+      
+      // 保存初始状态
+      setInitialFileUploadState(newState);
+    };
+    
+    initializeFileUploadState();
   }, [config]);
 
   useEffect(() => {
@@ -177,11 +219,27 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   const handleSave = () => {
     onSave(localConfig);
     setHasChanges(false);
+    
+    // 更新初始状态
+    setInitialFileUploadState({
+      fileUploadEnabled,
+      uploadMethod,
+      maxFiles,
+      enabledFileTypes: new Set(enabledFileTypes),
+      customFileTypes
+    });
   };
 
   const handleReset = () => {
     setLocalConfig(config);
     setHasChanges(false);
+    
+    // 恢复文件上传状态到初始状态
+    setFileUploadEnabled(initialFileUploadState.fileUploadEnabled);
+    setUploadMethod(initialFileUploadState.uploadMethod);
+    setMaxFiles(initialFileUploadState.maxFiles);
+    setEnabledFileTypes(new Set(initialFileUploadState.enabledFileTypes));
+    setCustomFileTypes(initialFileUploadState.customFileTypes);
   };
 
   const toggleFileType = (fileType: string) => {
@@ -197,28 +255,15 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   const handleFileUploadToggle = (enabled: boolean) => {
     setFileUploadEnabled(enabled);
     if (!enabled) {
-      // 关闭时清空文件上传配置
+      // 关闭时清空本地配置，但保持表单状态供用户重新配置
       updateConfig('file_upload', undefined);
     } else {
-      // 开启时设置默认配置（只启用图片）
-      updateConfig('file_upload', {
-        image: {
-          enabled: true,
-          number_limits: 3,
-          transfer_methods: ['local_file', 'remote_url']
-        }
-      });
+      // 开启时根据当前表单状态生成配置
+      generateFileUploadConfig();
     }
   };
 
-  const openFileUploadModal = () => {
-    if (fileUploadEnabled) {
-      setShowFileUploadModal(true);
-    }
-  };
-
-  const handleFileUploadSave = () => {
-    // 构建文件上传配置 - 根据启用的文件类型构建配置
+  const generateFileUploadConfig = () => {
     const fileUploadConfig: any = {};
     
     const transferMethods = uploadMethod === 'local' ? ['local_file'] : 
@@ -257,7 +302,6 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
     
-    // 处理其他文件类型
     if (enabledFileTypes.has('其他文件类型') && customFileTypes.trim()) {
       fileUploadConfig.other = {
         enabled: true,
@@ -267,14 +311,23 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
     
-    if (Object.keys(fileUploadConfig).length > 0) {
-      updateConfig('file_upload', fileUploadConfig);
-    } else {
-      // 如果没有启用任何文件类型，则清空配置
-      updateConfig('file_upload', undefined);
-      setFileUploadEnabled(false);
+    updateConfig('file_upload', Object.keys(fileUploadConfig).length > 0 ? fileUploadConfig : undefined);
+  };
+
+  const openFileUploadModal = () => {
+    if (fileUploadEnabled) {
+      setShowFileUploadModal(true);
     }
-    
+  };
+
+  const handleFileUploadSave = () => {
+    generateFileUploadConfig();
+    setShowFileUploadModal(false);
+  };
+
+  const handleFileUploadCancel = () => {
+    // 取消时恢复到打开模态框前的状态
+    // 不改变fileUploadEnabled状态，因为这是在外层控制的
     setShowFileUploadModal(false);
   };
 
@@ -610,9 +663,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
         <>
           <div 
             className="fixed inset-0 z-60 bg-black/30 backdrop-blur-sm cursor-pointer"
-            onClick={() => setShowFileUploadModal(false)}
+            onClick={handleFileUploadCancel}
           />
-          <div className="fixed inset-x-4 top-8 bottom-20 z-60 flex items-center justify-center">
+          <div className="fixed inset-x-4 top-4 bottom-24 z-60 flex items-center justify-center">
             <div className="w-full max-w-[420px] max-h-full flex flex-col">
               <div className={cn(
                 "rounded-xl border shadow-2xl flex flex-col h-full",
@@ -632,7 +685,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                     文件上传配置
                   </h3>
                   <button
-                    onClick={() => setShowFileUploadModal(false)}
+                    onClick={handleFileUploadCancel}
                     className={cn(
                       "p-1.5 rounded-lg transition-colors cursor-pointer",
                       isDark 
@@ -861,7 +914,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   isDark ? "border-stone-700" : "border-stone-200"
                 )}>
                   <button
-                    onClick={() => setShowFileUploadModal(false)}
+                    onClick={handleFileUploadCancel}
                     className={cn(
                       "flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif transition-colors cursor-pointer",
                       isDark

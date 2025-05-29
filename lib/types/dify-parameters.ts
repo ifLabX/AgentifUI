@@ -91,12 +91,21 @@ export interface DifyVideoUploadConfig {
   transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表
 }
 
+/** 其他文件类型上传配置 */
+export interface DifyOtherUploadConfig {
+  enabled: boolean; // 是否开启
+  number_limits: number; // 文件数量限制
+  transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表
+  custom_extensions?: string[]; // 自定义文件扩展名列表
+}
+
 /** 文件上传配置 */
 export interface DifyFileUploadConfig {
   image?: DifyImageUploadConfig; // 图片设置
   document?: DifyDocumentUploadConfig; // 文档设置
   audio?: DifyAudioUploadConfig; // 音频设置
   video?: DifyVideoUploadConfig; // 视频设置
+  other?: DifyOtherUploadConfig; // 其他文件类型设置
 }
 
 /** 系统参数配置 */
