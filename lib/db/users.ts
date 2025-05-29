@@ -68,7 +68,7 @@ export interface UserFilters {
 const supabase = createClient();
 
 /**
- * 获取用户列表（使用安全的数据库函数，不暴露敏感的auth.users数据）
+ * 获取用户列表（使用安全的管理员视图）
  */
 export async function getUserList(filters: UserFilters = {}): Promise<Result<{
   users: EnhancedUser[];
@@ -89,56 +89,63 @@ export async function getUserList(filters: UserFilters = {}): Promise<Result<{
       pageSize = 20
     } = filters;
 
-    // 使用安全的数据库函数获取用户列表
-    const { data: usersData, error: usersError } = await supabase.rpc('get_users_for_admin', {
-      p_role: role || null,
-      p_status: status || null,
-      p_auth_source: auth_source || null,
-      p_search: search || null,
-      p_sort_by: sortBy,
-      p_sort_order: sortOrder,
-      p_page: page,
-      p_page_size: pageSize
-    });
+    // 使用新的管理员专用视图
+    let query = supabase
+      .from('admin_user_management_view')
+      .select('*', { count: 'exact' });
 
-    if (usersError) {
-      console.error('获取用户列表失败:', usersError);
-      return failure(new Error(`获取用户列表失败: ${usersError.message}`));
+    // 添加筛选条件
+    if (role) query = query.eq('role', role);
+    if (status) query = query.eq('status', status);
+    if (auth_source) query = query.eq('auth_source', auth_source);
+    if (search && search.trim()) {
+      query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,email.ilike.%${search}%`);
     }
 
-    // 获取用户总数（用于分页）
-    const { data: totalCount, error: countError } = await supabase.rpc('get_users_count_for_admin', {
-      p_role: role || null,
-      p_status: status || null,
-      p_auth_source: auth_source || null,
-      p_search: search || null
-    });
+    // 排序
+    const sortColumn = sortBy === 'email' ? 'email' : 
+                      sortBy === 'last_sign_in_at' ? 'last_sign_in_at' :
+                      sortBy === 'full_name' ? 'full_name' : 'created_at';
+    query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
+    
+    // 分页
+    const from = (page - 1) * pageSize;
+    query = query.range(from, from + pageSize - 1);
 
-    if (countError) {
-      console.error('获取用户总数失败:', countError);
-      return failure(new Error(`获取用户总数失败: ${countError.message}`));
+    const { data, error, count } = await query;
+
+    if (error) {
+      console.error('获取用户列表失败:', error);
+      return failure(new Error(`获取用户列表失败: ${error.message}`));
     }
 
-    const total = totalCount || 0;
+    const total = count || 0;
     const totalPages = Math.ceil(total / pageSize);
 
-    // 转换数据格式，添加缺失的字段以兼容现有接口
-    const enhancedUsers: EnhancedUser[] = (usersData || []).map((user: any) => ({
-      ...user,
-      // 从安全函数返回的字段重新映射
+    // 转换数据格式 - 现在包含真实的完整信息
+    const users: EnhancedUser[] = (data || []).map(user => ({
+      id: user.id,
+      email: user.email, // 真实邮箱
+      phone: user.phone, // 真实手机号
+      email_confirmed_at: user.email_confirmed_at,
+      phone_confirmed_at: user.phone_confirmed_at,
       created_at: user.created_at,
       updated_at: user.updated_at,
+      last_sign_in_at: user.last_sign_in_at, // 真实最后登录时间
+      full_name: user.full_name,
+      username: user.username,
+      avatar_url: user.avatar_url,
+      role: user.role,
+      status: user.status,
+      auth_source: user.auth_source,
+      sso_provider_id: user.sso_provider_id,
       profile_created_at: user.created_at,
       profile_updated_at: user.updated_at,
-      // 对于敏感信息，使用安全的替代字段
-      email: user.has_email ? '[已设置]' : null,
-      phone: null, // 不暴露手机号
-      email_confirmed_at: user.email_confirmed ? new Date().toISOString() : null,
-      phone_confirmed_at: null
+      last_login: user.last_login,
     }));
 
     return success({
-      users: enhancedUsers,
+      users,
       total,
       page,
       pageSize,
