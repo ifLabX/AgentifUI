@@ -153,6 +153,7 @@
 | created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT NOW() |
 | updated_at | TIMESTAMP WITH TIME ZONE | 更新时间 | DEFAULT NOW() |
 | | | | UNIQUE(provider_id, instance_id) |
+| | | | UNIQUE INDEX: 每个提供商最多一个默认应用 |
 
 #### api_keys
 
@@ -306,6 +307,7 @@ API密钥使用AES-256-GCM加密算法存储，格式为"iv:authTag:encryptedDat
 - 域名唯一性约束
 - 服务实例在同一提供商下实例ID唯一
 - 组织成员在同一组织中唯一
+- **默认应用唯一性约束**：每个提供商最多只能有一个默认服务实例（通过部分唯一索引实现）
 
 ### 自动化功能
 
@@ -453,82 +455,78 @@ SSO认证系统支持多种认证方式：
 | avatar_url    |    |  | settings       |       | created_at    |
 | role          |    |  | created_at     |       | updated_at    |
 | status        |    |  | updated_at     |       +---------------+
-| created_at    |    |  +----------------+
-| updated_at    |    |                            +---------------+
-| last_login    |    |                            | ai_configs    |
-| auth_source   |    |                            +---------------+
-| sso_provider_id|    |                            | id            |
-+---------------+    |                            | org_id        |
-                     |                            | provider      |
-+---------------+    |                            | app_id        |
-| conversations |    |                            | api_key       |
-+---------------+    |                            | api_url       |
-| id            |    |                            | settings      |
-| org_id        |    |                            | enabled       |
-| user_id       |----+                            | created_at    |
-| ai_config_id  |                                 | updated_at    |
-| title         |                                 +---------------+
-| summary       |
-| settings      |                                 +---------------+
-| created_at    |                                 | providers     |
-| updated_at    |                                 +---------------+
-| status        |                                 | id            |
-+---------------+                                 | name          |
-      |                                           | type          |
-      |                                           | base_url      |
-      v                                           | auth_type     |
-+---------------+                                 | is_active     |
-| messages      |                                 | created_at    |
-+---------------+                                 | updated_at    |
-| id            |                                 +---------------+
-| conversation_id|                                        |
-| user_id       |                                         |
-| role          |                                         |
-| content       |                                         v
-| metadata      |                                 +---------------+
-| created_at    |                                 | service_instances|
-| status        |                                 +---------------+
-+---------------+                                 | id            |
-                                                  | provider_id   |
-+---------------+                                 | name          |
-| user_preferences|                               | display_name  |
-+---------------+                                 | description   |
-| id            |                                 | instance_id   |
-| user_id       |                                 | api_path      |
-| theme         |                                 | is_default    |
-| language      |                                 | config        |
-| notification_settings|                          | created_at    |
-| ai_preferences|                                 | updated_at    |
-| updated_at    |                                 +---------------+
-+---------------+                                        |
-                                                         |
-+---------------+                                        v
-| sso_providers |                                 +---------------+
-+---------------+                                 | api_keys      |
-| id            |                                 +---------------+
-| name          |                                 | id            |
-| protocol      |                                 | provider_id   |
-| settings      |                                 | service_instance_id|
-| client_id     |                                 | user_id       |
-| client_secret |                                 | key_value     |
-| metadata_url  |                                 | is_default    |
-| enabled       |                                 | usage_count   |
-| created_at    |                                 | last_used_at  |
-| updated_at    |                                 | created_at    |
-+---------------+                                 | updated_at    |
-      |                                           +---------------+
-      |
-      v
-+---------------+
-| domain_sso_mappings|
-+---------------+
-| id            |
-| domain        |
-| sso_provider_id|
-| enabled       |
-| created_at    |
-| updated_at    |
-+---------------+
+| created_at    |    |  |                |       |               |
+| updated_at    |    |  |                |       | ai_configs    |
+| last_login    |    |  |                |       | id            |
+| auth_source   |    |  |                |       | org_id        |
+| sso_provider_id|    |  |                |       | provider      |
++---------------+    |  |                |       | app_id        |
+| conversations |    |  |                |       | api_key       |
++---------------+    |  |                |       | api_url       |
+| id            |    |  |                |       | settings      |
+| org_id        |    |  |                |       | enabled       |
+| user_id       |----+  |                |       | created_at    |
+| ai_config_id  |       |                |       | updated_at    |
+| title         |       |                |       +---------------+
+| summary       |       |                |       | providers     |
+| settings      |       |                |       | id            |
+| created_at    |       |                |       | name          |
+| updated_at    |       |                |       | type          |
+| status        |       |                |       | base_url      |
++---------------+       |                |       | auth_type     |
+      |               |                |       | is_active     |
+      |               |                |       | created_at    |
+      |               |                |       | updated_at    |
+      v               |                |       |               |
++---------------+       |                |       | service_instances|
+| messages      |       |                |       | id            |
++---------------+       |                |       | provider_id   |
+| id            |       |                |       | name          |
+| conversation_id|       |                |       | display_name  |
+| user_id       |       |                |       | description   |
+| role          |       |                |       | instance_id   |
+| content       |       |                |       | api_path      |
+| metadata      |       |                |       | is_default    |
+| created_at    |       |                |       | config        |
+| status        |       |                |       | created_at    |
+| updated_at    |       |                |       | updated_at    |
++---------------+       |                |       |               |
+| user_preferences|       |                |       |               |
++---------------+       |                |       |               |
+| id            |       |                |       |               |
+| user_id       |       |                |       |               |
+| theme         |       |                |       |               |
+| language      |       |                |       |               |
+| notification_settings|       |                |       |               |
+| ai_preferences|       |                |       |               |
+| updated_at    |       |                |       |               |
++---------------+       |                |       |               |
+| sso_providers |       |                |       |               |
++---------------+       |                |       |               |
+| id            |       |                |       |               |
+| name          |       |                |       |               |
+| protocol      |       |                |       |               |
+| settings      |       |                |       |               |
+| client_id     |       |                |       |               |
+| client_secret |       |                |       |               |
+| metadata_url  |       |                |       |               |
+| enabled       |       |                |       |               |
+| created_at    |       |                |       |               |
+| updated_at    |       |                |       |               |
++---------------+       |                |       |               |
+      |               |                |       |               |
+      |               |                |       |               |
+      v               v                v               |
++---------------+               +---------------+       |
+| domain_sso_mappings|               | api_keys      |       |
++---------------+               | id            |       |
+| id            |               | provider_id   |       |
+| domain        |               | service_instance_id|       |
+| sso_provider_id|               | user_id       |       |
+| enabled       |               | key_value     |       |
+| created_at    |               | is_default    |       |
+| updated_at    |               | usage_count   |       |
++---------------+               | last_used_at  |       |
 ```
 
 这个数据库设计为 LLM EduHub 平台提供了坚实的基础，支持用户管理、组织协作、AI对话、SSO认证和API集成等核心功能。设计注重安全性、可扩展性和模块化，便于未来功能扩展和维护。

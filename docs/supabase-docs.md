@@ -45,6 +45,7 @@
    - 主要字段：`id`, `provider_id`, `name`, `display_name`, `description`, `instance_id`, `api_path`, `is_default`, `config`, `created_at`, `updated_at`
    - 存储特定服务提供商的实例配置
    - `provider_id` 和 `instance_id` 组合具有唯一性约束
+   - **默认应用唯一性约束**：通过部分唯一索引确保每个提供商最多只能有一个默认应用（`is_default = TRUE`）
 
 3. `api_keys` 表：
    - 主要字段：`id`, `provider_id`, `service_instance_id`, `user_id`, `key_value`, `is_default`, `usage_count`, `last_used_at`, `created_at`, `updated_at`
@@ -255,3 +256,4 @@ if (!isAdmin) return <AccessDenied />;
 
 ### 数据完整性和清理
 - `/supabase/migrations/20250524194000_improve_cascade_deletion.sql`: 改进级联删除逻辑，处理孤儿组织和 AI 配置问题
+- `/supabase/migrations/20250529151826_ensure_default_service_instance_constraint.sql`: 确保默认服务实例的唯一性约束，防止同一提供商下存在多个默认应用
