@@ -464,9 +464,9 @@ const InstanceForm = ({
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
                   {showApiKey ? (
-                    <EyeOff className="h-4 w-4 text-stone-500" />
-                  ) : (
                     <Eye className="h-4 w-4 text-stone-500" />
+                  ) : (
+                    <EyeOff className="h-4 w-4 text-stone-500" />
                   )}
                 </button>
               </div>

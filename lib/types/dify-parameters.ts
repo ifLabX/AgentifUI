@@ -70,9 +70,33 @@ export interface DifyImageUploadConfig {
   transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表，remote_url | local_file，必选一个
 }
 
+/** 文档上传配置 */
+export interface DifyDocumentUploadConfig {
+  enabled: boolean; // 是否开启
+  number_limits: number; // 文档数量限制
+  transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表
+}
+
+/** 音频上传配置 */
+export interface DifyAudioUploadConfig {
+  enabled: boolean; // 是否开启
+  number_limits: number; // 音频数量限制
+  transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表
+}
+
+/** 视频上传配置 */
+export interface DifyVideoUploadConfig {
+  enabled: boolean; // 是否开启
+  number_limits: number; // 视频数量限制
+  transfer_methods: ('remote_url' | 'local_file')[]; // 传递方式列表
+}
+
 /** 文件上传配置 */
 export interface DifyFileUploadConfig {
-  image: DifyImageUploadConfig; // 图片设置，当前仅支持图片类型：png, jpg, jpeg, webp, gif
+  image?: DifyImageUploadConfig; // 图片设置
+  document?: DifyDocumentUploadConfig; // 文档设置
+  audio?: DifyAudioUploadConfig; // 音频设置
+  video?: DifyVideoUploadConfig; // 视频设置
 }
 
 /** 系统参数配置 */
@@ -101,7 +125,5 @@ export interface DifyParametersConfig {
 export interface DifyParametersSimplifiedConfig {
   opening_statement?: string; // 开场白
   suggested_questions?: string[]; // 开场推荐问题列表
-  file_upload?: {
-    image?: DifyImageUploadConfig; // 图片设置，可选
-  }; // 文件上传配置
+  file_upload?: DifyFileUploadConfig; // 文件上传配置
 } 

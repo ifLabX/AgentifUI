@@ -21,7 +21,8 @@ import {
   Globe,
   Music,
   Video,
-  File
+  File,
+  ExternalLink
 } from 'lucide-react';
 
 interface DifyParametersPanelProps {
@@ -70,10 +71,12 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [localConfig, setLocalConfig] = useState<DifyParametersSimplifiedConfig>(config);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['basic', 'questions', 'upload']));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [hasChanges, setHasChanges] = useState(false);
   
   // --- 文件上传配置状态 ---
+  const [fileUploadEnabled, setFileUploadEnabled] = useState(false);
+  const [showFileUploadModal, setShowFileUploadModal] = useState(false);
   const [uploadMethod, setUploadMethod] = useState<'local' | 'url' | 'both'>('both');
   const [maxFiles, setMaxFiles] = useState(3);
   const [enabledFileTypes, setEnabledFileTypes] = useState<Set<string>>(new Set(['图片']));
@@ -81,6 +84,42 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   useEffect(() => {
     setLocalConfig(config);
     setHasChanges(false);
+    // 检查是否已有文件上传配置
+    const hasFileUpload = !!(config.file_upload?.image?.enabled || 
+                            config.file_upload?.document?.enabled || 
+                            config.file_upload?.audio?.enabled || 
+                            config.file_upload?.video?.enabled);
+    setFileUploadEnabled(hasFileUpload);
+    
+    // 初始化文件上传配置状态
+    if (config.file_upload) {
+      // 从现有配置中获取最大文件数（取所有类型中的最大值）
+      const maxLimits = Math.max(
+        config.file_upload.image?.number_limits || 0,
+        config.file_upload.document?.number_limits || 0,
+        config.file_upload.audio?.number_limits || 0,
+        config.file_upload.video?.number_limits || 0
+      );
+      setMaxFiles(maxLimits || 3);
+      
+      // 根据transfer_methods设置上传方式（以图片配置为准）
+      const methods = config.file_upload.image?.transfer_methods || [];
+      if (methods.includes('local_file') && methods.includes('remote_url')) {
+        setUploadMethod('both');
+      } else if (methods.includes('local_file')) {
+        setUploadMethod('local');
+      } else if (methods.includes('remote_url')) {
+        setUploadMethod('url');
+      }
+      
+      // 设置启用的文件类型
+      const enabledTypes = new Set<string>();
+      if (config.file_upload.image?.enabled) enabledTypes.add('图片');
+      if (config.file_upload.document?.enabled) enabledTypes.add('文档');
+      if (config.file_upload.audio?.enabled) enabledTypes.add('音频');
+      if (config.file_upload.video?.enabled) enabledTypes.add('视频');
+      setEnabledFileTypes(enabledTypes);
+    }
   }, [config]);
 
   useEffect(() => {
@@ -154,6 +193,80 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
     setEnabledFileTypes(newEnabledTypes);
   };
 
+  const handleFileUploadToggle = (enabled: boolean) => {
+    setFileUploadEnabled(enabled);
+    if (!enabled) {
+      // 关闭时清空文件上传配置
+      updateConfig('file_upload', undefined);
+    } else {
+      // 开启时设置默认配置（只启用图片）
+      updateConfig('file_upload', {
+        image: {
+          enabled: true,
+          number_limits: 3,
+          transfer_methods: ['local_file', 'remote_url']
+        }
+      });
+    }
+  };
+
+  const openFileUploadModal = () => {
+    if (fileUploadEnabled) {
+      setShowFileUploadModal(true);
+    }
+  };
+
+  const handleFileUploadSave = () => {
+    // 构建文件上传配置 - 根据启用的文件类型构建配置
+    const fileUploadConfig: any = {};
+    
+    const transferMethods = uploadMethod === 'local' ? ['local_file'] : 
+                           uploadMethod === 'url' ? ['remote_url'] : 
+                           ['local_file', 'remote_url'];
+    
+    if (enabledFileTypes.has('图片')) {
+      fileUploadConfig.image = {
+        enabled: true,
+        number_limits: maxFiles,
+        transfer_methods: transferMethods
+      };
+    }
+    
+    if (enabledFileTypes.has('文档')) {
+      fileUploadConfig.document = {
+        enabled: true,
+        number_limits: maxFiles,
+        transfer_methods: transferMethods
+      };
+    }
+    
+    if (enabledFileTypes.has('音频')) {
+      fileUploadConfig.audio = {
+        enabled: true,
+        number_limits: maxFiles,
+        transfer_methods: transferMethods
+      };
+    }
+    
+    if (enabledFileTypes.has('视频')) {
+      fileUploadConfig.video = {
+        enabled: true,
+        number_limits: maxFiles,
+        transfer_methods: transferMethods
+      };
+    }
+    
+    if (Object.keys(fileUploadConfig).length > 0) {
+      updateConfig('file_upload', fileUploadConfig);
+    } else {
+      // 如果没有启用任何文件类型，则清空配置
+      updateConfig('file_upload', undefined);
+      setFileUploadEnabled(false);
+    }
+    
+    setShowFileUploadModal(false);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -177,7 +290,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
         {/* --- 弹窗容器，留上下空间 --- */}
         <div className="h-full p-4 flex flex-col">
           <div className={cn(
-            "flex-1 flex flex-col my-8",
+            "flex-1 flex flex-col mt-4 mb-4 max-h-[calc(100vh-8rem)]",
             "rounded-2xl border shadow-2xl",
             isDark 
               ? "bg-stone-900 border-stone-700" 
@@ -186,7 +299,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
             
             {/* --- 头部 --- */}
             <div className={cn(
-              "flex items-center justify-between p-6 border-b",
+              "flex items-center justify-between p-6 border-b flex-shrink-0",
               isDark ? "border-stone-700" : "border-stone-200"
             )}>
               <div className="flex items-center gap-3">
@@ -352,14 +465,14 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       <button
                         onClick={addSuggestedQuestion}
                         className={cn(
-                          "w-full flex items-center justify-center gap-2 p-4 rounded-xl",
-                          "border-2 border-dashed transition-colors",
+                          "w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg",
+                          "border border-dashed transition-colors text-sm",
                           isDark 
                             ? "border-stone-600 hover:border-stone-500 hover:bg-stone-800/50" 
                             : "border-stone-300 hover:border-stone-400 hover:bg-stone-50"
                         )}
                       >
-                        <Plus className="h-4 w-4 text-stone-500" />
+                        <Plus className="h-3 w-3 text-stone-500" />
                         <span className={cn(
                           "font-medium font-serif",
                           isDark ? "text-stone-300" : "text-stone-700"
@@ -371,201 +484,69 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   )}
                 </div>
 
-                {/* --- 文件上传配置 --- */}
+                {/* --- 文件上传开关 --- */}
                 <div className="space-y-4">
-                  <button
-                    onClick={() => toggleSection('upload')}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-4 rounded-xl transition-colors",
-                      isDark 
-                        ? "bg-stone-800 hover:bg-stone-700" 
-                        : "bg-stone-50 hover:bg-stone-100"
-                    )}
-                  >
-                    <Upload className={cn(
-                      "h-4 w-4",
-                      isDark ? "text-stone-400" : "text-stone-600"
-                    )} />
-                    <span className={cn(
-                      "flex-1 text-left font-medium font-serif",
-                      isDark ? "text-stone-200" : "text-stone-800"
-                    )}>
-                      文件上传设置
-                    </span>
-                    {expandedSections.has('upload') ? (
-                      <ChevronDown className="h-4 w-4 text-stone-400" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-stone-400" />
-                    )}
-                  </button>
-
-                  {expandedSections.has('upload') && (
-                    <div className="ml-6 space-y-6">
-                      
-                      {/* --- 上传文件类型 --- */}
-                      <div>
-                        <label className={cn(
-                          "block text-sm font-medium mb-3 font-serif",
-                          isDark ? "text-stone-300" : "text-stone-700"
-                        )}>
-                          上传文件类型
-                        </label>
-                        <div className="flex gap-2 mb-4">
-                          <button
-                            onClick={() => setUploadMethod('local')}
-                            className={cn(
-                              "px-4 py-2 rounded-lg text-sm font-serif transition-colors",
-                              uploadMethod === 'local'
-                                ? "bg-blue-500 text-white"
-                                : isDark
-                                  ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
-                                  : "bg-stone-100 text-stone-700 hover:bg-stone-200"
-                            )}
-                          >
-                            本地上传
-                          </button>
-                          <button
-                            onClick={() => setUploadMethod('url')}
-                            className={cn(
-                              "px-4 py-2 rounded-lg text-sm font-serif transition-colors",
-                              uploadMethod === 'url'
-                                ? "bg-blue-500 text-white"
-                                : isDark
-                                  ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
-                                  : "bg-stone-100 text-stone-700 hover:bg-stone-200"
-                            )}
-                          >
-                            URL
-                          </button>
-                          <button
-                            onClick={() => setUploadMethod('both')}
-                            className={cn(
-                              "px-4 py-2 rounded-lg text-sm font-serif transition-colors",
-                              uploadMethod === 'both'
-                                ? "bg-blue-500 text-white"
-                                : isDark
-                                  ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
-                                  : "bg-stone-100 text-stone-700 hover:bg-stone-200"
-                            )}
-                          >
-                            两者
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* --- 最大上传数 --- */}
-                      <div>
-                        <label className={cn(
-                          "block text-sm font-medium mb-2 font-serif",
-                          isDark ? "text-stone-300" : "text-stone-700"
-                        )}>
-                          最大上传数
-                        </label>
-                        <p className={cn(
-                          "text-xs mb-3 font-serif",
-                          isDark ? "text-stone-400" : "text-stone-600"
-                        )}>
-                          文档 &lt; 15.00MB, 图片 &lt; 10.00MB, 音频 &lt; 50.00MB, 视频 &lt; 100.00MB
-                        </p>
-                        <div className="flex items-center gap-4">
-                          <input
-                            type="range"
-                            min="1"
-                            max="10"
-                            value={maxFiles}
-                            onChange={(e) => setMaxFiles(parseInt(e.target.value))}
-                            className="flex-1"
-                          />
-                          <span className={cn(
-                            "text-lg font-medium font-serif min-w-[2rem] text-center",
-                            isDark ? "text-stone-200" : "text-stone-800"
-                          )}>
-                            {maxFiles}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* --- 支持的文件类型 --- */}
-                      <div>
-                        <label className={cn(
-                          "block text-sm font-medium mb-3 font-serif",
-                          isDark ? "text-stone-300" : "text-stone-700"
-                        )}>
-                          支持的文件类型
-                        </label>
-                        <div className="space-y-3">
-                          {Object.entries(FILE_TYPE_CONFIG).map(([fileType, config]) => {
-                            const IconComponent = config.icon;
-                            const isEnabled = enabledFileTypes.has(fileType);
-                            
-                            return (
-                              <div
-                                key={fileType}
-                                className={cn(
-                                  "flex items-center justify-between p-4 rounded-xl border-2 transition-colors",
-                                  isEnabled
-                                    ? "border-blue-500 bg-blue-50/50"
-                                    : isDark
-                                      ? "border-stone-600 bg-stone-800/50"
-                                      : "border-stone-200 bg-stone-50/50"
-                                )}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className={cn(
-                                    "p-2 rounded-lg",
-                                    isEnabled
-                                      ? "bg-blue-500 text-white"
-                                      : isDark
-                                        ? "bg-stone-700 text-stone-400"
-                                        : "bg-stone-200 text-stone-600"
-                                  )}>
-                                    <IconComponent className="h-4 w-4" />
-                                  </div>
-                                  <div>
-                                    <div className={cn(
-                                      "font-medium font-serif",
-                                      isDark ? "text-stone-200" : "text-stone-800"
-                                    )}>
-                                      {fileType}
-                                    </div>
-                                    <div className={cn(
-                                      "text-xs font-serif",
-                                      isDark ? "text-stone-400" : "text-stone-600"
-                                    )}>
-                                      {config.extensions.length > 0 
-                                        ? config.extensions.join(', ').toUpperCase()
-                                        : config.maxSize
-                                      }
-                                    </div>
-                                  </div>
-                                </div>
-                                <input
-                                  type="checkbox"
-                                  checked={isEnabled}
-                                  onChange={() => toggleFileType(fileType)}
-                                  className={cn(
-                                    "w-5 h-5 rounded border-2",
-                                    isEnabled
-                                      ? "bg-blue-500 border-blue-500"
-                                      : isDark
-                                        ? "border-stone-500"
-                                        : "border-stone-300"
-                                  )}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+                  <div className={cn(
+                    "flex items-center justify-between p-4 rounded-xl",
+                    isDark 
+                      ? "bg-stone-800" 
+                      : "bg-stone-50"
+                  )}>
+                    <div className="flex items-center gap-3">
+                      <Upload className={cn(
+                        "h-4 w-4",
+                        isDark ? "text-stone-400" : "text-stone-600"
+                      )} />
+                      <span className={cn(
+                        "font-medium font-serif",
+                        isDark ? "text-stone-200" : "text-stone-800"
+                      )}>
+                        文件上传功能
+                      </span>
                     </div>
-                  )}
+                    <div className="flex items-center gap-3">
+                      {fileUploadEnabled && (
+                        <button
+                          onClick={openFileUploadModal}
+                          className={cn(
+                            "p-2 rounded-lg transition-colors",
+                            isDark 
+                              ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
+                              : "hover:bg-stone-200 text-stone-600 hover:text-stone-900"
+                          )}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </button>
+                      )}
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={fileUploadEnabled}
+                          onChange={(e) => handleFileUploadToggle(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className={cn(
+                          "w-11 h-6 rounded-full peer transition-colors relative",
+                          "peer-focus:ring-2 peer-focus:ring-blue-300",
+                          fileUploadEnabled 
+                            ? "bg-blue-500" 
+                            : isDark ? "bg-stone-600" : "bg-stone-300"
+                        )}>
+                          <div className={cn(
+                            "absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform",
+                            fileUploadEnabled ? "translate-x-5" : "translate-x-0"
+                          )} />
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* --- 底部操作栏 --- */}
             <div className={cn(
-              "p-6 border-t",
+              "p-6 border-t flex-shrink-0",
               isDark ? "border-stone-700" : "border-stone-200"
             )}>
               <div className="flex gap-3">
@@ -613,6 +594,233 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
           </div>
         </div>
       </div>
+
+      {/* --- 文件上传配置小模态框 --- */}
+      {showFileUploadModal && (
+        <>
+          <div 
+            className="fixed inset-0 z-60 bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowFileUploadModal(false)}
+          />
+          <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-60 w-[420px] max-h-[70vh] flex flex-col">
+            <div className={cn(
+              "rounded-xl border shadow-2xl flex flex-col max-h-full",
+              isDark 
+                ? "bg-stone-900 border-stone-700" 
+                : "bg-white border-stone-200"
+            )}>
+              {/* --- 模态框头部 --- */}
+              <div className={cn(
+                "flex items-center justify-between p-4 border-b flex-shrink-0",
+                isDark ? "border-stone-700" : "border-stone-200"
+              )}>
+                <h3 className={cn(
+                  "text-base font-bold font-serif",
+                  isDark ? "text-stone-100" : "text-stone-900"
+                )}>
+                  文件上传配置
+                </h3>
+                <button
+                  onClick={() => setShowFileUploadModal(false)}
+                  className={cn(
+                    "p-1.5 rounded-lg transition-colors",
+                    isDark 
+                      ? "hover:bg-stone-800 text-stone-400 hover:text-stone-200" 
+                      : "hover:bg-stone-100 text-stone-600 hover:text-stone-900"
+                  )}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* --- 模态框内容区域（可滚动） --- */}
+              <div className="flex-1 overflow-y-auto min-h-0 p-4">
+                <div className="space-y-4">
+                  {/* --- 上传文件类型 --- */}
+                  <div>
+                    <label className={cn(
+                      "block text-sm font-medium mb-2 font-serif",
+                      isDark ? "text-stone-300" : "text-stone-700"
+                    )}>
+                      上传文件类型
+                    </label>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => setUploadMethod('local')}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors",
+                          uploadMethod === 'local'
+                            ? "bg-blue-500 text-white"
+                            : isDark
+                              ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
+                              : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                        )}
+                      >
+                        本地上传
+                      </button>
+                      <button
+                        onClick={() => setUploadMethod('url')}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors",
+                          uploadMethod === 'url'
+                            ? "bg-blue-500 text-white"
+                            : isDark
+                              ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
+                              : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                        )}
+                      >
+                        URL
+                      </button>
+                      <button
+                        onClick={() => setUploadMethod('both')}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors",
+                          uploadMethod === 'both'
+                            ? "bg-blue-500 text-white"
+                            : isDark
+                              ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
+                              : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                        )}
+                      >
+                        两者
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* --- 最大上传数 --- */}
+                  <div>
+                    <label className={cn(
+                      "block text-sm font-medium mb-2 font-serif",
+                      isDark ? "text-stone-300" : "text-stone-700"
+                    )}>
+                      最大上传数
+                    </label>
+                    <p className={cn(
+                      "text-xs mb-2 font-serif",
+                      isDark ? "text-stone-400" : "text-stone-600"
+                    )}>
+                      文档 &lt; 15MB, 图片 &lt; 10MB, 音频 &lt; 50MB, 视频 &lt; 100MB
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={maxFiles}
+                        onChange={(e) => setMaxFiles(parseInt(e.target.value))}
+                        className="flex-1"
+                      />
+                      <span className={cn(
+                        "text-base font-medium font-serif min-w-[1.5rem] text-center",
+                        isDark ? "text-stone-200" : "text-stone-800"
+                      )}>
+                        {maxFiles}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* --- 支持的文件类型 --- */}
+                  <div>
+                    <label className={cn(
+                      "block text-sm font-medium mb-2 font-serif",
+                      isDark ? "text-stone-300" : "text-stone-700"
+                    )}>
+                      支持的文件类型
+                    </label>
+                    <div className="space-y-2">
+                      {Object.entries(FILE_TYPE_CONFIG).map(([fileType, config]) => {
+                        const IconComponent = config.icon;
+                        const isEnabled = enabledFileTypes.has(fileType);
+                        
+                        return (
+                          <div
+                            key={fileType}
+                            className={cn(
+                              "flex items-center justify-between p-3 rounded-lg border transition-colors",
+                              isEnabled
+                                ? "border-blue-500 bg-blue-50/50"
+                                : isDark
+                                  ? "border-stone-600 bg-stone-800/50"
+                                  : "border-stone-200 bg-stone-50/50"
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={cn(
+                                "p-1.5 rounded-lg",
+                                isEnabled
+                                  ? "bg-blue-500 text-white"
+                                  : isDark
+                                    ? "bg-stone-700 text-stone-400"
+                                    : "bg-stone-200 text-stone-600"
+                              )}>
+                                <IconComponent className="h-3 w-3" />
+                              </div>
+                              <div>
+                                <div className={cn(
+                                  "font-medium text-sm font-serif",
+                                  isDark ? "text-stone-200" : "text-stone-800"
+                                )}>
+                                  {fileType}
+                                </div>
+                                <div className={cn(
+                                  "text-xs font-serif",
+                                  isDark ? "text-stone-400" : "text-stone-600"
+                                )}>
+                                  {config.extensions.length > 0 
+                                    ? config.extensions.slice(0, 3).join(', ').toUpperCase() + (config.extensions.length > 3 ? '...' : '')
+                                    : config.maxSize
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={isEnabled}
+                              onChange={() => toggleFileType(fileType)}
+                              className={cn(
+                                "w-4 h-4 rounded border",
+                                isEnabled
+                                  ? "bg-blue-500 border-blue-500"
+                                  : isDark
+                                    ? "border-stone-500"
+                                    : "border-stone-300"
+                              )}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* --- 模态框底部按钮 --- */}
+              <div className={cn(
+                "flex gap-2 p-4 border-t flex-shrink-0",
+                isDark ? "border-stone-700" : "border-stone-200"
+              )}>
+                <button
+                  onClick={() => setShowFileUploadModal(false)}
+                  className={cn(
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif transition-colors",
+                    isDark
+                      ? "bg-stone-700 hover:bg-stone-600 text-stone-200"
+                      : "bg-stone-100 hover:bg-stone-200 text-stone-700"
+                  )}
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleFileUploadSave}
+                  className="flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                >
+                  确定
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

@@ -6,7 +6,7 @@
  */
 
 // 枚举类型
-export type UserRole = 'admin' | 'user';
+export type UserRole = 'admin' | 'manager' | 'user';
 export type AccountStatus = 'active' | 'suspended' | 'pending';
 export type OrgMemberRole = 'owner' | 'admin' | 'member';
 export type MessageRole = 'user' | 'assistant' | 'system';
@@ -161,6 +161,21 @@ export interface ServiceInstanceConfig {
     // 文件上传配置
     file_upload?: {
       image?: {
+        enabled: boolean;
+        number_limits: number;
+        transfer_methods: ('remote_url' | 'local_file')[];
+      };
+      document?: {
+        enabled: boolean;
+        number_limits: number;
+        transfer_methods: ('remote_url' | 'local_file')[];
+      };
+      audio?: {
+        enabled: boolean;
+        number_limits: number;
+        transfer_methods: ('remote_url' | 'local_file')[];
+      };
+      video?: {
         enabled: boolean;
         number_limits: number;
         transfer_methods: ('remote_url' | 'local_file')[];
