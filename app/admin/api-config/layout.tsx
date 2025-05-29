@@ -182,7 +182,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         {/* 头部：不需要额外的顶部间距，因为已经从正确位置开始 */}
         <div className={cn(
           "p-2 border-b flex-shrink-0",
-          isDark ? "border-stone-700 bg-stone-900" : "border-stone-200 bg-white"
+          isDark ? "border-stone-700 bg-stone-800" : "border-stone-200 bg-stone-100"
         )}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         {/* 列表：独立滚动区域 */}
         <div className={cn(
           "flex-1 overflow-y-auto min-h-0",
-          isDark ? "bg-stone-900" : "bg-white"
+          isDark ? "bg-stone-800" : "bg-stone-100"
         )}>
           {!hasInitiallyLoaded && instancesLoading ? (
             <div className="p-4 text-center">
@@ -269,12 +269,13 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                     "transition-colors duration-150 ease-in-out",
                     "focus:outline-none focus:ring-2",
                     selectedInstanceId === instance.instance_id
-                      ? isDark
-                        ? "bg-stone-700 border border-stone-600 focus:ring-stone-600"
-                        : "bg-stone-100 border border-stone-300"
-                      : isDark
-                        ? "hover:bg-stone-800/50 focus:ring-stone-600"
-                        : "hover:bg-stone-50 focus:ring-stone-300"
+                    ? isDark
+                      ? "bg-stone-600 border border-stone-500 focus:ring-stone-500"
+                      : "bg-stone-300 border border-stone-400"
+                    : isDark
+                      ? "hover:bg-stone-700 focus:ring-stone-600"
+                      : "hover:bg-stone-200 focus:ring-stone-300"
+                  
                   )}
                   onClick={() => {
                     // --- BEGIN COMMENT ---
