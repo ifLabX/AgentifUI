@@ -667,9 +667,9 @@ export default function ApiConfigPage() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col">
       {showAddForm ? (
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0">
           <InstanceForm
             instance={null}
             isEditing={false}
@@ -699,7 +699,7 @@ export default function ApiConfigPage() {
           />
         </div>
       ) : selectedInstance ? (
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -719,11 +719,11 @@ export default function ApiConfigPage() {
               <button
                 onClick={handleCancelEdit}
                 className={cn(
-                  "p-2 rounded-lg transition-colors",
+                  "p-2 rounded-lg transition-colors cursor-pointer",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2",
                   isDark 
-                    ? "hover:bg-stone-700 text-stone-400 focus:ring-stone-500" 
-                    : "hover:bg-stone-100 text-stone-600 focus:ring-stone-400"
+                    ? "bg-stone-600 hover:bg-stone-500 text-stone-200 hover:text-stone-100 focus:ring-stone-500" 
+                    : "bg-stone-200 hover:bg-stone-300 text-stone-700 hover:text-stone-900 focus:ring-stone-400"
                 )}
               >
                 <X className="h-5 w-5" />

@@ -67,12 +67,12 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   }
 
   return (
-    <div className="h-full flex">
+    <div className="h-full flex overflow-hidden">
       {/* --- BEGIN COMMENT ---
       左侧应用实例导航 - 固定宽度，独立滚动
       --- END COMMENT --- */}
-      <div className="w-80 flex-shrink-0">
-        <div className="p-4 border-b border-stone-200 dark:border-stone-700">
+      <div className="w-80 flex-shrink-0 h-full flex flex-col">
+        <div className="p-4 border-b border-stone-200 dark:border-stone-700 flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <h2 className={cn(
@@ -95,8 +95,8 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                 className={cn(
                   "p-2 rounded-lg transition-colors cursor-pointer",
                   isDark 
-                    ? "bg-stone-800 hover:bg-stone-700 text-stone-300" 
-                    : "bg-white hover:bg-stone-100 text-stone-600"
+                    ? "bg-stone-600 hover:bg-stone-500 text-stone-200 hover:text-stone-100" 
+                    : "bg-stone-200 hover:bg-stone-300 text-stone-700 hover:text-stone-900"
                 )}
               >
                 <Plus className="h-5 w-5" />
@@ -111,7 +111,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           {!hasInitiallyLoaded && instancesLoading ? (
             <div className="p-4 text-center">
               <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-stone-400" />
@@ -212,9 +212,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       </div>
       
       {/* --- BEGIN COMMENT ---
-      右侧内容区域
+      右侧内容区域 - 独立滚动，限制高度
       --- END COMMENT --- */}
-      <div className="flex-1 flex flex-col min-w-0 border-l border-stone-200 dark:border-stone-700">
+      <div className="flex-1 h-full border-l border-stone-200 dark:border-stone-700 overflow-hidden">
         {children}
       </div>
     </div>
