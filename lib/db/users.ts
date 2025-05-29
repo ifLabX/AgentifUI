@@ -68,7 +68,7 @@ export interface UserFilters {
 const supabase = createClient();
 
 /**
- * 获取用户列表（使用数据库函数）
+ * 获取用户列表（直接使用Supabase查询，避免复杂的数据库函数）
  */
 export async function getUserList(filters: UserFilters = {}): Promise<Result<{
   users: EnhancedUser[];
@@ -89,51 +89,53 @@ export async function getUserList(filters: UserFilters = {}): Promise<Result<{
       pageSize = 20
     } = filters;
 
-    // 首先获取总数
-    const { data: countData, error: countError } = await supabase.rpc('get_user_count', {
-      p_role: role || null,
-      p_status: status || null,
-      p_auth_source: auth_source || null,
-      p_search: search || null
-    });
+    // 构建基础查询
+    let query = supabase
+      .from('user_management_view')
+      .select('*', { count: 'exact' });
 
-    if (countError) {
-      console.error('获取用户总数失败:', countError);
-      return failure(new Error(`获取用户总数失败: ${countError.message}`));
+    // 添加筛选条件
+    if (role) {
+      query = query.eq('role', role);
+    }
+    
+    if (status) {
+      query = query.eq('status', status);
+    }
+    
+    if (auth_source) {
+      query = query.eq('auth_source', auth_source);
+    }
+    
+    if (search && search.trim()) {
+      query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,email.ilike.%${search}%`);
     }
 
-    const total = countData || 0;
-    const totalPages = Math.ceil(total / pageSize);
+    // 添加排序
+    const sortColumn = sortBy === 'email' ? 'email' : 
+                      sortBy === 'last_sign_in_at' ? 'last_sign_in_at' :
+                      sortBy === 'full_name' ? 'full_name' : 'created_at';
+    
+    query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
 
-    // 然后获取用户列表
-    const { data, error } = await supabase.rpc('get_user_list_simple', {
-      p_role: role || null,
-      p_status: status || null,
-      p_auth_source: auth_source || null,
-      p_search: search || null,
-      p_sort_by: sortBy,
-      p_sort_order: sortOrder,
-      p_page: page,
-      p_page_size: pageSize
-    });
+    // 添加分页
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+
+    // 执行查询
+    const { data, error, count } = await query;
 
     if (error) {
       console.error('获取用户列表失败:', error);
       return failure(new Error(`获取用户列表失败: ${error.message}`));
     }
 
-    if (!data || data.length === 0) {
-      return success({
-        users: [],
-        total,
-        page,
-        pageSize,
-        totalPages
-      });
-    }
+    const total = count || 0;
+    const totalPages = Math.ceil(total / pageSize);
 
-    // 数据库函数直接返回行数据
-    const users = data.map((row: any) => ({
+    // 转换数据格式
+    const users: EnhancedUser[] = (data || []).map(row => ({
       id: row.id,
       email: row.email,
       phone: row.phone,
