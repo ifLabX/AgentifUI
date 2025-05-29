@@ -180,10 +180,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           ? "border-b-stone-700/50" 
           : "border-b-stone-300/60"
       )}>
-        <div className="flex items-center justify-between px-6 py-3">
+        <div className="flex items-center justify-between px-6 py-2">
           <div className="flex items-center gap-4">
             <h1 className={cn(
-              "text-lg font-semibold",
+              "text-base font-semibold",
               colors.mainText.tailwind
             )}>
               AgentifUI 管理后台
@@ -222,10 +222,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Link 
               href="/chat" 
               className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200",
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200",
                 isDark 
-                  ? "text-stone-400 hover:text-stone-100 hover:bg-stone-600" 
-                  : "text-stone-600 hover:text-stone-900 hover:bg-stone-300"
+                  ? "text-stone-300 bg-stone-700/50 hover:bg-stone-600 hover:text-stone-100 border border-stone-600/50 hover:border-stone-500" 
+                  : "text-stone-600 bg-stone-100/80 hover:bg-stone-200 hover:text-stone-900 border border-stone-200 hover:border-stone-300"
               )}
             >
               <Home className="h-4 w-4" />
@@ -319,7 +319,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       主内容区域 - 顶部留出navbar空间，左侧始终留出slim sidebar空间
       --- END COMMENT --- */}
       <main className={cn(
-        "pt-16 ml-16 transition-all duration-300 ease-in-out min-h-screen"
+        "pt-12 ml-16 transition-all duration-300 ease-in-out min-h-screen"
       )}>
         {children}
       </main>

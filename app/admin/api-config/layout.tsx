@@ -27,23 +27,47 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   } = useApiConfigStore()
   
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false)
-  const [isInitialMount, setIsInitialMount] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null)
 
   // --- BEGIN COMMENT ---
-  // 加载实例数据 - 只在首次加载时执行
+  // 初始化数据加载
   // --- END COMMENT ---
   useEffect(() => {
-    if (!hasInitiallyLoaded && isInitialMount) {
+    if (!hasInitiallyLoaded) {
       loadInstances().finally(() => {
         setHasInitiallyLoaded(true)
-        setIsInitialMount(false)
       })
-    } else if (isInitialMount) {
-      setHasInitiallyLoaded(true)
-      setIsInitialMount(false)
     }
-  }, [hasInitiallyLoaded, isInitialMount, loadInstances])
+  }, [hasInitiallyLoaded, loadInstances])
+
+  // --- BEGIN COMMENT ---
+  // 监听page组件的状态变化，完全同步page的表单状态
+  // --- END COMMENT ---
+  useEffect(() => {
+    const handleAddFormToggled = (event: CustomEvent) => {
+      const { showAddForm: newShowAddForm, selectedInstance } = event.detail
+      setShowAddForm(newShowAddForm)
+      // --- BEGIN COMMENT ---
+      // 当显示添加表单时，清除所有选中状态
+      // 当显示编辑表单时，设置对应的选中状态
+      // --- END COMMENT ---
+      if (newShowAddForm) {
+        setSelectedInstanceId(null)
+      } else if (selectedInstance) {
+        setSelectedInstanceId(selectedInstance.instance_id)
+      } else {
+        setSelectedInstanceId(null)
+      }
+    }
+
+    window.addEventListener('addFormToggled', handleAddFormToggled as EventListener)
+    
+    return () => {
+      window.removeEventListener('addFormToggled', handleAddFormToggled as EventListener)
+    }
+  }, [])
 
   const handleDeleteInstance = async (instanceId: string) => {
     if (!confirm('确定要删除此应用实例吗？此操作不可撤销。')) {
@@ -58,6 +82,13 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       }
       
       await deleteInstance(instanceToDelete.id)
+      
+      // --- BEGIN COMMENT ---
+      // 通知page组件实例被删除
+      // --- END COMMENT ---
+      window.dispatchEvent(new CustomEvent('instanceDeleted', {
+        detail: { instanceId }
+      }))
     } catch (error) {
       console.error('删除失败:', error)
       alert('删除应用实例失败')
@@ -69,49 +100,61 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   return (
     <div className="h-full flex overflow-hidden">
       {/* --- BEGIN COMMENT ---
-      左侧应用实例导航 - 固定宽度，独立滚动
+      左侧导航：固定宽度，从admin导航栏下方开始
       --- END COMMENT --- */}
-      <div className="w-80 flex-shrink-0 h-full flex flex-col">
-        <div className="p-4 border-b border-stone-200 dark:border-stone-700 flex-shrink-0">
-          <div className="flex items-center justify-between mb-4">
+      <div className={cn(
+        "w-80 flex-shrink-0 flex flex-col fixed left-16 z-40",
+        "top-12 bottom-0"
+      )}>
+        {/* 头部：不需要额外的顶部间距，因为已经从正确位置开始 */}
+        <div className={cn(
+          "p-2 border-b flex-shrink-0",
+          isDark ? "border-stone-700 bg-stone-900" : "border-stone-200 bg-white"
+        )}>
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <h2 className={cn(
-                "font-bold text-lg font-serif",
+                "font-bold text-sm font-serif",
                 isDark ? "text-stone-100" : "text-stone-900"
               )}>
                 应用实例
               </h2>
-              {/* 初始加载时的小spinner */}
-              {instancesLoading && !hasInitiallyLoaded && (
-                <Loader2 className="h-3 w-3 animate-spin text-stone-400" />
+            </div>
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('toggleAddForm'))
+              }}
+              className={cn(
+                "p-1.5 rounded-lg transition-all duration-200 cursor-pointer",
+                "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                showAddForm
+                  ? isDark
+                    ? "bg-stone-500 text-stone-100 focus:ring-stone-400"
+                    : "bg-stone-400 text-white focus:ring-stone-300"
+                  : isDark 
+                    ? "bg-stone-600 hover:bg-stone-500 text-stone-200 hover:text-stone-100 focus:ring-stone-500" 
+                    : "bg-stone-200 hover:bg-stone-300 text-stone-700 hover:text-stone-900 focus:ring-stone-400"
               )}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  // 通过自定义事件通知page组件显示添加表单
-                  window.dispatchEvent(new CustomEvent('addInstance'))
-                }}
-                className={cn(
-                  "p-2 rounded-lg transition-colors cursor-pointer",
-                  isDark 
-                    ? "bg-stone-600 hover:bg-stone-500 text-stone-200 hover:text-stone-100" 
-                    : "bg-stone-200 hover:bg-stone-300 text-stone-700 hover:text-stone-900"
-                )}
-              >
-                <Plus className="h-5 w-5" />
-              </button>
-            </div>
+            >
+              <Plus className={cn(
+                "h-3.5 w-3.5 transition-transform duration-200",
+                showAddForm && "rotate-45"
+              )} />
+            </button>
           </div>
           <div className={cn(
-            "text-sm font-serif",
+            "text-xs font-serif",
             isDark ? "text-stone-400" : "text-stone-600"
           )}>
             共 {instances.length} 个应用
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto min-h-0">
+        {/* 列表：独立滚动区域 */}
+        <div className={cn(
+          "flex-1 overflow-y-auto min-h-0",
+          isDark ? "bg-stone-900" : "bg-white"
+        )}>
           {!hasInitiallyLoaded && instancesLoading ? (
             <div className="p-4 text-center">
               <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-stone-400" />
@@ -133,8 +176,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
               </p>
               <button
                 onClick={() => {
-                  // 通过自定义事件通知page组件显示添加表单
-                  window.dispatchEvent(new CustomEvent('addInstance'))
+                  window.dispatchEvent(new CustomEvent('toggleAddForm'))
                 }}
                 className={cn(
                   "mt-2 text-sm transition-colors font-serif cursor-pointer",
@@ -150,15 +192,21 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                 <div
                   key={instance.instance_id}
                   className={cn(
-                    "p-3 rounded-lg mb-2 cursor-pointer group",
+                    "p-2.5 rounded-lg mb-2 cursor-pointer group",
                     "transition-colors duration-150 ease-in-out",
                     "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                    isDark
-                      ? "hover:bg-stone-800/50 focus:ring-stone-600"
-                      : "hover:bg-white/50 focus:ring-stone-300"
+                    selectedInstanceId === instance.instance_id
+                      ? isDark
+                        ? "bg-stone-700 border border-stone-600"
+                        : "bg-stone-100 border border-stone-300"
+                      : isDark
+                        ? "hover:bg-stone-800/50 focus:ring-stone-600"
+                        : "hover:bg-stone-50 focus:ring-stone-300"
                   )}
                   onClick={() => {
-                    // 通过自定义事件通知page组件
+                    // --- BEGIN COMMENT ---
+                    // 只发送事件给page组件，不在layout中设置状态
+                    // --- END COMMENT ---
                     window.dispatchEvent(new CustomEvent('selectInstance', {
                       detail: instance
                     }))
@@ -169,12 +217,12 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <Globe className={cn(
-                          "h-4 w-4 flex-shrink-0",
+                          "h-3.5 w-3.5 flex-shrink-0",
                           isDark ? "text-stone-400" : "text-stone-500"
                         )} />
                         <h3 className={cn(
                           "font-medium text-sm truncate font-serif",
-                          isDark ? "text-stone-100" : "text-stone-900"
+                          isDark ? "text-stone-200" : "text-stone-800"
                         )}>
                           {instance.display_name}
                         </h3>
@@ -195,8 +243,10 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                         disabled={isProcessing}
                         className={cn(
                           "p-1 rounded transition-colors cursor-pointer",
-                          "hover:bg-red-100 dark:hover:bg-red-900/30",
                           "focus:outline-none focus:ring-2 focus:ring-red-500",
+                          isDark 
+                            ? "hover:bg-red-900/30" 
+                            : "hover:bg-red-100",
                           isProcessing && "opacity-50 cursor-not-allowed"
                         )}
                       >
@@ -212,9 +262,18 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       </div>
       
       {/* --- BEGIN COMMENT ---
-      右侧内容区域 - 独立滚动，限制高度
+      分割线：从admin导航栏下方开始的全高度垂直分割线
       --- END COMMENT --- */}
-      <div className="flex-1 h-full border-l border-stone-200 dark:border-stone-700 overflow-hidden">
+      <div className={cn(
+        "fixed left-96 z-40 w-px",
+        "top-12 bottom-0",
+        isDark ? "bg-stone-700" : "bg-stone-200"
+      )}></div>
+      
+      {/* --- BEGIN COMMENT ---
+      右侧内容区域：调整左边距以适应固定侧边栏
+      --- END COMMENT --- */}
+      <div className="flex-1 h-full overflow-hidden ml-80 pl-px">
         {children}
       </div>
     </div>

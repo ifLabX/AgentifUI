@@ -27,11 +27,8 @@ import {
 interface ApiConfigPageProps {
   selectedInstance?: ServiceInstance | null
   showAddForm?: boolean
-  isLoadingInstance?: boolean
-  onInstanceSelect?: (instance: ServiceInstance) => void
-  onAddInstance?: () => void
-  onCancelAdd?: () => void
-  onCancelEdit?: () => void
+  onClearSelection?: () => void
+  instances?: ServiceInstance[]
 }
 
 interface FeedbackState {
@@ -116,6 +113,56 @@ const InstanceForm = ({
     }
   });
   const [showApiKey, setShowApiKey] = useState(false);
+  
+  useEffect(() => {
+    if (instance) {
+      setFormData({
+        instance_id: instance.instance_id || '',
+        display_name: instance.display_name || '',
+        description: instance.description || '',
+        api_path: instance.api_path || '',
+        apiKey: '',
+        config: {
+          api_url: instance.config?.api_url || '',
+          app_metadata: {
+            app_type: instance.config?.app_metadata?.app_type || 'model',
+            is_common_model: instance.config?.app_metadata?.is_common_model || false,
+            tags: instance.config?.app_metadata?.tags || [],
+          },
+          dify_parameters: {
+            opening_statement: instance.config?.dify_parameters?.opening_statement || '',
+            suggested_questions: instance.config?.dify_parameters?.suggested_questions || [],
+            file_upload: instance.config?.dify_parameters?.file_upload || {
+              image: { enabled: false, number_limits: 3, detail: 'high' }
+            }
+          }
+        }
+      });
+    } else {
+      setFormData({
+        instance_id: '',
+        display_name: '',
+        description: '',
+        api_path: '',
+        apiKey: '',
+        config: {
+          api_url: '',
+          app_metadata: {
+            app_type: 'model',
+            is_common_model: false,
+            tags: [],
+          },
+          dify_parameters: {
+            opening_statement: '',
+            suggested_questions: [],
+            file_upload: {
+              image: { enabled: false, number_limits: 3, detail: 'high' }
+            }
+          }
+        }
+      });
+    }
+  }, [instance]);
   
   const addSuggestedQuestion = () => {
     setFormData(prev => ({
@@ -596,16 +643,12 @@ export default function ApiConfigPage() {
   const {
     serviceInstances: instances,
     providers,
-    isLoading: instancesLoading,
-    loadConfigData: loadInstances,
     createAppInstance: addInstance,
     updateAppInstance: updateInstance,
-    deleteAppInstance: deleteInstance
   } = useApiConfigStore()
   
   const [selectedInstance, setSelectedInstance] = useState<ServiceInstance | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [isLoadingInstance, setIsLoadingInstance] = useState(false)
   const [feedback, setFeedback] = useState<FeedbackState>({
     open: false,
     message: '',
@@ -613,42 +656,41 @@ export default function ApiConfigPage() {
   })
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // --- BEGIN COMMENT ---
-  // 监听左侧导航的实例选择事件
-  // --- END COMMENT ---
   useEffect(() => {
     const handleSelectInstance = (event: CustomEvent) => {
       const instance = event.detail as ServiceInstance
-      if (selectedInstance?.instance_id === instance.instance_id) {
-        return
-      }
-      
-      setIsLoadingInstance(true)
+      setSelectedInstance(instance)
       setShowAddForm(false)
-      
-      setTimeout(() => {
-        setSelectedInstance(instance)
-        setIsLoadingInstance(false)
-      }, 50)
     }
 
-    const handleAddInstance = () => {
-      setSelectedInstance(null)
-      setShowAddForm(true)
+    const handleToggleAddForm = () => {
+      if (showAddForm) {
+        setShowAddForm(false)
+        setSelectedInstance(null)
+      } else {
+        setSelectedInstance(null)
+        setShowAddForm(true)
+      }
+    }
+
+    const handleInstanceDeleted = (event: CustomEvent) => {
+      const { instanceId } = event.detail
+      if (selectedInstance?.instance_id === instanceId) {
+        setSelectedInstance(null)
+        setShowAddForm(false)
+      }
     }
 
     window.addEventListener('selectInstance', handleSelectInstance as EventListener)
-    window.addEventListener('addInstance', handleAddInstance)
+    window.addEventListener('toggleAddForm', handleToggleAddForm)
+    window.addEventListener('instanceDeleted', handleInstanceDeleted as EventListener)
     
     return () => {
       window.removeEventListener('selectInstance', handleSelectInstance as EventListener)
-      window.removeEventListener('addInstance', handleAddInstance)
+      window.removeEventListener('toggleAddForm', handleToggleAddForm)
+      window.removeEventListener('instanceDeleted', handleInstanceDeleted as EventListener)
     }
-  }, [selectedInstance])
-
-  // --- BEGIN COMMENT ---
-  // 提示相关函数
-  // --- END COMMENT ---
+  }, [showAddForm, selectedInstance])
 
   const showFeedback = (message: string, severity: FeedbackState['severity'] = 'info') => {
     setFeedback({ open: true, message, severity })
@@ -658,13 +700,25 @@ export default function ApiConfigPage() {
     setFeedback({ open: false, message: '', severity: 'info' })
   }
 
-  const handleCancelAdd = () => {
+  const handleClearSelection = () => {
+    setSelectedInstance(null)
     setShowAddForm(false)
+    window.dispatchEvent(new CustomEvent('addFormToggled', {
+      detail: { 
+        showAddForm: false,
+        selectedInstance: null
+      }
+    }))
   }
 
-  const handleCancelEdit = () => {
-    setSelectedInstance(null)
-  }
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('addFormToggled', {
+      detail: { 
+        showAddForm,
+        selectedInstance
+      }
+    }))
+  }, [showAddForm, selectedInstance])
 
   return (
     <div className="h-full flex flex-col">
@@ -684,7 +738,7 @@ export default function ApiConfigPage() {
               }, data.apiKey)
                 .then(() => {
                   showFeedback('应用实例创建成功', 'success')
-                  handleCancelAdd()
+                  handleClearSelection()
                 })
                 .catch((error) => {
                   console.error('创建失败:', error)
@@ -694,7 +748,7 @@ export default function ApiConfigPage() {
                   setIsProcessing(false)
                 })
             }}
-            onCancel={handleCancelAdd}
+            onCancel={handleClearSelection}
             isProcessing={isProcessing}
           />
         </div>
@@ -717,7 +771,7 @@ export default function ApiConfigPage() {
                 </p>
               </div>
               <button
-                onClick={handleCancelEdit}
+                onClick={handleClearSelection}
                 className={cn(
                   "p-2 rounded-lg transition-colors cursor-pointer",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2",
@@ -731,36 +785,30 @@ export default function ApiConfigPage() {
             </div>
           </div>
           
-          {isLoadingInstance ? (
-            <div className="flex items-center justify-center h-32">
-              <Loader2 className="h-6 w-6 animate-spin text-stone-400" />
-            </div>
-          ) : (
-            <InstanceForm
-              instance={selectedInstance}
-              isEditing={true}
-              onSave={(data) => {
-                setIsProcessing(true)
-                updateInstance(selectedInstance.id, data, data.apiKey)
-                  .then(() => {
-                    showFeedback('应用实例更新成功', 'success')
-                    handleCancelEdit()
-                  })
-                  .catch((error) => {
-                    console.error('更新失败:', error)
-                    showFeedback('更新应用实例失败', 'error')
-                  })
-                  .finally(() => {
-                    setIsProcessing(false)
-                  })
-              }}
-              onCancel={handleCancelEdit}
-              isProcessing={isProcessing}
-            />
-          )}
+          <InstanceForm
+            instance={selectedInstance}
+            isEditing={true}
+            onSave={(data) => {
+              setIsProcessing(true)
+              updateInstance(selectedInstance.id, data, data.apiKey)
+                .then(() => {
+                  showFeedback('应用实例更新成功', 'success')
+                  handleClearSelection()
+                })
+                .catch((error) => {
+                  console.error('更新失败:', error)
+                  showFeedback('更新应用实例失败', 'error')
+                })
+                .finally(() => {
+                  setIsProcessing(false)
+                })
+            }}
+            onCancel={handleClearSelection}
+            isProcessing={isProcessing}
+          />
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center">
             <Settings className="h-16 w-16 mx-auto mb-4 text-stone-400" />
             <h3 className={cn(
@@ -775,21 +823,6 @@ export default function ApiConfigPage() {
             )}>
               从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例
             </p>
-            <button
-              onClick={() => {
-                setSelectedInstance(null)
-                setShowAddForm(true)
-              }}
-              className={cn(
-                "mt-4 px-4 py-2 rounded-lg transition-colors font-serif cursor-pointer",
-                isDark 
-                  ? "bg-stone-700 hover:bg-stone-600 text-stone-200" 
-                  : "bg-stone-200 hover:bg-stone-300 text-stone-800"
-              )}
-            >
-              <Plus className="h-4 w-4 inline mr-2" />
-              添加应用实例
-            </button>
           </div>
         </div>
       )}
