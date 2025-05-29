@@ -182,27 +182,43 @@ const InstanceForm = ({
           </h3>
           
           <div className="flex items-center gap-3">
-            {/* 设置默认应用按钮 - 仅在编辑模式且非默认应用时显示 */}
-            {isEditing && instance && !instance.is_default && (
+            {/* 设置默认应用按钮 - 在编辑模式时总是显示 */}
+            {isEditing && instance && (
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
-                    window.dispatchEvent(new CustomEvent('setInstanceAsDefault', {
-                      detail: { instanceId: instance.id }
-                    }))
+                  // --- 统一逻辑：直接调用layout的设置默认应用函数 ---
+                  if (!instance.is_default) {
+                    if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
+                      window.dispatchEvent(new CustomEvent('directSetDefault', {
+                        detail: { instanceId: instance.id }
+                      }))
+                    }
                   }
                 }}
+                disabled={instance.is_default}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all cursor-pointer",
-                  "border hover:scale-105",
-                  isDark 
-                    ? "border-stone-600 bg-stone-700 hover:bg-stone-600 text-stone-300" 
-                    : "border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700"
+                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all",
+                  "border",
+                  instance.is_default
+                    ? "cursor-not-allowed opacity-60"
+                    : "cursor-pointer hover:scale-105",
+                  instance.is_default
+                    ? isDark
+                      ? "border-stone-600/50 bg-stone-700/30 text-stone-400"
+                      : "border-stone-300/50 bg-stone-100/50 text-stone-500"
+                    : isDark
+                      ? "border-stone-600 bg-stone-700 hover:bg-stone-600 text-stone-300"
+                      : "border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700"
                 )}
               >
-                <Star className="h-4 w-4" />
-                <span className="text-sm font-medium font-serif">设为默认</span>
+                <Star className={cn(
+                  "h-4 w-4",
+                  instance.is_default && "fill-current"
+                )} />
+                <span className="text-sm font-medium font-serif">
+                  {instance.is_default ? '默认应用' : '设为默认'}
+                </span>
               </button>
             )}
             
@@ -592,10 +608,12 @@ export default function ApiConfigPage() {
 
     const handleDefaultInstanceChanged = (event: CustomEvent) => {
       const { instanceId } = event.detail
-      if (selectedInstance?.id === instanceId) {
-        showFeedback('默认应用设置成功', 'success')
-      }
+      // --- 始终显示成功提示，不管是否是当前选中的实例 ---
+      showFeedback('默认应用设置成功', 'success')
+      
+      // --- 重新加载服务实例数据以更新UI状态 ---
       setTimeout(() => {
+        // 给数据库操作一点时间完成
         window.dispatchEvent(new CustomEvent('reloadInstances'))
       }, 100)
     }

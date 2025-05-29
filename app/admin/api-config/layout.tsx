@@ -70,6 +70,12 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       handleSetDefaultInstance(instanceId)
     }
 
+    const handleDirectSetDefault = (event: CustomEvent) => {
+      const { instanceId } = event.detail
+      // --- 统一逻辑：直接调用相同的函数 ---
+      handleSetDefaultInstance(instanceId)
+    }
+
     const handleReloadInstances = () => {
       // 重新加载服务实例数据
       loadInstances()
@@ -77,11 +83,13 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
 
     window.addEventListener('addFormToggled', handleAddFormToggled as EventListener)
     window.addEventListener('setInstanceAsDefault', handleSetInstanceAsDefault as EventListener)
+    window.addEventListener('directSetDefault', handleDirectSetDefault as EventListener)
     window.addEventListener('reloadInstances', handleReloadInstances)
     
     return () => {
       window.removeEventListener('addFormToggled', handleAddFormToggled as EventListener)
       window.removeEventListener('setInstanceAsDefault', handleSetInstanceAsDefault as EventListener)
+      window.removeEventListener('directSetDefault', handleDirectSetDefault as EventListener)
       window.removeEventListener('reloadInstances', handleReloadInstances)
     }
   }, [])
