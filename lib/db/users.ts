@@ -68,7 +68,7 @@ export interface UserFilters {
 const supabase = createClient();
 
 /**
- * 获取用户列表（直接使用Supabase查询，避免复杂的数据库函数）
+ * 获取用户列表（使用安全的数据库函数，不暴露敏感的auth.users数据）
  */
 export async function getUserList(filters: UserFilters = {}): Promise<Result<{
   users: EnhancedUser[];
@@ -89,75 +89,56 @@ export async function getUserList(filters: UserFilters = {}): Promise<Result<{
       pageSize = 20
     } = filters;
 
-    // 构建基础查询
-    let query = supabase
-      .from('user_management_view')
-      .select('*', { count: 'exact' });
+    // 使用安全的数据库函数获取用户列表
+    const { data: usersData, error: usersError } = await supabase.rpc('get_users_for_admin', {
+      p_role: role || null,
+      p_status: status || null,
+      p_auth_source: auth_source || null,
+      p_search: search || null,
+      p_sort_by: sortBy,
+      p_sort_order: sortOrder,
+      p_page: page,
+      p_page_size: pageSize
+    });
 
-    // 添加筛选条件
-    if (role) {
-      query = query.eq('role', role);
-    }
-    
-    if (status) {
-      query = query.eq('status', status);
-    }
-    
-    if (auth_source) {
-      query = query.eq('auth_source', auth_source);
-    }
-    
-    if (search && search.trim()) {
-      query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,email.ilike.%${search}%`);
+    if (usersError) {
+      console.error('获取用户列表失败:', usersError);
+      return failure(new Error(`获取用户列表失败: ${usersError.message}`));
     }
 
-    // 添加排序
-    const sortColumn = sortBy === 'email' ? 'email' : 
-                      sortBy === 'last_sign_in_at' ? 'last_sign_in_at' :
-                      sortBy === 'full_name' ? 'full_name' : 'created_at';
-    
-    query = query.order(sortColumn, { ascending: sortOrder === 'asc' });
+    // 获取用户总数（用于分页）
+    const { data: totalCount, error: countError } = await supabase.rpc('get_users_count_for_admin', {
+      p_role: role || null,
+      p_status: status || null,
+      p_auth_source: auth_source || null,
+      p_search: search || null
+    });
 
-    // 添加分页
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-    query = query.range(from, to);
-
-    // 执行查询
-    const { data, error, count } = await query;
-
-    if (error) {
-      console.error('获取用户列表失败:', error);
-      return failure(new Error(`获取用户列表失败: ${error.message}`));
+    if (countError) {
+      console.error('获取用户总数失败:', countError);
+      return failure(new Error(`获取用户总数失败: ${countError.message}`));
     }
 
-    const total = count || 0;
+    const total = totalCount || 0;
     const totalPages = Math.ceil(total / pageSize);
 
-    // 转换数据格式
-    const users: EnhancedUser[] = (data || []).map(row => ({
-      id: row.id,
-      email: row.email,
-      phone: row.phone,
-      email_confirmed_at: row.email_confirmed_at,
-      phone_confirmed_at: row.phone_confirmed_at,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      last_sign_in_at: row.last_sign_in_at,
-      full_name: row.full_name,
-      username: row.username,
-      avatar_url: row.avatar_url,
-      role: row.role,
-      status: row.status,
-      auth_source: row.auth_source,
-      sso_provider_id: row.sso_provider_id,
-      profile_created_at: row.profile_created_at,
-      profile_updated_at: row.profile_updated_at,
-      last_login: row.last_login,
+    // 转换数据格式，添加缺失的字段以兼容现有接口
+    const enhancedUsers: EnhancedUser[] = (usersData || []).map((user: any) => ({
+      ...user,
+      // 从安全函数返回的字段重新映射
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      profile_created_at: user.created_at,
+      profile_updated_at: user.updated_at,
+      // 对于敏感信息，使用安全的替代字段
+      email: user.has_email ? '[已设置]' : null,
+      phone: null, // 不暴露手机号
+      email_confirmed_at: user.email_confirmed ? new Date().toISOString() : null,
+      phone_confirmed_at: null
     }));
 
     return success({
-      users,
+      users: enhancedUsers,
       total,
       page,
       pageSize,
@@ -189,11 +170,11 @@ export async function getUserStats(): Promise<Result<UserStats>> {
 }
 
 /**
- * 获取单个用户详细信息（使用数据库函数）
+ * 获取单个用户详细信息（使用安全的数据库函数，不暴露敏感的auth.users数据）
  */
 export async function getUserById(userId: string): Promise<Result<EnhancedUser | null>> {
   try {
-    const { data, error } = await supabase.rpc('get_user_detail', {
+    const { data, error } = await supabase.rpc('get_user_detail_for_admin', {
       target_user_id: userId
     });
 
@@ -206,7 +187,21 @@ export async function getUserById(userId: string): Promise<Result<EnhancedUser |
       return success(null);
     }
 
-    return success(data[0] as EnhancedUser);
+    // 转换数据格式，兼容现有接口
+    const userDetail = data[0];
+    const enhancedUser: EnhancedUser = {
+      ...userDetail,
+      // 从安全函数返回的字段重新映射
+      profile_created_at: userDetail.created_at,
+      profile_updated_at: userDetail.updated_at,
+      // 对于敏感信息，使用安全的替代字段
+      email: userDetail.has_email ? '[已设置]' : null,
+      phone: userDetail.has_phone ? '[已设置]' : null,
+      email_confirmed_at: userDetail.email_confirmed ? new Date().toISOString() : null,
+      phone_confirmed_at: userDetail.phone_confirmed ? new Date().toISOString() : null
+    };
+
+    return success(enhancedUser);
   } catch (error) {
     console.error('获取用户信息异常:', error);
     return failure(error instanceof Error ? error : new Error('获取用户信息失败'));
