@@ -590,69 +590,111 @@ const InstanceForm = ({
   );
 };
 
-export default function ApiConfigPage({
-  selectedInstance,
-  showAddForm,
-  isLoadingInstance,
-  onInstanceSelect,
-  onAddInstance,
-  onCancelAdd,
-  onCancelEdit
-}: ApiConfigPageProps) {
-  const { isDark } = useTheme();
+export default function ApiConfigPage() {
+  const { isDark } = useTheme()
   
   const {
+    serviceInstances: instances,
     providers,
+    isLoading: instancesLoading,
+    loadConfigData: loadInstances,
     createAppInstance: addInstance,
-    updateAppInstance: updateInstance
-  } = useApiConfigStore();
+    updateAppInstance: updateInstance,
+    deleteAppInstance: deleteInstance
+  } = useApiConfigStore()
   
+  const [selectedInstance, setSelectedInstance] = useState<ServiceInstance | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [isLoadingInstance, setIsLoadingInstance] = useState(false)
   const [feedback, setFeedback] = useState<FeedbackState>({
     open: false,
     message: '',
     severity: 'info'
-  });
-  const [isProcessing, setIsProcessing] = useState(false);
+  })
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // --- BEGIN COMMENT ---
+  // 监听左侧导航的实例选择事件
+  // --- END COMMENT ---
+  useEffect(() => {
+    const handleSelectInstance = (event: CustomEvent) => {
+      const instance = event.detail as ServiceInstance
+      if (selectedInstance?.instance_id === instance.instance_id) {
+        return
+      }
+      
+      setIsLoadingInstance(true)
+      setShowAddForm(false)
+      
+      setTimeout(() => {
+        setSelectedInstance(instance)
+        setIsLoadingInstance(false)
+      }, 50)
+    }
+
+    const handleAddInstance = () => {
+      setSelectedInstance(null)
+      setShowAddForm(true)
+    }
+
+    window.addEventListener('selectInstance', handleSelectInstance as EventListener)
+    window.addEventListener('addInstance', handleAddInstance)
+    
+    return () => {
+      window.removeEventListener('selectInstance', handleSelectInstance as EventListener)
+      window.removeEventListener('addInstance', handleAddInstance)
+    }
+  }, [selectedInstance])
+
+  // --- BEGIN COMMENT ---
+  // 提示相关函数
+  // --- END COMMENT ---
 
   const showFeedback = (message: string, severity: FeedbackState['severity'] = 'info') => {
-    setFeedback({ open: true, message, severity });
-  };
+    setFeedback({ open: true, message, severity })
+  }
 
   const handleCloseFeedback = () => {
-    setFeedback({ open: false, message: '', severity: 'info' });
-  };
+    setFeedback({ open: false, message: '', severity: 'info' })
+  }
+
+  const handleCancelAdd = () => {
+    setShowAddForm(false)
+  }
+
+  const handleCancelEdit = () => {
+    setSelectedInstance(null)
+  }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       {showAddForm ? (
         <div className="flex-1 overflow-y-auto p-6">
           <InstanceForm
             instance={null}
             isEditing={false}
             onSave={(data) => {
-              setIsProcessing(true);
+              setIsProcessing(true)
               const defaultProviderId = providers.find(p => p.name === 'Dify')?.id || 
                                       providers[0]?.id || 
-                                      '1';
+                                      '1'
               addInstance({
                 ...data,
                 provider_id: defaultProviderId
               }, data.apiKey)
                 .then(() => {
-                  showFeedback('应用实例创建成功', 'success');
-                  onCancelAdd?.();
+                  showFeedback('应用实例创建成功', 'success')
+                  handleCancelAdd()
                 })
                 .catch((error) => {
-                  console.error('创建失败:', error);
-                  showFeedback('创建应用实例失败', 'error');
+                  console.error('创建失败:', error)
+                  showFeedback('创建应用实例失败', 'error')
                 })
                 .finally(() => {
-                  setIsProcessing(false);
-                });
+                  setIsProcessing(false)
+                })
             }}
-            onCancel={() => {
-              onCancelAdd?.();
-            }}
+            onCancel={handleCancelAdd}
             isProcessing={isProcessing}
           />
         </div>
@@ -675,7 +717,7 @@ export default function ApiConfigPage({
                 </p>
               </div>
               <button
-                onClick={() => onCancelEdit?.()}
+                onClick={handleCancelEdit}
                 className={cn(
                   "p-2 rounded-lg transition-colors",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2",
@@ -698,23 +740,21 @@ export default function ApiConfigPage({
               instance={selectedInstance}
               isEditing={true}
               onSave={(data) => {
-                setIsProcessing(true);
+                setIsProcessing(true)
                 updateInstance(selectedInstance.id, data, data.apiKey)
                   .then(() => {
-                    showFeedback('应用实例更新成功', 'success');
-                    onCancelEdit?.();
+                    showFeedback('应用实例更新成功', 'success')
+                    handleCancelEdit()
                   })
                   .catch((error) => {
-                    console.error('更新失败:', error);
-                    showFeedback('更新应用实例失败', 'error');
+                    console.error('更新失败:', error)
+                    showFeedback('更新应用实例失败', 'error')
                   })
                   .finally(() => {
-                    setIsProcessing(false);
-                  });
+                    setIsProcessing(false)
+                  })
               }}
-              onCancel={() => {
-                onCancelEdit?.();
-              }}
+              onCancel={handleCancelEdit}
               isProcessing={isProcessing}
             />
           )}
@@ -735,11 +775,26 @@ export default function ApiConfigPage({
             )}>
               从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例
             </p>
+            <button
+              onClick={() => {
+                setSelectedInstance(null)
+                setShowAddForm(true)
+              }}
+              className={cn(
+                "mt-4 px-4 py-2 rounded-lg transition-colors font-serif cursor-pointer",
+                isDark 
+                  ? "bg-stone-700 hover:bg-stone-600 text-stone-200" 
+                  : "bg-stone-200 hover:bg-stone-300 text-stone-800"
+              )}
+            >
+              <Plus className="h-4 w-4 inline mr-2" />
+              添加应用实例
+            </button>
           </div>
         </div>
       )}
       
       <Toast feedback={feedback} onClose={handleCloseFeedback} />
     </div>
-  );
+  )
 }
