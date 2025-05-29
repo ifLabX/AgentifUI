@@ -89,8 +89,24 @@ export async function getUserList(filters: UserFilters = {}): Promise<Result<{
       pageSize = 20
     } = filters;
 
-    // 调用数据库函数
-    const { data, error } = await supabase.rpc('get_user_list', {
+    // 首先获取总数
+    const { data: countData, error: countError } = await supabase.rpc('get_user_count', {
+      p_role: role || null,
+      p_status: status || null,
+      p_auth_source: auth_source || null,
+      p_search: search || null
+    });
+
+    if (countError) {
+      console.error('获取用户总数失败:', countError);
+      return failure(new Error(`获取用户总数失败: ${countError.message}`));
+    }
+
+    const total = countData || 0;
+    const totalPages = Math.ceil(total / pageSize);
+
+    // 然后获取用户列表
+    const { data, error } = await supabase.rpc('get_user_list_simple', {
       p_role: role || null,
       p_status: status || null,
       p_auth_source: auth_source || null,
@@ -109,23 +125,40 @@ export async function getUserList(filters: UserFilters = {}): Promise<Result<{
     if (!data || data.length === 0) {
       return success({
         users: [],
-        total: 0,
+        total,
         page,
         pageSize,
-        totalPages: 0
+        totalPages
       });
     }
 
-    const result = data[0];
-    const users = result.users || [];
-    const total = parseInt(result.total_count) || 0;
-    const totalPages = parseInt(result.total_pages) || 0;
+    // 数据库函数直接返回行数据
+    const users = data.map((row: any) => ({
+      id: row.id,
+      email: row.email,
+      phone: row.phone,
+      email_confirmed_at: row.email_confirmed_at,
+      phone_confirmed_at: row.phone_confirmed_at,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      last_sign_in_at: row.last_sign_in_at,
+      full_name: row.full_name,
+      username: row.username,
+      avatar_url: row.avatar_url,
+      role: row.role,
+      status: row.status,
+      auth_source: row.auth_source,
+      sso_provider_id: row.sso_provider_id,
+      profile_created_at: row.profile_created_at,
+      profile_updated_at: row.profile_updated_at,
+      last_login: row.last_login,
+    }));
 
     return success({
       users,
       total,
-      page: parseInt(result.page) || page,
-      pageSize: parseInt(result.page_size) || pageSize,
+      page,
+      pageSize,
       totalPages
     });
   } catch (error) {
