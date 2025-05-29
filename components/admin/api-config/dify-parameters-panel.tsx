@@ -80,6 +80,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   const [uploadMethod, setUploadMethod] = useState<'local' | 'url' | 'both'>('both');
   const [maxFiles, setMaxFiles] = useState(3);
   const [enabledFileTypes, setEnabledFileTypes] = useState<Set<string>>(new Set(['图片']));
+  const [customFileTypes, setCustomFileTypes] = useState<string>(''); // 新增：自定义文件类型
 
   useEffect(() => {
     setLocalConfig(config);
@@ -256,6 +257,16 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
     
+    // 处理其他文件类型
+    if (enabledFileTypes.has('其他文件类型') && customFileTypes.trim()) {
+      fileUploadConfig.other = {
+        enabled: true,
+        number_limits: maxFiles,
+        transfer_methods: transferMethods,
+        custom_extensions: customFileTypes.split(/[,\s]+/).filter(ext => ext.trim())
+      };
+    }
+    
     if (Object.keys(fileUploadConfig).length > 0) {
       updateConfig('file_upload', fileUploadConfig);
     } else {
@@ -274,7 +285,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       {/* --- 背景遮罩 --- */}
       <div 
         className={cn(
-          "fixed inset-0 z-50 transition-opacity duration-300",
+          "fixed inset-0 z-50 transition-opacity duration-300 cursor-pointer",
           "bg-black/20 backdrop-blur-sm",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
@@ -330,7 +341,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
               <button
                 onClick={onClose}
                 className={cn(
-                  "p-2 rounded-lg transition-colors",
+                  "p-2 rounded-lg transition-colors cursor-pointer",
                   isDark 
                     ? "hover:bg-stone-800 text-stone-400 hover:text-stone-200" 
                     : "hover:bg-stone-100 text-stone-600 hover:text-stone-900"
@@ -349,7 +360,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   <button
                     onClick={() => toggleSection('basic')}
                     className={cn(
-                      "w-full flex items-center gap-3 p-4 rounded-xl transition-colors",
+                      "w-full flex items-center gap-3 p-4 rounded-xl transition-colors cursor-pointer",
                       isDark 
                         ? "bg-stone-800 hover:bg-stone-700" 
                         : "bg-stone-50 hover:bg-stone-100"
@@ -373,38 +384,38 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   </button>
 
                   {expandedSections.has('basic') && (
-                    <div className="ml-6 space-y-4">
-                      <div>
-                        <label className={cn(
-                          "block text-sm font-medium mb-2 font-serif",
-                          isDark ? "text-stone-300" : "text-stone-700"
-                        )}>
-                          开场白 (opening_statement)
-                        </label>
-                        <textarea
-                          value={localConfig.opening_statement || ''}
-                          onChange={(e) => updateConfig('opening_statement', e.target.value)}
-                          className={cn(
-                            "w-full px-4 py-3 rounded-xl border font-serif resize-none",
-                            "focus:ring-2 focus:ring-stone-500/20 focus:border-stone-500",
-                            isDark 
-                              ? "bg-stone-800 border-stone-600 text-stone-100 placeholder-stone-400" 
-                              : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
-                          )}
-                          placeholder="输入应用的开场白..."
-                          rows={4}
-                        />
-                      </div>
+                    <div className={cn(
+                      "p-4 rounded-xl border",
+                      isDark ? "bg-stone-800/50 border-stone-700" : "bg-stone-50/50 border-stone-200"
+                    )}>
+                      <label className={cn(
+                        "block text-sm font-medium mb-2 font-serif",
+                        isDark ? "text-stone-300" : "text-stone-700"
+                      )}>
+                        开场白内容
+                      </label>
+                      <textarea
+                        value={localConfig.opening_statement || ''}
+                        onChange={(e) => updateConfig('opening_statement', e.target.value)}
+                        className={cn(
+                          "w-full px-3 py-2 rounded-lg border font-serif resize-none",
+                          isDark 
+                            ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                            : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                        )}
+                        placeholder="输入开场白内容..."
+                        rows={3}
+                      />
                     </div>
                   )}
                 </div>
 
-                {/* --- 推荐问题 --- */}
+                {/* --- 推荐问题配置 --- */}
                 <div className="space-y-4">
                   <button
                     onClick={() => toggleSection('questions')}
                     className={cn(
-                      "w-full flex items-center gap-3 p-4 rounded-xl transition-colors",
+                      "w-full flex items-center gap-3 p-4 rounded-xl transition-colors cursor-pointer",
                       isDark 
                         ? "bg-stone-800 hover:bg-stone-700" 
                         : "bg-stone-50 hover:bg-stone-100"
@@ -418,14 +429,8 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       "flex-1 text-left font-medium font-serif",
                       isDark ? "text-stone-200" : "text-stone-800"
                     )}>
-                      推荐问题 (suggested_questions)
+                      推荐问题
                     </span>
-                    <div className={cn(
-                      "px-2 py-1 rounded-full text-xs font-medium",
-                      isDark ? "bg-stone-700 text-stone-300" : "bg-stone-200 text-stone-600"
-                    )}>
-                      {localConfig.suggested_questions?.length || 0}
-                    </div>
                     {expandedSections.has('questions') ? (
                       <ChevronDown className="h-4 w-4 text-stone-400" />
                     ) : (
@@ -434,7 +439,10 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   </button>
 
                   {expandedSections.has('questions') && (
-                    <div className="ml-6 space-y-3">
+                    <div className={cn(
+                      "p-4 rounded-xl border space-y-3",
+                      isDark ? "bg-stone-800/50 border-stone-700" : "bg-stone-50/50 border-stone-200"
+                    )}>
                       {(localConfig.suggested_questions || []).map((question, index) => (
                         <div key={index} className="flex gap-2">
                           <input
@@ -442,10 +450,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                             value={question}
                             onChange={(e) => updateSuggestedQuestion(index, e.target.value)}
                             className={cn(
-                              "flex-1 px-4 py-2 rounded-xl border font-serif",
-                              "focus:ring-2 focus:ring-stone-500/20 focus:border-stone-500",
+                              "flex-1 px-3 py-2 rounded-lg border font-serif",
                               isDark 
-                                ? "bg-stone-800 border-stone-600 text-stone-100 placeholder-stone-400" 
+                                ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
                                 : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
                             )}
                             placeholder={`推荐问题 ${index + 1}`}
@@ -453,8 +460,10 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           <button
                             onClick={() => removeSuggestedQuestion(index)}
                             className={cn(
-                              "p-2 rounded-xl transition-colors",
-                              "hover:bg-red-500/10 text-red-500"
+                              "p-2 rounded-lg transition-colors cursor-pointer",
+                              isDark 
+                                ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
+                                : "hover:bg-stone-200 text-stone-600 hover:text-stone-900"
                             )}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -465,26 +474,21 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       <button
                         onClick={addSuggestedQuestion}
                         className={cn(
-                          "w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg",
-                          "border border-dashed transition-colors text-sm",
+                          "w-full py-2 px-3 rounded-lg border border-dashed transition-colors cursor-pointer",
+                          "flex items-center justify-center gap-2 text-sm font-serif",
                           isDark 
-                            ? "border-stone-600 hover:border-stone-500 hover:bg-stone-800/50" 
-                            : "border-stone-300 hover:border-stone-400 hover:bg-stone-50"
+                            ? "border-stone-600 hover:border-stone-500 text-stone-400 hover:text-stone-300" 
+                            : "border-stone-300 hover:border-stone-400 text-stone-600 hover:text-stone-700"
                         )}
                       >
-                        <Plus className="h-3 w-3 text-stone-500" />
-                        <span className={cn(
-                          "font-medium font-serif",
-                          isDark ? "text-stone-300" : "text-stone-700"
-                        )}>
-                          添加推荐问题
-                        </span>
+                        <Plus className="h-4 w-4" />
+                        添加问题
                       </button>
                     </div>
                   )}
                 </div>
 
-                {/* --- 文件上传开关 --- */}
+                {/* --- 文件上传配置 --- */}
                 <div className="space-y-4">
                   <div className={cn(
                     "flex items-center justify-between p-4 rounded-xl",
@@ -504,12 +508,12 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         文件上传功能
                       </span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 h-6"> {/* 固定高度防止变化 */}
                       {fileUploadEnabled && (
                         <button
                           onClick={openFileUploadModal}
                           className={cn(
-                            "p-2 rounded-lg transition-colors",
+                            "p-2 rounded-lg transition-colors cursor-pointer",
                             isDark 
                               ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
                               : "hover:bg-stone-200 text-stone-600 hover:text-stone-900"
@@ -527,10 +531,14 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         />
                         <div className={cn(
                           "w-11 h-6 rounded-full peer transition-colors relative",
-                          "peer-focus:ring-2 peer-focus:ring-blue-300",
+                          "peer-focus:ring-2",
                           fileUploadEnabled 
-                            ? "bg-blue-500" 
-                            : isDark ? "bg-stone-600" : "bg-stone-300"
+                            ? isDark 
+                              ? "bg-stone-600 peer-focus:ring-stone-500" 
+                              : "bg-stone-700 peer-focus:ring-stone-300"
+                            : isDark 
+                              ? "bg-stone-600 peer-focus:ring-stone-500" 
+                              : "bg-stone-300 peer-focus:ring-stone-300"
                         )}>
                           <div className={cn(
                             "absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform",
@@ -558,8 +566,8 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                     "font-medium font-serif transition-colors",
                     hasChanges
                       ? isDark
-                        ? "bg-stone-700 hover:bg-stone-600 text-stone-200"
-                        : "bg-stone-100 hover:bg-stone-200 text-stone-700"
+                        ? "bg-stone-700 hover:bg-stone-600 text-stone-200 cursor-pointer"
+                        : "bg-stone-100 hover:bg-stone-200 text-stone-700 cursor-pointer"
                       : "opacity-50 cursor-not-allowed bg-stone-500/20 text-stone-500"
                   )}
                 >
@@ -573,7 +581,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                     "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl",
                     "font-medium font-serif transition-colors",
                     hasChanges
-                      ? "bg-blue-500 hover:bg-blue-600 text-white"
+                      ? isDark
+                        ? "bg-stone-600 hover:bg-stone-500 text-white cursor-pointer"
+                        : "bg-stone-700 hover:bg-stone-800 text-white cursor-pointer"
                       : "opacity-50 cursor-not-allowed bg-stone-500/20 text-stone-500"
                   )}
                 >
@@ -599,7 +609,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       {showFileUploadModal && (
         <>
           <div 
-            className="fixed inset-0 z-60 bg-black/30 backdrop-blur-sm"
+            className="fixed inset-0 z-60 bg-black/30 backdrop-blur-sm cursor-pointer"
             onClick={() => setShowFileUploadModal(false)}
           />
           <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-60 w-[420px] max-h-[70vh] flex flex-col">
@@ -623,7 +633,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                 <button
                   onClick={() => setShowFileUploadModal(false)}
                   className={cn(
-                    "p-1.5 rounded-lg transition-colors",
+                    "p-1.5 rounded-lg transition-colors cursor-pointer",
                     isDark 
                       ? "hover:bg-stone-800 text-stone-400 hover:text-stone-200" 
                       : "hover:bg-stone-100 text-stone-600 hover:text-stone-900"
@@ -648,9 +658,11 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       <button
                         onClick={() => setUploadMethod('local')}
                         className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors",
+                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors cursor-pointer",
                           uploadMethod === 'local'
-                            ? "bg-blue-500 text-white"
+                            ? isDark
+                              ? "bg-stone-600 text-white"
+                              : "bg-stone-700 text-white"
                             : isDark
                               ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
                               : "bg-stone-100 text-stone-700 hover:bg-stone-200"
@@ -661,9 +673,11 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       <button
                         onClick={() => setUploadMethod('url')}
                         className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors",
+                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors cursor-pointer",
                           uploadMethod === 'url'
-                            ? "bg-blue-500 text-white"
+                            ? isDark
+                              ? "bg-stone-600 text-white"
+                              : "bg-stone-700 text-white"
                             : isDark
                               ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
                               : "bg-stone-100 text-stone-700 hover:bg-stone-200"
@@ -674,9 +688,11 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       <button
                         onClick={() => setUploadMethod('both')}
                         className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors",
+                          "px-3 py-1.5 rounded-lg text-xs font-serif transition-colors cursor-pointer",
                           uploadMethod === 'both'
-                            ? "bg-blue-500 text-white"
+                            ? isDark
+                              ? "bg-stone-600 text-white"
+                              : "bg-stone-700 text-white"
                             : isDark
                               ? "bg-stone-700 text-stone-300 hover:bg-stone-600"
                               : "bg-stone-100 text-stone-700 hover:bg-stone-200"
@@ -708,7 +724,10 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         max="10"
                         value={maxFiles}
                         onChange={(e) => setMaxFiles(parseInt(e.target.value))}
-                        className="flex-1"
+                        className={cn(
+                          "flex-1 cursor-pointer",
+                          isDark ? "accent-stone-600" : "accent-stone-700"
+                        )}
                       />
                       <span className={cn(
                         "text-base font-medium font-serif min-w-[1.5rem] text-center",
@@ -733,59 +752,100 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         const isEnabled = enabledFileTypes.has(fileType);
                         
                         return (
-                          <div
-                            key={fileType}
-                            className={cn(
-                              "flex items-center justify-between p-3 rounded-lg border transition-colors",
-                              isEnabled
-                                ? "border-blue-500 bg-blue-50/50"
-                                : isDark
-                                  ? "border-stone-600 bg-stone-800/50"
-                                  : "border-stone-200 bg-stone-50/50"
-                            )}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className={cn(
-                                "p-1.5 rounded-lg",
+                          <div key={fileType} className="space-y-2">
+                            <div
+                              className={cn(
+                                "flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer",
                                 isEnabled
-                                  ? "bg-blue-500 text-white"
+                                  ? isDark
+                                    ? "border-stone-500 bg-stone-700/50"
+                                    : "border-stone-400 bg-stone-100/50"
                                   : isDark
-                                    ? "bg-stone-700 text-stone-400"
-                                    : "bg-stone-200 text-stone-600"
-                              )}>
-                                <IconComponent className="h-3 w-3" />
-                              </div>
-                              <div>
+                                    ? "border-stone-600 bg-stone-800/50"
+                                    : "border-stone-200 bg-stone-50/50"
+                              )}
+                              onClick={() => toggleFileType(fileType)}
+                            >
+                              <div className="flex items-center gap-2">
                                 <div className={cn(
-                                  "font-medium text-sm font-serif",
-                                  isDark ? "text-stone-200" : "text-stone-800"
+                                  "p-1.5 rounded-lg",
+                                  isEnabled
+                                    ? isDark
+                                      ? "bg-stone-600 text-white"
+                                      : "bg-stone-700 text-white"
+                                    : isDark
+                                      ? "bg-stone-700 text-stone-400"
+                                      : "bg-stone-200 text-stone-600"
                                 )}>
-                                  {fileType}
+                                  <IconComponent className="h-3 w-3" />
                                 </div>
-                                <div className={cn(
-                                  "text-xs font-serif",
+                                <div>
+                                  <div className={cn(
+                                    "font-medium text-sm font-serif",
+                                    isDark ? "text-stone-200" : "text-stone-800"
+                                  )}>
+                                    {fileType}
+                                  </div>
+                                  <div className={cn(
+                                    "text-xs font-serif",
+                                    isDark ? "text-stone-400" : "text-stone-600"
+                                  )}>
+                                    {config.extensions.length > 0 
+                                      ? config.extensions.slice(0, 3).join(', ').toUpperCase() + (config.extensions.length > 3 ? '...' : '')
+                                      : config.maxSize
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={isEnabled}
+                                onChange={() => toggleFileType(fileType)}
+                                className={cn(
+                                  "w-4 h-4 rounded border cursor-pointer",
+                                  isEnabled
+                                    ? isDark
+                                      ? "bg-stone-600 border-stone-600 accent-stone-600"
+                                      : "bg-stone-700 border-stone-700 accent-stone-700"
+                                    : isDark
+                                      ? "border-stone-500 accent-stone-600"
+                                      : "border-stone-300 accent-stone-700"
+                                )}
+                              />
+                            </div>
+                            
+                            {/* --- 其他文件类型的自定义输入 --- */}
+                            {fileType === '其他文件类型' && isEnabled && (
+                              <div className={cn(
+                                "ml-4 p-3 rounded-lg border",
+                                isDark ? "bg-stone-800 border-stone-600" : "bg-stone-50 border-stone-200"
+                              )}>
+                                <label className={cn(
+                                  "block text-xs font-medium mb-2 font-serif",
+                                  isDark ? "text-stone-300" : "text-stone-700"
+                                )}>
+                                  自定义文件扩展名（用逗号或空格分隔）
+                                </label>
+                                <input
+                                  type="text"
+                                  value={customFileTypes}
+                                  onChange={(e) => setCustomFileTypes(e.target.value)}
+                                  className={cn(
+                                    "w-full px-2 py-1.5 rounded text-xs font-serif border",
+                                    isDark 
+                                      ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                                      : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                                  )}
+                                  placeholder="例如: zip, rar, 7z, tar"
+                                />
+                                <p className={cn(
+                                  "text-xs mt-1 font-serif",
                                   isDark ? "text-stone-400" : "text-stone-600"
                                 )}>
-                                  {config.extensions.length > 0 
-                                    ? config.extensions.slice(0, 3).join(', ').toUpperCase() + (config.extensions.length > 3 ? '...' : '')
-                                    : config.maxSize
-                                  }
-                                </div>
+                                  支持格式：zip, rar, 7z, tar, gz, bz2, xz 等
+                                </p>
                               </div>
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={isEnabled}
-                              onChange={() => toggleFileType(fileType)}
-                              className={cn(
-                                "w-4 h-4 rounded border",
-                                isEnabled
-                                  ? "bg-blue-500 border-blue-500"
-                                  : isDark
-                                    ? "border-stone-500"
-                                    : "border-stone-300"
-                              )}
-                            />
+                            )}
                           </div>
                         );
                       })}
@@ -802,7 +862,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                 <button
                   onClick={() => setShowFileUploadModal(false)}
                   className={cn(
-                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif transition-colors",
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif transition-colors cursor-pointer",
                     isDark
                       ? "bg-stone-700 hover:bg-stone-600 text-stone-200"
                       : "bg-stone-100 hover:bg-stone-200 text-stone-700"
@@ -812,7 +872,12 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                 </button>
                 <button
                   onClick={handleFileUploadSave}
-                  className="flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                  className={cn(
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium font-serif transition-colors cursor-pointer",
+                    isDark
+                      ? "bg-stone-600 hover:bg-stone-500 text-white"
+                      : "bg-stone-700 hover:bg-stone-800 text-white"
+                  )}
                 >
                   确定
                 </button>
