@@ -24,7 +24,8 @@ import {
   Globe,
   Zap,
   Loader2,
-  Sliders
+  Sliders,
+  Star
 } from 'lucide-react';
 
 interface ApiConfigPageProps {
@@ -180,21 +181,48 @@ const InstanceForm = ({
             {isEditing ? '编辑应用实例' : '添加应用实例'}
           </h3>
           
-          {/* Dify参数配置按钮 */}
-          <button
-            type="button"
-            onClick={() => setShowDifyPanel(true)}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer",
-              "border border-dashed hover:scale-105",
-              isDark 
-                ? "border-blue-500/50 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400" 
-                : "border-blue-500/50 bg-blue-50 hover:bg-blue-100 text-blue-600"
+          <div className="flex items-center gap-3">
+            {/* 设置默认应用按钮 - 仅在编辑模式且非默认应用时显示 */}
+            {isEditing && instance && !instance.is_default && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`确定要将"${formData.display_name || formData.instance_id}"设置为默认应用吗？`)) {
+                    // 触发设置默认应用的事件
+                    window.dispatchEvent(new CustomEvent('setInstanceAsDefault', {
+                      detail: { instanceId: instance.instance_id }
+                    }))
+                  }
+                }}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all cursor-pointer",
+                  "border hover:scale-105",
+                  isDark 
+                    ? "border-stone-600 bg-stone-700 hover:bg-stone-600 text-stone-300" 
+                    : "border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700"
+                )}
+              >
+                <Star className="h-4 w-4" />
+                <span className="text-sm font-medium font-serif">设为默认</span>
+              </button>
             )}
-          >
-            <Sliders className="h-4 w-4" />
-            <span className="text-sm font-medium font-serif">Dify 参数配置</span>
-          </button>
+            
+            {/* Dify参数配置按钮 */}
+            <button
+              type="button"
+              onClick={() => setShowDifyPanel(true)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer",
+                "border border-dashed hover:scale-105",
+                isDark 
+                  ? "border-stone-500/50 bg-stone-600/10 hover:bg-stone-600/20 text-stone-400" 
+                  : "border-stone-500/50 bg-stone-50 hover:bg-stone-100 text-stone-600"
+              )}
+            >
+              <Sliders className="h-4 w-4" />
+              <span className="text-sm font-medium font-serif">Dify 参数配置</span>
+            </button>
+          </div>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -563,14 +591,23 @@ export default function ApiConfigPage() {
       }
     }
 
+    const handleDefaultInstanceChanged = (event: CustomEvent) => {
+      const { instanceId } = event.detail
+      if (selectedInstance?.instance_id === instanceId) {
+        showFeedback('默认应用设置成功', 'success')
+      }
+    }
+
     window.addEventListener('selectInstance', handleSelectInstance as EventListener)
     window.addEventListener('toggleAddForm', handleToggleAddForm)
     window.addEventListener('instanceDeleted', handleInstanceDeleted as EventListener)
+    window.addEventListener('defaultInstanceChanged', handleDefaultInstanceChanged as EventListener)
     
     return () => {
       window.removeEventListener('selectInstance', handleSelectInstance as EventListener)
       window.removeEventListener('toggleAddForm', handleToggleAddForm)
       window.removeEventListener('instanceDeleted', handleInstanceDeleted as EventListener)
+      window.removeEventListener('defaultInstanceChanged', handleDefaultInstanceChanged as EventListener)
     }
   }, [showAddForm, selectedInstance])
 

@@ -25,6 +25,7 @@ import {
   createServiceInstance,
   updateServiceInstance,
   deleteServiceInstance,
+  setDefaultServiceInstance,
   getApiKeyByServiceInstance,
   createApiKey,
   updateApiKey,
@@ -48,6 +49,7 @@ interface ApiConfigState {
   createAppInstance: (instance: Partial<ServiceInstance>, apiKey?: string) => Promise<ServiceInstance>;
   updateAppInstance: (id: string, instance: Partial<ServiceInstance>, apiKey?: string) => Promise<ServiceInstance>;
   deleteAppInstance: (id: string) => Promise<void>;
+  setDefaultInstance: (instanceId: string) => Promise<void>;
   
   // 操作
   loadConfigData: () => Promise<void>;
@@ -278,6 +280,28 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
     }
   },
   
+  // 设置默认应用实例
+  setDefaultInstance: async (instanceId) => {
+    try {
+      // 调用数据库函数设置默认实例
+      const result = await setDefaultServiceInstance(instanceId);
+      const updatedInstance = handleResult(result, '设置默认应用实例');
+      
+      // 更新本地状态 - 更新所有相关实例的is_default状态
+      const { serviceInstances } = get();
+      set({
+        serviceInstances: serviceInstances.map(si => ({
+          ...si,
+          is_default: si.id === instanceId ? true : 
+                     (si.provider_id === updatedInstance.provider_id ? false : si.is_default)
+        }))
+      });
+    } catch (error) {
+      console.error('设置默认应用实例时出错:', error);
+      throw error;
+    }
+  },
+  
   setNewApiKey: (key) => set({ newApiKey: key }),
   setNewApiUrl: (url) => set({ newApiUrl: url }),
   
@@ -297,9 +321,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         serviceInstances.push(...providerInstances);
       }
       
+      // --- 排序服务实例：默认应用排在前面 ---
+      const sortedServiceInstances = serviceInstances.sort((a, b) => {
+        // 首先按是否默认排序（默认的在前）
+        if (a.is_default !== b.is_default) {
+          return a.is_default ? -1 : 1;
+        }
+        // 然后按名称排序
+        return (a.display_name || a.name).localeCompare(b.display_name || b.name);
+      });
+      
       // 获取每个服务实例的API密钥
       const apiKeys: ApiKey[] = [];
-      for (const instance of serviceInstances) {
+      for (const instance of sortedServiceInstances) {
         const apiKeyResult = await getApiKeyByServiceInstance(instance.id);
         const apiKey = handleResult(apiKeyResult, `获取服务实例 ${instance.name} 的 API 密钥`);
         if (apiKey) {
@@ -310,7 +344,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       // 更新状态
       set({ 
         providers, 
-        serviceInstances, 
+        serviceInstances: sortedServiceInstances, 
         apiKeys,
         isLoading: false,
         error: null

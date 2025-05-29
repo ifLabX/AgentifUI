@@ -9,7 +9,9 @@ import {
   Database,
   Globe,
   Trash2,
-  Loader2
+  Loader2,
+  Star,
+  StarOff
 } from 'lucide-react'
 
 interface ApiConfigLayoutProps {
@@ -23,7 +25,8 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
     serviceInstances: instances,
     isLoading: instancesLoading,
     loadConfigData: loadInstances,
-    deleteAppInstance: deleteInstance
+    deleteAppInstance: deleteInstance,
+    setDefaultInstance
   } = useApiConfigStore()
   
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false)
@@ -62,25 +65,39 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       }
     }
 
+    const handleSetInstanceAsDefault = (event: CustomEvent) => {
+      const { instanceId } = event.detail
+      handleSetDefaultInstance(instanceId)
+    }
+
     window.addEventListener('addFormToggled', handleAddFormToggled as EventListener)
+    window.addEventListener('setInstanceAsDefault', handleSetInstanceAsDefault as EventListener)
     
     return () => {
       window.removeEventListener('addFormToggled', handleAddFormToggled as EventListener)
+      window.removeEventListener('setInstanceAsDefault', handleSetInstanceAsDefault as EventListener)
     }
   }, [])
 
   const handleDeleteInstance = async (instanceId: string) => {
+    const instanceToDelete = instances.find(inst => inst.instance_id === instanceId)
+    if (!instanceToDelete) {
+      alert('未找到要删除的实例')
+      return
+    }
+    
+    // --- 检查是否为默认应用 ---
+    if (instanceToDelete.is_default) {
+      alert('默认应用不可删除，请先设置其他应用为默认应用')
+      return
+    }
+    
     if (!confirm('确定要删除此应用实例吗？此操作不可撤销。')) {
       return
     }
 
     setIsProcessing(true)
     try {
-      const instanceToDelete = instances.find(inst => inst.instance_id === instanceId)
-      if (!instanceToDelete) {
-        throw new Error('未找到要删除的实例')
-      }
-      
       await deleteInstance(instanceToDelete.id)
       
       // --- BEGIN COMMENT ---
@@ -92,6 +109,39 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
     } catch (error) {
       console.error('删除失败:', error)
       alert('删除应用实例失败')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleSetDefaultInstance = async (instanceId: string) => {
+    const instanceToSet = instances.find(inst => inst.instance_id === instanceId)
+    if (!instanceToSet) {
+      alert('未找到要设置的实例')
+      return
+    }
+
+    if (instanceToSet.is_default) {
+      return // 已经是默认应用，无需操作
+    }
+
+    if (!confirm(`确定要将"${instanceToSet.display_name || instanceToSet.name}"设置为默认应用吗？`)) {
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      await setDefaultInstance(instanceToSet.id)
+      
+      // --- BEGIN COMMENT ---
+      // 通知page组件默认应用已更改
+      // --- END COMMENT ---
+      window.dispatchEvent(new CustomEvent('defaultInstanceChanged', {
+        detail: { instanceId }
+      }))
+    } catch (error) {
+      console.error('设置默认应用失败:', error)
+      alert('设置默认应用失败')
     } finally {
       setIsProcessing(false)
     }
@@ -226,6 +276,19 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                         )}>
                           {instance.display_name}
                         </h3>
+                        
+                        {/* --- 默认应用标签 --- */}
+                        {instance.is_default && (
+                          <span className={cn(
+                            "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium font-serif",
+                            isDark
+                              ? "bg-stone-600/30 text-stone-300 border border-stone-600"
+                              : "bg-stone-700/10 text-stone-700 border border-stone-700/20"
+                          )}>
+                            <Star className="h-2.5 w-2.5" />
+                            默认
+                          </span>
+                        )}
                       </div>
                       <p className={cn(
                         "text-xs truncate font-serif",
@@ -235,22 +298,51 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                       </p>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {/* --- 设置默认应用按钮 --- */}
+                      {!instance.is_default && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleSetDefaultInstance(instance.instance_id)
+                          }}
+                          disabled={isProcessing}
+                          className={cn(
+                            "p-1 rounded transition-colors cursor-pointer",
+                            "focus:outline-none focus:ring-2 focus:ring-stone-500",
+                            isDark 
+                              ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
+                              : "hover:bg-stone-200 text-stone-600 hover:text-stone-900",
+                            isProcessing && "opacity-50 cursor-not-allowed"
+                          )}
+                          title="设为默认应用"
+                        >
+                          <StarOff className="h-3 w-3" />
+                        </button>
+                      )}
+                      
+                      {/* --- 删除按钮 --- */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
                           handleDeleteInstance(instance.instance_id)
                         }}
-                        disabled={isProcessing}
+                        disabled={isProcessing || instance.is_default}
                         className={cn(
-                          "p-1 rounded transition-colors cursor-pointer",
+                          "p-1 rounded transition-colors",
                           "focus:outline-none focus:ring-2 focus:ring-red-500",
-                          isDark 
-                            ? "hover:bg-red-900/30" 
-                            : "hover:bg-red-100",
-                          isProcessing && "opacity-50 cursor-not-allowed"
+                          instance.is_default
+                            ? "opacity-50 cursor-not-allowed text-stone-400"
+                            : cn(
+                                "cursor-pointer",
+                                isDark 
+                                  ? "hover:bg-red-900/30 text-red-400 hover:text-red-300" 
+                                  : "hover:bg-red-100 text-red-600 hover:text-red-700"
+                              ),
+                          (isProcessing && !instance.is_default) && "opacity-50 cursor-not-allowed"
                         )}
+                        title={instance.is_default ? "默认应用不可删除" : "删除"}
                       >
-                        <Trash2 className="h-3 w-3 text-red-500" />
+                        <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
                   </div>

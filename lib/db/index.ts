@@ -76,6 +76,7 @@ export {
   createServiceInstance,
   updateServiceInstance,
   deleteServiceInstance,
+  setDefaultServiceInstance,
   getAppParametersFromDb,
   updateAppParametersInDb,
   batchUpdateAppParametersInDb,

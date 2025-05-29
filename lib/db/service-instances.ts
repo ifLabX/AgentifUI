@@ -497,3 +497,41 @@ export async function getAppParametersSyncStatus(instanceId: string): Promise<Re
     };
   });
 }
+
+/**
+ * 设置默认服务实例（确保同一提供商只有一个默认实例）
+ * @param instanceId 要设置为默认的实例ID
+ * @returns 操作结果的Result
+ */
+export async function setDefaultServiceInstance(instanceId: string): Promise<Result<ServiceInstance>> {
+  return dataService.query(async () => {
+    // 首先获取要设置的实例信息
+    const instanceResult = await getServiceInstanceById(instanceId);
+    if (!instanceResult.success || !instanceResult.data) {
+      throw new Error('找不到指定的服务实例');
+    }
+    
+    const instance = instanceResult.data;
+    
+    // 在事务中执行：先将同一提供商的其他实例设为非默认，再设置当前实例为默认
+    const { data, error } = await supabase.rpc('set_default_service_instance', {
+      target_instance_id: instanceId,
+      target_provider_id: instance.provider_id
+    });
+    
+    if (error) {
+      throw error;
+    }
+    
+    // 清除相关缓存
+    cacheService.deletePattern('service_instances:*');
+    
+    // 返回更新后的实例
+    const updatedResult = await getServiceInstanceById(instanceId);
+    if (!updatedResult.success) {
+      throw updatedResult.error;
+    }
+    
+    return updatedResult.data!;
+  });
+}
