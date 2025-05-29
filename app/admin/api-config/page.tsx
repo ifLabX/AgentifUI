@@ -478,7 +478,7 @@ const InstanceForm = ({
               type="submit"
               disabled={isProcessing}
               className={cn(
-                "flex-1 py-2 px-4 rounded-lg font-medium disabled:opacity-50 transition-colors flex items-center justify-center gap-2 font-serif",
+                "flex-1 py-2 px-4 rounded-lg font-medium disabled:opacity-50 transition-colors flex items-center justify-center gap-2 font-serif cursor-pointer",
                 isDark 
                   ? "bg-stone-600 hover:bg-stone-500 text-stone-100" 
                   : "bg-stone-800 hover:bg-stone-700 text-white"
@@ -495,7 +495,7 @@ const InstanceForm = ({
               type="button"
               onClick={onCancel}
               className={cn(
-                "flex-1 py-2 px-4 rounded-lg font-medium transition-colors font-serif",
+                "flex-1 py-2 px-4 rounded-lg font-medium transition-colors font-serif cursor-pointer",
                 isDark 
                   ? "bg-stone-700 hover:bg-stone-600 text-stone-200" 
                   : "bg-stone-200 hover:bg-stone-300 text-stone-800"
