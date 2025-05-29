@@ -48,7 +48,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   const { isDark } = useTheme()
 
   // --- BEGIN COMMENT ---
-  // 获取角色显示信息
+  // 获取角色显示信息 - 使用stone主题配色
   // --- END COMMENT ---
   const getRoleInfo = (role: string) => {
     switch (role) {
@@ -56,25 +56,25 @@ export const UserTable: React.FC<UserTableProps> = ({
         return { 
           label: '管理员', 
           icon: <Shield className="h-4 w-4" />, 
-          color: 'purple' as const
+          variant: 'danger' as const
         }
       case 'manager':
         return { 
           label: '经理', 
           icon: <Crown className="h-4 w-4" />, 
-          color: 'indigo' as const
+          variant: 'warning' as const
         }
       default:
         return { 
           label: '普通用户', 
           icon: <UserIcon className="h-4 w-4" />, 
-          color: 'gray' as const
+          variant: 'neutral' as const
         }
     }
   }
 
   // --- BEGIN COMMENT ---
-  // 获取状态显示信息
+  // 获取状态显示信息 - 使用stone主题配色
   // --- END COMMENT ---
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -82,54 +82,48 @@ export const UserTable: React.FC<UserTableProps> = ({
         return { 
           label: '活跃', 
           icon: <UserCheck className="h-4 w-4" />, 
-          color: 'green' as const
+          variant: 'success' as const
         }
       case 'suspended':
         return { 
           label: '已暂停', 
           icon: <UserX className="h-4 w-4" />, 
-          color: 'red' as const
+          variant: 'danger' as const
         }
       case 'pending':
         return { 
           label: '待激活', 
           icon: <Clock className="h-4 w-4" />, 
-          color: 'yellow' as const
+          variant: 'warning' as const
         }
       default:
         return { 
           label: '未知', 
           icon: <Clock className="h-4 w-4" />, 
-          color: 'gray' as const
+          variant: 'neutral' as const
         }
     }
   }
 
   // --- BEGIN COMMENT ---
-  // 获取标签样式
+  // 获取stone主题标签样式
   // --- END COMMENT ---
-  const getBadgeClasses = (color: 'purple' | 'indigo' | 'gray' | 'green' | 'red' | 'yellow') => {
-    const colorMap = {
-      purple: isDark 
-        ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' 
-        : 'bg-purple-100 text-purple-700 border-purple-200',
-      indigo: isDark 
-        ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' 
-        : 'bg-indigo-100 text-indigo-700 border-indigo-200',
-      gray: isDark 
-        ? 'bg-stone-500/20 text-stone-400 border-stone-500/30' 
-        : 'bg-stone-100 text-stone-700 border-stone-200',
-      green: isDark 
-        ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-        : 'bg-green-100 text-green-700 border-green-200',
-      red: isDark 
-        ? 'bg-red-500/20 text-red-400 border-red-500/30' 
-        : 'bg-red-100 text-red-700 border-red-200',
-      yellow: isDark 
-        ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' 
-        : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+  const getBadgeClasses = (variant: 'success' | 'warning' | 'danger' | 'neutral') => {
+    const variantMap = {
+      success: isDark 
+        ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700' 
+        : 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      warning: isDark 
+        ? 'bg-amber-900/30 text-amber-300 border-amber-700' 
+        : 'bg-amber-50 text-amber-700 border-amber-200',
+      danger: isDark 
+        ? 'bg-red-900/30 text-red-300 border-red-700' 
+        : 'bg-red-50 text-red-700 border-red-200',
+      neutral: isDark 
+        ? 'bg-stone-700/50 text-stone-300 border-stone-600' 
+        : 'bg-stone-100 text-stone-700 border-stone-300'
     }
-    return colorMap[color]
+    return variantMap[variant]
   }
 
   // --- BEGIN COMMENT ---
@@ -155,8 +149,8 @@ export const UserTable: React.FC<UserTableProps> = ({
   if (isLoading) {
     return (
       <div className={cn(
-        "rounded-xl border overflow-hidden",
-        isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
+        "rounded-lg border overflow-hidden",
+        isDark ? "bg-stone-800/50 border-stone-700" : "bg-white border-stone-200"
       )}>
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-400 mx-auto mb-4"></div>
@@ -174,8 +168,8 @@ export const UserTable: React.FC<UserTableProps> = ({
   if (users.length === 0) {
     return (
       <div className={cn(
-        "rounded-xl border p-8 text-center",
-        isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
+        "rounded-lg border p-8 text-center",
+        isDark ? "bg-stone-800/50 border-stone-700" : "bg-white border-stone-200"
       )}>
         <UserIcon className={cn(
           "h-12 w-12 mx-auto mb-4",
@@ -199,20 +193,20 @@ export const UserTable: React.FC<UserTableProps> = ({
 
   return (
     <div className={cn(
-      "rounded-xl border overflow-hidden",
-      isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200"
+      "rounded-lg border overflow-hidden",
+      isDark ? "bg-stone-800/50 border-stone-700" : "bg-white border-stone-200"
     )}>
       <div className="overflow-x-auto">
         <table className="w-full">
           {/* --- BEGIN COMMENT ---
-          表头
+          表头 - 优化样式和对齐
           --- END COMMENT --- */}
           <thead className={cn(
             "border-b",
-            isDark ? "border-stone-700 bg-stone-900/50" : "border-stone-200 bg-stone-50"
+            isDark ? "bg-stone-900/50 border-stone-700" : "bg-stone-50 border-stone-200"
           )}>
             <tr>
-              <th className="p-4 text-left">
+              <th className="w-12 px-4 py-4">
                 <button
                   onClick={() => onSelectAll(!isAllSelected)}
                   className={cn(
@@ -221,76 +215,73 @@ export const UserTable: React.FC<UserTableProps> = ({
                   )}
                 >
                   {isAllSelected ? (
-                    <CheckSquare className="h-4 w-4" />
+                    <CheckSquare className="h-5 w-5" />
                   ) : isPartiallySelected ? (
-                    <div className="h-4 w-4 border-2 border-current bg-current/20 rounded-sm" />
+                    <Square className="h-5 w-5 border-2" />
                   ) : (
-                    <Square className="h-4 w-4" />
+                    <Square className="h-5 w-5" />
                   )}
                 </button>
               </th>
               <th className={cn(
-                "p-4 text-left text-sm font-medium font-serif",
+                "px-4 py-4 text-left text-sm font-semibold font-serif",
                 isDark ? "text-stone-300" : "text-stone-700"
               )}>
                 用户信息
               </th>
               <th className={cn(
-                "p-4 text-left text-sm font-medium font-serif",
+                "px-4 py-4 text-left text-sm font-semibold font-serif",
                 isDark ? "text-stone-300" : "text-stone-700"
               )}>
-                角色
+                角色权限
               </th>
               <th className={cn(
-                "p-4 text-left text-sm font-medium font-serif",
+                "px-4 py-4 text-left text-sm font-semibold font-serif",
                 isDark ? "text-stone-300" : "text-stone-700"
               )}>
-                状态
+                账户状态
               </th>
               <th className={cn(
-                "p-4 text-left text-sm font-medium font-serif",
-                isDark ? "text-stone-300" : "text-stone-700"
-              )}>
-                注册时间
-              </th>
-              <th className={cn(
-                "p-4 text-left text-sm font-medium font-serif",
+                "px-4 py-4 text-left text-sm font-semibold font-serif",
                 isDark ? "text-stone-300" : "text-stone-700"
               )}>
                 最后登录
               </th>
               <th className={cn(
-                "p-4 text-center text-sm font-medium font-serif",
+                "px-4 py-4 text-left text-sm font-semibold font-serif",
                 isDark ? "text-stone-300" : "text-stone-700"
               )}>
-                操作
+                注册时间
               </th>
+              <th className="w-16 px-4 py-4"></th>
             </tr>
           </thead>
-
+          
           {/* --- BEGIN COMMENT ---
-          表格内容
+          表格内容 - 优化行样式和悬停效果
           --- END COMMENT --- */}
           <tbody>
-            {users.map((user, index) => {
+            {users.map((user) => {
               const isSelected = selectedUserIds.includes(user.id)
               const roleInfo = getRoleInfo(user.role)
               const statusInfo = getStatusInfo(user.status)
-
+              
               return (
                 <tr
                   key={user.id}
                   className={cn(
-                    "border-b transition-colors",
+                    "border-b transition-all duration-200",
                     isDark ? "border-stone-700" : "border-stone-200",
-                    isSelected && (isDark ? "bg-blue-500/10" : "bg-blue-50"),
-                    !isSelected && (isDark ? "hover:bg-stone-700/50" : "hover:bg-stone-50")
+                    isSelected 
+                      ? (isDark ? "bg-stone-700/50" : "bg-stone-100") 
+                      : (isDark ? "hover:bg-stone-800/70" : "hover:bg-stone-50"),
+                    "hover:shadow-sm"
                   )}
                 >
                   {/* --- BEGIN COMMENT ---
-                  选择列
+                  选择框列
                   --- END COMMENT --- */}
-                  <td className="p-4">
+                  <td className="px-4 py-4">
                     <button
                       onClick={() => onSelectUser(user.id)}
                       className={cn(
@@ -299,56 +290,51 @@ export const UserTable: React.FC<UserTableProps> = ({
                       )}
                     >
                       {isSelected ? (
-                        <CheckSquare className="h-4 w-4 text-blue-500" />
+                        <CheckSquare className="h-5 w-5" />
                       ) : (
-                        <Square className="h-4 w-4" />
+                        <Square className="h-5 w-5" />
                       )}
                     </button>
                   </td>
-
+                  
                   {/* --- BEGIN COMMENT ---
-                  用户信息列
+                  用户信息列 - 包含头像、姓名、邮箱
                   --- END COMMENT --- */}
-                  <td className="p-4">
+                  <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
-                      {/* --- BEGIN COMMENT ---
-                      用户头像
-                      --- END COMMENT --- */}
+                      {/* --- 用户头像 --- */}
                       <div className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center",
-                        isDark ? "bg-stone-700" : "bg-stone-100"
+                        "w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm",
+                        isDark ? "bg-stone-700 text-stone-300" : "bg-stone-200 text-stone-700"
                       )}>
                         {user.avatar_url ? (
-                          <img
-                            src={user.avatar_url}
-                            alt={user.full_name || user.email || '用户'}
+                          <img 
+                            src={user.avatar_url} 
+                            alt={user.full_name || '用户头像'} 
                             className="w-10 h-10 rounded-full object-cover"
                           />
                         ) : (
-                          <UserIcon className={cn(
-                            "h-5 w-5",
-                            isDark ? "text-stone-400" : "text-stone-500"
-                          )} />
+                          <span className="font-serif">
+                            {(user.full_name || user.username || user.email || 'U')[0].toUpperCase()}
+                          </span>
                         )}
                       </div>
-
-                      {/* --- BEGIN COMMENT ---
-                      用户基本信息
-                      --- END COMMENT --- */}
+                      
+                      {/* --- 用户名称和邮箱 --- */}
                       <div className="min-w-0 flex-1">
                         <p className={cn(
                           "font-medium font-serif truncate",
                           isDark ? "text-stone-100" : "text-stone-900"
                         )}>
-                          {user.full_name || '未设置姓名'}
+                          {user.full_name || user.username || '未设置姓名'}
                         </p>
                         <p className={cn(
                           "text-sm font-serif truncate",
                           isDark ? "text-stone-400" : "text-stone-600"
                         )}>
-                          {user.email || '无邮箱'}
+                          {user.email || '未设置邮箱'}
                         </p>
-                        {user.username && (
+                        {user.username && user.username !== user.full_name && (
                           <p className={cn(
                             "text-xs font-serif truncate",
                             isDark ? "text-stone-500" : "text-stone-500"
@@ -359,127 +345,198 @@ export const UserTable: React.FC<UserTableProps> = ({
                       </div>
                     </div>
                   </td>
-
+                  
                   {/* --- BEGIN COMMENT ---
-                  角色列
+                  角色权限列
                   --- END COMMENT --- */}
-                  <td className="p-4">
+                  <td className="px-4 py-4">
                     <span className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border font-serif",
-                      getBadgeClasses(roleInfo.color)
+                      "inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium font-serif border",
+                      getBadgeClasses(roleInfo.variant)
                     )}>
                       {roleInfo.icon}
                       {roleInfo.label}
                     </span>
                   </td>
-
+                  
                   {/* --- BEGIN COMMENT ---
-                  状态列
+                  账户状态列
                   --- END COMMENT --- */}
-                  <td className="p-4">
+                  <td className="px-4 py-4">
                     <span className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border font-serif",
-                      getBadgeClasses(statusInfo.color)
+                      "inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium font-serif border",
+                      getBadgeClasses(statusInfo.variant)
                     )}>
                       {statusInfo.icon}
                       {statusInfo.label}
                     </span>
                   </td>
-
+                  
                   {/* --- BEGIN COMMENT ---
-                  注册时间列
+                  最后登录时间列
                   --- END COMMENT --- */}
-                  <td className="p-4">
-                    <span className={cn(
-                      "text-sm font-serif",
-                      isDark ? "text-stone-300" : "text-stone-700"
-                    )}>
-                      {formatDate(user.created_at)}
-                    </span>
-                  </td>
-
-                  {/* --- BEGIN COMMENT ---
-                  最后登录列
-                  --- END COMMENT --- */}
-                  <td className="p-4">
-                    <span className={cn(
+                  <td className="px-4 py-4">
+                    <p className={cn(
                       "text-sm font-serif",
                       isDark ? "text-stone-300" : "text-stone-700"
                     )}>
                       {formatDate(user.last_sign_in_at)}
-                    </span>
+                    </p>
                   </td>
-
+                  
                   {/* --- BEGIN COMMENT ---
-                  操作列
+                  注册时间列
                   --- END COMMENT --- */}
-                  <td className="p-4">
-                    <div className="flex items-center justify-center">
-                      <Dropdown
-                        trigger={
-                          <button className={cn(
-                            "p-2 rounded-lg transition-colors",
+                  <td className="px-4 py-4">
+                    <p className={cn(
+                      "text-sm font-serif",
+                      isDark ? "text-stone-300" : "text-stone-700"
+                    )}>
+                      {formatDate(user.created_at)}
+                    </p>
+                  </td>
+                  
+                  {/* --- BEGIN COMMENT ---
+                  操作菜单列
+                  --- END COMMENT --- */}
+                  <td className="px-4 py-4">
+                    <Dropdown
+                      trigger={
+                        <button className={cn(
+                          "p-2 rounded-lg transition-colors",
+                          isDark 
+                            ? "text-stone-400 hover:text-stone-300 hover:bg-stone-700" 
+                            : "text-stone-600 hover:text-stone-700 hover:bg-stone-100"
+                        )}>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
+                      }
+                    >
+                      <div className="py-1">
+                        {/* --- 查看用户 --- */}
+                        <button
+                          onClick={() => onViewUser(user)}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
                             isDark 
-                              ? "text-stone-400 hover:text-stone-300 hover:bg-stone-700" 
-                              : "text-stone-600 hover:text-stone-700 hover:bg-stone-100"
-                          )}>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
-                        }
-                        items={[
-                          {
-                            icon: <Eye className="h-4 w-4" />,
-                            label: '查看详情',
-                            onClick: () => onViewUser(user)
-                          },
-                          {
-                            icon: <Edit2 className="h-4 w-4" />,
-                            label: '编辑用户',
-                            onClick: () => onEditUser(user)
-                          },
-                          { type: 'separator' },
-                          {
-                            icon: <Shield className="h-4 w-4" />,
-                            label: '设为管理员',
-                            onClick: () => onChangeRole(user, 'admin'),
-                            disabled: user.role === 'admin'
-                          },
-                          {
-                            icon: <Crown className="h-4 w-4" />,
-                            label: '设为经理',
-                            onClick: () => onChangeRole(user, 'manager'),
-                            disabled: user.role === 'manager'
-                          },
-                          {
-                            icon: <UserIcon className="h-4 w-4" />,
-                            label: '设为普通用户',
-                            onClick: () => onChangeRole(user, 'user'),
-                            disabled: user.role === 'user'
-                          },
-                          { type: 'separator' },
-                          {
-                            icon: <UserCheck className="h-4 w-4" />,
-                            label: '激活用户',
-                            onClick: () => onChangeStatus(user, 'active'),
-                            disabled: user.status === 'active'
-                          },
-                          {
-                            icon: <UserX className="h-4 w-4" />,
-                            label: '暂停用户',
-                            onClick: () => onChangeStatus(user, 'suspended'),
-                            disabled: user.status === 'suspended',
-                            className: 'text-red-600'
-                          },
-                          { type: 'separator' },
-                          {
-                            icon: <Trash2 className="h-4 w-4" />,
-                            label: '删除用户',
-                            onClick: () => onDeleteUser(user),
-                            className: 'text-red-600'
-                          }
-                        ]}
-                      />
-                    </div>
+                              ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
+                              : "text-stone-700 hover:bg-stone-100 hover:text-stone-900"
+                          )}
+                        >
+                          <Eye className="h-4 w-4" />
+                          查看详情
+                        </button>
+                        
+                        {/* --- 编辑用户 --- */}
+                        <button
+                          onClick={() => onEditUser(user)}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
+                            isDark 
+                              ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
+                              : "text-stone-700 hover:bg-stone-100 hover:text-stone-900"
+                          )}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                          编辑信息
+                        </button>
+                        
+                        <div className={cn(
+                          "h-px my-1",
+                          isDark ? "bg-stone-700" : "bg-stone-200"
+                        )} />
+                        
+                        {/* --- 角色更改子菜单 --- */}
+                        <div className={cn(
+                          "px-4 py-2 text-xs font-semibold font-serif uppercase tracking-wider",
+                          isDark ? "text-stone-500" : "text-stone-500"
+                        )}>
+                          更改角色
+                        </div>
+                        
+                        {(['admin', 'manager', 'user'] as const).map((role) => {
+                          const roleInfo = getRoleInfo(role)
+                          return (
+                            <button
+                              key={role}
+                              onClick={() => onChangeRole(user, role)}
+                              disabled={user.role === role}
+                              className={cn(
+                                "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
+                                user.role === role 
+                                  ? (isDark ? "text-stone-600 cursor-not-allowed" : "text-stone-400 cursor-not-allowed")
+                                  : (isDark 
+                                      ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
+                                      : "text-stone-700 hover:bg-stone-100 hover:text-stone-900")
+                              )}
+                            >
+                              {roleInfo.icon}
+                              {roleInfo.label}
+                              {user.role === role && (
+                                <span className="ml-auto text-xs">(当前)</span>
+                              )}
+                            </button>
+                          )
+                        })}
+                        
+                        <div className={cn(
+                          "h-px my-1",
+                          isDark ? "bg-stone-700" : "bg-stone-200"
+                        )} />
+                        
+                        {/* --- 状态更改子菜单 --- */}
+                        <div className={cn(
+                          "px-4 py-2 text-xs font-semibold font-serif uppercase tracking-wider",
+                          isDark ? "text-stone-500" : "text-stone-500"
+                        )}>
+                          更改状态
+                        </div>
+                        
+                        {(['active', 'suspended', 'pending'] as const).map((status) => {
+                          const statusInfo = getStatusInfo(status)
+                          return (
+                            <button
+                              key={status}
+                              onClick={() => onChangeStatus(user, status)}
+                              disabled={user.status === status}
+                              className={cn(
+                                "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
+                                user.status === status 
+                                  ? (isDark ? "text-stone-600 cursor-not-allowed" : "text-stone-400 cursor-not-allowed")
+                                  : (isDark 
+                                      ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100" 
+                                      : "text-stone-700 hover:bg-stone-100 hover:text-stone-900")
+                              )}
+                            >
+                              {statusInfo.icon}
+                              {statusInfo.label}
+                              {user.status === status && (
+                                <span className="ml-auto text-xs">(当前)</span>
+                              )}
+                            </button>
+                          )
+                        })}
+                        
+                        <div className={cn(
+                          "h-px my-1",
+                          isDark ? "bg-stone-700" : "bg-stone-200"
+                        )} />
+                        
+                        {/* --- 删除用户 --- */}
+                        <button
+                          onClick={() => onDeleteUser(user)}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-4 py-2 text-sm font-serif transition-colors",
+                            isDark 
+                              ? "text-red-400 hover:bg-red-900/20 hover:text-red-300" 
+                              : "text-red-600 hover:bg-red-50 hover:text-red-700"
+                          )}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          删除用户
+                        </button>
+                      </div>
+                    </Dropdown>
                   </td>
                 </tr>
               )
