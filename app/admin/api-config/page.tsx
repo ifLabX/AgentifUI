@@ -24,9 +24,6 @@ import {
   Loader2
 } from 'lucide-react';
 
-// 导入AdminLayout
-import AdminLayout from '@components/admin/admin-layout';
-
 interface FeedbackState {
   open: boolean;
   message: string;
@@ -700,273 +697,271 @@ export default function ApiConfigPage() {
   };
 
   return (
-    <AdminLayout>
-      <div className="h-full flex">
-        {/* 左侧应用列表 */}
-        <div className="w-80 flex-shrink-0">
-          <div className="p-4 border-b border-stone-200 dark:border-stone-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <h2 className={cn(
-                  "font-bold text-lg",
-                  isDark ? "text-stone-100" : "text-stone-900"
-                )}>
-                  应用实例
-                </h2>
-                {/* 初始加载时的小spinner */}
-                {instancesLoading && !hasInitiallyLoaded && (
-                  <Loader2 className="h-3 w-3 animate-spin text-stone-400" />
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleAddInstance}
-                  className={cn(
-                    "p-2 rounded-lg transition-colors",
-                    isDark 
-                      ? "bg-stone-800 hover:bg-stone-700 text-stone-300" 
-                      : "bg-white hover:bg-stone-100 text-stone-600"
-                  )}
-                >
-                  <Plus className="h-5 w-5" />
-                </button>
-              </div>
+    <div className="h-full flex">
+      {/* 左侧应用列表 */}
+      <div className="w-80 flex-shrink-0">
+        <div className="p-4 border-b border-stone-200 dark:border-stone-700">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className={cn(
+                "font-bold text-lg",
+                isDark ? "text-stone-100" : "text-stone-900"
+              )}>
+                应用实例
+              </h2>
+              {/* 初始加载时的小spinner */}
+              {instancesLoading && !hasInitiallyLoaded && (
+                <Loader2 className="h-3 w-3 animate-spin text-stone-400" />
+              )}
             </div>
-            <div className={cn(
-              "text-sm",
-              isDark ? "text-stone-400" : "text-stone-600"
-            )}>
-              共 {instances.length} 个应用
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAddInstance}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  isDark 
+                    ? "bg-stone-800 hover:bg-stone-700 text-stone-300" 
+                    : "bg-white hover:bg-stone-100 text-stone-600"
+                )}
+              >
+                <Plus className="h-5 w-5" />
+              </button>
             </div>
           </div>
-          
-          <div className="flex-1 overflow-y-auto">
-            {!hasInitiallyLoaded && instancesLoading ? (
-              <div className="p-4 text-center">
-                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-stone-400" />
-                <p className={cn(
-                  "text-sm",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  加载应用实例中...
-                </p>
-              </div>
-            ) : instances.length === 0 ? (
-              <div className="p-4 text-center">
-                <Database className="h-12 w-12 mx-auto mb-3 text-stone-400" />
-                <p className={cn(
-                  "text-sm",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  暂无应用实例
-                </p>
-                <button
-                  onClick={handleAddInstance}
-                  className={cn(
-                    "mt-2 text-sm transition-colors",
-                    isDark ? "text-stone-300 hover:text-stone-100" : "text-stone-600 hover:text-stone-800"
-                  )}
-                >
-                  添加第一个应用
-                </button>
-              </div>
-            ) : (
-              <div className="p-2">
-                {instances.map((instance) => {
-                  const isSelected = selectedInstance?.instance_id === instance.instance_id;
-                  
-                  return (
-                    <div
-                      key={instance.instance_id}
-                      className={cn(
-                        "p-3 rounded-lg mb-2 cursor-pointer group",
-                        "transition-colors duration-150 ease-in-out",
-                        "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                        isSelected
-                          ? isDark 
-                            ? "bg-stone-800 border border-stone-600 focus:ring-stone-500" 
-                            : "bg-white border border-stone-300 shadow-sm focus:ring-stone-400"
-                          : isDark
-                            ? "hover:bg-stone-800/50 focus:ring-stone-600"
-                            : "hover:bg-white/50 focus:ring-stone-300"
-                      )}
-                      onClick={() => handleSelectInstance(instance)}
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleSelectInstance(instance);
-                        }
-                      }}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Globe className={cn(
-                              "h-4 w-4 flex-shrink-0",
-                              isDark ? "text-stone-400" : "text-stone-500"
-                            )} />
-                            <h3 className={cn(
-                              "font-medium text-sm truncate",
-                              isDark ? "text-stone-100" : "text-stone-900"
-                            )}>
-                              {instance.display_name}
-                            </h3>
-                          </div>
-                          <p className={cn(
-                            "text-xs truncate",
-                            isDark ? "text-stone-400" : "text-stone-600"
-                          )}>
-                            {instance.description || instance.instance_id}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteInstance(instance.instance_id);
-                            }}
-                            className={cn(
-                              "p-1 rounded transition-colors",
-                              "hover:bg-red-100 dark:hover:bg-red-900/30",
-                              "focus:outline-none focus:ring-2 focus:ring-red-500"
-                            )}
-                          >
-                            <Trash2 className="h-3 w-3 text-red-500" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+          <div className={cn(
+            "text-sm",
+            isDark ? "text-stone-400" : "text-stone-600"
+          )}>
+            共 {instances.length} 个应用
           </div>
         </div>
         
-        {/* 右侧配置面板 */}
-        <div className="flex-1 flex flex-col">
-          {showAddForm ? (
-            <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto">
+          {!hasInitiallyLoaded && instancesLoading ? (
+            <div className="p-4 text-center">
+              <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-stone-400" />
+              <p className={cn(
+                "text-sm",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                加载应用实例中...
+              </p>
+            </div>
+          ) : instances.length === 0 ? (
+            <div className="p-4 text-center">
+              <Database className="h-12 w-12 mx-auto mb-3 text-stone-400" />
+              <p className={cn(
+                "text-sm",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                暂无应用实例
+              </p>
+              <button
+                onClick={handleAddInstance}
+                className={cn(
+                  "mt-2 text-sm transition-colors",
+                  isDark ? "text-stone-300 hover:text-stone-100" : "text-stone-600 hover:text-stone-800"
+                )}
+              >
+                添加第一个应用
+              </button>
+            </div>
+          ) : (
+            <div className="p-2">
+              {instances.map((instance) => {
+                const isSelected = selectedInstance?.instance_id === instance.instance_id;
+                
+                return (
+                  <div
+                    key={instance.instance_id}
+                    className={cn(
+                      "p-3 rounded-lg mb-2 cursor-pointer group",
+                      "transition-colors duration-150 ease-in-out",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                      isSelected
+                        ? isDark 
+                          ? "bg-stone-800 border border-stone-600 focus:ring-stone-500" 
+                          : "bg-white border border-stone-300 shadow-sm focus:ring-stone-400"
+                        : isDark
+                          ? "hover:bg-stone-800/50 focus:ring-stone-600"
+                          : "hover:bg-white/50 focus:ring-stone-300"
+                    )}
+                    onClick={() => handleSelectInstance(instance)}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelectInstance(instance);
+                      }
+                    }}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Globe className={cn(
+                            "h-4 w-4 flex-shrink-0",
+                            isDark ? "text-stone-400" : "text-stone-500"
+                          )} />
+                          <h3 className={cn(
+                            "font-medium text-sm truncate",
+                            isDark ? "text-stone-100" : "text-stone-900"
+                          )}>
+                            {instance.display_name}
+                          </h3>
+                        </div>
+                        <p className={cn(
+                          "text-xs truncate",
+                          isDark ? "text-stone-400" : "text-stone-600"
+                        )}>
+                          {instance.description || instance.instance_id}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteInstance(instance.instance_id);
+                          }}
+                          className={cn(
+                            "p-1 rounded transition-colors",
+                            "hover:bg-red-100 dark:hover:bg-red-900/30",
+                            "focus:outline-none focus:ring-2 focus:ring-red-500"
+                          )}
+                        >
+                          <Trash2 className="h-3 w-3 text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* 右侧配置面板 */}
+      <div className="flex-1 flex flex-col">
+        {showAddForm ? (
+          <div className="flex-1 overflow-y-auto p-6">
+            <InstanceForm
+              instance={null}
+              isEditing={false}
+              onSave={(data) => {
+                setIsProcessing(true);
+                // 获取有效的provider_id
+                const defaultProviderId = providers.find(p => p.name === 'Dify')?.id || 
+                                        providers[0]?.id || 
+                                        '1'; // 最后的备选方案
+                addInstance({
+                  ...data,
+                  provider_id: defaultProviderId
+                }, data.apiKey)
+                  .then(() => {
+                    showFeedback('应用实例创建成功', 'success');
+                    setShowAddForm(false);
+                  })
+                  .catch((error) => {
+                    console.error('创建失败:', error);
+                    showFeedback('创建应用实例失败', 'error');
+                  })
+                  .finally(() => {
+                    setIsProcessing(false);
+                  });
+              }}
+              onCancel={() => {
+                setShowAddForm(false);
+              }}
+              isProcessing={isProcessing}
+            />
+          </div>
+        ) : selectedInstance ? (
+          <div className="flex-1 overflow-y-auto p-6">
+            {/* 移除横线，直接在内容区域显示标题 */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className={cn(
+                    "text-xl font-bold",
+                    isDark ? "text-stone-100" : "text-stone-900"
+                  )}>
+                    {selectedInstance.display_name}
+                  </h2>
+                  <p className={cn(
+                    "text-sm mt-1",
+                    isDark ? "text-stone-400" : "text-stone-600"
+                  )}>
+                    {selectedInstance.description || selectedInstance.instance_id}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedInstance(null)}
+                  className={cn(
+                    "p-2 rounded-lg transition-colors",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-2",
+                    isDark 
+                      ? "hover:bg-stone-700 text-stone-400 focus:ring-stone-500" 
+                      : "hover:bg-stone-100 text-stone-600 focus:ring-stone-400"
+                  )}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+            
+            {isLoadingInstance ? (
+              <div className="flex items-center justify-center h-32">
+                <Loader2 className="h-6 w-6 animate-spin text-stone-400" />
+              </div>
+            ) : (
               <InstanceForm
-                instance={null}
-                isEditing={false}
+                instance={selectedInstance}
+                isEditing={true}
                 onSave={(data) => {
                   setIsProcessing(true);
-                  // 获取有效的provider_id
-                  const defaultProviderId = providers.find(p => p.name === 'Dify')?.id || 
-                                          providers[0]?.id || 
-                                          '1'; // 最后的备选方案
-                  addInstance({
-                    ...data,
-                    provider_id: defaultProviderId
-                  }, data.apiKey)
+                  updateInstance(selectedInstance.id, data, data.apiKey)
                     .then(() => {
-                      showFeedback('应用实例创建成功', 'success');
-                      setShowAddForm(false);
+                      showFeedback('应用实例更新成功', 'success');
+                      setSelectedInstance(null);
                     })
                     .catch((error) => {
-                      console.error('创建失败:', error);
-                      showFeedback('创建应用实例失败', 'error');
+                      console.error('更新失败:', error);
+                      showFeedback('更新应用实例失败', 'error');
                     })
                     .finally(() => {
                       setIsProcessing(false);
                     });
                 }}
                 onCancel={() => {
-                  setShowAddForm(false);
+                  setSelectedInstance(null);
                 }}
                 isProcessing={isProcessing}
               />
+            )}
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <Settings className="h-16 w-16 mx-auto mb-4 text-stone-400" />
+              <h3 className={cn(
+                "text-lg font-medium mb-2",
+                isDark ? "text-stone-300" : "text-stone-700"
+              )}>
+                选择应用实例
+              </h3>
+              <p className={cn(
+                "text-sm",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例
+              </p>
             </div>
-          ) : selectedInstance ? (
-            <div className="flex-1 overflow-y-auto p-6">
-              {/* 移除横线，直接在内容区域显示标题 */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className={cn(
-                      "text-xl font-bold",
-                      isDark ? "text-stone-100" : "text-stone-900"
-                    )}>
-                      {selectedInstance.display_name}
-                    </h2>
-                    <p className={cn(
-                      "text-sm mt-1",
-                      isDark ? "text-stone-400" : "text-stone-600"
-                    )}>
-                      {selectedInstance.description || selectedInstance.instance_id}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setSelectedInstance(null)}
-                    className={cn(
-                      "p-2 rounded-lg transition-colors",
-                      "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                      isDark 
-                        ? "hover:bg-stone-700 text-stone-400 focus:ring-stone-500" 
-                        : "hover:bg-stone-100 text-stone-600 focus:ring-stone-400"
-                    )}
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-              
-              {isLoadingInstance ? (
-                <div className="flex items-center justify-center h-32">
-                  <Loader2 className="h-6 w-6 animate-spin text-stone-400" />
-                </div>
-              ) : (
-                <InstanceForm
-                  instance={selectedInstance}
-                  isEditing={true}
-                  onSave={(data) => {
-                    setIsProcessing(true);
-                    updateInstance(selectedInstance.id, data, data.apiKey)
-                      .then(() => {
-                        showFeedback('应用实例更新成功', 'success');
-                        setSelectedInstance(null);
-                      })
-                      .catch((error) => {
-                        console.error('更新失败:', error);
-                        showFeedback('更新应用实例失败', 'error');
-                      })
-                      .finally(() => {
-                        setIsProcessing(false);
-                      });
-                  }}
-                  onCancel={() => {
-                    setSelectedInstance(null);
-                  }}
-                  isProcessing={isProcessing}
-                />
-              )}
-            </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <Settings className="h-16 w-16 mx-auto mb-4 text-stone-400" />
-                <h3 className={cn(
-                  "text-lg font-medium mb-2",
-                  isDark ? "text-stone-300" : "text-stone-700"
-                )}>
-                  选择应用实例
-                </h3>
-                <p className={cn(
-                  "text-sm",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* Toast通知 */}
-        <Toast feedback={feedback} onClose={handleCloseFeedback} />
+          </div>
+        )}
       </div>
-    </AdminLayout>
+      
+      {/* Toast通知 */}
+      <Toast feedback={feedback} onClose={handleCloseFeedback} />
+    </div>
   );
 }

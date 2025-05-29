@@ -4,15 +4,12 @@ import React, { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from '@lib/hooks/use-theme'
-import { useChatWidth } from '@lib/hooks/use-chat-width'
 import { cn } from '@lib/utils'
 import { 
   Settings, 
   Menu,
   X,
   Home,
-  Pin,
-  PinOff,
   ChevronRight
 } from 'lucide-react'
 
@@ -32,7 +29,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const { isDark } = useTheme()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  // 管理菜单项
+  // --- BEGIN COMMENT ---
+  // 管理菜单项配置
+  // --- END COMMENT ---
   const menuItems: MenuItem[] = [
     { 
       text: 'API 配置', 
@@ -42,7 +41,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   ]
 
-  // 面包屑导航
+  // --- BEGIN COMMENT ---
+  // 面包屑导航生成
+  // --- END COMMENT ---
   const getBreadcrumbs = () => {
     const currentItem = menuItems.find(item => pathname.startsWith(item.href))
     return [
@@ -57,7 +58,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       isDark ? "bg-stone-900" : "bg-stone-50"
     )}>
       {/* --- BEGIN COMMENT ---
-      顶部导航栏
+      顶部导航栏 - 固定在顶部
       --- END COMMENT --- */}
       <header className={cn(
         "sticky top-0 z-50 border-b backdrop-blur-md",
@@ -68,7 +69,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="w-full px-4 py-4">
           <div className="flex items-center justify-between">
             {/* --- BEGIN COMMENT ---
-            左侧：标题和面包屑
+            左侧：标题区域
             --- END COMMENT --- */}
             <div className="flex items-center gap-3">
               <h1 className={cn(
@@ -80,11 +81,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             {/* --- BEGIN COMMENT ---
-            右侧：返回主页按钮和移动端菜单
+            右侧：操作按钮区域
             --- END COMMENT --- */}
             <div className="flex items-center gap-3">
               <Link 
-                href="/chat/new" 
+                href="/chat" 
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
                   isDark 
@@ -96,7 +97,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <span className="text-sm hidden sm:inline">返回对话</span>
               </Link>
               
-              {/* 移动端菜单按钮 */}
+              {/* --- BEGIN COMMENT ---
+              移动端菜单切换按钮
+              --- END COMMENT --- */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className={cn(
@@ -118,22 +121,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </header>
 
       {/* --- BEGIN COMMENT ---
-      主要内容区域 - 全宽度布局
+      主要内容区域 - 侧边栏+内容
       --- END COMMENT --- */}
       <div className="flex h-[calc(100vh-73px)]">
         
         {/* --- BEGIN COMMENT ---
-        侧边栏导航 - 固定宽度，桌面端固定，移动端可折叠
+        侧边栏导航 - 响应式显示
         --- END COMMENT --- */}
         <aside className={cn(
           "w-80 flex-shrink-0 border-r",
           isDark ? "border-stone-700 bg-stone-800" : "border-stone-200 bg-white",
-          // 移动端展开/收起状态
+          // 响应式显示控制
           isMobileMenuOpen ? "block" : "hidden lg:block"
         )}>
           <div className="h-full flex flex-col p-6">
-            {/* 面包屑导航 */}
-            <nav className="mb-6">
+            {/* --- BEGIN COMMENT ---
+            面包屑导航 - 调整间距
+            --- END COMMENT --- */}
+            <nav className="mb-8">
               <ol className="flex items-center space-x-2 text-sm">
                 {getBreadcrumbs().map((crumb, index) => (
                   <li key={crumb.href} className="flex items-center">
@@ -156,14 +161,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </ol>
             </nav>
 
-            {/* 导航菜单 */}
+            {/* --- BEGIN COMMENT ---
+            主导航菜单 - 移除重复标题，直接显示菜单项
+            --- END COMMENT --- */}
             <nav className="space-y-2">
-              <h2 className={cn(
-                "text-sm font-medium mb-4",
-                isDark ? "text-stone-300" : "text-stone-600"
-              )}>
-                管理功能
-              </h2>
               {menuItems.map((item) => {
                 const isActive = pathname.startsWith(item.href)
                 const Icon = item.icon
@@ -219,7 +220,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* --- BEGIN COMMENT ---
-      移动端菜单遮罩
+      移动端菜单遮罩层
       --- END COMMENT --- */}
       {isMobileMenuOpen && (
         <div 
@@ -229,4 +230,4 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       )}
     </div>
   )
-}
+} 
