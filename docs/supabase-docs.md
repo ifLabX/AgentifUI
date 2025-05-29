@@ -12,12 +12,60 @@
 
 1. `profiles` 表：
    - 主要字段：`id`, `full_name`, `username`, `avatar_url`, `role`, `status`, `created_at`, `updated_at`, `last_login`, `auth_source`, `sso_provider_id`
-   - `role` 字段可能的值为 `'user'` 或 `'admin'`，默认值为 `'user'`
-   - `status` 字段可能的值为 `'active'`, `'suspended'` 或 `'pending'`
+   - `role` 字段类型为 `user_role` 枚举，可能的值为 `'admin'`, `'manager'`, `'user'`，默认值为 `'user'`
+   - `status` 字段类型为 `account_status` 枚举，可能的值为 `'active'`, `'suspended'`, `'pending'`，默认值为 `'active'`
 
 2. `user_preferences` 表：
    - 主要字段：`id`, `user_id`, `theme`, `language`, `notification_settings`, `ai_preferences`, `updated_at`
    - 存储用户的个性化设置和偏好
+
+### 用户管理系统
+
+#### 管理员专用视图
+
+**`admin_user_management_view`** - 为管理员提供安全的用户管理视图：
+
+```sql
+-- 视图包含完整的用户信息，包括来自 auth.users 表的敏感数据
+SELECT 
+  p.id, p.full_name, p.username, p.avatar_url, p.role, p.status,
+  p.created_at, p.updated_at, p.last_login, p.auth_source, p.sso_provider_id,
+  au.email,                    -- 真实邮箱地址
+  au.phone,                    -- 真实手机号
+  au.email_confirmed_at,       -- 邮箱确认时间
+  au.phone_confirmed_at,       -- 手机确认时间
+  au.last_sign_in_at          -- 最后登录时间
+FROM profiles p
+LEFT JOIN auth.users au ON p.id = au.id
+WHERE EXISTS (
+  SELECT 1 FROM profiles admin_check 
+  WHERE admin_check.id = auth.uid() 
+  AND admin_check.role = 'admin'
+);
+```
+
+**安全特性：**
+- 使用 `SECURITY DEFINER` 模式访问 `auth.users` 表
+- 视图级别的权限检查，非管理员查询返回空结果
+- 解决了 Supabase 安全警告同时保留完整功能
+- 管理员可以看到真实的邮箱地址和最后登录时间
+
+#### 权限保护机制
+
+1. **角色更新保护** (`validate_role_update` 触发器)：
+   - 防止管理员修改自己的角色
+   - 防止降级其他管理员的权限
+   - 只有管理员可以修改用户角色
+
+2. **用户删除保护** (`validate_user_deletion` 触发器)：
+   - 防止管理员删除自己的账号
+   - 防止删除其他管理员账号
+   - 只有管理员可以删除用户
+
+3. **批量操作保护** (`safe_batch_update_role` 函数)：
+   - 安全的批量角色更新
+   - 包含完整的权限检查和自我保护
+   - 原子性操作确保数据一致性
 
 ### 对话和消息管理
 
@@ -85,7 +133,51 @@
 
 ### 管理员角色
 
-管理员角色具有特殊权限，可以管理 API 密钥、服务提供商和服务实例等敏感资源。
+管理员角色具有特殊权限，可以管理 API 密钥、服务提供商和服务实例等敏感资源。系统通过多层安全机制保护管理员功能。
+
+### 安全函数
+
+#### 管理员权限检查
+
+```sql
+-- 检查当前用户是否为管理员
+auth.is_admin() RETURNS BOOLEAN
+```
+
+该函数用于所有需要管理员权限的操作中，确保只有管理员可以执行敏感操作。
+
+#### 用户统计
+
+```sql
+-- 获取用户统计信息（仅管理员可访问）
+public.get_user_stats() RETURNS JSON
+```
+
+返回包含以下信息的 JSON 对象：
+- `totalUsers`: 总用户数
+- `activeUsers`: 活跃用户数
+- `suspendedUsers`: 被暂停用户数
+- `pendingUsers`: 待审核用户数
+- `adminUsers`: 管理员用户数
+- `managerUsers`: 管理者用户数
+- `regularUsers`: 普通用户数
+- `newUsersToday`: 今日新用户数
+- `newUsersThisWeek`: 本周新用户数
+- `newUsersThisMonth`: 本月新用户数
+
+#### 批量用户管理
+
+```sql
+-- 安全的批量角色更新
+public.safe_batch_update_role(target_user_ids UUID[], target_role user_role) RETURNS INTEGER
+```
+
+**安全特性：**
+- 权限验证：只有管理员可以执行
+- 自我保护：不能在批量操作中包含自己
+- 管理员保护：不能降级其他管理员
+- 原子性：所有更新在单个事务中完成
+- 返回成功更新的用户数量
 
 ### 管理员设置函数
 
@@ -127,6 +219,42 @@ const { isAdmin, isLoading, error } = useAdminAuth();
 // 使用示例
 if (!isAdmin) return <AccessDenied />;
 ```
+
+### 数据库安全机制
+
+#### 触发器保护
+
+1. **角色更新保护触发器**：
+   ```sql
+   CREATE TRIGGER validate_role_update_trigger
+     BEFORE UPDATE OF role ON profiles
+     FOR EACH ROW
+     EXECUTE FUNCTION public.validate_role_update();
+   ```
+
+2. **用户删除保护触发器**：
+   ```sql
+   CREATE TRIGGER validate_user_deletion_trigger
+     BEFORE DELETE ON profiles
+     FOR EACH ROW
+     EXECUTE FUNCTION public.validate_user_deletion();
+   ```
+
+#### 视图级安全
+
+`admin_user_management_view` 视图通过以下机制确保安全：
+
+1. **权限检查**：视图内置管理员权限验证
+2. **数据隔离**：非管理员查询返回空结果
+3. **敏感数据访问**：使用 SECURITY DEFINER 模式安全访问 auth.users 表
+4. **权限撤销**：明确撤销匿名用户和普通用户的直接访问权限
+
+#### 最佳实践
+
+1. **最小权限原则**：每个用户只能访问其权限范围内的数据
+2. **防御性编程**：所有管理函数都包含权限验证
+3. **审计追踪**：重要操作都有相应的日志和通知
+4. **数据完整性**：使用触发器防止危险操作
 
 ## Dify 集成
 
@@ -229,7 +357,7 @@ if (!isAdmin) return <AccessDenied />;
 数据库结构和函数在以下迁移文件中定义：
 
 ### 基础结构
-- `/supabase/migrations/20250501000000_init.sql`: 初始化基础表结构
+- `/supabase/migrations/20250501000000_init.sql`: 初始化基础表结构和枚举类型
 - `/supabase/migrations/20250502000000_sso_config.sql`: SSO 认证配置
 
 ### 用户和权限管理
@@ -240,6 +368,20 @@ if (!isAdmin) return <AccessDenied />;
 - `/supabase/migrations/20250524193208_fix_username_sync.sql`: 修复用户名同步逻辑
 - `/supabase/migrations/20250524195000_fix_profiles_foreign_key.sql`: 修复 profiles 表外键约束
 - `/supabase/migrations/20250524200000_fix_user_deletion_trigger.sql`: 修复用户删除触发器
+- `/supabase/migrations/20250527180000_fix_org_members_rls_recursion.sql`: 修复组织成员 RLS 递归问题
+- `/supabase/migrations/20250529153000_add_user_management_views.sql`: 添加用户管理视图和相关函数
+- `/supabase/migrations/20250529154000_update_profiles_table.sql`: 更新 profiles 表，添加 auth_source 和 sso_provider_id 字段
+- `/supabase/migrations/20250529170443_fix_user_list_function.sql`: 修复用户列表函数
+- `/supabase/migrations/20250529170559_simplify_user_list_function.sql`: 简化用户列表查询函数
+- `/supabase/migrations/20250529171148_cleanup_unused_functions.sql`: 清理未使用的函数
+- `/supabase/migrations/20250530000000_fix_role_constraint.sql`: 修复角色约束，支持 manager 角色，转换为枚举类型
+- `/supabase/migrations/20250530010000_add_role_update_protection.sql`: 添加角色更新保护机制和用户删除保护
+
+### 最新用户管理安全机制 (2025-06-01)
+- `/supabase/migrations/20250601000100_fix_user_view_security.sql`: 修复用户管理视图安全问题，删除不安全的视图，创建安全的管理函数
+- `/supabase/migrations/20250601000200_fix_user_functions_quick.sql`: 快速修复用户管理函数结构问题
+- `/supabase/migrations/20250601000500_restore_admin_user_view.sql`: 重新创建安全的管理员用户视图（使用 security_invoker）
+- `/supabase/migrations/20250601000600_fix_view_permissions.sql`: 修复视图权限问题，改回 SECURITY DEFINER 模式
 
 ### API 密钥管理
 - `/supabase/migrations/20250508165500_api_key_management.sql`: API 密钥管理
@@ -247,14 +389,44 @@ if (!isAdmin) return <AccessDenied />;
 - `/supabase/migrations/20250508182400_fix_api_key_encryption.sql`: 修复 API 密钥加密
 - `/supabase/migrations/20250508183400_extend_service_instances.sql`: 扩展服务实例表
 - `/supabase/migrations/20250524230000_fix_dify_config_rls.sql`: 修复 Dify 配置相关表的 RLS 策略
+- `/supabase/migrations/20250529151826_ensure_default_service_instance_constraint.sql`: 确保默认服务实例的唯一性约束
+- `/supabase/migrations/20250529151827_add_set_default_service_instance_function.sql`: 添加设置默认服务实例的存储过程
 
 ### 对话和消息管理
 - `/supabase/migrations/20250513104549_extend_conversations_messages.sql`: 扩展对话和消息表
 - `/supabase/migrations/20250515132500_add_metadata_to_conversations.sql`: 添加元数据字段到对话表
 - `/supabase/migrations/20250521125100_add_message_trigger.sql`: 增加 messages 表触发器，自动维护同步状态和 last_message_preview
-- `/supabase/migrations/20250522193000_update_message_preview_format.sql`: 调整 conversations.last_message_preview 字段为 JSONB 格式，支持更丰富的消息预览内容
+- `/supabase/migrations/20250522193000_update_message_preview_format.sql`: 调整 conversations.last_message_preview 字段为 JSONB 格式
 
 ### 数据完整性和清理
 - `/supabase/migrations/20250524194000_improve_cascade_deletion.sql`: 改进级联删除逻辑，处理孤儿组织和 AI 配置问题
-- `/supabase/migrations/20250529151826_ensure_default_service_instance_constraint.sql`: 确保默认服务实例的唯一性约束，防止同一提供商下存在多个默认应用
-- `/supabase/migrations/20250529151827_add_set_default_service_instance_function.sql`: 添加设置默认服务实例的存储过程，实现原子性操作确保同一提供商只有一个默认应用
+
+## 迁移文件说明
+
+### 用户管理系统演进
+
+用户管理系统经历了多次安全性改进：
+
+1. **初始实现** (20250529153000): 创建了基础的用户管理视图和函数
+2. **安全问题发现** (20250601000100): Supabase 发出安全警告，原视图暴露 auth.users 数据
+3. **函数方案尝试** (20250601000200): 尝试用安全函数替代视图，但遇到结构匹配问题
+4. **视图重建** (20250601000500): 重新创建安全视图，使用 security_invoker 模式
+5. **权限修复** (20250601000600): 发现权限问题，改回 SECURITY DEFINER 模式
+
+### 最终安全方案
+
+最终的 `admin_user_management_view` 视图采用以下安全机制：
+
+- **SECURITY DEFINER 模式**：允许访问 auth.users 表
+- **视图级权限检查**：只有管理员能看到数据
+- **明确的权限控制**：撤销匿名用户和普通用户权限
+- **完整功能保留**：管理员可以看到真实邮箱和登录时间
+
+### 权限保护机制
+
+系统通过多层保护确保安全：
+
+1. **触发器保护**：防止危险的角色操作和用户删除
+2. **函数级验证**：所有管理函数都包含权限检查
+3. **视图级隔离**：非管理员查询返回空结果
+4. **批量操作安全**：包含自我保护和管理员保护机制
