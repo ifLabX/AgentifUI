@@ -257,3 +257,4 @@ if (!isAdmin) return <AccessDenied />;
 ### 数据完整性和清理
 - `/supabase/migrations/20250524194000_improve_cascade_deletion.sql`: 改进级联删除逻辑，处理孤儿组织和 AI 配置问题
 - `/supabase/migrations/20250529151826_ensure_default_service_instance_constraint.sql`: 确保默认服务实例的唯一性约束，防止同一提供商下存在多个默认应用
+- `/supabase/migrations/20250529151827_add_set_default_service_instance_function.sql`: 添加设置默认服务实例的存储过程，实现原子性操作确保同一提供商只有一个默认应用

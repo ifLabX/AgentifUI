@@ -335,6 +335,9 @@ API密钥使用AES-256-GCM加密算法存储，格式为"iv:authTag:encryptedDat
    - `cleanup_orphan_data`: 清理孤儿数据（组织、AI配置、消息）
    - `safe_cleanup_orphan_data`: 安全的批量清理，支持dry_run模式
 
+6. **服务实例管理函数**
+   - `set_default_service_instance(target_instance_id uuid, target_provider_id uuid)`: 原子性地设置默认服务实例，确保同一提供商只有一个默认实例。该函数在事务中执行两个操作：首先将同一提供商的所有实例设为非默认，然后将指定实例设为默认，防止并发操作导致的数据不一致问题。
+
 ## 初始数据
 
 系统预设了以下初始数据：
