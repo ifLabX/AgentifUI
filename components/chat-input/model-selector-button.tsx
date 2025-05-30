@@ -20,7 +20,7 @@ interface AppSelectorButtonProps {
 
 export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   const router = useRouter();
-  const { currentAppId, switchToSpecificApp } = useCurrentApp();
+  const { currentAppId, switchToSpecificApp, isValidating } = useCurrentApp();
   const { apps, fetchApps, isLoading } = useAppListStore();
   const { clearMessages } = useChatStore();
   const { isDark } = useTheme();
@@ -49,10 +49,68 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   });
 
   // --- BEGIN COMMENT ---
+  // 🎯 最后使用模型记忆机制
+  // 当从非模型应用回到聊天界面时，自动恢复到最后使用的模型
+  // --- END COMMENT ---
+  const getLastUsedModel = () => {
+    try {
+      return localStorage.getItem('last-used-model-app-id');
+    } catch {
+      return null;
+    }
+  };
+
+  const setLastUsedModel = (appId: string) => {
+    try {
+      localStorage.setItem('last-used-model-app-id', appId);
+    } catch {
+      // 忽略localStorage错误
+    }
+  };
+
+  // --- BEGIN COMMENT ---
+  // 🎯 智能模型选择逻辑：
+  // 1. 如果当前应用是模型类型，直接使用
+  // 2. 如果当前应用不是模型类型，尝试恢复最后使用的模型
+  // 3. 如果没有最后使用的模型或该模型不可用，选择第一个可用模型
+  // --- END COMMENT ---
+  const currentApp = modelApps.find(app => app.id === currentAppId);
+  const isCurrentAppModel = !!currentApp;
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 智能验证和切换逻辑：
+  // 当从非模型应用回到聊天界面时，自动验证并切换到合适的模型
+  // 显示loading状态，就像重新进入页面一样
+  // --- END COMMENT ---
+  const [isAutoSwitching, setIsAutoSwitching] = useState(false);
+  
+  // 获取应该显示的模型应用
+  const getTargetModelApp = () => {
+    // 如果当前应用就是模型类型，直接使用
+    if (isCurrentAppModel) {
+      return currentApp;
+    }
+    
+    // 如果当前应用不是模型类型，尝试恢复最后使用的模型
+    const lastUsedModelId = getLastUsedModel();
+    if (lastUsedModelId) {
+      const lastUsedModel = modelApps.find(app => app.id === lastUsedModelId);
+      if (lastUsedModel) {
+        return lastUsedModel;
+      }
+    }
+    
+    // 如果没有最后使用的模型或该模型不可用，选择第一个可用模型
+    return modelApps.length > 0 ? modelApps[0] : null;
+  };
+
+  const targetModelApp = getTargetModelApp();
+  
+  // --- BEGIN COMMENT ---
   // 🎯 纯乐观UI应用切换：立即更新UI，无任何API调用
   // 发送消息时的验证会在handleSubmit中自动触发
   // --- END COMMENT ---
-  const handleAppChange = async (newAppId: string) => {
+  const handleAppChange = useCallback(async (newAppId: string) => {
     if (newAppId === currentAppId) {
       setIsOpen(false);
       // --- BEGIN COMMENT ---
@@ -68,6 +126,14 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       
       // 开始乐观切换状态（显示spinner）
       setIsOptimisticSwitching(true);
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 记录最后使用的模型（仅当切换到模型类型应用时）
+      // --- END COMMENT ---
+      const targetApp = modelApps.find(app => app.id === newAppId);
+      if (targetApp) {
+        setLastUsedModel(newAppId);
+      }
       
       // --- BEGIN COMMENT ---
       // 🎯 纯乐观UI：使用switchToSpecificApp方法进行切换
@@ -99,7 +165,64 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       // --- END COMMENT ---
       setTimeout(() => focusInput(), 0);
     }
+  }, [currentAppId, focusInput, modelApps, setLastUsedModel, switchToSpecificApp, clearMessages, router]);
+  
+  useEffect(() => {
+    // --- BEGIN COMMENT ---
+    // 🎯 修复：只在用户刚进入聊天页面且当前应用不是模型类型时才自动切换
+    // 不要在用户主动切换应用后立即强制切换回模型
+    // 添加延迟检查，避免干扰用户的主动操作
+    // --- END COMMENT ---
+    const timer = setTimeout(() => {
+      // 只有当前应用不是模型类型且有目标模型时才自动切换
+      // 但要确保这不是用户刚刚主动切换的结果
+      if (!isCurrentAppModel && targetModelApp && currentAppId && !isOptimisticSwitching && !isAutoSwitching) {
+        // 检查当前路径是否是聊天页面，只在聊天页面才自动切换
+        const isOnChatPage = window.location.pathname.startsWith('/chat');
+        
+        if (isOnChatPage) {
+          console.log(`在聊天页面检测到非模型应用 ${currentAppId}，自动切换到模型: ${targetModelApp.id}`);
+          
+          setIsAutoSwitching(true);
+          
+          handleAppChange(targetModelApp.id).finally(() => {
+            setIsAutoSwitching(false);
+          });
+        }
+      }
+    }, 500); // 延迟500ms，给用户操作留出时间
+
+    return () => clearTimeout(timer);
+  }, [isCurrentAppModel, targetModelApp?.id, currentAppId, isOptimisticSwitching, isAutoSwitching, handleAppChange]);
+
+  // --- BEGIN COMMENT ---
+  // 🎯 显示状态判断：
+  // 1. 如果正在验证或自动切换，显示loading状态
+  // 2. 如果当前应用是模型类型，显示当前模型名称
+  // 3. 如果有目标模型，显示目标模型名称
+  // 4. 否则显示默认文本
+  // --- END COMMENT ---
+  const getDisplayState = () => {
+    // 如果当前应用是模型类型，显示当前模型
+    if (isCurrentAppModel && currentApp) {
+      return { isLoading: false, name: currentApp.display_name || currentApp.instance_id };
+    }
+    
+    // 如果有目标模型，显示目标模型
+    if (targetModelApp) {
+      return { isLoading: false, name: targetModelApp.display_name || targetModelApp.instance_id };
+    }
+    
+    // 没有可用模型
+    if (modelApps.length === 0) {
+      return { isLoading: false, name: "暂无可用模型" };
+    }
+    
+    // 默认状态
+    return { isLoading: false, name: "选择模型" };
   };
+
+  const displayState = getDisplayState();
 
   // --- BEGIN COMMENT ---
   // 修改：处理下拉菜单的打开/关闭，确保操作后恢复焦点
@@ -136,15 +259,15 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   }, [focusInput]);
 
   // 获取当前选中的app名称
-  const currentApp = modelApps.find(app => app.id === currentAppId);
-  const currentAppName = currentApp?.display_name || '选择模型';
+  const currentAppName = displayState.name;
 
   // --- BEGIN COMMENT ---
   // 🎯 骨架屏：固定长度的响应式骨架屏
   // 移动端较短，桌面端较长
   // 🎯 修复：暗黑模式下使用更亮的颜色，确保与输入框背景有对比度
+  // 🎯 修改：把原来显示"验证中..."的时机改成显示骨架屏
   // --- END COMMENT ---
-  if (isLoading && modelApps.length === 0) {
+  if ((isLoading && modelApps.length === 0) || isValidating || isAutoSwitching) {
     return (
       <div className={cn("flex items-center", className)}>
         <div 
@@ -198,9 +321,10 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
         
         {/* --- BEGIN COMMENT ---
         右侧图标区域：固定宽度，显示v/反v或spinner
+        支持验证状态的spinner显示
         --- END COMMENT --- */}
         <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
-          {isOptimisticSwitching ? (
+          {(isOptimisticSwitching || isValidating || isAutoSwitching) ? (
             <Loader2 className="h-3 w-3 animate-spin" />
           ) : isOpen ? (
             <ChevronUp className="h-3 w-3" />
