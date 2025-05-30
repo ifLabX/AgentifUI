@@ -41,16 +41,26 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
     return app.appType === 'model' ? (
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center",
-        colors.sidebarBackground.tailwind
+        isDark 
+          ? "bg-stone-700" 
+          : "bg-stone-100"
       )}>
-        <Cpu className="w-6 h-6 text-blue-500" />
+        <Cpu className={cn(
+          "w-6 h-6",
+          isDark ? "text-stone-300" : "text-stone-600"
+        )} />
       </div>
     ) : (
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center",
-        colors.sidebarBackground.tailwind
+        isDark 
+          ? "bg-stone-600" 
+          : "bg-stone-200"
       )}>
-        <Blocks className="w-6 h-6 text-green-500" />
+        <Blocks className={cn(
+          "w-6 h-6",
+          isDark ? "text-stone-300" : "text-stone-600"
+        )} />
       </div>
     )
   }
@@ -60,14 +70,17 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
       onClick={() => onClick(app)}
       className={cn(
         "group cursor-pointer transition-all duration-300",
-        "bg-white rounded-2xl border border-stone-200",
-        "hover:shadow-xl hover:shadow-stone-200/50",
-        "hover:border-stone-300",
+        "rounded-2xl border",
+        "hover:shadow-xl",
         "hover:-translate-y-2 hover:scale-[1.02]",
-        isDark && [
-          "bg-stone-800 border-stone-700",
-          "hover:shadow-stone-900/50",
+        isDark ? [
+          "bg-stone-900 border-stone-700",
+          "hover:shadow-stone-950/50",
           "hover:border-stone-600"
+        ] : [
+          "bg-white border-stone-200",
+          "hover:shadow-stone-200/50",
+          "hover:border-stone-300"
         ],
         viewMode === 'list' && "flex items-center p-4 gap-4 hover:scale-100 hover:-translate-y-1"
       )}

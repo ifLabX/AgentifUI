@@ -41,26 +41,11 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
 
   // --- BEGIN COMMENT ---
   // 🎯 过滤出模型类型的应用
-  // 优先级：有元数据配置的模型 > 根据名称推断的模型
+  // 只保留配置了app_type为model的应用
   // --- END COMMENT ---
   const modelApps = apps.filter(app => {
     const metadata = app.config?.app_metadata;
-    
-    // 如果有元数据配置，检查是否为模型类型
-    if (metadata) {
-      return metadata.app_type === 'model';
-    }
-    
-    // 如果没有元数据配置，根据名称进行启发式判断
-    const appName = (app.display_name || app.instance_id).toLowerCase();
-    const modelKeywords = ['gpt', 'claude', 'gemini', 'llama', 'qwen', '通义', '模型', 'model', 'chat', '对话'];
-    const marketplaceKeywords = ['翻译', 'translate', '代码', 'code', '助手', 'assistant', '工具', 'tool', '生成', 'generate'];
-    
-    const isLikelyModel = modelKeywords.some(keyword => appName.includes(keyword));
-    const isLikelyMarketplace = marketplaceKeywords.some(keyword => appName.includes(keyword));
-    
-    // 只有明确是模型且不是应用市场应用才包含
-    return isLikelyModel && !isLikelyMarketplace;
+    return metadata?.app_type === 'model';
   });
 
   // --- BEGIN COMMENT ---

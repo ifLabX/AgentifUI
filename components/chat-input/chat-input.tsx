@@ -9,6 +9,7 @@ import { useChatLayoutStore } from "@lib/stores/chat-layout-store"
 import { useChatInputStore } from "@lib/stores/chat-input-store"
 import { useChatScrollStore } from "@lib/stores/chat-scroll-store"
 import { useAttachmentStore } from "@lib/stores/attachment-store"
+import { useAppListStore } from "@lib/stores/app-list-store"
 import { AttachmentPreviewBar } from "./attachment-preview-bar"
 import { INITIAL_INPUT_HEIGHT } from "@lib/stores/chat-layout-store"
 import { ChatButton } from "./button"
@@ -68,6 +69,16 @@ interface ChatInputProps {
   // 当为 true 时，使用闪烁效果而不是滑动
   // --- END COMMENT ---
   isTransitioningToWelcome?: boolean
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：是否需要模型验证
+  // 默认为true，在应用广场等不需要模型的场景可以设为false
+  // --- END COMMENT ---
+  requireModelValidation?: boolean
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：是否显示模型选择器
+  // 默认为true，在某些场景下可能不需要显示
+  // --- END COMMENT ---
+  showModelSelector?: boolean
 }
 
 export const ChatInput = ({
@@ -80,7 +91,9 @@ export const ChatInput = ({
   isWaitingForResponse = false,
   isWaiting = false,
   isWelcomeScreen: externalIsWelcomeScreen = false,
-  isTransitioningToWelcome = false
+  isTransitioningToWelcome = false,
+  requireModelValidation = true,
+  showModelSelector = true
 }: ChatInputProps) => {
   const { widthClass } = useChatWidth()
   const { setInputHeight } = useChatLayoutStore()
@@ -163,6 +176,24 @@ export const ChatInput = ({
     hasCurrentApp,
     isReady: isAppReady
   } = useCurrentApp();
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 检查是否有可用的模型以及是否选择了有效模型
+  // 只有在需要模型验证时才进行检查
+  // --- END COMMENT ---
+  const { apps } = useAppListStore();
+  const availableModels = apps.filter(app => {
+    const metadata = app.config?.app_metadata;
+    return metadata?.app_type === 'model';
+  });
+  const hasAvailableModels = availableModels.length > 0;
+  
+  // 检查当前选择的模型是否有效
+  const currentSelectedModel = availableModels.find(app => app.id === currentAppId);
+  const hasValidSelectedModel = !!currentSelectedModel;
+  
+  // 只有在需要模型验证时才检查模型状态
+  const canSubmitWithModel = !requireModelValidation || (hasAvailableModels && hasValidSelectedModel);
   // --- END 中文注释 ---
 
   // --- BEGIN COMMENT ---
@@ -275,7 +306,8 @@ export const ChatInput = ({
         isProcessing || // 正在处理上一条消息
         attachments.some(f => f.status === 'uploading') || // 有文件正在上传
         attachments.some(f => f.status === 'error') || // 有文件上传失败
-        !message.trim(); // 消息为空
+        !message.trim() || // 消息为空
+        !canSubmitWithModel; // 🎯 新增：没有可用模型或没有选择有效模型
       // --- END 中文注释 ---
 
       if (!shouldBlockSubmit) {
@@ -494,7 +526,7 @@ export const ChatInput = ({
           中间区域：应用选择器按钮，可以向左延伸
           --- END COMMENT --- */}
           <div className="flex-1 flex justify-end items-center space-x-2">
-            <AppSelectorButton />
+            {showModelSelector && <AppSelectorButton />}
             <ChatButton
               icon={
                 isWaiting || isValidatingConfig ? (
@@ -512,7 +544,8 @@ export const ChatInput = ({
                 isValidatingConfig || // 🎯 新增：验证期间禁用按钮
                 isUploading ||
                 hasError ||
-                (!isProcessing && !message.trim())
+                (!isProcessing && !message.trim()) ||
+                !canSubmitWithModel
               }
               isDark={isDark}
               ariaLabel={
@@ -520,6 +553,11 @@ export const ChatInput = ({
                 isProcessing ? "停止生成" : 
                 isUploading ? "正在上传..." : 
                 hasError ? "部分附件上传失败" : 
+                !canSubmitWithModel ? (
+                  requireModelValidation 
+                    ? (!hasAvailableModels ? "没有可用模型" : "请选择一个模型")
+                    : "无法提交"
+                ) :
                 "发送消息"
               }
               forceActiveStyle={isWaiting || isValidatingConfig}
