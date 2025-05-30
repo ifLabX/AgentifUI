@@ -151,7 +151,6 @@
 |--------|------|------|------|
 | id | UUID | 实例ID | 主键 |
 | provider_id | UUID | 提供商ID | 引用 providers(id) |
-| name | TEXT | 实例名称 | NOT NULL |
 | display_name | TEXT | 显示名称 | DEFAULT '' |
 | description | TEXT | 描述 | DEFAULT '' |
 | instance_id | TEXT | 实例标识符 | NOT NULL |

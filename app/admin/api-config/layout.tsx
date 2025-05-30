@@ -150,7 +150,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       return // 已经是默认应用，无需操作
     }
 
-    if (!confirm(`确定要将"${instanceToSet.display_name || instanceToSet.name}"设置为默认应用吗？`)) {
+    if (!confirm(`确定要将"${instanceToSet.display_name || instanceToSet.instance_id}"设置为默认应用吗？`)) {
       return
     }
 

@@ -85,7 +85,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       // 创建服务实例
       const newInstanceResult = await createServiceInstance({
         provider_id: instance.provider_id || '1', // 默认提供商ID
-        name: instance.name || instance.display_name || '',
         display_name: instance.display_name || '',
         description: instance.description || '',
         instance_id: instance.instance_id || '',
@@ -158,7 +157,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       
       // 更新服务实例
       const updatedInstanceResult = await updateServiceInstance(id, {
-        name: instance.name || instance.display_name || existingInstance.name,
         display_name: instance.display_name !== undefined ? instance.display_name : existingInstance.display_name,
         description: instance.description !== undefined ? instance.description : existingInstance.description,
         api_path: instance.api_path || existingInstance.api_path,
@@ -321,21 +319,16 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         serviceInstances.push(...providerInstances);
       }
       
-      // --- 排序服务实例：默认应用排在前面 ---
-      const sortedServiceInstances = serviceInstances.sort((a, b) => {
-        // 首先按是否默认排序（默认的在前）
-        if (a.is_default !== b.is_default) {
-          return a.is_default ? -1 : 1;
-        }
-        // 然后按名称排序
-        return (a.display_name || a.name).localeCompare(b.display_name || b.name);
-      });
+      // 按显示名称排序
+      const sortedServiceInstances = serviceInstances.sort((a, b) => 
+        (a.display_name || a.instance_id).localeCompare(b.display_name || b.instance_id)
+      );
       
       // 获取每个服务实例的API密钥
       const apiKeys: ApiKey[] = [];
       for (const instance of sortedServiceInstances) {
         const apiKeyResult = await getApiKeyByServiceInstance(instance.id);
-        const apiKey = handleResult(apiKeyResult, `获取服务实例 ${instance.name} 的 API 密钥`);
+        const apiKey = handleResult(apiKeyResult, `获取服务实例 ${instance.display_name || instance.instance_id} 的 API 密钥`);
         if (apiKey) {
           apiKeys.push(apiKey);
         }

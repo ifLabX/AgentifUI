@@ -209,7 +209,7 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
       apiKey: decryptedKey,
       apiUrl: provider.base_url,
       appId: instance.instance_id,
-      displayName: instance.display_name || instance.name,
+      displayName: instance.display_name || instance.instance_id,
       description: instance.description
     };
     

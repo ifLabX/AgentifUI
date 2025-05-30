@@ -278,15 +278,14 @@ export const useCurrentAppStore = create<CurrentAppState>()(
           
           // 检查当前配置是否与目标配置一致
           // 🎯 修复：不仅检查ID，还要检查实例的详细信息是否有变化
-          const needsUpdate = 
+          const hasInstanceChanged = (
             currentState.currentAppId !== targetInstance.instance_id ||
-            currentState.currentAppInstance?.id !== targetInstance.id ||
             currentState.currentAppInstance?.display_name !== targetInstance.display_name ||
             currentState.currentAppInstance?.description !== targetInstance.description ||
-            currentState.currentAppInstance?.name !== targetInstance.name ||
-            JSON.stringify(currentState.currentAppInstance?.config || {}) !== JSON.stringify(targetInstance.config || {});
-            
-          if (needsUpdate) {
+            currentState.currentAppInstance?.config !== targetInstance.config
+          );
+          
+          if (hasInstanceChanged) {
             console.log('[validateAndRefreshConfig] 配置已变更，更新为最新配置');
             
             // --- BEGIN COMMENT ---

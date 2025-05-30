@@ -107,7 +107,7 @@ export async function getAllDifyApps(): Promise<Array<{id: string, name: string,
     
     return instances?.map(instance => ({
       id: instance.instance_id,
-      name: instance.display_name || instance.name,
+      name: instance.display_name || instance.instance_id,
       description: instance.description
     })) || [];
     

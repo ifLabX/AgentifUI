@@ -213,7 +213,6 @@ export interface ServiceInstanceConfig {
 export interface ServiceInstance {
   id: string;
   provider_id: string;
-  name: string;
   display_name: string | null;
   description: string | null;
   instance_id: string;

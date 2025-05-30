@@ -52,7 +52,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
     }
     
     // 如果没有元数据配置，根据名称进行启发式判断
-    const appName = (app.display_name || app.name || app.instance_id).toLowerCase();
+    const appName = (app.display_name || app.instance_id).toLowerCase();
     const modelKeywords = ['gpt', 'claude', 'gemini', 'llama', 'qwen', '通义', '模型', 'model', 'chat', '对话'];
     const marketplaceKeywords = ['翻译', 'translate', '代码', 'code', '助手', 'assistant', '工具', 'tool', '生成', 'generate'];
     
@@ -152,7 +152,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
 
   // 获取当前选中的app名称
   const currentApp = modelApps.find(app => app.id === currentAppId);
-  const currentAppName = currentApp?.display_name || currentApp?.name || '选择模型';
+  const currentAppName = currentApp?.display_name || '选择模型';
 
   // --- BEGIN COMMENT ---
   // 🎯 骨架屏：固定长度的响应式骨架屏
@@ -286,7 +286,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
                     )
                   )}
                 >
-                  {app.display_name || app.name}
+                  {app.display_name || app.instance_id}
                 </button>
               ))
             )}
