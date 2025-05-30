@@ -115,7 +115,6 @@ const InstanceForm = ({
       api_url: instance?.config?.api_url || '',
       app_metadata: {
         app_type: instance?.config?.app_metadata?.app_type || 'model',
-        is_common_model: instance?.config?.app_metadata?.is_common_model || false,
         tags: instance?.config?.app_metadata?.tags || [],
       },
       dify_parameters: instance?.config?.dify_parameters || {}
@@ -137,7 +136,6 @@ const InstanceForm = ({
           api_url: instance.config?.api_url || '',
           app_metadata: {
             app_type: instance.config?.app_metadata?.app_type || 'model',
-            is_common_model: instance.config?.app_metadata?.is_common_model || false,
             tags: instance.config?.app_metadata?.tags || [],
           },
           dify_parameters: instance.config?.dify_parameters || {}
@@ -154,7 +152,6 @@ const InstanceForm = ({
           api_url: '',
           app_metadata: {
             app_type: 'model',
-            is_common_model: false,
             tags: [],
           },
           dify_parameters: {}
@@ -165,7 +162,21 @@ const InstanceForm = ({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ ...formData, setAsDefault });
+    
+    // --- 自动设置 is_marketplace_app 字段与 app_type 保持一致 ---
+    const dataToSave = {
+      ...formData,
+      config: {
+        ...formData.config,
+        app_metadata: {
+          ...formData.config.app_metadata,
+          is_marketplace_app: formData.config.app_metadata.app_type === 'marketplace'
+        }
+      },
+      setAsDefault
+    };
+    
+    onSave(dataToSave);
   };
 
   const handleDifyParametersSave = (difyConfig: any) => {
@@ -496,6 +507,242 @@ const InstanceForm = ({
             )}>
               选择"模型"类型的应用会出现在聊天界面的模型选择器中
             </p>
+          </div>
+
+          {/* 应用标签配置 - 紧凑设计 */}
+          <div>
+            <label className={cn(
+              "block text-sm font-medium mb-3 font-serif",
+              isDark ? "text-stone-300" : "text-stone-700"
+            )}>
+              应用标签 (tags)
+            </label>
+            <div className="space-y-3">
+              {/* 预定义标签选择 - 按类别分组 */}
+              <div className="space-y-3">
+                {/* 模型类型 */}
+                <div>
+                  <div className={cn(
+                    "text-xs font-medium mb-2 font-serif",
+                    isDark ? "text-stone-400" : "text-stone-600"
+                  )}>
+                    模型类型
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      '对话模型', '代码模型', '文档模型', '多模态'
+                    ].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          const isSelected = formData.config.app_metadata.tags.includes(tag)
+                          setFormData(prev => ({
+                            ...prev,
+                            config: {
+                              ...prev.config,
+                              app_metadata: {
+                                ...prev.config.app_metadata,
+                                tags: isSelected
+                                  ? prev.config.app_metadata.tags.filter(t => t !== tag)
+                                  : [...prev.config.app_metadata.tags, tag]
+                              }
+                            }
+                          }))
+                        }}
+                        className={cn(
+                          "px-2 py-1.5 rounded text-xs font-medium font-serif transition-colors cursor-pointer",
+                          formData.config.app_metadata.tags.includes(tag)
+                            ? isDark
+                              ? "bg-stone-600 text-stone-200 border border-stone-500"
+                              : "bg-stone-200 text-stone-800 border border-stone-300"
+                            : isDark
+                              ? "bg-stone-700/50 text-stone-400 border border-stone-600 hover:bg-stone-700"
+                              : "bg-stone-50 text-stone-600 border border-stone-300 hover:bg-stone-100"
+                        )}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 应用场景 */}
+                <div>
+                  <div className={cn(
+                    "text-xs font-medium mb-2 font-serif",
+                    isDark ? "text-stone-400" : "text-stone-600"
+                  )}>
+                    应用场景
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      '文本生成', '代码生成', '数据分析', '翻译'
+                    ].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          const isSelected = formData.config.app_metadata.tags.includes(tag)
+                          setFormData(prev => ({
+                            ...prev,
+                            config: {
+                              ...prev.config,
+                              app_metadata: {
+                                ...prev.config.app_metadata,
+                                tags: isSelected
+                                  ? prev.config.app_metadata.tags.filter(t => t !== tag)
+                                  : [...prev.config.app_metadata.tags, tag]
+                              }
+                            }
+                          }))
+                        }}
+                        className={cn(
+                          "px-2 py-1.5 rounded text-xs font-medium font-serif transition-colors cursor-pointer",
+                          formData.config.app_metadata.tags.includes(tag)
+                            ? isDark
+                              ? "bg-stone-600 text-stone-200 border border-stone-500"
+                              : "bg-stone-200 text-stone-800 border border-stone-300"
+                            : isDark
+                              ? "bg-stone-700/50 text-stone-400 border border-stone-600 hover:bg-stone-700"
+                              : "bg-stone-50 text-stone-600 border border-stone-300 hover:bg-stone-100"
+                        )}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 技术特性 */}
+                <div>
+                  <div className={cn(
+                    "text-xs font-medium mb-2 font-serif",
+                    isDark ? "text-stone-400" : "text-stone-600"
+                  )}>
+                    技术特性
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      '高精度', '快速响应', '本地部署', '企业级'
+                    ].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          const isSelected = formData.config.app_metadata.tags.includes(tag)
+                          setFormData(prev => ({
+                            ...prev,
+                            config: {
+                              ...prev.config,
+                              app_metadata: {
+                                ...prev.config.app_metadata,
+                                tags: isSelected
+                                  ? prev.config.app_metadata.tags.filter(t => t !== tag)
+                                  : [...prev.config.app_metadata.tags, tag]
+                              }
+                            }
+                          }))
+                        }}
+                        className={cn(
+                          "px-2 py-1.5 rounded text-xs font-medium font-serif transition-colors cursor-pointer",
+                          formData.config.app_metadata.tags.includes(tag)
+                            ? isDark
+                              ? "bg-stone-600 text-stone-200 border border-stone-500"
+                              : "bg-stone-200 text-stone-800 border border-stone-300"
+                            : isDark
+                              ? "bg-stone-700/50 text-stone-400 border border-stone-600 hover:bg-stone-700"
+                              : "bg-stone-50 text-stone-600 border border-stone-300 hover:bg-stone-100"
+                        )}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* 自定义标签输入 - 更小的输入框 */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="自定义标签（回车添加）"
+                  className={cn(
+                    "flex-1 px-2 py-1.5 rounded border font-serif text-xs",
+                    isDark 
+                      ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                      : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                  )}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const input = e.target as HTMLInputElement
+                      const tag = input.value.trim()
+                      if (tag && !formData.config.app_metadata.tags.includes(tag)) {
+                        setFormData(prev => ({
+                          ...prev,
+                          config: {
+                            ...prev.config,
+                            app_metadata: {
+                              ...prev.config.app_metadata,
+                              tags: [...prev.config.app_metadata.tags, tag]
+                            }
+                          }
+                        }))
+                        input.value = ''
+                      }
+                    }
+                  }}
+                />
+              </div>
+              
+              {/* 已选标签显示 - 更小的标签 */}
+              {formData.config.app_metadata.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {formData.config.app_metadata.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className={cn(
+                        "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium font-serif",
+                        isDark 
+                          ? "bg-stone-700 text-stone-300 border border-stone-600" 
+                          : "bg-stone-100 text-stone-700 border border-stone-300"
+                      )}
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            config: {
+                              ...prev.config,
+                              app_metadata: {
+                                ...prev.config.app_metadata,
+                                tags: prev.config.app_metadata.tags.filter((_, i) => i !== index)
+                              }
+                            }
+                          }))
+                        }}
+                        className={cn(
+                          "hover:bg-red-500 hover:text-white rounded-full p-0.5 transition-colors",
+                          isDark ? "text-stone-400" : "text-stone-500"
+                        )}
+                      >
+                        <X className="h-2 w-2" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              
+              <p className={cn(
+                "text-xs font-serif",
+                isDark ? "text-stone-400" : "text-stone-500"
+              )}>
+                标签用于应用分类和搜索
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
