@@ -57,9 +57,9 @@ const Toast = ({ feedback, onClose }: { feedback: FeedbackState; onClose: () => 
   if (!feedback.open) return null;
   
   return (
-    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 max-w-sm w-full mx-4">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-sm w-full mx-4">
       <div className={cn(
-        "rounded-lg p-4 shadow-lg border animate-in zoom-in-95 duration-200",
+        "rounded-lg p-4 shadow-lg border animate-in slide-in-from-top-2",
         feedback.severity === 'success' && "bg-green-500 text-white border-green-600",
         feedback.severity === 'error' && "bg-red-500 text-white border-red-600",
         feedback.severity === 'warning' && "bg-yellow-500 text-white border-yellow-600",
