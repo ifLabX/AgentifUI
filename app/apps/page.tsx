@@ -22,7 +22,8 @@ import {
 import { useFavoriteAppsStore } from "@lib/stores/favorite-apps-store"
 import { useAppListStore } from "@lib/stores/app-list-store"
 
-// 🎯 使用真实的应用数据类型，与useAppListStore保持一致
+// 🎯 应用市场卡片显示的核心信息
+// 只包含卡片中需要展示的必要字段
 interface AppInstance {
   instanceId: string
   displayName: string
@@ -30,10 +31,11 @@ interface AppInstance {
   appType: 'model' | 'marketplace'
   iconUrl?: string
   category?: string
+  tags?: string[]
+  // 展示用的辅助信息
   isPopular?: boolean
   userCount?: number
   lastUsed?: string
-  tags?: string[]
 }
 
 export default function AppsPage() {
@@ -89,7 +91,7 @@ export default function AppsPage() {
         iconUrl: metadata?.icon_url,
         category: metadata?.tags?.[0] || '工具',
         tags: metadata?.tags || [],
-        // 模拟一些展示数据
+        // 展示用的辅助信息
         isPopular: metadata?.is_common_model || false,
         userCount: Math.floor(Math.random() * 1000) + 100,
         lastUsed: new Date().toISOString().split('T')[0]
