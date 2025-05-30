@@ -14,7 +14,6 @@ import {
   Star,
   ArrowRight,
   Sparkles,
-  Users,
   Plus,
   Store,
   Cpu
@@ -34,7 +33,6 @@ interface AppInstance {
   tags?: string[]
   // 展示用的辅助信息
   isPopular?: boolean
-  userCount?: number
   lastUsed?: string
 }
 
@@ -89,17 +87,35 @@ export default function AppsPage() {
         description: metadata?.brief_description || app.description || difyParams?.opening_statement || '暂无描述',
         appType: 'marketplace' as const,
         iconUrl: metadata?.icon_url,
-        category: metadata?.tags?.[0] || '工具',
+        category: metadata?.tags?.[0] || '未分类',
         tags: metadata?.tags || [],
         // 展示用的辅助信息
         isPopular: metadata?.is_common_model || false,
-        userCount: Math.floor(Math.random() * 1000) + 100,
         lastUsed: new Date().toISOString().split('T')[0]
       }
     })
 
-  // 🎯 从应用数据中提取分类列表
-  const categories = ['全部', ...Array.from(new Set(apps.map(app => app.category).filter(cat => cat && cat.trim())))]
+  // 🎯 从应用数据中提取所有tags作为分类列表
+  const allTags = new Set<string>()
+  apps.forEach(app => {
+    if (app.tags && app.tags.length > 0) {
+      app.tags.forEach(tag => allTags.add(tag))
+    }
+  })
+  
+  // 检查是否有未分类的应用，如果有则添加"未分类"选项
+  const hasUncategorizedApps = apps.some(app => !app.tags || app.tags.length === 0)
+  
+  // 检查是否有常用应用
+  const { favoriteApps } = useFavoriteAppsStore()
+  const hasFavoriteApps = favoriteApps.length > 0
+  
+  const categories = [
+    '全部', 
+    ...(hasFavoriteApps ? ['常用应用'] : []),
+    ...Array.from(allTags).sort(),
+    ...(hasUncategorizedApps ? ['未分类'] : [])
+  ]
 
   // 过滤和搜索逻辑
   const filteredApps = apps.filter(app => {
@@ -107,16 +123,29 @@ export default function AppsPage() {
                          app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     
-    const matchesCategory = selectedCategory === "全部" || app.category === selectedCategory
+    // 修改分类匹配逻辑：检查应用的所有tags是否包含选中的分类
+    const matchesCategory = selectedCategory === "全部" || 
+                           (selectedCategory === "常用应用" && favoriteApps.some(fav => fav.instanceId === app.instanceId)) ||
+                           (app.tags && app.tags.includes(selectedCategory)) ||
+                           (selectedCategory === "未分类" && (!app.tags || app.tags.length === 0))
     
     return matchesSearch && matchesCategory
   })
 
-  // 排序逻辑
+  // 排序逻辑 - 常用应用置顶
   const sortedApps = [...filteredApps].sort((a, b) => {
+    // 首先按是否为常用应用排序（常用应用置顶）
+    const aIsFavorite = favoriteApps.some(fav => fav.instanceId === a.instanceId)
+    const bIsFavorite = favoriteApps.some(fav => fav.instanceId === b.instanceId)
+    
+    if (aIsFavorite && !bIsFavorite) return -1
+    if (!aIsFavorite && bIsFavorite) return 1
+    
+    // 如果都是常用应用或都不是，则按原有排序规则
     switch (sortBy) {
       case 'popular':
-        return (b.userCount || 0) - (a.userCount || 0)
+        // 移除用户数量排序，改为按名称排序
+        return a.displayName.localeCompare(b.displayName)
       case 'recent':
         return new Date(b.lastUsed || 0).getTime() - new Date(a.lastUsed || 0).getTime()
       case 'name':
@@ -321,25 +350,92 @@ export default function AppsPage() {
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               : "space-y-4"
           )}>
-            {sortedApps.map((app) => (
+            {sortedApps.map((app) => {
+              // 检查是否为常用应用
+              const isFavoriteApp = favoriteApps.some(fav => fav.instanceId === app.instanceId)
+              
+              return (
               <div
                 key={app.instanceId}
                 onClick={() => handleOpenApp(app)}
                 className={cn(
-                  "group cursor-pointer transition-all duration-200",
-                  "bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700",
-                  "hover:shadow-lg hover:border-stone-300 dark:hover:border-stone-600",
-                  "hover:-translate-y-1",
-                  viewMode === 'list' && "flex items-center p-4 gap-4"
+                  "group cursor-pointer transition-all duration-300",
+                  "bg-white dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700",
+                  "hover:shadow-xl hover:shadow-stone-200/50 dark:hover:shadow-stone-900/50",
+                  "hover:border-stone-300 dark:hover:border-stone-600",
+                  "hover:-translate-y-2 hover:scale-[1.02]",
+                  viewMode === 'list' && "flex items-center p-4 gap-4 hover:scale-100 hover:-translate-y-1"
                 )}
               >
                 {viewMode === 'grid' ? (
                   <div className="p-6">
-                    {/* 应用图标和基本信息 */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
+                    {/* 顶部区域：图标、标题和star */}
+                    <div className="flex items-start gap-3 mb-4">
+                      {/* 应用图标 */}
+                      <div className="flex-shrink-0">
                         {getAppIcon(app)}
-                        <div className="flex-1 min-w-0">
+                      </div>
+                      
+                      {/* 标题和分类 */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-stone-900 dark:text-stone-100 truncate font-serif mb-1">
+                          {app.displayName}
+                        </h3>
+                        <p className="text-sm text-stone-600 dark:text-stone-400 font-serif">
+                          {app.category}
+                        </p>
+                      </div>
+                      
+                      {/* 常用标志 - 固定位置不被挤压 */}
+                      <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+                        {isFavoriteApp && (
+                          <Star className="w-5 h-5 text-stone-600 dark:text-stone-400 fill-current" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 应用描述 */}
+                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-4 line-clamp-2 font-serif leading-relaxed">
+                      {app.description}
+                    </p>
+
+                    {/* 标签区域 - 固定高度确保一致性 */}
+                    <div className="min-h-[2rem] mb-4">
+                      {app.tags && app.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {app.tags.slice(0, 3).map((tag, index) => (
+                            <span
+                              key={index}
+                              className="px-2.5 py-1 text-xs rounded-full bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-400 font-serif font-medium"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {app.tags.length > 3 && (
+                            <span className="px-2.5 py-1 text-xs rounded-full bg-stone-200 dark:bg-stone-600 text-stone-500 dark:text-stone-500 font-serif font-medium">
+                              +{app.tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                    </div>
+
+                    {/* 底部箭头 */}
+                    <div className="flex items-center justify-end pt-2">
+                      <ArrowRight className="w-4 h-4 text-stone-400 group-hover:translate-x-1 group-hover:text-stone-600 transition-all duration-200" />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* 列表视图 */}
+                    <div className="flex-shrink-0">
+                      {getAppIcon(app)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1 min-w-0 pr-3">
                           <h3 className="font-semibold text-stone-900 dark:text-stone-100 truncate font-serif">
                             {app.displayName}
                           </h3>
@@ -347,74 +443,24 @@ export default function AppsPage() {
                             {app.category}
                           </p>
                         </div>
-                      </div>
-                      {app.isPopular && (
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      )}
-                    </div>
-
-                    {/* 应用描述 */}
-                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-4 line-clamp-2 font-serif">
-                      {app.description}
-                    </p>
-
-                    {/* 标签 */}
-                    {app.tags && app.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {app.tags.slice(0, 3).map((tag, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-400 font-serif"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {app.tags.length > 3 && (
-                          <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-400 font-serif">
-                            +{app.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* 底部信息 */}
-                    <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-500">
-                      <div className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        <span className="font-serif">{app.userCount} 用户</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {/* 列表视图 */}
-                    {getAppIcon(app)}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-stone-900 dark:text-stone-100 truncate font-serif">
-                          {app.displayName}
-                        </h3>
-                        {app.isPopular && (
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                        )}
-                      </div>
-                      <p className="text-sm text-stone-600 dark:text-stone-400 mb-2 line-clamp-1 font-serif">
-                        {app.description}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-stone-500 dark:text-stone-500">
-                        <span className="font-serif">{app.category}</span>
-                        <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          <span className="font-serif">{app.userCount} 用户</span>
+                        <div className="flex-shrink-0">
+                          {isFavoriteApp && (
+                            <Star className="w-4 h-4 text-stone-600 dark:text-stone-400 fill-current" />
+                          )}
                         </div>
                       </div>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-1 font-serif">
+                        {app.description}
+                      </p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-stone-400 group-hover:translate-x-1 transition-transform" />
+                    <div className="flex-shrink-0 ml-4">
+                      <ArrowRight className="w-5 h-5 text-stone-400 group-hover:translate-x-1 group-hover:text-stone-600 transition-all duration-200" />
+                    </div>
                   </>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
