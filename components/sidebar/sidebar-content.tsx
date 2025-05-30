@@ -6,6 +6,7 @@ import { useTheme } from "@lib/hooks/use-theme"
 import { useMobile } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { SidebarChatList } from "./sidebar-chat-list"
+import { SidebarFavoriteApps } from "./sidebar-favorite-apps"
 import { useRouter } from "next/navigation"
 import { useChatStore } from "@lib/stores/chat-store"
 import { useChatInputStore } from "@lib/stores/chat-input-store"
@@ -13,7 +14,7 @@ import { useChatInputStore } from "@lib/stores/chat-input-store"
 /**
  * 侧边栏内容组件
  * 
- * 管理侧边栏主要内容区域，主要包含聊天列表
+ * 管理侧边栏主要内容区域，包含常用应用和聊天列表
  * 提供选中状态管理，并负责将状态传递给子组件
  */
 export function SidebarContent() {
@@ -66,8 +67,6 @@ export function SidebarContent() {
     router.push(`/chat/${chatId}`)
   }, [selectItem, setCurrentConversationId, setIsWelcomeScreen, router])
 
-
-
   return (
     <div className="relative flex-1 overflow-hidden">
       {/* Top Divider - Animates opacity based on contentVisible, add invisible for robust hiding */}
@@ -81,7 +80,7 @@ export function SidebarContent() {
       {/* Scrollable Content Area */}
       <div
         className={cn(
-          "absolute inset-0 flex flex-col gap-6 overflow-y-auto pb-4 pt-4",
+          "absolute inset-0 flex flex-col overflow-y-auto pb-4 pt-4",
           "scrollbar-thin scrollbar-track-transparent",
           isDark ? "scrollbar-thumb-gray-600" : "scrollbar-thumb-accent",
           // 在移动端上不应用动画效果，直接显示
@@ -99,13 +98,23 @@ export function SidebarContent() {
             : "hidden" // 折叠时直接隐藏
         )}
       >
-        {/* Chat List Section */}
-        <SidebarChatList 
-          isDark={isDark ?? false}
-          contentVisible={contentVisible}
-          selectedId={selectedType === 'chat' ? String(selectedId) : null}
-          onSelectChat={handleSelectChat}
-        />
+        {/* 常用应用区域 */}
+        <div className="px-3 mb-4">
+          <SidebarFavoriteApps 
+            isDark={isDark ?? false}
+            contentVisible={contentVisible}
+          />
+        </div>
+
+        {/* 对话列表区域 */}
+        <div className="flex-1 min-h-0">
+          <SidebarChatList 
+            isDark={isDark ?? false}
+            contentVisible={contentVisible}
+            selectedId={selectedType === 'chat' ? String(selectedId) : null}
+            onSelectChat={handleSelectChat}
+          />
+        </div>
       </div>
 
       {/* Bottom Divider - Animates opacity based on contentVisible, add invisible for robust hiding */}
