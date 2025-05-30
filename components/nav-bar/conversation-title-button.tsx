@@ -1,14 +1,16 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useParams } from 'next/navigation';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { useCombinedConversations, CombinedConversation, conversationEvents } from '@lib/hooks/use-combined-conversations';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
-import { ChevronDown, ChevronUp, Edit, Trash } from 'lucide-react';
+import { ChevronDown, ChevronUp, Edit, Trash, Star, Blocks } from 'lucide-react';
 import { ConfirmDialog, InputDialog } from '@components/ui';
+import { useAppListStore } from '@lib/stores/app-list-store';
+import { useFavoriteAppsStore } from '@lib/stores/favorite-apps-store';
 
 interface ConversationTitleButtonProps {
   className?: string;
@@ -17,12 +19,19 @@ interface ConversationTitleButtonProps {
 export function ConversationTitleButton({ className }: ConversationTitleButtonProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
   const { currentConversationId } = useChatStore();
   const { isExpanded, isLocked, isHovering } = useSidebarStore();
   const { conversations, refresh } = useCombinedConversations();
   const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isOperating, setIsOperating] = useState(false);
+  
+  // --- BEGIN COMMENT ---
+  // 应用相关状态
+  // --- END COMMENT ---
+  const { apps } = useAppListStore();
+  const { favoriteApps, addFavoriteApp, removeFavoriteApp, isFavorite } = useFavoriteAppsStore();
   
   // --- BEGIN COMMENT ---
   // 模态框状态管理
@@ -43,6 +52,22 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
     // 排除 /chat/new 页面
     return conversationId !== 'new' && conversationId !== 'recents';
   }, [pathname]);
+
+  // --- BEGIN COMMENT ---
+  // 检查是否为应用详情页面：/apps/[instanceId] 格式
+  // --- END COMMENT ---
+  const isAppDetailPage = React.useMemo(() => {
+    if (!pathname) return false;
+    return pathname.match(/^\/apps\/[^\/]+$/);
+  }, [pathname]);
+
+  // --- BEGIN COMMENT ---
+  // 获取当前应用信息（应用详情页面使用）
+  // --- END COMMENT ---
+  const currentApp = React.useMemo(() => {
+    if (!isAppDetailPage || !params.instanceId) return null;
+    return apps.find(app => app.instance_id === params.instanceId);
+  }, [isAppDetailPage, params.instanceId, apps]);
 
   // --- BEGIN COMMENT ---
   // 获取当前对话信息 - 使用与sidebar相同的数据源，但添加备用机制
@@ -242,7 +267,139 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
   };
 
   // --- BEGIN COMMENT ---
-  // 条件渲染：只在历史对话页面且有当前对话ID时显示
+  // 处理应用收藏操作（应用详情页面使用）
+  // --- END COMMENT ---
+  const handleToggleFavorite = async () => {
+    if (!currentApp) return;
+    
+    try {
+      const instanceId = currentApp.instance_id;
+      const appMetadata = currentApp.config?.app_metadata;
+      
+      if (isFavorite(instanceId)) {
+        removeFavoriteApp(instanceId);
+      } else {
+        await addFavoriteApp({
+          instanceId: currentApp.instance_id,
+          displayName: currentApp.display_name || currentApp.instance_id,
+          description: appMetadata?.brief_description || currentApp.description,
+          iconUrl: appMetadata?.icon_url,
+          appType: appMetadata?.app_type || 'marketplace'
+        });
+      }
+    } catch (error) {
+      console.error('收藏操作失败:', error);
+    }
+  };
+
+  // --- BEGIN COMMENT ---
+  // 条件渲染：在历史对话页面显示对话标题，在应用详情页面显示应用信息
+  // --- END COMMENT ---
+  if (isAppDetailPage && currentApp) {
+    // 应用详情页面渲染
+    const appMetadata = currentApp.config?.app_metadata;
+    const instanceId = currentApp.instance_id;
+    
+    return (
+      <div className={cn(
+        "flex items-center gap-3 transition-all duration-300 ease-in-out",
+        shouldHide ? "opacity-0 -translate-x-2 pointer-events-none" : "opacity-100 translate-x-0",
+        className
+      )}>
+        {/* 应用图标 */}
+        {appMetadata?.icon_url ? (
+          <img 
+            src={appMetadata.icon_url} 
+            alt={currentApp.display_name || currentApp.instance_id}
+            className="w-6 h-6 rounded-md object-cover flex-shrink-0"
+          />
+        ) : (
+          <div className={cn(
+            "w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0",
+            isDark ? "bg-stone-700" : "bg-stone-200"
+          )}>
+            <Blocks className={cn(
+              "w-3 h-3",
+              isDark ? "text-stone-300" : "text-stone-600"
+            )} />
+          </div>
+        )}
+        
+        {/* 应用信息 */}
+        <div className="min-w-0 flex-1">
+          <h1 className={cn(
+            "font-medium font-serif truncate text-sm",
+            isDark ? "text-stone-100" : "text-stone-900"
+          )}>
+            {currentApp.display_name || currentApp.instance_id}
+          </h1>
+          {appMetadata?.brief_description && (
+            <p className={cn(
+              "text-xs font-serif truncate",
+              isDark ? "text-stone-400" : "text-stone-600"
+            )}>
+              {appMetadata.brief_description}
+            </p>
+          )}
+        </div>
+        
+        {/* 标签 */}
+        {appMetadata?.tags && appMetadata.tags.length > 0 && (
+          <div className="hidden lg:flex gap-1 flex-shrink-0">
+            {appMetadata.tags.slice(0, 2).map((tag: string, index: number) => (
+              <span
+                key={index}
+                className={cn(
+                  "px-2 py-0.5 rounded-full text-xs font-serif",
+                  isDark 
+                    ? "bg-stone-700 text-stone-300" 
+                    : "bg-stone-100 text-stone-700"
+                )}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+        
+        {/* 收藏按钮 */}
+        <button
+          onClick={handleToggleFavorite}
+          className={cn(
+            "p-1.5 rounded-md transition-colors flex-shrink-0",
+            isFavorite(instanceId)
+              ? isDark
+                ? "bg-stone-700 text-stone-300"
+                : "bg-stone-200 text-stone-700"
+              : isDark
+                ? "hover:bg-stone-700 text-stone-500 hover:text-stone-300"
+                : "hover:bg-stone-200 text-stone-400 hover:text-stone-600"
+          )}
+        >
+          <Star className={cn(
+            "w-3.5 h-3.5",
+            isFavorite(instanceId) && "fill-current"
+          )} />
+        </button>
+        
+        {/* 返回按钮 */}
+        <button
+          onClick={() => router.push('/apps')}
+          className={cn(
+            "px-2 py-1 rounded-md transition-colors text-xs font-serif flex-shrink-0",
+            isDark 
+              ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
+              : "hover:bg-stone-200 text-stone-600 hover:text-stone-900"
+          )}
+        >
+          应用广场
+        </button>
+      </div>
+    );
+  }
+
+  // --- BEGIN COMMENT ---
+  // 历史对话页面渲染：只在历史对话页面且有当前对话ID时显示
   // --- END COMMENT ---
   if (!isHistoricalChatPage || !currentConversationId || !finalConversation) {
     return null;
