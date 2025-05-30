@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams, usePathname } from "next/navigation"
-import { useMobile, useChatWidth, useChatStateSync } from "@lib/hooks"
+import { useMobile, useChatWidth, useChatStateSync, useChatInterface } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { 
   Loader2,
@@ -26,6 +26,21 @@ export default function AppDetailPage() {
   const params = useParams()
   const pathname = usePathname()
   const instanceId = params.instanceId as string
+  
+  // --- BEGIN COMMENT ---
+  // 获取用户资料，用于欢迎界面显示
+  // --- END COMMENT ---
+  const { profile } = useProfile()
+  
+  // --- BEGIN COMMENT ---
+  // 使用聊天接口逻辑，发送消息后跳转到对话页面
+  // --- END COMMENT ---
+  const {
+    handleSubmit,
+    isProcessing,
+    isWaitingForResponse,
+    handleStopProcessing,
+  } = useChatInterface()
   
   // --- BEGIN COMMENT ---
   // 同步主题状态到ChatInput，确保主题切换后样式正确
@@ -55,7 +70,6 @@ export default function AppDetailPage() {
     error: appError 
   } = useCurrentApp()
   const { clearMessages } = useChatStore()
-  const { profile } = useProfile()
   
   // --- BEGIN COMMENT ---
   // 获取当前应用实例数据
@@ -121,13 +135,16 @@ export default function AppDetailPage() {
   }, [selectItem])
   
   // --- BEGIN COMMENT ---
-  // 处理消息提交
+  // 包装handleSubmit，在发送消息后跳转到对话页面
   // --- END COMMENT ---
-  const handleSubmit = (message: string) => {
-    // 清空当前消息并开始新对话
-    clearMessages()
-    // 跳转到聊天页面并发送消息
-    router.push(`/chat/new?message=${encodeURIComponent(message)}`)
+  const wrappedHandleSubmit = async (message: string, files?: any[]) => {
+    try {
+      // 调用原始的handleSubmit，它会创建对话并发送消息
+      await handleSubmit(message, files)
+      // handleSubmit内部会处理路由跳转到新创建的对话页面
+    } catch (error) {
+      console.error('[AppDetail] 发送消息失败:', error)
+    }
   }
   
   // --- BEGIN COMMENT ---
@@ -203,30 +220,30 @@ export default function AppDetailPage() {
       {/* --- 主要内容区域 - 使用与聊天页面相同的响应式布局 --- */}
       <div className={cn(
         "relative flex-1 flex flex-col overflow-hidden min-h-0",
-        "pt-10"
+        "pt-10",
+        "w-full mx-auto",
+        widthClass,
+        paddingClass
       )}>
         {/* 主要内容 */}
         <div className="flex-1 min-h-0">
           <div className={cn(
             "h-full overflow-y-auto scroll-smooth"
           )}>
-            {/* --- 使用统一的宽度管理系统 --- */}
-            <div className={cn(
-              "w-full mx-auto py-8",
-              widthClass,
-              paddingClass
-            )}>
+            <div className="py-8">
               {/* 欢迎文字 */}
               <div className="mb-8">
-                <WelcomeScreen username={profile?.full_name} />
+                <WelcomeScreen username={profile?.username} />
               </div>
               
               {/* 聊天输入框 */}
               <div className="pb-16">
                 <ChatInput
-                  onSubmit={handleSubmit}
+                  onSubmit={wrappedHandleSubmit}
                   placeholder={`与 ${currentApp.display_name || '应用'} 开始对话...`}
-                  requireModelValidation={false}
+                  isProcessing={isProcessing}
+                  isWaiting={isWaitingForResponse}
+                  onStop={handleStopProcessing}
                   showModelSelector={false}
                   isWelcomeScreen={true}
                 />

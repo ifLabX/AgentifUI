@@ -188,6 +188,7 @@ export default function ChatPage() {
           onStop={handleStopProcessing}
           isWelcomeScreen={isWelcomeScreen}
           isTransitioningToWelcome={isTransitioningToWelcome}
+          showModelSelector={isNewChat}
         />
         
         {/* --- BEGIN COMMENT ---
