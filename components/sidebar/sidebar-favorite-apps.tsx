@@ -127,14 +127,12 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
             isMenuOpen={isMenuOpen}
             isItemSelected={false}
             disableHover={!!openDropdownId && !isMenuOpen}
-            className="cursor-pointer"
           />
         }
       >
         <DropdownMenuV2.Item
           icon={<Plus className="w-3.5 h-3.5" />}
           onClick={() => handleStartNewChat(app)}
-          className="cursor-pointer"
         >
           发起新对话
         </DropdownMenuV2.Item>
@@ -142,7 +140,6 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
         <DropdownMenuV2.Item
           icon={<EyeOff className="w-3.5 h-3.5" />}
           onClick={() => handleHideApp(app)}
-          className="cursor-pointer"
         >
           隐藏该应用
         </DropdownMenuV2.Item>
