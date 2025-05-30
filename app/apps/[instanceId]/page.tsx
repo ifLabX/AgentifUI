@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams, usePathname } from "next/navigation"
-import { useMobile } from "@lib/hooks"
+import { useMobile, useChatWidth, useChatStateSync } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { 
   Loader2,
@@ -15,13 +15,13 @@ import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { WelcomeScreen } from "@components/chat/welcome-screen"
 import { ChatInput } from "@components/chat-input"
 import { useProfile } from "@lib/hooks/use-profile"
-import { NavBar } from "@components/nav-bar"
+import { NavBar } from "@components/nav-bar/nav-bar"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
-import { useChatStateSync } from "@lib/hooks/use-chat-state-sync"
 
 export default function AppDetailPage() {
   const { colors, isDark } = useThemeColors()
   const isMobile = useMobile()
+  const { widthClass, paddingClass } = useChatWidth()
   const router = useRouter()
   const params = useParams()
   const pathname = usePathname()
@@ -136,8 +136,9 @@ export default function AppDetailPage() {
   if (initError) {
     return (
       <div className={cn(
+        "h-full w-full relative flex flex-col",
         colors.mainBackground.tailwind,
-        "min-h-screen flex items-center justify-center"
+        "items-center justify-center"
       )}>
         <div className="text-center">
           <Blocks className="w-16 h-16 text-stone-400 mx-auto mb-4" />
@@ -174,8 +175,9 @@ export default function AppDetailPage() {
   if (isInitializing || isValidating || !currentApp) {
     return (
       <div className={cn(
+        "h-full w-full relative flex flex-col",
         colors.mainBackground.tailwind,
-        "min-h-screen flex items-center justify-center"
+        "items-center justify-center"
       )}>
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-stone-400 mx-auto mb-4 animate-spin" />
@@ -193,27 +195,43 @@ export default function AppDetailPage() {
   
   return (
     <div className={cn(
+      "h-full w-full relative flex flex-col",
       colors.mainBackground.tailwind,
-      "min-h-screen"
+      colors.mainText.tailwind
     )}>
       <NavBar />
-      {/* --- 主要内容区域 --- */}
-      <div className="container mx-auto px-4 py-8 pt-12">
-        <div className="max-w-2xl mx-auto">
-          {/* 欢迎文字 */}
-          <div className="mb-8">
-            <WelcomeScreen username={profile?.full_name} />
-          </div>
-          
-          {/* 聊天输入框 */}
-          <div className="pb-16">
-            <ChatInput
-              onSubmit={handleSubmit}
-              placeholder={`与 ${currentApp.display_name || '应用'} 开始对话...`}
-              requireModelValidation={false}
-              showModelSelector={false}
-              isWelcomeScreen={true}
-            />
+      {/* --- 主要内容区域 - 使用与聊天页面相同的响应式布局 --- */}
+      <div className={cn(
+        "relative flex-1 flex flex-col overflow-hidden min-h-0",
+        "pt-10"
+      )}>
+        {/* 主要内容 */}
+        <div className="flex-1 min-h-0">
+          <div className={cn(
+            "h-full overflow-y-auto scroll-smooth"
+          )}>
+            {/* --- 使用统一的宽度管理系统 --- */}
+            <div className={cn(
+              "w-full mx-auto py-8",
+              widthClass,
+              paddingClass
+            )}>
+              {/* 欢迎文字 */}
+              <div className="mb-8">
+                <WelcomeScreen username={profile?.full_name} />
+              </div>
+              
+              {/* 聊天输入框 */}
+              <div className="pb-16">
+                <ChatInput
+                  onSubmit={handleSubmit}
+                  placeholder={`与 ${currentApp.display_name || '应用'} 开始对话...`}
+                  requireModelValidation={false}
+                  showModelSelector={false}
+                  isWelcomeScreen={true}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
