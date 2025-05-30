@@ -128,25 +128,44 @@ export function useAutoAddFavoriteApp() {
   const { addFavoriteApp, updateLastUsed } = useFavoriteAppsStore()
 
   const addToFavorites = async (instanceId: string) => {
+    console.log(`[addToFavorites] 添加应用到常用列表: ${instanceId}`)
+    
     try {
+      // 🎯 修复：先获取Dify提供商的ID，然后使用providerId查询服务实例
+      const { getProviderByName } = await import('@lib/db/providers')
+      const providerResult = await getProviderByName('Dify')
+      
+      if (!providerResult.success || !providerResult.data) {
+        console.error(`[addToFavorites] 未找到Dify提供商`)
+        return
+      }
+      
+      const providerId = providerResult.data.id
+      
       // 获取应用信息
       const { getServiceInstanceByInstanceId } = await import('@lib/db/service-instances')
-      const result = await getServiceInstanceByInstanceId('dify', instanceId)
+      const result = await getServiceInstanceByInstanceId(providerId, instanceId)
       
       if (result.success && result.data) {
         const instance = result.data
         const appMetadata = instance.config?.app_metadata
 
-        addFavoriteApp({
+        const favoriteApp = {
           instanceId: instance.instance_id,
           displayName: instance.display_name || instance.instance_id,
           description: instance.description || appMetadata?.brief_description,
           iconUrl: appMetadata?.icon_url,
           appType: appMetadata?.app_type || 'marketplace'
-        })
+        }
+        
+        addFavoriteApp(favoriteApp)
+        
+        console.log(`[addToFavorites] 成功添加到常用应用: ${instance.display_name || instanceId}`)
+      } else {
+        console.error(`[addToFavorites] 查询应用信息失败: ${instanceId}`)
       }
     } catch (error) {
-      console.error('添加到常用应用失败:', error)
+      console.error(`[addToFavorites] 添加到常用应用失败:`, error instanceof Error ? error.message : String(error))
     }
   }
 

@@ -8,6 +8,7 @@ import { useSupabaseAuth } from '@lib/supabase/hooks'; // For userId
 // import { useCurrentAppStore } from '@lib/stores/current-app-store'; // appId is passed as param
 import { createConversation } from '@lib/db'; // 使用新的优化版本
 import { useChatStore } from '@lib/stores/chat-store'; // To set local conversation ID
+import { useAutoAddFavoriteApp } from '@lib/stores/favorite-apps-store';
 
 interface UseCreateConversationReturn {
   initiateNewConversation: (
@@ -46,7 +47,11 @@ export function useCreateConversation(): UseCreateConversationReturn {
   const { session } = useSupabaseAuth();
   const currentUserId = session?.user?.id;
   const setCurrentChatConversationId = useChatStore((state) => state.setCurrentConversationId);
-
+  
+  // --- BEGIN COMMENT ---
+  // 添加常用应用管理hook
+  // --- END COMMENT ---
+  const { addToFavorites } = useAutoAddFavoriteApp();
 
   const initiateNewConversation = useCallback(
     async (
@@ -167,9 +172,16 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     const localConversation = result.data;
                     console.log(`[useCreateConversation] 数据库记录创建成功，数据库ID: ${localConversation.id}, Dify对话ID: ${difyConvId}`);
                     
+                    // --- BEGIN COMMENT ---
+                    // 🎯 在对话创建成功后添加应用到常用列表
+                    // 这是最佳时机：确保对话真正创建成功，且只在新对话时执行一次
+                    // --- END COMMENT ---
+                    console.log(`[useCreateConversation] 添加应用到常用列表: ${appId}`);
+                    addToFavorites(appId);
+                    
                     setSupabasePKInPendingStore(difyConvId, localConversation.id); 
                     updateStatusInPendingStore(currentTempConvId, 'title_resolved'); 
-                    markAsOptimistic(difyConvId); 
+                    markAsOptimistic(difyConvId);
 
                     // 立即调用回调函数，通知数据库ID创建完成
                     if (typeof onDbIdCreated === 'function') {
@@ -313,6 +325,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
       completeTitleTypewriter,
       currentUserId,
       setCurrentChatConversationId,
+      addToFavorites,
     ]
   );
 

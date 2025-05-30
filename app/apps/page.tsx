@@ -130,13 +130,6 @@ export default function AppsPage() {
   // 打开应用详情
   const handleOpenApp = async (app: AppInstance) => {
     try {
-      // 添加到收藏（如果还没有的话）
-      await addFavoriteApp({
-        instanceId: app.instanceId,
-        displayName: app.displayName,
-        appType: app.appType
-      })
-      
       // 跳转到应用详情页
       router.push(`/apps/${app.instanceId}`)
     } catch (error) {
@@ -188,4 +181,4 @@ export default function AppsPage() {
       </div>
     </>
   )
-} 
+}

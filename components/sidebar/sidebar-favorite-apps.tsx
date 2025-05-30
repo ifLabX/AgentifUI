@@ -31,11 +31,11 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   const { switchToSpecificApp } = useCurrentApp()
   const { clearMessages } = useChatStore()
   const { isExpanded, selectItem, selectedType, selectedId } = useSidebarStore()
-  const { 
-    favoriteApps, 
-    removeFavoriteApp, 
+  const {
+    favoriteApps,
+    removeFavoriteApp,
     loadFavoriteApps,
-    isLoading 
+    isLoading
   } = useFavoriteAppsStore()
 
   // 下拉菜单状态管理
@@ -59,10 +59,10 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   const isAppActive = React.useCallback((app: FavoriteApp) => {
     // 获取当前路由路径
     const pathname = window.location.pathname
-    
+
     // 检查当前路由是否是应用详情页面
     if (!pathname.startsWith('/apps/')) return false
-    
+
     // 检查路由中的instanceId是否匹配
     const routeInstanceId = pathname.split('/apps/')[1]?.split('/')[0]
     return routeInstanceId === app.instanceId
@@ -72,13 +72,13 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     try {
       // 设置sidebar选中状态
       selectItem('app', app.instanceId)
-      
+
       // 切换到指定应用
       await switchToSpecificApp(app.instanceId)
-      
+
       // 跳转到应用详情页面
       router.push(`/apps/${app.instanceId}`)
-      
+
     } catch (error) {
       console.error('切换到常用应用失败:', error)
     }
@@ -89,13 +89,13 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     try {
       // 设置sidebar选中状态
       selectItem('app', app.instanceId)
-      
+
       // 切换到指定应用
       await switchToSpecificApp(app.instanceId)
-      
+
       // 跳转到应用详情页面
       router.push(`/apps/${app.instanceId}`)
-      
+
     } catch (error) {
       console.error('发起新对话失败:', error)
     }
@@ -110,20 +110,15 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   const getAppIcon = (app: FavoriteApp) => {
     if (app.iconUrl) {
       return (
-        <img 
-          src={app.iconUrl} 
+        <img
+          src={app.iconUrl}
           alt={app.displayName}
           className="w-4 h-4 rounded-sm object-cover"
         />
       )
     }
+    return <Bot className="w-4 h-4" />
 
-    // 根据应用类型返回不同图标
-    if (app.appType === 'model') {
-      return <Bot className="w-4 h-4" />
-    } else {
-      return <Zap className="w-4 h-4" />
-    }
   }
 
   // 创建下拉菜单
@@ -202,7 +197,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
           {displayApps.map((app) => {
             // 使用路由判断应用是否被选中
             const isSelected = isAppActive(app)
-            
+
             return (
               <div className="group relative" key={app.instanceId}>
                 <SidebarListButton
@@ -217,7 +212,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                       "transition-opacity",
                       openDropdownId === app.instanceId
                         ? "opacity-100" // 当前打开菜单的item，more button保持显示
-                        : openDropdownId 
+                        : openDropdownId
                           ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
                           : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
                     )}>
@@ -227,8 +222,8 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                   className={cn(
                     "w-full justify-start font-medium",
                     "transition-all duration-200 ease-in-out",
-                    isDark 
-                      ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50" 
+                    isDark
+                      ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50"
                       : "text-gray-700 hover:text-gray-900 hover:bg-stone-100"
                   )}
                 >
