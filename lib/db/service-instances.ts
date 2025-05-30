@@ -24,7 +24,7 @@ export async function getServiceInstancesByProvider(providerId: string): Promise
   return dataService.findMany<ServiceInstance>(
     'service_instances',
     { provider_id: providerId },
-    { column: 'name', ascending: true },
+    { column: 'display_name', ascending: true },
     undefined,
     {
       cache: true,
