@@ -91,7 +91,27 @@ export function SidebarHeader() {
         )} />}
         disableLockBehavior={true}
         onClick={() => {
-          // ... 你的逻辑
+          const isAlreadyOnNewChat = window.location.pathname === '/chat/new';
+          if (isAlreadyOnNewChat) {
+            return;
+          }
+          
+          const { isHovering, setHovering } = useSidebarStore.getState();
+          if (isHovering) {
+            setHovering(false);
+          }
+          
+          router.push('/chat/new');
+          
+          useChatStore.getState().clearMessages();
+          clearMessages();
+          setCurrentConversationId(null);
+          setIsWelcomeScreen(true);
+          setIsTransitioningToWelcome(true);
+          setIsWaitingForResponse(false);
+          
+          const { selectItem } = useSidebarStore.getState();
+          selectItem('chat', null, true);
         }}
         aria-label="发起新对话"
         className={cn(
