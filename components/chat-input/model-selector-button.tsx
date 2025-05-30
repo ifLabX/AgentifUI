@@ -169,19 +169,19 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   
   useEffect(() => {
     // --- BEGIN COMMENT ---
-    // 🎯 修复：只在用户刚进入聊天页面且当前应用不是模型类型时才自动切换
-    // 不要在用户主动切换应用后立即强制切换回模型
-    // 添加延迟检查，避免干扰用户的主动操作
+    // 🎯 修复：只在用户访问新对话页面时才自动切换
+    // 不要在历史对话页面进行自动切换，避免强制跳转到chat/new
     // --- END COMMENT ---
     const timer = setTimeout(() => {
       // 只有当前应用不是模型类型且有目标模型时才自动切换
       // 但要确保这不是用户刚刚主动切换的结果
       if (!isCurrentAppModel && targetModelApp && currentAppId && !isOptimisticSwitching && !isAutoSwitching) {
-        // 检查当前路径是否是聊天页面，只在聊天页面才自动切换
-        const isOnChatPage = window.location.pathname.startsWith('/chat');
+        // 检查当前路径是否是新对话页面，只在新对话页面才自动切换
+        const pathname = window.location.pathname;
+        const isOnNewChatPage = pathname === '/chat/new'
         
-        if (isOnChatPage) {
-          console.log(`在聊天页面检测到非模型应用 ${currentAppId}，自动切换到模型: ${targetModelApp.id}`);
+        if (isOnNewChatPage) {
+          console.log(`在新对话页面检测到非模型应用 ${currentAppId}，自动切换到模型: ${targetModelApp.id}`);
           
           setIsAutoSwitching(true);
           
