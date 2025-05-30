@@ -15,11 +15,14 @@ import {
   ArrowRight,
   Sparkles,
   Users,
-  Plus
+  Plus,
+  Store,
+  Cpu
 } from "lucide-react"
 import { useFavoriteAppsStore } from "@lib/stores/favorite-apps-store"
+import { useAppListStore } from "@lib/stores/app-list-store"
 
-// 临时模拟数据，后续替换为真实API
+// 🎯 使用真实的应用数据类型，与useAppListStore保持一致
 interface AppInstance {
   instanceId: string
   displayName: string
@@ -30,99 +33,104 @@ interface AppInstance {
   isPopular?: boolean
   userCount?: number
   lastUsed?: string
+  tags?: string[]
 }
 
-// 模拟数据 - 参考图片中的应用类型
-const mockApps: AppInstance[] = [
-  {
-    instanceId: "gpt-4-turbo",
-    displayName: "GPT-4 Turbo",
-    description: "最新的GPT-4模型，具有更快的响应速度和更强的推理能力",
-    appType: "model",
-    category: "AI助手",
-    isPopular: true,
-    userCount: 1250,
-    lastUsed: "2024-01-15"
-  },
-  {
-    instanceId: "claude-3-sonnet", 
-    displayName: "Claude 3 Sonnet",
-    description: "Anthropic的Claude 3模型，擅长分析和创作",
-    appType: "model",
-    category: "AI助手", 
-    isPopular: true,
-    userCount: 890,
-    lastUsed: "2024-01-14"
-  },
-  {
-    instanceId: "code-assistant",
-    displayName: "代码助手",
-    description: "专业的编程助手，支持多种编程语言的代码生成和调试",
-    appType: "marketplace",
-    category: "开发工具",
-    userCount: 567,
-    lastUsed: "2024-01-13"
-  },
-  {
-    instanceId: "writing-coach",
-    displayName: "写作教练", 
-    description: "帮助改善写作技巧，提供文章结构建议和语言优化",
-    appType: "marketplace",
-    category: "教育学习",
-    userCount: 423,
-    lastUsed: "2024-01-12"
-  },
-  {
-    instanceId: "data-analyst",
-    displayName: "数据分析师",
-    description: "专业的数据分析工具，支持图表生成和数据洞察", 
-    appType: "marketplace",
-    category: "数据分析",
-    userCount: 334,
-    lastUsed: "2024-01-11"
-  },
-  {
-    instanceId: "language-tutor",
-    displayName: "语言导师",
-    description: "多语言学习助手，提供对话练习和语法指导",
-    appType: "marketplace", 
-    category: "教育学习",
-    userCount: 789,
-    lastUsed: "2024-01-10"
-  }
-]
-
 export default function AppsPage() {
-  const { colors, isDark } = useThemeColors()
-  const isMobile = useMobile()
   const router = useRouter()
+  const { colors } = useThemeColors()
+  const isMobile = useMobile()
   const { addFavoriteApp } = useFavoriteAppsStore()
+  
+  // 🎯 使用真实的应用列表数据，替代硬编码
+  const { apps: rawApps, fetchApps, isLoading } = useAppListStore()
+  
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("全部")
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [sortBy, setSortBy] = useState<'popular' | 'recent' | 'name'>('popular')
 
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string>("全部")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [apps, setApps] = useState<AppInstance[]>(mockApps)
+  // 🎯 在组件挂载时获取应用列表
+  useEffect(() => {
+    fetchApps()
+  }, [fetchApps])
 
-  // 获取所有分类
-  const categories = ["全部", ...Array.from(new Set(mockApps.map(app => app.category).filter(Boolean)))]
+  // 🎯 将原始应用数据转换为应用市场格式
+  // 过滤出应用市场类型的应用，并从config中提取显示信息
+  const apps: AppInstance[] = rawApps
+    .filter(app => {
+      const metadata = app.config?.app_metadata
+      
+      // 如果有元数据配置，检查是否为应用市场类型
+      if (metadata) {
+        return metadata.app_type === 'marketplace' || metadata.is_marketplace_app === true
+      }
+      
+      // 如果没有元数据配置，根据名称进行启发式判断
+      const appName = (app.display_name || app.instance_id).toLowerCase()
+      const marketplaceKeywords = ['翻译', 'translate', '代码', 'code', '助手', 'assistant', '工具', 'tool', '生成', 'generate', '写作', 'writing']
+      const modelKeywords = ['gpt', 'claude', 'gemini', 'llama', 'qwen', '通义', '模型', 'model']
+      
+      const isLikelyMarketplace = marketplaceKeywords.some(keyword => appName.includes(keyword))
+      const isLikelyModel = modelKeywords.some(keyword => appName.includes(keyword))
+      
+      // 优先判断为应用市场应用，除非明确是模型
+      return isLikelyMarketplace || (!isLikelyModel && !appName.includes('chat') && !appName.includes('对话'))
+    })
+    .map(app => {
+      const metadata = app.config?.app_metadata
+      const difyParams = app.config?.dify_parameters
+      
+      return {
+        instanceId: app.instance_id,
+        displayName: app.display_name || app.instance_id,
+        description: metadata?.brief_description || app.description || difyParams?.opening_statement || '暂无描述',
+        appType: 'marketplace' as const,
+        iconUrl: metadata?.icon_url,
+        category: metadata?.tags?.[0] || '工具',
+        tags: metadata?.tags || [],
+        // 模拟一些展示数据
+        isPopular: metadata?.is_common_model || false,
+        userCount: Math.floor(Math.random() * 1000) + 100,
+        lastUsed: new Date().toISOString().split('T')[0]
+      }
+    })
 
-  // 过滤应用
+  // 🎯 从应用数据中提取分类列表
+  const categories = ['全部', ...Array.from(new Set(apps.map(app => app.category).filter(cat => cat && cat.trim())))]
+
+  // 过滤和搜索逻辑
   const filteredApps = apps.filter(app => {
-    const matchesSearch = app.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         app.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = app.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    
     const matchesCategory = selectedCategory === "全部" || app.category === selectedCategory
+    
     return matchesSearch && matchesCategory
   })
 
-  // 处理应用点击
-  const handleAppClick = async (app: AppInstance) => {
+  // 排序逻辑
+  const sortedApps = [...filteredApps].sort((a, b) => {
+    switch (sortBy) {
+      case 'popular':
+        return (b.userCount || 0) - (a.userCount || 0)
+      case 'recent':
+        return new Date(b.lastUsed || 0).getTime() - new Date(a.lastUsed || 0).getTime()
+      case 'name':
+        return a.displayName.localeCompare(b.displayName)
+      default:
+        return 0
+    }
+  })
+
+  // 打开应用详情
+  const handleOpenApp = async (app: AppInstance) => {
     try {
-      // 添加到常用应用
-      addFavoriteApp({
+      // 添加到收藏（如果还没有的话）
+      await addFavoriteApp({
         instanceId: app.instanceId,
         displayName: app.displayName,
-        description: app.description,
-        iconUrl: app.iconUrl,
         appType: app.appType
       })
       
@@ -148,246 +156,261 @@ export default function AppsPage() {
     return app.appType === 'model' ? (
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center",
-        isDark ? "bg-green-900/30" : "bg-green-50"
+        colors.sidebarBackground.tailwind
       )}>
-        <Bot className={cn(
-          "w-6 h-6",
-          isDark ? "text-green-400" : "text-green-600"
-        )} />
+        <Cpu className="w-6 h-6 text-blue-500" />
       </div>
     ) : (
       <div className={cn(
-        "w-12 h-12 rounded-xl flex items-center justify-center", 
-        isDark ? "bg-blue-900/30" : "bg-blue-50"
+        "w-12 h-12 rounded-xl flex items-center justify-center",
+        colors.sidebarBackground.tailwind
       )}>
-        <Zap className={cn(
-          "w-6 h-6",
-          isDark ? "text-blue-400" : "text-blue-600"
-        )} />
+        <Store className="w-6 h-6 text-green-500" />
+      </div>
+    )
+  }
+
+  // 🎯 加载状态显示
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-stone-100 dark:from-stone-900 dark:to-stone-800">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-600"></div>
+            <span className="ml-3 text-stone-600 dark:text-stone-400">加载应用列表...</span>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className={cn(
-      "min-h-screen w-full",
-      colors.mainBackground.tailwind
-    )}>
-      {/* 页面头部 */}
-      <div className={cn(
-        "border-b",
-        isDark ? "border-stone-700" : "border-stone-200"
-      )}>
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex flex-col gap-6">
-            {/* 标题和描述 */}
-            <div className="text-center">
-              <h1 className={cn(
-                "text-4xl font-bold font-serif mb-4",
-                colors.mainText.tailwind
-              )}>
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 to-stone-100 dark:from-stone-900 dark:to-stone-800">
+      <div className="container mx-auto px-4 py-8">
+        {/* 页面标题 */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-xl bg-stone-600 text-white">
+              <Store className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 font-serif">
                 应用广场
               </h1>
-              <p className={cn(
-                "text-lg font-serif max-w-2xl mx-auto",
-                isDark ? "text-stone-300" : "text-stone-600"
-              )}>
-                探索并创建各种AI应用，提升您的工作效率
+              <p className="text-stone-600 dark:text-stone-400 font-serif">
+                发现和使用各种AI应用工具
               </p>
             </div>
+          </div>
+          
+          {/* 统计信息 */}
+          <div className="flex items-center gap-6 text-sm text-stone-600 dark:text-stone-400">
+            <span className="font-serif">共 {apps.length} 个应用</span>
+            <span className="font-serif">已筛选 {sortedApps.length} 个</span>
+          </div>
+        </div>
 
-            {/* 搜索和筛选 */}
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-center max-w-4xl mx-auto w-full">
-              {/* 搜索框 */}
-              <div className="relative flex-1 max-w-md">
-                <Search className={cn(
-                  "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5",
-                  isDark ? "text-stone-400" : "text-stone-500"
-                )} />
-                <input
-                  type="text"
-                  placeholder="搜索应用..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={cn(
-                    "w-full pl-10 pr-4 py-3 rounded-xl border font-serif",
-                    "focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                    "transition-colors duration-200",
-                    isDark 
-                      ? "bg-stone-700 border-stone-600 text-white placeholder-stone-400"
-                      : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
-                  )}
-                />
-              </div>
+        {/* 搜索和过滤栏 */}
+        <div className="mb-8 space-y-4">
+          {/* 搜索框 */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-stone-400" />
+            <input
+              type="text"
+              placeholder="搜索应用名称、描述或标签..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={cn(
+                "w-full pl-10 pr-4 py-3 rounded-xl border font-serif",
+                "bg-white dark:bg-stone-800",
+                "border-stone-200 dark:border-stone-700",
+                "text-stone-900 dark:text-stone-100",
+                "placeholder-stone-500 dark:placeholder-stone-400",
+                "focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent"
+              )}
+            />
+          </div>
 
-              {/* 分类筛选和视图切换 */}
-              <div className="flex items-center gap-4">
-                {/* 分类筛选 */}
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+          {/* 过滤和排序控件 */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            {/* 分类过滤 */}
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category || '全部')}
                   className={cn(
-                    "px-4 py-3 rounded-xl border font-serif",
-                    "focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                    "transition-colors duration-200",
-                    isDark 
-                      ? "bg-stone-700 border-stone-600 text-white"
-                      : "bg-white border-stone-300 text-stone-900"
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-colors font-serif",
+                    selectedCategory === category
+                      ? "bg-stone-600 text-white"
+                      : "bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700"
                   )}
                 >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+                  {category}
+                </button>
+              ))}
+            </div>
 
-                {/* 视图切换 */}
-                <div className={cn(
-                  "flex rounded-xl border",
-                  isDark ? "border-stone-600" : "border-stone-300"
-                )}>
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={cn(
-                      "p-3 rounded-l-xl transition-colors duration-200",
-                      viewMode === "grid"
-                        ? (isDark ? "bg-stone-600 text-white" : "bg-stone-200 text-stone-900")
-                        : (isDark ? "text-stone-400 hover:text-white" : "text-stone-500 hover:text-stone-900")
-                    )}
-                  >
-                    <Grid3x3 className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={cn(
-                      "p-3 rounded-r-xl transition-colors duration-200",
-                      viewMode === "list"
-                        ? (isDark ? "bg-stone-600 text-white" : "bg-stone-200 text-stone-900")
-                        : (isDark ? "text-stone-400 hover:text-white" : "text-stone-500 hover:text-stone-900")
-                    )}
-                  >
-                    <List className="w-5 h-5" />
-                  </button>
-                </div>
+            {/* 视图模式和排序 */}
+            <div className="flex items-center gap-4">
+              {/* 排序 */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'popular' | 'recent' | 'name')}
+                className={cn(
+                  "px-3 py-2 rounded-lg border text-sm font-serif",
+                  "bg-white dark:bg-stone-800",
+                  "border-stone-200 dark:border-stone-700",
+                  "text-stone-900 dark:text-stone-100",
+                  "focus:outline-none focus:ring-2 focus:ring-stone-500"
+                )}
+              >
+                <option value="popular">按热度排序</option>
+                <option value="recent">按最近使用</option>
+                <option value="name">按名称排序</option>
+              </select>
+
+              {/* 视图切换 */}
+              <div className="flex rounded-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={cn(
+                    "p-2 transition-colors",
+                    viewMode === 'grid'
+                      ? "bg-stone-600 text-white"
+                      : "bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700"
+                  )}
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={cn(
+                    "p-2 transition-colors",
+                    viewMode === 'list'
+                      ? "bg-stone-600 text-white"
+                      : "bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700"
+                  )}
+                >
+                  <List className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 应用列表 */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {filteredApps.length === 0 ? (
+        {/* 应用列表 */}
+        {sortedApps.length === 0 ? (
           <div className="text-center py-16">
-            <Sparkles className={cn(
-              "w-16 h-16 mx-auto mb-6",
-              isDark ? "text-stone-500" : "text-stone-400"
-            )} />
-            <h3 className={cn(
-              "text-xl font-medium font-serif mb-3",
-              isDark ? "text-stone-300" : "text-stone-600"
-            )}>
-              未找到匹配的应用
+            <Store className="w-16 h-16 text-stone-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-stone-600 dark:text-stone-400 mb-2 font-serif">
+              {apps.length === 0 ? '暂无应用' : '未找到匹配的应用'}
             </h3>
-            <p className={cn(
-              "text-base font-serif",
-              isDark ? "text-stone-500" : "text-stone-500"
-            )}>
-              尝试调整搜索条件或浏览其他分类
+            <p className="text-stone-500 dark:text-stone-500 font-serif">
+              {apps.length === 0 
+                ? '请在管理界面中添加应用实例' 
+                : '尝试调整搜索条件或分类筛选'
+              }
             </p>
           </div>
         ) : (
           <div className={cn(
-            viewMode === "grid" 
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            viewMode === 'grid' 
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               : "space-y-4"
           )}>
-            {filteredApps.map((app) => (
+            {sortedApps.map((app) => (
               <div
                 key={app.instanceId}
-                onClick={() => handleAppClick(app)}
+                onClick={() => handleOpenApp(app)}
                 className={cn(
-                  "group cursor-pointer rounded-2xl border transition-all duration-200",
-                  "hover:shadow-lg hover:scale-[1.02]",
-                  isDark 
-                    ? "bg-stone-700 border-stone-600 hover:border-stone-500 hover:shadow-stone-900/20"
-                    : "bg-white border-stone-200 hover:border-stone-300 hover:shadow-stone-900/10",
-                  viewMode === "grid" ? "p-6" : "p-4 flex items-center gap-4"
+                  "group cursor-pointer transition-all duration-200",
+                  "bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700",
+                  "hover:shadow-lg hover:border-stone-300 dark:hover:border-stone-600",
+                  "hover:-translate-y-1",
+                  viewMode === 'list' && "flex items-center p-4 gap-4"
                 )}
               >
-                {/* 应用图标 */}
-                <div className={cn(
-                  "flex-shrink-0",
-                  viewMode === "grid" ? "mb-4" : ""
-                )}>
-                  {getAppIcon(app)}
-                </div>
-
-                {/* 应用信息 */}
-                <div className={cn(
-                  "flex-1 min-w-0",
-                  viewMode === "grid" ? "" : "mr-4"
-                )}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className={cn(
-                      "font-semibold font-serif truncate",
-                      colors.mainText.tailwind,
-                      viewMode === "grid" ? "text-lg" : "text-base"
-                    )}>
-                      {app.displayName}
-                    </h3>
-                    {app.isPopular && (
-                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                    )}
-                  </div>
-
-                  {app.description && (
-                    <p className={cn(
-                      "text-sm font-serif mb-3",
-                      isDark ? "text-stone-300" : "text-stone-600",
-                      viewMode === "grid" ? "line-clamp-2" : "line-clamp-1"
-                    )}>
-                      {app.description}
-                    </p>
-                  )}
-
-                  {/* 应用元信息 */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs">
-                      {/* 应用类型 */}
-                      <span className={cn(
-                        "px-2 py-1 rounded-full font-medium",
-                        app.appType === 'model'
-                          ? (isDark 
-                              ? "bg-green-900/30 text-green-400" 
-                              : "bg-green-50 text-green-700")
-                          : (isDark 
-                              ? "bg-blue-900/30 text-blue-400" 
-                              : "bg-blue-50 text-blue-700")
-                      )}>
-                        {app.appType === 'model' ? '模型' : '应用'}
-                      </span>
-
-                      {/* 用户数量 */}
-                      {app.userCount && (
-                        <div className={cn(
-                          "flex items-center gap-1",
-                          isDark ? "text-stone-400" : "text-stone-500"
-                        )}>
-                          <Users className="w-3 h-3" />
-                          <span>{app.userCount}</span>
+                {viewMode === 'grid' ? (
+                  <div className="p-6">
+                    {/* 应用图标和基本信息 */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        {getAppIcon(app)}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-stone-900 dark:text-stone-100 truncate font-serif">
+                            {app.displayName}
+                          </h3>
+                          <p className="text-sm text-stone-600 dark:text-stone-400 font-serif">
+                            {app.category}
+                          </p>
                         </div>
+                      </div>
+                      {app.isPopular && (
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
                       )}
                     </div>
 
-                    {/* 箭头图标 */}
-                    <ArrowRight className={cn(
-                      "w-5 h-5 transition-transform duration-200 group-hover:translate-x-1",
-                      isDark ? "text-stone-400" : "text-stone-500"
-                    )} />
+                    {/* 应用描述 */}
+                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-4 line-clamp-2 font-serif">
+                      {app.description}
+                    </p>
+
+                    {/* 标签 */}
+                    {app.tags && app.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {app.tags.slice(0, 3).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-400 font-serif"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {app.tags.length > 3 && (
+                          <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-400 font-serif">
+                            +{app.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 底部信息 */}
+                    <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-500">
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        <span className="font-serif">{app.userCount} 用户</span>
+                      </div>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* 列表视图 */}
+                    {getAppIcon(app)}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-stone-900 dark:text-stone-100 truncate font-serif">
+                          {app.displayName}
+                        </h3>
+                        {app.isPopular && (
+                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        )}
+                      </div>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 mb-2 line-clamp-1 font-serif">
+                        {app.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-xs text-stone-500 dark:text-stone-500">
+                        <span className="font-serif">{app.category}</span>
+                        <div className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          <span className="font-serif">{app.userCount} 用户</span>
+                        </div>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-stone-400 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </div>
             ))}
           </div>
