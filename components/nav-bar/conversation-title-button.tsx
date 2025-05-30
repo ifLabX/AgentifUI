@@ -306,24 +306,6 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
         shouldHide ? "opacity-0 -translate-x-2 pointer-events-none" : "opacity-100 translate-x-0",
         className
       )}>
-        {/* 应用图标 */}
-        {appMetadata?.icon_url ? (
-          <img 
-            src={appMetadata.icon_url} 
-            alt={currentApp.display_name || currentApp.instance_id}
-            className="w-6 h-6 rounded-md object-cover flex-shrink-0"
-          />
-        ) : (
-          <div className={cn(
-            "w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0",
-            isDark ? "bg-stone-700" : "bg-stone-200"
-          )}>
-            <Blocks className={cn(
-              "w-3 h-3",
-              isDark ? "text-stone-300" : "text-stone-600"
-            )} />
-          </div>
-        )}
         
         {/* 应用信息 */}
         <div className="min-w-0 flex-1">
@@ -382,7 +364,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
           )} />
         </button>
         
-        {/* 返回按钮 */}
+        {/* 应用广场按钮 */}
         <button
           onClick={() => router.push('/apps')}
           className={cn(
