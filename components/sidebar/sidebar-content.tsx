@@ -99,7 +99,7 @@ export function SidebarContent() {
         )}
       >
         {/* 常用应用区域 */}
-        <div className="px-3 mb-4">
+        <div className="mb-4">
           <SidebarFavoriteApps 
             isDark={isDark ?? false}
             contentVisible={contentVisible}

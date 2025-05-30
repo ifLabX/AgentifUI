@@ -1,13 +1,16 @@
 "use client"
 
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Star, Sparkles, Zap, Bot } from "lucide-react"
+import { Zap, Bot, Plus, EyeOff } from "lucide-react"
 import { cn } from "@lib/utils"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useChatStore } from "@lib/stores/chat-store"
+import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useFavoriteAppsStore } from "@lib/stores/favorite-apps-store"
 import { SidebarButton } from "./sidebar-button"
+import { MoreButtonV2 } from "@components/ui/more-button-v2"
+import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
 
 interface FavoriteApp {
   instanceId: string
@@ -26,6 +29,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   const router = useRouter()
   const { switchToSpecificApp } = useCurrentApp()
   const { clearMessages } = useChatStore()
+  const { isExpanded } = useSidebarStore()
   const { 
     favoriteApps, 
     removeFavoriteApp, 
@@ -33,9 +37,19 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     isLoading 
   } = useFavoriteAppsStore()
 
+  // 下拉菜单状态管理
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
+
   useEffect(() => {
     loadFavoriteApps()
   }, [loadFavoriteApps])
+
+  // 监听sidebar展开状态，关闭时自动关闭dropdown
+  useEffect(() => {
+    if (!isExpanded && openDropdownId) {
+      setOpenDropdownId(null)
+    }
+  }, [isExpanded, openDropdownId])
 
   // 限制显示最多5个常用应用
   const displayApps = favoriteApps.slice(0, 5)
@@ -45,15 +59,31 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
       // 切换到指定应用
       await switchToSpecificApp(app.instanceId)
       
-      // 清除当前聊天状态
-      clearMessages()
-      
-      // 跳转到新对话页面
-      router.push('/chat/new')
+      // 跳转到应用详情页面
+      router.push(`/apps/${app.instanceId}`)
       
     } catch (error) {
       console.error('切换到常用应用失败:', error)
     }
+  }
+
+  // 发起新对话 - 跳转到应用详情页面
+  const handleStartNewChat = async (app: FavoriteApp) => {
+    try {
+      // 切换到指定应用
+      await switchToSpecificApp(app.instanceId)
+      
+      // 跳转到应用详情页面
+      router.push(`/apps/${app.instanceId}`)
+      
+    } catch (error) {
+      console.error('发起新对话失败:', error)
+    }
+  }
+
+  // 隐藏应用
+  const handleHideApp = (app: FavoriteApp) => {
+    removeFavoriteApp(app.instanceId)
   }
 
   // 获取应用图标
@@ -76,102 +106,118 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     }
   }
 
+  // 创建下拉菜单
+  const createMoreActions = (app: FavoriteApp) => {
+    const isMenuOpen = openDropdownId === app.instanceId
+
+    const handleMenuOpenChange = (isOpen: boolean) => {
+      setOpenDropdownId(isOpen ? app.instanceId : null)
+    }
+
+    return (
+      <DropdownMenuV2
+        placement="bottom"
+        minWidth={120}
+        isOpen={isMenuOpen}
+        onOpenChange={handleMenuOpenChange}
+        trigger={
+          <MoreButtonV2
+            aria-label="更多选项"
+            disabled={false}
+            isMenuOpen={isMenuOpen}
+            isItemSelected={false}
+            disableHover={!!openDropdownId && !isMenuOpen}
+            className="cursor-pointer"
+          />
+        }
+      >
+        <DropdownMenuV2.Item
+          icon={<Plus className="w-3.5 h-3.5" />}
+          onClick={() => handleStartNewChat(app)}
+          className="cursor-pointer"
+        >
+          发起新对话
+        </DropdownMenuV2.Item>
+        <DropdownMenuV2.Divider />
+        <DropdownMenuV2.Item
+          icon={<EyeOff className="w-3.5 h-3.5" />}
+          onClick={() => handleHideApp(app)}
+          className="cursor-pointer"
+        >
+          隐藏该应用
+        </DropdownMenuV2.Item>
+      </DropdownMenuV2>
+    )
+  }
+
   // 如果没有常用应用，不显示任何内容
   if (!isLoading && displayApps.length === 0) {
     return null
   }
 
+  if (!contentVisible) return null
+
   return (
-    <div className={cn(
-      "transition-opacity duration-150 ease-in-out",
-      contentVisible ? "opacity-100" : "opacity-0"
-    )}>
-      {/* 标题 - 只在有应用时显示 */}
+    <div className="flex flex-col space-y-1">
+      {/* 标题 - 与近期对话标题样式完全一致 */}
       {displayApps.length > 0 && (
         <div className={cn(
-          "flex items-center gap-2 px-3 py-2 mb-2",
-          "text-xs font-medium uppercase tracking-wider font-serif",
-          isDark ? "text-gray-400" : "text-gray-600"
+          "flex items-center px-2 py-1 text-xs font-medium font-serif",
+          isDark ? "text-stone-400" : "text-stone-500"
         )}>
-          <Star className="w-3 h-3" />
-          <span>常用应用</span>
+          常用应用
         </div>
       )}
 
       {/* 加载状态 */}
       {isLoading && (
         <div className={cn(
-          "px-3 py-2 text-xs font-serif",
+          "px-2 py-1 text-xs font-serif",
           isDark ? "text-gray-500" : "text-gray-400"
         )}>
           加载中...
         </div>
       )}
 
-      {/* 应用列表 */}
-      <div className="space-y-1">
-        {displayApps.map((app) => (
-          <SidebarButton
-            key={app.instanceId}
-            icon={getAppIcon(app)}
-            onClick={() => handleAppClick(app)}
-            className={cn(
-              "group relative w-full justify-start font-medium",
-              "transition-all duration-200 ease-in-out",
-              isDark 
-                ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50" 
-                : "text-gray-700 hover:text-gray-900 hover:bg-stone-100"
-            )}
-          >
-            <div className="flex-1 min-w-0 flex items-center gap-2">
-              {/* 应用名称 */}
-              <span className="truncate font-serif text-sm">
-                {app.displayName}
-              </span>
+      {/* 应用列表 - 贴边显示，与近期对话列表样式一致 */}
+      {displayApps.length > 0 && (
+        <div className="space-y-1 px-2">
+          {displayApps.map((app) => (
+            <div className="group relative" key={app.instanceId}>
+              <SidebarButton
+                icon={getAppIcon(app)}
+                onClick={() => handleAppClick(app)}
+                className={cn(
+                  "w-full justify-start font-medium",
+                  "transition-all duration-200 ease-in-out",
+                  isDark 
+                    ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50" 
+                    : "text-gray-700 hover:text-gray-900 hover:bg-stone-100"
+                )}
+              >
+                <div className="flex-1 min-w-0 flex items-center">
+                  {/* 应用名称 - 使用与近期对话一致的样式 */}
+                  <span className="truncate font-serif text-xs font-medium">
+                    {app.displayName}
+                  </span>
+                </div>
+              </SidebarButton>
               
-              {/* 应用类型标识 */}
+              {/* More button - 悬停时显示，添加z-10确保优先级 */}
               <div className={cn(
-                "flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium",
-                app.appType === 'model'
-                  ? (isDark 
-                      ? "bg-green-900/30 text-green-400" 
-                      : "bg-green-50 text-green-700")
-                  : (isDark 
-                      ? "bg-blue-900/30 text-blue-400" 
-                      : "bg-blue-50 text-blue-700")
+                "absolute right-2 top-1/2 -translate-y-1/2 z-10",
+                "transition-opacity",
+                openDropdownId === app.instanceId
+                  ? "opacity-100" // 当前打开菜单的item，more button保持显示
+                  : openDropdownId 
+                    ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
+                    : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
               )}>
-                {app.appType === 'model' ? '模型' : '应用'}
+                {createMoreActions(app)}
               </div>
             </div>
-
-            {/* 悬停时显示的移除按钮 */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                removeFavoriteApp(app.instanceId)
-              }}
-              className={cn(
-                "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center",
-                "opacity-0 group-hover:opacity-100 transition-opacity",
-                "ml-2",
-                isDark 
-                  ? "hover:bg-red-900/30 text-red-400 hover:text-red-300" 
-                  : "hover:bg-red-50 text-red-500 hover:text-red-600"
-              )}
-              aria-label={`移除 ${app.displayName}`}
-            >
-              <span className="text-xs">×</span>
-            </button>
-          </SidebarButton>
-        ))}
-      </div>
-
-      {/* 分隔线 - 只在有应用时显示 */}
-      {displayApps.length > 0 && (
-        <div className={cn(
-          "mt-4 mx-3 h-px",
-          isDark ? "bg-gray-700/60" : "bg-gray-200/50"
-        )} />
+          ))}
+        </div>
       )}
     </div>
   )
