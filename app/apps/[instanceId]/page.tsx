@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams, usePathname } from "next/navigation"
-import { useMobile, useChatWidth, useChatStateSync, useChatInterface } from "@lib/hooks"
+import { useMobile, useChatWidth, useChatInterface, useChatStateSync } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { 
   Loader2,
@@ -12,7 +12,8 @@ import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useChatStore } from "@lib/stores/chat-store"
 import { useAppListStore } from "@lib/stores/app-list-store"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
-import { WelcomeScreen } from "@components/chat/welcome-screen"
+import { useChatLayoutStore } from "@lib/stores/chat-layout-store"
+import { WelcomeScreen, ChatInputBackdrop } from "@components/chat"
 import { ChatInput } from "@components/chat-input"
 import { useProfile } from "@lib/hooks/use-profile"
 import { NavBar } from "@components/nav-bar/nav-bar"
@@ -36,16 +37,22 @@ export default function AppDetailPage() {
   // 使用聊天接口逻辑，发送消息后跳转到对话页面
   // --- END COMMENT ---
   const {
-    handleSubmit,
+    handleSubmit: originalHandleSubmit,
     isProcessing,
     isWaitingForResponse,
     handleStopProcessing,
   } = useChatInterface()
   
   // --- BEGIN COMMENT ---
-  // 同步主题状态到ChatInput，确保主题切换后样式正确
+  // 使用完整的聊天状态同步，确保与聊天页面行为一致
   // --- END COMMENT ---
   useChatStateSync()
+  
+  // --- BEGIN COMMENT ---
+  // 获取聊天布局状态，用于输入框高度管理
+  // --- END COMMENT ---
+  const { inputHeight } = useChatLayoutStore()
+  const chatInputHeightVar = `${inputHeight || 80}px`
   
   // --- BEGIN COMMENT ---
   // Sidebar选中状态管理
@@ -135,13 +142,19 @@ export default function AppDetailPage() {
   }, [selectItem])
   
   // --- BEGIN COMMENT ---
-  // 包装handleSubmit，在发送消息后跳转到对话页面
+  // 包装handleSubmit，复用聊天页面的提交逻辑
+  // 确保在发送消息后正确跳转到对话页面
   // --- END COMMENT ---
-  const wrappedHandleSubmit = async (message: string, files?: any[]) => {
+  const handleSubmit = async (message: string, files?: any[]) => {
     try {
+      // 清空当前消息，准备创建新对话
+      clearMessages()
+      
       // 调用原始的handleSubmit，它会创建对话并发送消息
-      await handleSubmit(message, files)
+      await originalHandleSubmit(message, files)
+      
       // handleSubmit内部会处理路由跳转到新创建的对话页面
+      console.log('[AppDetail] 消息发送成功，等待路由跳转')
     } catch (error) {
       console.error('[AppDetail] 发送消息失败:', error)
     }
@@ -217,40 +230,56 @@ export default function AppDetailPage() {
       colors.mainText.tailwind
     )}>
       <NavBar />
-      {/* --- 主要内容区域 - 使用与聊天页面相同的响应式布局 --- */}
-      <div className={cn(
-        "relative flex-1 flex flex-col overflow-hidden min-h-0",
-        "pt-10",
-        "w-full mx-auto",
-        widthClass,
-        paddingClass
-      )}>
+      
+      {/* --- BEGIN COMMENT ---
+      主要内容区域 - 复用聊天页面的完整布局结构
+      包括CSS变量设置、响应式布局等
+      --- END COMMENT --- */}
+      <div 
+        className={cn(
+          "relative flex-1 flex flex-col overflow-hidden min-h-0",
+          "pt-10"
+        )}
+        style={{ '--chat-input-height': chatInputHeightVar } as React.CSSProperties}
+      >
         {/* 主要内容 */}
         <div className="flex-1 min-h-0">
-          <div className={cn(
-            "h-full overflow-y-auto scroll-smooth"
-          )}>
+          <div 
+            className={cn(
+              "h-full overflow-y-auto scroll-smooth",
+              "w-full mx-auto",
+              widthClass,
+              paddingClass
+            )}
+          >
             <div className="py-8">
               {/* 欢迎文字 */}
               <div className="mb-8">
                 <WelcomeScreen username={profile?.username} />
               </div>
-              
-              {/* 聊天输入框 */}
-              <div className="pb-16">
-                <ChatInput
-                  onSubmit={wrappedHandleSubmit}
-                  placeholder={`与 ${currentApp.display_name || '应用'} 开始对话...`}
-                  isProcessing={isProcessing}
-                  isWaiting={isWaitingForResponse}
-                  onStop={handleStopProcessing}
-                  showModelSelector={false}
-                  isWelcomeScreen={true}
-                />
-              </div>
             </div>
           </div>
         </div>
+
+        {/* --- BEGIN COMMENT ---
+        添加ChatInputBackdrop，确保与聊天页面视觉一致
+        这解决了输入框两侧的视觉问题
+        --- END COMMENT --- */}
+        <ChatInputBackdrop />
+        
+        {/* --- BEGIN COMMENT ---
+        聊天输入框 - 使用与聊天页面完全一致的配置
+        --- END COMMENT --- */}
+        <ChatInput
+          onSubmit={handleSubmit}
+          placeholder={`与 ${currentApp.display_name || '应用'} 开始对话...`}
+          isProcessing={isProcessing}
+          isWaiting={isWaitingForResponse}
+          onStop={handleStopProcessing}
+          showModelSelector={false}
+          requireModelValidation={false}
+          isWelcomeScreen={true}
+        />
       </div>
     </div>
   )
