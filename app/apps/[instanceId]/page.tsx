@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
-import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { useMobile } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { 
@@ -16,6 +15,8 @@ import { WelcomeScreen } from "@components/chat/welcome-screen"
 import { ChatInput } from "@components/chat-input"
 import { useProfile } from "@lib/hooks/use-profile"
 import { NavBar } from "@components/nav-bar"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
+import { useChatStateSync } from "@lib/hooks/use-chat-state-sync"
 
 export default function AppDetailPage() {
   const { colors, isDark } = useThemeColors()
@@ -23,6 +24,11 @@ export default function AppDetailPage() {
   const router = useRouter()
   const params = useParams()
   const instanceId = params.instanceId as string
+  
+  // --- BEGIN COMMENT ---
+  // 同步主题状态到ChatInput，确保主题切换后样式正确
+  // --- END COMMENT ---
+  useChatStateSync()
   
   // --- BEGIN COMMENT ---
   // 状态管理
