@@ -11,6 +11,7 @@ import { useFavoriteAppsStore } from "@lib/stores/favorite-apps-store"
 import { SidebarListButton } from "./sidebar-list-button"
 import { MoreButtonV2 } from "@components/ui/more-button-v2"
 import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
+import React from "react"
 
 interface FavoriteApp {
   instanceId: string
@@ -29,7 +30,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   const router = useRouter()
   const { switchToSpecificApp } = useCurrentApp()
   const { clearMessages } = useChatStore()
-  const { isExpanded } = useSidebarStore()
+  const { isExpanded, selectItem, selectedType, selectedId } = useSidebarStore()
   const { 
     favoriteApps, 
     removeFavoriteApp, 
@@ -54,8 +55,24 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   // 限制显示最多5个常用应用
   const displayApps = favoriteApps.slice(0, 5)
 
+  // 判断应用是否处于选中状态 - 参考chat list的实现
+  const isAppActive = React.useCallback((app: FavoriteApp) => {
+    // 获取当前路由路径
+    const pathname = window.location.pathname
+    
+    // 检查当前路由是否是应用详情页面
+    if (!pathname.startsWith('/apps/')) return false
+    
+    // 检查路由中的instanceId是否匹配
+    const routeInstanceId = pathname.split('/apps/')[1]?.split('/')[0]
+    return routeInstanceId === app.instanceId
+  }, [])
+
   const handleAppClick = async (app: FavoriteApp) => {
     try {
+      // 设置sidebar选中状态
+      selectItem('app', app.instanceId)
+      
       // 切换到指定应用
       await switchToSpecificApp(app.instanceId)
       
@@ -70,6 +87,9 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   // 发起新对话 - 跳转到应用详情页面
   const handleStartNewChat = async (app: FavoriteApp) => {
     try {
+      // 设置sidebar选中状态
+      selectItem('app', app.instanceId)
+      
       // 切换到指定应用
       await switchToSpecificApp(app.instanceId)
       
@@ -179,44 +199,49 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
       {/* 应用列表 - 贴边显示，与近期对话列表样式一致 */}
       {displayApps.length > 0 && (
         <div className="space-y-1 px-2">
-          {displayApps.map((app) => (
-            <div className="group relative" key={app.instanceId}>
-              <SidebarListButton
-                icon={getAppIcon(app)}
-                onClick={() => handleAppClick(app)}
-                active={false}
-                isLoading={false}
-                hasOpenDropdown={openDropdownId === app.instanceId}
-                disableHover={!!openDropdownId}
-                moreActionsTrigger={
-                  <div className={cn(
-                    "transition-opacity",
-                    openDropdownId === app.instanceId
-                      ? "opacity-100" // 当前打开菜单的item，more button保持显示
-                      : openDropdownId 
-                        ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
-                        : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
-                  )}>
-                    {createMoreActions(app)}
+          {displayApps.map((app) => {
+            // 使用路由判断应用是否被选中
+            const isSelected = isAppActive(app)
+            
+            return (
+              <div className="group relative" key={app.instanceId}>
+                <SidebarListButton
+                  icon={getAppIcon(app)}
+                  onClick={() => handleAppClick(app)}
+                  active={isSelected}
+                  isLoading={false}
+                  hasOpenDropdown={openDropdownId === app.instanceId}
+                  disableHover={!!openDropdownId}
+                  moreActionsTrigger={
+                    <div className={cn(
+                      "transition-opacity",
+                      openDropdownId === app.instanceId
+                        ? "opacity-100" // 当前打开菜单的item，more button保持显示
+                        : openDropdownId 
+                          ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
+                          : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
+                    )}>
+                      {createMoreActions(app)}
+                    </div>
+                  }
+                  className={cn(
+                    "w-full justify-start font-medium",
+                    "transition-all duration-200 ease-in-out",
+                    isDark 
+                      ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50" 
+                      : "text-gray-700 hover:text-gray-900 hover:bg-stone-100"
+                  )}
+                >
+                  <div className="flex-1 min-w-0 flex items-center">
+                    {/* 应用名称 - 使用与近期对话一致的样式 */}
+                    <span className="truncate font-serif text-xs font-medium">
+                      {app.displayName}
+                    </span>
                   </div>
-                }
-                className={cn(
-                  "w-full justify-start font-medium",
-                  "transition-all duration-200 ease-in-out",
-                  isDark 
-                    ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50" 
-                    : "text-gray-700 hover:text-gray-900 hover:bg-stone-100"
-                )}
-              >
-                <div className="flex-1 min-w-0 flex items-center">
-                  {/* 应用名称 - 使用与近期对话一致的样式 */}
-                  <span className="truncate font-serif text-xs font-medium">
-                    {app.displayName}
-                  </span>
-                </div>
-              </SidebarListButton>
-            </div>
-          ))}
+                </SidebarListButton>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter, useParams, usePathname } from "next/navigation"
 import { useMobile } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { 
@@ -11,6 +11,7 @@ import {
 import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useChatStore } from "@lib/stores/chat-store"
 import { useAppListStore } from "@lib/stores/app-list-store"
+import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { WelcomeScreen } from "@components/chat/welcome-screen"
 import { ChatInput } from "@components/chat-input"
 import { useProfile } from "@lib/hooks/use-profile"
@@ -23,12 +24,18 @@ export default function AppDetailPage() {
   const isMobile = useMobile()
   const router = useRouter()
   const params = useParams()
+  const pathname = usePathname()
   const instanceId = params.instanceId as string
   
   // --- BEGIN COMMENT ---
   // 同步主题状态到ChatInput，确保主题切换后样式正确
   // --- END COMMENT ---
   useChatStateSync()
+  
+  // --- BEGIN COMMENT ---
+  // Sidebar选中状态管理
+  // --- END COMMENT ---
+  const { selectItem } = useSidebarStore()
   
   // --- BEGIN COMMENT ---
   // 状态管理
@@ -58,7 +65,7 @@ export default function AppDetailPage() {
   const difyParams = currentApp?.config?.dify_parameters
   
   // --- BEGIN COMMENT ---
-  // 页面初始化：切换到目标应用
+  // 页面初始化：切换到目标应用并同步sidebar选中状态
   // --- END COMMENT ---
   useEffect(() => {
     const initializeApp = async () => {
@@ -78,6 +85,9 @@ export default function AppDetailPage() {
           return
         }
         
+        // 应用存在时设置sidebar选中状态
+        selectItem('app', instanceId)
+        
         // 如果当前应用不是目标应用，则切换
         if (currentAppId !== instanceId) {
           console.log('[AppDetail] 切换到应用:', instanceId)
@@ -95,7 +105,20 @@ export default function AppDetailPage() {
     if (instanceId) {
       initializeApp()
     }
-  }, [instanceId, apps, currentAppId, fetchApps, switchToSpecificApp])
+  }, [instanceId, apps, currentAppId, fetchApps, switchToSpecificApp, selectItem])
+  
+  // --- BEGIN COMMENT ---
+  // 页面卸载时清除选中状态（当离开应用详情页面时）
+  // --- END COMMENT ---
+  useEffect(() => {
+    return () => {
+      // 检查是否离开了应用详情页面
+      const currentPath = window.location.pathname
+      if (!currentPath.startsWith('/apps/')) {
+        selectItem(null, null)
+      }
+    }
+  }, [selectItem])
   
   // --- BEGIN COMMENT ---
   // 处理消息提交

@@ -7,6 +7,7 @@ import { useMobile } from "@lib/hooks"
 import { cn } from "@lib/utils"
 import { useFavoriteAppsStore } from "@lib/stores/favorite-apps-store"
 import { useAppListStore } from "@lib/stores/app-list-store"
+import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { NavBar } from "@components/nav-bar"
 import { 
   AppHeader, 
@@ -21,6 +22,7 @@ export default function AppsPage() {
   const { colors } = useThemeColors()
   const isMobile = useMobile()
   const { addFavoriteApp, favoriteApps } = useFavoriteAppsStore()
+  const { selectItem } = useSidebarStore()
   
   // 🎯 使用真实的应用列表数据，替代硬编码
   const { apps: rawApps, fetchApps, isLoading } = useAppListStore()
@@ -29,10 +31,12 @@ export default function AppsPage() {
   const [selectedCategory, setSelectedCategory] = useState("全部")
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // 🎯 在组件挂载时获取应用列表
+  // 🎯 在组件挂载时获取应用列表并清除sidebar选中状态
   useEffect(() => {
     fetchApps()
-  }, [fetchApps])
+    // 清除sidebar选中状态，因为在应用广场页面不应该有选中的应用
+    selectItem(null, null)
+  }, [fetchApps, selectItem])
 
   // 🎯 将原始应用数据转换为应用市场格式
   // 过滤出应用市场类型的应用，并从config中提取显示信息

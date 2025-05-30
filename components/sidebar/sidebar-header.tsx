@@ -14,7 +14,7 @@ export function SidebarHeader() {
   const { isExpanded, isLocked, toggleSidebar } = useSidebarStore()
   const { isDark } = useTheme()
   const router = useRouter()
-
+  
   const setCurrentConversationId = useChatStore((state) => state.setCurrentConversationId)
   const clearMessages = useChatStore(state => state.clearMessages)
   const setIsWaitingForResponse = useChatStore(state => state.setIsWaitingForResponse)
@@ -37,8 +37,8 @@ export function SidebarHeader() {
           }
         }}
         aria-label={
-          !isLocked
-            ? "锁定侧栏"
+          !isLocked 
+            ? "锁定侧栏" 
             : (isExpanded ? "解锁并收起侧栏" : "展开侧栏")
         }
         className={cn(
@@ -62,7 +62,7 @@ export function SidebarHeader() {
       >
         <div className="flex flex-1 items-center min-w-0">
           <span className={cn(
-            "flex h-5 w-5 items-center justify-center -ml-0.5 flex-shrink-0",
+            "flex h-5 w-5 items-center justify-center -ml-0.5 flex-shrink-0", 
             isDark ? "text-gray-400" : "text-gray-500",
           )}>
             {isLocked && isExpanded ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
@@ -72,15 +72,15 @@ export function SidebarHeader() {
               "ml-2 flex-1 min-w-0 truncate font-serif",
               "flex items-center leading-none"
             )}>
-              {!isLocked
-                ? "锁定侧栏"
+              {!isLocked 
+                ? "锁定侧栏" 
                 : (isExpanded ? "解锁并收起" : "展开侧栏")
               }
             </div>
           )}
         </div>
       </div>
-
+      
       {/* 🎯 发起新对话按钮 - 主要行动按钮 */}
       <SidebarButton
         icon={<Plus className={cn(
@@ -116,7 +116,7 @@ export function SidebarHeader() {
         aria-label="发起新对话"
         className={cn(
           "group font-medium transition-all duration-200",
-          isDark
+          isDark 
             ? [
               "bg-stone-600 hover:bg-stone-500",
               "border border-stone-500 hover:border-stone-400",
