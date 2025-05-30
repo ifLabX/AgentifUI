@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
@@ -82,6 +82,30 @@ function AdminCard({ title, description, icon: Icon, href, stats }: AdminCardPro
 
 export default function AdminPage() {
   const { isDark } = useTheme()
+  const [apiConfigStatus, setApiConfigStatus] = useState<string>('检查中...')
+
+  // --- BEGIN COMMENT ---
+  // 检查API配置状态
+  // --- END COMMENT ---
+  useEffect(() => {
+    const checkApiConfigStatus = async () => {
+      try {
+        // 检查是否有配置的服务实例
+        const response = await fetch('/api/admin/status')
+        if (response.ok) {
+          const data = await response.json()
+          setApiConfigStatus(data.hasActiveInstances ? '已配置' : '待配置')
+        } else {
+          setApiConfigStatus('待配置')
+        }
+      } catch (error) {
+        console.error('检查API配置状态失败:', error)
+        setApiConfigStatus('待配置')
+      }
+    }
+
+    checkApiConfigStatus()
+  }, [])
 
   // --- BEGIN COMMENT ---
   // 管理功能卡片配置
@@ -92,14 +116,14 @@ export default function AdminPage() {
       description: '管理应用实例、配置参数和API密钥',
       icon: Key,
       href: '/admin/api-config',
-      stats: '当前配置: 活跃'
+      stats: `当前状态: ${apiConfigStatus}`
     },
     {
       title: '用户管理',
       description: '管理用户账户、权限和访问控制',
       icon: Users,
       href: '/admin/users',
-      stats: '即将推出'
+      stats: '功能可用'
     },
     {
       title: '数据统计',
