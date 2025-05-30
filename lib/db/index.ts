@@ -78,11 +78,7 @@ export {
   deleteServiceInstance,
   setDefaultServiceInstance,
   getAppParametersFromDb,
-  updateAppParametersInDb,
-  batchUpdateAppParametersInDb,
-  updateAppParametersSyncStatus,
-  getAppInstancesForSync,
-  getAppParametersSyncStatus
+  updateAppParametersInDb
 } from './service-instances';
 
 // --- BEGIN COMMENT ---

@@ -310,17 +310,11 @@ export async function updateAppParametersInDb(
       throw new Error(`未找到实例ID为 ${instanceId} 的服务实例`);
     }
 
-    // 更新config中的dify_parameters和sync_metadata
+    // 更新config中的dify_parameters
     const currentConfig = result.data.config || {};
     const updatedConfig = {
       ...currentConfig,
-      dify_parameters: parameters,
-      sync_metadata: {
-        ...currentConfig.sync_metadata,
-        last_sync_at: new Date().toISOString(),
-        sync_status: 'success' as const,
-        last_error: undefined
-      }
+      dify_parameters: parameters
     };
 
     // 执行更新
@@ -333,168 +327,6 @@ export async function updateAppParametersInDb(
     }
 
     return undefined;
-  });
-}
-
-/**
- * 批量同步应用参数到数据库
- * @param syncData 同步数据数组，包含instanceId和parameters
- * @returns 同步结果数组
- */
-export async function batchUpdateAppParametersInDb(
-  syncData: Array<{ instanceId: string; parameters: any; error?: string }>
-): Promise<Result<Array<{ instanceId: string; success: boolean; error?: string }>>> {
-  return dataService.query(async () => {
-    const results: Array<{ instanceId: string; success: boolean; error?: string }> = [];
-
-    for (const item of syncData) {
-      try {
-        if (item.error) {
-          // 如果同步时就有错误，记录错误状态
-          await updateAppParametersSyncStatus(item.instanceId, 'failed', item.error);
-          results.push({
-            instanceId: item.instanceId,
-            success: false,
-            error: item.error
-          });
-        } else {
-          // 正常更新参数
-          const updateResult = await updateAppParametersInDb(item.instanceId, item.parameters);
-          results.push({
-            instanceId: item.instanceId,
-            success: updateResult.success,
-            error: updateResult.success ? undefined : updateResult.error.message
-          });
-        }
-      } catch (error) {
-        results.push({
-          instanceId: item.instanceId,
-          success: false,
-          error: error instanceof Error ? error.message : '未知错误'
-        });
-      }
-    }
-
-    return results;
-  });
-}
-
-/**
- * 更新应用参数同步状态
- * @param instanceId 应用实例ID
- * @param status 同步状态
- * @param error 错误信息（可选）
- * @returns 更新操作的Result
- */
-export async function updateAppParametersSyncStatus(
-  instanceId: string,
-  status: 'success' | 'failed' | 'pending',
-  error?: string
-): Promise<Result<void>> {
-  return dataService.query(async () => {
-    const result = await getServiceInstanceByInstanceId('dify', instanceId);
-    
-    if (!result.success || !result.data) {
-      throw new Error(`未找到实例ID为 ${instanceId} 的服务实例`);
-    }
-
-    const currentConfig = result.data.config || {};
-    const updatedConfig = {
-      ...currentConfig,
-      sync_metadata: {
-        ...currentConfig.sync_metadata,
-        last_sync_at: new Date().toISOString(),
-        sync_status: status,
-        last_error: error
-      }
-    };
-
-    const updateResult = await updateServiceInstance(result.data.id, {
-      config: updatedConfig
-    });
-
-    if (!updateResult.success) {
-      throw updateResult.error;
-    }
-
-    return undefined;
-  });
-}
-
-/**
- * 获取需要同步的应用实例列表
- * @param maxAge 最大缓存时间（分钟），超过此时间的被认为需要同步
- * @returns 需要同步的服务实例列表
- */
-export async function getAppInstancesForSync(maxAge: number = 60): Promise<Result<ServiceInstance[]>> {
-  return dataService.query(async () => {
-    // 获取所有dify类型的服务实例
-    const result = await getServiceInstancesByProvider('dify');
-    
-    if (!result.success) {
-      throw result.error;
-    }
-
-    const now = new Date();
-    const maxAgeMs = maxAge * 60 * 1000;
-
-    // 筛选需要同步的实例
-    const needSyncInstances = result.data.filter(instance => {
-      const syncMetadata = instance.config?.sync_metadata;
-      
-      // 如果没有同步元数据，需要同步
-      if (!syncMetadata) {
-        return true;
-      }
-
-      // 如果上次同步失败，需要重新同步
-      if (syncMetadata.sync_status === 'failed') {
-        return true;
-      }
-
-      // 如果超过最大缓存时间，需要同步
-      if (syncMetadata.last_sync_at) {
-        const lastSyncTime = new Date(syncMetadata.last_sync_at);
-        const timeDiff = now.getTime() - lastSyncTime.getTime();
-        return timeDiff > maxAgeMs;
-      }
-
-      // 默认需要同步
-      return true;
-    });
-
-    return needSyncInstances;
-  });
-}
-
-/**
- * 获取应用参数同步状态
- * @param instanceId 应用实例ID
- * @returns 同步状态信息
- */
-export async function getAppParametersSyncStatus(instanceId: string): Promise<Result<{
-  lastSyncAt?: string;
-  syncStatus?: 'success' | 'failed' | 'pending';
-  lastError?: string;
-  hasParameters: boolean;
-} | null>> {
-  return dataService.query(async () => {
-    const result = await getServiceInstanceByInstanceId('dify', instanceId);
-    
-    if (!result.success || !result.data) {
-      return null;
-    }
-
-    const config = result.data.config || {};
-    const syncMetadata = config.sync_metadata;
-    const hasParameters = !!config.dify_parameters;
-
-    return {
-      lastSyncAt: syncMetadata?.last_sync_at,
-      syncStatus: syncMetadata?.sync_status,
-      lastError: syncMetadata?.last_error,
-      hasParameters
-    };
   });
 }
 

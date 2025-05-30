@@ -413,7 +413,6 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         if (!defaultInstance) {
           const newInstanceResult = await createServiceInstance({
             provider_id: difyProvider.id,
-            name: 'default',
             display_name: 'Default Dify Application',
             description: '默认 Dify 应用实例',
             instance_id: 'default',

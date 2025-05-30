@@ -183,29 +183,6 @@ export interface ServiceInstanceConfig {
     };
   };
   
-  // --- BEGIN COMMENT ---
-  // 🎯 同步元数据 - 用于跟踪与Dify的同步状态
-  // --- END COMMENT ---
-  sync_metadata?: {
-    // 最后同步时间
-    last_sync_at?: string;
-    
-    // Dify版本（用于检测变更）
-    dify_version?: string;
-    
-    // 同步状态
-    sync_status?: 'success' | 'failed' | 'pending';
-    
-    // 最后同步错误信息
-    last_error?: string;
-    
-    // 同步频率配置（分钟）
-    sync_interval?: number;
-    
-    // 是否启用自动同步
-    auto_sync_enabled?: boolean;
-  };
-  
   // 其他配置
   [key: string]: any;
 }
