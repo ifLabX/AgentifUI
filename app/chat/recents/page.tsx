@@ -1,6 +1,7 @@
 "use client"
 
 import { Recents } from "@components/recents"
+import { NavBar } from "@components/nav-bar"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useEffect } from "react"
 import { useTheme } from "@lib/hooks/use-theme"
@@ -28,8 +29,17 @@ export default function RecentsPage() {
   }, [setMounted])
 
   return (
-    <div className="h-full w-full overflow-hidden">
-      <Recents />
-    </div>
+    <>
+      {/* --- 添加导航栏 --- */}
+      <NavBar />
+      
+      <div className={cn(
+        "h-full w-full overflow-hidden",
+        // --- 为navbar留出顶部空间 ---
+        "pt-12"
+      )}>
+        <Recents />
+      </div>
+    </>
   )
 }

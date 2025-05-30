@@ -4,6 +4,7 @@ import * as React from "react"
 import { Search, Plus, Trash2 } from "lucide-react"
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks/use-theme"
+import { useThemeColors } from "@lib/hooks/use-theme-colors"
 import { useRouter } from "next/navigation"
 import { useChatStore } from "@lib/stores/chat-store"
 import { useChatInputStore } from "@lib/stores/chat-input-store"
@@ -22,6 +23,7 @@ import { ConfirmDialog } from "@components/ui"
 // --- END COMMENT ---
 export function Recents() {
   const { isDark } = useTheme()
+  const { colors } = useThemeColors()
   const [searchQuery, setSearchQuery] = React.useState("")
   const router = useRouter()
   const { widthClass, paddingClass } = useChatWidth()
@@ -222,12 +224,12 @@ export function Recents() {
   return (
     <div className={cn(
       "flex flex-col h-full w-full overflow-hidden",
-      isDark ? "bg-stone-900" : "bg-white"
+      colors.mainBackground.tailwind
     )}>
       {/* 页面内容区域 - 使用与聊天页面相同的宽度和居中设置 */}
       <div className={cn(
         "flex flex-col flex-1 overflow-auto py-4",
-        isDark ? "bg-stone-900" : "bg-stone-50"
+        colors.mainBackground.tailwind
       )}>
         {/* 标题和新对话按钮 - 居中显示 */}
         <div className={cn(
