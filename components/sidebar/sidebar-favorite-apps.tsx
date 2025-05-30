@@ -8,7 +8,7 @@ import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useChatStore } from "@lib/stores/chat-store"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useFavoriteAppsStore } from "@lib/stores/favorite-apps-store"
-import { SidebarButton } from "./sidebar-button"
+import { SidebarListButton } from "./sidebar-list-button"
 import { MoreButtonV2 } from "@components/ui/more-button-v2"
 import { DropdownMenuV2 } from "@components/ui/dropdown-menu-v2"
 
@@ -181,9 +181,25 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
         <div className="space-y-1 px-2">
           {displayApps.map((app) => (
             <div className="group relative" key={app.instanceId}>
-              <SidebarButton
+              <SidebarListButton
                 icon={getAppIcon(app)}
                 onClick={() => handleAppClick(app)}
+                active={false}
+                isLoading={false}
+                hasOpenDropdown={openDropdownId === app.instanceId}
+                disableHover={!!openDropdownId}
+                moreActionsTrigger={
+                  <div className={cn(
+                    "transition-opacity",
+                    openDropdownId === app.instanceId
+                      ? "opacity-100" // 当前打开菜单的item，more button保持显示
+                      : openDropdownId 
+                        ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
+                        : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
+                  )}>
+                    {createMoreActions(app)}
+                  </div>
+                }
                 className={cn(
                   "w-full justify-start font-medium",
                   "transition-all duration-200 ease-in-out",
@@ -198,20 +214,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                     {app.displayName}
                   </span>
                 </div>
-              </SidebarButton>
-              
-              {/* More button - 悬停时显示，添加z-10确保优先级 */}
-              <div className={cn(
-                "absolute right-2 top-1/2 -translate-y-1/2 z-10",
-                "transition-opacity",
-                openDropdownId === app.instanceId
-                  ? "opacity-100" // 当前打开菜单的item，more button保持显示
-                  : openDropdownId 
-                    ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
-                    : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
-              )}>
-                {createMoreActions(app)}
-              </div>
+              </SidebarListButton>
             </div>
           ))}
         </div>
