@@ -54,11 +54,14 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
   }, [pathname]);
 
   // --- BEGIN COMMENT ---
-  // 检查是否为应用详情页面：/apps/[instanceId] 格式
+  // 检查是否为应用详情页面：/apps/[instanceId]/[appType] 格式
+  // appType 可以是: agent, chatbot, text-generation, chatflow, workflow
   // --- END COMMENT ---
   const isAppDetailPage = React.useMemo(() => {
     if (!pathname) return false;
-    return pathname.match(/^\/apps\/[^\/]+$/);
+    const validAppTypes = ['agent', 'chatbot', 'text-generation', 'chatflow', 'workflow'];
+    const match = pathname.match(/^\/apps\/([^\/]+)\/([^\/]+)$/);
+    return match && validAppTypes.includes(match[2]);
   }, [pathname]);
 
   // --- BEGIN COMMENT ---
