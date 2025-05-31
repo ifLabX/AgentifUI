@@ -14,7 +14,9 @@ import {
   DifyWorkflowSseNodeFinishedEvent,
   DifyWorkflowErrorCode,
   DifyApiError,
-  DifyWorkflowRunDetailResponse
+  DifyWorkflowRunDetailResponse,
+  GetDifyWorkflowLogsParams,
+  GetDifyWorkflowLogsResponse
 } from './types';
 import { parseSseStream } from '@lib/utils/sse-parser';
 
@@ -375,5 +377,93 @@ export async function getDifyWorkflowRunDetail(
     }
     
     throw new Error('获取 workflow 执行情况时发生未知错误');
+  }
+}
+
+// --- BEGIN COMMENT ---
+// 获取 Workflow 日志
+// GET /workflows/logs
+// --- END COMMENT ---
+
+/**
+ * 获取 workflow 日志列表
+ * 倒序返回 workflow 日志
+ * 
+ * @param appId - 应用 ID
+ * @param params - 查询参数
+ * @returns Promise<GetDifyWorkflowLogsResponse> - workflow 日志列表
+ */
+export async function getDifyWorkflowLogs(
+  appId: string,
+  params?: GetDifyWorkflowLogsParams
+): Promise<GetDifyWorkflowLogsResponse> {
+  const slug = 'workflows/logs'; // Dify API 路径
+  
+  // 构建查询参数
+  const searchParams = new URLSearchParams();
+  if (params?.keyword) {
+    searchParams.append('keyword', params.keyword);
+  }
+  if (params?.status) {
+    searchParams.append('status', params.status);
+  }
+  if (params?.page) {
+    searchParams.append('page', params.page.toString());
+  }
+  if (params?.limit) {
+    searchParams.append('limit', params.limit.toString());
+  }
+  
+  const queryString = searchParams.toString();
+  const apiUrl = `/api/dify/${appId}/${slug}${queryString ? `?${queryString}` : ''}`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 不需要 Authorization 头，这是代理的职责
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取 workflow 日志失败'
+        };
+      }
+      
+      console.error('[Dify Workflow Service] 获取 workflow 日志失败:', errorData);
+      throw new Error(`获取 workflow 日志失败: ${errorData.message}`);
+    }
+
+    const result: GetDifyWorkflowLogsResponse = await response.json();
+    
+    console.log('[Dify Workflow Service] 成功获取 workflow 日志:', {
+      appId,
+      params,
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      dataCount: result.data.length,
+      hasMore: result.has_more
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify Workflow Service] 获取 workflow 日志时发生错误:', error);
+    
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('获取 workflow 日志时发生未知错误');
   }
 } 

@@ -813,3 +813,43 @@ export interface DifyWorkflowRunDetailResponse {
   finished_at: number | null; // 任务结束时间 (Unix timestamp)
   elapsed_time: number | null; // 耗时(秒)
 }
+
+// --- BEGIN COMMENT ---
+// Workflow 日志 API 类型定义
+// GET /workflows/logs
+// --- END COMMENT ---
+
+/** Workflow 执行状态枚举 */
+export type DifyWorkflowLogStatus = 'succeeded' | 'failed' | 'stopped' | 'running';
+
+/** 获取 Workflow 日志的请求参数 */
+export interface GetDifyWorkflowLogsParams {
+  keyword?: string; // 关键字（可选）
+  status?: DifyWorkflowLogStatus; // 执行状态（可选）
+  page?: number; // 当前页码，默认 1
+  limit?: number; // 每页条数，默认 20
+}
+
+/** Workflow 日志单条记录 */
+export interface DifyWorkflowLogEntry {
+  id: string; // workflow 执行 ID (UUID)
+  workflow_id: string; // 关联的 Workflow ID (UUID)
+  status: DifyWorkflowLogStatus; // 执行状态
+  inputs: string; // 任务输入内容的 JSON 字符串
+  outputs: Record<string, any> | null; // 任务输出内容的 JSON 对象
+  error: string | null; // 错误原因
+  total_steps: number; // 任务执行总步数
+  total_tokens: number; // 任务执行总 tokens
+  created_at: number; // 任务开始时间 (Unix timestamp)
+  finished_at: number | null; // 任务结束时间 (Unix timestamp)
+  elapsed_time: number | null; // 耗时(秒)
+}
+
+/** 获取 Workflow 日志的响应体 */
+export interface GetDifyWorkflowLogsResponse {
+  page: number; // 当前页码
+  limit: number; // 每页条数
+  total: number; // 总条数
+  has_more: boolean; // 是否还有更多数据
+  data: DifyWorkflowLogEntry[]; // 当前页码的数据
+}

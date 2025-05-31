@@ -14,7 +14,8 @@ export {
   executeDifyWorkflow,
   streamDifyWorkflow,
   stopDifyWorkflow,
-  getDifyWorkflowRunDetail
+  getDifyWorkflowRunDetail,
+  getDifyWorkflowLogs
 } from './workflow-service';
 
 // App 服务
@@ -67,6 +68,10 @@ export type {
   DifyWorkflowInputFile,
   DifyWorkflowErrorCode,
   DifyWorkflowRunDetailResponse,
+  DifyWorkflowLogStatus,
+  GetDifyWorkflowLogsParams,
+  GetDifyWorkflowLogsResponse,
+  DifyWorkflowLogEntry,
   
   // App 相关类型
   DifyAppParametersResponse,
