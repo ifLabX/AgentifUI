@@ -5,7 +5,15 @@
 // 即提供独立的、可导出的服务函数。
 // --- END COMMENT ---
 
-import type { GetMessagesParams, GetMessagesResponse, DifyApiError } from './types';
+import type { 
+  GetMessagesParams, 
+  GetMessagesResponse, 
+  DifyApiError,
+  DifyMessageFeedbackRequestPayload,
+  DifyMessageFeedbackResponse,
+  DifyAudioToTextRequestPayload,
+  DifyAudioToTextResponse
+} from './types';
 
 // --- BEGIN COMMENT ---
 // 定义指向我们后端 Dify 代理 API 的基础 URL。
@@ -123,3 +131,131 @@ export async function getConversationMessages(
 // --- END COMMENT ---
 
 export {}; // 确保文件被视为一个 ES模块 
+
+// --- BEGIN COMMENT ---
+// 消息反馈 API 服务函数
+// --- END COMMENT ---
+
+/**
+ * 提交消息反馈
+ * 
+ * @param appId - 应用 ID
+ * @param messageId - 消息 ID
+ * @param payload - 反馈数据
+ * @returns Promise<DifyMessageFeedbackResponse> - 反馈结果
+ */
+export async function submitMessageFeedback(
+  appId: string,
+  messageId: string,
+  payload: DifyMessageFeedbackRequestPayload
+): Promise<DifyMessageFeedbackResponse> {
+  const slug = `messages/${messageId}/feedbacks`; // Dify API 路径
+  const apiUrl = `/api/dify/${appId}/${slug}`; // 指向后端代理
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '提交反馈失败'
+        };
+      }
+      
+      console.error('[Dify Message Service] 提交消息反馈失败:', errorData);
+      throw new Error(`提交消息反馈失败: ${errorData.message}`);
+    }
+
+    const result: DifyMessageFeedbackResponse = await response.json();
+    
+    console.log('[Dify Message Service] 成功提交消息反馈:', {
+      appId,
+      messageId,
+      rating: payload.rating
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify Message Service] 提交消息反馈时发生错误:', error);
+    
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('提交消息反馈时发生未知错误');
+  }
+}
+
+/**
+ * 语音转文本
+ * 
+ * @param appId - 应用 ID
+ * @param payload - 语音数据
+ * @returns Promise<DifyAudioToTextResponse> - 转换结果
+ */
+export async function convertAudioToText(
+  appId: string,
+  payload: DifyAudioToTextRequestPayload
+): Promise<DifyAudioToTextResponse> {
+  const slug = 'audio-to-text'; // Dify API 路径
+  const apiUrl = `/api/dify/${appId}/${slug}`; // 指向后端代理
+
+  try {
+    const formData = new FormData();
+    formData.append('file', payload.file);
+    formData.append('user', payload.user);
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: formData, // 使用 FormData，不设置 Content-Type
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '语音转文本失败'
+        };
+      }
+      
+      console.error('[Dify Message Service] 语音转文本失败:', errorData);
+      throw new Error(`语音转文本失败: ${errorData.message}`);
+    }
+
+    const result: DifyAudioToTextResponse = await response.json();
+    
+    console.log('[Dify Message Service] 成功转换语音为文本:', {
+      appId,
+      textLength: result.text.length
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify Message Service] 语音转文本时发生错误:', error);
+    
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('语音转文本时发生未知错误');
+  }
+} 

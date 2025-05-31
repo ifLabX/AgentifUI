@@ -1,5 +1,5 @@
 import { getProviderByName } from '@lib/db';
-import type { DifyAppParametersResponse, DifyApiError } from './types';
+import type { DifyAppParametersResponse, DifyApiError, DifyAppInfoResponse, DifyWebAppSettingsResponse, DifyAppMetaResponse } from './types';
 import type { ServiceInstanceConfig } from '@lib/types/database';
 
 /**
@@ -135,5 +135,183 @@ export async function testDifyAppParameters(appId: string): Promise<void> {
   } catch (error) {
     console.error(`[Test] 测试应用参数API失败:`, error);
     throw error;
+  }
+}
+
+/**
+ * 获取应用基本信息
+ * 
+ * @param appId - 应用ID
+ * @returns Promise<DifyAppInfoResponse> - 应用基本信息
+ */
+export async function getDifyAppInfo(appId: string): Promise<DifyAppInfoResponse> {
+  const slug = 'info'; // Dify API 路径
+  const apiUrl = `/api/dify/${appId}/${slug}`; // 指向后端代理
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 不需要 Authorization 头，这是代理的职责
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        // 如果无法解析JSON，使用默认错误格式
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取应用信息失败'
+        };
+      }
+      
+      console.error('[Dify App Service] 获取应用信息失败:', errorData);
+      throw new Error(`获取应用信息失败: ${errorData.message}`);
+    }
+
+    const result: DifyAppInfoResponse = await response.json();
+    
+    console.log('[Dify App Service] 成功获取应用信息:', {
+      appId,
+      name: result.name,
+      description: result.description,
+      tagsCount: result.tags?.length || 0
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify App Service] 获取应用信息时发生错误:', error);
+    
+    // 重新抛出错误，保持错误信息
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('获取应用信息时发生未知错误');
+  }
+}
+
+/**
+ * 获取应用 WebApp 设置
+ * 
+ * @param appId - 应用ID
+ * @returns Promise<DifyWebAppSettingsResponse> - WebApp 设置信息
+ */
+export async function getDifyWebAppSettings(appId: string): Promise<DifyWebAppSettingsResponse> {
+  const slug = 'site'; // Dify API 路径
+  const apiUrl = `/api/dify/${appId}/${slug}`; // 指向后端代理
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 不需要 Authorization 头，这是代理的职责
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        // 如果无法解析JSON，使用默认错误格式
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取 WebApp 设置失败'
+        };
+      }
+      
+      console.error('[Dify App Service] 获取 WebApp 设置失败:', errorData);
+      throw new Error(`获取 WebApp 设置失败: ${errorData.message}`);
+    }
+
+    const result: DifyWebAppSettingsResponse = await response.json();
+    
+    console.log('[Dify App Service] 成功获取 WebApp 设置:', {
+      appId,
+      title: result.title,
+      iconType: result.icon_type,
+      hasDescription: !!result.description
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify App Service] 获取 WebApp 设置时发生错误:', error);
+    
+    // 重新抛出错误，保持错误信息
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('获取 WebApp 设置时发生未知错误');
+  }
+}
+
+/**
+ * 获取应用 Meta 信息
+ * 
+ * @param appId - 应用ID
+ * @returns Promise<DifyAppMetaResponse> - 应用 Meta 信息
+ */
+export async function getDifyAppMeta(appId: string): Promise<DifyAppMetaResponse> {
+  const slug = 'meta'; // Dify API 路径
+  const apiUrl = `/api/dify/${appId}/${slug}`; // 指向后端代理
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 不需要 Authorization 头，这是代理的职责
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        // 如果无法解析JSON，使用默认错误格式
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取应用 Meta 信息失败'
+        };
+      }
+      
+      console.error('[Dify App Service] 获取应用 Meta 信息失败:', errorData);
+      throw new Error(`获取应用 Meta 信息失败: ${errorData.message}`);
+    }
+
+    const result: DifyAppMetaResponse = await response.json();
+    
+    console.log('[Dify App Service] 成功获取应用 Meta 信息:', {
+      appId,
+      toolIconsCount: Object.keys(result.tool_icons).length
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify App Service] 获取应用 Meta 信息时发生错误:', error);
+    
+    // 重新抛出错误，保持错误信息
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('获取应用 Meta 信息时发生未知错误');
   }
 } 
