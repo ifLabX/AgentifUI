@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { appParametersService } from '@lib/services/app-parameters-service';
+import { appParametersService } from '@lib/services/dify/app-parameters-service';
 import type { DifyAppParametersResponse } from '@lib/services/dify/types';
 
 interface UseAppParametersState {
