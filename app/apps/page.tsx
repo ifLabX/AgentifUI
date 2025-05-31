@@ -141,24 +141,24 @@ export default function AppsPage() {
       
       switch (difyAppType) {
         case 'chatbot':
-          routePath = `/apps/${app.instanceId}/chatbot`
+          routePath = `/apps/chatbot/${app.instanceId}`
           break
         case 'agent':
-          routePath = `/apps/${app.instanceId}/agent`
+          routePath = `/apps/agent/${app.instanceId}`
           break
         case 'chatflow':
-          routePath = `/apps/${app.instanceId}/chatflow`
+          routePath = `/apps/chatflow/${app.instanceId}`
           break
         case 'workflow':
-          routePath = `/apps/${app.instanceId}/workflow`
+          routePath = `/apps/workflow/${app.instanceId}`
           break
         case 'text-generation':
-          routePath = `/apps/${app.instanceId}/text-generation`
+          routePath = `/apps/text-generation/${app.instanceId}`
           break
         default:
           // --- 如果没有指定类型或类型无效，默认跳转到chatbot ---
           console.warn(`未知的Dify应用类型: ${difyAppType}，使用默认路由`)
-          routePath = `/apps/${app.instanceId}/chatbot`
+          routePath = `/apps/chatbot/${app.instanceId}`
       }
       
       console.log(`[路由跳转] 应用: ${app.displayName}, 类型: ${difyAppType}, 路径: ${routePath}`)

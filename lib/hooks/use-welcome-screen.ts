@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
  * 
  * 欢迎界面的条件：
  * 1. 当前路径为/chat/new，或
- * 2. 当前路径为/apps/[instanceId]（应用详情页面），或
+ * 2. 当前路径为/apps/{type}/[instanceId]（应用详情页面），或
  * 3. isWelcomeScreen状态为true且messages数组为空
  * 4. 且当前没有指定对话ID
  */
@@ -20,7 +20,7 @@ export function useWelcomeScreen() {
   // --- BEGIN COMMENT ---
   // 修改判断逻辑，支持应用详情页面作为欢迎界面
   // 1. 当路径为/chat/new时，总是显示欢迎界面
-  // 2. 当路径为/apps/[instanceId]时，总是显示欢迎界面
+  // 2. 当路径为/apps/{type}/[instanceId]时，总是显示欢迎界面
   // 3. 当路径包含对话ID时，总是不显示欢迎界面
   // 4. 其他情况下，根据 isWelcomeScreen 状态和 messages 数组判断
   // --- END COMMENT ---
@@ -32,10 +32,10 @@ export function useWelcomeScreen() {
     pathname !== '/chat/new' && 
     !pathname.includes('/chat/temp-'); // 临时ID也算有效对话ID
   
-  // 判断当前路径是否为应用详情页面
+  // 判断当前路径是否为应用详情页面 /apps/{type}/[instanceId]
   const isAppDetailPage = pathname && 
     pathname.startsWith('/apps/') && 
-    pathname.split('/').length === 3; // /apps/[instanceId] 格式
+    pathname.split('/').length === 4; // /apps/{type}/[instanceId] 格式
   
   if (pathname === '/chat/new') {
     // 如果路径是 /chat/new，总是显示欢迎界面

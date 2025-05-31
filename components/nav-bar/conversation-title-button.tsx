@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
@@ -54,20 +54,16 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
   }, [pathname]);
 
   // --- BEGIN COMMENT ---
-  // 检查是否为应用详情页面：/apps/[instanceId]/[appType] 格式
-  // appType 可以是: agent, chatbot, text-generation, chatflow, workflow
+  // 检查是否为应用详情页面：/apps/{type}/[instanceId] 格式
   // --- END COMMENT ---
-  const isAppDetailPage = React.useMemo(() => {
-    if (!pathname) return false;
-    const validAppTypes = ['agent', 'chatbot', 'text-generation', 'chatflow', 'workflow'];
-    const match = pathname.match(/^\/apps\/([^\/]+)\/([^\/]+)$/);
-    return match && validAppTypes.includes(match[2]);
-  }, [pathname]);
-
+  const isAppDetailPage = pathname && 
+    pathname.startsWith('/apps/') && 
+    pathname.split('/').length === 4;
+  
   // --- BEGIN COMMENT ---
-  // 获取当前应用信息（应用详情页面使用）
+  // 获取当前应用信息（仅在应用详情页面）
   // --- END COMMENT ---
-  const currentApp = React.useMemo(() => {
+  const currentApp = useMemo(() => {
     if (!isAppDetailPage || !params.instanceId) return null;
     return apps.find(app => app.instance_id === params.instanceId);
   }, [isAppDetailPage, params.instanceId, apps]);

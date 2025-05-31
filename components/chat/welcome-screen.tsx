@@ -64,12 +64,12 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   useEffect(() => {
     // 检测应用切换状态
     const pathname = window.location.pathname
-    const isOnAppDetailPage = pathname.startsWith('/apps/') && pathname.split('/').length === 3
+    const isOnAppDetailPage = pathname.startsWith('/apps/') && pathname.split('/').length === 4
     const isOnNewChatPage = pathname === '/chat/new'
     
     if (isOnAppDetailPage) {
       // 在应用详情页面，检查当前应用是否与URL匹配
-      const urlInstanceId = pathname.split('/')[2]
+      const urlInstanceId = pathname.split('/')[3] // /apps/{type}/[instanceId] 中的 instanceId
       const currentInstanceId = currentAppInstance?.instance_id
       
       if (currentInstanceId && currentInstanceId !== urlInstanceId) {

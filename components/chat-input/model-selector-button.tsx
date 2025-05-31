@@ -179,7 +179,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
         // 检查当前路径是否是新对话页面，只在新对话页面才自动切换
         const pathname = window.location.pathname;
         const isOnNewChatPage = pathname === '/chat/new'
-        const isOnAppDetailPage = pathname && pathname.startsWith('/apps/') && pathname.split('/').length === 3
+        const isOnAppDetailPage = pathname && pathname.startsWith('/apps/') && pathname.split('/').length === 4
         
         // --- BEGIN COMMENT ---
         // 🎯 修复：不在应用详情页面进行自动切换，避免干扰用户访问应用

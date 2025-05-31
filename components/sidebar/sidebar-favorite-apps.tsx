@@ -64,26 +64,19 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     // 检查当前路由是否是应用详情页面
     if (!pathname.startsWith('/apps/')) return false
 
-    // 🎯 修复：支持新的路由结构 /apps/[instanceId]/[difyAppType]
+    // 🎯 修复：支持新的路由结构 /apps/{type}/[instanceId]
     const pathParts = pathname.split('/apps/')[1]?.split('/')
-    if (!pathParts || pathParts.length === 0) return false
+    if (!pathParts || pathParts.length < 2) return false
     
-    const routeInstanceId = pathParts[0]
+    const routeAppType = pathParts[0]  // 应用类型
+    const routeInstanceId = pathParts[1]  // 实例ID
     
     // 基本的instanceId匹配
     if (routeInstanceId !== app.instanceId) return false
     
-    // 如果路由只有instanceId（如 /apps/instanceId），则匹配
-    if (pathParts.length === 1) return true
-    
-    // 如果路由有应用类型（如 /apps/instanceId/chatflow），检查应用类型是否匹配
-    if (pathParts.length >= 2) {
-      const routeAppType = pathParts[1]
-      const appDifyType = app.dify_apptype || 'chatflow'
-      return routeAppType === appDifyType
-    }
-    
-    return false
+    // 检查应用类型是否匹配
+    const appDifyType = app.dify_apptype || 'chatflow'
+    return routeAppType === appDifyType
   }, [])
 
   const handleAppClick = async (app: FavoriteApp) => {
@@ -96,7 +89,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
 
       // 🎯 根据Dify应用类型跳转到对应页面
       const difyAppType = app.dify_apptype || 'chatflow'
-      router.push(`/apps/${app.instanceId}/${difyAppType}`)
+      router.push(`/apps/${difyAppType}/${app.instanceId}`)
 
     } catch (error) {
       console.error('切换到常用应用失败:', error)
@@ -114,7 +107,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
 
       // 🎯 根据Dify应用类型跳转到对应页面
       const difyAppType = app.dify_apptype || 'chatflow'
-      router.push(`/apps/${app.instanceId}/${difyAppType}`)
+      router.push(`/apps/${difyAppType}/${app.instanceId}`)
 
     } catch (error) {
       console.error('发起新对话失败:', error)

@@ -99,10 +99,11 @@ export function DynamicTitle() {
           // 应用市场页面
           newTitle = '应用市场 | ' + baseTitle
         } else {
-          // 应用详情页面 /apps/[instanceId]
+          // 应用详情页面 /apps/{type}/[instanceId]
           const pathSegments = pathname.split('/')
-          if (pathSegments.length >= 3) {
-            const instanceId = pathSegments[2]
+          if (pathSegments.length >= 4) {
+            const appType = pathSegments[2]  // 应用类型
+            const instanceId = pathSegments[3]  // 实例ID
             
             // 查找对应的应用
             const targetApp = apps.find(app => app.instance_id === instanceId)

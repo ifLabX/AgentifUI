@@ -119,7 +119,7 @@ export default function AppDetailPage() {
     // --- BEGIN COMMENT ---
     // 🎯 修复：正确判断当前是否在chatbot页面
     // --- END COMMENT ---
-    if (pathname === `/apps/${instanceId}/chatbot`) {
+    if (pathname === `/apps/chatbot/${instanceId}`) {
       console.log('[AppDetail] 路由切换到应用详情页面，立即清理聊天状态')
       
       // 立即清除所有消息

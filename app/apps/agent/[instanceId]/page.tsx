@@ -117,9 +117,9 @@ export default function AppDetailPage() {
   // --- END COMMENT ---
   useLayoutEffect(() => {
     // --- BEGIN COMMENT ---
-    // 🎯 修复：正确判断当前是否在chatflow页面
+    // 🎯 修复：正确判断当前是否在agent页面
     // --- END COMMENT ---
-    if (pathname === `/apps/${instanceId}/chatflow`) {
+    if (pathname === `/apps/agent/${instanceId}`) {
       console.log('[AppDetail] 路由切换到应用详情页面，立即清理聊天状态')
       
       // 立即清除所有消息
