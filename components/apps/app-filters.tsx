@@ -28,7 +28,7 @@ export function AppFilters({
 
   const getCategoryDisplay = (category: string) => {
     if (category === '全部') {
-      return { icon: '📱', label: '全部' }
+      return { icon: '🔍', label: '全部' }
     }
     if (category === '常用应用') {
       return { icon: '⭐', label: '常用应用' }
