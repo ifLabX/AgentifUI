@@ -853,3 +853,103 @@ export interface GetDifyWorkflowLogsResponse {
   has_more: boolean; // 是否还有更多数据
   data: DifyWorkflowLogEntry[]; // 当前页码的数据
 }
+
+// --- BEGIN COMMENT ---
+// 标注列表 API 类型定义
+// GET /apps/annotations
+// --- END COMMENT ---
+
+/** 单个标注条目 */
+export interface DifyAnnotationItem {
+  id: string; // 标注ID (UUID格式)
+  question: string; // 问题
+  answer: string; // 答案内容
+  hit_count: number; // 命中次数
+  created_at: number; // 创建时间戳
+}
+
+/** 获取标注列表的请求参数 */
+export interface GetDifyAnnotationsParams {
+  page?: number; // 分页页码，默认：1
+  limit?: number; // 每页数量，默认 20，范围 1-100
+}
+
+/** 标注列表响应 */
+export interface DifyAnnotationListResponse {
+  data: DifyAnnotationItem[]; // 标注列表
+  has_more: boolean; // 是否有更多数据
+  limit: number; // 每页数量
+  total: number; // 总数量
+  page: number; // 当前页码
+}
+
+// --- BEGIN COMMENT ---
+// 创建标注 API 类型定义
+// POST /apps/annotations
+// --- END COMMENT ---
+
+/** 创建标注请求体 */
+export interface CreateDifyAnnotationRequest {
+  question: string; // 问题
+  answer: string; // 答案内容
+}
+
+/** 创建标注响应 (返回创建的标注条目) */
+export interface CreateDifyAnnotationResponse extends DifyAnnotationItem {
+  // 继承 DifyAnnotationItem 的所有字段
+}
+
+// --- BEGIN COMMENT ---
+// 更新标注 API 类型定义
+// PUT /apps/annotations/{annotation_id}
+// --- END COMMENT ---
+
+/** 更新标注请求体 */
+export interface UpdateDifyAnnotationRequest {
+  question: string; // 问题
+  answer: string; // 答案内容
+}
+
+/** 更新标注响应 (返回更新后的标注条目) */
+export interface UpdateDifyAnnotationResponse extends DifyAnnotationItem {
+  // 继承 DifyAnnotationItem 的所有字段
+}
+
+// --- BEGIN COMMENT ---
+// 删除标注 API 类型定义
+// DELETE /apps/annotations/{annotation_id}
+// 删除成功返回 204 状态码，无响应体
+// --- END COMMENT ---
+
+/** 删除标注响应 (204 状态码，无内容) */
+export interface DeleteDifyAnnotationResponse {
+  // 空接口，表示无响应体
+}
+
+// --- BEGIN COMMENT ---
+// 标注回复初始设置 API 类型定义
+// POST /apps/annotation-reply/{action}
+// --- END COMMENT ---
+
+/** 标注回复设置动作类型 */
+export type DifyAnnotationReplyAction = 'enable' | 'disable';
+
+/** 标注回复初始设置请求体 */
+export interface InitialDifyAnnotationReplySettingsRequest {
+  embedding_provider_name?: string | null; // （可选）指定的嵌入模型提供商名称
+  embedding_model_name?: string | null; // （可选）指定的嵌入模型名称
+  score_threshold: number; // 相似度阈值
+}
+
+/** 异步任务响应 */
+export interface DifyAsyncJobResponse {
+  job_id: string; // 任务 ID (UUID格式)
+  job_status: string; // 任务状态
+}
+
+/** 异步任务状态响应 */
+export interface DifyAsyncJobStatusResponse {
+  job_id: string; // 任务 ID (UUID格式)
+  job_status: string; // 任务状态
+  error_msg?: string | null; // 错误信息（如果任务失败）
+}

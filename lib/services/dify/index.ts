@@ -50,6 +50,16 @@ export {
   stopDifyCompletion
 } from './completion-service';
 
+// Annotation 服务
+export {
+  getDifyAnnotations,
+  createDifyAnnotation,
+  updateDifyAnnotation,
+  deleteDifyAnnotation,
+  setDifyAnnotationReplySettings,
+  getDifyAnnotationReplyJobStatus
+} from './annotation-service';
+
 // 类型定义
 export type {
   // Chat 相关类型
@@ -90,6 +100,20 @@ export type {
   DifyCompletionRequestPayload,
   DifyCompletionResponse,
   DifyCompletionStreamResponse,
+  
+  // Annotation 相关类型
+  DifyAnnotationItem,
+  GetDifyAnnotationsParams,
+  DifyAnnotationListResponse,
+  CreateDifyAnnotationRequest,
+  CreateDifyAnnotationResponse,
+  UpdateDifyAnnotationRequest,
+  UpdateDifyAnnotationResponse,
+  DeleteDifyAnnotationResponse,
+  DifyAnnotationReplyAction,
+  InitialDifyAnnotationReplySettingsRequest,
+  DifyAsyncJobResponse,
+  DifyAsyncJobStatusResponse,
   
   // 通用类型
   DifyFile,
