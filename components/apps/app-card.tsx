@@ -3,6 +3,7 @@
 import { Star, ArrowRight, Cpu, Blocks } from "lucide-react"
 import { cn } from "@lib/utils"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
+import { getDifyAppTypeInfo } from "@lib/types/dify-app-types"
 
 interface AppInstance {
   instanceId: string
@@ -14,6 +15,13 @@ interface AppInstance {
   tags?: string[]
   isPopular?: boolean
   lastUsed?: string
+  config?: {
+    app_metadata?: {
+      dify_apptype?: string
+      [key: string]: any
+    }
+    [key: string]: any
+  }
 }
 
 interface AppCardProps {
@@ -25,6 +33,10 @@ interface AppCardProps {
 
 export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
   const { colors, isDark } = useThemeColors()
+
+  // 🎯 新增：获取Dify应用类型信息
+  const difyAppType = app.config?.app_metadata?.dify_apptype
+  const difyTypeInfo = difyAppType ? getDifyAppTypeInfo(difyAppType) : null
 
   // 获取应用图标
   const getAppIcon = (app: AppInstance) => {
@@ -162,6 +174,25 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
             )}
           </div>
 
+          {/* 🎯 新增：Dify应用类型显示 */}
+          {difyTypeInfo && (
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-sm">{difyTypeInfo.icon}</span>
+              <span className={cn(
+                "text-xs font-serif font-medium",
+                isDark ? "text-stone-400" : "text-stone-600"
+              )}>
+                {difyTypeInfo.label}
+              </span>
+              <span className={cn(
+                "text-xs font-serif",
+                isDark ? "text-stone-500" : "text-stone-500"
+              )}>
+                • {difyTypeInfo.description}
+              </span>
+            </div>
+          )}
+
           {/* 底部箭头 */}
           <div className="flex items-center justify-end pt-2">
             <ArrowRight className={cn(
@@ -210,6 +241,19 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
             )}>
               {app.description}
             </p>
+            
+            {/* 🎯 新增：列表视图中的Dify应用类型显示 */}
+            {difyTypeInfo && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm">{difyTypeInfo.icon}</span>
+                <span className={cn(
+                  "text-xs font-serif font-medium",
+                  isDark ? "text-stone-400" : "text-stone-600"
+                )}>
+                  {difyTypeInfo.label}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex-shrink-0 ml-4">
             <ArrowRight className={cn(
