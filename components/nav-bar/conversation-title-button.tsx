@@ -334,7 +334,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
                   "px-2 py-0.5 rounded-full text-xs font-serif",
                   isDark 
                     ? "bg-stone-700 text-stone-300" 
-                    : "bg-stone-100 text-stone-700"
+                    : "bg-stone-200 text-stone-700"
                 )}
               >
                 {tag}
