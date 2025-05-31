@@ -7,6 +7,7 @@ export interface DifyAppConfig {
   appId: string;
   displayName?: string;
   description?: string;
+  appType?: string;
 }
 
 // --- BEGIN COMMENT ---
@@ -208,9 +209,10 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
     const config = {
       apiKey: decryptedKey,
       apiUrl: provider.base_url,
-      appId: instance.instance_id,
-      displayName: instance.display_name || instance.instance_id,
-      description: instance.description
+      appId: serviceInstance.instance_id,
+      displayName: serviceInstance.display_name || serviceInstance.instance_id,
+      description: serviceInstance.description,
+      appType: serviceInstance.config?.app_metadata?.dify_apptype
     };
     
     return config;
