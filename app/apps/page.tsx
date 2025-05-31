@@ -128,11 +128,43 @@ export default function AppsPage() {
     return a.displayName.localeCompare(b.displayName)
   })
 
-  // 打开应用详情
+  // --- BEGIN COMMENT ---
+  // 🎯 打开应用详情 - 根据Dify应用类型动态路由
+  // --- END COMMENT ---
   const handleOpenApp = async (app: AppInstance) => {
     try {
-      // 跳转到应用详情页
-      router.push(`/apps/${app.instanceId}`)
+      // --- 获取Dify应用类型 ---
+      const difyAppType = app.config?.app_metadata?.dify_apptype
+      
+      // --- 根据应用类型构建不同的路由路径 ---
+      let routePath: string
+      
+      switch (difyAppType) {
+        case 'chatbot':
+          routePath = `/apps/${app.instanceId}/chatbot`
+          break
+        case 'agent':
+          routePath = `/apps/${app.instanceId}/agent`
+          break
+        case 'chatflow':
+          routePath = `/apps/${app.instanceId}/chatflow`
+          break
+        case 'workflow':
+          routePath = `/apps/${app.instanceId}/workflow`
+          break
+        case 'text-generation':
+          routePath = `/apps/${app.instanceId}/text-generation`
+          break
+        default:
+          // --- 如果没有指定类型或类型无效，默认跳转到chatbot ---
+          console.warn(`未知的Dify应用类型: ${difyAppType}，使用默认路由`)
+          routePath = `/apps/${app.instanceId}/chatbot`
+      }
+      
+      console.log(`[路由跳转] 应用: ${app.displayName}, 类型: ${difyAppType}, 路径: ${routePath}`)
+      
+      // --- 执行路由跳转 ---
+      router.push(routePath)
     } catch (error) {
       console.error('打开应用失败:', error)
     }
