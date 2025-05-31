@@ -696,8 +696,9 @@ export interface DifyAppInfoResponse {
 
 /** 消息反馈请求体 */
 export interface DifyMessageFeedbackRequestPayload {
-  rating: 'like' | 'dislike'; // 反馈类型：点赞或点踩
+  rating: 'like' | 'dislike' | null; // 反馈类型：点赞 'like'、点踩 'dislike'、撤销 'null'
   user: string; // 用户标识符
+  content?: string; // 消息反馈的具体信息（可选）
 }
 
 /** 消息反馈响应体 */
@@ -796,4 +797,19 @@ export interface DifyToolIconDetail {
 /** 应用 Meta 信息响应 */
 export interface DifyAppMetaResponse {
   tool_icons: Record<string, string | DifyToolIconDetail>; // 工具图标，键为工具名称，值为图标 URL 或详情对象
+}
+
+/** Workflow 执行详情响应 */
+export interface DifyWorkflowRunDetailResponse {
+  id: string; // workflow 执行 ID (UUID)
+  workflow_id: string; // 关联的 Workflow ID (UUID)
+  status: 'running' | 'succeeded' | 'failed' | 'stopped'; // 执行状态
+  inputs: string; // 任务输入内容的 JSON 字符串
+  outputs: Record<string, any> | null; // 任务输出内容的 JSON 对象
+  error: string | null; // 错误原因
+  total_steps: number; // 任务执行总步数
+  total_tokens: number; // 任务执行总 tokens
+  created_at: number; // 任务开始时间 (Unix timestamp)
+  finished_at: number | null; // 任务结束时间 (Unix timestamp)
+  elapsed_time: number | null; // 耗时(秒)
 }

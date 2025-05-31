@@ -13,7 +13,8 @@ import {
   DifyWorkflowSseNodeStartedEvent,
   DifyWorkflowSseNodeFinishedEvent,
   DifyWorkflowErrorCode,
-  DifyApiError
+  DifyApiError,
+  DifyWorkflowRunDetailResponse
 } from './types';
 import { parseSseStream } from '@lib/utils/sse-parser';
 
@@ -306,5 +307,73 @@ export async function stopDifyWorkflow(
   } catch (error) {
     console.error(`[Dify Workflow Service] Error stopping workflow task ${taskId}:`, error);
     throw error;
+  }
+}
+
+/**
+ * 获取 workflow 执行情况
+ * 
+ * @param appId - 应用 ID
+ * @param workflowRunId - workflow 执行 ID
+ * @returns Promise<DifyWorkflowRunDetailResponse> - workflow 执行详情
+ */
+export async function getDifyWorkflowRunDetail(
+  appId: string,
+  workflowRunId: string
+): Promise<DifyWorkflowRunDetailResponse> {
+  const slug = `workflows/run/${workflowRunId}`; // Dify API 路径
+  const apiUrl = `/api/dify/${appId}/${slug}`; // 指向后端代理
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // 不需要 Authorization 头，这是代理的职责
+    });
+
+    if (!response.ok) {
+      // 处理 404 错误
+      if (response.status === 404) {
+        throw new Error('Workflow 执行记录未找到');
+      }
+
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取 workflow 执行情况失败'
+        };
+      }
+      
+      console.error('[Dify Workflow Service] 获取 workflow 执行情况失败:', errorData);
+      throw new Error(`获取 workflow 执行情况失败: ${errorData.message}`);
+    }
+
+    const result: DifyWorkflowRunDetailResponse = await response.json();
+    
+    console.log('[Dify Workflow Service] 成功获取 workflow 执行情况:', {
+      appId,
+      workflowRunId,
+      status: result.status,
+      totalSteps: result.total_steps,
+      totalTokens: result.total_tokens
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify Workflow Service] 获取 workflow 执行情况时发生错误:', error);
+    
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('获取 workflow 执行情况时发生未知错误');
   }
 } 
