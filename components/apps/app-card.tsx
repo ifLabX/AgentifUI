@@ -13,6 +13,7 @@ interface AppInstance {
   iconUrl?: string
   category?: string
   tags?: string[]
+  difyAppType?: string
   isPopular?: boolean
   lastUsed?: string
   config?: {
@@ -34,8 +35,8 @@ interface AppCardProps {
 export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
   const { colors, isDark } = useThemeColors()
 
-  // 🎯 新增：获取Dify应用类型信息
-  const difyAppType = app.config?.app_metadata?.dify_apptype
+  // 获取Dify应用类型信息
+  const difyAppType = app.config?.app_metadata?.dify_apptype || app.difyAppType
   const difyTypeInfo = difyAppType ? getDifyAppTypeInfo(difyAppType) : null
 
   // 获取应用图标
@@ -50,12 +51,22 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
       )
     }
 
+    // 如果有Dify应用类型，使用对应的图标，但保持stone配色
+    if (difyTypeInfo) {
+      return (
+        <div className={cn(
+          "w-12 h-12 rounded-xl flex items-center justify-center text-2xl",
+          isDark ? "bg-stone-700 text-stone-300" : "bg-stone-200 text-stone-600"
+        )}>
+          {difyTypeInfo.icon}
+        </div>
+      )
+    }
+
     return app.appType === 'model' ? (
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center",
-        isDark 
-          ? "bg-stone-700" 
-          : "bg-stone-100"
+        isDark ? "bg-stone-700" : "bg-stone-100"
       )}>
         <Cpu className={cn(
           "w-6 h-6",
@@ -65,9 +76,7 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
     ) : (
       <div className={cn(
         "w-12 h-12 rounded-xl flex items-center justify-center",
-        isDark 
-          ? "bg-stone-600" 
-          : "bg-stone-200"
+        isDark ? "bg-stone-600" : "bg-stone-200"
       )}>
         <Blocks className={cn(
           "w-6 h-6",
@@ -99,35 +108,40 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
     >
       {viewMode === 'grid' ? (
         <div className="p-6">
-          {/* 顶部区域：图标、标题和star */}
+          {/* 顶部区域：图标、标题和常用标志 */}
           <div className="flex items-start gap-3 mb-4">
             {/* 应用图标 */}
             <div className="flex-shrink-0">
               {getAppIcon(app)}
             </div>
             
-            {/* 标题和分类 */}
+            {/* 标题和应用类型 */}
             <div className="flex-1 min-w-0">
               <h3 className={cn(
-                "font-semibold truncate font-serif mb-1",
+                "font-bold text-lg truncate font-serif mb-1",
                 colors.mainText.tailwind
               )}>
                 {app.displayName}
               </h3>
-              <p className={cn(
-                "text-sm font-serif",
-                isDark ? "text-stone-400" : "text-stone-600"
-              )}>
-                {app.category}
-              </p>
+              
+              {/* 应用类型标识 */}
+              {difyTypeInfo && (
+                <div className={cn(
+                  "flex items-center gap-1 mb-2",
+                  isDark ? "text-stone-400" : "text-stone-600"
+                )}>
+                  <span className="text-sm">{difyTypeInfo.icon}</span>
+                  <span className="text-xs font-medium font-serif">{difyTypeInfo.label}</span>
+                </div>
+              )}
             </div>
             
-            {/* 常用标志 - 固定位置不被挤压 */}
-            <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+            {/* 常用标志 */}
+            <div className="flex-shrink-0">
               {isFavorite && (
                 <Star className={cn(
                   "w-5 h-5 fill-current",
-                  isDark ? "text-stone-400" : "text-stone-600"
+                  isDark ? "text-stone-400" : "text-stone-500"
                 )} />
               )}
             </div>
@@ -141,7 +155,7 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
             {app.description}
           </p>
 
-          {/* 标签区域 - 固定高度确保一致性 */}
+          {/* 标签区域 - 显示实际的tags */}
           <div className="min-h-[2rem] mb-4">
             {app.tags && app.tags.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
@@ -151,7 +165,7 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
                     className={cn(
                       "px-2.5 py-1 text-xs rounded-full font-serif font-medium",
                       isDark 
-                        ? "bg-stone-700 text-stone-400" 
+                        ? "bg-stone-800 text-stone-300" 
                         : "bg-stone-100 text-stone-600"
                     )}
                   >
@@ -162,109 +176,116 @@ export function AppCard({ app, viewMode, isFavorite, onClick }: AppCardProps) {
                   <span className={cn(
                     "px-2.5 py-1 text-xs rounded-full font-serif font-medium",
                     isDark 
-                      ? "bg-stone-600 text-stone-500" 
+                      ? "bg-stone-700 text-stone-400" 
                       : "bg-stone-200 text-stone-500"
                   )}>
                     +{app.tags.length - 3}
                   </span>
                 )}
               </div>
+            ) : difyTypeInfo ? (
+              // 如果没有tags但有Dify类型，显示核心功能
+              <div className="flex flex-wrap gap-1.5">
+                {difyTypeInfo.features.slice(0, 3).map((feature, index) => (
+                  <span
+                    key={index}
+                    className={cn(
+                      "px-2.5 py-1 text-xs rounded-full font-serif font-medium",
+                      isDark 
+                        ? "bg-stone-800 text-stone-300" 
+                        : "bg-stone-100 text-stone-600"
+                    )}
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
             ) : (
               <div></div>
             )}
           </div>
-
-          {/* 🎯 新增：Dify应用类型显示 */}
-          {difyTypeInfo && (
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm">{difyTypeInfo.icon}</span>
-              <span className={cn(
-                "text-xs font-serif font-medium",
-                isDark ? "text-stone-400" : "text-stone-600"
-              )}>
-                {difyTypeInfo.label}
-              </span>
-              <span className={cn(
-                "text-xs font-serif",
-                isDark ? "text-stone-500" : "text-stone-500"
-              )}>
-                • {difyTypeInfo.description}
-              </span>
-            </div>
-          )}
 
           {/* 底部箭头 */}
           <div className="flex items-center justify-end pt-2">
             <ArrowRight className={cn(
               "w-4 h-4 transition-all duration-200",
               "group-hover:translate-x-1",
-              isDark 
-                ? "text-stone-400 group-hover:text-stone-300" 
-                : "text-stone-400 group-hover:text-stone-600"
+              isDark ? "text-stone-400" : "text-stone-500"
             )} />
           </div>
         </div>
       ) : (
-        <>
-          {/* 列表视图 */}
+        // 列表视图
+        <div className="flex items-center w-full gap-4">
+          {/* 应用图标 */}
           <div className="flex-shrink-0">
             {getAppIcon(app)}
           </div>
+          
+          {/* 应用信息 */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex-1 min-w-0 pr-3">
-                <h3 className={cn(
-                  "font-semibold truncate font-serif",
-                  colors.mainText.tailwind
-                )}>
-                  {app.displayName}
-                </h3>
-                <p className={cn(
-                  "text-sm font-serif",
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className={cn(
+                "font-bold font-serif",
+                colors.mainText.tailwind
+              )}>
+                {app.displayName}
+              </h3>
+              
+              {difyTypeInfo && (
+                <span className={cn(
+                  "flex items-center gap-1 text-xs",
                   isDark ? "text-stone-400" : "text-stone-600"
                 )}>
-                  {app.category}
-                </p>
-              </div>
-              <div className="flex-shrink-0">
-                {isFavorite && (
-                  <Star className={cn(
-                    "w-4 h-4 fill-current",
-                    isDark ? "text-stone-400" : "text-stone-600"
-                  )} />
-                )}
-              </div>
+                  <span>{difyTypeInfo.icon}</span>
+                  <span className="font-serif">{difyTypeInfo.label}</span>
+                </span>
+              )}
+              
+              {isFavorite && (
+                <Star className={cn(
+                  "w-4 h-4 fill-current",
+                  isDark ? "text-stone-400" : "text-stone-500"
+                )} />
+              )}
             </div>
+            
             <p className={cn(
-              "text-sm line-clamp-1 font-serif",
+              "text-sm line-clamp-1 font-serif mb-1",
               isDark ? "text-stone-400" : "text-stone-600"
             )}>
               {app.description}
             </p>
             
-            {/* 🎯 新增：列表视图中的Dify应用类型显示 */}
-            {difyTypeInfo && (
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm">{difyTypeInfo.icon}</span>
-                <span className={cn(
-                  "text-xs font-serif font-medium",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  {difyTypeInfo.label}
-                </span>
+            {/* 标签 */}
+            {app.tags && app.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {app.tags.slice(0, 2).map((tag, index) => (
+                  <span
+                    key={index}
+                    className={cn(
+                      "px-2 py-0.5 text-xs rounded font-serif",
+                      isDark 
+                        ? "bg-stone-800 text-stone-400" 
+                        : "bg-stone-100 text-stone-600"
+                    )}
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             )}
           </div>
-          <div className="flex-shrink-0 ml-4">
+          
+          {/* 操作按钮 */}
+          <div className="flex-shrink-0">
             <ArrowRight className={cn(
               "w-5 h-5 transition-all duration-200",
               "group-hover:translate-x-1",
-              isDark 
-                ? "text-stone-400 group-hover:text-stone-300" 
-                : "text-stone-400 group-hover:text-stone-600"
+              isDark ? "text-stone-400" : "text-stone-500"
             )} />
           </div>
-        </>
+        </div>
       )}
     </div>
   )

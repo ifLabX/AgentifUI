@@ -8,6 +8,8 @@ export interface AppInstance {
   iconUrl?: string
   category?: string
   tags?: string[]
+  // 🎯 新增：Dify应用类型，用于分类和路由
+  difyAppType?: string
   // 展示用的辅助信息
   isPopular?: boolean
   lastUsed?: string
