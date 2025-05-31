@@ -67,7 +67,17 @@ AgentifUI/
   │   │   ├── use-theme.ts           # Theme management
   │   │   └── use-welcome-screen.ts  # Welcome screen management
   │   ├── services/       # Service integrations
-  │   │   └── dify/       # Dify service integration
+  │   │   └── dify/         # Dify service integration
+  │   │       ├── types.ts           # Dify API type definitions
+  │   │       ├── index.ts           # Unified export file
+  │   │       ├── chat-service.ts    # Chat service
+  │   │       ├── workflow-service.ts # Workflow service
+  │   │       ├── app-service.ts     # Application management service
+  │   │       ├── message-service.ts # Message management service
+  │   │       ├── conversation-service.ts # Conversation management service
+  │   │       ├── completion-service.ts # Text generation service
+  │   │       ├── annotation-service.ts # Annotation management service
+  │   │       └── file-service.ts    # File service (if needed)
   │   ├── stores/         # State management
   │   │   ├── chat-store.ts          # Chat state
   │   │   ├── chat-input-store.ts    # Chat input state

@@ -119,11 +119,54 @@ By following these guidelines, we ensure consistency in our commit history and m
 
 ## Commit Command Examples
 
+### 单行提交
+
 ```bash
 git commit -m "feat(api): 添加用户登录API"
 git commit -m "fix(ui): 修复按钮在IE11中的样式问题"
 git commit -m "docs: 更新开发环境配置文档"
 ```
+
+### 多行提交（使用多个 -m 参数）
+
+当需要添加详细的提交说明时，使用多个 `-m` 参数来创建多行提交信息：
+
+```bash
+# 带有详细说明的提交
+git commit -m "feat(api): 添加用户认证API端点" \
+           -m "" \
+           -m "实现基于JWT的认证机制，支持用户登录和令牌刷新功能。" \
+           -m "添加了相应的单元测试和文档。" \
+           -m "" \
+           -m "Closes #123"
+
+# 带有破坏性变更说明的提交
+git commit -m "feat(auth): 重构用户认证系统" \
+           -m "" \
+           -m "升级到新的认证架构，提供更好的安全性和性能。" \
+           -m "" \
+           -m "BREAKING CHANGE: 旧的认证令牌将不再有效，用户需要重新登录。"
+
+# 修复问题的详细提交
+git commit -m "fix(ui): 修复移动端菜单显示问题" \
+           -m "" \
+           -m "解决了在小屏幕设备上菜单项重叠的问题。" \
+           -m "调整了响应式断点和CSS样式。"
+```
+
+### 多行提交格式说明
+
+- **第一个 `-m`**: 包含主要的提交信息（type、scope、subject）
+- **第二个 `-m`**: 通常是空字符串 `""`，用于在主题和正文之间创建空行
+- **后续 `-m`**: 包含详细的说明、原因、影响等
+- **最后的 `-m`**: 可以包含 footer 信息（如 issue 引用、破坏性变更等）
+
+### 使用建议
+
+1. **简单修改**: 使用单行提交即可
+2. **复杂功能**: 使用多行提交提供详细说明
+3. **破坏性变更**: 必须使用多行提交说明影响和迁移方法
+4. **修复重要问题**: 建议使用多行提交说明问题原因和解决方案
 
 Remember to always use this format when committing changes to the repository.
 
