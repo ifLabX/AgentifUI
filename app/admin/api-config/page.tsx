@@ -27,6 +27,9 @@ import {
   Sliders,
   Star
 } from 'lucide-react';
+import { DifyAppTypeSelector } from '@components/admin/api-config/dify-app-type-selector';
+import { validateDifyFormData } from '@lib/services/dify/validation';
+import type { DifyAppType } from '@lib/types/dify-app-types';
 
 interface ApiConfigPageProps {
   selectedInstance?: ServiceInstance | null
@@ -115,6 +118,7 @@ const InstanceForm = ({
       api_url: instance?.config?.api_url || '',
       app_metadata: {
         app_type: instance?.config?.app_metadata?.app_type || 'model',
+        dify_apptype: instance?.config?.app_metadata?.dify_apptype || 'chatbot',
         tags: instance?.config?.app_metadata?.tags || [],
       },
       dify_parameters: instance?.config?.dify_parameters || {}
@@ -136,6 +140,7 @@ const InstanceForm = ({
           api_url: instance.config?.api_url || '',
           app_metadata: {
             app_type: instance.config?.app_metadata?.app_type || 'model',
+            dify_apptype: instance.config?.app_metadata?.dify_apptype || 'chatbot',
             tags: instance.config?.app_metadata?.tags || [],
           },
           dify_parameters: instance.config?.dify_parameters || {}
@@ -152,6 +157,7 @@ const InstanceForm = ({
           api_url: '',
           app_metadata: {
             app_type: 'model',
+            dify_apptype: 'chatbot',
             tags: [],
           },
           dify_parameters: {}
@@ -163,6 +169,15 @@ const InstanceForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // --- BEGIN COMMENT ---
+    // 🎯 新增：表单验证，确保Dify应用类型必填
+    // --- END COMMENT ---
+    const validationErrors = validateDifyFormData(formData);
+    if (validationErrors.length > 0) {
+      showFeedback(validationErrors.join(', '), 'error');
+      return;
+    }
+    
     // --- 自动设置 is_marketplace_app 字段与 app_type 保持一致 ---
     const dataToSave = {
       ...formData,
@@ -170,6 +185,10 @@ const InstanceForm = ({
         ...formData.config,
         app_metadata: {
           ...formData.config.app_metadata,
+          // --- BEGIN COMMENT ---
+          // 🎯 确保dify_apptype字段被保存
+          // --- END COMMENT ---
+          dify_apptype: formData.config.app_metadata.dify_apptype,
           is_marketplace_app: formData.config.app_metadata.app_type === 'marketplace'
         }
       },
@@ -508,6 +527,26 @@ const InstanceForm = ({
               选择"模型"类型的应用会出现在聊天界面的模型选择器中
             </p>
           </div>
+
+          {/* --- BEGIN COMMENT --- */}
+          {/* 🎯 新增：Dify应用类型选择器 */}
+          {/* 在现有app_type选择器下方添加，保持一致的设计风格 */}
+          {/* --- END COMMENT --- */}
+          <DifyAppTypeSelector
+            value={formData.config.app_metadata.dify_apptype}
+            onChange={(type: DifyAppType) => {
+              setFormData(prev => ({
+                ...prev,
+                config: {
+                  ...prev.config,
+                  app_metadata: {
+                    ...prev.config.app_metadata,
+                    dify_apptype: type
+                  }
+                }
+              }))
+            }}
+          />
 
           {/* 应用标签配置 - 紧凑设计 */}
           <div>
