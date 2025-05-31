@@ -74,7 +74,8 @@ export default function AppsPage() {
         tags: metadata?.tags || [],
         // 展示用的辅助信息
         isPopular: metadata?.is_common_model || false,
-        lastUsed: new Date().toISOString().split('T')[0]
+        lastUsed: new Date().toISOString().split('T')[0],
+        config: app.config
       }
     })
 
