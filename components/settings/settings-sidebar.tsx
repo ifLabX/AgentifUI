@@ -37,35 +37,37 @@ export function SettingsSidebar() {
   const { colors } = useSettingsColors();
   
   return (
-    <div className="h-full py-6">
-      <div className="px-4 mb-6">
-        <h2 className="text-xl font-semibold font-serif">设置</h2>
+    <div className="h-full">
+      <div className="py-6">
+        <div className="px-4 mb-6">
+          <h2 className="text-xl font-semibold font-serif">设置</h2>
+        </div>
+        <nav className="space-y-1 px-2">
+          {settingsNavItems.map((item) => {
+            const isActive = pathname === item.href
+            const Icon = item.icon
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center px-3 py-2.5 rounded-lg mx-2",
+                  "transition-colors duration-200",
+                  isActive 
+                    ? `${colors.sidebarItemActive.tailwind} font-medium` 
+                    : colors.sidebarItemHover.tailwind
+                )}
+              >
+                <span className="mr-3 flex-shrink-0">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="text-sm font-serif">{item.title}</span>
+              </Link>
+            )
+          })}
+        </nav>
       </div>
-      <nav className="space-y-1">
-        {settingsNavItems.map((item) => {
-          const isActive = pathname === item.href
-          const Icon = item.icon
-          
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center px-4 py-3 rounded-lg",
-                "transition-colors duration-200",
-                isActive 
-                  ? `${colors.sidebarItemActive.tailwind} font-medium` 
-                  : colors.sidebarItemHover.tailwind
-              )}
-            >
-              <span className="mr-3 flex-shrink-0">
-                <Icon className="h-5 w-5" />
-              </span>
-              <span className="text-sm font-serif">{item.title}</span>
-            </Link>
-          )
-        })}
-      </nav>
     </div>
   )
 }
