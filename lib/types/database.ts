@@ -124,6 +124,12 @@ export interface ServiceInstanceConfig {
     // 应用类型：模型切换 | 应用市场
     app_type?: 'model' | 'marketplace';
     
+    // --- BEGIN COMMENT ---
+    // 🎯 新增：Dify应用类型（必选字段）
+    // 基于Dify官方API文档的五种应用类型
+    // --- END COMMENT ---
+    dify_apptype?: 'chatbot' | 'agent' | 'chatflow' | 'workflow' | 'text-generation';
+    
     // 是否为常用模型（用于优先预加载）
     is_common_model?: boolean;
     

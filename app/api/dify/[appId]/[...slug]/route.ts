@@ -3,11 +3,48 @@ export const dynamic = 'force-dynamic';
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { getDifyAppConfig } from '@lib/config/dify-config';
+import { isWorkflowApp, isTextGenerationApp } from '@lib/types/dify-app-types';
 
 // 定义路由参数的接口
 interface DifyApiParams {
   appId: string;
   slug: string[];
+}
+
+/**
+ * --- BEGIN COMMENT ---
+ * 🎯 新增：根据Dify应用类型调整API路径的函数
+ * 不同类型的Dify应用使用不同的API端点
+ * --- END COMMENT ---
+ */
+function adjustApiPathByAppType(
+  slug: string[], 
+  appType: string | undefined
+): string {
+  const originalPath = slug.join('/');
+  
+  if (!appType) {
+    return originalPath; // --- 如果没有应用类型信息，保持原路径 ---
+  }
+  
+  // --- 工作流应用：需要workflows前缀 ---
+  if (isWorkflowApp(appType as any)) {
+    if (!originalPath.startsWith('workflows/')) {
+      return `workflows/${originalPath}`;
+    }
+  }
+  
+  // --- 文本生成应用：使用completion-messages端点 ---
+  if (isTextGenerationApp(appType as any)) {
+    if (originalPath === 'messages' || originalPath === 'chat-messages') {
+      return 'completion-messages';
+    }
+    if (originalPath.startsWith('chat-messages')) {
+      return originalPath.replace('chat-messages', 'completion-messages');
+    }
+  }
+  
+  return originalPath;
 }
 
 // --- 辅助函数：创建带有基本 CORS 和 Content-Type 的最小化响应头 ---
@@ -87,7 +124,7 @@ async function proxyToDify(
 
   try {
     // 3. 构造目标 Dify URL
-    const slugPath = slug.join('/');
+    const slugPath = adjustApiPathByAppType(slug, difyConfig.appType);
     const targetUrl = `${difyApiUrl}/${slugPath}${req.nextUrl.search}`;
     console.log(`[App: ${appId}] [${req.method}] Proxying request to target URL: ${targetUrl}`);
 

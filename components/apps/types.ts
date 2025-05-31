@@ -11,4 +11,12 @@ export interface AppInstance {
   // 展示用的辅助信息
   isPopular?: boolean
   lastUsed?: string
+  // 🎯 新增：配置信息，用于获取Dify应用类型等元数据
+  config?: {
+    app_metadata?: {
+      dify_apptype?: string
+      [key: string]: any
+    }
+    [key: string]: any
+  }
 }
