@@ -1,0 +1,162 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Dify API 端点完整指南
+
+本规则提供 AgentifUI 项目中所有 Dify API 端点的完整列表、使用方法和最佳实践。
+
+## 核心架构
+
+AgentifUI 使用三层架构处理 Dify API 集成：
+
+1. **代理层**: [app/api/dify/[appId]/[...slug]/route.ts](mdc:app/api/dify/[appId]/[...slug]/route.ts) - 处理认证和请求转发
+2. **服务层**: [lib/services/dify/](mdc:lib/services/dify/) - 业务逻辑和 API 调用
+3. **类型层**: [lib/services/dify/types.ts](mdc:lib/services/dify/types.ts) - TypeScript 类型定义
+
+## 完整 API 端点列表
+
+### 💬 聊天相关 (Chat)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/chat-messages` | POST | `streamDifyChat` | [chat-service.ts](mdc:lib/services/dify/chat-service.ts) |
+| `/chat-messages/{task_id}/stop` | POST | `stopDifyStreamingTask` | [chat-service.ts](mdc:lib/services/dify/chat-service.ts) |
+
+### ⚙️ 工作流相关 (Workflow)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/workflows/run` | POST | `executeDifyWorkflow`, `streamDifyWorkflow` | [workflow-service.ts](mdc:lib/services/dify/workflow-service.ts) |
+| `/workflows/runs/{workflow_run_id}/stop` | POST | `stopDifyWorkflow` | [workflow-service.ts](mdc:lib/services/dify/workflow-service.ts) |
+| `/workflows/runs/{workflow_run_id}` | GET | `getDifyWorkflowRunDetail` | [workflow-service.ts](mdc:lib/services/dify/workflow-service.ts) |
+| `/workflows/logs` | GET | `getDifyWorkflowLogs` | [workflow-service.ts](mdc:lib/services/dify/workflow-service.ts) |
+
+### 📱 应用管理 (App)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/parameters` | GET | `getDifyAppParameters` | [app-service.ts](mdc:lib/services/dify/app-service.ts) |
+| `/info` | GET | `getDifyAppInfo` | [app-service.ts](mdc:lib/services/dify/app-service.ts) |
+| `/site` | GET | `getDifyWebAppSettings` | [app-service.ts](mdc:lib/services/dify/app-service.ts) |
+| `/meta` | GET | `getDifyAppMeta` | [app-service.ts](mdc:lib/services/dify/app-service.ts) |
+
+### 💬 消息管理 (Messages)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/messages` | GET | `getConversationMessages` | [message-service.ts](mdc:lib/services/dify/message-service.ts) |
+| `/messages/{message_id}/feedbacks` | POST | `submitMessageFeedback` | [message-service.ts](mdc:lib/services/dify/message-service.ts) |
+| `/audio-to-text` | POST | `convertAudioToText` | [message-service.ts](mdc:lib/services/dify/message-service.ts) |
+
+### 🗨️ 对话管理 (Conversations)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/conversations` | GET | `getConversations` | [conversation-service.ts](mdc:lib/services/dify/conversation-service.ts) |
+| `/conversations/{conversation_id}` | DELETE | `deleteConversation` | [conversation-service.ts](mdc:lib/services/dify/conversation-service.ts) |
+| `/conversations/{conversation_id}` | PATCH | `renameConversation` | [conversation-service.ts](mdc:lib/services/dify/conversation-service.ts) |
+| `/conversations/{conversation_id}/variables` | GET | `getConversationVariables` | [conversation-service.ts](mdc:lib/services/dify/conversation-service.ts) |
+
+### 📝 文本生成 (Completion)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/completion-messages` | POST | `executeDifyCompletion`, `streamDifyCompletion` | [completion-service.ts](mdc:lib/services/dify/completion-service.ts) |
+| `/completion-messages/{task_id}/stop` | POST | `stopDifyCompletion` | [completion-service.ts](mdc:lib/services/dify/completion-service.ts) |
+
+### 📋 标注管理 (Annotations)
+
+| 端点 | 方法 | 服务函数 | 文件位置 |
+|------|------|----------|----------|
+| `/apps/annotations` | GET | `getDifyAnnotations` | [annotation-service.ts](mdc:lib/services/dify/annotation-service.ts) |
+| `/apps/annotations` | POST | `createDifyAnnotation` | [annotation-service.ts](mdc:lib/services/dify/annotation-service.ts) |
+| `/apps/annotations/{annotation_id}` | PUT | `updateDifyAnnotation` | [annotation-service.ts](mdc:lib/services/dify/annotation-service.ts) |
+| `/apps/annotations/{annotation_id}` | DELETE | `deleteDifyAnnotation` | [annotation-service.ts](mdc:lib/services/dify/annotation-service.ts) |
+| `/apps/annotation-reply/{action}` | POST | `setDifyAnnotationReplySettings` | [annotation-service.ts](mdc:lib/services/dify/annotation-service.ts) |
+| `/apps/annotation-reply/{action}/status/{job_id}` | GET | `getDifyAnnotationReplyJobStatus` | [annotation-service.ts](mdc:lib/services/dify/annotation-service.ts) |
+
+## 使用示例
+
+### 导入服务函数
+
+```typescript
+// 从统一入口导入
+import { 
+  streamDifyChat, 
+  getDifyAnnotations,
+  createDifyAnnotation 
+} from '@lib/services/dify';
+
+// 或从具体服务文件导入
+import { streamDifyChat } from '@lib/services/dify/chat-service';
+```
+
+### 聊天服务使用
+
+```typescript
+const response = await streamDifyChat(appId, {
+  query: "你好",
+  user: "user123",
+  response_mode: "streaming"
+});
+
+for await (const chunk of response.answerStream) {
+  console.log(chunk);
+}
+```
+
+### 标注管理使用
+
+```typescript
+// 获取标注列表
+const annotations = await getDifyAnnotations(appId, { page: 1, limit: 20 });
+
+// 创建新标注
+const newAnnotation = await createDifyAnnotation(appId, {
+  question: "什么是AI？",
+  answer: "人工智能是..."
+});
+```
+
+## 错误处理
+
+所有服务函数都使用统一的错误处理机制：
+
+```typescript
+try {
+  const result = await someService(appId, params);
+  // 处理成功结果
+} catch (error) {
+  if (error.status === 401) {
+    // 处理认证错误
+  } else if (error.status === 429) {
+    // 处理限流错误
+  } else {
+    // 处理其他错误
+  }
+}
+```
+
+## 类型安全
+
+所有 API 相关的类型定义都在 [lib/services/dify/types.ts](mdc:lib/services/dify/types.ts) 中：
+
+- 请求体类型：`Dify*RequestPayload`
+- 响应体类型：`Dify*Response`
+- SSE 事件类型：`Dify*SseEvent`
+- 错误类型：`DifyApiError`
+
+## 开发指南
+
+1. **添加新端点**：遵循 [dify-integration-rule.mdc](mdc:.cursor/rules/dify-integration-rule.mdc) 中的流程
+2. **文件命名**：遵循 [file-naming.mdc](mdc:.cursor/rules/file-naming.mdc) 规范
+3. **提交规范**：遵循 [git-commit-rule.mdc](mdc:.cursor/rules/git-commit-rule.mdc) 格式
+
+## 总计
+
+- **总端点数**: 25 个
+- **服务文件数**: 7 个
+- **支持的应用类型**: 5 种 (chatbot, agent, chatflow, workflow, text-generation)
+- **覆盖率**: 100% Dify API 功能
