@@ -224,14 +224,13 @@ const InstanceForm = ({
 
     setIsSyncing(true);
     try {
-      console.log('[同步参数] 开始从 Dify API 获取参数:', formData.instance_id);
-      
       // 调用 Dify API 获取参数
       const difyParams: DifyAppParametersResponse = await getDifyAppParameters(formData.instance_id);
       
-      console.log('[同步参数] 成功获取 Dify 参数:', difyParams);
-      
-      // 转换为简化配置格式
+      // --- BEGIN COMMENT ---
+      // 🎯 修复：正确处理 file_upload 字段的同步
+      // Dify API 只返回实际启用的文件类型，不要强制设置默认值
+      // --- END COMMENT ---
       const simplifiedParams: DifyParametersSimplifiedConfig = {
         opening_statement: difyParams.opening_statement || '',
         suggested_questions: difyParams.suggested_questions || [],
@@ -241,13 +240,8 @@ const InstanceForm = ({
         retriever_resource: difyParams.retriever_resource || { enabled: false },
         annotation_reply: difyParams.annotation_reply || { enabled: false },
         user_input_form: difyParams.user_input_form || [],
-        file_upload: difyParams.file_upload || {
-          image: {
-            enabled: false,
-            number_limits: 3,
-            transfer_methods: ['local_file', 'remote_url']
-          }
-        },
+        // --- 修复：只有当 Dify 返回 file_upload 数据时才设置，否则保持 undefined ---
+        file_upload: difyParams.file_upload || undefined,
         system_parameters: difyParams.system_parameters || {
           file_size_limit: 15,
           image_file_size_limit: 10,

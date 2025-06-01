@@ -101,6 +101,14 @@ export interface DifyOtherUploadConfig {
 
 /** 文件上传配置 */
 export interface DifyFileUploadConfig {
+  enabled?: boolean; // 顶层的文件上传总开关
+  allowed_file_types?: string[]; // 允许的文件类型列表
+  allowed_file_extensions?: string[]; // 允许的文件扩展名列表
+  allowed_file_upload_methods?: string[]; // 允许的上传方式
+  max_file_size_mb?: number; // 最大文件大小(MB)
+  number_limits?: number; // 文件数量限制（可能的字段名1）
+  max_files?: number; // 文件数量限制（可能的字段名2）
+  file_count_limit?: number; // 文件数量限制（可能的字段名3）
   image?: DifyImageUploadConfig; // 图片设置
   document?: DifyDocumentUploadConfig; // 文档设置
   audio?: DifyAudioUploadConfig; // 音频设置

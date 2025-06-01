@@ -88,7 +88,11 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
         retriever_resource: config.retriever_resource || { enabled: false },
         annotation_reply: config.annotation_reply || { enabled: false },
         user_input_form: config.user_input_form || [],
-        file_upload: config.file_upload || {
+        // --- BEGIN COMMENT ---
+        // 🎯 修复：不要覆盖从 Dify 同步来的 file_upload 配置
+        // 只有当 config.file_upload 为 undefined 时才设置默认值
+        // --- END COMMENT ---
+        file_upload: config.file_upload !== undefined ? config.file_upload : {
           image: {
             enabled: false,
             number_limits: 3,
@@ -111,11 +115,26 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
     // 初始化文件上传配置状态
     const initializeFileUploadState = () => {
       const fileUploadConfig = config.file_upload;
-      const hasFileUpload = !!(fileUploadConfig?.image?.enabled || 
-                              fileUploadConfig?.document?.enabled || 
-                              fileUploadConfig?.audio?.enabled || 
-                              fileUploadConfig?.video?.enabled ||
-                              fileUploadConfig?.other?.enabled);
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 文件上传配置初始化完成，移除调试日志
+      // --- END COMMENT ---
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 修复：根据实际的 Dify API 返回格式检测文件上传是否启用
+      // 实际格式：{enabled: true, image: {...}, allowed_file_types: [...]}
+      // 而不是我们之前假设的：{image: {enabled: true, ...}}
+      // --- END COMMENT ---
+      const hasFileUpload = !!(
+        fileUploadConfig?.enabled || // 检查顶层的 enabled 字段
+        fileUploadConfig?.image?.enabled || // 兼容标准格式
+        fileUploadConfig?.document?.enabled || 
+        fileUploadConfig?.audio?.enabled || 
+        fileUploadConfig?.video?.enabled ||
+        fileUploadConfig?.other?.enabled
+      );
+      
+      console.log('[文件上传初始化] 检测到文件上传启用状态:', hasFileUpload);
       
       let uploadMethodValue: 'local' | 'url' | 'both' = 'both';
       let maxFilesValue = 3;
@@ -123,14 +142,16 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       let customFileTypesValue = '';
       
       if (hasFileUpload && fileUploadConfig) {
-        // 从任一启用的文件类型获取通用配置
-        const firstEnabledConfig = fileUploadConfig.image || fileUploadConfig.document || 
-                                  fileUploadConfig.audio || fileUploadConfig.video || 
-                                  fileUploadConfig.other;
+        // --- BEGIN COMMENT ---
+        // 🎯 修复：根据实际的 Dify API 返回格式获取配置参数
+        // 优先从顶层字段获取，然后从具体文件类型配置获取
+        // --- END COMMENT ---
         
-        if (firstEnabledConfig) {
-          maxFilesValue = firstEnabledConfig.number_limits || 3;
-          const methods = firstEnabledConfig.transfer_methods || [];
+        // 从顶层配置或第一个启用的文件类型获取通用配置
+        let configSource = null;
+        if (fileUploadConfig.allowed_file_upload_methods) {
+          // 使用顶层配置
+          const methods = fileUploadConfig.allowed_file_upload_methods || [];
           if (methods.includes('local_file') && methods.includes('remote_url')) {
             uploadMethodValue = 'both';
           } else if (methods.includes('local_file')) {
@@ -138,16 +159,73 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
           } else if (methods.includes('remote_url')) {
             uploadMethodValue = 'url';
           }
+          
+          // 获取文件数量限制
+          maxFilesValue = fileUploadConfig.number_limits || 
+                         fileUploadConfig.max_files || 
+                         fileUploadConfig.file_count_limit || 
+                         3; // 默认值
+        } else {
+          // 回退到具体文件类型配置
+          configSource = fileUploadConfig.image || fileUploadConfig.document || 
+                        fileUploadConfig.audio || fileUploadConfig.video || 
+                        fileUploadConfig.other;
+          
+          if (configSource) {
+            maxFilesValue = configSource.number_limits || 3;
+            const methods = configSource.transfer_methods || [];
+            if (methods.includes('local_file') && methods.includes('remote_url')) {
+              uploadMethodValue = 'both';
+            } else if (methods.includes('local_file')) {
+              uploadMethodValue = 'local';
+            } else if (methods.includes('remote_url')) {
+              uploadMethodValue = 'url';
+            }
+          }
         }
         
-        // 设置启用的文件类型
-        if (fileUploadConfig.image?.enabled) enabledTypesSet.add('图片');
-        if (fileUploadConfig.document?.enabled) enabledTypesSet.add('文档');
-        if (fileUploadConfig.audio?.enabled) enabledTypesSet.add('音频');
-        if (fileUploadConfig.video?.enabled) enabledTypesSet.add('视频');
-        if (fileUploadConfig.other?.enabled) {
-          enabledTypesSet.add('其他文件类型');
-          customFileTypesValue = (fileUploadConfig.other as any).custom_extensions?.join(', ') || '';
+        // --- BEGIN COMMENT ---
+        // 🎯 修复：根据实际的 API 返回格式设置启用的文件类型
+        // 从 allowed_file_types 字段或具体的文件类型配置中获取
+        // 注意：Dify 中"其他文件类型"与前四个类型是互斥的
+        // --- END COMMENT ---
+        if (fileUploadConfig.allowed_file_types) {
+          // 从顶层的 allowed_file_types 字段获取
+          const allowedTypes = fileUploadConfig.allowed_file_types;
+          
+          // 检查是否包含标准类型
+          const hasStandardTypes = allowedTypes.some(type => 
+            ['image', 'document', 'audio', 'video'].includes(type)
+          );
+          
+          if (hasStandardTypes) {
+            // 如果有标准类型，只添加标准类型
+            if (allowedTypes.includes('image')) enabledTypesSet.add('图片');
+            if (allowedTypes.includes('document')) enabledTypesSet.add('文档');
+            if (allowedTypes.includes('audio')) enabledTypesSet.add('音频');
+            if (allowedTypes.includes('video')) enabledTypesSet.add('视频');
+          } else if (allowedTypes.includes('custom')) {
+            // 如果包含 custom，说明选择了"其他文件类型"
+            enabledTypesSet.add('其他文件类型');
+            // 从 allowed_file_extensions 获取自定义扩展名
+            if (fileUploadConfig.allowed_file_extensions) {
+              customFileTypesValue = fileUploadConfig.allowed_file_extensions.join(', ');
+            }
+          } else {
+            // 如果没有标准类型也没有custom，可能是其他未知类型
+            console.warn('[文件上传初始化] 未知的文件类型:', allowedTypes);
+            enabledTypesSet.add('其他文件类型');
+          }
+        } else {
+          // 回退到检查具体的文件类型配置
+          if (fileUploadConfig.image?.enabled) enabledTypesSet.add('图片');
+          if (fileUploadConfig.document?.enabled) enabledTypesSet.add('文档');
+          if (fileUploadConfig.audio?.enabled) enabledTypesSet.add('音频');
+          if (fileUploadConfig.video?.enabled) enabledTypesSet.add('视频');
+          if (fileUploadConfig.other?.enabled) {
+            enabledTypesSet.add('其他文件类型');
+            customFileTypesValue = (fileUploadConfig.other as any).custom_extensions?.join(', ') || '';
+          }
         }
       }
       
@@ -277,6 +355,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   };
 
   const generateFileUploadConfig = () => {
+    // --- BEGIN COMMENT ---
+    // 🎯 修复：根据用户选择的文件类型生成对应的配置
+    // --- END COMMENT ---
     const fileUploadConfig: any = {};
     
     const transferMethods = uploadMethod === 'local' ? ['local_file'] : 
@@ -451,107 +532,132 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
 
                   {expandedSections.has('basic') && (
                     <div className={cn(
-                      "p-4 rounded-xl border",
+                      "p-4 rounded-xl border space-y-4",
                       isDark ? "bg-stone-800/50 border-stone-700" : "bg-stone-50/50 border-stone-200"
                     )}>
-                      <label className={cn(
-                        "block text-sm font-medium mb-2 font-serif",
-                        isDark ? "text-stone-300" : "text-stone-700"
-                      )}>
-                        开场白内容
-                      </label>
-                      <textarea
-                        value={localConfig.opening_statement || ''}
-                        onChange={(e) => updateConfig('opening_statement', e.target.value)}
-                        className={cn(
-                          "w-full px-3 py-2 rounded-lg border font-serif resize-none",
-                          isDark 
-                            ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
-                            : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
-                        )}
-                        placeholder="输入开场白内容..."
-                        rows={3}
-                      />
+                      {/* 开场白内容 */}
+                      <div>
+                        <label className={cn(
+                          "block text-sm font-medium mb-2 font-serif",
+                          isDark ? "text-stone-300" : "text-stone-700"
+                        )}>
+                          开场白内容
+                        </label>
+                        <textarea
+                          value={localConfig.opening_statement || ''}
+                          onChange={(e) => updateConfig('opening_statement', e.target.value)}
+                          className={cn(
+                            "w-full px-3 py-2 rounded-lg border font-serif resize-none",
+                            isDark 
+                              ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                              : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                          )}
+                          placeholder="输入开场白内容..."
+                          rows={3}
+                        />
+                      </div>
+
+                      {/* 开场推荐问题 */}
+                      <div>
+                        <label className={cn(
+                          "block text-sm font-medium mb-2 font-serif",
+                          isDark ? "text-stone-300" : "text-stone-700"
+                        )}>
+                          开场推荐问题
+                        </label>
+                        <div className="space-y-3">
+                          {(localConfig.suggested_questions || []).map((question, index) => (
+                            <div key={index} className="flex gap-2">
+                              <input
+                                type="text"
+                                value={question}
+                                onChange={(e) => updateSuggestedQuestion(index, e.target.value)}
+                                className={cn(
+                                  "flex-1 px-3 py-2 rounded-lg border font-serif",
+                                  isDark 
+                                    ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                                    : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                                )}
+                                placeholder={`推荐问题 ${index + 1}`}
+                              />
+                              <button
+                                onClick={() => removeSuggestedQuestion(index)}
+                                className={cn(
+                                  "p-2 rounded-lg transition-colors cursor-pointer",
+                                  isDark 
+                                    ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
+                                    : "hover:bg-stone-200 text-stone-600 hover:text-stone-900"
+                                )}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                          
+                          <button
+                            onClick={addSuggestedQuestion}
+                            className={cn(
+                              "w-full py-2 px-3 rounded-lg border border-dashed transition-colors cursor-pointer",
+                              "flex items-center justify-center gap-2 text-sm font-serif",
+                              isDark 
+                                ? "border-stone-600 hover:border-stone-500 text-stone-400 hover:text-stone-300" 
+                                : "border-stone-300 hover:border-stone-400 text-stone-600 hover:text-stone-700"
+                            )}
+                          >
+                            <Plus className="h-4 w-4" />
+                            添加推荐问题
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* --- 推荐问题配置 --- */}
+                {/* --- 回答后推荐问题配置 --- */}
                 <div className="space-y-4">
-                  <button
-                    onClick={() => toggleSection('questions')}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-4 rounded-xl transition-colors cursor-pointer",
-                      isDark 
-                        ? "bg-stone-800 hover:bg-stone-700" 
-                        : "bg-stone-50 hover:bg-stone-100"
-                    )}
-                  >
-                    <Sparkles className={cn(
-                      "h-4 w-4",
-                      isDark ? "text-stone-400" : "text-stone-600"
-                    )} />
-                    <span className={cn(
-                      "flex-1 text-left font-medium font-serif",
-                      isDark ? "text-stone-200" : "text-stone-800"
-                    )}>
-                      推荐问题
-                    </span>
-                    {expandedSections.has('questions') ? (
-                      <ChevronDown className="h-4 w-4 text-stone-400" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-stone-400" />
-                    )}
-                  </button>
-
-                  {expandedSections.has('questions') && (
-                    <div className={cn(
-                      "p-4 rounded-xl border space-y-3",
-                      isDark ? "bg-stone-800/50 border-stone-700" : "bg-stone-50/50 border-stone-200"
-                    )}>
-                      {(localConfig.suggested_questions || []).map((question, index) => (
-                        <div key={index} className="flex gap-2">
-                          <input
-                            type="text"
-                            value={question}
-                            onChange={(e) => updateSuggestedQuestion(index, e.target.value)}
-                            className={cn(
-                              "flex-1 px-3 py-2 rounded-lg border font-serif",
-                              isDark 
-                                ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
-                                : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
-                            )}
-                            placeholder={`推荐问题 ${index + 1}`}
-                          />
-                          <button
-                            onClick={() => removeSuggestedQuestion(index)}
-                            className={cn(
-                              "p-2 rounded-lg transition-colors cursor-pointer",
-                              isDark 
-                                ? "hover:bg-stone-700 text-stone-400 hover:text-stone-200" 
-                                : "hover:bg-stone-200 text-stone-600 hover:text-stone-900"
-                            )}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                      
-                      <button
-                        onClick={addSuggestedQuestion}
-                        className={cn(
-                          "w-full py-2 px-3 rounded-lg border border-dashed transition-colors cursor-pointer",
-                          "flex items-center justify-center gap-2 text-sm font-serif",
-                          isDark 
-                            ? "border-stone-600 hover:border-stone-500 text-stone-400 hover:text-stone-300" 
-                            : "border-stone-300 hover:border-stone-400 text-stone-600 hover:text-stone-700"
-                        )}
-                      >
-                        <Plus className="h-4 w-4" />
-                        添加问题
-                      </button>
+                  <div className={cn(
+                    "flex items-center justify-between p-4 rounded-xl",
+                    isDark 
+                      ? "bg-stone-800" 
+                      : "bg-stone-50"
+                  )}>
+                    <div className="flex items-center gap-3">
+                      <Sparkles className={cn(
+                        "h-4 w-4",
+                        isDark ? "text-stone-400" : "text-stone-600"
+                      )} />
+                      <span className={cn(
+                        "font-medium font-serif",
+                        isDark ? "text-stone-200" : "text-stone-800"
+                      )}>
+                        回答后推荐问题
+                      </span>
                     </div>
-                  )}
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={localConfig.suggested_questions_after_answer?.enabled || false}
+                        onChange={(e) => updateConfig('suggested_questions_after_answer.enabled', e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className={cn(
+                        "w-11 h-6 rounded-full peer transition-colors relative",
+                        "peer-focus:ring-2",
+                        localConfig.suggested_questions_after_answer?.enabled
+                          ? isDark 
+                            ? "bg-stone-600 peer-focus:ring-stone-500" 
+                            : "bg-stone-700 peer-focus:ring-stone-300"
+                          : isDark 
+                            ? "bg-stone-600 peer-focus:ring-stone-500" 
+                            : "bg-stone-300 peer-focus:ring-stone-300"
+                      )}>
+                        <div className={cn(
+                          "absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform",
+                          localConfig.suggested_questions_after_answer?.enabled ? "translate-x-5" : "translate-x-0"
+                        )} />
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
                 {/* --- 文件上传配置 --- */}
@@ -613,53 +719,6 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         </div>
                       </label>
                     </div>
-                  </div>
-                </div>
-
-                {/* --- 回答后推荐问题配置 --- */}
-                <div className="space-y-4">
-                  <div className={cn(
-                    "flex items-center justify-between p-4 rounded-xl",
-                    isDark 
-                      ? "bg-stone-800" 
-                      : "bg-stone-50"
-                  )}>
-                    <div className="flex items-center gap-3">
-                      <Sparkles className={cn(
-                        "h-4 w-4",
-                        isDark ? "text-stone-400" : "text-stone-600"
-                      )} />
-                      <span className={cn(
-                        "font-medium font-serif",
-                        isDark ? "text-stone-200" : "text-stone-800"
-                      )}>
-                        回答后推荐问题
-                      </span>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={localConfig.suggested_questions_after_answer?.enabled || false}
-                        onChange={(e) => updateConfig('suggested_questions_after_answer.enabled', e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className={cn(
-                        "w-11 h-6 rounded-full peer transition-colors relative",
-                        "peer-focus:ring-2",
-                        localConfig.suggested_questions_after_answer?.enabled
-                          ? isDark 
-                            ? "bg-stone-600 peer-focus:ring-stone-500" 
-                            : "bg-stone-700 peer-focus:ring-stone-300"
-                          : isDark 
-                            ? "bg-stone-600 peer-focus:ring-stone-500" 
-                            : "bg-stone-300 peer-focus:ring-stone-300"
-                      )}>
-                        <div className={cn(
-                          "absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform",
-                          localConfig.suggested_questions_after_answer?.enabled ? "translate-x-5" : "translate-x-0"
-                        )} />
-                      </div>
-                    </label>
                   </div>
                 </div>
 
