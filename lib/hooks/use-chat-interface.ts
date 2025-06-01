@@ -1,3 +1,23 @@
+/**
+ * 聊天界面交互钩子
+ * 
+ * --- BEGIN COMMENT ---
+ * 🎯 适用范围：仅用于对话类 Dify 应用（chatbot、agent、chatflow）
+ * 这些应用的数据存储到 conversations + messages 表
+ * 
+ * 任务类应用（workflow、text-generation）使用独立的组件和存储逻辑，
+ * 数据存储到 app_executions 表，不使用此 hook
+ * --- END COMMENT ---
+ * 
+ * 提供完整的聊天功能，包括：
+ * - 消息发送和接收
+ * - 流式响应处理
+ * - 对话创建和管理
+ * - 消息持久化
+ * - 文件上传支持
+ * - 错误处理和重试
+ */
+
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useChatInputStore } from '@lib/stores/chat-input-store';

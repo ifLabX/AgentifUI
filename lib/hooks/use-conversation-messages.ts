@@ -1,6 +1,14 @@
 /**
  * 对话消息加载钩子
  * 
+ * --- BEGIN COMMENT ---
+ * 🎯 适用范围：仅用于对话类 Dify 应用（chatbot、agent、chatflow）
+ * 这些应用的历史消息存储在 conversations + messages 表中
+ * 
+ * 任务类应用（workflow、text-generation）的执行记录存储在 app_executions 表中，
+ * 不使用此 hook 进行历史记录加载
+ * --- END COMMENT ---
+ * 
  * 提供消息的分页加载、历史记录查询和滚动加载功能
  * 更新为使用新的统一数据服务和messageService
  */

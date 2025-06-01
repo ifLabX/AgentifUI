@@ -1,3 +1,22 @@
+/**
+ * 新对话创建钩子
+ * 
+ * --- BEGIN COMMENT ---
+ * 🎯 适用范围：仅用于对话类 Dify 应用（chatbot、agent、chatflow）
+ * 这些应用的数据存储到 conversations + messages 表
+ * 
+ * 任务类应用（workflow、text-generation）使用独立的组件和存储逻辑，
+ * 数据存储到 app_executions 表，不使用此 hook
+ * --- END COMMENT ---
+ * 
+ * 提供新对话的创建和初始化功能，包括：
+ * - Dify API 调用和流式响应处理
+ * - 数据库对话记录创建
+ * - 路由和状态管理
+ * - 对话标题自动生成
+ * - 常用应用管理
+ */
+
 import { useCallback, useState } from 'react';
 import { usePendingConversationStore, PendingConversation } from '@lib/stores/pending-conversation-store';
 import { streamDifyChat } from '@lib/services/dify/chat-service';
