@@ -20,6 +20,7 @@ import {
   ChatLoader,
   ScrollToBottomButton 
 } from "@components/chat"
+import { DynamicSuggestedQuestions } from "@components/chat/dynamic-suggested-questions"
 import { ChatInput } from "@components/chat-input"
 import { useProfile } from "@lib/hooks/use-profile"
 import { NavBar } from "@components/nav-bar/nav-bar"
@@ -48,6 +49,7 @@ export default function AppDetailPage() {
     isProcessing,
     isWaitingForResponse,
     handleStopProcessing,
+    sendDirectMessage,
   } = useChatInterface()
   
   // --- BEGIN COMMENT ---
@@ -396,6 +398,13 @@ export default function AppDetailPage() {
           showModelSelector={false}
           requireModelValidation={false}
         />
+        
+        {/* --- BEGIN COMMENT ---
+        显示动态推荐问题的条件：欢迎界面且没有消息
+        --- END COMMENT --- */}
+        {isWelcomeScreen && messages.length === 0 && (
+          <DynamicSuggestedQuestions onQuestionClick={sendDirectMessage} />
+        )}
       </div>
     </div>
   )
