@@ -6,6 +6,7 @@ import { useTheme } from "@lib/hooks"
 import { TypeWriter } from "@components/ui/typewriter"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
+import { useTypewriterStore } from "@lib/stores/ui/typewriter-store"
 
 interface WelcomeScreenProps {
   className?: string
@@ -41,6 +42,11 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   // 🎯 新增：TypeWriter重置键，确保应用切换时能够重新打字
   // --- END COMMENT ---
   const [typewriterKey, setTypewriterKey] = useState(0)
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：打字机状态管理
+  // --- END COMMENT ---
+  const { setWelcomeTypewriterComplete, resetWelcomeTypewriter } = useTypewriterStore()
   
   // --- BEGIN COMMENT ---
   // 🎯 新增：动态打字速度配置
@@ -230,6 +236,11 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     // --- END COMMENT ---
     const updateTimer = setTimeout(() => {
       // --- BEGIN COMMENT ---
+      // 🎯 重置打字机状态，准备开始新的打字动画
+      // --- END COMMENT ---
+      resetWelcomeTypewriter();
+      
+      // --- BEGIN COMMENT ---
       // 🎯 确定最终显示的文字 - 纯数据库策略
       // --- END COMMENT ---
       let welcomeText = "";
@@ -281,8 +292,17 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     currentAppInstance?.instance_id,
     isValidating,     // 🎯 监听验证状态
     isLoading,        // 🎯 监听加载状态
-    isAppSwitching    // 🎯 新增：监听应用切换状态
+    isAppSwitching,   // 🎯 新增：监听应用切换状态
+    resetWelcomeTypewriter
   ]);
+
+  // --- BEGIN COMMENT ---
+  // 🎯 打字机完成回调
+  // --- END COMMENT ---
+  const handleTypewriterComplete = () => {
+    console.log('[WelcomeScreen] 打字机动画完成，通知推荐问题组件开始渲染');
+    setWelcomeTypewriterComplete(true);
+  };
 
   return (
       <div 
@@ -310,6 +330,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
           短文本：慢速打字，营造仪式感
           长文本：快速打字，避免等待过久
           🎯 添加key属性，确保应用切换时重新开始打字动画
+          🎯 添加onComplete回调，通知推荐问题组件开始渲染
           --- END COMMENT --- */}
           <TypeWriter 
             key={typewriterKey} // 🎯 强制重新开始打字动画
@@ -317,6 +338,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
             speed={typewriterConfig.speed} // 🎯 动态速度
             delay={typewriterConfig.delay} // 🎯 动态延迟
             waitingEffect={finalText.endsWith("...")}
+            onComplete={handleTypewriterComplete} // 🎯 打字机完成回调
             className={cn(
               "font-bold leading-tight",
               needsCompactLayout ? "text-xl" : "text-3xl"

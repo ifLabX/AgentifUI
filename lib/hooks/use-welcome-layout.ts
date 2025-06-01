@@ -12,8 +12,8 @@ export interface WelcomeLayoutConfig {
   // 各组件之间的最小间距
   minSpacing: {
     welcomeTextToInput: number; // 欢迎文字到输入框的最小距离
-    promptToInput: number; // 提示按钮到输入框的最小距离
-    welcomeTextToPrompt: number; // 欢迎文字到提示按钮的最小距离
+    suggestedQuestionsToInput: number; // 推荐问题到输入框的最小距离
+    welcomeTextToSuggestedQuestions: number; // 欢迎文字到推荐问题的最小距离
     // --- BEGIN COMMENT ---
     // 扩展区域：新组件间距配置
     // 添加新组件时在此处添加间距配置
@@ -24,7 +24,7 @@ export interface WelcomeLayoutConfig {
   // 组件高度估算（用于计算布局）
   estimatedHeights: {
     welcomeText: number; // 欢迎文字区域高度
-    promptContainer: number; // 提示容器高度
+    suggestedQuestions: number; // 推荐问题容器高度
     inputContainer: number; // 输入框容器高度
     // --- BEGIN COMMENT ---
     // 扩展区域：新组件高度估算
@@ -43,7 +43,7 @@ export interface WelcomeLayoutConfig {
     [componentName: string]: {
       enabled: boolean; // 是否启用该组件
       priority: number; // 布局优先级（数字越小优先级越高）
-      positioning: 'above-input' | 'below-input' | 'above-welcome' | 'below-prompt' | 'custom';
+      positioning: 'above-input' | 'below-input' | 'above-welcome' | 'below-suggested-questions' | 'custom';
       customOffset?: number; // 自定义偏移量（仅当positioning为custom时使用）
     };
   };
@@ -64,8 +64,8 @@ const DEFAULT_WELCOME_LAYOUT: WelcomeLayoutConfig = {
     // 间距配置：调整这些值改变组件之间的距离
     // --- END COMMENT ---
     welcomeTextToInput: 10, // 欢迎文字到输入框的距离，减小此值让文字更靠近输入框
-    promptToInput: 40, // 提示按钮到输入框的距离
-    welcomeTextToPrompt: 30, // 欢迎文字到提示按钮的距离
+    suggestedQuestionsToInput: 40, // 推荐问题到输入框的距离
+    welcomeTextToSuggestedQuestions: 30, // 欢迎文字到推荐问题的距离
   },
   
   estimatedHeights: {
@@ -73,7 +73,7 @@ const DEFAULT_WELCOME_LAYOUT: WelcomeLayoutConfig = {
     // 高度估算：用于布局计算，如果组件实际高度变化需要调整这些值
     // --- END COMMENT ---
     welcomeText: 120, // 欢迎文字区域高度（包括标题和副标题）
-    promptContainer: 60, // 提示容器高度
+    suggestedQuestions: 120, // 推荐问题容器高度（根据问题数量动态调整）
     inputContainer: 80, // 输入框容器基础高度
   },
   
@@ -99,12 +99,12 @@ function createCompactLayout(): WelcomeLayoutConfig {
     inputOffsetFromCenter: -50, // 向上偏移
     minSpacing: {
       welcomeTextToInput: 60, // 适当间距，确保副标题不被遮挡
-      promptToInput:40, // 减少间距
-      welcomeTextToPrompt: 20, // 减少间距
+      suggestedQuestionsToInput: 40, // 减少间距
+      welcomeTextToSuggestedQuestions: 20, // 减少间距
     },
     estimatedHeights: {
       welcomeText: 90, // 紧凑文字区域，考虑副标题
-      promptContainer: 50, // 紧凑按钮容器
+      suggestedQuestions: 100, // 紧凑推荐问题容器
       inputContainer: 70, // 紧凑输入框
     },
     compactLayoutThreshold: 0.95, // 更容易触发紧凑布局
@@ -123,12 +123,12 @@ function createSpacedLayout(): WelcomeLayoutConfig {
     inputOffsetFromCenter: -120, // 大屏幕也适当上移
     minSpacing: {
       welcomeTextToInput: 0, // 增加间距
-      promptToInput: 50, // 增加间距
-      welcomeTextToPrompt: 40, // 增加间距
+      suggestedQuestionsToInput: 50, // 增加间距
+      welcomeTextToSuggestedQuestions: 40, // 增加间距
     },
     estimatedHeights: {
       welcomeText: 150, // 更大的文字区域
-      promptContainer: 80, // 更大的按钮容器
+      suggestedQuestions: 140, // 更大的推荐问题容器
       inputContainer: 100, // 更大的输入框
     },
     compactLayoutThreshold: 0.8, // 不容易触发紧凑布局
@@ -183,15 +183,15 @@ export function moveWelcomeTextCloserToInput(distance: number = 20): WelcomeLayo
 }
 
 /**
- * 让提示按钮更靠近输入框
+ * 让推荐问题更靠近输入框
  * @param distance 减少的距离（像素）
  */
-export function movePromptCloserToInput(distance: number = 15): WelcomeLayoutConfig {
+export function moveSuggestedQuestionsCloserToInput(distance: number = 15): WelcomeLayoutConfig {
   return {
     ...DEFAULT_WELCOME_LAYOUT,
     minSpacing: {
       ...DEFAULT_WELCOME_LAYOUT.minSpacing,
-      promptToInput: Math.max(20, DEFAULT_WELCOME_LAYOUT.minSpacing.promptToInput - distance),
+      suggestedQuestionsToInput: Math.max(20, DEFAULT_WELCOME_LAYOUT.minSpacing.suggestedQuestionsToInput - distance),
     },
   };
 }
@@ -219,102 +219,100 @@ export function moveInputLower(distance: number = 20): WelcomeLayoutConfig {
 }
 
 // --- BEGIN COMMENT ---
-// 🔥 移动端宽度专用调整函数
+// 🎯 移动端欢迎文字宽度设置函数
+// 这个函数主要用于调试和测试，实际宽度在Hook中动态计算
 // --- END COMMENT ---
-
-/**
- * 调整移动端欢迎文字宽度
- * @param widthRem 移动端宽度（rem单位）
- * @returns 无返回值，直接修改Hook内部逻辑
- */
 export function setMobileWelcomeTextWidth(widthRem: number): void {
-  // 这个函数提供了一个明确的接口来调整移动端宽度
-  // 实际的宽度设置在Hook的calculateLayout函数中
-  console.log(`移动端欢迎文字宽度将设置为: ${widthRem}rem`);
-  console.log('请直接修改Hook中的移动端宽度值: welcomeTextMaxWidth = \'${widthRem}rem\'');
+  console.log(`设置移动端欢迎文字宽度: ${widthRem}rem`);
+  console.log('注意：实际宽度由 useWelcomeLayout Hook 动态计算');
+  console.log('移动端使用 width 强制宽度，桌面端使用 maxWidth 限制宽度');
 }
 
 // --- BEGIN COMMENT ---
-// 🧩 新组件管理函数 - 扩展布局系统
+// 🔧 动态组件添加系统
+// 支持在运行时添加新的布局组件
 // --- END COMMENT ---
 
 /**
- * 添加新组件到布局配置
+ * 添加新组件到布局系统
  * @param componentName 组件名称
  * @param config 组件配置
- * @param baseConfig 基础配置（可选，默认使用DEFAULT_WELCOME_LAYOUT）
+ * @param baseConfig 基础配置
  */
 export function addComponent(
   componentName: string,
   config: {
     height: number;
     spacing: { [key: string]: number };
-    positioning: 'above-input' | 'below-input' | 'above-welcome' | 'below-prompt' | 'custom';
+    positioning: 'above-input' | 'below-input' | 'above-welcome' | 'below-suggested-questions' | 'custom';
     priority?: number;
     customOffset?: number;
   },
   baseConfig: WelcomeLayoutConfig = DEFAULT_WELCOME_LAYOUT
 ): WelcomeLayoutConfig {
-  return {
-    ...baseConfig,
-    minSpacing: {
-      ...baseConfig.minSpacing,
-      ...config.spacing,
-    },
-    estimatedHeights: {
-      ...baseConfig.estimatedHeights,
-      [componentName]: config.height,
-    },
-    extensions: {
-      ...baseConfig.extensions,
-      [componentName]: {
-        enabled: true,
-        priority: config.priority || 5,
-        positioning: config.positioning,
-        customOffset: config.customOffset,
-      },
-    },
+  const newConfig = { ...baseConfig };
+  
+  // 添加高度估算
+  newConfig.estimatedHeights[componentName] = config.height;
+  
+  // 添加间距配置
+  Object.entries(config.spacing).forEach(([key, value]) => {
+    newConfig.minSpacing[key] = value;
+  });
+  
+  // 添加扩展配置
+  if (!newConfig.extensions) {
+    newConfig.extensions = {};
+  }
+  
+  newConfig.extensions[componentName] = {
+    enabled: true,
+    priority: config.priority || 5,
+    positioning: config.positioning,
+    customOffset: config.customOffset,
   };
+  
+  return newConfig;
 }
 
 /**
- * 快速添加通知组件（在欢迎文字上方）
+ * 添加通知组件
  */
 export function addNotificationComponent(height: number = 40): WelcomeLayoutConfig {
   return addComponent('notification', {
     height,
-    spacing: { notificationToWelcome: 20 },
-    positioning: 'above-welcome',
+    spacing: { notificationToInput: 20 },
+    positioning: 'above-input',
     priority: 1,
   });
 }
 
 /**
- * 快速添加操作按钮组（在提示按钮下方）
+ * 添加操作按钮组
  */
 export function addActionButtons(height: number = 50): WelcomeLayoutConfig {
   return addComponent('actionButtons', {
     height,
-    spacing: { promptToActions: 30, actionsToBottom: 20 },
-    positioning: 'below-prompt',
-    priority: 6,
-  });
-}
-
-/**
- * 快速添加状态指示器（在输入框上方）
- */
-export function addStatusIndicator(height: number = 30): WelcomeLayoutConfig {
-  return addComponent('statusIndicator', {
-    height,
-    spacing: { statusToInput: 15 },
-    positioning: 'above-input',
+    spacing: { actionButtonsToInput: 30 },
+    positioning: 'below-suggested-questions',
     priority: 3,
   });
 }
 
+/**
+ * 添加状态指示器
+ */
+export function addStatusIndicator(height: number = 30): WelcomeLayoutConfig {
+  return addComponent('statusIndicator', {
+    height,
+    spacing: { statusToWelcome: 15 },
+    positioning: 'above-welcome',
+    priority: 2,
+  });
+}
+
 // --- BEGIN COMMENT ---
-// 📐 布局位置接口
+// 🎯 布局位置接口定义
 // --- END COMMENT ---
 interface WelcomeLayoutPositions {
   // 输入框位置
@@ -340,8 +338,8 @@ interface WelcomeLayoutPositions {
     maxWidth?: string;
   };
   
-  // 提示容器位置
-  promptContainer: {
+  // 推荐问题容器位置
+  suggestedQuestions: {
     top: string;
     transform: string;
   };
@@ -388,7 +386,7 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
     welcomeTextTitle: {
       width: '32rem', // 默认适中的最大宽度，会在calculateLayout中动态调整
     },
-    promptContainer: { top: 'calc(50% + 120px)', transform: 'translateX(-50%)' },
+    suggestedQuestions: { top: 'calc(50% + 120px)', transform: 'translateX(-50%)' },
     needsCompactLayout: false,
     extensions: {},
   });
@@ -415,10 +413,10 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
     const idealWelcomeTextTopY = idealWelcomeTextBottomY - config.estimatedHeights.welcomeText;
     
     // --- BEGIN COMMENT ---
-    // 3. 计算提示容器的理想位置
+    // 3. 计算推荐问题的理想位置
     // --- END COMMENT ---
-    const idealPromptTopY = inputBottomY + config.minSpacing.promptToInput;
-    const idealPromptBottomY = idealPromptTopY + config.estimatedHeights.promptContainer;
+    const idealSuggestedQuestionsTopY = inputBottomY + config.minSpacing.suggestedQuestionsToInput;
+    const idealSuggestedQuestionsBottomY = idealSuggestedQuestionsTopY + config.estimatedHeights.suggestedQuestions;
     
     // --- BEGIN COMMENT ---
     // 4. 检查是否需要紧凑布局
@@ -427,8 +425,8 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
       config.estimatedHeights.welcomeText + 
       config.minSpacing.welcomeTextToInput + 
       actualInputHeight + 
-      config.minSpacing.promptToInput + 
-      config.estimatedHeights.promptContainer;
+      config.minSpacing.suggestedQuestionsToInput + 
+      config.estimatedHeights.suggestedQuestions;
     
     const availableHeight = viewportHeight * config.compactLayoutThreshold;
     const needsCompactLayout = totalRequiredHeight > availableHeight;
@@ -437,27 +435,27 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
     // 5. 根据是否需要紧凑布局计算最终位置
     // --- END COMMENT ---
     let finalWelcomeTextY: number;
-    let finalPromptY: number;
+    let finalSuggestedQuestionsY: number;
     
     if (needsCompactLayout) {
       // 紧凑布局：减少间距，确保所有内容都能显示
       const compactSpacing = Math.min(config.minSpacing.welcomeTextToInput * 0.7, 40);
       finalWelcomeTextY = inputTopY - compactSpacing - config.estimatedHeights.welcomeText / 2;
-      finalPromptY = inputBottomY + compactSpacing;
+      finalSuggestedQuestionsY = inputBottomY + compactSpacing;
     } else {
       // 正常布局：使用理想位置
       finalWelcomeTextY = idealWelcomeTextTopY + config.estimatedHeights.welcomeText / 2;
-      finalPromptY = idealPromptTopY;
+      finalSuggestedQuestionsY = idealSuggestedQuestionsTopY;
     }
     
     // --- BEGIN COMMENT ---
     // 6. 确保不超出视口边界
     // --- END COMMENT ---
     const minWelcomeTextY = config.estimatedHeights.welcomeText / 2 + 20; // 顶部留20px边距
-    const maxPromptY = viewportHeight - config.estimatedHeights.promptContainer - 20; // 底部留20px边距
+    const maxSuggestedQuestionsY = viewportHeight - config.estimatedHeights.suggestedQuestions - 20; // 底部留20px边距
     
     finalWelcomeTextY = Math.max(finalWelcomeTextY, minWelcomeTextY);
-    finalPromptY = Math.min(finalPromptY, maxPromptY);
+    finalSuggestedQuestionsY = Math.min(finalSuggestedQuestionsY, maxSuggestedQuestionsY);
     
     // --- BEGIN COMMENT ---
     // 7. 转换为CSS样式和欢迎文字宽度计算
@@ -510,8 +508,8 @@ export function useWelcomeLayout(): WelcomeLayoutPositions {
           : { maxWidth: welcomeTextMaxWidth } // 桌面端：最大宽度限制
         ),
       },
-      promptContainer: {
-        top: `${finalPromptY}px`,
+      suggestedQuestions: {
+        top: `${finalSuggestedQuestionsY}px`,
         transform: 'translateX(-50%)',
       },
       needsCompactLayout,
