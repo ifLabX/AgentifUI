@@ -252,6 +252,11 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         throw new Error('未找到要删除的应用实例');
       }
       
+      // --- BEGIN COMMENT ---
+      // 🎯 新增：删除应用实例时同步从常用应用存储中移除
+      // --- END COMMENT ---
+      const instanceId = existingInstance.instance_id;
+      
       // 查找并删除相关的 API 密钥
       const existingKeyResult = await getApiKeyByServiceInstance(id);
       const existingKey = handleResult(existingKeyResult, '获取 API 密钥');
@@ -272,6 +277,19 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       // 更新本地状态 - 从实例列表中移除
       const { serviceInstances } = get();
       set({ serviceInstances: serviceInstances.filter(si => si.id !== id) });
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 新增：从常用应用存储中移除被删除的应用
+      // --- END COMMENT ---
+      try {
+        const { useFavoriteAppsStore } = await import('./favorite-apps-store');
+        const { removeFavoriteApp } = useFavoriteAppsStore.getState();
+        removeFavoriteApp(instanceId);
+        console.log(`[删除应用] 已从常用应用中移除: ${instanceId}`);
+      } catch (favoriteError) {
+        console.warn(`[删除应用] 从常用应用中移除失败: ${instanceId}`, favoriteError);
+        // 不抛出错误，因为这不应该阻止主要的删除操作
+      }
     } catch (error) {
       console.error('删除应用实例时出错:', error);
       throw error;
