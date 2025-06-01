@@ -42,6 +42,9 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   // 下拉菜单状态管理
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
 
+  // 新增：点击状态管理，提供即时反馈
+  const [clickingAppId, setClickingAppId] = useState<string | null>(null)
+
   useEffect(() => {
     loadFavoriteApps()
   }, [loadFavoriteApps])
@@ -79,38 +82,89 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     return routeAppType === appDifyType
   }, [])
 
+  // 🎯 优化：重构点击处理逻辑，提供即时反馈和更好的错误处理
   const handleAppClick = async (app: FavoriteApp) => {
+    // 🎯 防止重复点击
+    if (clickingAppId === app.instanceId) {
+      console.log('[FavoriteApps] 防止重复点击:', app.instanceId)
+      return
+    }
+
     try {
-      // 设置sidebar选中状态
+      // 🎯 立即设置点击状态，提供视觉反馈
+      setClickingAppId(app.instanceId)
+      console.log('[FavoriteApps] 开始切换到常用应用:', app.displayName)
+
+      // 🎯 立即设置sidebar选中状态，提供即时反馈
       selectItem('app', app.instanceId)
 
-      // 切换到指定应用
-      await switchToSpecificApp(app.instanceId)
-
-      // 🎯 根据Dify应用类型跳转到对应页面
+      // 🎯 立即开始路由跳转，不等待应用切换完成
+      // 这样用户能立即看到页面开始切换
       const difyAppType = app.dify_apptype || 'chatflow'
-      router.push(`/apps/${difyAppType}/${app.instanceId}`)
+      const targetPath = `/apps/${difyAppType}/${app.instanceId}`
+      
+      // 🎯 并行执行：路由跳转和应用切换同时进行
+      const routerPromise = router.push(targetPath)
+      const switchPromise = switchToSpecificApp(app.instanceId)
+
+      // 🎯 等待路由跳转完成（通常很快），不等待应用切换
+      // 应用切换在后台继续进行
+      await routerPromise
+      
+      console.log('[FavoriteApps] 路由跳转完成，应用切换在后台继续')
+
+      // 🎯 在后台等待应用切换完成，但不阻塞用户界面
+      switchPromise.catch(error => {
+        console.error('[FavoriteApps] 后台应用切换失败:', error)
+        // 不显示错误给用户，因为页面已经跳转了
+        // 应用详情页面会处理应用切换失败的情况
+      })
 
     } catch (error) {
-      console.error('切换到常用应用失败:', error)
+      console.error('[FavoriteApps] 切换到常用应用失败:', error)
+      
+      // 🎯 错误处理：如果路由跳转失败，尝试恢复状态
+      selectItem(null, null) // 清除选中状态
+    } finally {
+      // 🎯 清除点击状态，允许后续点击
+      setClickingAppId(null)
     }
   }
 
-  // 发起新对话 - 跳转到应用详情页面
+  // 🎯 优化：发起新对话的处理逻辑也使用相同的优化策略
   const handleStartNewChat = async (app: FavoriteApp) => {
+    // 防止重复点击
+    if (clickingAppId === app.instanceId) {
+      return
+    }
+
     try {
-      // 设置sidebar选中状态
+      setClickingAppId(app.instanceId)
+      console.log('[FavoriteApps] 发起新对话:', app.displayName)
+
+      // 立即设置sidebar选中状态
       selectItem('app', app.instanceId)
 
-      // 切换到指定应用
-      await switchToSpecificApp(app.instanceId)
-
-      // 🎯 根据Dify应用类型跳转到对应页面
+      // 立即跳转，不等待应用切换
       const difyAppType = app.dify_apptype || 'chatflow'
-      router.push(`/apps/${difyAppType}/${app.instanceId}`)
+      const targetPath = `/apps/${difyAppType}/${app.instanceId}`
+      
+      // 并行执行
+      const routerPromise = router.push(targetPath)
+      const switchPromise = switchToSpecificApp(app.instanceId)
+
+      await routerPromise
+      
+      // 后台处理应用切换
+      switchPromise.catch(error => {
+        console.error('[FavoriteApps] 发起新对话时应用切换失败:', error)
+      })
 
     } catch (error) {
-      console.error('发起新对话失败:', error)
+      console.error('[FavoriteApps] 发起新对话失败:', error)
+      selectItem(null, null)
+    } finally {
+      setClickingAppId(null)
     }
   }
 
@@ -137,8 +191,14 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   // 创建下拉菜单
   const createMoreActions = (app: FavoriteApp) => {
     const isMenuOpen = openDropdownId === app.instanceId
+    // 🎯 检查当前应用是否正在处理中
+    const isAppBusy = clickingAppId === app.instanceId
 
     const handleMenuOpenChange = (isOpen: boolean) => {
+      // 🎯 如果应用正在处理中，不允许打开菜单
+      if (isAppBusy && isOpen) {
+        return
+      }
       setOpenDropdownId(isOpen ? app.instanceId : null)
     }
 
@@ -151,7 +211,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
         trigger={
           <MoreButtonV2
             aria-label="更多选项"
-            disabled={false}
+            disabled={isAppBusy} // 🎯 应用忙碌时禁用
             isMenuOpen={isMenuOpen}
             isItemSelected={false}
             disableHover={!!openDropdownId && !isMenuOpen}
@@ -160,14 +220,23 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
       >
         <DropdownMenuV2.Item
           icon={<Plus className="w-3.5 h-3.5" />}
-          onClick={() => handleStartNewChat(app)}
+          onClick={() => {
+            // 🎯 点击后立即关闭菜单，避免状态冲突
+            setOpenDropdownId(null)
+            handleStartNewChat(app)
+          }}
+          disabled={isAppBusy} // 🎯 应用忙碌时禁用
         >
           发起新对话
         </DropdownMenuV2.Item>
         <DropdownMenuV2.Divider />
         <DropdownMenuV2.Item
           icon={<EyeOff className="w-3.5 h-3.5" />}
-          onClick={() => handleHideApp(app)}
+          onClick={() => {
+            setOpenDropdownId(null)
+            handleHideApp(app)
+          }}
+          disabled={isAppBusy} // 🎯 应用忙碌时禁用
         >
           隐藏该应用
         </DropdownMenuV2.Item>
@@ -210,6 +279,8 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
           {displayApps.map((app) => {
             // 使用路由判断应用是否被选中
             const isSelected = isAppActive(app)
+            // 🎯 新增：检查当前应用是否正在点击中
+            const isClicking = clickingAppId === app.instanceId
 
             return (
               <div className="group relative" key={app.instanceId}>
@@ -217,17 +288,20 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                   icon={getAppIcon(app)}
                   onClick={() => handleAppClick(app)}
                   active={isSelected}
-                  isLoading={false}
+                  isLoading={isClicking} // 🎯 显示点击加载状态
                   hasOpenDropdown={openDropdownId === app.instanceId}
-                  disableHover={!!openDropdownId}
+                  disableHover={!!openDropdownId || isClicking} // 🎯 点击时禁用悬停
                   moreActionsTrigger={
                     <div className={cn(
                       "transition-opacity",
-                      openDropdownId === app.instanceId
-                        ? "opacity-100" // 当前打开菜单的item，more button保持显示
-                        : openDropdownId
-                          ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
-                          : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
+                      // 🎯 点击时隐藏more button，避免干扰
+                      isClicking
+                        ? "opacity-0 pointer-events-none"
+                        : openDropdownId === app.instanceId
+                          ? "opacity-100" // 当前打开菜单的item，more button保持显示
+                          : openDropdownId
+                            ? "opacity-0" // 有其他菜单打开时，此item的more button不显示
+                            : "opacity-0 group-hover:opacity-100 focus-within:opacity-100" // 正常状态下的悬停显示
                     )}>
                       {createMoreActions(app)}
                     </div>
@@ -235,6 +309,8 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                   className={cn(
                     "w-full justify-start font-medium",
                     "transition-all duration-200 ease-in-out",
+                    // 🎯 点击时的特殊样式
+                    isClicking && "opacity-75 cursor-wait",
                     isDark
                       ? "text-gray-300 hover:text-gray-100 hover:bg-stone-700/50"
                       : "text-gray-700 hover:text-gray-900 hover:bg-stone-100"
@@ -245,6 +321,15 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                     <span className="truncate font-serif text-xs font-medium">
                       {app.displayName}
                     </span>
+                    {/* 🎯 新增：点击时显示状态提示 */}
+                    {isClicking && (
+                      <span className={cn(
+                        "ml-2 text-xs opacity-75 font-serif",
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      )}>
+                        切换中...
+                      </span>
+                    )}
                   </div>
                 </SidebarListButton>
               </div>
