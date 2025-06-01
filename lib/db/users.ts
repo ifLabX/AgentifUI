@@ -90,39 +90,43 @@ export async function getUserList(filters: UserFilters = {}): Promise<Result<{
     } = filters;
 
     // --- BEGIN COMMENT ---
-    // 使用新的安全函数替代不安全的视图
-    // 这个函数内部有严格的管理员权限检查，无法被绕过
+    // 临时回退到使用视图，确保功能正常
+    // TODO: 迁移到安全函数后删除此代码
     // --- END COMMENT ---
-    const { data: users, error: usersError } = await supabase.rpc('get_admin_user_list', {
-      p_role: role || null,
-      p_status: status || null,
-      p_auth_source: auth_source || null,
-      p_search: search || null,
-      p_sort_by: sortBy,
-      p_sort_order: sortOrder,
-      p_page: page,
-      p_page_size: pageSize
-    });
+    let query = supabase
+      .from('admin_user_management_view')
+      .select('*', { count: 'exact' });
+
+    // 应用筛选条件
+    if (role) {
+      query = query.eq('role', role);
+    }
+    if (status) {
+      query = query.eq('status', status);
+    }
+    if (auth_source) {
+      query = query.eq('auth_source', auth_source);
+    }
+    if (search) {
+      query = query.or(`full_name.ilike.%${search}%,username.ilike.%${search}%,email.ilike.%${search}%`);
+    }
+
+    // 应用排序
+    query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+
+    // 应用分页
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+
+    const { data: users, error: usersError, count } = await query;
 
     if (usersError) {
       console.error('获取用户列表失败:', usersError);
       return failure(new Error(`获取用户列表失败: ${usersError.message}`));
     }
 
-    // 获取总数
-    const { data: totalCount, error: countError } = await supabase.rpc('get_admin_user_count', {
-      p_role: role || null,
-      p_status: status || null,
-      p_auth_source: auth_source || null,
-      p_search: search || null
-    });
-
-    if (countError) {
-      console.error('获取用户总数失败:', countError);
-      return failure(new Error(`获取用户总数失败: ${countError.message}`));
-    }
-
-    const total = totalCount || 0;
+    const total = count || 0;
     const totalPages = Math.ceil(total / pageSize);
 
     // 转换数据格式 - 现在包含真实的完整信息
