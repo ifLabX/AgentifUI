@@ -83,6 +83,105 @@ WHERE EXISTS (
    - `metadata` 字段 (JSONB 类型)：用于存储消息的附加信息，如消息来源、编辑历史、引用内容等。该字段为可选，便于后续功能扩展。
    - 触发器说明：自 20250521125100_add_message_trigger.sql 起，`messages` 表增加了触发器（如 `set_message_synced_on_update`、`update_conversation_last_message_preview` 等），用于自动维护消息同步状态、更新时间戳、以及在新消息插入或更新时自动刷新 `conversations.last_message_preview` 字段。这些触发器确保数据一致性和前端展示的实时性，无需手动维护。
 
+### 应用执行记录管理
+
+**`app_executions` 表** - 用于存储工作流和文本生成应用的执行记录：
+
+#### 表结构设计
+
+1. **基础字段**：
+   - `id`: 主键，UUID 类型
+   - `user_id`: 用户ID，关联 auth.users 表
+   - `service_instance_id`: 服务实例ID，关联 service_instances 表
+   - `execution_type`: 执行类型枚举，支持 'workflow' 和 'text-generation'
+
+2. **Dify 集成字段**：
+   - `external_execution_id`: Dify API 返回的执行ID（workflow_run_id 或 message_id）
+   - `task_id`: Dify 返回的任务ID（主要用于 workflow 类型）
+
+3. **执行内容字段**：
+   - `title`: 执行标题，用户自定义或自动生成
+   - `inputs`: 输入参数，JSONB 格式存储
+   - `outputs`: 输出结果，JSONB 格式存储
+   - `status`: 执行状态枚举（pending, running, completed, failed, stopped）
+   - `error_message`: 错误信息
+
+4. **统计字段**：
+   - `total_steps`: 总步骤数（workflow 使用，text-generation 为 0）
+   - `total_tokens`: 总 token 数量
+   - `elapsed_time`: 执行耗时（秒）
+
+5. **元数据和时间戳**：
+   - `metadata`: 扩展元数据，JSONB 格式
+   - `created_at`, `updated_at`, `completed_at`: 时间戳字段
+
+#### 设计特点
+
+1. **应用类型区分**：
+   - **对话类应用**（chatbot, agent, chatflow）：使用 `conversations` + `messages` 表
+   - **任务类应用**（workflow, text-generation）：使用 `app_executions` 表
+
+2. **数据隔离**：
+   - 每次执行都是独立的任务记录
+   - 不同于对话类应用的连续性对话
+   - 避免概念混淆和数据污染
+
+3. **灵活扩展**：
+   - 支持未来新增的任务类应用类型
+   - JSONB 字段支持复杂的输入输出结构
+   - 元数据字段支持自定义扩展
+
+#### 索引优化
+
+```sql
+-- 用户执行记录查询优化
+CREATE INDEX idx_app_executions_user_created ON app_executions(user_id, created_at DESC);
+
+-- 服务实例关联查询优化
+CREATE INDEX idx_app_executions_service_instance ON app_executions(service_instance_id);
+
+-- 类型和状态筛选优化
+CREATE INDEX idx_app_executions_type_status ON app_executions(execution_type, status);
+
+-- 外部ID查询优化（用于与Dify同步）
+CREATE INDEX idx_app_executions_external_id ON app_executions(external_execution_id) WHERE external_execution_id IS NOT NULL;
+```
+
+#### 行级安全策略
+
+```sql
+-- 用户只能访问自己的执行记录
+CREATE POLICY "用户可以查看自己的执行记录" ON app_executions
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- 管理员可以查看所有执行记录（用于系统管理）
+CREATE POLICY "管理员可以查看所有执行记录" ON app_executions
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE profiles.id = auth.uid() 
+      AND profiles.role = 'admin'
+    )
+  );
+```
+
+#### 使用场景
+
+1. **工作流执行**：
+   - 存储工作流的输入参数和输出结果
+   - 记录执行状态和步骤进度
+   - 支持执行历史查询和重新执行
+
+2. **文本生成**：
+   - 存储生成请求的输入提示
+   - 记录生成的文本内容
+   - 支持生成历史管理
+
+3. **执行监控**：
+   - 实时跟踪执行状态
+   - 统计 token 使用量
+   - 性能分析和优化
+
 ### API 密钥管理
 
 1. `providers` 表：
@@ -400,6 +499,9 @@ if (!isAdmin) return <AccessDenied />;
 
 ### 数据完整性和清理
 - `/supabase/migrations/20250524194000_improve_cascade_deletion.sql`: 改进级联删除逻辑，处理孤儿组织和 AI 配置问题
+
+### 应用执行记录管理
+- `/supabase/migrations/20250601124105_add_app_executions_table.sql`: 添加应用执行记录表，支持工作流和文本生成应用的执行历史管理
 
 ## 迁移文件说明
 

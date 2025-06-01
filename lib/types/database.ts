@@ -13,6 +13,13 @@ export type MessageRole = 'user' | 'assistant' | 'system';
 export type MessageStatus = 'sent' | 'delivered' | 'error';
 export type SsoProtocol = 'SAML' | 'OAuth2' | 'OIDC';
 
+// --- BEGIN COMMENT ---
+// 🎯 新增：应用执行相关的枚举类型
+// 用于工作流和文本生成应用的执行记录管理
+// --- END COMMENT ---
+export type ExecutionType = 'workflow' | 'text-generation';
+export type ExecutionStatus = 'pending' | 'running' | 'completed' | 'failed' | 'stopped';
+
 // 用户和身份管理
 export interface Profile {
   id: string;
@@ -280,6 +287,32 @@ export interface ApiLog {
   created_at: string;
 }
 
+// --- BEGIN COMMENT ---
+// 🎯 新增：应用执行记录接口
+// 用于存储工作流和文本生成应用的执行历史
+// 这些应用类型不同于对话类应用，每次执行都是独立的任务
+// --- END COMMENT ---
+export interface AppExecution {
+  id: string;
+  user_id: string;
+  service_instance_id: string;
+  execution_type: ExecutionType;
+  external_execution_id: string | null; // workflow_run_id 或 message_id
+  task_id: string | null; // Dify 返回的 task_id（主要用于workflow）
+  title: string;
+  inputs: Record<string, any>; // 输入参数
+  outputs: Record<string, any> | null; // 输出结果
+  status: ExecutionStatus;
+  error_message: string | null;
+  total_steps: number; // workflow的步骤数，text-generation为0
+  total_tokens: number;
+  elapsed_time: number | null; // 执行耗时（秒）
+  metadata: Record<string, any>; // 扩展字段，如标签、备注等
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+}
+
 // 数据库类型命名空间
 export namespace Database {
   export interface Tables {
@@ -297,5 +330,6 @@ export namespace Database {
     auth_settings: AuthSettings;
     ai_configs: AiConfig;
     api_logs: ApiLog;
+    app_executions: AppExecution;
   }
 }

@@ -82,6 +82,29 @@ export {
 } from './service-instances';
 
 // --- BEGIN COMMENT ---
+// 应用执行记录相关函数：新版本和兼容版本
+// --- END COMMENT ---
+
+// 新的优化版本（返回Result类型）
+export {
+  getUserExecutions,
+  getExecutionById,
+  getExecutionByExternalId,
+  createExecution,
+  updateExecution,
+  updateExecutionStatus,
+  deleteExecution,
+  getExecutionsByServiceInstance,
+  getExecutionStats
+} from './app-executions';
+
+// 兼容版本（保持原有API）
+export {
+  getUserExecutionsLegacy,
+  getExecutionByIdLegacy
+} from './app-executions';
+
+// --- BEGIN COMMENT ---
 // 用户资料相关函数：新版本和兼容版本
 // --- END COMMENT ---
 
