@@ -316,4 +316,77 @@ export async function getDifyAppMeta(appId: string): Promise<DifyAppMetaResponse
     
     throw new Error('获取应用 Meta 信息时发生未知错误');
   }
+}
+
+/**
+ * 使用指定的API配置获取Dify应用参数（用于表单同步）
+ * 
+ * @param appId - 应用ID
+ * @param apiConfig - API配置（URL和密钥）
+ * @returns Promise<DifyAppParametersResponse> - 应用参数
+ */
+export async function getDifyAppParametersWithConfig(
+  appId: string, 
+  apiConfig: { apiUrl: string; apiKey: string }
+): Promise<DifyAppParametersResponse> {
+  const { apiUrl, apiKey } = apiConfig;
+  
+  if (!apiUrl || !apiKey) {
+    throw new Error('API URL 和 API Key 都是必需的');
+  }
+  
+  // 构造直接的Dify API URL
+  const targetUrl = `${apiUrl}/parameters`;
+  
+  try {
+    console.log(`[Dify App Service] 使用表单配置同步参数: ${appId}`);
+    
+    const response = await fetch(targetUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        // 如果无法解析JSON，使用默认错误格式
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取应用参数失败'
+        };
+      }
+      
+      console.error('[Dify App Service] 使用表单配置获取应用参数失败:', errorData);
+      throw new Error(`获取应用参数失败: ${errorData.message}`);
+    }
+
+    const result: DifyAppParametersResponse = await response.json();
+    
+    console.log('[Dify App Service] 使用表单配置成功获取应用参数:', {
+      appId,
+      hasOpeningStatement: !!result.opening_statement,
+      suggestedQuestionsCount: result.suggested_questions?.length || 0,
+      userInputFormCount: result.user_input_form?.length || 0,
+      textToSpeechEnabled: result.text_to_speech?.enabled || false
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify App Service] 使用表单配置获取应用参数时发生错误:', error);
+    
+    // 重新抛出错误，保持错误信息
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('获取应用参数时发生未知错误');
+  }
 } 

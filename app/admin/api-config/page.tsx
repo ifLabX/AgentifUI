@@ -214,7 +214,9 @@ const InstanceForm = ({
   };
 
   // --- BEGIN COMMENT ---
-  // 🎯 新增：从 Dify API 同步参数的功能
+  // 🎯 修复：智能同步参数逻辑
+  // 编辑模式：优先使用数据库配置，失败时fallback到表单配置
+  // 添加模式：直接使用表单配置
   // --- END COMMENT ---
   const handleSyncFromDify = async () => {
     if (!formData.instance_id) {
@@ -224,8 +226,45 @@ const InstanceForm = ({
 
     setIsSyncing(true);
     try {
-      // 调用 Dify API 获取参数
-      const difyParams: DifyAppParametersResponse = await getDifyAppParameters(formData.instance_id);
+      let difyParams: DifyAppParametersResponse;
+      
+      if (isEditing) {
+        // 编辑模式：优先使用数据库配置
+        try {
+          console.log('[同步参数] 编辑模式：尝试使用数据库配置');
+          difyParams = await getDifyAppParameters(formData.instance_id);
+        } catch (dbError) {
+          console.log('[同步参数] 数据库配置失败，尝试使用表单配置:', dbError);
+          
+          // 检查表单配置是否完整
+          if (!formData.config.api_url || !formData.apiKey) {
+            throw new Error('数据库配置失效，且表单中的API URL或API Key为空，无法同步参数');
+          }
+          
+          // 使用表单配置作为fallback
+          const { getDifyAppParametersWithConfig } = await import('@lib/services/dify');
+          difyParams = await getDifyAppParametersWithConfig(formData.instance_id, {
+            apiUrl: formData.config.api_url,
+            apiKey: formData.apiKey
+          });
+        }
+      } else {
+        // 添加模式：直接使用表单配置
+        console.log('[同步参数] 添加模式：使用表单配置');
+        
+        // 检查表单配置是否完整
+        if (!formData.config.api_url || !formData.apiKey) {
+          showFeedback('请先填写API URL和API Key', 'warning');
+          return;
+        }
+        
+        // 直接使用表单配置
+        const { getDifyAppParametersWithConfig } = await import('@lib/services/dify');
+        difyParams = await getDifyAppParametersWithConfig(formData.instance_id, {
+          apiUrl: formData.config.api_url,
+          apiKey: formData.apiKey
+        });
+      }
       
       // --- BEGIN COMMENT ---
       // 🎯 修复：正确处理 file_upload 字段的同步
