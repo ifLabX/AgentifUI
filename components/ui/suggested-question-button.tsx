@@ -14,7 +14,7 @@ interface SuggestedQuestionButtonProps {
 /**
  * 推荐问题按钮组件
  * 具有大圆角效果和渐进显示动画
- * 根据文字长度动态调整宽度
+ * 按钮内文字始终保持一行，完整显示问题内容
  */
 export const SuggestedQuestionButton = ({ 
   question, 
@@ -28,31 +28,35 @@ export const SuggestedQuestionButton = ({
     onClick(question)
   }
 
-  // 🎯 根据文字长度动态计算按钮宽度
-  // 调整最大宽度，确保在容器中能正常换行
-  const getButtonWidth = () => {
+  // 🎯 根据问题长度动态设置最大宽度，确保完整显示且合理换行
+  const getMaxWidth = () => {
     const textLength = question.length
     
     if (textLength <= 10) {
-      return "w-auto min-w-[120px] max-w-[180px]" // 短文本
+      return "max-w-[200px]"  // 短问题
     } else if (textLength <= 20) {
-      return "w-auto min-w-[160px] max-w-[240px]" // 中等文本
-    } else if (textLength <= 40) {
-      return "w-auto min-w-[200px] max-w-[300px]" // 长文本
+      return "max-w-[300px]"  // 中等问题
+    } else if (textLength <= 30) {
+      return "max-w-[400px]"  // 较长问题
+    } else if (textLength <= 50) {
+      return "max-w-[500px]"  // 长问题
     } else {
-      return "w-auto min-w-[240px] max-w-[320px]" // 超长文本
+      return "max-w-[600px]"  // 超长问题
     }
   }
 
   return (
     <button
       className={cn(
-        // --- 基础样式：超大圆角、动态宽度、边框 ---
+        // --- 基础样式：超大圆角、自适应宽度、边框 ---
         "text-left px-6 py-2.5 rounded-3xl border transition-colors duration-200 cursor-pointer",
         "font-serif text-sm leading-relaxed",
         
-        // --- 动态宽度：根据文字长度调整 ---
-        getButtonWidth(),
+        // --- 🎯 关键：确保文字始终保持一行，完整显示 ---
+        "whitespace-nowrap", // 强制文字不换行
+        "w-auto", // 宽度根据内容自适应
+        getMaxWidth(), // 根据文字长度动态设置最大宽度
+        "min-w-[80px]", // 设置最小宽度，避免按钮过窄
         
         // --- 动画效果：使用与标题相同的fade-in动画 ---
         "opacity-0 animate-fade-in",
@@ -71,9 +75,7 @@ export const SuggestedQuestionButton = ({
       onClick={handleClick}
       aria-label={`推荐问题: ${question}`}
     >
-      <span className="block">
-        {question}
-      </span>
+      {question}
     </button>
   )
 } 
