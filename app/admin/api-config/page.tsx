@@ -406,18 +406,18 @@ const InstanceForm = ({
       }
       
       // --- BEGIN COMMENT ---
-      // 🎯 处理基本信息同步
+      // 🎯 处理基本信息同步 - 去掉确认对话框，直接同步
       // --- END COMMENT ---
       const updatedFormData = { ...formData };
       
       if (appInfo) {
-        // 同步display_name（如果当前为空或用户确认）
-        if (!formData.display_name || confirm(`是否将显示名称更新为："${appInfo.name}"？`)) {
+        // 直接同步display_name（如果当前为空则更新）
+        if (!formData.display_name && appInfo.name) {
           updatedFormData.display_name = appInfo.name;
         }
         
-        // 同步description（如果当前为空或用户确认）
-        if (!formData.description || confirm(`是否将描述更新为："${appInfo.description}"？`)) {
+        // 直接同步description（如果当前为空则更新）
+        if (!formData.description && appInfo.description) {
           updatedFormData.description = appInfo.description;
         }
         
@@ -429,9 +429,7 @@ const InstanceForm = ({
           const newTags = appInfo.tags.filter((tag: string) => !currentTags.includes(tag));
           
           if (newTags.length > 0) {
-            if (confirm(`是否添加新标签：${newTags.join(', ')}？`)) {
-              updatedFormData.config.app_metadata.tags = [...currentTags, ...newTags];
-            }
+            updatedFormData.config.app_metadata.tags = [...currentTags, ...newTags];
           }
         }
       }
