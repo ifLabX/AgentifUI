@@ -130,9 +130,16 @@ export interface DifyParametersConfig {
   system_parameters: DifySystemParameters; // 系统参数
 }
 
-/** 简化版配置（用于UI组件，只包含核心功能） */
+/** 简化版配置（用于UI组件，包含所有API字段） */
 export interface DifyParametersSimplifiedConfig {
   opening_statement?: string; // 开场白
   suggested_questions?: string[]; // 开场推荐问题列表
+  suggested_questions_after_answer?: DifySuggestedQuestionsAfterAnswer; // 启用回答后给出推荐问题
+  speech_to_text?: DifySpeechToText; // 语音转文本
+  text_to_speech?: DifyTextToSpeech; // 文本转语音
+  retriever_resource?: DifyRetrieverResourceConfig; // 引用和归属
+  annotation_reply?: DifyAnnotationReply; // 标记回复
+  user_input_form?: DifyUserInputFormItem[]; // 用户输入表单配置
   file_upload?: DifyFileUploadConfig; // 文件上传配置
+  system_parameters?: DifySystemParameters; // 系统参数
 } 

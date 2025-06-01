@@ -25,11 +25,14 @@ import {
   Zap,
   Loader2,
   Sliders,
-  Star
+  Star,
+  RefreshCw
 } from 'lucide-react';
 import { DifyAppTypeSelector } from '@components/admin/api-config/dify-app-type-selector';
 import { validateDifyFormData } from '@lib/services/dify/validation';
 import type { DifyAppType } from '@lib/types/dify-app-types';
+import { getDifyAppParameters } from '@lib/services/dify/app-service';
+import type { DifyAppParametersResponse } from '@lib/services/dify/types';
 
 interface ApiConfigPageProps {
   selectedInstance?: ServiceInstance | null
@@ -127,6 +130,7 @@ const InstanceForm = ({
   const [showApiKey, setShowApiKey] = useState(false);
   const [showDifyPanel, setShowDifyPanel] = useState(false);
   const [setAsDefault, setSetAsDefault] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   
   useEffect(() => {
     if (instance) {
@@ -208,7 +212,70 @@ const InstanceForm = ({
     }));
     setShowDifyPanel(false);
   };
-  
+
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：从 Dify API 同步参数的功能
+  // --- END COMMENT ---
+  const handleSyncFromDify = async () => {
+    if (!formData.instance_id) {
+      showFeedback('请先填写应用ID', 'warning');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      console.log('[同步参数] 开始从 Dify API 获取参数:', formData.instance_id);
+      
+      // 调用 Dify API 获取参数
+      const difyParams: DifyAppParametersResponse = await getDifyAppParameters(formData.instance_id);
+      
+      console.log('[同步参数] 成功获取 Dify 参数:', difyParams);
+      
+      // 转换为简化配置格式
+      const simplifiedParams: DifyParametersSimplifiedConfig = {
+        opening_statement: difyParams.opening_statement || '',
+        suggested_questions: difyParams.suggested_questions || [],
+        suggested_questions_after_answer: difyParams.suggested_questions_after_answer || { enabled: false },
+        speech_to_text: difyParams.speech_to_text || { enabled: false },
+        text_to_speech: difyParams.text_to_speech || { enabled: false },
+        retriever_resource: difyParams.retriever_resource || { enabled: false },
+        annotation_reply: difyParams.annotation_reply || { enabled: false },
+        user_input_form: difyParams.user_input_form || [],
+        file_upload: difyParams.file_upload || {
+          image: {
+            enabled: false,
+            number_limits: 3,
+            transfer_methods: ['local_file', 'remote_url']
+          }
+        },
+        system_parameters: difyParams.system_parameters || {
+          file_size_limit: 15,
+          image_file_size_limit: 10,
+          audio_file_size_limit: 50,
+          video_file_size_limit: 100
+        }
+      };
+      
+      // 更新表单数据
+      setFormData(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          dify_parameters: simplifiedParams
+        }
+      }));
+      
+      showFeedback('成功从 Dify API 同步参数配置！', 'success');
+      
+    } catch (error) {
+      console.error('[同步参数] 同步失败:', error);
+      const errorMessage = error instanceof Error ? error.message : '同步参数失败';
+      showFeedback(`同步失败: ${errorMessage}`, 'error');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <>
       <div className={cn(
@@ -304,21 +371,53 @@ const InstanceForm = ({
               </button>
             )}
             
-            {/* Dify参数配置按钮 */}
-            <button
-              type="button"
-              onClick={() => setShowDifyPanel(true)}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer",
-                "border border-dashed hover:scale-105",
-                isDark 
-                  ? "border-stone-500/50 bg-stone-600/10 hover:bg-stone-600/20 text-stone-400" 
-                  : "border-stone-500/50 bg-stone-50 hover:bg-stone-100 text-stone-600"
-              )}
-            >
-              <Sliders className="h-4 w-4" />
-              <span className="text-sm font-medium font-serif">Dify 参数配置</span>
-            </button>
+            {/* Dify参数配置按钮组 */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowDifyPanel(true)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer",
+                  "border border-dashed hover:scale-105",
+                  isDark 
+                    ? "border-stone-500/50 bg-stone-600/10 hover:bg-stone-600/20 text-stone-400" 
+                    : "border-stone-500/50 bg-stone-50 hover:bg-stone-100 text-stone-600"
+                )}
+              >
+                <Sliders className="h-4 w-4" />
+                <span className="text-sm font-medium font-serif">Dify 参数配置</span>
+              </button>
+              
+              {/* --- BEGIN COMMENT --- */}
+              {/* 🎯 新增：从 Dify API 同步参数按钮 */}
+              {/* --- END COMMENT --- */}
+              <button
+                type="button"
+                onClick={handleSyncFromDify}
+                disabled={isSyncing || !formData.instance_id}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all cursor-pointer",
+                  "border",
+                  isSyncing || !formData.instance_id
+                    ? isDark
+                      ? "border-stone-600 bg-stone-700/50 text-stone-500 cursor-not-allowed"
+                      : "border-stone-300 bg-stone-100 text-stone-400 cursor-not-allowed"
+                    : isDark
+                      ? "border-stone-500 bg-stone-600/20 hover:bg-stone-600/30 text-stone-300 hover:text-stone-200"
+                      : "border-stone-400 bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-700"
+                )}
+                title={!formData.instance_id ? "请先填写应用ID" : "从 Dify API 同步参数"}
+              >
+                {isSyncing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                <span className="text-sm font-medium font-serif">
+                  {isSyncing ? '同步中...' : '同步参数'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
         
