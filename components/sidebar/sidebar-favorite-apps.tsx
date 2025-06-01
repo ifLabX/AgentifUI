@@ -82,7 +82,11 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     return routeAppType === appDifyType
   }, [])
 
-  // 🎯 优化：重构点击处理逻辑，提供即时反馈和更好的错误处理
+  // 🎯 重构：优化点击处理逻辑，解决用户体验问题
+  // 1. 立即跳转路由，让页面级spinner处理加载状态
+  // 2. 移除按钮级加载状态，避免按钮卡住
+  // 3. 简化应用切换逻辑，避免验证反弹
+  // 4. 保持sidebar选中状态的即时反馈
   const handleAppClick = async (app: FavoriteApp) => {
     // 🎯 防止重复点击
     if (clickingAppId === app.instanceId) {
@@ -91,47 +95,46 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
     }
 
     try {
-      // 🎯 立即设置点击状态，提供视觉反馈
+      // 🎯 立即设置点击状态，提供短暂的视觉反馈
       setClickingAppId(app.instanceId)
       console.log('[FavoriteApps] 开始切换到常用应用:', app.displayName)
 
       // 🎯 立即设置sidebar选中状态，提供即时反馈
       selectItem('app', app.instanceId)
 
-      // 🎯 立即开始路由跳转，不等待应用切换完成
-      // 这样用户能立即看到页面开始切换
+      // 🎯 立即跳转路由，让页面级spinner接管加载状态
       const difyAppType = app.dify_apptype || 'chatflow'
       const targetPath = `/apps/${difyAppType}/${app.instanceId}`
       
-      // 🎯 并行执行：路由跳转和应用切换同时进行
-      const routerPromise = router.push(targetPath)
-      const switchPromise = switchToSpecificApp(app.instanceId)
-
-      // 🎯 等待路由跳转完成（通常很快），不等待应用切换
-      // 应用切换在后台继续进行
-      await routerPromise
+      console.log('[FavoriteApps] 立即跳转路由:', targetPath)
       
-      console.log('[FavoriteApps] 路由跳转完成，应用切换在后台继续')
-
-      // 🎯 在后台等待应用切换完成，但不阻塞用户界面
-      switchPromise.catch(error => {
-        console.error('[FavoriteApps] 后台应用切换失败:', error)
-        // 不显示错误给用户，因为页面已经跳转了
-        // 应用详情页面会处理应用切换失败的情况
+      // 🎯 关键优化：立即跳转，不等待任何异步操作
+      // 页面级的加载逻辑会处理应用切换
+      router.push(targetPath)
+      
+      // 🎯 后台静默切换应用，不阻塞UI
+      // 如果失败，页面会通过自己的逻辑处理
+      switchToSpecificApp(app.instanceId).catch(error => {
+        console.warn('[FavoriteApps] 后台应用切换失败，页面将自行处理:', error)
       })
+      
+      console.log('[FavoriteApps] 路由跳转已发起，页面接管后续处理')
 
     } catch (error) {
       console.error('[FavoriteApps] 切换到常用应用失败:', error)
       
-      // 🎯 错误处理：如果路由跳转失败，尝试恢复状态
-      selectItem(null, null) // 清除选中状态
+      // 🎯 错误处理：恢复sidebar状态
+      selectItem(null, null)
     } finally {
-      // 🎯 清除点击状态，允许后续点击
-      setClickingAppId(null)
+      // 🎯 快速清除点击状态，避免按钮卡住
+      // 使用短延迟确保用户能看到点击反馈
+      setTimeout(() => {
+        setClickingAppId(null)
+      }, 200)
     }
   }
 
-  // 🎯 优化：发起新对话的处理逻辑也使用相同的优化策略
+  // 🎯 优化：发起新对话使用相同的优化策略
   const handleStartNewChat = async (app: FavoriteApp) => {
     // 防止重复点击
     if (clickingAppId === app.instanceId) {
@@ -145,26 +148,25 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
       // 立即设置sidebar选中状态
       selectItem('app', app.instanceId)
 
-      // 立即跳转，不等待应用切换
+      // 立即跳转，让页面处理后续逻辑
       const difyAppType = app.dify_apptype || 'chatflow'
       const targetPath = `/apps/${difyAppType}/${app.instanceId}`
       
-      // 并行执行
-      const routerPromise = router.push(targetPath)
-      const switchPromise = switchToSpecificApp(app.instanceId)
-
-      await routerPromise
+      console.log('[FavoriteApps] 发起新对话，跳转到:', targetPath)
+      router.push(targetPath)
       
       // 后台处理应用切换
-      switchPromise.catch(error => {
-        console.error('[FavoriteApps] 发起新对话时应用切换失败:', error)
+      switchToSpecificApp(app.instanceId).catch(error => {
+        console.warn('[FavoriteApps] 发起新对话时应用切换失败，页面将处理:', error)
       })
 
     } catch (error) {
       console.error('[FavoriteApps] 发起新对话失败:', error)
       selectItem(null, null)
     } finally {
-      setClickingAppId(null)
+      setTimeout(() => {
+        setClickingAppId(null)
+      }, 200)
     }
   }
 
@@ -327,7 +329,6 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
                         "ml-2 text-xs opacity-75 font-serif",
                         isDark ? "text-gray-400" : "text-gray-500"
                       )}>
-                        切换中...
                       </span>
                     )}
                   </div>
