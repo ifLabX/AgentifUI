@@ -507,6 +507,14 @@ export interface DifySpeechToText {
   enabled: boolean; // 是否开启
 }
 
+/** 文本转语音配置 */
+export interface DifyTextToSpeech {
+  enabled: boolean; // 是否开启
+  voice?: string; // 语音类型
+  language?: string; // 语言
+  autoPlay?: 'enabled' | 'disabled'; // 自动播放：enabled 开启, disabled 关闭
+}
+
 /** 引用和归属配置 */
 export interface DifyRetrieverResourceConfig {
   enabled: boolean; // 是否开启
@@ -523,6 +531,7 @@ export interface DifyAppParametersResponse {
   suggested_questions: string[]; // 开场推荐问题列表
   suggested_questions_after_answer: DifySuggestedQuestionsAfterAnswer; // 启用回答后给出推荐问题
   speech_to_text: DifySpeechToText; // 语音转文本
+  text_to_speech: DifyTextToSpeech; // 文本转语音
   retriever_resource: DifyRetrieverResourceConfig; // 引用和归属
   annotation_reply: DifyAnnotationReply; // 标记回复
   user_input_form: DifyUserInputFormItem[]; // 用户输入表单配置

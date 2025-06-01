@@ -41,6 +41,7 @@ function convertDatabaseConfigToDifyParameters(
       suggested_questions: config.suggested_questions || [],
       suggested_questions_after_answer: config.suggested_questions_after_answer || { enabled: false },
       speech_to_text: config.speech_to_text || { enabled: false },
+      text_to_speech: config.text_to_speech || { enabled: false },
       retriever_resource: config.retriever_resource || { enabled: false },
       annotation_reply: config.annotation_reply || { enabled: false },
       user_input_form: config.user_input_form || [],

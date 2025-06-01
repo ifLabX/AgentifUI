@@ -93,7 +93,8 @@ export async function getDifyAppParameters(appId: string): Promise<DifyAppParame
       appId,
       hasOpeningStatement: !!result.opening_statement,
       suggestedQuestionsCount: result.suggested_questions?.length || 0,
-      userInputFormCount: result.user_input_form?.length || 0
+      userInputFormCount: result.user_input_form?.length || 0,
+      textToSpeechEnabled: result.text_to_speech?.enabled || false
     });
     
     return result;
@@ -128,6 +129,7 @@ export async function testDifyAppParameters(appId: string): Promise<void> {
       user_input_form_count: parameters.user_input_form?.length || 0,
       file_upload_enabled: parameters.file_upload?.image?.enabled || false,
       speech_to_text_enabled: parameters.speech_to_text?.enabled || false,
+      text_to_speech_enabled: parameters.text_to_speech?.enabled || false,
       retriever_resource_enabled: parameters.retriever_resource?.enabled || false,
       annotation_reply_enabled: parameters.annotation_reply?.enabled || false
     });
