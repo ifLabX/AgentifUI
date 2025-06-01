@@ -141,23 +141,37 @@ export default function AppDetailPage() {
   
   // --- BEGIN COMMENT ---
   // 页面初始化：切换到目标应用并同步sidebar选中状态
+  // 🎯 优化：避免连续两次加载状态闪烁
   // --- END COMMENT ---
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        setIsInitializing(true)
+        // --- BEGIN COMMENT ---
+        // 🎯 优化：只在真正需要时才设置初始化状态
+        // 如果当前应用已经匹配且应用列表已加载，跳过初始化加载状态
+        // --- END COMMENT ---
+        const needsAppSwitch = currentAppId !== instanceId;
+        const needsAppListFetch = apps.length === 0;
+        
+        // 只有在需要获取应用列表或应用不存在时才显示加载状态
+        if (needsAppListFetch || !apps.find(app => app.instance_id === instanceId)) {
+          setIsInitializing(true);
+        }
+        
         setInitError(null)
         
         console.log('[AppDetail] 开始初始化应用:', instanceId)
         
         // 确保应用列表已加载
-        if (apps.length === 0) {
+        if (needsAppListFetch) {
           console.log('[AppDetail] 应用列表为空，开始获取')
           await fetchApps()
         }
         
         // 等待应用列表更新
-        await new Promise(resolve => setTimeout(resolve, 100))
+        if (needsAppListFetch) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
         
         // 重新获取最新的应用列表
         const latestApps = useAppListStore.getState().apps
@@ -176,9 +190,13 @@ export default function AppDetailPage() {
         // 应用存在时设置sidebar选中状态
         selectItem('app', instanceId)
         
-        // 如果当前应用不是目标应用，则切换
-        if (currentAppId !== instanceId) {
+        // --- BEGIN COMMENT ---
+        // 🎯 优化：如果需要切换应用，不设置本地加载状态
+        // 让 useCurrentApp 的 isValidating 状态来处理加载显示
+        // --- END COMMENT ---
+        if (needsAppSwitch) {
           console.log('[AppDetail] 切换到应用:', instanceId)
+          // 不设置 isInitializing，让 isValidating 处理加载状态
           await switchToSpecificApp(instanceId)
         }
         
@@ -188,6 +206,9 @@ export default function AppDetailPage() {
         console.error('[AppDetail] 初始化失败:', error)
         setInitError(error instanceof Error ? error.message : '初始化失败')
       } finally {
+        // --- BEGIN COMMENT ---
+        // 🎯 优化：确保在所有情况下都清除初始化状态
+        // --- END COMMENT ---
         setIsInitializing(false)
       }
     }
