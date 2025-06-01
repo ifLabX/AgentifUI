@@ -351,7 +351,7 @@ export default function AppDetailPage() {
               <ChatLoader 
                 messages={messages} 
                 isWaitingForResponse={isWaitingForResponse}
-                isLoadingInitial={isSubmitting && messages.length === 0}
+                isLoadingInitial={false}
               />
             </div>
           )}
