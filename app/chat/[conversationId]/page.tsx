@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ChatInput } from '@components/chat-input';
@@ -7,11 +8,11 @@ import {
   ChatLoader, 
   WelcomeScreen, 
   ChatInputBackdrop, 
-  PromptContainer, 
   ScrollToBottomButton,
   MessagesLoadingIndicator,
   PageLoadingSpinner
 } from '@components/chat';
+import { DynamicSuggestedQuestions } from '@components/chat/dynamic-suggested-questions';
 import { FilePreviewCanvas } from '@components/file-preview/file-preview-canvas';
 import { useChatInterface, useChatStateSync } from '@lib/hooks';
 import { useConversationMessages } from '@lib/hooks/use-conversation-messages';
@@ -192,12 +193,12 @@ export default function ChatPage() {
         />
         
         {/* --- BEGIN COMMENT ---
-        显示提示模板容器的条件：
+        显示动态推荐问题的条件：
         1. 新聊天页面且没有消息
         2. 或者欢迎状态且没有消息且不在提交中
         --- END COMMENT --- */}
-        {(isNewChat && messages.length === 0) && <PromptContainer />}
-        {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <PromptContainer />}
+        {(isNewChat && messages.length === 0) && <DynamicSuggestedQuestions />}
+        {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <DynamicSuggestedQuestions />}
       </div>
       
       <FilePreviewCanvas /> 

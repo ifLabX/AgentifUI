@@ -46,6 +46,7 @@ module.exports = {
         'pulse-subtle': 'pulseSubtle 2s infinite ease-in-out',
         'bounce-subtle': 'bounceSubtle 1s infinite',
         'fadein': 'fadeIn 0.5s ease-out',
+        'fade-in': 'fadeIn 0.3s ease-out forwards',
         'blink': 'blink 1s step-end infinite',
       },
       keyframes: {
@@ -68,6 +69,10 @@ module.exports = {
         fadeIn: {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
+        },
+        fadeInUp: {
+          '0%': { opacity: 0, transform: 'translateY(8px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
         },
         blink: {
           '0%, 100%': { opacity: 1 },
