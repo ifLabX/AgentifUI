@@ -58,6 +58,7 @@ export async function middleware(request: NextRequest) {
   // 基于用户会话状态的路由保护逻辑
   const isAuthRoute = pathname.startsWith('/auth')
   const isApiRoute = pathname.startsWith('/api')
+  const isAdminRoute = pathname.startsWith('/admin')
   const isPublicRoute = pathname === '/' || 
                          pathname === '/login' || 
                          pathname === '/about' || 
@@ -86,5 +87,6 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico).*)',
     '/chat', // 确保 /chat 被拦截以重定向
     '/chat/:path*', // 拦截所有 /chat/ 下的路径
+    '/admin/:path*', // 拦截所有 /admin/ 下的路径
   ],
 } 
