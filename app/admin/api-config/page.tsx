@@ -277,12 +277,48 @@ const InstanceForm = ({
         isDark ? "bg-stone-800 border-stone-600" : "bg-white border-stone-200"
       )}>
         <div className="flex items-center justify-between mb-6">
-          <h3 className={cn(
-            "text-lg font-bold font-serif",
-            isDark ? "text-stone-100" : "text-stone-900"
-          )}>
-            {isEditing ? '编辑应用实例' : '添加应用实例'}
-          </h3>
+          <div className="flex items-center gap-3">
+            <h3 className={cn(
+              "text-lg font-bold font-serif",
+              isDark ? "text-stone-100" : "text-stone-900"
+            )}>
+              {isEditing ? '编辑应用实例' : '添加应用实例'}
+            </h3>
+            
+            {/* --- BEGIN COMMENT --- */}
+            {/* 🎯 新增：未保存更改提示 */}
+            {/* --- END COMMENT --- */}
+            {(JSON.stringify(formData) !== JSON.stringify({
+              instance_id: instance?.instance_id || '',
+              display_name: instance?.display_name || '',
+              description: instance?.description || '',
+              api_path: instance?.api_path || '',
+              apiKey: '',
+              config: {
+                api_url: instance?.config?.api_url || '',
+                app_metadata: {
+                  app_type: instance?.config?.app_metadata?.app_type || 'model',
+                  dify_apptype: instance?.config?.app_metadata?.dify_apptype || 'chatbot',
+                  tags: instance?.config?.app_metadata?.tags || [],
+                },
+                dify_parameters: instance?.config?.dify_parameters || {}
+              }
+            }) || formData.apiKey) && (
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium font-serif",
+                "border border-dashed animate-pulse",
+                isDark 
+                  ? "bg-amber-900/20 border-amber-700/40 text-amber-300" 
+                  : "bg-amber-50 border-amber-300/60 text-amber-700"
+              )}>
+                <div className={cn(
+                  "w-2 h-2 rounded-full",
+                  isDark ? "bg-amber-400" : "bg-amber-500"
+                )} />
+                有未保存的更改
+              </div>
+            )}
+          </div>
           
           <div className="flex items-center gap-3">
             {/* 设为默认应用按钮 */}
@@ -366,16 +402,21 @@ const InstanceForm = ({
             )}
             
             {/* Dify参数配置按钮组 */}
-            <div className="flex gap-2">
+            <div className={cn(
+              "flex gap-2 p-2 rounded-lg",
+              isDark 
+                ? "bg-stone-800/50" 
+                : "bg-stone-100/50"
+            )}>
               <button
                 type="button"
                 onClick={() => setShowDifyPanel(true)}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer",
-                  "border border-dashed hover:scale-105",
+                  "hover:scale-105",
                   isDark 
-                    ? "border-stone-500/50 bg-stone-600/10 hover:bg-stone-600/20 text-stone-400" 
-                    : "border-stone-500/50 bg-stone-50 hover:bg-stone-100 text-stone-600"
+                    ? "bg-stone-700/50 hover:bg-stone-700 text-stone-300 hover:text-stone-200" 
+                    : "bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-800 border border-stone-200"
                 )}
               >
                 <Sliders className="h-4 w-4" />
@@ -391,14 +432,14 @@ const InstanceForm = ({
                 disabled={isSyncing || !formData.instance_id}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-lg transition-all cursor-pointer",
-                  "border",
+                  "hover:scale-105",
                   isSyncing || !formData.instance_id
                     ? isDark
-                      ? "border-stone-600 bg-stone-700/50 text-stone-500 cursor-not-allowed"
-                      : "border-stone-300 bg-stone-100 text-stone-400 cursor-not-allowed"
+                      ? "bg-stone-800/50 text-stone-500 cursor-not-allowed"
+                      : "bg-stone-200/50 text-stone-400 cursor-not-allowed border border-stone-200"
                     : isDark
-                      ? "border-stone-500 bg-stone-600/20 hover:bg-stone-600/30 text-stone-300 hover:text-stone-200"
-                      : "border-stone-400 bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-700"
+                      ? "bg-stone-700/50 hover:bg-stone-700 text-stone-300 hover:text-stone-200"
+                      : "bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-800 border border-stone-200"
                 )}
                 title={!formData.instance_id ? "请先填写应用ID" : "从 Dify API 同步参数"}
               >

@@ -53,6 +53,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   const [localConfig, setLocalConfig] = useState<DifyParametersSimplifiedConfig>(config);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [hasChanges, setHasChanges] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   
   // --- 文件上传配置状态 ---
   const [fileUploadEnabled, setFileUploadEnabled] = useState(false);
@@ -74,6 +75,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   useEffect(() => {
     setLocalConfig(config);
     setHasChanges(false);
+    setIsInitialized(false);
     
     // --- BEGIN COMMENT ---
     // 🎯 更新：初始化所有配置字段的默认值
@@ -108,6 +110,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
       
       setLocalConfig(initializedConfig);
+      setTimeout(() => setIsInitialized(true), 100);
     };
     
     initializeConfig();
@@ -257,9 +260,11 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   }, [config]);
 
   useEffect(() => {
-    const configChanged = JSON.stringify(localConfig) !== JSON.stringify(config);
-    setHasChanges(configChanged);
-  }, [localConfig, config]);
+    if (isInitialized) {
+      const configChanged = JSON.stringify(localConfig) !== JSON.stringify(config);
+      setHasChanges(configChanged);
+    }
+  }, [localConfig, config, isInitialized]);
 
   const toggleSection = (section: string) => {
     const newExpanded = new Set(expandedSections);
@@ -460,38 +465,22 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
               "flex items-center justify-between p-6 border-b flex-shrink-0",
               isDark ? "border-stone-700" : "border-stone-200"
             )}>
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "p-2 rounded-lg",
-                  isDark ? "bg-stone-800" : "bg-stone-100"
-                )}>
-                  <Settings className={cn(
-                    "h-5 w-5",
-                    isDark ? "text-stone-400" : "text-stone-600"
-                  )} />
-                </div>
-                <div>
-                  <h2 className={cn(
-                    "text-lg font-bold font-serif",
-                    isDark ? "text-stone-100" : "text-stone-900"
-                  )}>
-                    Dify 参数配置
-                  </h2>
-                  <p className={cn(
-                    "text-sm font-serif",
-                    isDark ? "text-stone-400" : "text-stone-600"
-                  )}>
-                    {instanceName}
-                  </p>
-                </div>
-              </div>
+              {/* 标题 */}
+              <h2 className={cn(
+                "text-xl font-bold font-serif",
+                isDark ? "text-stone-100" : "text-stone-900"
+              )}>
+                {instanceName} - Dify 参数配置
+              </h2>
+              
+              {/* 关闭按钮 */}
               <button
                 onClick={onClose}
                 className={cn(
                   "p-2 rounded-lg transition-colors cursor-pointer",
                   isDark 
-                    ? "hover:bg-stone-800 text-stone-400 hover:text-stone-200" 
-                    : "hover:bg-stone-100 text-stone-600 hover:text-stone-900"
+                    ? "hover:bg-stone-700 text-stone-400 hover:text-stone-300" 
+                    : "hover:bg-stone-100 text-stone-600 hover:text-stone-700"
                 )}
               >
                 <X className="h-5 w-5" />
@@ -524,9 +513,15 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       开场白配置
                     </span>
                     {expandedSections.has('basic') ? (
-                      <ChevronDown className="h-4 w-4 text-stone-400" />
+                      <ChevronDown className={cn(
+                        "h-4 w-4",
+                        isDark ? "text-stone-400" : "text-stone-500"
+                      )} />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-stone-400" />
+                      <ChevronRight className={cn(
+                        "h-4 w-4",
+                        isDark ? "text-stone-400" : "text-stone-500"
+                      )} />
                     )}
                   </button>
 
