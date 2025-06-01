@@ -154,6 +154,51 @@ const InstanceForm = ({
   const [setAsDefault, setSetAsDefault] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：实时验证instance_id格式
+  // --- END COMMENT ---
+  const [instanceIdError, setInstanceIdError] = useState<string>('');
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 实时验证instance_id格式的函数
+  // --- END COMMENT ---
+  const validateInstanceId = (value: string) => {
+    if (!value.trim()) {
+      setInstanceIdError('');
+      return;
+    }
+    
+    const instanceId = value.trim();
+    
+    // 检查是否包含空格
+    if (instanceId.includes(' ')) {
+      setInstanceIdError('不能包含空格（会影响URL路由）');
+      return;
+    }
+    
+    // 检查是否包含其他需要URL编码的特殊字符
+    const urlUnsafeChars = /[^a-zA-Z0-9\-_\.]/;
+    if (urlUnsafeChars.test(instanceId)) {
+      setInstanceIdError('只能包含字母、数字、连字符(-)、下划线(_)和点(.)');
+      return;
+    }
+    
+    // 检查长度限制
+    if (instanceId.length > 50) {
+      setInstanceIdError('长度不能超过50个字符');
+      return;
+    }
+    
+    // 检查是否以字母或数字开头
+    if (!/^[a-zA-Z0-9]/.test(instanceId)) {
+      setInstanceIdError('必须以字母或数字开头');
+      return;
+    }
+    
+    // 所有验证通过
+    setInstanceIdError('');
+  };
+  
   useEffect(() => {
     const newData = {
       instance_id: instance?.instance_id || '',
@@ -175,6 +220,10 @@ const InstanceForm = ({
     if (instance) {
       setFormData(newData);
       setBaselineData(newData);
+      // --- BEGIN COMMENT ---
+      // 🎯 初始化时也验证instance_id格式
+      // --- END COMMENT ---
+      validateInstanceId(newData.instance_id);
     } else {
       const emptyData = {
         instance_id: '',
@@ -194,11 +243,23 @@ const InstanceForm = ({
       };
       setFormData(emptyData);
       setBaselineData(emptyData);
+      // --- BEGIN COMMENT ---
+      // 🎯 新建时清空错误状态
+      // --- END COMMENT ---
+      setInstanceIdError('');
     }
   }, [instance]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // --- BEGIN COMMENT ---
+    // 🎯 检查实时验证错误
+    // --- END COMMENT ---
+    if (instanceIdError) {
+      showFeedback(`应用ID格式错误: ${instanceIdError}`, 'error');
+      return;
+    }
     
     // --- BEGIN COMMENT ---
     // 🎯 新增：表单验证，确保Dify应用类型必填
@@ -212,6 +273,10 @@ const InstanceForm = ({
     // --- 自动设置 is_marketplace_app 字段与 app_type 保持一致 ---
     const dataToSave = {
       ...formData,
+      // --- BEGIN COMMENT ---
+      // 🎯 确保instance_id去除首尾空格
+      // --- END COMMENT ---
+      instance_id: formData.instance_id.trim(),
       config: {
         ...formData.config,
         app_metadata: {
@@ -543,13 +608,17 @@ const InstanceForm = ({
               <input
                 type="text"
                 value={formData.instance_id}
-                onChange={(e) => setFormData(prev => ({ ...prev, instance_id: e.target.value }))}
+                onChange={(e) => {
+                  setFormData(prev => ({ ...prev, instance_id: e.target.value }));
+                  validateInstanceId(e.target.value);
+                }}
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border font-serif",
                   isDark 
                     ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
                     : "bg-white border-stone-300 text-stone-900 placeholder-stone-500",
-                  isEditing && (isDark ? "bg-stone-800 cursor-not-allowed" : "bg-stone-100 cursor-not-allowed")
+                  isEditing && (isDark ? "bg-stone-800 cursor-not-allowed" : "bg-stone-100 cursor-not-allowed"),
+                  instanceIdError && "border-red-500"
                 )}
                 placeholder="输入应用 ID"
                 required
@@ -561,6 +630,27 @@ const InstanceForm = ({
                   isDark ? "text-stone-400" : "text-stone-500"
                 )}>
                   应用 ID 创建后不可修改
+                </p>
+              )}
+
+              {!isEditing && (
+                <p className={cn(
+                  "text-xs mt-1 font-serif",
+                  isDark ? "text-stone-400" : "text-stone-500"
+                )}>
+                  只能包含字母、数字、连字符(-)、下划线(_)和点(.)，不能包含空格
+                </p>
+              )}
+              
+              {/* --- BEGIN COMMENT --- */}
+              {/* 🎯 新增：实时错误提示 */}
+              {/* --- END COMMENT --- */}
+              {instanceIdError && (
+                <p className={cn(
+                  "text-xs mt-1 font-serif text-red-500 flex items-center gap-1"
+                )}>
+                  <AlertCircle className="h-3 w-3" />
+                  {instanceIdError}
                 </p>
               )}
             </div>

@@ -79,7 +79,7 @@ export function AdminButton({ variant = 'floating' }: AdminButtonProps) {
           )}
         >
           <Settings className="h-4 w-4" />
-          <span className="text-sm font-medium">管理面板</span>
+          <span className="text-sm font-medium">管理后台</span>
         </button>
       </motion.div>
     )

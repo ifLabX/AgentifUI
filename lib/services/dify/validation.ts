@@ -68,6 +68,25 @@ export function validateDifyFormData(formData: any): string[] {
   // --- 验证基础字段 ---
   if (!formData.instance_id?.trim()) {
     errors.push('应用实例ID不能为空');
+  } else {
+    const instanceId = formData.instance_id.trim();
+    
+    if (instanceId.includes(' ')) {
+      errors.push('应用实例ID不能包含空格（会影响URL路由）');
+    }
+    
+    const urlUnsafeChars = /[^a-zA-Z0-9\-_\.]/;
+    if (urlUnsafeChars.test(instanceId)) {
+      errors.push('应用实例ID只能包含字母、数字、连字符(-)、下划线(_)和点(.)');
+    }
+    
+    if (instanceId.length > 50) {
+      errors.push('应用实例ID长度不能超过50个字符');
+    }
+    
+    if (!/^[a-zA-Z0-9]/.test(instanceId)) {
+      errors.push('应用实例ID必须以字母或数字开头');
+    }
   }
   
   if (!formData.display_name?.trim()) {
