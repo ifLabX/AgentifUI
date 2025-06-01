@@ -73,7 +73,7 @@ const DEFAULT_WELCOME_LAYOUT: WelcomeLayoutConfig = {
     // 高度估算：用于布局计算，如果组件实际高度变化需要调整这些值
     // --- END COMMENT ---
     welcomeText: 120, // 欢迎文字区域高度（包括标题和副标题）
-    suggestedQuestions: 120, // 推荐问题容器高度（根据问题数量动态调整）
+    suggestedQuestions: 200, // 推荐问题容器高度（增加以支持多行显示）
     inputContainer: 80, // 输入框容器基础高度
   },
   

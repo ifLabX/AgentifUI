@@ -88,7 +88,6 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
     // 🎯 核心条件：必须等待打字机完成
     // --- END COMMENT ---
     if (!isWelcomeTypewriterComplete) {
-      console.log('[DynamicSuggestedQuestions] 等待欢迎文字打字机完成...');
       setShouldShowQuestions(false);
       return;
     }
@@ -97,11 +96,6 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
     // 应用切换保护：验证期间或应用切换期间不更新推荐问题
     // --- END COMMENT ---
     if (isValidating || isLoading || isAppSwitching) {
-      console.log('[DynamicSuggestedQuestions] 应用正在验证、加载或切换中，暂停更新推荐问题', {
-        isValidating,
-        isLoading,
-        isAppSwitching
-      });
       setShouldShowQuestions(false);
       return;
     }
@@ -110,7 +104,6 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
     // 🎯 应用实例完整性检查
     // --- END COMMENT ---
     if (!currentAppInstance?.instance_id) {
-      console.log('[DynamicSuggestedQuestions] 等待应用实例加载完成...');
       setShouldShowQuestions(false);
       return;
     }
@@ -124,7 +117,6 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
     if (isOnAppDetailPage) {
       const urlInstanceId = pathname.split('/')[3];
       if (currentAppInstance.instance_id !== urlInstanceId) {
-        console.log('[DynamicSuggestedQuestions] 路径不匹配，等待应用切换完成');
         setShouldShowQuestions(false);
         return;
       }
@@ -146,21 +138,13 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
           .map(q => q.trim());
           
         if (validQuestions.length > 0) {
-          console.log('[DynamicSuggestedQuestions] 打字机完成，开始渲染推荐问题:', {
-            appId: currentAppInstance?.instance_id,
-            count: validQuestions.length,
-            questions: validQuestions
-          });
-          
           setDisplayQuestions(validQuestions);
           setShouldShowQuestions(true);
         } else {
-          console.log('[DynamicSuggestedQuestions] 推荐问题为空或无效');
           setDisplayQuestions([]);
           setShouldShowQuestions(false);
         }
       } else {
-        console.log('[DynamicSuggestedQuestions] 数据库无推荐问题配置');
         setDisplayQuestions([]);
         setShouldShowQuestions(false);
       }
@@ -179,6 +163,7 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
 
   // --- BEGIN COMMENT ---
   // 🎯 智能布局计算：根据问题数量动态调整布局
+  // 改用flexbox布局，让按钮根据内容宽度居中显示
   // --- END COMMENT ---
   const layoutConfig = useMemo(() => {
     const count = displayQuestions.length;
@@ -186,44 +171,19 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
     if (count === 0) return null;
     
     // --- BEGIN COMMENT ---
-    // 根据问题数量和屏幕尺寸智能布局
-    // 1-2个问题：单列布局
-    // 3-4个问题：双列布局
-    // 5-6个问题：三列布局（大屏）或双列布局（小屏）
-    // 7+个问题：最多三列，超出部分滚动
+    // 使用flexbox布局，支持按钮内容自适应宽度并居中
+    // 最多显示6个问题
     // --- END COMMENT ---
-    if (count <= 2) {
-      return {
-        gridClass: "grid-cols-1",
-        maxDisplay: count,
-        description: `${count}个问题-单列`
-      };
-    } else if (count <= 4) {
-      return {
-        gridClass: "grid-cols-1 sm:grid-cols-2",
-        maxDisplay: count,
-        description: `${count}个问题-双列`
-      };
-    } else if (count <= 6) {
-      return {
-        gridClass: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-        maxDisplay: count,
-        description: `${count}个问题-三列`
-      };
-    } else {
-      return {
-        gridClass: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-        maxDisplay: 6, // 最多显示6个问题
-        description: `${count}个问题-限制6个`
-      };
-    }
+    return {
+      maxDisplay: count > 6 ? 6 : count,
+      description: `${count}个问题-flexbox居中`
+    };
   }, [displayQuestions.length]);
 
   // --- BEGIN COMMENT ---
   // 🎯 问题点击处理
   // --- END COMMENT ---
   const handleQuestionClick = (question: string) => {
-    console.log('[DynamicSuggestedQuestions] 用户点击推荐问题:', question);
     setMessage(question);
   };
 
@@ -249,20 +209,17 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
       style={questionsPosition}
     >
       {/* --- BEGIN COMMENT ---
-      问题网格：智能布局，直接显示按钮无标题
+      问题容器：使用flexbox布局，支持多行换行，每行都居中对齐
       --- END COMMENT --- */}
-      <div className={cn(
-        "grid gap-3",
-        layoutConfig.gridClass
-      )}>
+      <div className="flex flex-wrap justify-center items-start gap-3">
         {questionsToShow.map((question, index) => (
           <SuggestedQuestionButton
             key={`${currentAppInstance?.instance_id}-${index}`}
             question={question}
             onClick={handleQuestionClick}
-            animationDelay={index * 150} // 每个问题间隔150ms显示，从0ms开始
+            animationDelay={index * 100} // 每个问题间隔100ms显示
             className={cn(
-              needsCompactLayout && "py-2 px-3 text-xs"
+              needsCompactLayout && "py-2 px-4 text-xs"
             )}
           />
         ))}
@@ -277,7 +234,7 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
           "text-xs text-stone-500 dark:text-stone-500 font-serif"
         )}
         style={{
-          animationDelay: `${questionsToShow.length * 150 + 200}ms`,
+          animationDelay: `${questionsToShow.length * 100 + 200}ms`,
           animationFillMode: 'forwards'
         }}>
           还有 {displayQuestions.length - layoutConfig.maxDisplay} 个问题...
