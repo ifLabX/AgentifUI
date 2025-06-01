@@ -45,7 +45,7 @@ export const FileTypeSelector = ({
   // 生成tooltip内容
   const getTooltipContent = () => {
     if (!uploadConfig.enabled) {
-      return "文件上传功能未启用"
+      return "该应用不支持上传文件"
     }
     if (uploadConfig.maxFiles === 0) {
       return "文件上传数量限制为0"

@@ -907,6 +907,36 @@ export function useChatInterface() {
     initiateNewConversation, updatePendingStatus, difyConversationId, saveMessage, saveStoppedAssistantMessage, updateMessage
   ]);
 
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：直接发送消息功能
+  // 相当于在输入框中输入消息然后点击发送按钮
+  // 完全复用现有的handleSubmit逻辑，包括验证、状态管理等
+  // --- END COMMENT ---
+  const sendDirectMessage = useCallback(async (messageText: string, files?: any[]) => {
+    if (!messageText.trim()) {
+      console.warn("[sendDirectMessage] 消息内容为空，跳过发送");
+      return;
+    }
+
+    // 临时设置消息到输入框store（这样handleSubmit可以读取到）
+    const { setMessage, clearMessage } = useChatInputStore.getState();
+    const originalMessage = useChatInputStore.getState().message;
+    
+    try {
+      // 设置消息内容
+      setMessage(messageText);
+      
+      // 调用现有的handleSubmit逻辑
+      await handleSubmit(messageText, files);
+      
+    } catch (error) {
+      console.error("[sendDirectMessage] 发送失败:", error);
+      // 恢复原始消息
+      setMessage(originalMessage);
+      throw error;
+    }
+  }, [handleSubmit]);
+
   const handleStopProcessing = useCallback(async () => {
     const state = useChatStore.getState();
     const currentStreamingId = state.streamingMessageId;
@@ -1078,6 +1108,7 @@ export function useChatInterface() {
 
   return {
     messages, handleSubmit, handleStopProcessing, 
+    sendDirectMessage, // 🎯 新增：暴露直接发送消息的功能
     isProcessing: useChatStore(selectIsProcessing), 
     isWaitingForResponse: useChatStore(state => state.isWaitingForResponse),
     // --- BEGIN COMMENT ---

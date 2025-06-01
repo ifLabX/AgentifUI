@@ -11,6 +11,7 @@ import { useTypewriterStore } from "@lib/stores/ui/typewriter-store"
 
 interface DynamicSuggestedQuestionsProps {
   className?: string
+  onQuestionClick?: (messageText: string, files?: any[]) => Promise<void>
 }
 
 /**
@@ -18,7 +19,7 @@ interface DynamicSuggestedQuestionsProps {
  * 从数据库配置中获取推荐问题并渐进显示
  * 等待欢迎文字打字机完成后才开始渲染
  */
-export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestionsProps) => {
+export const DynamicSuggestedQuestions = ({ className, onQuestionClick }: DynamicSuggestedQuestionsProps) => {
   const { widthClass, paddingClass } = useChatWidth()
   const { currentAppInstance, isValidating, isLoading } = useCurrentApp()
   const { setMessage } = useChatInputStore()
@@ -181,10 +182,22 @@ export const DynamicSuggestedQuestions = ({ className }: DynamicSuggestedQuestio
   }, [displayQuestions.length]);
 
   // --- BEGIN COMMENT ---
-  // 🎯 问题点击处理
+  // 🎯 问题点击处理 - 修改为直接发送消息
   // --- END COMMENT ---
-  const handleQuestionClick = (question: string) => {
-    setMessage(question);
+  const handleQuestionClick = async (question: string) => {
+    if (onQuestionClick) {
+      // 🎯 直接发送消息，相当于在输入框中输入并点击发送
+      try {
+        await onQuestionClick(question);
+      } catch (error) {
+        console.error('[DynamicSuggestedQuestions] 发送消息失败:', error);
+        // 如果直接发送失败，回退到设置输入框内容
+        setMessage(question);
+      }
+    } else {
+      // 回退行为：仅设置到输入框
+      setMessage(question);
+    }
   };
 
   // --- BEGIN COMMENT ---

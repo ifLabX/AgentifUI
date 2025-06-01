@@ -59,6 +59,7 @@ export default function ChatPage() {
     handleSubmit: originalHandleSubmit, 
     isProcessing,        
     handleStopProcessing, 
+    sendDirectMessage,
   } = useChatInterface();
   
   // --- BEGIN COMMENT ---
@@ -197,8 +198,8 @@ export default function ChatPage() {
         1. 新聊天页面且没有消息
         2. 或者欢迎状态且没有消息且不在提交中
         --- END COMMENT --- */}
-        {(isNewChat && messages.length === 0) && <DynamicSuggestedQuestions />}
-        {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <DynamicSuggestedQuestions />}
+        {(isNewChat && messages.length === 0) && <DynamicSuggestedQuestions onQuestionClick={sendDirectMessage} />}
+        {(!isSubmitting && isWelcomeScreen && messages.length === 0 && conversationIdFromUrl !== 'new') && <DynamicSuggestedQuestions onQuestionClick={sendDirectMessage} />}
       </div>
       
       <FilePreviewCanvas /> 
