@@ -120,38 +120,63 @@ const InstanceForm = ({
     config: {
       api_url: instance?.config?.api_url || '',
       app_metadata: {
-        app_type: instance?.config?.app_metadata?.app_type || 'model',
-        dify_apptype: instance?.config?.app_metadata?.dify_apptype || 'chatbot',
+        app_type: (instance?.config?.app_metadata?.app_type as 'model' | 'marketplace') || 'model',
+        dify_apptype: (instance?.config?.app_metadata?.dify_apptype as 'chatbot' | 'agent' | 'chatflow' | 'workflow' | 'text-generation') || 'chatbot',
         tags: instance?.config?.app_metadata?.tags || [],
       },
       dify_parameters: instance?.config?.dify_parameters || {}
     }
   });
+  
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：基准数据状态，用于正确判断是否有未保存的更改
+  // 当同步参数或重置表单时，需要更新这个基准数据
+  // --- END COMMENT ---
+  const [baselineData, setBaselineData] = useState({
+    instance_id: instance?.instance_id || '',
+    display_name: instance?.display_name || '',
+    description: instance?.description || '',
+    api_path: instance?.api_path || '',
+    apiKey: '',
+    config: {
+      api_url: instance?.config?.api_url || '',
+      app_metadata: {
+        app_type: (instance?.config?.app_metadata?.app_type as 'model' | 'marketplace') || 'model',
+        dify_apptype: (instance?.config?.app_metadata?.dify_apptype as 'chatbot' | 'agent' | 'chatflow' | 'workflow' | 'text-generation') || 'chatbot',
+        tags: instance?.config?.app_metadata?.tags || [],
+      },
+      dify_parameters: instance?.config?.dify_parameters || {}
+    }
+  });
+  
   const [showApiKey, setShowApiKey] = useState(false);
   const [showDifyPanel, setShowDifyPanel] = useState(false);
   const [setAsDefault, setSetAsDefault] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   
   useEffect(() => {
+    const newData = {
+      instance_id: instance?.instance_id || '',
+      display_name: instance?.display_name || '',
+      description: instance?.description || '',
+      api_path: instance?.api_path || '',
+      apiKey: '',
+      config: {
+        api_url: instance?.config?.api_url || '',
+        app_metadata: {
+          app_type: (instance?.config?.app_metadata?.app_type as 'model' | 'marketplace') || 'model',
+          dify_apptype: (instance?.config?.app_metadata?.dify_apptype as 'chatbot' | 'agent' | 'chatflow' | 'workflow' | 'text-generation') || 'chatbot',
+          tags: instance?.config?.app_metadata?.tags || [],
+        },
+        dify_parameters: instance?.config?.dify_parameters || {}
+      }
+    };
+    
     if (instance) {
-      setFormData({
-        instance_id: instance.instance_id || '',
-        display_name: instance.display_name || '',
-        description: instance.description || '',
-        api_path: instance.api_path || '',
-        apiKey: '',
-        config: {
-          api_url: instance.config?.api_url || '',
-          app_metadata: {
-            app_type: instance.config?.app_metadata?.app_type || 'model',
-            dify_apptype: instance.config?.app_metadata?.dify_apptype || 'chatbot',
-            tags: instance.config?.app_metadata?.tags || [],
-          },
-          dify_parameters: instance.config?.dify_parameters || {}
-        }
-      });
+      setFormData(newData);
+      setBaselineData(newData);
     } else {
-      setFormData({
+      const emptyData = {
         instance_id: '',
         display_name: '',
         description: '',
@@ -160,13 +185,15 @@ const InstanceForm = ({
         config: {
           api_url: '',
           app_metadata: {
-            app_type: 'model',
-            dify_apptype: 'chatbot',
+            app_type: 'model' as const,
+            dify_apptype: 'chatbot' as const,
             tags: [],
           },
           dify_parameters: {}
         }
-      });
+      };
+      setFormData(emptyData);
+      setBaselineData(emptyData);
     }
   }, [instance]);
   
@@ -210,6 +237,18 @@ const InstanceForm = ({
         dify_parameters: difyConfig
       }
     }));
+    
+    // --- BEGIN COMMENT ---
+    // 🎯 修复：Dify参数保存后也更新基准数据
+    // --- END COMMENT ---
+    setBaselineData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        dify_parameters: difyConfig
+      }
+    }));
+    
     setShowDifyPanel(false);
   };
 
@@ -298,6 +337,18 @@ const InstanceForm = ({
         }
       }));
       
+      // --- BEGIN COMMENT ---
+      // 🎯 修复：同步参数成功后更新基准数据
+      // 避免显示错误的"有未保存的更改"提示
+      // --- END COMMENT ---
+      setBaselineData(prev => ({
+        ...prev,
+        config: {
+          ...prev.config,
+          dify_parameters: simplifiedParams
+        }
+      }));
+      
       showFeedback('成功从 Dify API 同步参数配置！', 'success');
       
     } catch (error) {
@@ -327,22 +378,7 @@ const InstanceForm = ({
             {/* --- BEGIN COMMENT --- */}
             {/* 🎯 新增：未保存更改提示 */}
             {/* --- END COMMENT --- */}
-            {(JSON.stringify(formData) !== JSON.stringify({
-              instance_id: instance?.instance_id || '',
-              display_name: instance?.display_name || '',
-              description: instance?.description || '',
-              api_path: instance?.api_path || '',
-              apiKey: '',
-              config: {
-                api_url: instance?.config?.api_url || '',
-                app_metadata: {
-                  app_type: instance?.config?.app_metadata?.app_type || 'model',
-                  dify_apptype: instance?.config?.app_metadata?.dify_apptype || 'chatbot',
-                  tags: instance?.config?.app_metadata?.tags || [],
-                },
-                dify_parameters: instance?.config?.dify_parameters || {}
-              }
-            }) || formData.apiKey) && (
+            {(JSON.stringify(formData) !== JSON.stringify(baselineData) || formData.apiKey) && (
               <div className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium font-serif",
                 "border border-dashed animate-pulse",
