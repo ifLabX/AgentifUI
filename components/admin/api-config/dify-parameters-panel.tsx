@@ -94,13 +94,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
         // 🎯 修复：不要覆盖从 Dify 同步来的 file_upload 配置
         // 只有当 config.file_upload 为 undefined 时才设置默认值
         // --- END COMMENT ---
-        file_upload: config.file_upload !== undefined ? config.file_upload : {
-          image: {
-            enabled: false,
-            number_limits: 3,
-            transfer_methods: ['local_file', 'remote_url']
-          }
-        },
+        file_upload: config.file_upload,
         system_parameters: config.system_parameters || {
           file_size_limit: 15,
           image_file_size_limit: 10,
@@ -232,10 +226,8 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
         }
       }
       
-      // 如果没有启用任何类型，默认启用图片
-      if (enabledTypesSet.size === 0) {
-        enabledTypesSet.add('图片');
-      }
+      // 如果没有启用任何类型，应该保持空集合，让用户自己选择
+      // 不再默认启用任何文件类型
       
       const newState = {
         fileUploadEnabled: hasFileUpload,
