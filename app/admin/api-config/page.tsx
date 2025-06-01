@@ -323,30 +323,53 @@ const InstanceForm = ({
   // 添加模式：直接使用表单配置
   // --- END COMMENT ---
   const handleSyncFromDify = async () => {
-    if (!formData.instance_id) {
+    // --- BEGIN COMMENT ---
+    // 🎯 新建模式下需要API URL和API Key，编辑模式下需要instance_id
+    // --- END COMMENT ---
+    if (!isEditing && (!formData.config.api_url || !formData.apiKey)) {
+      showFeedback('请先填写API URL和API Key', 'warning');
+      return;
+    }
+    
+    if (isEditing && !formData.instance_id) {
       showFeedback('请先填写应用ID', 'warning');
       return;
     }
 
     setIsSyncing(true);
     try {
-      let difyParams: DifyAppParametersResponse;
+      // --- BEGIN COMMENT ---
+      // 🎯 新增：同步基本配置信息（name、description、tags）
+      // --- END COMMENT ---
+      let appInfo: any = null;
+      let difyParams: DifyAppParametersResponse | null = null;
       
       if (isEditing) {
         // 编辑模式：优先使用数据库配置
         try {
-          console.log('[同步参数] 编辑模式：尝试使用数据库配置');
+          console.log('[同步配置] 编辑模式：尝试使用数据库配置');
+          
+          // 同时获取基本信息和参数
+          const { getDifyAppInfo } = await import('@lib/services/dify');
+          appInfo = await getDifyAppInfo(formData.instance_id);
           difyParams = await getDifyAppParameters(formData.instance_id);
+          
         } catch (dbError) {
-          console.log('[同步参数] 数据库配置失败，尝试使用表单配置:', dbError);
+          console.log('[同步配置] 数据库配置失败，尝试使用表单配置:', dbError);
           
           // 检查表单配置是否完整
           if (!formData.config.api_url || !formData.apiKey) {
-            throw new Error('数据库配置失效，且表单中的API URL或API Key为空，无法同步参数');
+            throw new Error('数据库配置失效，且表单中的API URL或API Key为空，无法同步配置');
           }
           
           // 使用表单配置作为fallback
-          const { getDifyAppParametersWithConfig } = await import('@lib/services/dify');
+          const { getDifyAppInfoWithConfig, getDifyAppParametersWithConfig } = await import('@lib/services/dify');
+          
+          // 同时获取基本信息和参数
+          appInfo = await getDifyAppInfoWithConfig(formData.instance_id, {
+            apiUrl: formData.config.api_url,
+            apiKey: formData.apiKey
+          });
           difyParams = await getDifyAppParametersWithConfig(formData.instance_id, {
             apiUrl: formData.config.api_url,
             apiKey: formData.apiKey
@@ -354,7 +377,7 @@ const InstanceForm = ({
         }
       } else {
         // 添加模式：直接使用表单配置
-        console.log('[同步参数] 添加模式：使用表单配置');
+        console.log('[同步配置] 添加模式：使用表单配置');
         
         // 检查表单配置是否完整
         if (!formData.config.api_url || !formData.apiKey) {
@@ -362,8 +385,20 @@ const InstanceForm = ({
           return;
         }
         
+        // 需要instance_id来获取信息
+        if (!formData.instance_id) {
+          showFeedback('请先填写应用ID', 'warning');
+          return;
+        }
+        
         // 直接使用表单配置
-        const { getDifyAppParametersWithConfig } = await import('@lib/services/dify');
+        const { getDifyAppInfoWithConfig, getDifyAppParametersWithConfig } = await import('@lib/services/dify');
+        
+        // 同时获取基本信息和参数
+        appInfo = await getDifyAppInfoWithConfig(formData.instance_id, {
+          apiUrl: formData.config.api_url,
+          apiKey: formData.apiKey
+        });
         difyParams = await getDifyAppParametersWithConfig(formData.instance_id, {
           apiUrl: formData.config.api_url,
           apiKey: formData.apiKey
@@ -371,54 +406,82 @@ const InstanceForm = ({
       }
       
       // --- BEGIN COMMENT ---
-      // 🎯 修复：正确处理 file_upload 字段的同步
-      // Dify API 只返回实际启用的文件类型，不要强制设置默认值
+      // 🎯 处理基本信息同步
       // --- END COMMENT ---
-      const simplifiedParams: DifyParametersSimplifiedConfig = {
-        opening_statement: difyParams.opening_statement || '',
-        suggested_questions: difyParams.suggested_questions || [],
-        suggested_questions_after_answer: difyParams.suggested_questions_after_answer || { enabled: false },
-        speech_to_text: difyParams.speech_to_text || { enabled: false },
-        text_to_speech: difyParams.text_to_speech || { enabled: false },
-        retriever_resource: difyParams.retriever_resource || { enabled: false },
-        annotation_reply: difyParams.annotation_reply || { enabled: false },
-        user_input_form: difyParams.user_input_form || [],
-        // --- 修复：只有当 Dify 返回 file_upload 数据时才设置，否则保持 undefined ---
-        file_upload: difyParams.file_upload || undefined,
-        system_parameters: difyParams.system_parameters || {
-          file_size_limit: 15,
-          image_file_size_limit: 10,
-          audio_file_size_limit: 50,
-          video_file_size_limit: 100
-        }
-      };
+      const updatedFormData = { ...formData };
       
-      // 更新表单数据
-      setFormData(prev => ({
-        ...prev,
-        config: {
-          ...prev.config,
-          dify_parameters: simplifiedParams
+      if (appInfo) {
+        // 同步display_name（如果当前为空或用户确认）
+        if (!formData.display_name || confirm(`是否将显示名称更新为："${appInfo.name}"？`)) {
+          updatedFormData.display_name = appInfo.name;
         }
-      }));
+        
+        // 同步description（如果当前为空或用户确认）
+        if (!formData.description || confirm(`是否将描述更新为："${appInfo.description}"？`)) {
+          updatedFormData.description = appInfo.description;
+        }
+        
+        // --- BEGIN COMMENT ---
+        // 🎯 同步tags（append模式，不替换现有tags）
+        // --- END COMMENT ---
+        if (appInfo.tags && appInfo.tags.length > 0) {
+          const currentTags = formData.config.app_metadata.tags || [];
+          const newTags = appInfo.tags.filter((tag: string) => !currentTags.includes(tag));
+          
+          if (newTags.length > 0) {
+            if (confirm(`是否添加新标签：${newTags.join(', ')}？`)) {
+              updatedFormData.config.app_metadata.tags = [...currentTags, ...newTags];
+            }
+          }
+        }
+      }
       
       // --- BEGIN COMMENT ---
-      // 🎯 修复：同步参数成功后更新基准数据
-      // 避免显示错误的"有未保存的更改"提示
+      // 🎯 处理参数同步（保持原有逻辑）
       // --- END COMMENT ---
-      setBaselineData(prev => ({
-        ...prev,
-        config: {
-          ...prev.config,
-          dify_parameters: simplifiedParams
-        }
-      }));
+      if (difyParams) {
+        const simplifiedParams: DifyParametersSimplifiedConfig = {
+          opening_statement: difyParams.opening_statement || '',
+          suggested_questions: difyParams.suggested_questions || [],
+          suggested_questions_after_answer: difyParams.suggested_questions_after_answer || { enabled: false },
+          speech_to_text: difyParams.speech_to_text || { enabled: false },
+          text_to_speech: difyParams.text_to_speech || { enabled: false },
+          retriever_resource: difyParams.retriever_resource || { enabled: false },
+          annotation_reply: difyParams.annotation_reply || { enabled: false },
+          user_input_form: difyParams.user_input_form || [],
+          file_upload: difyParams.file_upload || undefined,
+          system_parameters: difyParams.system_parameters || {
+            file_size_limit: 15,
+            image_file_size_limit: 10,
+            audio_file_size_limit: 50,
+            video_file_size_limit: 100
+          }
+        };
+        
+        updatedFormData.config.dify_parameters = simplifiedParams;
+      }
       
-      showFeedback('成功从 Dify API 同步参数配置！', 'success');
+      // 更新表单数据
+      setFormData(updatedFormData);
+      
+      // --- BEGIN COMMENT ---
+      // 🎯 同步成功后更新基准数据
+      // --- END COMMENT ---
+      setBaselineData(updatedFormData);
+      
+      const syncedItems = [];
+      if (appInfo) {
+        syncedItems.push('基本信息');
+      }
+      if (difyParams) {
+        syncedItems.push('参数配置');
+      }
+      
+      showFeedback(`成功从 Dify API 同步${syncedItems.join('和')}！`, 'success');
       
     } catch (error) {
-      console.error('[同步参数] 同步失败:', error);
-      const errorMessage = error instanceof Error ? error.message : '同步参数失败';
+      console.error('[同步配置] 同步失败:', error);
+      const errorMessage = error instanceof Error ? error.message : '同步配置失败';
       showFeedback(`同步失败: ${errorMessage}`, 'error');
     } finally {
       setIsSyncing(false);
@@ -589,7 +652,7 @@ const InstanceForm = ({
                   <RefreshCw className="h-4 w-4" />
                 )}
                 <span className="text-sm font-medium font-serif">
-                  {isSyncing ? '同步中...' : '同步参数'}
+                  {isSyncing ? '同步中...' : '同步配置'}
                 </span>
               </button>
             </div>
@@ -677,6 +740,138 @@ const InstanceForm = ({
               />
             </div>
           </div>
+
+          {/* --- BEGIN COMMENT --- */}
+          {/* 🎯 API配置字段 - 移动到描述字段之前 */}
+          {/* --- END COMMENT --- */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <label className={cn(
+                "block text-sm font-medium mb-2 font-serif",
+                isDark ? "text-stone-300" : "text-stone-700"
+              )}>
+                API URL (config.api_url)
+              </label>
+              <input
+                type="url"
+                value={formData.config.api_url}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  config: {
+                    ...prev.config,
+                    api_url: e.target.value
+                  }
+                }))}
+                className={cn(
+                  "w-full px-3 py-2 rounded-lg border font-serif",
+                  isDark 
+                    ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                    : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                )}
+                placeholder="https://api.dify.ai/v1"
+              />
+              <p className={cn(
+                "text-xs mt-1 font-serif",
+                isDark ? "text-stone-400" : "text-stone-500"
+              )}>
+                留空将使用默认URL: https://api.dify.ai/v1
+              </p>
+            </div>
+
+            <div>
+              <div className="flex items-start justify-between mb-2">
+                <label className={cn(
+                  "text-sm font-medium font-serif",
+                  isDark ? "text-stone-300" : "text-stone-700"
+                )}>
+                  API 密钥 (key_value) {!isEditing && '*'}
+                </label>
+                
+                {/* --- API密钥配置状态标签 - 靠上对齐，避免挤压输入框 --- */}
+                {isEditing && (
+                  <span className={cn(
+                    "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium font-serif -mt-0.5",
+                    hasApiKey
+                      ? isDark
+                        ? "bg-green-900/20 border-green-700/30 text-green-300 border"
+                        : "bg-green-50 border-green-200 text-green-700 border"
+                      : isDark
+                        ? "bg-orange-900/20 border-orange-700/30 text-orange-300 border"
+                        : "bg-orange-50 border-orange-200 text-orange-700 border"
+                  )}>
+                    <Key className="h-3 w-3" />
+                    {hasApiKey ? '已配置' : '未配置'}
+                  </span>
+                )}
+              </div>
+              
+              <div className="relative">
+                <input
+                  type={showApiKey ? "text" : "password"}
+                  value={formData.apiKey}
+                  onChange={(e) => setFormData(prev => ({ ...prev, apiKey: e.target.value }))}
+                  className={cn(
+                    "w-full px-3 py-2 pr-10 rounded-lg border font-serif",
+                    isDark 
+                      ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
+                      : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                  )}
+                  placeholder={isEditing ? "留空则不更新 API 密钥" : "输入 API 密钥"}
+                  required={!isEditing}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  {showApiKey ? (
+                    <Eye className="h-4 w-4 text-stone-500" />
+                  ) : (
+                    <EyeOff className="h-4 w-4 text-stone-500" />
+                  )}
+                </button>
+              </div>
+              
+              {/* --- 提示信息（仅在编辑模式且已配置时显示） --- */}
+              {isEditing && hasApiKey && (
+                <p className={cn(
+                  "text-xs mt-1 font-serif",
+                  isDark ? "text-stone-400" : "text-stone-500"
+                )}>
+                  留空输入框将保持现有密钥不变
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* --- BEGIN COMMENT --- */}
+          {/* 🎯 同步配置按钮 - 仅在新建模式下显示 */}
+          {/* --- END COMMENT --- */}
+          {!isEditing && (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleSyncFromDify}
+                disabled={isSyncing || !formData.config.api_url || !formData.apiKey}
+                className={cn(
+                  "px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 font-serif cursor-pointer",
+                  isSyncing || !formData.config.api_url || !formData.apiKey
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer",
+                  isDark 
+                    ? "bg-blue-600 hover:bg-blue-500 text-white" 
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                )}
+              >
+                {isSyncing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                {isSyncing ? '同步中...' : '从Dify同步配置'}
+              </button>
+            </div>
+          )}
 
           <div>
             <label className={cn(
@@ -1083,106 +1278,6 @@ const InstanceForm = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className={cn(
-                "block text-sm font-medium mb-2 font-serif",
-                isDark ? "text-stone-300" : "text-stone-700"
-              )}>
-                API URL (config.api_url)
-              </label>
-              <input
-                type="url"
-                value={formData.config.api_url}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  config: {
-                    ...prev.config,
-                    api_url: e.target.value
-                  }
-                }))}
-                className={cn(
-                  "w-full px-3 py-2 rounded-lg border font-serif",
-                  isDark 
-                    ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
-                    : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
-                )}
-                placeholder="https://api.dify.ai/v1"
-              />
-              <p className={cn(
-                "text-xs mt-1 font-serif",
-                isDark ? "text-stone-400" : "text-stone-500"
-              )}>
-                留空将使用默认URL: https://api.dify.ai/v1
-              </p>
-            </div>
-
-            <div>
-              <div className="flex items-start justify-between mb-2">
-                <label className={cn(
-                  "text-sm font-medium font-serif",
-                  isDark ? "text-stone-300" : "text-stone-700"
-                )}>
-                  API 密钥 (key_value) {!isEditing && '*'}
-                </label>
-                
-                {/* --- API密钥配置状态标签 - 靠上对齐，避免挤压输入框 --- */}
-                {isEditing && (
-                  <span className={cn(
-                    "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium font-serif -mt-0.5",
-                    hasApiKey
-                      ? isDark
-                        ? "bg-green-900/20 border-green-700/30 text-green-300 border"
-                        : "bg-green-50 border-green-200 text-green-700 border"
-                      : isDark
-                        ? "bg-orange-900/20 border-orange-700/30 text-orange-300 border"
-                        : "bg-orange-50 border-orange-200 text-orange-700 border"
-                  )}>
-                    <Key className="h-3 w-3" />
-                    {hasApiKey ? '已配置' : '未配置'}
-                  </span>
-                )}
-              </div>
-              
-              <div className="relative">
-                <input
-                  type={showApiKey ? "text" : "password"}
-                  value={formData.apiKey}
-                  onChange={(e) => setFormData(prev => ({ ...prev, apiKey: e.target.value }))}
-                  className={cn(
-                    "w-full px-3 py-2 pr-10 rounded-lg border font-serif",
-                    isDark 
-                      ? "bg-stone-700 border-stone-600 text-stone-100 placeholder-stone-400" 
-                      : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
-                  )}
-                  placeholder={isEditing ? "留空则不更新 API 密钥" : "输入 API 密钥"}
-                  required={!isEditing}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                >
-                  {showApiKey ? (
-                    <Eye className="h-4 w-4 text-stone-500" />
-                  ) : (
-                    <EyeOff className="h-4 w-4 text-stone-500" />
-                  )}
-                </button>
-              </div>
-              
-              {/* --- 提示信息（仅在编辑模式且已配置时显示） --- */}
-              {isEditing && hasApiKey && (
-                <p className={cn(
-                  "text-xs mt-1 font-serif",
-                  isDark ? "text-stone-400" : "text-stone-500"
-                )}>
-                  留空输入框将保持现有密钥不变
-                </p>
-              )}
-            </div>
-          </div>
-          
           <div className="flex gap-3 pt-4">
             <button
               type="submit"

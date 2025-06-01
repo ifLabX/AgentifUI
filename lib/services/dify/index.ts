@@ -24,6 +24,7 @@ export {
   getDifyAppParameters,
   getDifyAppParametersWithConfig,
   getDifyAppInfo,
+  getDifyAppInfoWithConfig,
   getDifyWebAppSettings,
   getDifyAppMeta,
   testDifyAppParameters

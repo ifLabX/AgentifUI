@@ -387,6 +387,78 @@ export async function getDifyAppParametersWithConfig(
       throw error;
     }
     
-    throw new Error('获取应用参数时发生未知错误');
+    throw new Error('使用表单配置获取应用参数时发生未知错误');
+  }
+}
+
+/**
+ * 使用指定的API配置获取Dify应用基本信息（用于表单同步）
+ * 
+ * @param appId - 应用ID
+ * @param apiConfig - API配置（URL和密钥）
+ * @returns Promise<DifyAppInfoResponse> - 应用基本信息
+ */
+export async function getDifyAppInfoWithConfig(
+  appId: string, 
+  apiConfig: { apiUrl: string; apiKey: string }
+): Promise<DifyAppInfoResponse> {
+  const { apiUrl, apiKey } = apiConfig;
+  
+  if (!apiUrl || !apiKey) {
+    throw new Error('API URL 和 API Key 都是必需的');
+  }
+  
+  // 构造直接的Dify API URL
+  const targetUrl = `${apiUrl}/info`;
+  
+  try {
+    console.log(`[Dify App Service] 使用表单配置同步基本信息: ${appId}`);
+    
+    const response = await fetch(targetUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      // 尝试解析错误响应
+      let errorData: DifyApiError;
+      try {
+        errorData = await response.json();
+      } catch {
+        // 如果无法解析JSON，使用默认错误格式
+        errorData = {
+          status: response.status,
+          code: response.status.toString(),
+          message: response.statusText || '获取应用基本信息失败'
+        };
+      }
+      
+      console.error('[Dify App Service] 使用表单配置获取应用基本信息失败:', errorData);
+      throw new Error(`获取应用基本信息失败: ${errorData.message}`);
+    }
+
+    const result: DifyAppInfoResponse = await response.json();
+    
+    console.log('[Dify App Service] 使用表单配置成功获取应用基本信息:', {
+      appId,
+      name: result.name,
+      description: result.description,
+      tagsCount: result.tags?.length || 0
+    });
+    
+    return result;
+
+  } catch (error) {
+    console.error('[Dify App Service] 使用表单配置获取应用基本信息时发生错误:', error);
+    
+    // 重新抛出错误，保持错误信息
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('使用表单配置获取应用基本信息时发生未知错误');
   }
 } 
