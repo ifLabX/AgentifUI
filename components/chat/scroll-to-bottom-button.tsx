@@ -3,6 +3,7 @@ import { useChatScrollStore } from '@lib/stores/chat-scroll-store'
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store'
 import { useChatInputStore } from '@lib/stores/chat-input-store'
 import { useWelcomeScreen } from '@lib/hooks'
+import { useChatInterface } from '@lib/hooks/use-chat-interface'
 import { useThemeColors } from '@lib/hooks/use-theme-colors'
 import { cn } from '@lib/utils'
 
@@ -17,9 +18,13 @@ export const ScrollToBottomButton = () => {
   const scrollToBottom = useChatScrollStore((state) => state.scrollToBottom);
   const resetScrollState = useChatScrollStore((state) => state.resetScrollState);
   const { isWelcomeScreen: isOnWelcomeScreen } = useWelcomeScreen();
+  const { messages } = useChatInterface();
 
-  // 只有当不在欢迎屏幕且不在底部时才显示按钮
-  const shouldRender = !isOnWelcomeScreen && !isAtBottom;
+  // --- BEGIN COMMENT ---
+  // 🎯 修复：添加消息数量检查，确保只有在真正需要滚动时才显示按钮
+  // 条件：不在欢迎屏幕 && 不在底部 && 有足够的消息内容
+  // --- END COMMENT ---
+  const shouldRender = !isOnWelcomeScreen && !isAtBottom && messages.length > 1;
   
   // --- BEGIN COMMENT ---
   // 恢复动态计算 bottom 偏移量
