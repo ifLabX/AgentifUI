@@ -951,38 +951,18 @@ export function useChatInterface() {
     }
 
     // --- BEGIN COMMENT ---
-    // 🎯 核心修改：强制等待App配置就绪，解决时序问题
-    // 新增错误恢复机制：停止操作失败时仍然尝试本地停止
+    // 🎯 修复：停止操作不需要验证应用配置，直接使用当前配置
+    // 停止操作应该立即响应，不应该触发全屏验证spinner
+    // 即使应用配置有问题，本地停止仍然有效
     // --- END COMMENT ---
-    let appConfig: { appId: string; instance: ServiceInstance };
-    try {
-      console.log('[handleStopProcessing] 开始等待App配置就绪...');
-      appConfig = await ensureAppReady();
-      console.log(`[handleStopProcessing] App配置就绪: ${appConfig.appId}`);
-    } catch (error) {
-      console.error('[handleStopProcessing] App配置获取失败:', error);
-      
-      // --- BEGIN COMMENT ---
-      // 🎯 错误恢复机制：即使App配置获取失败，也要尝试本地停止流式响应
-      // 这确保用户界面能够响应停止操作，避免界面卡死
-      // --- END COMMENT ---
-      console.warn('[handleStopProcessing] App配置获取失败，仅执行本地停止操作');
-      
-      if (currentStreamingId) {
-        if (appendTimerRef.current) { 
-          clearTimeout(appendTimerRef.current);
-          appendTimerRef.current = null;
-        }
-        flushChunkBuffer(currentStreamingId); 
-        markAsManuallyStopped(currentStreamingId);
-        
-        // 更新UI状态
-        if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
-          setIsWaitingForResponse(false);
-        }
-      }
-      
-      return; // 不执行远程停止操作
+    let appConfig: { appId: string; instance: ServiceInstance } | null = null;
+    
+    // 尝试获取当前应用配置，但不强制验证
+    if (currentAppId && currentAppInstance) {
+      appConfig = { appId: currentAppId, instance: currentAppInstance };
+      console.log(`[handleStopProcessing] 使用当前App配置: ${appConfig.appId}`);
+    } else {
+      console.warn('[handleStopProcessing] 当前App配置不可用，仅执行本地停止操作');
     }
 
     if (currentStreamingId) {
@@ -1000,13 +980,18 @@ export function useChatInterface() {
         updatePendingStatus(currentConvId, 'stream_completed_title_pending');
       }
 
-      if (currentTaskId) {
+      // 只有在有有效应用配置和任务ID时才尝试远程停止
+      if (currentTaskId && appConfig) {
         try {
-          await stopDifyStreamingTask(appConfig.appId, currentTaskId, currentUserId); // 使用确保就绪的 appId
+          await stopDifyStreamingTask(appConfig.appId, currentTaskId, currentUserId);
           setCurrentTaskId(null); 
         } catch (error) {
           console.error(`[handleStopProcessing] Error calling stopDifyStreamingTask:`, error);
+          // 远程停止失败不影响本地停止的效果
         }
+      } else if (currentTaskId) {
+        console.warn('[handleStopProcessing] 无有效App配置，跳过远程停止操作');
+        setCurrentTaskId(null); // 清除任务ID
       }
       
       // --- BEGIN COMMENT ---
@@ -1095,12 +1080,15 @@ export function useChatInterface() {
         });
       }
     }
+    
+    // 更新UI状态
     if (state.isWaitingForResponse && state.streamingMessageId === currentStreamingId) {
         setIsWaitingForResponse(false);
     }
   }, [
-    currentUserId, // 添加依赖
-    ensureAppReady, // 替换 currentAppId，使用强制等待方法
+    currentUserId,
+    currentAppId, // 🎯 修改：直接使用currentAppId和currentAppInstance
+    currentAppInstance,
     markAsManuallyStopped, setCurrentTaskId, 
     appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer, 
     dbConversationUUID, difyConversationId, updateMessage, saveMessage
