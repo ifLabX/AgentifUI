@@ -104,6 +104,15 @@ export function useChatInterface() {
   // --- END COMMENT ---
   const appendTimerRef = useRef<NodeJS.Timeout | null>(null); 
 
+  // --- BEGIN COMMENT ---
+  // 用于流式状态检测的ref
+  // --- END COMMENT ---
+  const lastStreamingCheckRef = useRef<{
+    messageId: string;
+    content: string;
+    lastUpdateTime: number;
+  } | null>(null);
+
   const flushChunkBuffer = useCallback((id: string | null) => {
     if (id && chunkBufferRef.current) {
       appendMessageChunk(id, chunkBufferRef.current);
@@ -943,6 +952,43 @@ export function useChatInterface() {
     const currentTaskId = state.currentTaskId;
     
     // --- BEGIN COMMENT ---
+    // 🎯 新增：停止前的状态检查和修复
+    // 如果发现流式消息实际已经完成但状态未更新，先修复状态
+    // --- END COMMENT ---
+    if (currentStreamingId) {
+      const streamingMessage = state.messages.find(m => m.id === currentStreamingId);
+      
+      if (streamingMessage && streamingMessage.isStreaming) {
+        // 检查消息是否看起来已经完成（有完整内容且最近没有更新）
+        const messageContent = streamingMessage.text;
+        const hasContent = messageContent && messageContent.trim().length > 0;
+        
+        // 如果消息有内容但没有任务ID，可能是流已经结束但状态未更新
+        if (hasContent && !currentTaskId) {
+          console.warn(`[handleStopProcessing] 检测到可能的僵尸流式状态，消息有内容但无任务ID: ${currentStreamingId}`);
+          
+          // 自动修复：finalize消息
+          finalizeStreamingMessage(currentStreamingId);
+          setIsWaitingForResponse(false);
+          
+          // 尝试保存消息
+          const currentDbConvId = dbConversationUUID;
+          if (currentDbConvId && streamingMessage.persistenceStatus !== 'saved' && !streamingMessage.db_id) {
+            console.log(`[handleStopProcessing] 自动保存修复的消息: ${currentStreamingId}`);
+            updateMessage(currentStreamingId, { persistenceStatus: 'pending' });
+            saveMessage(streamingMessage, currentDbConvId).catch(err => {
+              console.error('[handleStopProcessing] 自动保存失败:', err);
+              updateMessage(currentStreamingId, { persistenceStatus: 'error' });
+            });
+          }
+          
+          console.log(`[handleStopProcessing] 僵尸流式状态已修复，停止操作完成`);
+          return; // 修复完成，无需继续停止操作
+        }
+      }
+    }
+    
+    // --- BEGIN COMMENT ---
     // 检查用户是否登录
     // --- END COMMENT ---
     if (!currentUserId) {
@@ -1093,6 +1139,94 @@ export function useChatInterface() {
     appendMessageChunk, setIsWaitingForResponse, updatePendingStatus, flushChunkBuffer, 
     dbConversationUUID, difyConversationId, updateMessage, saveMessage
   ]);
+
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：流式状态检测和自动修复机制
+  // 定期检查是否有"僵尸"流式消息（流已结束但状态未更新）
+  // 这可以解决某些app流式响应异常结束导致的状态不一致问题
+  // --- END COMMENT ---
+  useEffect(() => {
+    const checkStreamingState = () => {
+      const state = useChatStore.getState();
+      const { streamingMessageId, messages, currentTaskId } = state;
+      
+      if (streamingMessageId) {
+        const streamingMessage = messages.find(m => m.id === streamingMessageId);
+        
+        if (streamingMessage && streamingMessage.isStreaming) {
+          // 检查是否有任务ID但没有实际的网络活动
+          // 如果消息内容在过去30秒内没有变化，可能是"僵尸"流式状态
+          const messageContent = streamingMessage.text;
+          const messageId = streamingMessage.id;
+          
+          // 使用ref存储上次检查的消息内容和时间
+          if (!lastStreamingCheckRef.current) {
+            lastStreamingCheckRef.current = {
+              messageId,
+              content: messageContent,
+              lastUpdateTime: Date.now()
+            };
+            return;
+          }
+          
+          const { messageId: lastMessageId, content: lastContent, lastUpdateTime } = lastStreamingCheckRef.current;
+          
+          // 如果是同一条消息且内容没有变化
+          if (messageId === lastMessageId && messageContent === lastContent) {
+            const timeSinceLastUpdate = Date.now() - lastUpdateTime;
+            
+            // 如果超过30秒没有更新，认为是僵尸状态
+            if (timeSinceLastUpdate > 30000) {
+              console.warn(`[流式状态检测] 发现僵尸流式消息，自动修复: ${messageId}`);
+              
+              // 自动修复：finalize消息并清理状态
+              finalizeStreamingMessage(messageId);
+              setIsWaitingForResponse(false);
+              
+              // 清理任务ID
+              if (currentTaskId) {
+                setCurrentTaskId(null);
+              }
+              
+              // 重置检查状态
+              lastStreamingCheckRef.current = null;
+              
+              // 尝试保存消息（如果有数据库ID）
+              const currentDbConvId = dbConversationUUID;
+              if (currentDbConvId && streamingMessage.persistenceStatus !== 'saved' && !streamingMessage.db_id) {
+                console.log(`[流式状态检测] 自动保存修复的消息: ${messageId}`);
+                updateMessage(messageId, { persistenceStatus: 'pending' });
+                saveMessage(streamingMessage, currentDbConvId).catch(err => {
+                  console.error('[流式状态检测] 自动保存失败:', err);
+                  updateMessage(messageId, { persistenceStatus: 'error' });
+                });
+              }
+            }
+          } else {
+            // 内容有变化，更新检查状态
+            lastStreamingCheckRef.current = {
+              messageId,
+              content: messageContent,
+              lastUpdateTime: Date.now()
+            };
+          }
+        } else {
+          // 消息不存在或不在流式状态，清理检查状态
+          lastStreamingCheckRef.current = null;
+        }
+      } else {
+        // 没有流式消息，清理检查状态
+        lastStreamingCheckRef.current = null;
+      }
+    };
+    
+    // 每10秒检查一次流式状态
+    const interval = setInterval(checkStreamingState, 10000);
+    
+    return () => {
+      clearInterval(interval);
+    };
+  }, [finalizeStreamingMessage, setIsWaitingForResponse, setCurrentTaskId, dbConversationUUID, updateMessage, saveMessage]);
 
   return {
     messages, handleSubmit, handleStopProcessing, 
