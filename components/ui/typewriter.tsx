@@ -3,7 +3,7 @@ import { cn } from '@lib/utils';
 
 interface TypeWriterProps {
   text: string;
-  speed?: number; // 打字速度（毫秒）
+  speed?: number; // 🎯 修改：打字速度（字符/秒），与StreamingText保持一致
   delay?: number; // 开始延迟（毫秒）
   className?: string;
   onComplete?: () => void;
@@ -12,7 +12,7 @@ interface TypeWriterProps {
 
 export function TypeWriter({ 
   text, 
-  speed = 50, 
+  speed = 20, // 🎯 修改：默认20字符/秒，相当于原来的50毫秒间隔
   delay = 0, 
   className,
   onComplete,
@@ -65,7 +65,9 @@ export function TypeWriter({
         setRevealProgress(progress);
         indexRef.current++;
         
-        timeoutRef.current = setTimeout(typeNextChar, speed);
+        // 🎯 修改：将字符/秒转换为毫秒间隔
+        const intervalMs = Math.max(10, Math.floor(1000 / speed)); // 最小间隔10ms
+        timeoutRef.current = setTimeout(typeNextChar, intervalMs);
       } else {
         // 🎯 打字完成：确保完全显示
         setRevealProgress(100);
