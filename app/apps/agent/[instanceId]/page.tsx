@@ -95,7 +95,8 @@ export default function AppDetailPage() {
   const { apps, fetchApps } = useAppListStore()
   const { 
     currentAppId, 
-    isValidating, 
+    isValidating,
+    isValidatingForMessage,
     switchToSpecificApp,
     error: appError 
   } = useCurrentApp()
@@ -311,7 +312,7 @@ export default function AppDetailPage() {
   // --- BEGIN COMMENT ---
   // 加载状态
   // --- END COMMENT ---
-  if (isInitializing || isValidating || !currentApp) {
+  if (isInitializing || (isValidating && !isValidatingForMessage) || !currentApp) {
     return (
       <div className={cn(
         "h-full w-full relative flex flex-col",
@@ -328,7 +329,7 @@ export default function AppDetailPage() {
             isDark ? "text-stone-400" : "text-stone-500"
           )}>
             {isInitializing ? '正在加载应用...' : 
-             isValidating ? '正在验证应用配置...' : 
+             (isValidating && !isValidatingForMessage) ? '正在验证应用配置...' : 
              '加载中...'}
           </p>
         </div>
