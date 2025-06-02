@@ -61,40 +61,39 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     // 中等文本：中速打字，平衡体验
     // 长文本：快速打字，避免等待过久
     // 超长文本：极速打字，快速完成
-    // 🎯 修改：统一使用字符/秒语义，与StreamingText保持一致
     // --- END COMMENT ---
     if (textLength <= 20) {
       // 短文本（≤20字符）：慢速打字，营造仪式感
       return {
-        speed: 10, // 🎯 修改：10字符/秒（原来的speed: 20毫秒 ≈ 50字符/秒，现在更慢）
+        speed: 20,
         delay: 50,
         description: '短文本-慢速'
       }
     } else if (textLength <= 50) {
       // 中短文本（21-50字符）：标准速度
       return {
-        speed: 15, // 🎯 修改：15字符/秒（原来的speed: 15毫秒 ≈ 67字符/秒，现在更慢）
+        speed: 15,
         delay: 40,
         description: '中短文本-标准'
       }
     } else if (textLength <= 100) {
       // 中等文本（51-100字符）：中速打字
       return {
-        speed: 25, // 🎯 修改：25字符/秒（原来的speed: 10毫秒 ≈ 100字符/秒，现在更慢）
+        speed: 10,
         delay: 30,
         description: '中等文本-中速'
       }
     } else if (textLength <= 200) {
       // 长文本（101-200字符）：快速打字
       return {
-        speed: 50, // 🎯 修改：50字符/秒（原来的speed: 5毫秒 ≈ 200字符/秒，现在更慢）
+        speed: 5,
         delay: 10,
         description: '长文本-快速'
       }
     } else {
       // 超长文本（>200字符）：极速打字
       return {
-        speed: 40, // 🎯 修改：40字符/秒（原来的speed: 8毫秒 ≈ 125字符/秒，现在更慢但合理）
+        speed: 8,
         delay: 100,
         description: '超长文本-极速'
       }
