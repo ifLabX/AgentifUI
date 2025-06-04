@@ -40,6 +40,7 @@ interface UseCreateConversationReturn {
     realConvId?: string; 
     taskId?: string;     
     answerStream?: AsyncGenerator<string, void, undefined>;
+    completionPromise?: Promise<{ usage?: any; metadata?: Record<string, any>; retrieverResources?: any[] }>;
     error?: any;
   }>;
   isLoading: boolean;
@@ -83,6 +84,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
       realConvId?: string;
       taskId?: string;
       answerStream?: AsyncGenerator<string, void, undefined>;
+      completionPromise?: Promise<{ usage?: any; metadata?: Record<string, any>; retrieverResources?: any[] }>;
       error?: any;
     }> => {
       setIsLoading(true);
@@ -329,6 +331,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
           realConvId: realConvIdFromStream || undefined,
           taskId: taskIdFromStream || undefined,
           answerStream: streamResponse.answerStream,
+          completionPromise: streamResponse.completionPromise,
         };
 
       } catch (e) {

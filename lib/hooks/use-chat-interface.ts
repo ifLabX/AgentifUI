@@ -403,6 +403,11 @@ export function useChatInterface() {
         answerStream = creationResult.answerStream;
         finalRealConvId = creationResult.realConvId;
         finalTaskId = creationResult.taskId;
+        
+        // --- BEGIN COMMENT ---
+        // 🎯 修复：从新对话创建结果中获取completionPromise
+        // --- END COMMENT ---
+        completionPromise = creationResult.completionPromise;
 
         if (finalRealConvId) {
           // 更新UI和路由
