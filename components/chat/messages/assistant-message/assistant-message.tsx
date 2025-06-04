@@ -379,17 +379,24 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
           <ReferenceSources 
             retrieverResources={metadata?.dify_retriever_resources || metadata?.dify_metadata?.retriever_resources}
             isDark={isDark}
-            className="mt-3 mb-2"
+            className="mt-4 mb-2"
+            animationDelay={isStreaming ? 0 : 300} // 流式响应结束后延迟300ms显示
           />
           
-          {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，添加-mt-4来减少与消息内容的间距 */}
+          {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，调整间距 */}
           <AssistantMessageActions
             messageId={id}
             content={content} // 使用原始文本而不是处理后的mainContent
             onRegenerate={() => console.log('Regenerate message', id)}
             onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)} //后续修改反馈功能
             isRegenerating={isStreaming}
-            className="-ml-2 -mt-4"
+            className={cn(
+              "-ml-2",
+              // 🎯 根据是否有引用调整按钮的上边距
+              (metadata?.dify_retriever_resources || metadata?.dify_metadata?.retriever_resources)?.length > 0 
+                ? "mt-0" // 有引用时使用正常间距
+                : "-mt-4" // 无引用时保持原有的负间距
+            )}
           />
         </div>
       )}
