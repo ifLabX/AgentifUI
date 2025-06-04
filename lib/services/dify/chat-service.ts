@@ -80,6 +80,7 @@ export async function streamDifyChat(
     // --- END COMMENT ---
     let completionResolve: (value: { usage?: any; metadata?: Record<string, any>; retrieverResources?: any[] }) => void;
     let completionReject: (reason?: any) => void;
+    let completionResolved = false; // 🎯 添加标志位，防止重复resolve
     
     const completionPromise = new Promise<{ usage?: any; metadata?: Record<string, any>; retrieverResources?: any[] }>((resolve, reject) => {
       completionResolve = resolve;
@@ -108,7 +109,11 @@ export async function streamDifyChat(
           // 处理成功解析的事件
           // --- END COMMENT ---
           const event = result.event as DifySseEvent; // 明确事件类型
-          // console.log(`[Dify Service] Received SSE event type: ${event.event}`);
+          
+          // 🎯 过滤message事件，只显示关键事件
+          if (event.event !== 'message') {
+            console.log(`[Dify Service] 🎯 收到关键SSE事件: ${event.event}${event.event === 'message_end' ? ' (关键事件!)' : ''}`);
+          }
 
           // --- BEGIN COMMENT ---
           // 提取 conversation_id 和 task_id (通常在 message_end 事件中)
@@ -162,8 +167,8 @@ export async function streamDifyChat(
               // --- END COMMENT ---
               console.log('[Dify Service] Received message_end event with metadata:', {
                 metadata: event.metadata,
-                usage: event.usage,
-                retrieverResources: event.retriever_resources
+                usage: event.metadata?.usage || event.usage,
+                retrieverResources: event.metadata?.retriever_resources
               });
               
               // 确保此时已获取 conversationId 和 taskId
@@ -186,13 +191,16 @@ export async function streamDifyChat(
               
               // 🎯 解析并传递完整的metadata信息
               const completionData = {
-                usage: event.usage,
+                usage: event.metadata?.usage || event.usage,
                 metadata: event.metadata || {},
-                retrieverResources: event.retriever_resources || []
+                retrieverResources: event.metadata?.retriever_resources || []
               };
               
               console.log('[Dify Service] Resolving completionPromise with data:', completionData);
-              completionResolve(completionData);
+              if (!completionResolved) {
+                completionResolve(completionData);
+                completionResolved = true;
+              }
               
               console.log('[Dify Service] Message stream ended.');
               // 不需要 break，循环会在流结束后自动停止
@@ -213,9 +221,10 @@ export async function streamDifyChat(
         console.log('[Dify Service] Finished processing stream.');
         
         // 🎯 如果流正常结束但没有收到message_end事件，使用空数据resolve
-        if (completionResolve) {
+        if (completionResolve && !completionResolved) {
           console.log('[Dify Service] Stream ended without message_end, resolving with empty data');
           completionResolve({ usage: undefined, metadata: {}, retrieverResources: [] });
+          completionResolved = true;
         }
       } catch (error) {
         console.error('[Dify Service] Error in processStream:', error);
@@ -338,4 +347,4 @@ export async function stopDifyStreamingTask(
     // --- END COMMENT ---
     throw error;
   }
-} 
+}
