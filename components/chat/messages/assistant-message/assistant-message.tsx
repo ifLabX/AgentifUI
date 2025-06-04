@@ -12,6 +12,7 @@ import "katex/dist/katex.min.css"
 import type { Components } from "react-markdown"
 // --- BEGIN MODIFIED COMMENT ---
 // 导入原子化的 Markdown 组件和思考块相关组件
+// 导入引用资源组件
 // 
 // 文本样式系统说明：
 // 本组件使用了专门的CSS类系统来控制助手消息的文本显示效果：
@@ -44,6 +45,7 @@ import {
 } from "@components/chat/markdown-block";
 import { AssistantMessageActions } from '@components/chat/message-actions';
 import { StreamingText } from './streaming-markdown';
+import { ReferenceSources } from '@components/chat/reference-sources';
 
 const extractThinkContent = (rawContent: string): {
   hasThinkBlock: boolean;
@@ -72,18 +74,20 @@ interface AssistantMessageProps {
   content: string
   isStreaming: boolean
   wasManuallyStopped: boolean
+  metadata?: Record<string, any> // 🎯 新增：接收消息的metadata
   className?: string
 }
 
-// --- BEGIN MODIFIED ---
+// --- BEGIN MODIFIED COMMENT ---
 // 使用 React.memo 包裹 AssistantMessage 以优化渲染性能
 // 只有当 props 实际发生变化时，组件才会重新渲染
-// --- END MODIFIED ---
+// --- END MODIFIED COMMENT ---
 export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({ 
   id,
   content, 
   isStreaming,
   wasManuallyStopped, 
+  metadata,
   className 
 }) => {
   const { isDark } = useTheme();
@@ -370,6 +374,13 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
               </ReactMarkdown>
             )}
           </StreamingText>
+          
+          {/* --- 引用和归属组件 --- */}
+          <ReferenceSources 
+            retrieverResources={metadata?.dify_retriever_resources || metadata?.dify_metadata?.retriever_resources}
+            isDark={isDark}
+            className="mt-3 mb-2"
+          />
           
           {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，添加-mt-4来减少与消息内容的间距 */}
           <AssistantMessageActions

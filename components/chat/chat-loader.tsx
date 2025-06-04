@@ -135,6 +135,7 @@ export const ChatLoader = ({
                   content={msg.text} 
                   isStreaming={msg.isStreaming ?? false}
                   wasManuallyStopped={msg.wasManuallyStopped ?? false}
+                  metadata={msg.metadata}
                   id={msg.id}
                 />
               )
