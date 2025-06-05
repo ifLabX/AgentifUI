@@ -130,6 +130,37 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
     setIsOpen((prev) => !prev);
   };
 
+  // --- BEGIN COMMENT ---
+  // 预处理主内容，转义自定义HTML标签以避免浏览器解析错误
+  // 与Think Block Content使用相同的处理逻辑
+  // --- END COMMENT ---
+  const preprocessMainContent = (content: string): string => {
+    // 定义已知的安全HTML标签白名单
+    const knownHtmlTags = new Set([
+      'div', 'span', 'p', 'br', 'hr', 'strong', 'em', 'b', 'i', 'u', 's',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'dl', 'dt', 'dd',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'blockquote', 'pre', 'code',
+      'a', 'img',
+      'sub', 'sup',
+      'mark', 'del', 'ins'
+    ]);
+
+    // 转义不在白名单中的HTML标签，让它们显示为文本
+    return content.replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
+      if (!knownHtmlTags.has(tagName.toLowerCase())) {
+        return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      return match;
+    }).replace(/<\/([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
+      if (!knownHtmlTags.has(tagName.toLowerCase())) {
+        return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      return match;
+    });
+  };
+
   const calculateStatus = (): ThinkBlockStatus => {
     if (hasThinkBlock && thinkClosed) {
       return 'completed';
@@ -386,7 +417,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
           !hasThinkBlock ? "py-2" : "pt-1 pb-2" // 根据是否有思考块调整垂直间距
         )}>
           <StreamingText
-            content={mainContent}
+            content={preprocessMainContent(mainContent)}
             isStreaming={isStreaming}
             isComplete={!isStreaming}
             typewriterSpeed={150}
