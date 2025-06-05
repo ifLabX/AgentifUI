@@ -14,7 +14,7 @@ interface SuggestedQuestionButtonProps {
 /**
  * 推荐问题按钮组件
  * 具有大圆角效果和渐进显示动画
- * 按钮内文字始终保持一行，完整显示问题内容
+ * 按钮内文字保持单行显示，按钮本身根据容器宽度自动换行
  */
 export const SuggestedQuestionButton = ({ 
   question, 
@@ -28,17 +28,19 @@ export const SuggestedQuestionButton = ({
     onClick(question)
   }
 
-  // 🎯 根据问题长度动态设置最大宽度，确保完整显示且合理换行
+  // --- 根据问题长度动态设置最大宽度，确保单行显示 ---
   const getMaxWidth = () => {
     const textLength = question.length
-    
-    if (textLength <= 10) {
+     
+    if (textLength <= 6) {
+      return "max-w-[120px]"  // 很短问题
+    } else if (textLength <= 10) {
       return "max-w-[200px]"  // 短问题
-    } else if (textLength <= 20) {
+    } else if (textLength <= 15) {
       return "max-w-[300px]"  // 中等问题
-    } else if (textLength <= 30) {
+    } else if (textLength <= 20) {
       return "max-w-[400px]"  // 较长问题
-    } else if (textLength <= 50) {
+    } else if (textLength <= 30) {
       return "max-w-[500px]"  // 长问题
     } else {
       return "max-w-[600px]"  // 超长问题
@@ -52,11 +54,12 @@ export const SuggestedQuestionButton = ({
         "text-left px-6 py-2.5 rounded-3xl border transition-colors duration-200 cursor-pointer",
         "font-serif text-sm leading-relaxed",
         
-        // --- 🎯 关键：确保文字始终保持一行，完整显示 ---
-        "whitespace-nowrap", // 强制文字不换行
+        // --- 🎯 关键：文字保持单行，按钮在flex容器中自动换行 ---
+        "whitespace-nowrap", // 强制文字不换行，保持单行
+        "flex-shrink-0", // 防止按钮被压缩
         "w-auto", // 宽度根据内容自适应
         getMaxWidth(), // 根据文字长度动态设置最大宽度
-        "min-w-[80px]", // 设置最小宽度，避免按钮过窄
+        "min-w-[100px]", // 设置最小宽度，避免按钮过窄
         
         // --- 动画效果：使用与标题相同的fade-in动画 ---
         "opacity-0 animate-fade-in",
