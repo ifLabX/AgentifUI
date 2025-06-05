@@ -69,6 +69,33 @@ const extractThinkContent = (rawContent: string): {
   return { hasThinkBlock: false, thinkContent: '', mainContent: rawContent, thinkClosed: false };
 };
 
+// --- 提取纯净的主要内容用于复制功能 ---
+const extractMainContentForCopy = (rawContent: string): string => {
+  // 检查是否有未闭合的关键标签
+  const openThinkCount = (rawContent.match(/<think(?:\s[^>]*)?>/gi) || []).length;
+  const closeThinkCount = (rawContent.match(/<\/think>/gi) || []).length;
+  const openDetailsCount = (rawContent.match(/<details(?:\s[^>]*)?>/gi) || []).length;
+  const closeDetailsCount = (rawContent.match(/<\/details>/gi) || []).length;
+  
+  // 如果有未闭合的标签，说明内容还在生成中，返回空字符串
+  if (openThinkCount > closeThinkCount || openDetailsCount > closeDetailsCount) {
+    return '';
+  }
+  
+  let cleanContent = rawContent;
+  
+  // 移除所有 <think>...</think> 块
+  const thinkRegex = /<think(?:\s[^>]*)?>[\s\S]*?<\/think>/gi;
+  cleanContent = cleanContent.replace(thinkRegex, '');
+  
+  // 移除所有 <details>...</details> 块
+  const detailsRegex = /<details(?:\s[^>]*)?>[\s\S]*?<\/details>/gi;
+  cleanContent = cleanContent.replace(detailsRegex, '');
+  
+  // 清理多余的空白字符
+  return cleanContent.replace(/\n\s*\n/g, '\n').trim();
+};
+
 interface AssistantMessageProps {
   id: string;
   content: string
@@ -386,7 +413,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
           {/* 助手消息操作按钮 - 添加-ml-2来确保左对齐，调整间距 */}
           <AssistantMessageActions
             messageId={id}
-            content={content} // 使用原始文本而不是处理后的mainContent
+            content={extractMainContentForCopy(content) || undefined}
             onRegenerate={() => console.log('Regenerate message', id)}
             onFeedback={(isPositive) => console.log('Feedback', isPositive ? 'positive' : 'negative', id)} //后续修改反馈功能
             isRegenerating={isStreaming}
