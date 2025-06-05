@@ -45,10 +45,11 @@ export const AssistantMessageActions: React.FC<AssistantMessageActionsProps> = (
       isAssistantMessage={true}
       className={className}
     >
-      {/* 复制按钮 - 只在有内容时显示 */}
-      {hasContentToCopy && (
-        <CopyButton content={content} />
-      )}
+      {/* 复制按钮 - 始终显示，但根据内容条件禁用 */}
+      <CopyButton 
+        content={content} 
+        disabled={!hasContentToCopy}
+      />
       <RegenerateButton 
         onRegenerate={onRegenerate}
         isRegenerating={isRegenerating}

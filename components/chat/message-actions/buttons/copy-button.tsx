@@ -6,7 +6,8 @@ import { MessageActionButton } from "@components/ui/message-action-button"
 import { useCopyAction } from "../hooks/use-copy-action"
 
 interface CopyButtonProps {
-  content: string
+  content?: string
+  disabled?: boolean
   tooltipPosition?: "top" | "bottom" | "left" | "right"
   className?: string
 }
@@ -18,19 +19,29 @@ interface CopyButtonProps {
  */
 export const CopyButton: React.FC<CopyButtonProps> = ({
   content,
+  disabled = false,
   tooltipPosition = "bottom",
   className
 }) => {
-  const { handleCopy, isCopied } = useCopyAction(content)
+  const { handleCopy, isCopied } = useCopyAction(content || '')
+  
+  // 当没有内容或被禁用时，不执行复制操作
+  const handleClick = () => {
+    if (disabled || !content || content.trim().length === 0) {
+      return
+    }
+    handleCopy()
+  }
   
   return (
     <MessageActionButton
       icon={FiCopy}
       activeIcon={FiCheck}
-      label="复制"
+      label={disabled ? "无内容可复制" : "复制"}
       activeLabel="已复制"
-      onClick={handleCopy}
-      active={isCopied}
+      onClick={handleClick}
+      active={isCopied && !disabled}
+      disabled={disabled}
       tooltipPosition={tooltipPosition}
       className={className}
     />
