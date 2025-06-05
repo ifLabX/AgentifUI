@@ -55,7 +55,7 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
   },
   
   // --- BEGIN COMMENT ---
-  // 增强版 scrollToBottom 方法，确保一定会滚动到底部
+  // 🎯 优化：scrollToBottom 方法，更智能地处理状态更新
   // --- END COMMENT ---
   scrollToBottom: (behavior = 'auto', onScrollEnd) => {
     const { scrollRef } = get();
@@ -66,31 +66,37 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
             top: scrollRef.current.scrollHeight,
             behavior: behavior
           });
+          
           // --- BEGIN COMMENT ---
-          // 确保程序化滚动后状态一致
+          // 🎯 修复：延迟状态更新，让滚动事件处理器先执行
+          // 这样可以避免覆盖用户的滚动意图
           // --- END COMMENT ---
-          if (get().userScrolledUp !== false || get().isAtBottom !== true) {
-            set({ userScrolledUp: false, isAtBottom: true });
-          }
-          // --- BEGIN COMMENT ---
-          // 如果提供了 onScrollEnd 回调，则调用它
-          // --- END COMMENT ---
-          if (onScrollEnd) {
-            onScrollEnd();
-          }
+          setTimeout(() => {
+            // 重新检查当前滚动位置，而不是强制设置
+            if (scrollRef.current) {
+              const element = scrollRef.current;
+              const currentIsAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+              
+              // 只有确实滚动到底部时才更新状态
+              if (currentIsAtBottom) {
+                const currentState = get();
+                if (currentState.userScrolledUp !== false || currentState.isAtBottom !== true) {
+                  set({ userScrolledUp: false, isAtBottom: true });
+                }
+              }
+            }
+            
+            if (onScrollEnd) {
+              onScrollEnd();
+            }
+          }, behavior === 'smooth' ? 100 : 0); // 平滑滚动需要更多时间
         } else {
-          // --- BEGIN COMMENT ---
-          // 如果 scrollRef.current 不知何故变为空，仍然调用 onScrollEnd
-          // --- END COMMENT ---
           if (onScrollEnd) {
             onScrollEnd();
           }
         }
       });
     } else {
-      // --- BEGIN COMMENT ---
-      // 如果没有 scrollRef，立即调用 onScrollEnd
-      // --- END COMMENT ---
       if (onScrollEnd) {
         onScrollEnd();
       }
@@ -98,15 +104,14 @@ export const useChatScrollStore = create<ChatScrollState>((set, get) => ({
   },
   
   // --- BEGIN COMMENT ---
-  // 添加一个新方法，用于关键事件后重置滚动状态
+  // 🎯 优化：resetScrollState 方法，用于用户主动点击按钮时的重置
   // --- END COMMENT ---
   resetScrollState: (onScrollEnd) => {
     // --- BEGIN COMMENT ---
-    // 首先设置状态，如果 ref 可用则滚动
+    // 用户主动重置，强制设置状态并滚动
     // --- END COMMENT ---
-    if (get().userScrolledUp !== false || get().isAtBottom !== true) {
-      set({ userScrolledUp: false, isAtBottom: true });
-    }
+    set({ userScrolledUp: false, isAtBottom: true });
+    
     const { scrollRef } = get();
     if (scrollRef?.current) {
       requestAnimationFrame(() => {

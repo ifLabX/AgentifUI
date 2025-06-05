@@ -1,40 +1,35 @@
 import { ArrowDown } from 'lucide-react'
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store'
-import { useChatLayoutStore } from '@lib/stores/chat-layout-store'
-import { useChatInputStore } from '@lib/stores/chat-input-store'
-import { useWelcomeScreen } from '@lib/hooks'
-import { useChatInterface } from '@lib/hooks/use-chat-interface'
 import { useThemeColors } from '@lib/hooks/use-theme-colors'
+import { usePathname } from 'next/navigation'
 import { cn } from '@lib/utils'
 
 // --- BEGIN COMMENT ---
 // ScrollToBottomButton 组件
-// 当用户向上滚动离开聊天底部时显示，点击可平滑滚动回底部。
-// 样式已简化：白色背景，仅向下箭头，尺寸减小。
+// 简化渲染逻辑：只在 /chat 路径下（非 /chat/new）且不在底部时显示
 // --- END COMMENT ---
 export const ScrollToBottomButton = () => {
-  const { isAtBottom, userScrolledUp } = useChatScrollStore();
+  const { isAtBottom } = useChatScrollStore();
   const { colors, isDark } = useThemeColors();
-  const scrollToBottom = useChatScrollStore((state) => state.scrollToBottom);
   const resetScrollState = useChatScrollStore((state) => state.resetScrollState);
-  const { isWelcomeScreen: isOnWelcomeScreen } = useWelcomeScreen();
-  const { messages } = useChatInterface();
+  const pathname = usePathname();
 
   // --- BEGIN COMMENT ---
-  // 🎯 修复：添加消息数量检查，确保只有在真正需要滚动时才显示按钮
-  // 条件：不在欢迎屏幕 && 不在底部 && 有足够的消息内容
+  // 🎯 简化的渲染条件：
+  // 1. 在 /chat 路径下（但不是 /chat/new）
+  // 2. 不在底部
   // --- END COMMENT ---
-  const shouldRender = !isOnWelcomeScreen && !isAtBottom && messages.length > 1;
+  const isInChatPage = pathname.startsWith('/chat') && pathname !== '/chat/new';
+  const shouldRender = isInChatPage && !isAtBottom;
   
   // --- BEGIN COMMENT ---
-  // 恢复动态计算 bottom 偏移量
+  // 动态计算 bottom 偏移量
   // 基于输入框高度（CSS 变量 --chat-input-height）
-  // 额外增加一些间距
   // --- END COMMENT ---
   const bottomOffset = `calc(var(--chat-input-height, 80px) + 5.5rem)`;
 
   const handleClick = () => {
-    // 使用新增的重置滚动状态方法，确保完全重置状态并滚动到底部
+    // 重置滚动状态并滚动到底部
     resetScrollState();
   };
 
