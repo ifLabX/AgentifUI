@@ -33,6 +33,39 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
 }) => {
   // 移除 useTheme 和 useThemeColors，使用 CSS 变量替代
 
+  // --- BEGIN COMMENT ---
+  // 预处理内容，转义自定义HTML标签以避免浏览器解析错误
+  // 类似于代码块的处理方式，让不认识的标签显示为文本
+  // --- END COMMENT ---
+  const preprocessContent = (content: string): string => {
+    // 定义已知的安全HTML标签白名单
+    const knownHtmlTags = new Set([
+      'div', 'span', 'p', 'br', 'hr', 'strong', 'em', 'b', 'i', 'u', 's',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'dl', 'dt', 'dd',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'blockquote', 'pre', 'code',
+      'a', 'img',
+      'sub', 'sup',
+      'mark', 'del', 'ins'
+    ]);
+
+    // 转义不在白名单中的HTML标签，让它们显示为文本
+    return content.replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
+      if (!knownHtmlTags.has(tagName.toLowerCase())) {
+        return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      return match;
+    }).replace(/<\/([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
+      if (!knownHtmlTags.has(tagName.toLowerCase())) {
+        return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      return match;
+    });
+  };
+
+  const processedContent = preprocessContent(markdownContent);
+
   // --- Markdown 渲染器的组件配置 ---
   const markdownComponents: Components = {
     code({ className, children, ...props }: any) {
@@ -365,7 +398,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
           remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex, rehypeRaw]}
           components={markdownComponents}
-          children={markdownContent}
+          children={processedContent}
         />
       </div>
     </motion.div>
