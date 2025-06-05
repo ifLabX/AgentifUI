@@ -245,8 +245,8 @@ export function RecentsList({
           // 普通悬停样式
           !isSelected && (
             isDark 
-              ? "hover:bg-stone-800 border border-stone-800 hover:border-stone-700" 
-              : "hover:bg-stone-200/70 border border-stone-200 hover:border-stone-400"
+              ? "hover:bg-stone-700/50 border border-stone-600 hover:border-stone-500" 
+              : "hover:bg-stone-200/70 border border-stone-300 hover:border-stone-400"
           ),
           // 选中状态的边框
           isSelected && (
@@ -256,8 +256,8 @@ export function RecentsList({
           ),
           !isSelected && (
             isDark 
-              ? "border border-stone-800" 
-              : "border border-stone-200"
+              ? "border border-stone-600" 
+              : "border border-stone-300"
           ),
           "mb-3"
         )}
@@ -438,7 +438,7 @@ export function RecentsList({
             {conversations.length > 0 && (
               <div className={cn(
                 "flex items-center justify-center py-6 mt-4 border-t",
-                isDark ? "text-stone-500 border-stone-700" : "text-stone-500 border-stone-200"
+                isDark ? "text-stone-500 border-stone-600" : "text-stone-500 border-stone-300"
               )}>
                 <Clock className="h-4 w-4 mr-2" />
                 <span className="text-sm">
