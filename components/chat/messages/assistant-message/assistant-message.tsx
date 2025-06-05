@@ -53,9 +53,15 @@ const extractThinkContent = (rawContent: string): {
   mainContent: string;
   thinkClosed: boolean;
 } => {
+  // --- BEGIN COMMENT ---
+  // 支持两种标签：<think> 和 <details>
+  // 优先检查 <think> 标签，如果没有则检查 <details> 标签
+  // --- END COMMENT ---
+  
+  // 检查 <think> 标签
   const thinkStartTag = '<think>';
   const thinkEndTag = '</think>';
-
+  
   if (rawContent.startsWith(thinkStartTag)) {
     const endTagIndex = rawContent.indexOf(thinkEndTag);
     if (endTagIndex !== -1) {
@@ -66,12 +72,46 @@ const extractThinkContent = (rawContent: string): {
     const thinkContent = rawContent.substring(thinkStartTag.length);
     return { hasThinkBlock: true, thinkContent, mainContent: '', thinkClosed: false };
   }
+  
+  // 检查 <details> 标签
+  const detailsStartRegex = /<details(?:\s[^>]*)?>/i;
+  const detailsMatch = rawContent.match(detailsStartRegex);
+  
+  if (detailsMatch && rawContent.indexOf(detailsMatch[0]) === 0) {
+    const detailsStartTag = detailsMatch[0];
+    const detailsEndTag = '</details>';
+    const endTagIndex = rawContent.indexOf(detailsEndTag);
+    
+    if (endTagIndex !== -1) {
+      // 提取details内容，移除summary部分
+      let detailsContent = rawContent.substring(detailsStartTag.length, endTagIndex);
+      
+      // 移除 <summary>...</summary> 部分，只保留实际内容
+      const summaryRegex = /<summary[^>]*>[\s\S]*?<\/summary>/i;
+      detailsContent = detailsContent.replace(summaryRegex, '').trim();
+      
+      const mainContent = rawContent.substring(endTagIndex + detailsEndTag.length);
+      return { hasThinkBlock: true, thinkContent: detailsContent, mainContent, thinkClosed: true };
+    }
+    
+    // 未闭合的details标签
+    let detailsContent = rawContent.substring(detailsStartTag.length);
+    
+    // 移除 <summary>...</summary> 部分（如果存在）
+    const summaryRegex = /<summary[^>]*>[\s\S]*?<\/summary>/i;
+    detailsContent = detailsContent.replace(summaryRegex, '').trim();
+    
+    return { hasThinkBlock: true, thinkContent: detailsContent, mainContent: '', thinkClosed: false };
+  }
+  
   return { hasThinkBlock: false, thinkContent: '', mainContent: rawContent, thinkClosed: false };
 };
 
 // --- 提取纯净的主要内容用于复制功能 ---
 const extractMainContentForCopy = (rawContent: string): string => {
-  // 检查是否有未闭合的关键标签
+  // --- BEGIN COMMENT ---
+  // 检查是否有未闭合的关键标签（think 和 details 都由 Think Block 处理）
+  // --- END COMMENT ---
   const openThinkCount = (rawContent.match(/<think(?:\s[^>]*)?>/gi) || []).length;
   const closeThinkCount = (rawContent.match(/<\/think>/gi) || []).length;
   const openDetailsCount = (rawContent.match(/<details(?:\s[^>]*)?>/gi) || []).length;
@@ -88,7 +128,7 @@ const extractMainContentForCopy = (rawContent: string): string => {
   const thinkRegex = /<think(?:\s[^>]*)?>[\s\S]*?<\/think>/gi;
   cleanContent = cleanContent.replace(thinkRegex, '');
   
-  // 移除所有 <details>...</details> 块
+  // 移除所有 <details>...</details> 块（现在由 Think Block 处理）
   const detailsRegex = /<details(?:\s[^>]*)?>[\s\S]*?<\/details>/gi;
   cleanContent = cleanContent.replace(detailsRegex, '');
   

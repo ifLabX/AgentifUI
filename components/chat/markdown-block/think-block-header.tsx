@@ -34,7 +34,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   // --- BEGIN COMMENT --- 使用 status --- END COMMENT ---
   status, 
   isOpen, 
-  onToggle 
+  onToggle,
 }) => {
   // --- BEGIN COMMENT --- 移除 useTranslation hook --- END COMMENT ---
   // const { t } = useTranslation();
@@ -44,7 +44,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   // --- BEGIN COMMENT --- 根据 status 判断是否正在思考 (用于 Spinner 和样式) --- END COMMENT ---
   const isThinking = status === 'thinking'; 
 
-  // --- BEGIN COMMENT --- 获取状态对应的显示文本 --- END COMMENT ---
+  // --- BEGIN COMMENT --- 根据状态获取对应的显示文本，统一使用think的文本 --- END COMMENT ---
   const getStatusText = () => { 
     switch (status) {
       case 'thinking':
