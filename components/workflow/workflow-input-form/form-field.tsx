@@ -13,6 +13,7 @@ interface FormFieldProps {
   value: any
   onChange: (value: any) => void
   error?: string
+  instanceId?: string // 添加instanceId用于文件上传
 }
 
 /**
@@ -24,7 +25,7 @@ interface FormFieldProps {
  * - select: 下拉选择
  * - file: 文件上传
  */
-export function FormField({ type, config, value, onChange, error }: FormFieldProps) {
+export function FormField({ type, config, value, onChange, error, instanceId }: FormFieldProps) {
   const { isDark } = useTheme()
   
   const baseInputClasses = cn(
@@ -89,6 +90,10 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
       
       case 'file':
         const fileConfig = config as DifyFileInputControl
+        if (!instanceId) {
+          console.warn('[FormField] file类型字段需要instanceId参数')
+          return null
+        }
         return (
           <FileUploadField
             config={{
@@ -100,6 +105,7 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
             value={value || []}
             onChange={onChange}
             error={error}
+            instanceId={instanceId}
           />
         )
       

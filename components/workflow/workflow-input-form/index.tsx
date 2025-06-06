@@ -300,18 +300,21 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
                 value={fieldValue}
                 onChange={fieldOnChange}
                 error={errors[fieldConfig.variable]}
+                instanceId={instanceId}
               />
             )
           })}
           
           {/* --- 文件上传字段 --- */}
           {hasFileUpload && (
-                         <FileUploadField
-               config={fileUploadConfig}
-               value={formData._files || []}
-               onChange={(files: File[]) => handleFieldChange('_files', files)}
-               error={errors._files}
-             />
+            <FileUploadField
+              config={fileUploadConfig}
+              value={formData._files || []}
+              onChange={(files: any[]) => handleFieldChange('_files', files)}
+              error={errors._files}
+              label="文件上传"
+              instanceId={instanceId}
+            />
           )}
         </div>
         

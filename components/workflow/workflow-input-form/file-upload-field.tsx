@@ -1,45 +1,232 @@
 "use client"
 
-import React, { useRef } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
-import { cn } from '@lib/utils'
-import { Upload, X, File } from 'lucide-react'
+import { useSupabaseAuth } from "@lib/supabase/hooks"
+import { cn, formatBytes } from '@lib/utils'
+import { Upload, X, File, CheckCircle2Icon, RotateCcw, AlertCircle } from 'lucide-react'
+import { Spinner } from "@components/ui/spinner"
+import { TooltipWrapper } from "@components/ui/tooltip-wrapper"
+import { uploadDifyFile } from "@lib/services/dify/file-service"
+import type { DifyFileUploadResponse } from "@lib/services/dify/types"
+
+// --- BEGIN COMMENT ---
+// 定义上传文件的状态接口，与聊天输入组件保持一致
+// --- END COMMENT ---
+interface UploadFile {
+  id: string // 本地生成的唯一ID
+  file: File // 原始 File 对象
+  name: string // 文件名
+  size: number // 文件大小
+  type: string // 文件类型 (MIME type)
+  status: "pending" | "uploading" | "success" | "error" // 上传状态
+  progress: number // 上传进度 (0-100)
+  error?: string // 错误信息
+  uploadedId?: string // 上传成功后 Dify 返回的文件 ID
+}
 
 interface FileUploadFieldProps {
   config: any
-  value: File[]
-  onChange: (files: File[]) => void
+  value: any[] // 修改为上传文件对象数组，而不是File数组
+  onChange: (files: any[]) => void // 返回Dify格式的文件对象
   error?: string
-  label?: string // 可选的标签，用于覆盖默认的"文件上传"标签
+  label?: string
+  instanceId: string // 添加instanceId用于Dify API调用
 }
 
 /**
- * 文件上传字段组件
+ * 工作流文件上传字段组件 - 集成Dify文件上传API
  * 
- * 支持的功能：
- * - 多文件上传
- * - 文件类型限制
- * - 文件大小限制
- * - 拖拽上传
+ * 功能特点：
+ * - 集成Dify文件上传API
+ * - 实时上传进度显示
+ * - 支持重试上传
+ * - 文件状态管理
+ * - 与聊天输入组件的文件上传功能保持一致
  */
-export function FileUploadField({ config, value, onChange, error, label }: FileUploadFieldProps) {
+export function FileUploadField({ config, value, onChange, error, label, instanceId }: FileUploadFieldProps) {
   const { isDark } = useTheme()
+  const { session } = useSupabaseAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    onChange([...value, ...files])
+  // --- BEGIN COMMENT ---
+  // 本地文件状态管理，用于跟踪上传状态
+  // --- END COMMENT ---
+  const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([])
+  
+  // --- BEGIN COMMENT ---
+  // 当外部value prop发生变化时，重置uploadFiles状态
+  // 但只在初次渲染时执行，避免与内部状态管理冲突
+  // --- END COMMENT ---
+  const isInitializedRef = useRef(false)
+  
+  useEffect(() => {
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true
+      
+      if (value && value.length > 0) {
+        // 检查value是否已经是处理过的Dify文件格式
+        const isProcessedFiles = value.every(item => 
+          typeof item === 'object' && item.upload_file_id
+        )
+        
+        if (!isProcessedFiles) {
+          // 如果是原始File对象数组，转换为UploadFile格式
+          const convertedFiles = value.map((file: File) => ({
+            id: `${file.name}-${file.lastModified}-${file.size}`,
+            file,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            status: "pending" as const,
+            progress: 0
+          }))
+          setUploadFiles(convertedFiles)
+        }
+      } else {
+        setUploadFiles([])
+      }
+    }
+  }, [value])
+  
+  // --- BEGIN COMMENT ---
+  // 用ref跟踪上次的成功文件ID列表，避免无限循环
+  // --- END COMMENT ---
+  const lastSuccessIdsRef = useRef('')
+  
+  // --- BEGIN COMMENT ---
+  // 当uploadFiles状态变化时，通知父组件
+  // 只传递成功上传的文件的Dify格式数据
+  // --- END COMMENT ---
+  useEffect(() => {
+    const successfulFiles = uploadFiles
+      .filter(file => file.status === 'success' && file.uploadedId)
+      .map(file => ({
+        type: getDifyFileType(file),
+        transfer_method: 'local_file',
+        upload_file_id: file.uploadedId as string,
+        name: file.name,
+        size: file.size,
+        mime_type: file.type,
+      }))
+    
+    // 只有在成功文件列表实际发生变化时才调用onChange
+    const currentSuccessIds = successfulFiles.map(f => f.upload_file_id).sort().join(',')
+    
+    if (lastSuccessIdsRef.current !== currentSuccessIds) {
+      lastSuccessIdsRef.current = currentSuccessIds
+      onChange(successfulFiles)
+    }
+  }, [uploadFiles]) // 移除onChange依赖，避免无限循环
+  
+  // --- BEGIN COMMENT ---
+  // 根据文件类型推断 Dify 文件 type 字段
+  // --- END COMMENT ---
+  const getDifyFileType = (file: UploadFile): 'image' | 'document' | 'audio' | 'video' | 'custom' => {
+    const mime = file.type.toLowerCase()
+    if (mime.startsWith('image/')) return 'image'
+    if (mime.startsWith('audio/')) return 'audio'
+    if (mime.startsWith('video/')) return 'video'
+    if (mime === 'application/pdf' || mime.includes('word') || mime.includes('excel') || mime.includes('csv') || mime.includes('text') || mime.includes('html') || mime.includes('xml') || mime.includes('epub') || mime.includes('powerpoint')) return 'document'
+    return 'custom'
   }
   
-  const handleRemoveFile = (index: number) => {
-    const newFiles = value.filter((_, i) => i !== index)
-    onChange(newFiles)
+  // --- BEGIN COMMENT ---
+  // 更新文件状态的辅助函数
+  // --- END COMMENT ---
+  const updateFileStatus = useCallback((id: string, status: UploadFile["status"], progress?: number, error?: string, uploadedId?: string) => {
+    setUploadFiles(prev => prev.map(file => 
+      file.id === id ? {
+        ...file,
+        status,
+        progress: progress ?? file.progress,
+        error: status === 'error' ? error : undefined,
+        uploadedId: status === 'success' ? uploadedId : file.uploadedId
+      } : file
+    ))
+  }, [])
+  
+  // --- BEGIN COMMENT ---
+  // 上传单个文件到Dify
+  // --- END COMMENT ---
+  const uploadFileToDify = useCallback(async (uploadFile: UploadFile) => {
+    const userIdToUse = session?.user?.id || 'workflow-user-id'
+    
+    try {
+      updateFileStatus(uploadFile.id, 'uploading', 0)
+      
+      const response = await uploadDifyFile(
+        instanceId,
+        uploadFile.file,
+        userIdToUse,
+        (progress) => {
+          updateFileStatus(uploadFile.id, 'uploading', progress)
+        }
+      )
+      
+      updateFileStatus(uploadFile.id, 'success', 100, undefined, response.id)
+      console.log(`[工作流文件上传] 上传成功: ${uploadFile.name} -> ${response.id}`)
+      
+    } catch (error) {
+      const errorMessage = (error as Error).message || '上传失败'
+      updateFileStatus(uploadFile.id, 'error', undefined, errorMessage)
+      console.error(`[工作流文件上传] 上传失败: ${uploadFile.name}`, error)
+    }
+  }, [instanceId, session?.user?.id, updateFileStatus])
+  
+  // --- BEGIN COMMENT ---
+  // 处理文件选择
+  // --- END COMMENT ---
+  const handleFileSelect = useCallback((newFiles: File[]) => {
+    const newUploadFiles = newFiles.map(file => {
+      const uploadFile: UploadFile = {
+        id: `${file.name}-${file.lastModified}-${file.size}`,
+        file,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        status: "pending",
+        progress: 0
+      }
+      
+      // 立即开始上传
+      setTimeout(() => uploadFileToDify(uploadFile), 100)
+      
+      return uploadFile
+    })
+    
+    setUploadFiles(prev => [...prev, ...newUploadFiles])
+  }, [uploadFileToDify])
+  
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      handleFileSelect(files)
+      // 重置输入框
+      e.target.value = ''
+    }
   }
+  
+  const handleRemoveFile = (id: string) => {
+    setUploadFiles(prev => prev.filter(file => file.id !== id))
+  }
+  
+  // --- BEGIN COMMENT ---
+  // 重试上传
+  // --- END COMMENT ---
+  const handleRetryUpload = useCallback((id: string) => {
+    const uploadFile = uploadFiles.find(file => file.id === id)
+    if (uploadFile && uploadFile.status === 'error') {
+      uploadFileToDify(uploadFile)
+    }
+  }, [uploadFiles, uploadFileToDify])
   
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
-    onChange([...value, ...files])
+    if (files.length > 0) {
+      handleFileSelect(files)
+    }
   }
   
   const handleDragOver = (e: React.DragEvent) => {
@@ -50,14 +237,58 @@ export function FileUploadField({ config, value, onChange, error, label }: FileU
     return null
   }
   
-  // 生成文件类型提示文本
-  const getFileTypeHint = () => {
+  // --- BEGIN COMMENT ---
+  // 计算状态统计
+  // --- END COMMENT ---
+  const isUploading = uploadFiles.some(f => f.status === 'uploading')
+  const hasError = uploadFiles.some(f => f.status === 'error')
+  const successCount = uploadFiles.filter(f => f.status === 'success').length
+  const maxFiles = config.number_limits || 3
+  const canUploadMore = uploadFiles.length < maxFiles
+  
+  // --- BEGIN COMMENT ---
+  // 根据Dify文件类型标识符生成文件类型提示和accept字符串
+  // 参考file-type-selector.tsx的逻辑
+  // --- END COMMENT ---
+  const getFileTypeInfo = () => {
     const types = config.allowed_file_types
-    if (types && types.length > 0) {
-      return `支持的文件类型：${types.join(', ')}`
+    if (!types || types.length === 0) {
+      return {
+        hint: '支持上传各种文件类型',
+        accept: undefined
+      }
     }
-    return '支持上传各种文件类型'
+    
+    const typeMap: Record<string, { name: string; accept: string }> = {
+      'image': { 
+        name: '图片', 
+        accept: 'image/*,.jpg,.jpeg,.png,.gif,.bmp,.svg,.webp,.ico,.tiff,.tif'
+      },
+      'document': { 
+        name: '文档', 
+        accept: '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.csv,.html,.xml,.epub,.rtf,.odt,.ods,.odp'
+      },
+      'audio': { 
+        name: '音频', 
+        accept: 'audio/*,.mp3,.wav,.flac,.aac,.ogg,.wma,.m4a,.opus'
+      },
+      'video': { 
+        name: '视频', 
+        accept: 'video/*,.mp4,.avi,.mkv,.mov,.wmv,.flv,.webm,.m4v,.3gp'
+      },
+      'custom': { name: '其他文件', accept: '*/*' }
+    }
+    
+    const supportedTypes = types.map((type: string) => typeMap[type]?.name || type).filter(Boolean)
+    const acceptStrings = types.map((type: string) => typeMap[type]?.accept).filter(Boolean)
+    
+    return {
+      hint: supportedTypes.length > 0 ? `支持上传：${supportedTypes.join('、')}` : '支持上传各种文件类型',
+      accept: acceptStrings.length > 0 ? acceptStrings.join(',') : undefined
+    }
   }
+  
+  const fileTypeInfo = getFileTypeInfo()
   
   // 生成文件大小提示文本
   const getFileSizeHint = () => {
@@ -70,108 +301,182 @@ export function FileUploadField({ config, value, onChange, error, label }: FileU
   
   return (
     <div className="space-y-2 px-1">
-      {/* 标签 - 如果没有传入标签则不显示 */}
+      {/* 标签 */}
       {label && (
         <label className={cn(
           "block text-sm font-medium font-serif mb-2",
           isDark ? "text-stone-200" : "text-stone-700"
         )}>
           {label}
+          {successCount > 0 && (
+            <span className={cn(
+              "ml-2 text-xs",
+              isDark ? "text-stone-400" : "text-stone-500"
+            )}>
+              ({successCount}/{maxFiles} 已上传)
+            </span>
+          )}
         </label>
       )}
       
       {/* 上传区域 */}
-      <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        className={cn(
-          "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer",
-          "transition-all duration-200 ease-in-out",
-          "hover:scale-[1.02] hover:shadow-lg",
-          error
-            ? "border-red-500 bg-red-50 dark:bg-red-900/20 hover:border-red-400"
-            : isDark
-              ? "border-stone-600 bg-stone-700 hover:border-stone-500 hover:bg-stone-600"
-              : "border-stone-300 bg-stone-50 hover:border-stone-400 hover:bg-stone-100"
-        )}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <Upload className={cn(
-          "h-8 w-8 mx-auto mb-2",
-          isDark ? "text-stone-400" : "text-stone-500"
-        )} />
-        <p className={cn(
-          "text-sm font-serif",
-          isDark ? "text-stone-300" : "text-stone-600"
-        )}>
-          点击或拖拽文件到此处上传
-        </p>
-        <div className={cn(
-          "text-xs font-serif mt-2 space-y-1",
-          isDark ? "text-stone-400" : "text-stone-500"
-        )}>
-          <p>最多上传 {config.number_limits || 3} 个文件</p>
-          <p>{getFileTypeHint()}</p>
-          {getFileSizeHint() && <p>{getFileSizeHint()}</p>}
+      {canUploadMore && (
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          className={cn(
+            "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer",
+            "transition-all duration-200 ease-in-out",
+            "hover:scale-[1.02] hover:shadow-lg",
+            error
+              ? "border-red-500 bg-red-50 dark:bg-red-900/20 hover:border-red-400"
+              : isDark
+                ? "border-stone-600 bg-stone-700 hover:border-stone-500 hover:bg-stone-600"
+                : "border-stone-300 bg-stone-50 hover:border-stone-400 hover:bg-stone-100",
+            isUploading && "opacity-75 cursor-not-allowed"
+          )}
+          onClick={() => !isUploading && fileInputRef.current?.click()}
+        >
+          <Upload className={cn(
+            "h-8 w-8 mx-auto mb-2",
+            isDark ? "text-stone-400" : "text-stone-500"
+          )} />
+          <p className={cn(
+            "text-sm font-serif",
+            isDark ? "text-stone-300" : "text-stone-600"
+          )}>
+            {isUploading ? "正在上传..." : "点击或拖拽文件到此处上传"}
+          </p>
+          <div className={cn(
+            "text-xs font-serif mt-2 space-y-1",
+            isDark ? "text-stone-400" : "text-stone-500"
+          )}>
+            <p>最多上传 {maxFiles} 个文件 (剩余 {maxFiles - uploadFiles.length} 个)</p>
+            <p>{fileTypeInfo.hint}</p>
+            {getFileSizeHint() && <p>{getFileSizeHint()}</p>}
+          </div>
         </div>
-      </div>
+      )}
+      
+      {/* 超出限制提示 */}
+      {uploadFiles.length >= maxFiles && (
+        <div className={cn(
+          "px-3 py-2 rounded-lg text-sm font-serif border",
+          isDark 
+            ? "bg-orange-900/30 border-orange-500/30 text-orange-300" 
+            : "bg-orange-100 border-orange-300 text-orange-700"
+        )}>
+          已达到最大文件数量限制 ({uploadFiles.length}/{maxFiles})
+        </div>
+      )}
       
       {/* 隐藏的文件输入 */}
       <input
         ref={fileInputRef}
         type="file"
         multiple
-        accept={config.allowed_file_types ? config.allowed_file_types.map((type: string) => `.${type}`).join(',') : undefined}
+        accept={fileTypeInfo.accept}
         className="hidden"
-        onChange={handleFileSelect}
+        onChange={handleFileInputChange}
+        disabled={isUploading || !canUploadMore}
       />
       
       {/* 已选文件列表 */}
-      {value.length > 0 && (
+      {uploadFiles.length > 0 && (
         <div className="space-y-2">
-          {value.map((file, index) => (
+          {uploadFiles.map((uploadFile) => (
             <div
-              key={index}
+              key={uploadFile.id}
               className={cn(
-                "flex items-center gap-3 p-3 rounded-lg border",
+                "flex items-center gap-3 p-3 rounded-lg border relative",
                 "transition-all duration-200 ease-in-out",
-                "hover:scale-[1.01] hover:shadow-md",
                 "animate-in slide-in-from-top-2 fade-in duration-300",
                 isDark 
-                  ? "border-stone-600 bg-stone-700 hover:bg-stone-600" 
-                  : "border-stone-200 bg-stone-50 hover:bg-stone-100"
+                  ? "border-stone-600 bg-stone-700" 
+                  : "border-stone-200 bg-stone-50",
+                uploadFile.status === 'error' && (isDark ? "border-red-500/30" : "border-red-400/30")
               )}
             >
-              <File className={cn(
-                "h-4 w-4 flex-shrink-0",
-                isDark ? "text-stone-400" : "text-stone-500"
-              )} />
+              {/* 状态图标 */}
+              <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center relative">
+                {uploadFile.status === 'uploading' && <Spinner size="sm" />}
+                {uploadFile.status === 'success' && (
+                  <CheckCircle2Icon className={cn("w-4 h-4", isDark ? "text-green-400" : "text-green-500")} />
+                )}
+                {uploadFile.status === 'error' && (
+                  <TooltipWrapper content="重新上传" placement="top" id={`retry-${uploadFile.id}`}>
+                    <button 
+                      type="button"
+                      onClick={() => handleRetryUpload(uploadFile.id)}
+                      className={cn(
+                        "w-full h-full flex items-center justify-center rounded-full",
+                        "text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20",
+                        "focus:outline-none transition-colors duration-150"
+                      )}
+                      aria-label="重试上传"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                  </TooltipWrapper>
+                )}
+                {uploadFile.status === 'pending' && (
+                  <File className={cn("w-4 h-4", isDark ? "text-stone-400" : "text-stone-500")} />
+                )}
+              </div>
+              
+              {/* 文件信息 */}
               <div className="flex-1 min-w-0">
                 <p className={cn(
                   "text-sm font-serif truncate",
                   isDark ? "text-stone-200" : "text-stone-700"
                 )}>
-                  {file.name}
+                  {uploadFile.name}
                 </p>
-                <p className={cn(
-                  "text-xs font-serif",
-                  isDark ? "text-stone-400" : "text-stone-500"
-                )}>
-                  {(file.size / 1024 / 1024).toFixed(2)} MB
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className={cn(
+                    "text-xs font-serif",
+                    isDark ? "text-stone-400" : "text-stone-500"
+                  )}>
+                    {formatBytes(uploadFile.size)}
+                  </p>
+                  {uploadFile.status === 'uploading' && (
+                    <span className={cn(
+                      "text-xs font-serif",
+                      isDark ? "text-stone-400" : "text-stone-500"
+                    )}>
+                      {uploadFile.progress}%
+                    </span>
+                  )}
+                  {uploadFile.status === 'error' && uploadFile.error && (
+                    <span className="text-xs font-serif text-red-500">
+                      {uploadFile.error}
+                    </span>
+                  )}
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemoveFile(index)}
-                className={cn(
-                  "p-1 rounded-full transition-colors",
-                  isDark
-                    ? "hover:bg-stone-600 text-stone-400 hover:text-stone-300"
-                    : "hover:bg-stone-200 text-stone-500 hover:text-stone-600"
-                )}
-              >
-                <X className="h-4 w-4" />
-              </button>
+              
+              {/* 删除按钮 */}
+              <TooltipWrapper content="移除文件" placement="top" id={`remove-${uploadFile.id}`}>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveFile(uploadFile.id)}
+                  className={cn(
+                    "p-1 rounded-full transition-colors",
+                    isDark
+                      ? "hover:bg-stone-600 text-stone-400 hover:text-stone-300"
+                      : "hover:bg-stone-200 text-stone-500 hover:text-stone-600"
+                  )}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </TooltipWrapper>
+              
+              {/* 上传进度条 */}
+              {uploadFile.status === 'uploading' && (
+                <div className={cn(
+                  "absolute bottom-0 left-0 h-1 bg-blue-500 transition-all duration-300 rounded-b-lg",
+                )} style={{ width: `${uploadFile.progress}%` }} />
+              )}
             </div>
           ))}
         </div>
@@ -179,8 +484,22 @@ export function FileUploadField({ config, value, onChange, error, label }: FileU
       
       {/* 错误提示 */}
       {error && (
-        <div className="text-xs font-serif text-red-500">
+        <div className="flex items-center gap-2 text-xs font-serif text-red-500">
+          <AlertCircle className="h-4 w-4" />
           {error}
+        </div>
+      )}
+      
+      {/* 上传状态提示 */}
+      {hasError && (
+        <div className={cn(
+          "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-serif",
+          isDark 
+            ? "bg-red-900/30 border border-red-500/30 text-red-300" 
+            : "bg-red-100 border border-red-300 text-red-700"
+        )}>
+          <AlertCircle className="h-4 w-4" />
+          部分文件上传失败，请点击重试按钮重新上传
         </div>
       )}
     </div>
