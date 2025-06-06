@@ -152,15 +152,7 @@ export function WorkflowTracker({
               )}>
                 执行进度
               </h3>
-              {/* 显示总体进度 */}
-              {isExecuting && (
-                <span className={cn(
-                  "text-sm font-serif ml-auto",
-                  isDark ? "text-stone-400" : "text-stone-600"
-                )}>
-                  {Math.round(progress)}%
-                </span>
-              )}
+              
             </div>
             
             {/* 如果没有真实节点数据，显示一个简单的占位 */}
