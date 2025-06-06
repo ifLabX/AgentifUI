@@ -345,16 +345,16 @@ export const useCurrentAppStore = create<CurrentAppState>()(
             throw new Error(`获取提供商"${DIFY_PROVIDER_NAME}"失败`);
           }
           
-          // 查找指定的app实例
-          const { createClient } = await import('../supabase/client');
-          const supabase = createClient();
-          
-          const { data: targetInstance, error: targetError } = await supabase
-            .from('service_instances')
-            .select('*')
-            .eq('provider_id', providerResult.data.id)
-            .eq('id', appId)  // 使用UUID主键查找，而不是instance_id
-            .single();
+                // 查找指定的app实例
+      const { createClient } = await import('../supabase/client');
+      const supabase = createClient();
+      
+      const { data: targetInstance, error: targetError } = await supabase
+        .from('service_instances')
+        .select('*')
+        .eq('provider_id', providerResult.data.id)
+        .eq('instance_id', appId)  // 使用instance_id查找，因为传入的是业务标识符
+        .single();
             
           if (targetError || !targetInstance) {
             throw new Error(`未找到app实例: ${appId}`);

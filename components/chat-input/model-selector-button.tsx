@@ -122,12 +122,15 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       const targetApp = modelApps.find(app => app.id === newAppId);
       if (targetApp) {
         setLastUsedModel(newAppId);
+        
+        // --- BEGIN COMMENT ---
+        // 🎯 静默切换应用，不强制跳转页面
+        // switchToSpecificApp需要instance_id，不是数据库UUID
+        // --- END COMMENT ---
+        await switchToSpecificApp(targetApp.instance_id);
+      } else {
+        throw new Error(`未找到应用: ${newAppId}`);
       }
-      
-      // --- BEGIN COMMENT ---
-      // 🎯 静默切换应用，不强制跳转页面
-      // --- END COMMENT ---
-      await switchToSpecificApp(newAppId);
       
       // --- BEGIN COMMENT ---
       // 切换成功后清理聊天状态
@@ -156,15 +159,15 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   // --- END COMMENT ---
   useEffect(() => {
     // 只在有模型应用且当前应用不是模型类型时才尝试恢复
-    if (modelApps.length > 0 && !isCurrentAppModel && currentAppId && targetModelApp && targetModelApp.id !== currentAppId) {
-      console.log(`检测到非模型应用 ${currentAppId}，静默恢复到模型: ${targetModelApp.id}`);
+    if (modelApps.length > 0 && !isCurrentAppModel && currentAppId && targetModelApp && targetModelApp.instance_id !== currentAppId) {
+      console.log(`检测到非模型应用 ${currentAppId}，静默恢复到模型: ${targetModelApp.instance_id}`);
       
       // 静默切换，不显示loading状态，不强制跳转
-      switchToSpecificApp(targetModelApp.id).catch(error => {
+      switchToSpecificApp(targetModelApp.instance_id).catch(error => {
         console.warn('静默恢复模型失败:', error);
       });
     }
-  }, [modelApps.length, isCurrentAppModel, currentAppId, targetModelApp?.id]); // 移除handleAppChange依赖，避免循环
+  }, [modelApps.length, isCurrentAppModel, currentAppId, targetModelApp?.instance_id]); // 移除handleAppChange依赖，避免循环
 
   // --- BEGIN COMMENT ---
   // 🎯 显示状态判断：
