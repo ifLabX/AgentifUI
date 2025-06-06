@@ -61,6 +61,7 @@ interface WorkflowExecutionState {
   setFormData: (data: Record<string, any>) => void
   lockForm: () => void
   unlockForm: () => void
+  resetFormData: () => void
   
   // --- 错误管理 ---
   setError: (error: string | null, canRetry?: boolean) => void
@@ -80,6 +81,8 @@ interface WorkflowExecutionState {
   
   // --- 重置状态 ---
   reset: () => void
+  clearAll: () => void // 完全清空所有状态，包括历史记录
+  clearExecutionState: () => void // 仅清空执行相关状态，保留表单数据和历史记录
 }
 
 /**
@@ -92,6 +95,7 @@ interface WorkflowExecutionState {
  * - 处理错误和重试逻辑
  * - 维护执行历史记录
  * - 同步Dify API标识符
+ * - 提供多种清空状态的方法
  */
 export const useWorkflowExecutionStore = create<WorkflowExecutionState>((set, get) => ({
   // --- 初始状态 ---
@@ -243,6 +247,14 @@ export const useWorkflowExecutionStore = create<WorkflowExecutionState>((set, ge
     set({ formLocked: false })
   },
   
+  resetFormData: () => {
+    console.log('[工作流Store] 重置表单数据')
+    set({ 
+      formData: {},
+      formLocked: false
+    })
+  },
+  
   // --- 错误管理 ---
   setError: (error: string | null, canRetry: boolean = false) => {
     console.log('[工作流Store] 设置错误:', error, '可重试:', canRetry)
@@ -298,7 +310,7 @@ export const useWorkflowExecutionStore = create<WorkflowExecutionState>((set, ge
   
   // --- 重置状态 ---
   reset: () => {
-    console.log('[工作流Store] 重置所有状态')
+    console.log('[工作流Store] 重置所有状态（保留历史记录）')
     set({
       isExecuting: false,
       executionProgress: 0,
@@ -313,6 +325,41 @@ export const useWorkflowExecutionStore = create<WorkflowExecutionState>((set, ge
       currentExecution: null
       // 注意：不重置 executionHistory，保持历史记录
     })
+  },
+  
+  clearAll: () => {
+    console.log('[工作流Store] 完全清空所有状态')
+    set({
+      isExecuting: false,
+      executionProgress: 0,
+      nodes: [],
+      currentNodeId: null,
+      formData: {},
+      formLocked: false,
+      error: null,
+      canRetry: false,
+      executionHistory: [], // 清空历史记录
+      difyTaskId: null,
+      difyWorkflowRunId: null,
+      currentExecution: null
+    })
+  },
+  
+  clearExecutionState: () => {
+    console.log('[工作流Store] 清空执行状态（保留表单数据和历史记录）')
+    set((state) => ({
+      isExecuting: false,
+      executionProgress: 0,
+      nodes: [],
+      currentNodeId: null,
+      formLocked: false,
+      error: null,
+      canRetry: false,
+      difyTaskId: null,
+      difyWorkflowRunId: null,
+      currentExecution: null
+      // 保留：formData, executionHistory
+    }))
   }
 }))
 

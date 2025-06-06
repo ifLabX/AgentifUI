@@ -262,7 +262,8 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
     e.preventDefault()
   }
   
-  if (!config?.enabled) {
+  // 文件上传字段默认启用，除非明确设置为false
+  if (config?.enabled === false) {
     return null
   }
   
@@ -472,14 +473,7 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
                   )}>
                     {formatBytes(uploadFile.size)}
                   </p>
-                  {uploadFile.status === 'uploading' && (
-                    <span className={cn(
-                      "text-xs font-serif",
-                      isDark ? "text-stone-400" : "text-stone-500"
-                    )}>
-                      {uploadFile.progress}%
-                    </span>
-                  )}
+
                   {uploadFile.status === 'error' && uploadFile.error && (
                     <span className="text-xs font-serif text-red-500">
                       {uploadFile.error}
@@ -507,7 +501,8 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
               {/* 上传进度条 */}
               {uploadFile.status === 'uploading' && (
                 <div className={cn(
-                  "absolute bottom-0 left-0 h-1 bg-blue-500 transition-all duration-300 rounded-b-lg",
+                  "absolute bottom-0 left-0 h-1 transition-all duration-300 rounded-b-lg",
+                  isDark ? "bg-stone-400" : "bg-stone-600"
                 )} style={{ width: `${uploadFile.progress}%` }} />
               )}
             </div>

@@ -6,7 +6,7 @@ import { cn } from '@lib/utils'
 import { ExecutionBar } from './execution-bar'
 import { UnifiedStatusPanel } from './unified-status-panel'
 import { ResultViewer } from './result-viewer'
-import { Play, Clock, CheckCircle, XCircle, Square } from 'lucide-react'
+import { Play, Clock, CheckCircle, XCircle, Square, Loader2 } from 'lucide-react'
 // --- 集成真实的节点状态 ---
 import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store'
 
@@ -151,7 +151,10 @@ export function WorkflowTracker({
                 isDark ? "border-stone-600 bg-stone-800/50" : "border-stone-300 bg-stone-50"
               )}>
                 <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-yellow-500 animate-pulse" />
+                  <Loader2 className={cn(
+                    "h-5 w-5 animate-spin",
+                    isDark ? "text-stone-400" : "text-stone-600"
+                  )} />
                   <div>
                     <div className={cn(
                       "font-medium font-serif",

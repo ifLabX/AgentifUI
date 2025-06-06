@@ -104,14 +104,18 @@ export function UnifiedStatusPanel({
               </h2>
             </div>
             
-            {/* 进度百分比（仅在执行时显示） */}
+            {/* 执行状态指示器（仅在执行时显示） */}
             {isExecuting && (
-              <span className={cn(
-                "text-sm font-serif px-2 py-1 rounded-md",
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-serif",
                 isDark ? "bg-stone-700 text-stone-300" : "bg-stone-100 text-stone-700"
               )}>
-                {Math.round(progress)}%
-              </span>
+                <div className={cn(
+                  "w-2 h-2 rounded-full animate-pulse",
+                  isDark ? "bg-stone-400" : "bg-stone-600"
+                )} />
+                <span>执行中</span>
+              </div>
             )}
           </div>
           
@@ -188,26 +192,6 @@ export function UnifiedStatusPanel({
         
         {/* 详细信息行 */}
         <div className="flex items-center gap-6">
-          {/* 进度条（仅在执行时显示） */}
-          {isExecuting && (
-            <div className="flex items-center gap-3">
-              <span className={cn(
-                "text-sm font-serif",
-                isDark ? "text-stone-400" : "text-stone-600"
-              )}>
-                进度
-              </span>
-              <div className={cn(
-                "w-32 h-2 rounded-full overflow-hidden",
-                isDark ? "bg-stone-700" : "bg-stone-200"
-              )}>
-                <div
-                  className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 transition-all duration-500"
-                  style={{ width: `${Math.max(5, progress)}%` }}
-                />
-              </div>
-            </div>
-          )}
           
           {/* 执行时间 */}
           {currentExecution?.elapsed_time && (

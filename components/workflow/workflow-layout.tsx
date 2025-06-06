@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { useMobile } from '@lib/hooks/use-mobile'
 import { cn } from '@lib/utils'
-import { WorkflowInputForm } from './workflow-input-form'
+import { WorkflowInputForm, WorkflowInputFormRef } from './workflow-input-form'
 import { WorkflowTracker } from './workflow-tracker'
 import { ExecutionHistory } from './execution-history'
 import { HistoryButton } from '@components/workflow/history-button'
@@ -48,12 +48,17 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     stopWorkflowExecution,
     retryExecution,
     resetExecution,
+    resetAll,
+    clearExecutionState,
     loadWorkflowHistory
   } = useWorkflowExecution(instanceId)
   
   // --- 保留原有状态管理 ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore()
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('form')
+  
+  // --- 表单重置引用 ---
+  const formResetRef = React.useRef<WorkflowInputFormRef>(null)
   
   // --- 工作流执行回调，现在使用真实的hook ---
   const handleExecuteWorkflow = useCallback(async (formData: Record<string, any>) => {
@@ -92,10 +97,24 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     }
   }, [retryExecution])
   
+  // --- 完全重置（包括表单） ---
+  const handleCompleteReset = useCallback(() => {
+    console.log('[工作流布局] 完全重置')
+    
+    // 重置执行状态
+    resetAll()
+    
+    // 重置表单
+    if (formResetRef.current?.resetForm) {
+      formResetRef.current.resetForm()
+    }
+  }, [resetAll])
+  
   // --- 清除错误 ---
   const handleClearError = useCallback(() => {
-    resetExecution()
-  }, [resetExecution])
+    console.log('[工作流布局] 清除错误')
+    clearExecutionState()
+  }, [clearExecutionState])
   
   // --- 错误提示组件 ---
   const ErrorBanner = ({ error, canRetry, onRetry, onDismiss }: {
@@ -172,6 +191,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
                 instanceId={instanceId}
                 onExecute={handleExecuteWorkflow}
                 isExecuting={isExecuting}
+                ref={formResetRef}
               />
             </div>
           )}
@@ -185,7 +205,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
                 onNodeUpdate={handleNodeUpdate}
                 onStop={handleStopExecution}
                 onRetry={handleRetryExecution}
-                onReset={handleClearError}
+                onReset={handleCompleteReset}
               />
             </div>
           )}
@@ -230,6 +250,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
             instanceId={instanceId}
             onExecute={handleExecuteWorkflow}
             isExecuting={isExecuting}
+            ref={formResetRef}
           />
         </div>
       </div>
@@ -246,7 +267,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
           onNodeUpdate={handleNodeUpdate}
           onStop={handleStopExecution}
           onRetry={handleRetryExecution}
-          onReset={handleClearError}
+          onReset={handleCompleteReset}
         />
       </div>
       

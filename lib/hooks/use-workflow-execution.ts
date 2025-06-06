@@ -553,6 +553,46 @@ export function useWorkflowExecution(instanceId: string) {
     getActions().reset()
   }, [getActions])
   
+  /**
+   * 完全重置（包括表单数据）
+   */
+  const resetAll = useCallback(() => {
+    console.log('[工作流执行] 完全重置所有状态')
+    
+    // 清理连接
+    if (sseConnectionRef.current) {
+      sseConnectionRef.current.close()
+      sseConnectionRef.current = null
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+    
+    // 完全清空Store状态
+    getActions().clearAll()
+  }, [getActions])
+  
+  /**
+   * 仅清空执行状态（保留表单数据和历史记录）
+   */
+  const clearExecutionState = useCallback(() => {
+    console.log('[工作流执行] 清空执行状态')
+    
+    // 清理连接
+    if (sseConnectionRef.current) {
+      sseConnectionRef.current.close()
+      sseConnectionRef.current = null
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+    
+    // 仅清空执行相关状态
+    getActions().clearExecutionState()
+  }, [getActions])
+  
   // --- 组件卸载时清理资源 ---
   useEffect(() => {
     return () => {
@@ -564,6 +604,13 @@ export function useWorkflowExecution(instanceId: string) {
       }
     }
   }, [])
+  
+  // --- 路由切换时清空执行状态 ---
+  useEffect(() => {
+    // 当instanceId变化时，清空之前的执行状态
+    console.log('[工作流执行] instanceId变化，清空执行状态:', instanceId)
+    clearExecutionState()
+  }, [instanceId, clearExecutionState])
   
   // --- 初始化时加载历史记录 ---
   useEffect(() => {
@@ -590,6 +637,8 @@ export function useWorkflowExecution(instanceId: string) {
     stopWorkflowExecution,
     retryExecution,
     resetExecution,
+    resetAll,
+    clearExecutionState,
     loadWorkflowHistory
   }
 } 

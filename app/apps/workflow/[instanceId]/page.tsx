@@ -205,7 +205,7 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
       <NavBar />
       
       {/* --- 主内容区域，为 NavBar 留出空间 --- */}
-      <div className="pt-10 flex-1 min-h-0">
+      <div className="pt-14 flex-1 min-h-0">
         <WorkflowLayout instanceId={instanceId} />
       </div>
     </div>
