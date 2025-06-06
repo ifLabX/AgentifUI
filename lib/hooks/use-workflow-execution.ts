@@ -5,11 +5,11 @@ import type { DifyWorkflowRequestPayload } from '@lib/services/dify/types'
 import { useProfile } from '@lib/hooks/use-profile'
 
 /**
- * 工作流执行Hook - 简化版
+ * 工作流执行Hook - 万无一失的数据保存版本
  * 
  * 核心职责：
- * - 实现完整的9步工作流执行流程
- * - 协调Store、Service和数据库操作
+ * - 实现完整的工作流执行流程
+ * - 确保所有Dify返回的数据都完整保存到数据库
  * - 提供错误处理和恢复机制
  * - 管理数据一致性
  */
@@ -37,7 +37,117 @@ export function useWorkflowExecution(instanceId: string) {
   const abortControllerRef = useRef<AbortController | null>(null)
   
   /**
-   * 核心执行流程：9步完整工作流执行
+   * 万无一失的数据保存函数
+   * 确保所有Dify返回的字段都完整保存到数据库
+   */
+  const saveCompleteExecutionData = useCallback(async (
+    executionId: string,
+    finalResult: any,
+    taskId: string | null,
+    workflowRunId: string | null,
+    nodeExecutionData: any[] = []
+  ) => {
+    console.log('[工作流执行] 开始万无一失的数据保存，executionId:', executionId)
+    console.log('[工作流执行] finalResult:', JSON.stringify(finalResult, null, 2))
+    console.log('[工作流执行] taskId:', taskId)
+    console.log('[工作流执行] workflowRunId:', workflowRunId)
+    console.log('[工作流执行] nodeExecutionData:', nodeExecutionData)
+    
+         try {
+       const { updateCompleteExecutionData } = await import('@lib/db/app-executions')
+      
+      // 确定最终状态
+      const finalStatus: ExecutionStatus = finalResult.status === 'succeeded' ? 'completed' : 'failed'
+      const completedAt = new Date().toISOString()
+      
+      // --- 构建完整的metadata对象，包含所有可能的Dify数据 ---
+      const completeMetadata = {
+        // Dify原始响应数据
+        dify_response: {
+          workflow_id: finalResult.workflow_id || null,
+          created_at: finalResult.created_at || null,
+          finished_at: finalResult.finished_at || null,
+          sequence_number: finalResult.sequence_number || null,
+        },
+        
+        // 节点执行详情
+        node_executions: nodeExecutionData.map(node => ({
+          node_id: node.node_id,
+          node_type: node.node_type || null,
+          title: node.title || null,
+          status: node.status,
+          inputs: node.inputs || null,
+          outputs: node.outputs || null,
+          process_data: node.process_data || null,
+          execution_metadata: node.execution_metadata || null,
+          elapsed_time: node.elapsed_time || null,
+          total_tokens: node.total_tokens || null,
+          total_price: node.total_price || null,
+          currency: node.currency || null,
+          error: node.error || null,
+          created_at: node.created_at || null,
+          index: node.index || null,
+          predecessor_node_id: node.predecessor_node_id || null
+        })),
+        
+        // 执行环境信息
+        execution_context: {
+          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : null,
+          timestamp: new Date().toISOString(),
+          instance_id: instanceId,
+          execution_mode: 'streaming'
+        },
+        
+        // 统计汇总
+        statistics: {
+          total_node_count: nodeExecutionData.length,
+          successful_nodes: nodeExecutionData.filter(n => n.status === 'succeeded').length,
+          failed_nodes: nodeExecutionData.filter(n => n.status === 'failed').length,
+          total_node_tokens: nodeExecutionData.reduce((sum, n) => sum + (n.total_tokens || 0), 0),
+          total_node_elapsed_time: nodeExecutionData.reduce((sum, n) => sum + (n.elapsed_time || 0), 0)
+        }
+      }
+      
+             console.log('[工作流执行] 准备保存的完整数据到数据库')
+      
+             // --- 执行数据库更新 ---
+       const updateResult = await updateCompleteExecutionData(executionId, {
+         status: finalStatus,
+         external_execution_id: workflowRunId,
+         task_id: taskId,
+         outputs: finalResult.outputs,
+         total_steps: finalResult.total_steps,
+         total_tokens: finalResult.total_tokens,
+         elapsed_time: finalResult.elapsed_time,
+         error_message: finalResult.error,
+         completed_at: completedAt,
+         metadata: completeMetadata
+       })
+      
+      if (updateResult.success) {
+        console.log('[工作流执行] ✅ 数据库更新成功')
+        
+                 // 使用数据库返回的完整数据更新Store
+         const completeExecution = updateResult.data
+        
+        // 更新Store状态
+        getActions().updateCurrentExecution(completeExecution)
+        getActions().addExecutionToHistory(completeExecution)
+        
+        return { success: true, data: completeExecution }
+      } else {
+        console.error('[工作流执行] ❌ 数据库更新失败:', updateResult.error)
+        return { success: false, error: updateResult.error }
+      }
+      
+    } catch (error) {
+      console.error('[工作流执行] ❌ 保存完整数据时发生错误:', error)
+      return { success: false, error: error instanceof Error ? error : new Error(String(error)) }
+    }
+  }, [instanceId, getActions])
+
+  /**
+   * 核心执行流程：完整的工作流执行
    */
   const executeWorkflow = useCallback(async (formData: Record<string, any>) => {
     if (!userId) {
@@ -46,6 +156,12 @@ export function useWorkflowExecution(instanceId: string) {
     }
     
     console.log('[工作流执行] 开始执行流程，instanceId:', instanceId)
+    
+    // 用于收集节点执行数据
+    const nodeExecutionData: any[] = []
+    
+    // 声明streamResponse变量以便在catch块中使用
+    let streamResponse: any = null
     
     try {
       // --- 步骤1: 设置初始执行状态 ---
@@ -90,7 +206,10 @@ export function useWorkflowExecution(instanceId: string) {
         total_tokens: 0,
         elapsed_time: null,
         completed_at: null,
-        metadata: {}
+        metadata: {
+          execution_started_at: new Date().toISOString(),
+          initial_form_data: formData
+        }
       }
       
       const createResult = await createExecution(executionData)
@@ -125,33 +244,14 @@ export function useWorkflowExecution(instanceId: string) {
       // 创建中断控制器
       abortControllerRef.current = new AbortController()
       
-      const streamResponse = await streamDifyWorkflow(difyPayload, instanceId)
+      streamResponse = await streamDifyWorkflow(difyPayload, instanceId)
       
       console.log('[工作流执行] Dify流式响应启动成功')
       
-      // --- 步骤6: 获取并存储Dify标识符 ---
-      const taskId = streamResponse.getTaskId()
-      const workflowRunId = streamResponse.getWorkflowRunId()
-      
-      if (taskId) {
-        getActions().setDifyTaskId(taskId)
-      }
-      
-      if (workflowRunId) {
-        getActions().setDifyWorkflowRunId(workflowRunId)
-        
-        // 更新数据库记录
-        await updateExecutionStatus(dbExecution.id, 'running')
-        getActions().updateCurrentExecution({
-          external_execution_id: workflowRunId,
-          task_id: taskId
-        })
-      }
-      
-      // --- 步骤7: 处理SSE事件流 ---
+      // --- 步骤6: 处理SSE事件流并收集所有数据 ---
       console.log('[工作流执行] 开始处理SSE事件流')
       
-      // 处理进度事件
+      // 处理进度事件并收集节点数据
       for await (const event of streamResponse.progressStream) {
         if (abortControllerRef.current?.signal.aborted) {
           console.log('[工作流执行] 执行被中断')
@@ -165,76 +265,138 @@ export function useWorkflowExecution(instanceId: string) {
             title || node_type, 
             `正在执行${title || node_type}...`
           )
+          
+          // 收集节点开始数据
+          const existingNodeIndex = nodeExecutionData.findIndex(n => n.node_id === node_id)
+          if (existingNodeIndex >= 0) {
+            // 更新现有节点数据
+            nodeExecutionData[existingNodeIndex] = {
+              ...nodeExecutionData[existingNodeIndex],
+              ...event.data,
+              status: 'running'
+            }
+          } else {
+            // 添加新节点数据
+            nodeExecutionData.push({
+              ...event.data,
+              status: 'running'
+            })
+          }
+          
         } else if (event.event === 'node_finished') {
           const { node_id, status, error } = event.data
           const success = status === 'succeeded'
           getActions().onNodeFinished(node_id, success, error)
+          
+          // 收集节点完成数据
+          const existingNodeIndex = nodeExecutionData.findIndex(n => n.node_id === node_id)
+          if (existingNodeIndex >= 0) {
+            // 更新现有节点数据
+            nodeExecutionData[existingNodeIndex] = {
+              ...nodeExecutionData[existingNodeIndex],
+              ...event.data
+            }
+          } else {
+            // 添加新节点数据
+            nodeExecutionData.push(event.data)
+          }
         }
       }
       
-      // --- 步骤8: 等待最终完成结果 ---
+      // --- 步骤7: 等待最终完成结果 ---
       const finalResult = await streamResponse.completionPromise
       
-      console.log('[工作流执行] 工作流执行完成')
+      console.log('[工作流执行] 工作流执行完成，最终结果:', JSON.stringify(finalResult, null, 2))
       
-      // --- 步骤9: 更新最终状态 ---
-      const finalStatus: ExecutionStatus = finalResult.status === 'succeeded' ? 'completed' : 'failed'
-      const completedAt = new Date().toISOString()
+      // --- 步骤8: 获取最终的Dify标识符 ---
+      const taskId = streamResponse.getTaskId()
+      const workflowRunId = streamResponse.getWorkflowRunId()
       
-      // 更新数据库
-      await updateExecutionStatus(
+      console.log('[工作流执行] 最终获取的标识符 - taskId:', taskId, 'workflowRunId:', workflowRunId)
+      
+      // --- 步骤9: 万无一失的完整数据保存 ---
+      const saveResult = await saveCompleteExecutionData(
         dbExecution.id,
-        finalStatus,
-        finalResult.error || undefined,
-        completedAt
+        finalResult,
+        taskId,
+        workflowRunId,
+        nodeExecutionData
       )
       
-      const updatedExecution = {
-        ...dbExecution,
-        status: finalStatus,
-        outputs: finalResult.outputs || null,
-        total_steps: finalResult.total_steps || 0,
-        total_tokens: finalResult.total_tokens || 0,
-        elapsed_time: finalResult.elapsed_time || null,
-        completed_at: completedAt,
-        error_message: finalResult.error || null
+      if (!saveResult.success) {
+        throw new Error(`完整数据保存失败: ${saveResult.error?.message || '未知错误'}`)
       }
-      
-      getActions().updateCurrentExecution(updatedExecution)
-      getActions().addExecutionToHistory(updatedExecution)
       
       // 完成执行
       getActions().stopExecution()
       getActions().unlockForm()
       
-      console.log('[工作流执行] 执行流程完成')
+      console.log('[工作流执行] ✅ 执行流程完成，所有数据已完整保存')
       
     } catch (error) {
-      console.error('[工作流执行] 执行失败:', error)
+      console.error('[工作流执行] ❌ 执行失败:', error)
       
-      // 错误处理：更新数据库和Store状态
+      // 错误处理：尝试保存错误状态和已收集的数据
       const errorMessage = error instanceof Error ? error.message : '未知错误'
       getActions().setError(errorMessage, true)
       
-      // 如果有当前执行记录，更新为失败状态
+      // 如果有当前执行记录，尝试保存错误状态和已收集的数据
       const current = useWorkflowExecutionStore.getState().currentExecution
       if (current?.id) {
         try {
-          const { updateExecutionStatus } = await import('@lib/db/app-executions')
-          await updateExecutionStatus(
-            current.id,
-            'failed',
-            errorMessage,
-            new Date().toISOString()
-          )
+          console.log('[工作流执行] 尝试保存错误状态和已收集的数据')
+          
+          // 获取可能的标识符（如果streamResponse存在的话）
+          let taskId: string | null = null
+          let workflowRunId: string | null = null
+          
+          try {
+            // 尝试从可能存在的streamResponse获取标识符
+            if (typeof streamResponse !== 'undefined' && streamResponse) {
+              taskId = streamResponse.getTaskId() || null
+              workflowRunId = streamResponse.getWorkflowRunId() || null
+            }
+          } catch (streamError) {
+            console.warn('[工作流执行] 无法获取streamResponse标识符:', streamError)
+          }
+          
+          // 构建错误状态的完整数据
+          const errorMetadata = {
+            error_details: {
+              message: errorMessage,
+              timestamp: new Date().toISOString(),
+              collected_node_data: nodeExecutionData
+            },
+            execution_context: {
+              user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : null,
+              instance_id: instanceId,
+              execution_mode: 'streaming'
+            }
+          }
+          
+                     const { updateCompleteExecutionData } = await import('@lib/db/app-executions')
+           await updateCompleteExecutionData(current.id, {
+             status: 'failed',
+             error_message: errorMessage,
+             completed_at: new Date().toISOString(),
+             external_execution_id: workflowRunId,
+             task_id: taskId,
+             metadata: errorMetadata
+           })
           
           getActions().updateCurrentExecution({
             status: 'failed',
             error_message: errorMessage,
-            completed_at: new Date().toISOString()
+            completed_at: new Date().toISOString(),
+            external_execution_id: workflowRunId,
+            task_id: taskId,
+            metadata: errorMetadata
           })
+          
+          console.log('[工作流执行] ✅ 错误状态和数据已保存')
+          
         } catch (updateError) {
-          console.error('[工作流执行] 更新失败状态时出错:', updateError)
+          console.error('[工作流执行] ❌ 更新失败状态时出错:', updateError)
         }
       }
     } finally {
@@ -247,7 +409,7 @@ export function useWorkflowExecution(instanceId: string) {
         abortControllerRef.current = null
       }
     }
-  }, [instanceId, userId, getActions])
+  }, [instanceId, userId, getActions, saveCompleteExecutionData])
   
   /**
    * 停止工作流执行
