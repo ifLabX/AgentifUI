@@ -4,12 +4,11 @@ import React, { useState } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { ExecutionBar } from './execution-bar'
-import { WorkflowStatus } from './workflow-status'
+import { UnifiedStatusPanel } from './unified-status-panel'
 import { ResultViewer } from './result-viewer'
 import { Play, Clock, CheckCircle, XCircle, Square } from 'lucide-react'
 // --- 集成真实的节点状态 ---
 import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store'
-import { ExecutionControlPanel } from '../execution-control-panel'
 
 interface WorkflowTrackerProps {
   isExecuting: boolean
@@ -29,6 +28,7 @@ interface WorkflowTrackerProps {
  * - 细粒度节点进度跟踪
  * - 执行结果展示
  * - 支持 SSE 事件处理
+ * - 统一的状态面板（合并了控制面板和状态显示）
  */
 export function WorkflowTracker({ 
   isExecuting, 
@@ -76,9 +76,9 @@ export function WorkflowTracker({
   
   return (
     <div className="h-full flex flex-col">
-      {/* --- 执行控制面板 --- */}
+      {/* --- 统一状态面板 --- */}
       {(onStop || onRetry || onReset) && (
-        <ExecutionControlPanel
+        <UnifiedStatusPanel
           isExecuting={isExecuting}
           progress={progress}
           error={error}
@@ -87,20 +87,9 @@ export function WorkflowTracker({
           onStop={onStop || (() => {})}
           onRetry={onRetry || (() => {})}
           onReset={onReset || (() => {})}
-        />
-      )}
-      
-      {/* --- 状态头部 --- */}
-      <div className={cn(
-        "px-6 py-4 border-b flex-shrink-0",
-        isDark ? "border-stone-700" : "border-stone-200"
-      )}>
-        <WorkflowStatus 
-          status={overallStatus}
-          execution={currentExecution}
           onShowResult={() => setShowResult(true)}
         />
-      </div>
+      )}
       
       {/* --- 节点列表 --- */}
       <div className="flex-1 overflow-y-auto px-6 py-4">
