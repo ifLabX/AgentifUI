@@ -4,11 +4,13 @@ import React from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { useThemeColors } from '@lib/hooks/use-theme-colors'
 import { cn } from '@lib/utils'
-import { CheckCircle, XCircle, Clock, ChevronRight } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, ChevronRight, Check } from 'lucide-react'
 
 interface ExecutionItemProps {
   execution: any
   onClick: () => void
+  isMultiSelectMode?: boolean
+  isSelected?: boolean
 }
 
 /**
@@ -16,7 +18,7 @@ interface ExecutionItemProps {
  * 
  * 显示执行记录的基本信息和状态
  */
-export function ExecutionItem({ execution, onClick }: ExecutionItemProps) {
+export function ExecutionItem({ execution, onClick, isMultiSelectMode, isSelected }: ExecutionItemProps) {
   const { isDark } = useTheme()
   const { colors } = useThemeColors()
   
@@ -71,12 +73,39 @@ export function ExecutionItem({ execution, onClick }: ExecutionItemProps) {
       className={cn(
         "p-3 rounded-md border cursor-pointer transition-all duration-200",
         "hover:shadow-sm",
-        isDark
-          ? "border-stone-700/50 bg-stone-700/30 hover:bg-stone-700/50 hover:border-stone-600/50"
-          : "border-stone-300/50 bg-stone-50/50 hover:bg-stone-200/50 hover:border-stone-400/50"
+        // 选中状态样式
+        isMultiSelectMode && isSelected && (
+          isDark
+            ? "border-stone-500 bg-stone-600/50"
+            : "border-stone-400 bg-stone-300/50"
+        ),
+        // 默认样式
+        (!isMultiSelectMode || !isSelected) && (
+          isDark
+            ? "border-stone-700/50 bg-stone-700/30 hover:bg-stone-700/50 hover:border-stone-600/50"
+            : "border-stone-300/50 bg-stone-50/50 hover:bg-stone-200/50 hover:border-stone-400/50"
+        )
       )}
     >
       <div className="flex items-center justify-between">
+        {/* 多选模式下的复选框 */}
+        {isMultiSelectMode && (
+          <div className={cn(
+            "flex items-center justify-center w-4 h-4 rounded border mr-3",
+            isSelected
+              ? isDark
+                ? "bg-stone-500 border-stone-500"
+                : "bg-stone-600 border-stone-600"
+              : isDark
+                ? "border-stone-600"
+                : "border-stone-300"
+          )}>
+            {isSelected && (
+              <Check className="h-3 w-3 text-white" />
+            )}
+          </div>
+        )}
+        
         <div className="flex-1 min-w-0">
           {/* 标题和状态 */}
           <div className="flex items-center gap-2 mb-1.5">
@@ -125,10 +154,13 @@ export function ExecutionItem({ execution, onClick }: ExecutionItemProps) {
             {getStatusText()}
           </span>
           
-          <ChevronRight className={cn(
-            "h-3.5 w-3.5",
-            isDark ? "text-stone-500" : "text-stone-400"
-          )} />
+          {/* 只在非多选模式下显示箭头 */}
+          {!isMultiSelectMode && (
+            <ChevronRight className={cn(
+              "h-3.5 w-3.5",
+              isDark ? "text-stone-500" : "text-stone-400"
+            )} />
+          )}
         </div>
       </div>
     </div>
