@@ -29,9 +29,12 @@ export function WorkflowStatus({ status, execution, onShowResult }: WorkflowStat
         }
       case 'completed':
         return {
-          icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+          icon: <CheckCircle className={cn(
+            "h-5 w-5",
+            isDark ? "text-stone-400" : "text-stone-600"
+          )} />,
           text: '执行完成',
-          color: 'text-green-600 dark:text-green-400'
+          color: isDark ? 'text-white' : 'text-stone-600'
         }
       case 'failed':
         return {

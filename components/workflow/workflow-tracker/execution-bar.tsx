@@ -64,15 +64,27 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
   const getStatusIcon = () => {
     switch (node.status) {
       case 'running':
-        return <Loader2 className="h-4 w-4 animate-spin text-stone-600 dark:text-stone-300" />
+        return <Loader2 className={cn(
+          "h-4 w-4 animate-spin",
+          isDark ? "text-stone-400" : "text-stone-600"
+        )} />
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-stone-700 dark:text-stone-200" />
+        return <CheckCircle className={cn(
+          "h-4 w-4",
+          isDark ? "text-stone-400" : "text-stone-600"
+        )} />
       case 'failed':
         return <XCircle className="h-4 w-4 text-red-500" />
       case 'pending':
-        return <Clock className="h-4 w-4 text-stone-400" />
+        return <Clock className={cn(
+          "h-4 w-4",
+          isDark ? "text-stone-500" : "text-stone-400"
+        )} />
       default:
-        return <AlertCircle className="h-4 w-4 text-stone-400" />
+        return <AlertCircle className={cn(
+          "h-4 w-4",
+          isDark ? "text-stone-500" : "text-stone-400"
+        )} />
     }
   }
   

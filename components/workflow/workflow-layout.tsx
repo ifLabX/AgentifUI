@@ -198,7 +198,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
       
       {/* 历史记录侧边栏 */}
       {showHistory && (
-        <div className="w-1/3 min-w-80 border-l border-stone-200 dark:border-stone-700">
+        <div className="w-80 min-w-72 border-l border-stone-200 dark:border-stone-700">
           <ExecutionHistory
             instanceId={instanceId}
             onClose={() => setShowHistory(false)}
