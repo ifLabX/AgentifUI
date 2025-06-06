@@ -7,6 +7,7 @@ import { cn } from '@lib/utils'
 import { WorkflowInputForm, WorkflowInputFormRef } from './workflow-input-form'
 import { WorkflowTracker } from './workflow-tracker'
 import { ExecutionHistory } from './execution-history'
+import { ResultViewer } from './workflow-tracker/result-viewer'
 import { HistoryButton } from '@components/workflow/history-button'
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher'
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store'
@@ -56,6 +57,11 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   // --- 保留原有状态管理 ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore()
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('form')
+  
+  // --- ResultViewer 状态管理 ---
+  const [showResultViewer, setShowResultViewer] = useState(false)
+  const [selectedExecution, setSelectedExecution] = useState<any>(null)
+  const [executionResult, setExecutionResult] = useState<any>(null)
   
   // --- 表单重置引用 ---
   const formResetRef = React.useRef<WorkflowInputFormRef>(null)
@@ -115,6 +121,14 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     console.log('[工作流布局] 清除错误')
     clearExecutionState()
   }, [clearExecutionState])
+  
+  // --- 处理查看结果 ---
+  const handleViewResult = useCallback((result: any, execution: any) => {
+    console.log('[工作流布局] 查看执行结果:', execution)
+    setExecutionResult(result)
+    setSelectedExecution(execution)
+    setShowResultViewer(true)
+  }, [])
   
   // --- 错误提示组件 ---
   const ErrorBanner = ({ error, canRetry, onRetry, onDismiss }: {
@@ -216,6 +230,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
                 instanceId={instanceId}
                 onClose={() => setMobileActiveTab('form')}
                 isMobile={true}
+                onViewResult={handleViewResult}
               />
             </div>
           )}
@@ -283,12 +298,26 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
             instanceId={instanceId}
             onClose={() => setShowHistory(false)}
             isMobile={false}
+            onViewResult={handleViewResult}
           />
         </div>
       )}
       
              {/* 历史记录按钮已移至NavBar */}
       </div>
+      
+      {/* --- 结果查看器（页面层级，带模糊背景） --- */}
+      {showResultViewer && executionResult && selectedExecution && (
+        <ResultViewer
+          result={executionResult}
+          execution={selectedExecution}
+          onClose={() => {
+            setShowResultViewer(false)
+            setSelectedExecution(null)
+            setExecutionResult(null)
+          }}
+        />
+      )}
     </div>
   )
 } 

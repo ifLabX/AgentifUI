@@ -4,13 +4,14 @@ import React from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { useThemeColors } from '@lib/hooks/use-theme-colors'
 import { cn } from '@lib/utils'
-import { CheckCircle, XCircle, Clock, ChevronRight, Check } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, ChevronRight, Check, Loader2 } from 'lucide-react'
 
 interface ExecutionItemProps {
   execution: any
   onClick: () => void
   isMultiSelectMode?: boolean
   isSelected?: boolean
+  isLoading?: boolean
 }
 
 /**
@@ -18,7 +19,7 @@ interface ExecutionItemProps {
  * 
  * 显示执行记录的基本信息和状态
  */
-export function ExecutionItem({ execution, onClick, isMultiSelectMode, isSelected }: ExecutionItemProps) {
+export function ExecutionItem({ execution, onClick, isMultiSelectMode, isSelected, isLoading }: ExecutionItemProps) {
   const { isDark } = useTheme()
   const { colors } = useThemeColors()
   
@@ -154,12 +155,19 @@ export function ExecutionItem({ execution, onClick, isMultiSelectMode, isSelecte
             {getStatusText()}
           </span>
           
-          {/* 只在非多选模式下显示箭头 */}
+          {/* 只在非多选模式下显示箭头或loading */}
           {!isMultiSelectMode && (
-            <ChevronRight className={cn(
-              "h-3.5 w-3.5",
-              isDark ? "text-stone-500" : "text-stone-400"
-            )} />
+            isLoading ? (
+              <Loader2 className={cn(
+                "h-3.5 w-3.5 animate-spin",
+                isDark ? "text-stone-500" : "text-stone-400"
+              )} />
+            ) : (
+              <ChevronRight className={cn(
+                "h-3.5 w-3.5",
+                isDark ? "text-stone-500" : "text-stone-400"
+              )} />
+            )
           )}
         </div>
       </div>

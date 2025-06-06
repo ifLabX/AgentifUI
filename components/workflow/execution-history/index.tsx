@@ -13,6 +13,7 @@ interface ExecutionHistoryProps {
   instanceId: string
   onClose: () => void
   isMobile: boolean
+  onViewResult: (result: any, execution: AppExecution) => void
 }
 
 /**
@@ -26,7 +27,7 @@ interface ExecutionHistoryProps {
  * - 动态开门关门效果
  * - 独立滚动容器
  */
-export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHistoryProps) {
+export function ExecutionHistory({ instanceId, onClose, isMobile, onViewResult }: ExecutionHistoryProps) {
   const { colors, isDark } = useThemeColors()
   const [isLoading, setIsLoading] = useState(true)
   const [isVisible, setIsVisible] = useState(false)
@@ -38,6 +39,11 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [isDeleting, setIsDeleting] = useState(false)
   
+  // --- 查看结果loading状态 ---
+  const [loadingExecutionId, setLoadingExecutionId] = useState<string | null>(null)
+  
+
+  
   const executionHistory = useWorkflowExecutionStore(state => state.executionHistory)
   
   // --- 组件挂载时触发进入动画 ---
@@ -47,15 +53,10 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
     return () => clearTimeout(timer)
   }, [])
   
-  // --- 处理关闭动画 ---
+  // --- 处理关闭 ---
   const handleClose = () => {
-    setIsClosing(true)
-    setIsVisible(false)
-    
-    // 动画完成后执行实际关闭
-    setTimeout(() => {
-      onClose()
-    }, 300) // 与CSS动画时长保持一致
+    // 立即关闭，不使用动画
+    onClose()
   }
   
   // --- 自动刷新历史记录 ---
@@ -102,11 +103,34 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
     
     setIsDeleting(true)
     try {
-      // TODO: 实现批量删除逻辑
       console.log('批量删除执行记录:', Array.from(selectedIds))
       
-      // 暂时模拟删除操作
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 导入删除函数
+      const { deleteExecution } = await import('@lib/db/app-executions')
+      
+      // 并行删除所有选中的记录
+      const deletePromises = Array.from(selectedIds).map(async (id) => {
+        const result = await deleteExecution(id)
+        if (!result.success) {
+          console.error(`删除执行记录失败 ${id}:`, result.error)
+          return false
+        }
+        return true
+      })
+      
+      const results = await Promise.all(deletePromises)
+      const successCount = results.filter(Boolean).length
+      const failCount = results.length - successCount
+      
+      if (successCount > 0) {
+        // 刷新历史记录列表
+        await loadHistory()
+        console.log(`成功删除 ${successCount} 条记录`)
+      }
+      
+      if (failCount > 0) {
+        console.error(`${failCount} 条记录删除失败`)
+      }
       
       // 清空选中状态
       setSelectedIds(new Set())
@@ -115,6 +139,33 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
       console.error('批量删除失败:', error)
     } finally {
       setIsDeleting(false)
+    }
+  }
+  
+  // --- 重新加载历史记录 ---
+  const loadHistory = async () => {
+    try {
+      // 获取正确的应用UUID
+      const { useAppListStore } = await import('@lib/stores/app-list-store')
+      const currentApps = useAppListStore.getState().apps
+      const targetApp = currentApps.find(app => app.instance_id === instanceId)
+      
+      if (!targetApp) {
+        console.warn('[执行历史] 未找到对应的应用记录，instanceId:', instanceId)
+        return
+      }
+      
+      const { getExecutionsByServiceInstance } = await import('@lib/db/app-executions')
+      const result = await getExecutionsByServiceInstance(targetApp.id, 50)
+      
+      if (result.success) {
+        console.log('[执行历史] 历史记录刷新成功，数量:', result.data.length)
+        useWorkflowExecutionStore.getState().setExecutionHistory(result.data)
+      } else {
+        console.error('[执行历史] 历史记录刷新失败:', result.error)
+      }
+    } catch (error) {
+      console.error('[执行历史] 刷新历史记录时出错:', error)
     }
   }
   
@@ -132,13 +183,62 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
     } else {
       // 正常模式下查看执行详情
       try {
-        // TODO: 从数据库获取完整的执行结果
-        console.log('查看执行详情:', execution)
+        // 设置loading状态
+        setLoadingExecutionId(execution.id)
         
-        // 暂时使用现有的结果查看器
-        // 这里需要打开 ResultViewer 模态框
+        // 从数据库获取完整的执行详情
+        console.log('正在获取执行详情:', execution.id)
+        
+        const { getExecutionById } = await import('@lib/db/app-executions')
+        const result = await getExecutionById(execution.id)
+        
+        if (result.success && result.data) {
+          const fullExecution = result.data
+          
+          // 使用获取到的完整数据
+          let executionResult = fullExecution.outputs
+          
+          // 如果没有outputs，创建一个包含基本信息的结果对象
+          if (!executionResult || Object.keys(executionResult).length === 0) {
+            executionResult = {
+              message: '该执行记录暂无详细结果数据，但可以查看基本信息',
+              status: fullExecution.status,
+              executionId: fullExecution.id,
+              title: fullExecution.title,
+              inputs: fullExecution.inputs,
+              createdAt: fullExecution.created_at,
+              completedAt: fullExecution.completed_at,
+              elapsedTime: fullExecution.elapsed_time,
+              totalSteps: fullExecution.total_steps,
+              totalTokens: fullExecution.total_tokens,
+              errorMessage: fullExecution.error_message
+            }
+          }
+          
+          // 调用父组件的回调函数
+          onViewResult(executionResult, fullExecution)
+        } else {
+          // 显示错误结果
+          const errorResult = {
+            error: '获取执行详情失败',
+            message: result.error?.message || '未知错误',
+            status: 'error'
+          }
+          onViewResult(errorResult, execution)
+        }
+        
       } catch (error) {
         console.error('获取执行详情失败:', error)
+        // 显示错误结果
+        const errorResult = {
+          error: '获取执行详情失败',
+          message: error instanceof Error ? error.message : '未知错误',
+          status: 'error'
+        }
+        onViewResult(errorResult, execution)
+      } finally {
+        // 清除loading状态
+        setLoadingExecutionId(null)
       }
     }
   }
@@ -146,7 +246,8 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
   return (
     <div className={cn(
       "h-full flex flex-col relative overflow-hidden",
-      colors.mainBackground.tailwind,
+      // --- 使用与页面一致的背景色 ---
+      isDark ? "bg-stone-950" : "bg-stone-50",
       // --- 动画效果 ---
       "transition-all duration-300 ease-in-out",
       isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0",
@@ -322,6 +423,7 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
                     onClick={() => handleViewExecution(execution)}
                     isMultiSelectMode={isMultiSelectMode}
                     isSelected={selectedIds.has(execution.id)}
+                    isLoading={loadingExecutionId === execution.id}
                   />
                 </div>
               ))}

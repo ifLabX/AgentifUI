@@ -288,26 +288,26 @@ export async function updateExecutionStatus(
 }
 
 /**
- * 删除执行记录（优化版本）
+ * 删除执行记录（软删除版本）
  * @param id 执行记录ID
  * @returns 是否删除成功的Result
  */
 export async function deleteExecution(id: string): Promise<Result<boolean>> {
-  console.log(`[删除执行记录] 开始删除执行记录，ID: ${id}`);
+  console.log(`[软删除执行记录] 开始软删除执行记录，ID: ${id}`);
   
-  const result = await dataService.delete('app_executions', id);
+  const result = await dataService.softDelete('app_executions', id);
   
   if (result.success) {
-    console.log(`[删除执行记录] 删除操作完成，ID: ${id}`);
+    console.log(`[软删除执行记录] 软删除操作完成，ID: ${id}`);
     return success(true);
   } else {
-    console.error(`[删除执行记录] 删除执行记录失败:`, result.error);
+    console.error(`[软删除执行记录] 软删除执行记录失败:`, result.error);
     return success(false);
   }
 }
 
 /**
- * 获取服务实例的执行记录（优化版本）
+ * 获取服务实例的执行记录（优化版本，过滤软删除记录）
  * @param serviceInstanceId 服务实例ID
  * @param limit 限制数量
  * @returns 执行记录列表的Result
@@ -316,16 +316,38 @@ export async function getExecutionsByServiceInstance(
   serviceInstanceId: string,
   limit: number = 10
 ): Promise<Result<AppExecution[]>> {
-  return dataService.findMany<AppExecution>(
-    'app_executions',
-    { service_instance_id: serviceInstanceId },
-    { column: 'created_at', ascending: false },
-    { offset: 0, limit },
-    {
-      cache: true,
-      cacheTTL: 2 * 60 * 1000, // 2分钟缓存
+  try {
+    console.log('[获取执行记录] 开始查询，服务实例ID:', serviceInstanceId)
+    
+    // 先尝试获取所有记录，然后在应用层过滤
+    const result = await dataService.findMany<AppExecution>(
+      'app_executions',
+      { service_instance_id: serviceInstanceId },
+      { column: 'created_at', ascending: false },
+      { offset: 0, limit: limit * 2 }, // 获取更多记录以确保有足够的非删除记录
+      {
+        cache: true,
+        cacheTTL: 2 * 60 * 1000, // 2分钟缓存
+      }
+    );
+    
+    if (!result.success) {
+      console.error('[获取执行记录] 数据服务查询失败:', result.error);
+      return failure(result.error);
     }
-  );
+    
+    // 在应用层过滤软删除的记录
+    const filteredData = result.data
+      .filter(execution => execution.status !== 'deleted')
+      .slice(0, limit); // 限制最终返回的数量
+    
+    console.log('[获取执行记录] 查询成功，总数:', result.data.length, '过滤后:', filteredData.length)
+    
+    return success(filteredData);
+  } catch (error) {
+    console.error('[获取执行记录] 查询时发生异常:', error);
+    return failure(error instanceof Error ? error : new Error(String(error)));
+  }
 }
 
 /**

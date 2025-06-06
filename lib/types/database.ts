@@ -18,7 +18,7 @@ export type SsoProtocol = 'SAML' | 'OAuth2' | 'OIDC';
 // 用于工作流和文本生成应用的执行记录管理
 // --- END COMMENT ---
 export type ExecutionType = 'workflow' | 'text-generation';
-export type ExecutionStatus = 'pending' | 'running' | 'completed' | 'failed' | 'stopped';
+export type ExecutionStatus = 'pending' | 'running' | 'completed' | 'failed' | 'stopped' | 'deleted';
 
 // 用户和身份管理
 export interface Profile {
