@@ -97,12 +97,6 @@ export const WorkflowInputForm = React.forwardRef<WorkflowInputFormRef, Workflow
             
             setFormData(initialData)
             setInitialFormData(initialData)
-            console.log('[表单初始化] 应用配置加载完成:', { 
-              instanceId, 
-              userInputForm, 
-              initialData,
-              serviceInstance: serviceInstance.display_name 
-            })
             
           } catch (configError) {
             console.warn('[表单初始化] 无法获取应用配置，使用默认配置:', configError)
@@ -183,7 +177,6 @@ export const WorkflowInputForm = React.forwardRef<WorkflowInputFormRef, Workflow
     
     // --- 表单重置 ---
     const handleReset = () => {
-      console.log('[表单重置] 重置表单到初始状态')
       setFormData({ ...initialFormData })
       setErrors({})
     }
@@ -200,7 +193,6 @@ export const WorkflowInputForm = React.forwardRef<WorkflowInputFormRef, Workflow
       
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors)
-        console.log('[表单验证] 验证失败:', validationErrors)
         return
       }
       

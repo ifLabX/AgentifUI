@@ -58,43 +58,37 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
   const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([])
   
   // --- BEGIN COMMENT ---
-  // 当外部value prop发生变化时，重置uploadFiles状态
-  // 但只在初次渲染时执行，避免与内部状态管理冲突
+  // 当外部value prop发生变化时，同步uploadFiles状态
+  // 支持表单重置时清空文件列表
   // --- END COMMENT ---
-  const isInitializedRef = useRef(false)
-  
   useEffect(() => {
-    if (!isInitializedRef.current) {
-      isInitializedRef.current = true
-      
-      if (value) {
-        // 处理单文件对象的情况
-        const valueArray = Array.isArray(value) ? value : [value]
-        
-        if (valueArray.length > 0) {
-          // 检查value是否已经是处理过的Dify文件格式
-          const isProcessedFiles = valueArray.every((item: any) => 
-            typeof item === 'object' && item.upload_file_id
-          )
-        
-          if (!isProcessedFiles) {
-            // 如果是原始File对象数组，转换为UploadFile格式
-            const convertedFiles = valueArray.map((file: File) => ({
-              id: `${file.name}-${file.lastModified}-${file.size}`,
-              file,
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              status: "pending" as const,
-              progress: 0
-            }))
-            setUploadFiles(convertedFiles)
-          }
-        } else {
-          setUploadFiles([])
-        }
-      } else {
-        setUploadFiles([])
+    // 如果value为空（null、undefined、空数组），清空文件列表
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      setUploadFiles([])
+      return
+    }
+    
+    // 处理单文件对象的情况
+    const valueArray = Array.isArray(value) ? value : [value]
+    
+    if (valueArray.length > 0) {
+      // 检查value是否已经是处理过的Dify文件格式
+      const isProcessedFiles = valueArray.every((item: any) => 
+        typeof item === 'object' && item.upload_file_id
+      )
+    
+      if (!isProcessedFiles) {
+        // 如果是原始File对象数组，转换为UploadFile格式
+        const convertedFiles = valueArray.map((file: File) => ({
+          id: `${file.name}-${file.lastModified}-${file.size}`,
+          file,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          status: "pending" as const,
+          progress: 0
+        }))
+        setUploadFiles(convertedFiles)
       }
     }
   }, [value])
@@ -126,17 +120,13 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       // --- BEGIN COMMENT ---
       // 根据isSingleFileMode判断是单文件还是多文件
       // --- END COMMENT ---
-      console.log(`[工作流文件上传] isSingleFileMode: ${isSingleFileMode}, 成功文件数: ${successfulFiles.length}`)
-      
       if (isSingleFileMode) {
         // 单文件模式：返回第一个文件对象或null
         const singleFile = successfulFiles.length > 0 ? successfulFiles[0] : null
         onChange(singleFile)
-        console.log('[工作流文件上传] 单文件模式，文件数据已更新:', singleFile)
       } else {
         // 多文件模式：返回文件数组
         onChange(successfulFiles)
-        console.log('[工作流文件上传] 多文件模式，文件数据已更新:', successfulFiles)
       }
     }
   }, [uploadFiles, isSingleFileMode]) // 添加isSingleFileMode依赖
@@ -182,7 +172,6 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       // 与聊天输入框的逻辑保持一致
       // --- END COMMENT ---
       const appIdToUse = currentAppId || instanceId
-      console.log(`[工作流文件上传] 使用应用ID: ${appIdToUse} (currentAppId: ${currentAppId}, instanceId: ${instanceId})`)
       
       const response = await uploadDifyFile(
         appIdToUse,
@@ -194,7 +183,6 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       )
       
       updateFileStatus(uploadFile.id, 'success', 100, undefined, response.id)
-      console.log(`[工作流文件上传] 上传成功: ${uploadFile.name} -> ${response.id}`)
       
     } catch (error) {
       const errorMessage = (error as Error).message || '上传失败'
@@ -361,7 +349,7 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
           className={cn(
             "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer",
             "transition-all duration-200 ease-in-out",
-            "hover:scale-[1.02] hover:shadow-lg",
+            "hover:scale-[1.005] hover:shadow-md",
             error
               ? "border-red-500 bg-red-50 dark:bg-red-900/20 hover:border-red-400"
               : isDark
