@@ -77,7 +77,7 @@ export function useWorkflowExecution(instanceId: string) {
       
       const executionData: Omit<AppExecution, 'id' | 'created_at' | 'updated_at'> = {
         user_id: userId,
-        service_instance_id: targetApp.id, // 使用正确的UUID
+        service_instance_id: targetApp.id, // 使用UUID主键
         execution_type: 'workflow',
         external_execution_id: null,
         task_id: null,
@@ -343,7 +343,7 @@ export function useWorkflowExecution(instanceId: string) {
       console.log('[工作流执行] 历史记录查询使用UUID:', targetApp.id)
       
       const { getExecutionsByServiceInstance } = await import('@lib/db/app-executions')
-      const result = await getExecutionsByServiceInstance(targetApp.id, 20) // 使用正确的UUID
+      const result = await getExecutionsByServiceInstance(targetApp.id, 20) // 使用UUID主键
       
       if (result.success) {
         console.log('[工作流执行] 历史记录加载成功，数量:', result.data.length)

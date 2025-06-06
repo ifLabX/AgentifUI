@@ -353,7 +353,7 @@ export const useCurrentAppStore = create<CurrentAppState>()(
             .from('service_instances')
             .select('*')
             .eq('provider_id', providerResult.data.id)
-            .eq('instance_id', appId)
+            .eq('id', appId)  // 使用UUID主键查找，而不是instance_id
             .single();
             
           if (targetError || !targetInstance) {

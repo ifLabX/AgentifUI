@@ -132,14 +132,14 @@ export const useAppListStore = create<AppListState>((set, get) => ({
       // 并发获取所有应用的参数
       const parameterPromises = currentApps.map(async (app) => {
         try {
-          const parameters = await getDifyAppParameters(app.id);
-          newParametersCache[app.id] = {
+          const parameters = await getDifyAppParameters(app.instance_id); // 使用instance_id调用API
+          newParametersCache[app.id] = { // 但用id作为缓存key
             data: parameters,
             timestamp: now
           };
-          console.log(`[AppListStore] 成功获取应用 ${app.id} 的参数`);
+          console.log(`[AppListStore] 成功获取应用 ${app.instance_id} 的参数`);
         } catch (error) {
-          console.warn(`[AppListStore] 获取应用 ${app.id} 参数失败:`, error);
+          console.warn(`[AppListStore] 获取应用 ${app.instance_id} 参数失败:`, error);
           // 单个应用失败不影响其他应用
         }
       });

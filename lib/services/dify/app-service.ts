@@ -35,7 +35,7 @@ export async function getAllDifyApps(): Promise<Array<{
     }
     
     return instances?.map(instance => ({
-      id: instance.id,  // 使用真正的UUID主键
+      id: instance.id,  // 使用数据库UUID主键作为标识符
       name: instance.display_name || instance.instance_id,
       instance_id: instance.instance_id,
       display_name: instance.display_name,
