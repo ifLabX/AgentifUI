@@ -50,7 +50,7 @@ export function FileUploadField({ config, value, onChange, error }: FileUploadFi
   }
   
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 px-1">
       <label className={cn(
         "block text-sm font-medium font-serif mb-2",
         isDark ? "text-stone-200" : "text-stone-700"
@@ -63,12 +63,14 @@ export function FileUploadField({ config, value, onChange, error }: FileUploadFi
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         className={cn(
-          "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
+          "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer",
+          "transition-all duration-200 ease-in-out",
+          "hover:scale-[1.02] hover:shadow-lg",
           error
-            ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+            ? "border-red-500 bg-red-50 dark:bg-red-900/20 hover:border-red-400"
             : isDark
-              ? "border-stone-600 bg-stone-700 hover:border-stone-500"
-              : "border-stone-300 bg-stone-50 hover:border-stone-400"
+              ? "border-stone-600 bg-stone-700 hover:border-stone-500 hover:bg-stone-600"
+              : "border-stone-300 bg-stone-50 hover:border-stone-400 hover:bg-stone-100"
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -107,7 +109,12 @@ export function FileUploadField({ config, value, onChange, error }: FileUploadFi
               key={index}
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg border",
-                isDark ? "border-stone-600 bg-stone-700" : "border-stone-200 bg-stone-50"
+                "transition-all duration-200 ease-in-out",
+                "hover:scale-[1.01] hover:shadow-md",
+                "animate-in slide-in-from-top-2 fade-in duration-300",
+                isDark 
+                  ? "border-stone-600 bg-stone-700 hover:bg-stone-600" 
+                  : "border-stone-200 bg-stone-50 hover:bg-stone-100"
               )}
             >
               <File className={cn(

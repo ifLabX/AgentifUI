@@ -9,6 +9,7 @@ import { useSettingsColors } from "@lib/hooks/use-settings-colors"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { DesktopUserAvatar } from "./desktop-user-avatar"
 import { ConversationTitleButton } from "./conversation-title-button"
+import { WorkflowHistoryButton } from "./workflow-history-button"
 
 /**
  * 桌面端顶部导航栏组件
@@ -66,7 +67,12 @@ export function NavBar() {
           <ConversationTitleButton />
         </div>
         
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
+          {/* --- BEGIN COMMENT ---
+          工作流历史记录按钮（仅在工作流和文本生成页面显示）
+          --- END COMMENT --- */}
+          <WorkflowHistoryButton />
+          
           {/* --- BEGIN COMMENT ---
           用户头像按钮
           --- END COMMENT --- */}

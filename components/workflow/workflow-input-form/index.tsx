@@ -268,22 +268,6 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
   
   return (
     <div className="h-full flex flex-col">
-      {/* --- 表单标题 --- */}
-      <div className="mb-6">
-        <h1 className={cn(
-          "text-2xl font-bold font-serif mb-2",
-          isDark ? "text-stone-100" : "text-stone-900"
-        )}>
-          工作流执行
-        </h1>
-        <p className={cn(
-          "text-sm font-serif",
-          isDark ? "text-stone-400" : "text-stone-600"
-        )}>
-          {currentAppInstance?.display_name || '工作流应用'}
-        </p>
-      </div>
-      
       {/* --- 表单内容 --- */}
       <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
         <div className="flex-1 space-y-6 overflow-y-auto">

@@ -86,7 +86,7 @@ export function WorkflowTracker({
     <div className="h-full flex flex-col">
       {/* --- 状态头部 --- */}
       <div className={cn(
-        "p-6 border-b flex-shrink-0",
+        "px-6 py-4 border-b flex-shrink-0",
         isDark ? "border-stone-700" : "border-stone-200"
       )}>
         <WorkflowStatus 
@@ -97,7 +97,7 @@ export function WorkflowTracker({
       </div>
       
       {/* --- 节点列表 --- */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto px-6 py-4">
         {!isExecuting && !currentExecution ? (
           // 空状态
           <div className="h-full flex items-center justify-center">
@@ -130,7 +130,7 @@ export function WorkflowTracker({
         ) : (
           // 节点进度列表
           <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4">
               {getStatusIcon(overallStatus)}
               <h3 className={cn(
                 "text-lg font-semibold font-serif",

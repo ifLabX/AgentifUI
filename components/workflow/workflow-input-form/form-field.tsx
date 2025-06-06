@@ -3,6 +3,7 @@
 import React from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
+import { CustomSelect } from './custom-select'
 import type { DifyTextInputControl, DifyParagraphControl, DifySelectControl } from '@lib/services/dify/types'
 
 interface FormFieldProps {
@@ -25,10 +26,11 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
   const { isDark } = useTheme()
   
   const baseInputClasses = cn(
-    "w-full px-3 py-2 rounded-lg border font-serif transition-colors",
-    "focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent",
+    "w-full px-3 py-2 rounded-lg border font-serif transition-all duration-200",
+    "focus:outline-none focus:ring-2 focus:ring-stone-500/30 focus:border-stone-500",
+    "focus:shadow-md focus:shadow-stone-500/20",
     error
-      ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+      ? "border-red-500 bg-red-50 dark:bg-red-900/20 focus:ring-red-500/30 focus:border-red-500"
       : isDark
         ? "border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400"
         : "border-stone-300 bg-white text-stone-900 placeholder-stone-500"
@@ -65,7 +67,7 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={`请输入${config.label}`}
-            rows={4}
+            rows={6}
             maxLength={(paragraphConfig as any).max_length || undefined}
             className={cn(baseInputClasses, "resize-none")}
           />
@@ -74,18 +76,13 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
       case 'select':
         const selectConfig = config as DifySelectControl
         return (
-          <select
+          <CustomSelect
             value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className={baseInputClasses}
-          >
-            <option value="">请选择{config.label}</option>
-            {selectConfig.options.map((option, index) => (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            onChange={onChange}
+            options={selectConfig.options}
+            placeholder={`请选择${config.label}`}
+            error={error}
+          />
         )
       
       default:
@@ -94,7 +91,7 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
   }
   
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 px-1">
       <label className={labelClasses}>
         {config.label}
         {config.required && (

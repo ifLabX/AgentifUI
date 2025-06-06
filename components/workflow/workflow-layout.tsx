@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { useMobile } from '@lib/hooks/use-mobile'
 import { cn } from '@lib/utils'
@@ -9,6 +9,7 @@ import { WorkflowTracker } from './workflow-tracker'
 import { ExecutionHistory } from './execution-history'
 import { HistoryButton } from '@components/workflow/history-button'
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher'
+import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store'
 
 interface WorkflowLayoutProps {
   instanceId: string
@@ -30,11 +31,13 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   const isMobile = useMobile()
   
   // --- 状态管理 ---
-  const [showHistory, setShowHistory] = useState(false)
+  const { showHistory, setShowHistory } = useWorkflowHistoryStore()
   const [isExecuting, setIsExecuting] = useState(false)
   const [executionResult, setExecutionResult] = useState<any>(null)
   const [currentExecution, setCurrentExecution] = useState<any>(null)
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('form')
+  
+  // --- 历史记录状态现在通过全局store管理，无需事件监听 ---
   
   // --- 执行工作流的回调函数 ---
   const handleExecuteWorkflow = useCallback(async (formData: Record<string, any>) => {
@@ -100,7 +103,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   // --- 移动端布局 ---
   if (isMobile) {
     return (
-      <div className="h-[calc(100vh-3rem)] flex flex-col">
+      <div className="h-[calc(100vh-2.5rem)] flex flex-col">
         {/* 移动端标签切换器 */}
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
@@ -147,14 +150,14 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   
   // --- 桌面端布局 ---
   return (
-    <div className="h-[calc(100vh-3rem)] flex relative">
+    <div className="h-[calc(100vh-2.5rem)] flex relative">
       {/* 左侧：输入表单 */}
       <div className={cn(
         "flex-1 min-w-0 border-r transition-all duration-300",
         isDark ? "border-stone-700" : "border-stone-200",
         showHistory ? "lg:w-1/3" : "lg:w-1/2"
       )}>
-        <div className="h-full p-6 overflow-y-auto">
+        <div className="h-full px-8 py-6 overflow-y-auto">
           <WorkflowInputForm
             instanceId={instanceId}
             onExecute={handleExecuteWorkflow}
@@ -187,12 +190,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
         </div>
       )}
       
-      {/* 历史记录按钮 */}
-      <HistoryButton
-        onClick={() => setShowHistory(!showHistory)}
-        isActive={showHistory}
-        className="fixed top-16 right-4 z-10"
-      />
+             {/* 历史记录按钮已移至NavBar */}
     </div>
   )
 } 
