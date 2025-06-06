@@ -10,6 +10,7 @@ interface FileUploadFieldProps {
   value: File[]
   onChange: (files: File[]) => void
   error?: string
+  label?: string // 可选的标签，用于覆盖默认的"文件上传"标签
 }
 
 /**
@@ -21,7 +22,7 @@ interface FileUploadFieldProps {
  * - 文件大小限制
  * - 拖拽上传
  */
-export function FileUploadField({ config, value, onChange, error }: FileUploadFieldProps) {
+export function FileUploadField({ config, value, onChange, error, label }: FileUploadFieldProps) {
   const { isDark } = useTheme()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -49,14 +50,35 @@ export function FileUploadField({ config, value, onChange, error }: FileUploadFi
     return null
   }
   
+  // 生成文件类型提示文本
+  const getFileTypeHint = () => {
+    const types = config.allowed_file_types
+    if (types && types.length > 0) {
+      return `支持的文件类型：${types.join(', ')}`
+    }
+    return '支持上传各种文件类型'
+  }
+  
+  // 生成文件大小提示文本
+  const getFileSizeHint = () => {
+    const maxSize = config.max_file_size_mb
+    if (maxSize) {
+      return `单个文件最大 ${maxSize}MB`
+    }
+    return ''
+  }
+  
   return (
     <div className="space-y-2 px-1">
-      <label className={cn(
-        "block text-sm font-medium font-serif mb-2",
-        isDark ? "text-stone-200" : "text-stone-700"
-      )}>
-        文件上传
-      </label>
+      {/* 标签 - 如果没有传入标签则不显示 */}
+      {label && (
+        <label className={cn(
+          "block text-sm font-medium font-serif mb-2",
+          isDark ? "text-stone-200" : "text-stone-700"
+        )}>
+          {label}
+        </label>
+      )}
       
       {/* 上传区域 */}
       <div
@@ -84,12 +106,14 @@ export function FileUploadField({ config, value, onChange, error }: FileUploadFi
         )}>
           点击或拖拽文件到此处上传
         </p>
-        <p className={cn(
-          "text-xs font-serif mt-1",
+        <div className={cn(
+          "text-xs font-serif mt-2 space-y-1",
           isDark ? "text-stone-400" : "text-stone-500"
         )}>
-          最多上传 {config.number_limits || 3} 个文件
-        </p>
+          <p>最多上传 {config.number_limits || 3} 个文件</p>
+          <p>{getFileTypeHint()}</p>
+          {getFileSizeHint() && <p>{getFileSizeHint()}</p>}
+        </div>
       </div>
       
       {/* 隐藏的文件输入 */}
@@ -97,6 +121,7 @@ export function FileUploadField({ config, value, onChange, error }: FileUploadFi
         ref={fileInputRef}
         type="file"
         multiple
+        accept={config.allowed_file_types ? config.allowed_file_types.map((type: string) => `.${type}`).join(',') : undefined}
         className="hidden"
         onChange={handleFileSelect}
       />

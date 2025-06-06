@@ -4,13 +4,14 @@ import React from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { CustomSelect } from './custom-select'
-import type { DifyTextInputControl, DifyParagraphControl, DifySelectControl } from '@lib/services/dify/types'
+import { FileUploadField } from './file-upload-field'
+import type { DifyTextInputControl, DifyParagraphControl, DifySelectControl, DifyFileInputControl } from '@lib/services/dify/types'
 
 interface FormFieldProps {
-  type: 'text-input' | 'paragraph' | 'select'
-  config: DifyTextInputControl | DifyParagraphControl | DifySelectControl
-  value: string
-  onChange: (value: string) => void
+  type: 'text-input' | 'paragraph' | 'select' | 'file'
+  config: DifyTextInputControl | DifyParagraphControl | DifySelectControl | DifyFileInputControl
+  value: any
+  onChange: (value: any) => void
   error?: string
 }
 
@@ -21,6 +22,7 @@ interface FormFieldProps {
  * - text-input: 单行文本输入
  * - paragraph: 多行文本输入
  * - select: 下拉选择
+ * - file: 文件上传
  */
 export function FormField({ type, config, value, onChange, error }: FormFieldProps) {
   const { isDark } = useTheme()
@@ -85,6 +87,22 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
           />
         )
       
+      case 'file':
+        const fileConfig = config as DifyFileInputControl
+        return (
+          <FileUploadField
+            config={{
+              enabled: true,
+              number_limits: fileConfig.number_limits || 3,
+              allowed_file_types: fileConfig.allowed_file_types,
+              max_file_size_mb: fileConfig.max_file_size_mb
+            }}
+            value={value || []}
+            onChange={onChange}
+            error={error}
+          />
+        )
+      
       default:
         return null
     }
@@ -107,7 +125,7 @@ export function FormField({ type, config, value, onChange, error }: FormFieldPro
           "text-xs font-serif text-right",
           isDark ? "text-stone-400" : "text-stone-500"
         )}>
-          {value.length} / {(config as any).max_length}
+          {(value || '').length} / {(config as any).max_length}
         </div>
       )}
       

@@ -75,7 +75,12 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
             const fieldConfig = formItem[fieldType as keyof typeof formItem]
             
             if (fieldConfig) {
-              initialData[fieldConfig.variable] = fieldConfig.default || ''
+              // 根据字段类型设置默认值
+              if (fieldType === 'file') {
+                initialData[fieldConfig.variable] = fieldConfig.default || []
+              } else {
+                initialData[fieldConfig.variable] = fieldConfig.default || ''
+              }
             }
           })
           
@@ -278,15 +283,24 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
             
             if (!fieldConfig) return null
             
+            // 根据字段类型确定值和处理函数
+            const fieldValue = fieldType === 'file' 
+              ? (formData[fieldConfig.variable] || [])
+              : (formData[fieldConfig.variable] || '')
+            
+            const fieldOnChange = fieldType === 'file'
+              ? (value: File[]) => handleFieldChange(fieldConfig.variable, value)
+              : (value: string) => handleFieldChange(fieldConfig.variable, value)
+            
             return (
-                             <FormField
-                 key={`${fieldType}_${fieldConfig.variable}_${index}`}
-                 type={fieldType as 'text-input' | 'paragraph' | 'select'}
-                 config={fieldConfig}
-                 value={formData[fieldConfig.variable] || ''}
-                 onChange={(value: string) => handleFieldChange(fieldConfig.variable, value)}
-                 error={errors[fieldConfig.variable]}
-               />
+              <FormField
+                key={`${fieldType}_${fieldConfig.variable}_${index}`}
+                type={fieldType as 'text-input' | 'paragraph' | 'select' | 'file'}
+                config={fieldConfig}
+                value={fieldValue}
+                onChange={fieldOnChange}
+                error={errors[fieldConfig.variable]}
+              />
             )
           })}
           

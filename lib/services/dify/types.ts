@@ -470,11 +470,23 @@ export interface DifySelectControl {
   options: string[]; // 选项值列表
 }
 
+/** 文件输入控件 */
+export interface DifyFileInputControl {
+  label: string; // 控件展示标签名
+  variable: string; // 控件 ID
+  required: boolean; // 是否必填
+  default?: File[]; // 默认值（文件数组）
+  number_limits?: number; // 文件数量限制
+  allowed_file_types?: string[]; // 允许的文件类型
+  max_file_size_mb?: number; // 最大文件大小(MB)
+}
+
 /** 用户输入表单项 */
 export interface DifyUserInputFormItem {
   'text-input'?: DifyTextInputControl;
   'paragraph'?: DifyParagraphControl;
   'select'?: DifySelectControl;
+  'file'?: DifyFileInputControl;
 }
 
 /** 图片上传配置 */
