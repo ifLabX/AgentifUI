@@ -5,7 +5,9 @@ import { useTheme } from '@lib/hooks/use-theme'
 import { useThemeColors } from '@lib/hooks/use-theme-colors'
 import { cn } from '@lib/utils'
 import { ExecutionItem } from './execution-item'
-import { X, History, Search } from 'lucide-react'
+import { X, History, Search, Loader2 } from 'lucide-react'
+import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store'
+import type { AppExecution } from '@lib/types/database'
 
 interface ExecutionHistoryProps {
   instanceId: string
@@ -25,70 +27,51 @@ interface ExecutionHistoryProps {
 export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHistoryProps) {
   const { isDark } = useTheme()
   const { colors } = useThemeColors()
-  const [executions, setExecutions] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   
-  // 模拟历史记录数据
+  // --- 从Store获取执行历史 ---
+  const executionHistory = useWorkflowExecutionStore(state => state.executionHistory)
+  
+  // --- 自动刷新历史记录 ---
   useEffect(() => {
-    const mockExecutions = [
-      {
-        id: 'exec_1',
-        title: '情感分析工作流',
-        status: 'completed',
-        created_at: '2024-01-15T10:30:00Z',
-        elapsed_time: 2.5,
-        inputs: { input_text: '这是一个测试文本', Multisentiment: 'False' },
-        outputs: { result: '正面情感，置信度：0.85' }
-      },
-      {
-        id: 'exec_2',
-        title: '情感分析工作流',
-        status: 'failed',
-        created_at: '2024-01-14T15:20:00Z',
-        elapsed_time: 1.2,
-        inputs: { input_text: '另一个测试', Multisentiment: 'True' },
-        error_message: '模型调用失败'
-      },
-      {
-        id: 'exec_3',
-        title: '情感分析工作流',
-        status: 'completed',
-        created_at: '2024-01-13T09:15:00Z',
-        elapsed_time: 3.1,
-        inputs: { input_text: '第三个测试文本', Multisentiment: 'False' },
-        outputs: { result: '中性情感，置信度：0.72' }
-      },
-      {
-        id: 'exec_4',
-        title: '情感分析工作流',
-        status: 'completed',
-        created_at: '2024-01-12T14:45:00Z',
-        elapsed_time: 2.8,
-        inputs: { input_text: '第四个测试', Multisentiment: 'False' },
-        outputs: { result: '负面情感，置信度：0.91' }
-      },
-      {
-        id: 'exec_5',
-        title: '情感分析工作流',
-        status: 'completed',
-        created_at: '2024-01-11T11:20:00Z',
-        elapsed_time: 1.9,
-        inputs: { input_text: '第五个测试', Multisentiment: 'True' },
-        outputs: { result: '正面情感，置信度：0.76' }
+    const loadHistory = async () => {
+      setIsLoading(true)
+      try {
+        // 获取正确的应用UUID
+        const { useAppListStore } = await import('@lib/stores/app-list-store')
+        const currentApps = useAppListStore.getState().apps
+        const targetApp = currentApps.find(app => app.instance_id === instanceId)
+        
+        if (!targetApp) {
+          console.warn('[执行历史] 未找到对应的应用记录，instanceId:', instanceId)
+          setIsLoading(false)
+          return
+        }
+        
+        const { getExecutionsByServiceInstance } = await import('@lib/db/app-executions')
+        const result = await getExecutionsByServiceInstance(targetApp.id, 50) // 获取更多历史记录
+        
+        if (result.success) {
+          console.log('[执行历史] 历史记录加载成功，数量:', result.data.length)
+          useWorkflowExecutionStore.getState().setExecutionHistory(result.data)
+        } else {
+          console.error('[执行历史] 历史记录加载失败:', result.error)
+        }
+      } catch (error) {
+        console.error('[执行历史] 加载历史记录时出错:', error)
+      } finally {
+        setIsLoading(false)
       }
-    ]
+    }
     
-    setTimeout(() => {
-      setExecutions(mockExecutions)
-      setIsLoading(false)
-    }, 500)
+    loadHistory()
   }, [instanceId])
   
   // 筛选执行记录（只保留搜索功能）
-  const filteredExecutions = executions.filter(execution => {
-    const matchesSearch = execution.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         JSON.stringify(execution.inputs).toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredExecutions = executionHistory.filter((execution: AppExecution) => {
+    const matchesSearch = (execution.title || '工作流执行').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         JSON.stringify(execution.inputs || {}).toLowerCase().includes(searchTerm.toLowerCase())
     return matchesSearch
   })
   
@@ -154,11 +137,17 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
           <div className="p-4 text-center">
-            <div className={cn(
-              "text-sm font-serif",
-              isDark ? "text-stone-500" : "text-stone-500"
-            )}>
-              正在加载历史记录...
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className={cn(
+                "h-4 w-4 animate-spin",
+                isDark ? "text-stone-500" : "text-stone-500"
+              )} />
+              <div className={cn(
+                "text-sm font-serif",
+                isDark ? "text-stone-500" : "text-stone-500"
+              )}>
+                正在加载历史记录...
+              </div>
             </div>
           </div>
         ) : filteredExecutions.length === 0 ? (
@@ -172,7 +161,7 @@ export function ExecutionHistory({ instanceId, onClose, isMobile }: ExecutionHis
           </div>
         ) : (
           <div className="p-2 space-y-2">
-            {filteredExecutions.map((execution) => (
+            {filteredExecutions.map((execution: AppExecution) => (
               <ExecutionItem
                 key={execution.id}
                 execution={execution}

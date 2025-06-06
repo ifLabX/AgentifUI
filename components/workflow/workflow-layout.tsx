@@ -11,6 +11,7 @@ import { HistoryButton } from '@components/workflow/history-button'
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher'
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store'
 import { useWorkflowExecution } from '@lib/hooks/use-workflow-execution'
+import { AlertCircle, RefreshCw, X } from 'lucide-react'
 
 interface WorkflowLayoutProps {
   instanceId: string
@@ -71,10 +72,91 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     // 注意：节点状态现在通过hook自动管理，不需要手动更新
   }, [])
   
+  // --- 停止执行 ---
+  const handleStopExecution = useCallback(async () => {
+    console.log('[工作流布局] 停止执行')
+    try {
+      await stopWorkflowExecution()
+    } catch (error) {
+      console.error('[工作流布局] 停止执行失败:', error)
+    }
+  }, [stopWorkflowExecution])
+  
+  // --- 重试执行 ---
+  const handleRetryExecution = useCallback(async () => {
+    console.log('[工作流布局] 重试执行')
+    try {
+      await retryExecution()
+    } catch (error) {
+      console.error('[工作流布局] 重试执行失败:', error)
+    }
+  }, [retryExecution])
+  
+  // --- 清除错误 ---
+  const handleClearError = useCallback(() => {
+    resetExecution()
+  }, [resetExecution])
+  
+  // --- 错误提示组件 ---
+  const ErrorBanner = ({ error, canRetry, onRetry, onDismiss }: {
+    error: string
+    canRetry: boolean
+    onRetry: () => void
+    onDismiss: () => void
+  }) => (
+    <div className={cn(
+      "px-4 py-3 border-l-4 border-red-500 flex items-center gap-3",
+      isDark ? "bg-red-900/20 text-red-200" : "bg-red-50 text-red-800"
+    )}>
+      <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+      <div className="flex-1">
+        <p className="text-sm font-serif">{error}</p>
+      </div>
+      <div className="flex items-center gap-2">
+        {canRetry && (
+          <button
+            onClick={onRetry}
+            className={cn(
+              "p-1.5 rounded-md transition-colors",
+              isDark
+                ? "hover:bg-red-800/50 text-red-300 hover:text-red-200"
+                : "hover:bg-red-200/50 text-red-700 hover:text-red-800"
+            )}
+            title="重试"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </button>
+        )}
+        <button
+          onClick={onDismiss}
+          className={cn(
+            "p-1.5 rounded-md transition-colors",
+            isDark
+              ? "hover:bg-red-800/50 text-red-300 hover:text-red-200"
+              : "hover:bg-red-200/50 text-red-700 hover:text-red-800"
+          )}
+          title="关闭"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  )
+
   // --- 移动端布局 ---
   if (isMobile) {
     return (
       <div className="h-[calc(100vh-2.5rem)] flex flex-col">
+        {/* 全局错误提示 */}
+        {error && (
+          <ErrorBanner
+            error={error}
+            canRetry={canRetry}
+            onRetry={handleRetryExecution}
+            onDismiss={handleClearError}
+          />
+        )}
+        
         {/* 移动端标签切换器 */}
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
@@ -101,6 +183,9 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
                 executionResult={currentExecution?.outputs || null}
                 currentExecution={currentExecution}
                 onNodeUpdate={handleNodeUpdate}
+                onStop={handleStopExecution}
+                onRetry={handleRetryExecution}
+                onReset={handleClearError}
               />
             </div>
           )}
@@ -121,8 +206,20 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   
   // --- 桌面端布局 ---
   return (
-    <div className="h-[calc(100vh-2.5rem)] flex relative">
-      {/* 左侧：输入表单 */}
+    <div className="h-[calc(100vh-2.5rem)] flex flex-col relative">
+      {/* 全局错误提示 */}
+      {error && (
+        <ErrorBanner
+          error={error}
+          canRetry={canRetry}
+          onRetry={handleRetryExecution}
+          onDismiss={handleClearError}
+        />
+      )}
+      
+      {/* 主内容区域 */}
+      <div className="flex-1 flex relative">
+        {/* 左侧：输入表单 */}
       <div className={cn(
         "flex-1 min-w-0 border-r transition-all duration-300",
         isDark ? "border-stone-700" : "border-stone-200",
@@ -147,6 +244,9 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
           executionResult={currentExecution?.outputs || null}
           currentExecution={currentExecution}
           onNodeUpdate={handleNodeUpdate}
+          onStop={handleStopExecution}
+          onRetry={handleRetryExecution}
+          onReset={handleClearError}
         />
       </div>
       
@@ -162,6 +262,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
       )}
       
              {/* 历史记录按钮已移至NavBar */}
+      </div>
     </div>
   )
 } 
