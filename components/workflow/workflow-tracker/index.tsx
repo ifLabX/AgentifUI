@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { ExecutionBar } from './execution-bar'
@@ -48,6 +48,25 @@ export function WorkflowTracker({
   const progress = useWorkflowExecutionStore(state => state.executionProgress)
   const error = useWorkflowExecutionStore(state => state.error)
   const canRetry = useWorkflowExecutionStore(state => state.canRetry)
+  
+  // --- 自动打开结果查看器 ---
+  const prevExecutionRef = useRef<string | null>(null)
+  
+  useEffect(() => {
+    // 当执行完成且有结果时，自动打开（仅在新的执行完成时触发）
+    const currentExecutionId = currentExecution?.id || currentExecution?.task_id
+    
+    if (
+      !isExecuting && 
+      currentExecution?.status === 'completed' && 
+      executionResult &&
+      currentExecutionId &&
+      prevExecutionRef.current !== currentExecutionId
+    ) {
+      setShowResult(true)
+      prevExecutionRef.current = currentExecutionId
+    }
+  }, [isExecuting, currentExecution?.status, currentExecution?.id, currentExecution?.task_id, executionResult])
   
   const getOverallStatus = () => {
     if (isExecuting) return 'running'
