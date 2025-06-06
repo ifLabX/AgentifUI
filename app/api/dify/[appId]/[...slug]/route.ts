@@ -27,9 +27,15 @@ function adjustApiPathByAppType(
     return originalPath; // --- 如果没有应用类型信息，保持原路径 ---
   }
   
-  // --- 工作流应用：需要workflows前缀 ---
+  // --- 工作流应用：需要workflows前缀，但排除通用API ---
   if (isWorkflowApp(appType as any)) {
-    if (!originalPath.startsWith('workflows/')) {
+    // --- BEGIN COMMENT ---
+    // 文件上传、音频转文本等通用API不需要workflows前缀
+    // --- END COMMENT ---
+    const commonApis = ['files/upload', 'audio-to-text'];
+    const isCommonApi = commonApis.some(api => originalPath.startsWith(api));
+    
+    if (!isCommonApi && !originalPath.startsWith('workflows/')) {
       return `workflows/${originalPath}`;
     }
   }

@@ -3,6 +3,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { useSupabaseAuth } from "@lib/supabase/hooks"
+import { useCurrentApp } from '@lib/hooks/use-current-app'
 import { cn, formatBytes } from '@lib/utils'
 import { Upload, X, File, CheckCircle2Icon, RotateCcw, AlertCircle } from 'lucide-react'
 import { Spinner } from "@components/ui/spinner"
@@ -47,6 +48,7 @@ interface FileUploadFieldProps {
 export function FileUploadField({ config, value, onChange, error, label, instanceId }: FileUploadFieldProps) {
   const { isDark } = useTheme()
   const { session } = useSupabaseAuth()
+  const { currentAppId } = useCurrentApp()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // --- BEGIN COMMENT ---
@@ -147,7 +149,7 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
   }, [])
   
   // --- BEGIN COMMENT ---
-  // 上传单个文件到Dify
+  // 上传单个文件到Dify - 使用当前应用ID，与聊天输入框保持一致
   // --- END COMMENT ---
   const uploadFileToDify = useCallback(async (uploadFile: UploadFile) => {
     const userIdToUse = session?.user?.id || 'workflow-user-id'
@@ -155,8 +157,15 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
     try {
       updateFileStatus(uploadFile.id, 'uploading', 0)
       
+      // --- BEGIN COMMENT ---
+      // 使用当前应用ID，如果没有则fallback到instanceId
+      // 与聊天输入框的逻辑保持一致
+      // --- END COMMENT ---
+      const appIdToUse = currentAppId || instanceId
+      console.log(`[工作流文件上传] 使用应用ID: ${appIdToUse} (currentAppId: ${currentAppId}, instanceId: ${instanceId})`)
+      
       const response = await uploadDifyFile(
-        instanceId,
+        appIdToUse,
         uploadFile.file,
         userIdToUse,
         (progress) => {
@@ -172,7 +181,7 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       updateFileStatus(uploadFile.id, 'error', undefined, errorMessage)
       console.error(`[工作流文件上传] 上传失败: ${uploadFile.name}`, error)
     }
-  }, [instanceId, session?.user?.id, updateFileStatus])
+  }, [currentAppId, instanceId, session?.user?.id, updateFileStatus])
   
   // --- BEGIN COMMENT ---
   // 处理文件选择
