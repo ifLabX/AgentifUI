@@ -81,62 +81,14 @@ export function WorkflowStatus({ status, execution, onShowResult }: WorkflowStat
         )}
       </div>
       
-      {/* 执行统计 */}
-      {execution && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className={cn(
-            "text-center p-3 rounded-lg",
-            isDark ? "bg-stone-700" : "bg-stone-50"
-          )}>
-            <div className={cn(
-              "text-lg font-semibold font-serif",
-              isDark ? "text-stone-200" : "text-stone-800"
-            )}>
-              {execution.total_steps || 0}
-            </div>
-            <div className={cn(
-              "text-xs font-serif",
-              isDark ? "text-stone-400" : "text-stone-600"
-            )}>
-              总步数
-            </div>
-          </div>
-          
-          <div className={cn(
-            "text-center p-3 rounded-lg",
-            isDark ? "bg-stone-700" : "bg-stone-50"
-          )}>
-            <div className={cn(
-              "text-lg font-semibold font-serif",
-              isDark ? "text-stone-200" : "text-stone-800"
-            )}>
-              {execution.total_tokens || 0}
-            </div>
-            <div className={cn(
-              "text-xs font-serif",
-              isDark ? "text-stone-400" : "text-stone-600"
-            )}>
-              Token 数
-            </div>
-          </div>
-          
-          <div className={cn(
-            "text-center p-3 rounded-lg",
-            isDark ? "bg-stone-700" : "bg-stone-50"
-          )}>
-            <div className={cn(
-              "text-lg font-semibold font-serif",
-              isDark ? "text-stone-200" : "text-stone-800"
-            )}>
-              {execution.elapsed_time ? `${execution.elapsed_time}s` : '-'}
-            </div>
-            <div className={cn(
-              "text-xs font-serif",
-              isDark ? "text-stone-400" : "text-stone-600"
-            )}>
-              耗时
-            </div>
-          </div>
+      {/* 执行耗时 */}
+      {execution && execution.elapsed_time && (
+        <div className={cn(
+          "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-serif",
+          isDark ? "bg-stone-700 text-stone-300" : "bg-stone-100 text-stone-700"
+        )}>
+          <Clock className="h-4 w-4" />
+          <span>总耗时: {execution.elapsed_time}s</span>
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
-import { NodeProgress } from './node-progress'
+import { ExecutionBar } from './execution-bar'
 import { WorkflowStatus } from './workflow-status'
 import { ResultViewer } from './result-viewer'
 import { Play, Clock, CheckCircle, XCircle, Square } from 'lucide-react'
@@ -38,23 +38,26 @@ export function WorkflowTracker({
     {
       id: 'node_1',
       title: '输入处理',
-      status: isExecuting ? 'running' : 'completed',
+      status: (isExecuting ? 'running' : 'completed') as 'pending' | 'running' | 'completed' | 'failed',
       startTime: Date.now() - 2000,
-      endTime: isExecuting ? null : Date.now() - 1500
+      endTime: isExecuting ? undefined : Date.now() - 1500,
+      description: isExecuting ? '正在处理输入数据...' : undefined
     },
     {
       id: 'node_2', 
       title: '数据分析',
-      status: isExecuting ? 'pending' : 'completed',
-      startTime: isExecuting ? null : Date.now() - 1500,
-      endTime: isExecuting ? null : Date.now() - 800
+      status: (isExecuting ? 'pending' : 'completed') as 'pending' | 'running' | 'completed' | 'failed',
+      startTime: isExecuting ? undefined : Date.now() - 1500,
+      endTime: isExecuting ? undefined : Date.now() - 800,
+      description: isExecuting ? undefined : undefined
     },
     {
       id: 'node_3',
       title: '结果生成',
-      status: isExecuting ? 'pending' : 'completed',
-      startTime: isExecuting ? null : Date.now() - 800,
-      endTime: isExecuting ? null : Date.now() - 200
+      status: (isExecuting ? 'pending' : 'completed') as 'pending' | 'running' | 'completed' | 'failed',
+      startTime: isExecuting ? undefined : Date.now() - 800,
+      endTime: isExecuting ? undefined : Date.now() - 200,
+      description: isExecuting ? undefined : undefined
     }
   ])
   
@@ -141,11 +144,11 @@ export function WorkflowTracker({
             </div>
             
             {nodes.map((node, index) => (
-              <NodeProgress
+              <ExecutionBar
                 key={node.id}
                 node={node}
                 index={index}
-                isLast={index === nodes.length - 1}
+                delay={index * 200} // 每个条延迟200ms出现
               />
             ))}
           </div>
