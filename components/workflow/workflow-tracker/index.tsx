@@ -34,32 +34,116 @@ export function WorkflowTracker({
   const [showResult, setShowResult] = useState(false)
   
   // 模拟节点数据（实际应该从 SSE 事件中获取）
-  const [nodes] = useState([
+  const [nodes, setNodes] = useState([
     {
       id: 'node_1',
       title: '输入处理',
-      status: (isExecuting ? 'running' : 'completed') as 'pending' | 'running' | 'completed' | 'failed',
-      startTime: Date.now() - 2000,
-      endTime: isExecuting ? undefined : Date.now() - 1500,
-      description: isExecuting ? '正在处理输入数据...' : undefined
+      status: 'pending' as 'pending' | 'running' | 'completed' | 'failed',
+      startTime: undefined as number | undefined,
+      endTime: undefined as number | undefined,
+      description: '准备处理输入数据'
     },
     {
       id: 'node_2', 
       title: '数据分析',
-      status: (isExecuting ? 'pending' : 'completed') as 'pending' | 'running' | 'completed' | 'failed',
-      startTime: isExecuting ? undefined : Date.now() - 1500,
-      endTime: isExecuting ? undefined : Date.now() - 800,
-      description: isExecuting ? undefined : undefined
+      status: 'pending' as 'pending' | 'running' | 'completed' | 'failed',
+      startTime: undefined as number | undefined,
+      endTime: undefined as number | undefined,
+      description: '准备分析数据'
     },
     {
       id: 'node_3',
       title: '结果生成',
-      status: (isExecuting ? 'pending' : 'completed') as 'pending' | 'running' | 'completed' | 'failed',
-      startTime: isExecuting ? undefined : Date.now() - 800,
-      endTime: isExecuting ? undefined : Date.now() - 200,
-      description: isExecuting ? undefined : undefined
+      status: 'pending' as 'pending' | 'running' | 'completed' | 'failed',
+      startTime: undefined as number | undefined,
+      endTime: undefined as number | undefined,
+      description: '准备生成结果'
     }
   ])
+  
+  // 模拟节点状态更新
+  React.useEffect(() => {
+    if (!isExecuting) {
+      // 重置所有节点状态
+      setNodes([
+        {
+          id: 'node_1',
+          title: '输入处理',
+          status: 'pending',
+          startTime: undefined,
+          endTime: undefined,
+          description: '准备处理输入数据'
+        },
+        {
+          id: 'node_2', 
+          title: '数据分析',
+          status: 'pending',
+          startTime: undefined,
+          endTime: undefined,
+          description: '准备分析数据'
+        },
+        {
+          id: 'node_3',
+          title: '结果生成',
+          status: 'pending',
+          startTime: undefined,
+          endTime: undefined,
+          description: '准备生成结果'
+        }
+      ])
+      return
+    }
+    
+    // 模拟执行过程
+    const simulateNodeExecution = async () => {
+      const now = Date.now()
+      
+      // 第一个节点开始
+      setNodes(prev => prev.map((node, index) => 
+        index === 0 
+          ? { ...node, status: 'running', startTime: now, description: '正在处理输入数据...' }
+          : node
+      ))
+      
+      // 2-4秒后第一个节点完成，第二个开始
+      setTimeout(() => {
+        const time1 = Date.now()
+        setNodes(prev => prev.map((node, index) => 
+          index === 0 
+            ? { ...node, status: 'completed', endTime: time1, description: '输入数据处理完成' }
+            : index === 1
+              ? { ...node, status: 'running', startTime: time1, description: '正在分析数据模式...' }
+              : node
+        ))
+        
+        // 3-5秒后第二个节点完成，第三个开始
+        setTimeout(() => {
+          const time2 = Date.now()
+          setNodes(prev => prev.map((node, index) => 
+            index === 1 
+              ? { ...node, status: 'completed', endTime: time2, description: '数据分析完成' }
+              : index === 2
+                ? { ...node, status: 'running', startTime: time2, description: '正在生成最终结果...' }
+                : node
+          ))
+          
+          // 2-3秒后第三个节点完成
+          setTimeout(() => {
+            const time3 = Date.now()
+            setNodes(prev => prev.map((node, index) => 
+              index === 2 
+                ? { ...node, status: 'completed', endTime: time3, description: '结果生成完成' }
+                : node
+            ))
+          }, 2000 + Math.random() * 1000)
+          
+        }, 3000 + Math.random() * 2000)
+        
+      }, 2000 + Math.random() * 2000)
+    }
+    
+    simulateNodeExecution()
+  }, [isExecuting])
   
   const getOverallStatus = () => {
     if (isExecuting) return 'running'

@@ -64,9 +64,9 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
   const getStatusIcon = () => {
     switch (node.status) {
       case 'running':
-        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+        return <Loader2 className="h-4 w-4 animate-spin text-stone-600 dark:text-stone-300" />
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />
+        return <CheckCircle className="h-4 w-4 text-stone-700 dark:text-stone-200" />
       case 'failed':
         return <XCircle className="h-4 w-4 text-red-500" />
       case 'pending':
@@ -103,15 +103,15 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
         return cn(
           baseStyles,
           isDark
-            ? "bg-blue-900/20 border-blue-700/50 shadow-lg shadow-blue-900/20"
-            : "bg-blue-50 border-blue-200 shadow-lg shadow-blue-100/50"
+            ? "bg-stone-700/50 border-stone-600 shadow-lg shadow-stone-900/30"
+            : "bg-stone-200/50 border-stone-300 shadow-lg shadow-stone-200/50"
         )
       case 'completed':
         return cn(
           baseStyles,
           isDark
-            ? "bg-green-900/20 border-green-700/50"
-            : "bg-green-50 border-green-200"
+            ? "bg-stone-600/30 border-stone-500"
+            : "bg-stone-100 border-stone-300"
         )
       case 'failed':
         return cn(
@@ -124,15 +124,15 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
         return cn(
           baseStyles,
           isDark
-            ? "bg-stone-800 border-stone-700"
-            : "bg-stone-100 border-stone-200"
+            ? "bg-stone-800/50 border-stone-700/50"
+            : "bg-stone-50 border-stone-200"
         )
       default:
         return cn(
           baseStyles,
           isDark
-            ? "bg-stone-800 border-stone-700"
-            : "bg-stone-100 border-stone-200"
+            ? "bg-stone-800/50 border-stone-700/50"
+            : "bg-stone-50 border-stone-200"
         )
     }
   }
@@ -157,19 +157,19 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
             "text-xs px-2 py-0.5 rounded-full font-serif",
             node.status === 'running'
               ? isDark
-                ? "bg-blue-700/30 text-blue-300"
-                : "bg-blue-100 text-blue-700"
+                ? "bg-stone-600/40 text-stone-200"
+                : "bg-stone-300/60 text-stone-700"
               : node.status === 'completed'
                 ? isDark
-                  ? "bg-green-700/30 text-green-300"
-                  : "bg-green-100 text-green-700"
+                  ? "bg-stone-500/40 text-stone-100"
+                  : "bg-stone-200 text-stone-800"
                 : node.status === 'failed'
                   ? isDark
                     ? "bg-red-700/30 text-red-300"
                     : "bg-red-100 text-red-700"
                   : isDark
-                    ? "bg-stone-700 text-stone-400"
-                    : "bg-stone-200 text-stone-600"
+                    ? "bg-stone-700/50 text-stone-400"
+                    : "bg-stone-200/80 text-stone-600"
           )}>
             {getStatusText()}
           </span>

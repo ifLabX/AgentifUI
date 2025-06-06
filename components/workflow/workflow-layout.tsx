@@ -68,14 +68,29 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
       
       setCurrentExecution(mockExecution)
       
-      // 模拟完成
-      setTimeout(() => {
+      // 模拟分阶段执行过程
+      const simulateExecution = async () => {
+        // 第一阶段：输入处理 (2-4秒)
+        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000))
+        
+        // 第二阶段：数据分析 (3-5秒)
+        await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 2000))
+        
+        // 第三阶段：结果生成 (2-3秒)
+        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000))
+        
+        // 完成执行
         const completedExecution = {
           ...mockExecution,
           status: 'completed' as const,
-          outputs: { result: '模拟执行结果' },
+          outputs: { 
+            result: '工作流执行成功完成',
+            summary: '已处理所有输入数据并生成结果',
+            details: formData
+          },
           total_steps: 3,
-          total_tokens: 150,
+          total_tokens: 120 + Math.floor(Math.random() * 80),
+          elapsed_time: ((Date.now() - Date.parse(mockExecution.created_at)) / 1000).toFixed(1),
           completed_at: new Date().toISOString()
         }
         
@@ -84,7 +99,9 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
         setIsExecuting(false)
         
         console.log('[工作流执行] 执行完成:', completedExecution)
-      }, 3000)
+      }
+      
+      simulateExecution()
       
     } catch (error) {
       console.error('[工作流执行] 执行失败:', error)
