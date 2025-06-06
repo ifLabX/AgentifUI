@@ -78,6 +78,10 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
               // 根据字段类型设置默认值
               if (fieldType === 'file' || fieldType === 'file-list') {
                 initialData[fieldConfig.variable] = fieldConfig.default || []
+              } else if (fieldType === 'number') {
+                // number类型的默认值处理
+                const numberConfig = fieldConfig as any
+                initialData[fieldConfig.variable] = numberConfig.default !== undefined ? numberConfig.default : ''
               } else {
                 initialData[fieldConfig.variable] = fieldConfig.default || ''
               }
@@ -312,7 +316,7 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
             return (
               <FormField
                 key={`${fieldType}_${fieldConfig.variable}_${index}`}
-                type={fieldType as 'text-input' | 'paragraph' | 'select' | 'file' | 'file-list'}
+                type={fieldType as 'text-input' | 'number' | 'paragraph' | 'select' | 'file' | 'file-list'}
                 config={fieldConfig}
                 value={fieldValue}
                 onChange={fieldOnChange}

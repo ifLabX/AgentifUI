@@ -444,7 +444,19 @@ export interface GetConversationVariablesResponse {
 // 应用参数相关类型定义 (GET /parameters)
 // --- END COMMENT ---
 
-/** 用户输入表单控件 - 文本输入 */
+/** Dify 数字输入控件 */
+export interface DifyNumberInputControl {
+  label: string; // 控件展示标签名
+  variable: string; // 控件 ID
+  required: boolean; // 是否必填
+  default: number | string; // 默认值（可以是数字或字符串）
+  min?: number; // 最小值限制
+  max?: number; // 最大值限制
+  step?: number; // 步长，默认为1
+  precision?: number; // 小数位数限制
+}
+
+/** Dify 文本输入控件 */
 export interface DifyTextInputControl {
   label: string; // 控件展示标签名
   variable: string; // 控件 ID
@@ -484,6 +496,7 @@ export interface DifyFileInputControl {
 /** 用户输入表单项 */
 export interface DifyUserInputFormItem {
   'text-input'?: DifyTextInputControl;
+  'number'?: DifyNumberInputControl;
   'paragraph'?: DifyParagraphControl;
   'select'?: DifySelectControl;
   'file'?: DifyFileInputControl;

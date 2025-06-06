@@ -24,15 +24,68 @@ export function validateFormData(
     
     // 检查字段是否为空
     const isFileField = fieldType === 'file' || fieldType === 'file-list'
+    const isNumberField = fieldType === 'number'
+    
     const isEmpty = isFileField 
       ? (!value || 
          (Array.isArray(value) && value.length === 0) ||
          (typeof value === 'object' && !value.upload_file_id))
-      : (!value || (typeof value === 'string' && value.trim() === ''))
+      : isNumberField
+        ? (value === '' || value === null || value === undefined)
+        : (!value || (typeof value === 'string' && value.trim() === ''))
     
     // 如果字段为空且非必填，跳过所有验证
     if (isEmpty && !required) {
       return
+    }
+    
+    // 必填验证
+    if (isEmpty && required) {
+      errors[variable] = `${label}为必填项`
+      return
+    }
+    
+    // 数字类型验证
+    if (fieldType === 'number') {
+      const numberConfig = fieldConfig as any
+      
+      // 检查是否为有效数字
+      const numValue = typeof value === 'number' ? value : parseFloat(value)
+      if (isNaN(numValue)) {
+        errors[variable] = `${label}必须是有效的数字`
+        return
+      }
+      
+      // 最小值验证
+      if (numberConfig.min !== undefined && numValue < numberConfig.min) {
+        errors[variable] = `${label}不能小于${numberConfig.min}`
+        return
+      }
+      
+      // 最大值验证
+      if (numberConfig.max !== undefined && numValue > numberConfig.max) {
+        errors[variable] = `${label}不能大于${numberConfig.max}`
+        return
+      }
+      
+      // 步长验证
+      if (numberConfig.step && numberConfig.step > 0) {
+        const minValue = numberConfig.min || 0
+        const remainder = (numValue - minValue) % numberConfig.step
+        if (Math.abs(remainder) > 1e-10) { // 使用小的容差处理浮点数精度问题
+          errors[variable] = `${label}必须是${numberConfig.step}的倍数`
+          return
+        }
+      }
+      
+      // 精度验证（小数位数）
+      if (numberConfig.precision !== undefined) {
+        const decimalPlaces = (numValue.toString().split('.')[1] || '').length
+        if (decimalPlaces > numberConfig.precision) {
+          errors[variable] = `${label}小数位数不能超过${numberConfig.precision}位`
+          return
+        }
+      }
     }
     
     // 字符长度验证（仅适用于文本字段）
@@ -65,13 +118,7 @@ export function validateFormData(
         return // 数量超限时，不再检查其他错误
       }
       
-      // 2. 如果字段为空且必填，显示必填错误
-      if (isEmpty && required) {
-        errors[variable] = `${label}为必填项`
-        return
-      }
-      
-      // 3. 文件大小和类型验证（仅对原始File对象进行验证）
+      // 2. 文件大小和类型验证（仅对原始File对象进行验证）
       for (const file of fileArray) {
         if (file instanceof File) {
           // 文件大小验证
@@ -93,12 +140,6 @@ export function validateFormData(
           }
         }
         // 对于已上传的Dify文件对象（有upload_file_id），跳过验证
-      }
-    } else {
-      // 非文件字段的必填验证
-      if (isEmpty && required) {
-        errors[variable] = `${label}为必填项`
-        return
       }
     }
   })

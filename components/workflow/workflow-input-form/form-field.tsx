@@ -5,11 +5,11 @@ import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { CustomSelect } from './custom-select'
 import { FileUploadField } from './file-upload-field'
-import type { DifyTextInputControl, DifyParagraphControl, DifySelectControl, DifyFileInputControl } from '@lib/services/dify/types'
+import type { DifyTextInputControl, DifyNumberInputControl, DifyParagraphControl, DifySelectControl, DifyFileInputControl } from '@lib/services/dify/types'
 
 interface FormFieldProps {
-  type: 'text-input' | 'paragraph' | 'select' | 'file' | 'file-list'
-  config: DifyTextInputControl | DifyParagraphControl | DifySelectControl | DifyFileInputControl
+  type: 'text-input' | 'number' | 'paragraph' | 'select' | 'file' | 'file-list'
+  config: DifyTextInputControl | DifyNumberInputControl | DifyParagraphControl | DifySelectControl | DifyFileInputControl
   value: any
   onChange: (value: any) => void
   error?: string
@@ -21,6 +21,7 @@ interface FormFieldProps {
  * 
  * 支持的字段类型：
  * - text-input: 单行文本输入
+ * - number: 数字输入
  * - paragraph: 多行文本输入
  * - select: 下拉选择
  * - file: 文件上传
@@ -59,6 +60,37 @@ export function FormField({ type, config, value, onChange, error, instanceId }: 
             onChange={(e) => onChange(e.target.value)}
             placeholder={`请输入${config.label}`}
             maxLength={textConfig.max_length || undefined}
+            className={baseInputClasses}
+          />
+        )
+      
+      case 'number':
+        const numberConfig = config as DifyNumberInputControl
+        return (
+          <input
+            type="number"
+            value={value}
+            onChange={(e) => {
+              const inputValue = e.target.value
+              // 如果输入为空，传递空字符串
+              if (inputValue === '') {
+                onChange('')
+                return
+              }
+              
+              // 尝试转换为数字
+              const numValue = parseFloat(inputValue)
+              if (!isNaN(numValue)) {
+                onChange(numValue)
+              } else {
+                // 如果转换失败，保持原始字符串（用于验证）
+                onChange(inputValue)
+              }
+            }}
+            placeholder={`请输入${config.label}`}
+            min={numberConfig.min}
+            max={numberConfig.max}
+            step={numberConfig.step || 1}
             className={baseInputClasses}
           />
         )
@@ -133,6 +165,34 @@ export function FormField({ type, config, value, onChange, error, instanceId }: 
     }
   }
   
+  // --- BEGIN COMMENT ---
+  // 为number类型生成范围提示信息
+  // --- END COMMENT ---
+  const getNumberHint = () => {
+    if (type !== 'number') return null
+    
+    const numberConfig = config as DifyNumberInputControl
+    const hints: string[] = []
+    
+    if (numberConfig.min !== undefined && numberConfig.max !== undefined) {
+      hints.push(`范围：${numberConfig.min} - ${numberConfig.max}`)
+    } else if (numberConfig.min !== undefined) {
+      hints.push(`最小值：${numberConfig.min}`)
+    } else if (numberConfig.max !== undefined) {
+      hints.push(`最大值：${numberConfig.max}`)
+    }
+    
+    if (numberConfig.step && numberConfig.step !== 1) {
+      hints.push(`步长：${numberConfig.step}`)
+    }
+    
+    if (numberConfig.precision !== undefined) {
+      hints.push(`小数位数：${numberConfig.precision}`)
+    }
+    
+    return hints.length > 0 ? hints.join('，') : null
+  }
+  
   return (
     <div className="space-y-1 px-1">
       <label className={labelClasses}>
@@ -143,6 +203,16 @@ export function FormField({ type, config, value, onChange, error, instanceId }: 
       </label>
       
       {renderInput()}
+      
+      {/* 数字类型的范围提示 */}
+      {type === 'number' && getNumberHint() && (
+        <div className={cn(
+          "text-xs font-serif",
+          isDark ? "text-stone-400" : "text-stone-500"
+        )}>
+          {getNumberHint()}
+        </div>
+      )}
       
       {/* 字符计数（仅对有长度限制的字段显示） */}
       {(type === 'text-input' || type === 'paragraph') && (config as any).max_length && (
