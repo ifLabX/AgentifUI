@@ -1,0 +1,125 @@
+"use client"
+
+import React from 'react'
+import { useTheme } from '@lib/hooks/use-theme'
+import { cn } from '@lib/utils'
+import type { DifyTextInputControl, DifyParagraphControl, DifySelectControl } from '@lib/services/dify/types'
+
+interface FormFieldProps {
+  type: 'text-input' | 'paragraph' | 'select'
+  config: DifyTextInputControl | DifyParagraphControl | DifySelectControl
+  value: string
+  onChange: (value: string) => void
+  error?: string
+}
+
+/**
+ * 通用表单字段组件
+ * 
+ * 支持的字段类型：
+ * - text-input: 单行文本输入
+ * - paragraph: 多行文本输入
+ * - select: 下拉选择
+ */
+export function FormField({ type, config, value, onChange, error }: FormFieldProps) {
+  const { isDark } = useTheme()
+  
+  const baseInputClasses = cn(
+    "w-full px-3 py-2 rounded-lg border font-serif transition-colors",
+    "focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent",
+    error
+      ? "border-red-500 bg-red-50 dark:bg-red-900/20"
+      : isDark
+        ? "border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400"
+        : "border-stone-300 bg-white text-stone-900 placeholder-stone-500"
+  )
+  
+  const labelClasses = cn(
+    "block text-sm font-medium font-serif mb-2",
+    isDark ? "text-stone-200" : "text-stone-700"
+  )
+  
+  const errorClasses = cn(
+    "mt-1 text-xs font-serif text-red-500"
+  )
+  
+  const renderInput = () => {
+    switch (type) {
+      case 'text-input':
+        const textConfig = config as DifyTextInputControl
+        return (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={`请输入${config.label}`}
+            maxLength={textConfig.max_length || undefined}
+            className={baseInputClasses}
+          />
+        )
+      
+      case 'paragraph':
+        const paragraphConfig = config as DifyParagraphControl
+        return (
+          <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={`请输入${config.label}`}
+            rows={4}
+            maxLength={(paragraphConfig as any).max_length || undefined}
+            className={cn(baseInputClasses, "resize-none")}
+          />
+        )
+      
+      case 'select':
+        const selectConfig = config as DifySelectControl
+        return (
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={baseInputClasses}
+          >
+            <option value="">请选择{config.label}</option>
+            {selectConfig.options.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        )
+      
+      default:
+        return null
+    }
+  }
+  
+  return (
+    <div className="space-y-1">
+      <label className={labelClasses}>
+        {config.label}
+        {config.required && (
+          <span className="text-red-500 ml-1">*</span>
+        )}
+      </label>
+      
+      {renderInput()}
+      
+      {/* 字符计数（仅对有长度限制的字段显示） */}
+      {(type === 'text-input' || type === 'paragraph') && (config as any).max_length && (
+        <div className={cn(
+          "text-xs font-serif text-right",
+          isDark ? "text-stone-400" : "text-stone-500"
+        )}>
+          {value.length} / {(config as any).max_length}
+        </div>
+      )}
+      
+      {/* 错误提示 */}
+      {error && (
+        <div className={errorClasses}>
+          {error}
+        </div>
+      )}
+    </div>
+  )
+} 
