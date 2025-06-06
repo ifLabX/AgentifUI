@@ -98,7 +98,7 @@ export function FormField({ type, config, value, onChange, error, instanceId }: 
           <FileUploadField
             config={{
               enabled: true,
-              number_limits: fileConfig.number_limits || 3,
+              number_limits: fileConfig.number_limits, // 不使用默认值，保持undefined
               allowed_file_types: fileConfig.allowed_file_types,
               max_file_size_mb: fileConfig.max_file_size_mb
             }}

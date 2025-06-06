@@ -117,7 +117,7 @@ export function useWorkflowExecution(instanceId: string) {
         user: userId
       }
       
-      console.log('[工作流执行] 准备调用Dify API')
+      console.log('[工作流执行] 准备调用Dify API，payload:', JSON.stringify(difyPayload, null, 2))
       
       // --- 步骤5: 调用Dify流式API ---
       const { streamDifyWorkflow } = await import('@lib/services/dify/workflow-service')

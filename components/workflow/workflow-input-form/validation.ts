@@ -25,8 +25,12 @@ export function validateFormData(
     // 必填验证
     if (required) {
       if (fieldType === 'file') {
-        // 文件字段：检查是否有文件
-        if (!value || !Array.isArray(value) || value.length === 0) {
+        // 文件字段：支持单文件对象或文件数组
+        const isEmpty = !value || 
+          (Array.isArray(value) && value.length === 0) ||
+          (typeof value === 'object' && !value.upload_file_id)
+        
+        if (isEmpty) {
           errors[variable] = `${label}为必填项`
           return
         }
@@ -41,7 +45,11 @@ export function validateFormData(
     
     // 如果字段为空且非必填，跳过其他验证
     if (fieldType === 'file') {
-      if (!value || !Array.isArray(value) || value.length === 0) {
+      const isEmpty = !value || 
+        (Array.isArray(value) && value.length === 0) ||
+        (typeof value === 'object' && !value.upload_file_id)
+      
+      if (isEmpty) {
         return
       }
     } else {
@@ -69,34 +77,37 @@ export function validateFormData(
     // 文件验证
     if (fieldType === 'file') {
       const fileConfig = fieldConfig as any
-      if (Array.isArray(value)) {
-        // 文件数量限制
-        if (fileConfig.number_limits && value.length > fileConfig.number_limits) {
-          errors[variable] = `${label}文件数量不能超过${fileConfig.number_limits}个`
-        }
-        
-        // 文件大小和类型验证
-        for (const file of value) {
-          if (file instanceof File) {
-            // 文件大小验证
-            if (fileConfig.max_file_size_mb) {
-              const maxSizeBytes = fileConfig.max_file_size_mb * 1024 * 1024
-              if (file.size > maxSizeBytes) {
-                errors[variable] = `${label}中的文件"${file.name}"大小超过${fileConfig.max_file_size_mb}MB`
-                break
-              }
+      
+      // 将单文件对象转换为数组进行统一处理
+      const fileArray = Array.isArray(value) ? value : [value]
+      
+      // 文件数量限制
+      if (fileConfig.number_limits && fileArray.length > fileConfig.number_limits) {
+        errors[variable] = `${label}文件数量不能超过${fileConfig.number_limits}个`
+      }
+      
+      // 文件大小和类型验证（仅对原始File对象进行验证）
+      for (const file of fileArray) {
+        if (file instanceof File) {
+          // 文件大小验证
+          if (fileConfig.max_file_size_mb) {
+            const maxSizeBytes = fileConfig.max_file_size_mb * 1024 * 1024
+            if (file.size > maxSizeBytes) {
+              errors[variable] = `${label}中的文件"${file.name}"大小超过${fileConfig.max_file_size_mb}MB`
+              break
             }
-            
-            // 文件类型验证
-            if (fileConfig.allowed_file_types && fileConfig.allowed_file_types.length > 0) {
-              const fileExtension = file.name.split('.').pop()?.toLowerCase()
-              if (!fileExtension || !fileConfig.allowed_file_types.includes(fileExtension)) {
-                errors[variable] = `${label}中的文件"${file.name}"类型不支持，支持的类型：${fileConfig.allowed_file_types.join(', ')}`
-                break
-              }
+          }
+          
+          // 文件类型验证
+          if (fileConfig.allowed_file_types && fileConfig.allowed_file_types.length > 0) {
+            const fileExtension = file.name.split('.').pop()?.toLowerCase()
+            if (!fileExtension || !fileConfig.allowed_file_types.includes(fileExtension)) {
+              errors[variable] = `${label}中的文件"${file.name}"类型不支持，支持的类型：${fileConfig.allowed_file_types.join(', ')}`
+              break
             }
           }
         }
+        // 对于已上传的Dify文件对象（有upload_file_id），跳过验证
       }
     }
   })

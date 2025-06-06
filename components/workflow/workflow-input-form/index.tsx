@@ -283,14 +283,29 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
             
             if (!fieldConfig) return null
             
-            // 根据字段类型确定值和处理函数
-            const fieldValue = fieldType === 'file' 
-              ? (formData[fieldConfig.variable] || [])
-              : (formData[fieldConfig.variable] || '')
-            
-            const fieldOnChange = fieldType === 'file'
-              ? (value: File[]) => handleFieldChange(fieldConfig.variable, value)
-              : (value: string) => handleFieldChange(fieldConfig.variable, value)
+                      // 根据字段类型确定值和处理函数
+          const fieldValue = fieldType === 'file' 
+            ? (formData[fieldConfig.variable] || [])
+            : (formData[fieldConfig.variable] || '')
+          
+          const fieldOnChange = fieldType === 'file'
+            ? (value: File[]) => handleFieldChange(fieldConfig.variable, value)
+            : (value: string) => handleFieldChange(fieldConfig.variable, value)
+          
+          // --- BEGIN COMMENT ---
+          // 调试：输出文件字段的配置信息
+          // --- END COMMENT ---
+          if (fieldType === 'file') {
+            const fileConfig = fieldConfig as any
+            console.log(`[工作流表单] 文件字段配置:`, {
+              variable: fileConfig.variable,
+              label: fileConfig.label,
+              number_limits: fileConfig.number_limits,
+              required: fileConfig.required,
+              allowed_file_types: fileConfig.allowed_file_types,
+              max_file_size_mb: fileConfig.max_file_size_mb
+            })
+          }
             
             return (
               <FormField

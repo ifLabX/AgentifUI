@@ -28,8 +28,8 @@ interface UploadFile {
 
 interface FileUploadFieldProps {
   config: any
-  value: any[] // 修改为上传文件对象数组，而不是File数组
-  onChange: (files: any[]) => void // 返回Dify格式的文件对象
+  value: any[] | any // 支持单文件对象或文件数组
+  onChange: (files: any[] | any) => void // 返回Dify格式的文件对象或数组
   error?: string
   label?: string
   instanceId: string // 添加instanceId用于Dify API调用
@@ -66,24 +66,31 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
     if (!isInitializedRef.current) {
       isInitializedRef.current = true
       
-      if (value && value.length > 0) {
-        // 检查value是否已经是处理过的Dify文件格式
-        const isProcessedFiles = value.every(item => 
-          typeof item === 'object' && item.upload_file_id
-        )
+      if (value) {
+        // 处理单文件对象的情况
+        const valueArray = Array.isArray(value) ? value : [value]
         
-        if (!isProcessedFiles) {
-          // 如果是原始File对象数组，转换为UploadFile格式
-          const convertedFiles = value.map((file: File) => ({
-            id: `${file.name}-${file.lastModified}-${file.size}`,
-            file,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            status: "pending" as const,
-            progress: 0
-          }))
-          setUploadFiles(convertedFiles)
+        if (valueArray.length > 0) {
+          // 检查value是否已经是处理过的Dify文件格式
+          const isProcessedFiles = valueArray.every((item: any) => 
+            typeof item === 'object' && item.upload_file_id
+          )
+        
+          if (!isProcessedFiles) {
+            // 如果是原始File对象数组，转换为UploadFile格式
+            const convertedFiles = valueArray.map((file: File) => ({
+              id: `${file.name}-${file.lastModified}-${file.size}`,
+              file,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              status: "pending" as const,
+              progress: 0
+            }))
+            setUploadFiles(convertedFiles)
+          }
+        } else {
+          setUploadFiles([])
         }
       } else {
         setUploadFiles([])
@@ -98,18 +105,15 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
   
   // --- BEGIN COMMENT ---
   // 当uploadFiles状态变化时，通知父组件
-  // 只传递成功上传的文件的Dify格式数据
+  // 根据number_limits决定返回单个文件对象还是文件数组
   // --- END COMMENT ---
   useEffect(() => {
     const successfulFiles = uploadFiles
       .filter(file => file.status === 'success' && file.uploadedId)
       .map(file => ({
         type: getDifyFileType(file),
-        transfer_method: 'local_file',
+        transfer_method: 'local_file' as const,
         upload_file_id: file.uploadedId as string,
-        name: file.name,
-        size: file.size,
-        mime_type: file.type,
       }))
     
     // 只有在成功文件列表实际发生变化时才调用onChange
@@ -117,9 +121,26 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
     
     if (lastSuccessIdsRef.current !== currentSuccessIds) {
       lastSuccessIdsRef.current = currentSuccessIds
-      onChange(successfulFiles)
+      
+      // --- BEGIN COMMENT ---
+      // 根据number_limits判断是单文件还是多文件
+      // 如果number_limits未定义或为1，默认为单文件模式
+      // --- END COMMENT ---
+      const numberLimits = config.number_limits
+      console.log(`[工作流文件上传] number_limits: ${numberLimits}, 成功文件数: ${successfulFiles.length}`)
+      
+      if (numberLimits === undefined || numberLimits === 1) {
+        // 单文件模式：返回第一个文件对象或null
+        const singleFile = successfulFiles.length > 0 ? successfulFiles[0] : null
+        onChange(singleFile)
+        console.log('[工作流文件上传] 单文件模式（number_limits未定义或为1），文件数据已更新:', singleFile)
+      } else {
+        // 多文件模式：返回文件数组
+        onChange(successfulFiles)
+        console.log('[工作流文件上传] 多文件模式，文件数据已更新:', successfulFiles)
+      }
     }
-  }, [uploadFiles]) // 移除onChange依赖，避免无限循环
+  }, [uploadFiles, config.number_limits]) // 添加config.number_limits依赖
   
   // --- BEGIN COMMENT ---
   // 根据文件类型推断 Dify 文件 type 字段
@@ -252,7 +273,10 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
   const isUploading = uploadFiles.some(f => f.status === 'uploading')
   const hasError = uploadFiles.some(f => f.status === 'error')
   const successCount = uploadFiles.filter(f => f.status === 'success').length
-  const maxFiles = config.number_limits || 3
+  // --- BEGIN COMMENT ---
+  // 如果number_limits未定义，默认为1（单文件模式）
+  // --- END COMMENT ---
+  const maxFiles = config.number_limits !== undefined ? config.number_limits : 1
   const canUploadMore = uploadFiles.length < maxFiles
   
   // --- BEGIN COMMENT ---
@@ -383,7 +407,7 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       <input
         ref={fileInputRef}
         type="file"
-        multiple
+        multiple={maxFiles > 1}
         accept={fileTypeInfo.accept}
         className="hidden"
         onChange={handleFileInputChange}
