@@ -273,7 +273,12 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
       
       {/* 历史记录侧边栏 */}
       {showHistory && (
-        <div className="w-80 min-w-72 border-l border-stone-200 dark:border-stone-700">
+        <div className={cn(
+          "w-80 min-w-72 border-l",
+          "transition-all duration-300 ease-in-out",
+          "transform-gpu", // 使用GPU加速
+          isDark ? "border-stone-700" : "border-stone-200"
+        )}>
           <ExecutionHistory
             instanceId={instanceId}
             onClose={() => setShowHistory(false)}

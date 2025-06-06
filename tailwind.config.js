@@ -48,6 +48,8 @@ module.exports = {
         'fadein': 'fadeIn 0.5s ease-out',
         'fade-in': 'fadeIn 0.3s ease-out forwards',
         'blink': 'blink 1s step-end infinite',
+        'slide-in-right': 'slideInRight 0.3s ease-out forwards',
+        'slide-out-right': 'slideOutRight 0.3s ease-in forwards',
       },
       keyframes: {
         slideInDown: {
@@ -78,6 +80,14 @@ module.exports = {
           '0%, 100%': { opacity: 1 },
           '50%': { opacity: 0 },
         },
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)', opacity: 0 },
+          '100%': { transform: 'translateX(0)', opacity: 1 },
+        },
+        slideOutRight: {
+          '0%': { transform: 'translateX(0)', opacity: 1 },
+          '100%': { transform: 'translateX(100%)', opacity: 0 },
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -86,5 +96,7 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar')({ nocompatible: true }),
+  ],
 } 
