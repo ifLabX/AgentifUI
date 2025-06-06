@@ -33,6 +33,7 @@ interface FileUploadFieldProps {
   error?: string
   label?: string
   instanceId: string // 添加instanceId用于Dify API调用
+  isSingleFileMode?: boolean // 是否为单文件模式
 }
 
 /**
@@ -45,7 +46,7 @@ interface FileUploadFieldProps {
  * - 文件状态管理
  * - 与聊天输入组件的文件上传功能保持一致
  */
-export function FileUploadField({ config, value, onChange, error, label, instanceId }: FileUploadFieldProps) {
+export function FileUploadField({ config, value, onChange, error, label, instanceId, isSingleFileMode = false }: FileUploadFieldProps) {
   const { isDark } = useTheme()
   const { session } = useSupabaseAuth()
   const { currentAppId } = useCurrentApp()
@@ -123,24 +124,22 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       lastSuccessIdsRef.current = currentSuccessIds
       
       // --- BEGIN COMMENT ---
-      // 根据number_limits判断是单文件还是多文件
-      // 如果number_limits未定义或为1，默认为单文件模式
+      // 根据isSingleFileMode判断是单文件还是多文件
       // --- END COMMENT ---
-      const numberLimits = config.number_limits
-      console.log(`[工作流文件上传] number_limits: ${numberLimits}, 成功文件数: ${successfulFiles.length}`)
+      console.log(`[工作流文件上传] isSingleFileMode: ${isSingleFileMode}, 成功文件数: ${successfulFiles.length}`)
       
-      if (numberLimits === undefined || numberLimits === 1) {
+      if (isSingleFileMode) {
         // 单文件模式：返回第一个文件对象或null
         const singleFile = successfulFiles.length > 0 ? successfulFiles[0] : null
         onChange(singleFile)
-        console.log('[工作流文件上传] 单文件模式（number_limits未定义或为1），文件数据已更新:', singleFile)
+        console.log('[工作流文件上传] 单文件模式，文件数据已更新:', singleFile)
       } else {
         // 多文件模式：返回文件数组
         onChange(successfulFiles)
         console.log('[工作流文件上传] 多文件模式，文件数据已更新:', successfulFiles)
       }
     }
-  }, [uploadFiles, config.number_limits]) // 添加config.number_limits依赖
+  }, [uploadFiles, isSingleFileMode]) // 添加isSingleFileMode依赖
   
   // --- BEGIN COMMENT ---
   // 根据文件类型推断 Dify 文件 type 字段
@@ -274,9 +273,10 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
   const hasError = uploadFiles.some(f => f.status === 'error')
   const successCount = uploadFiles.filter(f => f.status === 'success').length
   // --- BEGIN COMMENT ---
-  // 如果number_limits未定义，默认为1（单文件模式）
+  // 根据isSingleFileMode和配置确定最大文件数
+  // file-list类型使用max_length字段，file类型使用number_limits字段
   // --- END COMMENT ---
-  const maxFiles = config.number_limits !== undefined ? config.number_limits : 1
+  const maxFiles = isSingleFileMode ? 1 : (config.max_length || config.number_limits || 1)
   const canUploadMore = uploadFiles.length < maxFiles
   
   // --- BEGIN COMMENT ---
@@ -299,7 +299,7 @@ export function FileUploadField({ config, value, onChange, error, label, instanc
       },
       'document': { 
         name: '文档', 
-        accept: '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.csv,.html,.xml,.epub,.rtf,.odt,.ods,.odp'
+        accept: "txt,md,mdx,markdown,pdf,html,xlsx,xls,doc,docx,csv,eml,msg,pptx,ppt,xml,epub"
       },
       'audio': { 
         name: '音频', 

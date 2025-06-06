@@ -76,7 +76,7 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
             
             if (fieldConfig) {
               // 根据字段类型设置默认值
-              if (fieldType === 'file') {
+              if (fieldType === 'file' || fieldType === 'file-list') {
                 initialData[fieldConfig.variable] = fieldConfig.default || []
               } else {
                 initialData[fieldConfig.variable] = fieldConfig.default || ''
@@ -284,33 +284,35 @@ export function WorkflowInputForm({ instanceId, onExecute, isExecuting }: Workfl
             if (!fieldConfig) return null
             
                       // 根据字段类型确定值和处理函数
-          const fieldValue = fieldType === 'file' 
+          const fieldValue = (fieldType === 'file' || fieldType === 'file-list')
             ? (formData[fieldConfig.variable] || [])
             : (formData[fieldConfig.variable] || '')
           
-          const fieldOnChange = fieldType === 'file'
-            ? (value: File[]) => handleFieldChange(fieldConfig.variable, value)
+          const fieldOnChange = (fieldType === 'file' || fieldType === 'file-list')
+            ? (value: any) => handleFieldChange(fieldConfig.variable, value)
             : (value: string) => handleFieldChange(fieldConfig.variable, value)
           
           // --- BEGIN COMMENT ---
           // 调试：输出文件字段的配置信息
           // --- END COMMENT ---
-          if (fieldType === 'file') {
+          if (fieldType === 'file' || fieldType === 'file-list') {
             const fileConfig = fieldConfig as any
-            console.log(`[工作流表单] 文件字段配置:`, {
+            console.log(`[工作流表单] ${fieldType}字段配置:`, {
               variable: fileConfig.variable,
               label: fileConfig.label,
-              number_limits: fileConfig.number_limits,
+              max_length: fileConfig.max_length, // file-list类型的文件数量限制
+              number_limits: fileConfig.number_limits, // file类型的文件数量限制
               required: fileConfig.required,
               allowed_file_types: fileConfig.allowed_file_types,
-              max_file_size_mb: fileConfig.max_file_size_mb
+              max_file_size_mb: fileConfig.max_file_size_mb,
+              fullConfig: fileConfig // 输出完整配置以便调试
             })
           }
             
             return (
               <FormField
                 key={`${fieldType}_${fieldConfig.variable}_${index}`}
-                type={fieldType as 'text-input' | 'paragraph' | 'select' | 'file'}
+                type={fieldType as 'text-input' | 'paragraph' | 'select' | 'file' | 'file-list'}
                 config={fieldConfig}
                 value={fieldValue}
                 onChange={fieldOnChange}

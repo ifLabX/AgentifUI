@@ -8,7 +8,7 @@ import { FileUploadField } from './file-upload-field'
 import type { DifyTextInputControl, DifyParagraphControl, DifySelectControl, DifyFileInputControl } from '@lib/services/dify/types'
 
 interface FormFieldProps {
-  type: 'text-input' | 'paragraph' | 'select' | 'file'
+  type: 'text-input' | 'paragraph' | 'select' | 'file' | 'file-list'
   config: DifyTextInputControl | DifyParagraphControl | DifySelectControl | DifyFileInputControl
   value: any
   onChange: (value: any) => void
@@ -89,7 +89,7 @@ export function FormField({ type, config, value, onChange, error, instanceId }: 
         )
       
       case 'file':
-        const fileConfig = config as DifyFileInputControl
+        const fileConfig = config as any
         if (!instanceId) {
           console.warn('[FormField] file类型字段需要instanceId参数')
           return null
@@ -97,15 +97,34 @@ export function FormField({ type, config, value, onChange, error, instanceId }: 
         return (
           <FileUploadField
             config={{
-              enabled: true,
-              number_limits: fileConfig.number_limits, // 不使用默认值，保持undefined
-              allowed_file_types: fileConfig.allowed_file_types,
-              max_file_size_mb: fileConfig.max_file_size_mb
+              ...fileConfig, // 保留所有原始字段
+              enabled: true // 确保启用
             }}
             value={value || []}
             onChange={onChange}
             error={error}
             instanceId={instanceId}
+            isSingleFileMode={true} // 单文件模式
+          />
+        )
+      
+      case 'file-list':
+        const fileListConfig = config as any
+        if (!instanceId) {
+          console.warn('[FormField] file-list类型字段需要instanceId参数')
+          return null
+        }
+        return (
+          <FileUploadField
+            config={{
+              ...fileListConfig, // 保留所有原始字段
+              enabled: true // 确保启用
+            }}
+            value={value || []}
+            onChange={onChange}
+            error={error}
+            instanceId={instanceId}
+            isSingleFileMode={false} // 多文件模式
           />
         )
       

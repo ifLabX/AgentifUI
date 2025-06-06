@@ -487,6 +487,7 @@ export interface DifyUserInputFormItem {
   'paragraph'?: DifyParagraphControl;
   'select'?: DifySelectControl;
   'file'?: DifyFileInputControl;
+  'file-list'?: DifyFileInputControl; // 多文件模式
 }
 
 /** 图片上传配置 */
