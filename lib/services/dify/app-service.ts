@@ -26,7 +26,7 @@ export async function getAllDifyApps(): Promise<Array<{
     
     const { data: instances, error } = await supabase
       .from('service_instances')
-      .select('instance_id, display_name, description, config')
+      .select('id, instance_id, display_name, description, config')
       .eq('provider_id', providerResult.data.id)
       .order('display_name');
       
@@ -35,7 +35,7 @@ export async function getAllDifyApps(): Promise<Array<{
     }
     
     return instances?.map(instance => ({
-      id: instance.instance_id,
+      id: instance.id,  // 使用真正的UUID主键
       name: instance.display_name || instance.instance_id,
       instance_id: instance.instance_id,
       display_name: instance.display_name,

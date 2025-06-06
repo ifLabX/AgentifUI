@@ -10,6 +10,7 @@ import { ExecutionHistory } from './execution-history'
 import { HistoryButton } from '@components/workflow/history-button'
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher'
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store'
+import { useWorkflowExecution } from '@lib/hooks/use-workflow-execution'
 
 interface WorkflowLayoutProps {
   instanceId: string
@@ -30,91 +31,44 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   const { isDark } = useTheme()
   const isMobile = useMobile()
   
-  // --- 状态管理 ---
+  // --- 新的工作流执行系统 ---
+  const {
+    isExecuting,
+    progress,
+    error,
+    canRetry,
+    nodes,
+    currentNodeId,
+    currentExecution,
+    executionHistory,
+    formData,
+    formLocked,
+    executeWorkflow,
+    stopWorkflowExecution,
+    retryExecution,
+    resetExecution,
+    loadWorkflowHistory
+  } = useWorkflowExecution(instanceId)
+  
+  // --- 保留原有状态管理 ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore()
-  const [isExecuting, setIsExecuting] = useState(false)
-  const [executionResult, setExecutionResult] = useState<any>(null)
-  const [currentExecution, setCurrentExecution] = useState<any>(null)
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('form')
   
-  // --- 历史记录状态现在通过全局store管理，无需事件监听 ---
-  
-  // --- 执行工作流的回调函数 ---
+  // --- 工作流执行回调，现在使用真实的hook ---
   const handleExecuteWorkflow = useCallback(async (formData: Record<string, any>) => {
-    console.log('[工作流执行] 开始执行，输入数据:', formData)
+    console.log('[工作流布局] 开始执行工作流，输入数据:', formData)
     
     try {
-      setIsExecuting(true)
-      setExecutionResult(null)
-      setCurrentExecution(null)
-      
-      // TODO: 集成真实的 Dify API 调用
-      // const { streamDifyWorkflow } = await import('@lib/services/dify/workflow-service')
-      // const result = await streamDifyWorkflow(payload, instanceId, handleNodeUpdate)
-      
-      // 模拟执行过程
-      console.log('[工作流执行] 模拟执行中...')
-      
-      // 创建执行记录
-      const mockExecution = {
-        id: `exec_${Date.now()}`,
-        title: `工作流执行 - ${new Date().toLocaleString()}`,
-        inputs: formData,
-        status: 'running' as const,
-        created_at: new Date().toISOString(),
-        total_steps: 0,
-        total_tokens: 0
-      }
-      
-      setCurrentExecution(mockExecution)
-      
-      // 模拟分阶段执行过程
-      const simulateExecution = async () => {
-        // 第一阶段：输入处理 (2-4秒)
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000))
-        
-        // 第二阶段：数据分析 (3-5秒)
-        await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 2000))
-        
-        // 第三阶段：结果生成 (2-3秒)
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000))
-        
-        // 完成执行
-        const completedExecution = {
-          ...mockExecution,
-          status: 'completed' as const,
-          outputs: { 
-            result: '工作流执行成功完成',
-            summary: '已处理所有输入数据并生成结果',
-            details: formData
-          },
-          total_steps: 3,
-          total_tokens: 120 + Math.floor(Math.random() * 80),
-          elapsed_time: ((Date.now() - Date.parse(mockExecution.created_at)) / 1000).toFixed(1),
-          completed_at: new Date().toISOString()
-        }
-        
-        setCurrentExecution(completedExecution)
-        setExecutionResult(completedExecution.outputs)
-        setIsExecuting(false)
-        
-        console.log('[工作流执行] 执行完成:', completedExecution)
-      }
-      
-      simulateExecution()
-      
+      await executeWorkflow(formData)
     } catch (error) {
-      console.error('[工作流执行] 执行失败:', error)
-      setIsExecuting(false)
-      
-      // TODO: 错误处理
+      console.error('[工作流布局] 执行失败:', error)
     }
-  }, [instanceId])
+  }, [executeWorkflow])
   
   // --- 节点状态更新回调 ---
   const handleNodeUpdate = useCallback((event: any) => {
     console.log('[节点更新]', event)
-    // TODO: 更新节点状态
+    // 注意：节点状态现在通过hook自动管理，不需要手动更新
   }, [])
   
   // --- 移动端布局 ---
@@ -144,7 +98,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
             <div className="h-full">
               <WorkflowTracker
                 isExecuting={isExecuting}
-                executionResult={executionResult}
+                executionResult={currentExecution?.outputs || null}
                 currentExecution={currentExecution}
                 onNodeUpdate={handleNodeUpdate}
               />
@@ -190,7 +144,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
       )}>
         <WorkflowTracker
           isExecuting={isExecuting}
-          executionResult={executionResult}
+          executionResult={currentExecution?.outputs || null}
           currentExecution={currentExecution}
           onNodeUpdate={handleNodeUpdate}
         />
