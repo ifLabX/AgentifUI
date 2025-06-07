@@ -458,10 +458,7 @@ export default function AppDetailPage() {
         <ChatflowFloatingController
           isVisible={showFloatingController}
           onToggleTracker={setShowNodeTracker}
-          onClose={() => {
-            setShowFloatingController(false)
-            setShowNodeTracker(false)
-          }}
+          onClose={() => setShowFloatingController(false)}
         />
 
         {/* --- 对话模式下的输入框 --- */}
