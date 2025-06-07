@@ -42,11 +42,11 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
   const getStatusColor = () => {
     switch (node.status) {
       case 'running':
-        return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
+        return isDark ? 'border-yellow-500 bg-yellow-900/20' : 'border-yellow-500 bg-yellow-50'
       case 'completed':
-        return 'border-green-500 bg-green-50 dark:bg-green-900/20'
+        return isDark ? 'border-green-500 bg-green-900/20' : 'border-green-500 bg-green-50'
       case 'failed':
-        return 'border-red-500 bg-red-50 dark:bg-red-900/20'
+        return isDark ? 'border-red-500 bg-red-900/20' : 'border-red-500 bg-red-50'
       default:
         return isDark ? 'border-stone-600 bg-stone-700' : 'border-stone-200 bg-stone-50'
     }
@@ -106,9 +106,9 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
           
           <p className={cn(
             "text-sm font-serif",
-            node.status === 'running' ? "text-yellow-600 dark:text-yellow-400" :
-            node.status === 'completed' ? "text-green-600 dark:text-green-400" :
-            node.status === 'failed' ? "text-red-600 dark:text-red-400" :
+            node.status === 'running' ? (isDark ? "text-yellow-400" : "text-yellow-600") :
+            node.status === 'completed' ? (isDark ? "text-green-400" : "text-green-600") :
+            node.status === 'failed' ? (isDark ? "text-red-400" : "text-red-600") :
             isDark ? "text-stone-400" : "text-stone-500"
           )}>
             {node.status === 'running' && '正在执行...'}

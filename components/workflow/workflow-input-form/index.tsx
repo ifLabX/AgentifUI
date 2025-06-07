@@ -290,7 +290,10 @@ export const WorkflowInputForm = React.forwardRef<WorkflowInputFormRef, Workflow
           </div>
           
           {/* --- 表单操作按钮 --- */}
-          <div className="flex-shrink-0 pt-6 border-t border-stone-200 dark:border-stone-700">
+          <div className={cn(
+          "flex-shrink-0 pt-6 border-t",
+          isDark ? "border-stone-700" : "border-stone-200"
+        )}>
             <div className="flex gap-3">
               {/* 重置按钮 */}
               <button

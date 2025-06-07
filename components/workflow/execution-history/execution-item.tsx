@@ -148,9 +148,9 @@ export function ExecutionItem({ execution, onClick, isMultiSelectMode, isSelecte
         <div className="flex items-center gap-2 ml-3">
           <span className={cn(
             "text-xs font-serif px-2 py-0.5 rounded-sm",
-            execution.status === 'completed' && "bg-stone-200/50 text-stone-700 dark:bg-stone-700/50 dark:text-stone-300",
-            execution.status === 'failed' && "bg-red-100/50 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-            execution.status === 'running' && "bg-stone-300/50 text-stone-700 dark:bg-stone-600/50 dark:text-stone-300"
+            execution.status === 'completed' && (isDark ? "bg-stone-700/50 text-stone-300" : "bg-stone-200/50 text-stone-700"),
+            execution.status === 'failed' && (isDark ? "bg-red-900/30 text-red-400" : "bg-red-100/50 text-red-700"),
+            execution.status === 'running' && (isDark ? "bg-stone-600/50 text-stone-300" : "bg-stone-300/50 text-stone-700")
           )}>
             {getStatusText()}
           </span>

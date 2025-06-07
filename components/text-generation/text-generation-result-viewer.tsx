@@ -153,9 +153,9 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
                   onClick={handleCopy}
                   className={cn(
                     "flex items-center justify-center p-2 rounded-lg transition-colors",
-                    "text-stone-500 dark:text-stone-400",
-                    "hover:text-stone-700 dark:hover:text-stone-300",
-                    "hover:bg-stone-300/40 dark:hover:bg-stone-600/40",
+                    isDark ? "text-stone-400" : "text-stone-500",
+                    isDark ? "hover:text-stone-300" : "hover:text-stone-700",
+                    isDark ? "hover:bg-stone-600/40" : "hover:bg-stone-300/40",
                     "focus:outline-none"
                   )}
                   style={{ transform: 'translateZ(0)' }}
@@ -223,9 +223,9 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
                       </span>
                       <span className={cn(
                         "ml-2",
-                        execution.status === 'completed' && "text-green-600 dark:text-green-400",
-                        execution.status === 'failed' && "text-red-600 dark:text-red-400",
-                        execution.status === 'stopped' && "text-yellow-600 dark:text-yellow-400"
+                        execution.status === 'completed' && (isDark ? "text-green-400" : "text-green-600"),
+                        execution.status === 'failed' && (isDark ? "text-red-400" : "text-red-600"),
+                        execution.status === 'stopped' && (isDark ? "text-yellow-400" : "text-yellow-600")
                       )}>
                         {execution.status === 'completed' ? '已完成' : 
                          execution.status === 'failed' ? '已失败' : 

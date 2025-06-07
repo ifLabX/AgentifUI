@@ -262,9 +262,9 @@ export function ResultViewer({ result, execution, onClose }: ResultViewerProps) 
                   onClick={handleCopy}
                   className={cn(
                     "flex items-center justify-center p-2 rounded-lg transition-colors",
-                    "text-stone-500 dark:text-stone-400",
-                    "hover:text-stone-700 dark:hover:text-stone-300",
-                    "hover:bg-stone-300/40 dark:hover:bg-stone-600/40",
+                    isDark ? "text-stone-400" : "text-stone-500",
+                    isDark ? "hover:text-stone-300" : "hover:text-stone-700",
+                    isDark ? "hover:bg-stone-600/40" : "hover:bg-stone-300/40",
                     "focus:outline-none"
                   )}
                   style={{ transform: 'translateZ(0)' }}

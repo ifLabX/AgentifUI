@@ -210,7 +210,7 @@ export function UnifiedStatusPanel({
           {error && (
             <div className={cn(
               "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-serif",
-              "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+              isDark ? "bg-red-900/30 text-red-400" : "bg-red-50 text-red-700"
             )}>
               <XCircle className="h-4 w-4" />
               <span className="truncate max-w-64">{error}</span>
