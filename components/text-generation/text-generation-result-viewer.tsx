@@ -170,18 +170,25 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
               </TooltipWrapper>
               
               {/* 下载按钮 */}
-              <button
-                onClick={handleDownload}
-                className={cn(
-                  "p-2 rounded-lg transition-colors",
-                  isDark
-                    ? "hover:bg-stone-700 text-stone-400 hover:text-stone-300"
-                    : "hover:bg-stone-100 text-stone-600 hover:text-stone-700"
-                )}
-                title="下载结果"
+              <TooltipWrapper
+                content="下载结果"
+                id="text-result-viewer-download-btn"
+                placement="bottom"
+                desktopOnly={true}
               >
-                <Download className="h-4 w-4" />
-              </button>
+                <button
+                  onClick={handleDownload}
+                  className={cn(
+                    "p-2 rounded-lg transition-colors",
+                    isDark
+                      ? "hover:bg-stone-700 text-stone-400 hover:text-stone-300"
+                      : "hover:bg-stone-100 text-stone-600 hover:text-stone-700"
+                  )}
+                  aria-label="下载结果"
+                >
+                  <Download className="h-4 w-4" />
+                </button>
+              </TooltipWrapper>
               
               {/* 关闭按钮 */}
               <button

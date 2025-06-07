@@ -198,20 +198,27 @@ export function TextGenerationTracker({
                   </TooltipWrapper>
                   
                   {/* 下载按钮 */}
-                  <button
-                    onClick={handleDownloadText}
-                    className={cn(
-                      "flex items-center justify-center p-2 rounded-lg transition-colors",
-                      isDark ? "text-stone-400" : "text-stone-500",
-                      isDark ? "hover:text-stone-300" : "hover:text-stone-700",
-                      isDark ? "hover:bg-stone-600/40" : "hover:bg-stone-300/40",
-                      "focus:outline-none"
-                    )}
-                    style={{ transform: 'translateZ(0)' }}
-                    title="下载文本"
+                  <TooltipWrapper
+                    content="下载文本"
+                    id="text-generation-download-btn"
+                    placement="bottom"
+                    desktopOnly={true}
                   >
-                    <Download className="h-4 w-4" />
-                  </button>
+                    <button
+                      onClick={handleDownloadText}
+                      className={cn(
+                        "flex items-center justify-center p-2 rounded-lg transition-colors",
+                        isDark ? "text-stone-400" : "text-stone-500",
+                        isDark ? "hover:text-stone-300" : "hover:text-stone-700",
+                        isDark ? "hover:bg-stone-600/40" : "hover:bg-stone-300/40",
+                        "focus:outline-none"
+                      )}
+                      style={{ transform: 'translateZ(0)' }}
+                      aria-label="下载文本"
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
+                  </TooltipWrapper>
                 </div>
               )}
             </div>
