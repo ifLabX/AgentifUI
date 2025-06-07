@@ -22,7 +22,7 @@ import { StagewiseToolbarWrapper } from "@components/dev/stagewise-toolbar";
 const inter = Inter({ 
   subsets: ['latin'], 
   variable: '--font-inter',
-  display: 'optional',
+  display: 'swap',
 });
 
 const notoSansSC = Noto_Sans_SC({ 
