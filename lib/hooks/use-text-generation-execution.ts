@@ -40,6 +40,8 @@ export function useTextGenerationExecution(instanceId: string) {
   
   // --- 流式响应引用 ---
   const abortControllerRef = useRef<AbortController | null>(null)
+  const lastUpdateTimeRef = useRef<number>(0)
+  const accumulatedTextRef = useRef<string>('')
   
   /**
    * 保存文本生成完整数据
@@ -231,10 +233,12 @@ export function useTextGenerationExecution(instanceId: string) {
       
              streamResponse = await streamDifyCompletion(targetApp.instance_id, difyPayload)
       
-      let accumulatedText = ''
       let messageId: string | null = null
       let taskId: string | null = null
       let completionResult: any = null
+      
+      // --- 重置累积文本 ---
+      accumulatedTextRef.current = ''
       
       // --- 步骤7: 处理流式响应 ---
       for await (const textChunk of streamResponse.answerStream) {
@@ -243,12 +247,18 @@ export function useTextGenerationExecution(instanceId: string) {
           break
         }
         
-        accumulatedText += textChunk
-        setGeneratedText(accumulatedText)
+        accumulatedTextRef.current += textChunk
         
-        // 更新进度（基于文本长度估算）
-        const estimatedProgress = Math.min(accumulatedText.length / 1000 * 100, 90)
-        getActions().setExecutionProgress(estimatedProgress)
+        // --- 节流更新UI（每100ms最多更新一次） ---
+        const now = Date.now()
+        if (now - lastUpdateTimeRef.current > 100) {
+          setGeneratedText(accumulatedTextRef.current)
+          lastUpdateTimeRef.current = now
+          
+          // 更新进度（基于文本长度估算）
+          const estimatedProgress = Math.min(accumulatedTextRef.current.length / 1000 * 100, 90)
+          getActions().setExecutionProgress(estimatedProgress)
+        }
         
         // --- 设置taskId以便停止时使用 ---
         const currentTaskId = streamResponse.getTaskId()
@@ -257,6 +267,9 @@ export function useTextGenerationExecution(instanceId: string) {
           console.log('[文本生成] 设置difyTaskId:', currentTaskId)
         }
       }
+      
+      // --- 确保最终文本被设置 ---
+      setGeneratedText(accumulatedTextRef.current)
       
       // --- 步骤8: 等待完成并获取最终结果 ---
       try {
@@ -267,13 +280,13 @@ export function useTextGenerationExecution(instanceId: string) {
         console.log('[文本生成] 流式响应完成，获得最终结果:', {
           messageId,
           taskId,
-          textLength: accumulatedText.length,
+          textLength: accumulatedTextRef.current.length,
           usage: completionResult?.usage
         })
       } catch (completionError) {
         console.error('[文本生成] 等待完成时出错:', completionError)
         // 即使completionPromise失败，如果已有文本内容，仍然尝试保存
-        if (accumulatedText.length > 0) {
+        if (accumulatedTextRef.current.length > 0) {
           console.log('[文本生成] 尽管完成时出错，但仍有生成内容，继续保存')
           completionResult = { usage: null, metadata: {} }
         } else {
@@ -287,7 +300,7 @@ export function useTextGenerationExecution(instanceId: string) {
         completionResult,
         taskId,
         messageId,
-        accumulatedText
+        accumulatedTextRef.current
       )
       
       if (!saveResult.success) {
@@ -352,7 +365,7 @@ export function useTextGenerationExecution(instanceId: string) {
       // 清理资源
       abortControllerRef.current = null
     }
-  }, [userId, instanceId, getActions, saveCompleteGenerationData, addToFavorites, currentExecution])
+  }, [userId, instanceId, getActions, saveCompleteGenerationData, addToFavorites])
 
   /**
    * 停止文本生成
@@ -364,6 +377,7 @@ export function useTextGenerationExecution(instanceId: string) {
       // 获取当前状态
       const state = useWorkflowExecutionStore.getState()
       const currentText = generatedText // 获取当前已生成的文本
+      const currentExec = state.currentExecution // 从store获取最新的执行状态
       
       // 1. 中断流式响应
       if (abortControllerRef.current) {
@@ -394,7 +408,7 @@ export function useTextGenerationExecution(instanceId: string) {
       setIsStreaming(false)
       
       // 4. 保存残缺文本到数据库（如果有内容）
-      if (currentExecution?.id && currentText && currentText.length > 0) {
+      if (currentExec?.id && currentText && currentText.length > 0) {
         try {
           console.log('[文本生成] 保存停止时的残缺文本，长度:', currentText.length)
           
@@ -430,7 +444,7 @@ export function useTextGenerationExecution(instanceId: string) {
           
           // 更新数据库记录
           const { updateCompleteExecutionData } = await import('@lib/db/app-executions')
-          const updateResult = await updateCompleteExecutionData(currentExecution.id, {
+          const updateResult = await updateCompleteExecutionData(currentExec.id, {
             status: 'stopped',
             external_execution_id: null,
             task_id: state.difyTaskId,
@@ -458,11 +472,11 @@ export function useTextGenerationExecution(instanceId: string) {
         }
       } else {
         // 没有生成内容，只更新状态
-        if (currentExecution?.id) {
+        if (currentExec?.id) {
           try {
             const { updateExecutionStatus } = await import('@lib/db/app-executions')
             await updateExecutionStatus(
-              currentExecution.id, 
+              currentExec.id, 
               'stopped',
               '用户手动停止',
               new Date().toISOString()
@@ -488,7 +502,7 @@ export function useTextGenerationExecution(instanceId: string) {
       // 清理资源
       abortControllerRef.current = null
     }
-  }, [instanceId, userId, currentExecution, getActions, generatedText])
+  }, [instanceId, userId, getActions])
 
   /**
    * 重试文本生成
