@@ -335,22 +335,49 @@ export function useTextGenerationExecution(instanceId: string) {
   }, [getActions])
 
   /**
-   * 加载历史记录
+   * 加载历史记录 - 与工作流保持一致的逻辑
    */
   const loadTextGenerationHistory = useCallback(async () => {
     if (!userId) return
     
+    console.log('[文本生成] 加载历史记录，instanceId:', instanceId)
+    
     try {
-      const { getUserExecutions } = await import('@lib/db/app-executions')
-      const result = await getUserExecutions(userId, 20, 0, 'text-generation')
+      // --- 获取正确的应用UUID ---
+      const { useAppListStore } = await import('@lib/stores/app-list-store')
+      const appListState = useAppListStore.getState()
+      
+      // 如果应用列表为空，先获取应用列表
+      if (appListState.apps.length === 0) {
+        console.log('[文本生成] 历史记录加载：应用列表为空，先获取应用列表')
+        await appListState.fetchApps()
+      }
+      
+      // 查找对应的应用记录
+      const currentApps = useAppListStore.getState().apps
+      const targetApp = currentApps.find(app => app.instance_id === instanceId)
+      
+      if (!targetApp) {
+        console.warn('[文本生成] 未找到对应的应用记录，instanceId:', instanceId)
+        getActions().setExecutionHistory([])
+        return
+      }
+      
+      console.log('[文本生成] 历史记录查询使用UUID:', targetApp.id)
+      
+      const { getExecutionsByServiceInstance } = await import('@lib/db/app-executions')
+      const result = await getExecutionsByServiceInstance(targetApp.id, 20) // 使用UUID主键
       
       if (result.success) {
-        getActions().setExecutionHistory(result.data.executions)
+        console.log('[文本生成] 历史记录加载成功，数量:', result.data.length)
+        getActions().setExecutionHistory(result.data)
+      } else {
+        console.error('[文本生成] 历史记录加载失败:', result.error)
       }
     } catch (error) {
-      console.error('[文本生成] 加载历史记录失败:', error)
+      console.error('[文本生成] 加载历史记录时出错:', error)
     }
-  }, [userId, getActions])
+  }, [instanceId, userId, getActions])
 
   // --- 初始化时加载历史记录 ---
   useEffect(() => {
