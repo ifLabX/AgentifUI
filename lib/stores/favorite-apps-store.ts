@@ -124,7 +124,10 @@ export const useFavoriteAppsStore = create<FavoriteAppsState>()(
         // 只更新显示名称、描述和图标，不影响其他数据
         // --- END COMMENT ---
         const updatedFavoriteApps = state.favoriteApps.map(favoriteApp => {
-          const matchedApp = apps.find(app => app.id === favoriteApp.instanceId)
+          // --- BEGIN COMMENT ---
+          // 🎯 修复：使用instance_id进行匹配，因为favoriteApp.instanceId存储的是instance_id
+          // --- END COMMENT ---
+          const matchedApp = apps.find(app => app.instance_id === favoriteApp.instanceId)
           
           if (matchedApp) {
             const appMetadata = matchedApp.config?.app_metadata

@@ -189,7 +189,10 @@ export const ChatInput = ({
   const hasAvailableModels = availableModels.length > 0;
   
   // 检查当前选择的模型是否有效
-  const currentSelectedModel = availableModels.find(app => app.id === currentAppId);
+  // --- BEGIN COMMENT ---
+  // 🎯 修复：使用instance_id进行匹配，因为currentAppId存储的是instance_id而不是UUID
+  // --- END COMMENT ---
+  const currentSelectedModel = availableModels.find(app => app.instance_id === currentAppId);
   const hasValidSelectedModel = !!currentSelectedModel;
   
   // --- BEGIN COMMENT ---

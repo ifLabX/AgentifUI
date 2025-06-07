@@ -74,7 +74,10 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   // 2. 如果当前应用不是模型类型，尝试恢复最后使用的模型
   // 3. 如果没有最后使用的模型或该模型不可用，选择第一个可用模型
   // --- END COMMENT ---
-  const currentApp = modelApps.find(app => app.id === currentAppId);
+  // --- BEGIN COMMENT ---
+  // 🎯 修复：使用instance_id进行匹配，因为currentAppId存储的是instance_id而不是UUID
+  // --- END COMMENT ---
+  const currentApp = modelApps.find(app => app.instance_id === currentAppId);
   const isCurrentAppModel = !!currentApp;
   
   // 获取应该显示的模型应用
@@ -87,7 +90,10 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
     // 如果当前应用不是模型类型，尝试恢复最后使用的模型
     const lastUsedModelId = getLastUsedModel();
     if (lastUsedModelId) {
-      const lastUsedModel = modelApps.find(app => app.id === lastUsedModelId);
+      // --- BEGIN COMMENT ---
+      // 🎯 修复：使用instance_id进行匹配，因为lastUsedModelId存储的是instance_id
+      // --- END COMMENT ---
+      const lastUsedModel = modelApps.find(app => app.instance_id === lastUsedModelId);
       if (lastUsedModel) {
         return lastUsedModel;
       }
@@ -118,8 +124,9 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
       
       // --- BEGIN COMMENT ---
       // 🎯 记录最后使用的模型（仅当切换到模型类型应用时）
+      // 🎯 修复：使用instance_id进行匹配，因为newAppId是instance_id
       // --- END COMMENT ---
-      const targetApp = modelApps.find(app => app.id === newAppId);
+      const targetApp = modelApps.find(app => app.instance_id === newAppId);
       if (targetApp) {
         setLastUsedModel(newAppId);
         
@@ -342,7 +349,7 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
               modelApps.map(app => (
                 <button
                   key={app.id}
-                  onClick={() => handleAppChange(app.id)}
+                  onClick={() => handleAppChange(app.instance_id)}
                   // --- BEGIN COMMENT ---
                   // 添加onMouseDown防止按钮点击时输入框失去焦点
                   // --- END COMMENT ---
@@ -359,12 +366,12 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
                     isDark 
                       ? "hover:bg-stone-600/60" 
                       : "hover:bg-stone-200/60",
-                    app.id === currentAppId && (
+                    app.instance_id === currentAppId && (
                       isDark 
                         ? "bg-stone-600/80 text-stone-100 font-medium" 
                         : "bg-stone-200/80 text-stone-800 font-medium"
                     ),
-                    app.id !== currentAppId && (
+                    app.instance_id !== currentAppId && (
                       isDark ? "text-stone-300" : "text-stone-600"
                     )
                   )}
