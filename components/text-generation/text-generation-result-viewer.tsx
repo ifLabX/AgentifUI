@@ -5,6 +5,18 @@ import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { X, Download, Copy, Check } from 'lucide-react'
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import rehypeRaw from 'rehype-raw'
+import 'katex/dist/katex.min.css'
+import {
+  InlineCode,
+  CodeBlock,
+  MarkdownTableContainer,
+  MarkdownBlockquote,
+} from '@components/chat/markdown-block'
 
 interface TextGenerationResultViewerProps {
   result: any
@@ -59,6 +71,89 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
   }
   
   const formattedContent = formatContent(result)
+  
+  // --- 检测是否包含Markdown内容 ---
+  const hasMarkdownContent = (text: string): boolean => {
+    if (!text) return false
+    
+    // 检测常见的Markdown语法
+    const markdownPatterns = [
+      /```[\s\S]*?```/,  // 代码块
+      /`[^`]+`/,         // 内联代码
+      /#{1,6}\s/,        // 标题
+      /\*\*[^*]+\*\*/,   // 粗体
+      /\*[^*]+\*/,       // 斜体
+      /\[[^\]]+\]\([^)]+\)/, // 链接
+      /^\s*[-*+]\s/m,    // 无序列表
+      /^\s*\d+\.\s/m,    // 有序列表
+      /^\s*>\s/m,        // 引用
+      /^\s*\|.*\|/m,     // 表格
+    ]
+    
+    return markdownPatterns.some(pattern => pattern.test(text))
+  }
+  
+  const shouldUseMarkdown = hasMarkdownContent(formattedContent)
+  
+  // --- Markdown组件配置 ---
+  const markdownComponents: any = {
+    code({ node, className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || '')
+      const language = match ? match[1] : null
+      
+      if (language) {
+        // 代码块
+        return (
+          <CodeBlock
+            language={language}
+            className={className}
+            isStreaming={false}
+          >
+            {String(children).replace(/\n$/, '')}
+          </CodeBlock>
+        )
+      } else {
+        // 内联代码
+        return <InlineCode className={className} {...props}>{children}</InlineCode>
+      }
+    },
+    table({ children, ...props }: any) {
+      return <MarkdownTableContainer>{children}</MarkdownTableContainer>
+    },
+    blockquote({ children, ...props }: any) {
+      return <MarkdownBlockquote>{children}</MarkdownBlockquote>
+    },
+    p({ children, ...props }: any) {
+      return <p className="my-2 font-serif" {...props}>{children}</p>
+    },
+    ul({ children, ...props }: any) {
+      return <ul className="my-2.5 ml-6 list-disc space-y-1 font-serif" {...props}>{children}</ul>
+    },
+    ol({ children, ...props }: any) {
+      return <ol className="my-2.5 ml-6 list-decimal space-y-1 font-serif" {...props}>{children}</ol>
+    },
+    li({ children, ...props }: any) {
+      return <li className="pb-0.5" {...props}>{children}</li>
+    },
+    h1({ children, ...props }: any) {
+      return <h1 className={cn("text-2xl font-semibold font-serif mt-4 mb-2 pb-1 border-b", isDark ? "border-gray-700" : "border-gray-300")} {...props}>{children}</h1>
+    },
+    h2({ children, ...props }: any) {
+      return <h2 className={cn("text-xl font-semibold font-serif mt-3.5 mb-1.5 pb-1 border-b", isDark ? "border-gray-700" : "border-gray-300")} {...props}>{children}</h2>
+    },
+    h3({ children, ...props }: any) {
+      return <h3 className="text-lg font-semibold font-serif mt-3 mb-1" {...props}>{children}</h3>
+    },
+    h4({ children, ...props }: any) {
+      return <h4 className="text-base font-semibold font-serif mt-2.5 mb-0.5" {...props}>{children}</h4>
+    },
+    a({ children, href, ...props }: any) {
+      return <a href={href} className={cn("underline font-serif", isDark ? "text-sky-400 hover:text-sky-300" : "text-sky-600 hover:text-sky-700")} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>
+    },
+    hr({ ...props }: any) {
+      return <hr className={cn("my-4 border-t", isDark ? "border-gray-700" : "border-gray-300")} {...props} />
+    }
+  }
   
   // --- 复制功能 ---
   const handleCopy = async () => {
@@ -290,10 +385,22 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
                   生成内容
                 </h3>
                 <div className={cn(
-                  "p-4 rounded-lg border font-serif whitespace-pre-wrap",
+                  "p-4 rounded-lg border font-serif",
                   isDark ? "bg-stone-800 border-stone-700 text-stone-200" : "bg-white border-stone-200 text-stone-900"
                 )}>
-                  {formattedContent}
+                  {shouldUseMarkdown ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm, remarkMath]}
+                      rehypePlugins={[rehypeKatex, rehypeRaw]}
+                      components={markdownComponents}
+                    >
+                      {formattedContent}
+                    </ReactMarkdown>
+                  ) : (
+                    <div className="whitespace-pre-wrap">
+                      {formattedContent}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
