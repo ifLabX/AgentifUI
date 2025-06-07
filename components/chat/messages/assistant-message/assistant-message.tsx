@@ -187,6 +187,16 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
   // 与Think Block Content使用相同的处理逻辑
   // --- END COMMENT ---
   const preprocessMainContent = (content: string): string => {
+    // --- BEGIN COMMENT ---
+    // 关键修复：确保details标签后有足够的空行来分隔markdown内容
+    // 这可以防止rehypeRaw插件影响后续markdown的解析
+    // --- END COMMENT ---
+    let processedContent = content
+      // 确保details结束标签后有两个换行符
+      .replace(/(<\/details>)(\s*)([^\s])/g, '$1\n\n$3')
+      // 确保details开始标签前有换行符（如果前面有内容）
+      .replace(/([^\n])(\s*)(<details[^>]*>)/g, '$1\n\n$3');
+
     // 定义已知的安全HTML标签白名单
     const knownHtmlTags = new Set([
       'div', 'span', 'p', 'br', 'hr', 'strong', 'em', 'b', 'i', 'u', 's',
@@ -201,7 +211,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
     ]);
 
     // 转义不在白名单中的HTML标签，让它们显示为文本
-    return content.replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
+    return processedContent.replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
       if (!knownHtmlTags.has(tagName.toLowerCase())) {
         return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
