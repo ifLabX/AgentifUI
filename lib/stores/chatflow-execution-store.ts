@@ -60,6 +60,7 @@ export const useChatflowExecutionStore = create<ChatflowExecutionState>((set, ge
   
   // Actions
   startExecution: () => {
+    console.log('[ChatflowExecution] 开始执行')
     set({
       isExecuting: true,
       error: null,
@@ -140,39 +141,50 @@ export const useChatflowExecutionStore = create<ChatflowExecutionState>((set, ge
   handleNodeEvent: (event: any) => {
     const { nodes } = get()
     
+    console.log('[ChatflowExecution] 🎯 收到节点事件:', event.event)
+    console.log('[ChatflowExecution] 节点数据:', event.data)
+    console.log('[ChatflowExecution] 当前节点数量:', nodes.length)
+    
     switch (event.event) {
       case 'node_started':
         // 添加或更新节点为运行状态
-        const existingNodeIndex = nodes.findIndex(n => n.id === event.data.node_id)
+        const { node_id, title, node_type } = event.data
+        const nodeTitle = title || node_type || `节点 ${nodes.length + 1}`
+        
+        const existingNodeIndex = nodes.findIndex(n => n.id === node_id)
         
         if (existingNodeIndex >= 0) {
           // 更新现有节点
-          get().updateNode(event.data.node_id, {
+          get().updateNode(node_id, {
             status: 'running',
             startTime: Date.now(),
-            description: event.data.node_type || '正在执行...'
+            description: '正在执行...',
+            type: node_type
           })
         } else {
           // 添加新节点
           get().addNode({
-            id: event.data.node_id,
-            title: event.data.node_type || `节点 ${nodes.length + 1}`,
+            id: node_id,
+            title: nodeTitle,
             status: 'running',
             startTime: Date.now(),
             description: '正在执行...',
-            type: event.data.node_type
+            type: node_type
           })
         }
         
-        get().setCurrentNode(event.data.node_id)
+        get().setCurrentNode(node_id)
         break
         
       case 'node_finished':
         // 更新节点为完成状态
-        get().updateNode(event.data.node_id, {
-          status: 'completed',
+        const { node_id: finishedNodeId, status, error } = event.data
+        const nodeStatus = status === 'succeeded' ? 'completed' : 'failed'
+        
+        get().updateNode(finishedNodeId, {
+          status: nodeStatus,
           endTime: Date.now(),
-          description: '执行完成'
+          description: nodeStatus === 'completed' ? '执行完成' : (error || '执行失败')
         })
         break
         
@@ -201,8 +213,7 @@ export const useChatflowExecutionStore = create<ChatflowExecutionState>((set, ge
         break
         
       default:
-        // 处理其他事件类型
-        console.log('[ChatflowExecution] 未处理的事件:', event)
+        console.log('[ChatflowExecution] 未知事件类型:', event.event)
         break
     }
   }

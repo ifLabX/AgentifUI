@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
-import { Loader2, Clock, CheckCircle, XCircle, AlertCircle, MessageSquare } from 'lucide-react'
+import { Loader2, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import type { ChatflowNode } from '@lib/stores/chatflow-execution-store'
 
 interface ChatflowExecutionBarProps {
@@ -180,10 +180,6 @@ export function ChatflowExecutionBar({ node, index, delay = 0 }: ChatflowExecuti
       {/* 中间：节点信息 */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <MessageSquare className={cn(
-            "h-3.5 w-3.5 flex-shrink-0",
-            isDark ? "text-stone-400" : "text-stone-500"
-          )} />
           <span className={cn(
             "font-medium text-sm",
             isDark ? "text-stone-200" : "text-stone-800"

@@ -59,47 +59,24 @@ export function useChatflowInterface() {
 
   // --- 监听 SSE 事件并更新节点状态 ---
   useEffect(() => {
-    // 这里我们需要监听来自 useChatInterface 的 SSE 事件
-    // 由于 useChatInterface 可能没有直接暴露 SSE 事件监听器，
-    // 我们可能需要通过其他方式来获取节点状态更新
-    
-    // 临时方案：监听消息状态变化来推断节点状态
     const { isWaitingForResponse } = chatInterface
     
-    // 当开始等待响应时，添加一个通用的处理节点
     if (isWaitingForResponse) {
-      const executionStore = useChatflowExecutionStore.getState()
-      
-      // 如果还没有节点，添加一个默认的处理节点
-      if (executionStore.nodes.length === 0) {
-        executionStore.addNode({
-          id: 'chatflow-processing',
-          title: 'Chatflow 处理',
-          status: 'running',
-          startTime: Date.now(),
-          description: '正在处理您的请求...',
-          type: 'chatflow'
-        })
-      }
+      // 开始执行时启动跟踪
+      console.log('[ChatflowInterface] 开始等待响应，启动执行跟踪')
+      startExecution()
     } else {
-      // 当响应完成时，更新节点状态
+      // 结束执行时停止跟踪
+      console.log('[ChatflowInterface] 响应完成，停止执行跟踪')
       const executionStore = useChatflowExecutionStore.getState()
-      const processingNode = executionStore.nodes.find(n => n.id === 'chatflow-processing')
-      
-      if (processingNode && processingNode.status === 'running') {
-        executionStore.updateNode('chatflow-processing', {
-          status: 'completed',
-          endTime: Date.now(),
-          description: '处理完成'
-        })
-        
-        // 延迟停止执行状态
+      if (executionStore.isExecuting) {
+        // 延迟停止，让用户能看到完成状态
         setTimeout(() => {
           executionStore.stopExecution()
-        }, 1000)
+        }, 1500)
       }
     }
-  }, [chatInterface.isWaitingForResponse])
+  }, [chatInterface.isWaitingForResponse, startExecution])
 
   // 返回扩展的接口
   return {
