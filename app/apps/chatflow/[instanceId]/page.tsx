@@ -81,7 +81,7 @@ export default function AppDetailPage() {
   const [showFloatingController, setShowFloatingController] = useState(false)
   
   // --- BEGIN COMMENT ---
-  // 监听节点执行状态，自动显示/隐藏悬浮控制器
+  // 监听节点执行状态，自动显示悬浮控制器（一旦显示就保持显示）
   // --- END COMMENT ---
   useEffect(() => {
     const hasNodes = nodeTracker.nodes.length > 0
@@ -89,13 +89,7 @@ export default function AppDetailPage() {
     
     if (hasNodes || isExecuting) {
       setShowFloatingController(true)
-    } else {
-      // 延迟隐藏，给用户时间查看结果
-      const timer = setTimeout(() => {
-        setShowFloatingController(false)
-      }, 3000)
-      
-      return () => clearTimeout(timer)
+      // 一旦有节点执行，就保持显示悬浮球，不再自动隐藏
     }
   }, [nodeTracker.nodes.length, nodeTracker.isExecuting])
   
@@ -443,7 +437,7 @@ export default function AppDetailPage() {
               <ChatflowNodeTracker
                 isVisible={showNodeTracker && (nodeTracker.isExecuting || nodeTracker.nodes.length > 0)}
                 className={cn(
-                  "fixed bottom-20 right-6 z-10 max-w-sm",
+                  "fixed bottom-40 right-6 z-10 max-w-sm",
                   "transition-all duration-300"
                 )}
               />

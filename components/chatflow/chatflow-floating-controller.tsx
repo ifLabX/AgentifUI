@@ -35,8 +35,8 @@ export function ChatflowFloatingController({
   const isExecuting = useChatflowExecutionStore(state => state.isExecuting)
   const error = useChatflowExecutionStore(state => state.error)
   
-  // 如果不可见或者（没有节点且不在执行中），不显示
-  if (!isVisible || (!isExecuting && nodes.length === 0)) {
+  // 只要isVisible为true就显示悬浮球，不管是否有节点执行
+  if (!isVisible) {
     return null
   }
   
