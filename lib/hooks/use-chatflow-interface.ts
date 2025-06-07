@@ -66,15 +66,15 @@ export function useChatflowInterface() {
       console.log('[ChatflowInterface] 开始等待响应，启动执行跟踪')
       startExecution()
     } else {
-      // 结束执行时停止跟踪
-      console.log('[ChatflowInterface] 响应完成，停止执行跟踪')
-      const executionStore = useChatflowExecutionStore.getState()
-      if (executionStore.isExecuting) {
-        // 延迟停止，让用户能看到完成状态
-        setTimeout(() => {
-          executionStore.stopExecution()
-        }, 1500)
-      }
+      // --- BEGIN COMMENT ---
+      // 修复：流式响应结束不等于节点执行完成
+      // 不应该强制停止执行，让节点自然完成
+      // 只在真正需要时（如用户手动停止）才调用stopExecution
+      // --- END COMMENT ---
+      console.log('[ChatflowInterface] 流式响应完成，但节点可能仍在执行')
+      
+      // 不再自动调用stopExecution，让节点通过node_finished事件自然完成
+      // 这样避免了将running节点错误标记为failed的问题
     }
   }, [chatInterface.isWaitingForResponse, startExecution])
 
