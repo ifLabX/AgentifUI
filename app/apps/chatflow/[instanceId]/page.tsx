@@ -376,9 +376,7 @@ export default function AppDetailPage() {
               )}
             >
               <div className="py-8">
-                <div className="mb-8">
-                  <WelcomeScreen username={profile?.username} />
-                </div>
+                {/* --- 移除重复的欢迎界面，避免与表单标题重合 --- */}
                 
                 {/* --- Chatflow 输入区域 --- */}
                 <ChatflowInputArea

@@ -35,19 +35,9 @@ export function useChatflowInterface() {
       // --- 步骤2: 准备文件数据 ---
       const difyFiles = files ? formatFilesForDify(files) : undefined
       
-      // --- 步骤3: 构建消息的 metadata ---
-      // 将表单数据保存到 metadata 中，用于数据库存储
-      const messageMetadata = {
-        chatflow_inputs: inputs,
-        original_query: query,
-        has_form_data: Object.keys(inputs).length > 0,
-        submission_timestamp: new Date().toISOString()
-      }
-      
-      // --- 步骤4: 调用现有的聊天接口 ---
-      // 注意：目前需要修改 sendDirectMessage 来支持 inputs 参数
-      // 暂时先发送消息，后续需要扩展 useChatInterface 来支持 inputs
-      await chatInterface.sendDirectMessage(userMessage, difyFiles)
+      // --- 步骤3: 使用修改后的handleSubmit传递inputs ---
+      // 现在handleSubmit支持第三个参数inputs
+      await chatInterface.handleSubmit(userMessage, difyFiles, inputs)
       
       console.log('[useChatflowInterface] Chatflow 数据已成功发送')
       

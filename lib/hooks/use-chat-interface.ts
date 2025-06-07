@@ -192,7 +192,7 @@ export function useChatInterface() {
     }
   }, [currentPathname]);
 
-  const handleSubmit = useCallback(async (message: string, files?: any[]) => {
+  const handleSubmit = useCallback(async (message: string, files?: any[], inputs?: Record<string, any>) => {
     if (isSubmittingRef.current) {
       console.warn("[handleSubmit] Submission blocked: already submitting.");
       return;
@@ -355,7 +355,7 @@ export function useChatInterface() {
       const basePayloadForNewConversation = {
         query: message,
         user: currentUserId, // 使用动态获取的 currentUserId
-        inputs: {}, 
+        inputs: inputs || {}, 
         ...(difyFiles && { files: difyFiles }),
       };
       
@@ -476,7 +476,7 @@ export function useChatInterface() {
         // 为现有对话构造一个不包含 user 的基础 payload，因为 DifyChatRequestPayload 会单独添加
         const payloadForExistingStream = {
             query: message,
-            inputs: {}, // 与 basePayloadForNewConversation 的 inputs 保持一致
+            inputs: inputs || {}, // 与 basePayloadForNewConversation 的 inputs 保持一致
             ...(difyFiles && { files: difyFiles }),
         };
         
@@ -1004,7 +1004,7 @@ export function useChatInterface() {
       setMessage(messageText);
       
       // 调用现有的handleSubmit逻辑
-      await handleSubmit(messageText, files);
+      await handleSubmit(messageText, files, {});
       
     } catch (error) {
       console.error("[sendDirectMessage] 发送失败:", error);
