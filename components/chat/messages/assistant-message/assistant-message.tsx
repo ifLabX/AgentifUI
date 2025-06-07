@@ -54,6 +54,18 @@ const extractThinkContent = (rawContent: string): {
   thinkClosed: boolean;
 } => {
   // --- BEGIN COMMENT ---
+  // 🔍 调试：检查details标签的位置和格式
+  // --- END COMMENT ---
+  if (rawContent.includes('<details')) {
+    console.log('[AssistantMessage] 检测到details标签:', {
+      content: rawContent.substring(0, 200) + '...',
+      startsWithDetails: rawContent.indexOf('<details') === 0,
+      detailsPosition: rawContent.indexOf('<details'),
+      firstLine: rawContent.split('\n')[0]
+    });
+  }
+  
+  // --- BEGIN COMMENT ---
   // 支持两种标签：<think> 和 <details>
   // 优先检查 <think> 标签，如果没有则检查 <details> 标签
   // --- END COMMENT ---
@@ -184,7 +196,8 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(({
       'blockquote', 'pre', 'code',
       'a', 'img',
       'sub', 'sup',
-      'mark', 'del', 'ins'
+      'mark', 'del', 'ins',
+      'details', 'summary'
     ]);
 
     // 转义不在白名单中的HTML标签，让它们显示为文本
