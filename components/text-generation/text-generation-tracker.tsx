@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { UnifiedStatusPanel } from '@components/workflow/workflow-tracker/unified-status-panel'
-import { Play, Clock, CheckCircle, XCircle, Square, FileText, Loader2, Copy, Download } from 'lucide-react'
+import { Play, Clock, CheckCircle, XCircle, Square, FileText, Loader2, Copy, Download, Check } from 'lucide-react'
+import { TooltipWrapper } from '@components/ui/tooltip-wrapper'
 
 interface TextGenerationTrackerProps {
   isExecuting: boolean
@@ -37,6 +38,7 @@ export function TextGenerationTracker({
 }: TextGenerationTrackerProps) {
   const { isDark } = useTheme()
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const [isCopied, setIsCopied] = useState(false)
   
   // --- 自动滚动到底部 ---
   useEffect(() => {
@@ -47,9 +49,7 @@ export function TextGenerationTracker({
   
   const getOverallStatus = () => {
     if (isExecuting || isStreaming) return 'running'
-    if (currentExecution?.status === 'completed') return 'completed'
-    if (currentExecution?.status === 'failed') return 'failed'
-    if (currentExecution?.status === 'stopped') return 'stopped'
+    if (currentExecution?.status) return currentExecution.status
     return 'idle'
   }
   
@@ -73,9 +73,15 @@ export function TextGenerationTracker({
     if (generatedText) {
       try {
         await navigator.clipboard.writeText(generatedText)
-        // 这里可以添加成功提示
+        setIsCopied(true)
+        console.log('[文本生成跟踪器] 文本已复制到剪贴板')
+        
+        // 2秒后重置状态
+        setTimeout(() => {
+          setIsCopied(false)
+        }, 2000)
       } catch (error) {
-        console.error('复制失败:', error)
+        console.error('[文本生成跟踪器] 复制失败:', error)
       }
     }
   }
@@ -163,22 +169,38 @@ export function TextGenerationTracker({
               {/* 操作按钮 */}
               {generatedText && !isExecuting && (
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleCopyText}
-                    className={cn(
-                      "p-2 rounded-md transition-colors",
-                      isDark
-                        ? "hover:bg-stone-700 text-stone-400 hover:text-stone-300"
-                        : "hover:bg-stone-100 text-stone-600 hover:text-stone-700"
-                    )}
-                    title="复制文本"
+                  {/* 复制按钮 */}
+                  <TooltipWrapper
+                    content={isCopied ? "已复制" : "复制文本"}
+                    id="text-generation-copy-btn"
+                    placement="bottom"
+                    desktopOnly={true}
                   >
-                    <Copy className="h-4 w-4" />
-                  </button>
+                    <button
+                      onClick={handleCopyText}
+                      className={cn(
+                        "flex items-center justify-center p-2 rounded-lg transition-colors",
+                        "text-stone-500 dark:text-stone-400",
+                        "hover:text-stone-700 dark:hover:text-stone-300",
+                        "hover:bg-stone-300/40 dark:hover:bg-stone-600/40",
+                        "focus:outline-none"
+                      )}
+                      style={{ transform: 'translateZ(0)' }}
+                      aria-label={isCopied ? "已复制" : "复制文本"}
+                    >
+                      {isCopied ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                  </TooltipWrapper>
+                  
+                  {/* 下载按钮 */}
                   <button
                     onClick={handleDownloadText}
                     className={cn(
-                      "p-2 rounded-md transition-colors",
+                      "p-2 rounded-lg transition-colors",
                       isDark
                         ? "hover:bg-stone-700 text-stone-400 hover:text-stone-300"
                         : "hover:bg-stone-100 text-stone-600 hover:text-stone-700"

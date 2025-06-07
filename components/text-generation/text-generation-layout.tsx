@@ -6,6 +6,7 @@ import { useMobile } from '@lib/hooks/use-mobile'
 import { cn } from '@lib/utils'
 import { WorkflowInputForm, WorkflowInputFormRef } from '@components/workflow/workflow-input-form'
 import { TextGenerationTracker } from './text-generation-tracker'
+import { TextGenerationResultViewer } from './text-generation-result-viewer'
 import { ExecutionHistory } from '@components/workflow/execution-history'
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher'
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store'
@@ -52,6 +53,11 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
   // --- 保留原有状态管理 ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore()
   const [mobileActiveTab, setMobileActiveTab] = useState<'form' | 'tracker' | 'history'>('form')
+  
+  // --- 结果查看器状态 ---
+  const [showResultViewer, setShowResultViewer] = useState(false)
+  const [viewerResult, setViewerResult] = useState<any>(null)
+  const [viewerExecution, setViewerExecution] = useState<any>(null)
   
   // --- 表单重置引用 ---
   const formResetRef = useRef<WorkflowInputFormRef>(null)
@@ -114,6 +120,16 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
   // --- 查看结果回调 ---
   const handleViewResult = useCallback((result: any, execution: any) => {
     console.log('[文本生成布局] 查看结果:', result, execution)
+    setViewerResult(result)
+    setViewerExecution(execution)
+    setShowResultViewer(true)
+  }, [])
+  
+  // --- 关闭结果查看器 ---
+  const handleCloseResultViewer = useCallback(() => {
+    setShowResultViewer(false)
+    setViewerResult(null)
+    setViewerExecution(null)
   }, [])
   
   // --- 错误提示组件 ---
@@ -221,6 +237,15 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
             </div>
           )}
         </div>
+        
+        {/* 结果查看器弹窗 */}
+        {showResultViewer && viewerResult && viewerExecution && (
+          <TextGenerationResultViewer
+            result={viewerResult}
+            execution={viewerExecution}
+            onClose={handleCloseResultViewer}
+          />
+        )}
       </div>
     )
   }
@@ -289,6 +314,15 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
           </div>
         )}
       </div>
+      
+      {/* 结果查看器弹窗 */}
+      {showResultViewer && viewerResult && viewerExecution && (
+        <TextGenerationResultViewer
+          result={viewerResult}
+          execution={viewerExecution}
+          onClose={handleCloseResultViewer}
+        />
+      )}
     </div>
   )
 } 
