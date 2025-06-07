@@ -116,7 +116,7 @@ export function CustomSelect({
   )
   
   const dropdownClasses = cn(
-    "absolute top-full left-0 right-0 mt-2 z-50",
+    "absolute top-full left-0 right-0 mt-2 z-40",
     "rounded-xl border-2 shadow-xl backdrop-blur-xl",
     "max-h-60 overflow-y-auto",
     "transform transition-all duration-300 ease-out",
