@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useLayoutEffect } from "react"
 import { useRouter, useParams, usePathname } from "next/navigation"
 import { useMobile, useChatWidth, useChatInterface, useWelcomeScreen, useChatScroll } from "@lib/hooks"
+import { useChatflowInterface } from "@lib/hooks/use-chatflow-interface"
 import { cn } from "@lib/utils"
 import { 
   Loader2,
@@ -22,6 +23,7 @@ import {
 } from "@components/chat"
 import { DynamicSuggestedQuestions } from "@components/chat/dynamic-suggested-questions"
 import { ChatInput } from "@components/chat-input"
+import { ChatflowInputArea } from "@components/chatflow/chatflow-input-area"
 import { useProfile } from "@lib/hooks/use-profile"
 import { NavBar } from "@components/nav-bar/nav-bar"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
@@ -41,7 +43,7 @@ export default function AppDetailPage() {
   const { profile } = useProfile()
   
   // --- BEGIN COMMENT ---
-  // 使用聊天接口逻辑，获取messages状态和相关方法
+  // 使用 chatflow 接口逻辑，支持表单和文本输入
   // --- END COMMENT ---
   const {
     messages,
@@ -50,7 +52,8 @@ export default function AppDetailPage() {
     isWaitingForResponse,
     handleStopProcessing,
     sendDirectMessage,
-  } = useChatInterface()
+    handleChatflowSubmit,
+  } = useChatflowInterface()
   
   // --- BEGIN COMMENT ---
   // 使用统一的欢迎界面逻辑，现在支持应用详情页面
@@ -88,6 +91,7 @@ export default function AppDetailPage() {
   // --- END COMMENT ---
   const [isInitializing, setIsInitializing] = useState(true)
   const [initError, setInitError] = useState<string | null>(null)
+  const [hasFormConfig, setHasFormConfig] = useState(false)
   
   // --- BEGIN COMMENT ---
   // 应用相关状态
@@ -368,15 +372,34 @@ export default function AppDetailPage() {
             <div 
               className={cn(
                 "h-full overflow-y-auto scroll-smooth",
-                "w-full mx-auto",
-                widthClass,
-                paddingClass
+                "w-full mx-auto"
               )}
             >
               <div className="py-8">
                 <div className="mb-8">
                   <WelcomeScreen username={profile?.username} />
                 </div>
+                
+                {/* --- Chatflow 输入区域 --- */}
+                <ChatflowInputArea
+                  instanceId={instanceId}
+                  onSubmit={handleChatflowSubmit}
+                  isProcessing={isProcessing}
+                  isWaiting={isWaitingForResponse}
+                  onFormConfigChange={setHasFormConfig}
+                />
+                
+                {/* --- 推荐问题（仅在没有表单配置时显示） --- */}
+                {!hasFormConfig && (
+                  <div className={cn(
+                    "w-full mx-auto",
+                    widthClass,
+                    paddingClass,
+                    "pt-4"
+                  )}>
+                    <DynamicSuggestedQuestions onQuestionClick={sendDirectMessage} />
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -396,27 +419,25 @@ export default function AppDetailPage() {
         {/* 滚动到底部按钮 */}
         <ScrollToBottomButton />
 
-        {/* 输入框背景 */}
-        <ChatInputBackdrop />
-        
-        {/* --- BEGIN COMMENT ---
-        聊天输入框 - 简化配置
-        --- END COMMENT --- */}
-        <ChatInput
-          onSubmit={handleSubmit}
-          placeholder={`与 ${currentApp.display_name || '应用'} 开始对话...`}
-          isProcessing={isProcessing}
-          isWaiting={isWaitingForResponse}
-          onStop={handleStopProcessing}
-          showModelSelector={false}
-          requireModelValidation={false}
-        />
-        
-        {/* --- BEGIN COMMENT ---
-        显示动态推荐问题的条件：欢迎界面且没有消息
-        --- END COMMENT --- */}
-        {isWelcomeScreen && messages.length === 0 && (
-          <DynamicSuggestedQuestions onQuestionClick={sendDirectMessage} />
+        {/* --- 对话模式下的输入框 --- */}
+        {!isWelcomeScreen && (
+          <>
+            {/* 输入框背景 */}
+            <ChatInputBackdrop />
+            
+            {/* --- BEGIN COMMENT ---
+            聊天输入框 - 仅在对话模式下显示
+            --- END COMMENT --- */}
+            <ChatInput
+              onSubmit={handleSubmit}
+              placeholder={`与 ${currentApp.display_name || '应用'} 继续对话...`}
+              isProcessing={isProcessing}
+              isWaiting={isWaitingForResponse}
+              onStop={handleStopProcessing}
+              showModelSelector={false}
+              requireModelValidation={false}
+            />
+          </>
         )}
       </div>
     </div>

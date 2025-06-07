@@ -1,0 +1,1 @@
+export { ChatflowInputArea } from './chatflow-input-area' 
