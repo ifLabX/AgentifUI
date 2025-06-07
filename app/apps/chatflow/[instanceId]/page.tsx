@@ -435,7 +435,7 @@ export default function AppDetailPage() {
               
               {/* --- Chatflow 节点跟踪器 --- */}
               <ChatflowNodeTracker
-                isVisible={showNodeTracker && (nodeTracker.isExecuting || nodeTracker.nodes.length > 0)}
+                isVisible={showNodeTracker}
                 className={cn(
                   "fixed bottom-40 right-6 z-10 max-w-sm",
                   "transition-all duration-300"

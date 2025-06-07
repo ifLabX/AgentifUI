@@ -43,8 +43,8 @@ export function ChatflowNodeTracker({ isVisible, className }: ChatflowNodeTracke
     }
   }, [isVisible])
   
-  // 如果不可见或者（没有节点且不在执行中），不显示
-  if (!isVisible || (!isExecuting && nodes.length === 0)) {
+  // 如果不可见，不显示
+  if (!isVisible) {
     return null
   }
   
@@ -76,28 +76,35 @@ export function ChatflowNodeTracker({ isVisible, className }: ChatflowNodeTracke
         
         {/* 节点列表 */}
         <div className="space-y-2">
-          {nodes.length === 0 && isExecuting ? (
-            // 执行中但还没有节点数据
+          {nodes.length === 0 ? (
+            // 没有节点数据时的显示
             <div className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-lg border-2 border-dashed",
               isDark ? "border-stone-600 bg-stone-800/30" : "border-stone-300 bg-stone-50"
             )}>
-              <Loader2 className={cn(
-                "h-4 w-4 animate-spin",
-                isDark ? "text-stone-400" : "text-stone-600"
-              )} />
+              {isExecuting ? (
+                <Loader2 className={cn(
+                  "h-4 w-4 animate-spin",
+                  isDark ? "text-stone-400" : "text-stone-600"
+                )} />
+              ) : (
+                <Workflow className={cn(
+                  "h-4 w-4",
+                  isDark ? "text-stone-400" : "text-stone-600"
+                )} />
+              )}
               <div>
                 <div className={cn(
                   "text-sm font-medium font-serif",
                   isDark ? "text-stone-200" : "text-stone-800"
                 )}>
-                  正在启动 Chatflow
+                  {isExecuting ? "正在启动 Chatflow" : "暂无节点执行记录"}
                 </div>
                 <div className={cn(
                   "text-xs font-serif",
                   isDark ? "text-stone-400" : "text-stone-600"
                 )}>
-                  等待节点状态更新...
+                  {isExecuting ? "等待节点状态更新..." : "开始对话后将显示节点执行进度"}
                 </div>
               </div>
             </div>
