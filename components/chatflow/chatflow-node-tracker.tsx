@@ -43,8 +43,8 @@ export function ChatflowNodeTracker({ isVisible, className }: ChatflowNodeTracke
     }
   }, [isVisible])
   
-  // 如果没有节点且不在执行中，不显示
-  if (!isVisible || (nodes.length === 0 && !isExecuting)) {
+  // 如果不可见或者（没有节点且不在执行中），不显示
+  if (!isVisible || (!isExecuting && nodes.length === 0)) {
     return null
   }
   

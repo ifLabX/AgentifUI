@@ -8,6 +8,7 @@ export interface ChatflowNode {
   endTime?: number
   description?: string
   type?: string
+  visible?: boolean
 }
 
 interface ChatflowExecutionState {
@@ -169,7 +170,8 @@ export const useChatflowExecutionStore = create<ChatflowExecutionState>((set, ge
             status: 'running',
             startTime: Date.now(),
             description: '正在执行...',
-            type: node_type
+            type: node_type,
+            visible: true
           })
         }
         
