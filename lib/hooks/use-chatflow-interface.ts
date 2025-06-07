@@ -97,40 +97,9 @@ export function useChatflowInterface() {
  * 格式化 Chatflow 消息内容
  */
 function formatChatflowMessage(query: string, inputs: Record<string, any>): string {
-  const messageParts: string[] = [query]
-  
-  // 如果有表单数据，添加摘要
-  if (Object.keys(inputs).length > 0) {
-    messageParts.push("")
-    messageParts.push("📋 **附加信息：**")
-    
-    Object.entries(inputs).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === '') {
-        return // 跳过空值
-      }
-      
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          if (value[0] && typeof value[0] === 'object' && value[0].name) {
-            const fileNames = value.map(file => file.name).join(', ')
-            messageParts.push(`• **${key}**: ${fileNames}`)
-          } else {
-            messageParts.push(`• **${key}**: ${value.join(', ')}`)
-          }
-        }
-      } else if (typeof value === 'object') {
-        if (value.name) {
-          messageParts.push(`• **${key}**: ${value.name}`)
-        } else {
-          messageParts.push(`• **${key}**: ${JSON.stringify(value)}`)
-        }
-      } else {
-        messageParts.push(`• **${key}**: ${value}`)
-      }
-    })
-  }
-  
-  return messageParts.join('\n')
+  // 🎯 修复：只返回用户的原始问题，不添加表单摘要
+  // 表单数据通过 inputs 字段传递给 Dify API，不应该污染 query 字段
+  return query
 }
 
 /**
