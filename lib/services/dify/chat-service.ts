@@ -3,7 +3,7 @@
 // 实现与 Dify 聊天相关 API 的交互逻辑。
 // --- END COMMENT ---
 
-import { DifyChatRequestPayload, DifyStreamResponse, DifySseEvent } from './types';
+import { DifyChatRequestPayload, DifyStreamResponse, DifySseEvent, DifySseNodeStartedEvent, DifySseNodeFinishedEvent } from './types';
 import { parseSseStream } from '@lib/utils/sse-parser';
 
 // --- BEGIN COMMENT ---
@@ -22,13 +22,15 @@ const DIFY_API_BASE_URL = '/api/dify'; // 代理的基础路径
  * @param payload - 发送给 Dify API 的请求体。
  * @param appId - Dify 应用的 ID。
  * @param onConversationIdReceived - 可选的回调函数，当 conversationId 首次被提取时调用。
+ * @param onNodeEvent - 可选的回调函数，当节点事件发生时调用。
  * @returns 一个包含异步生成器 (answerStream)、conversationId 和 taskId 的 Promise。
  * @throws 如果 fetch 请求失败或 API 返回错误状态，则抛出错误。
  */
 export async function streamDifyChat(
   payload: DifyChatRequestPayload,
   appId: string, // 将 appId 作为参数传入
-  onConversationIdReceived?: (id: string) => void
+  onConversationIdReceived?: (id: string) => void,
+  onNodeEvent?: (event: DifySseNodeStartedEvent | DifySseNodeFinishedEvent) => void // 新增节点事件回调
 ): Promise<DifyStreamResponse> {
   console.log('[Dify Service] Sending request to proxy:', payload);
   
@@ -152,6 +154,26 @@ export async function streamDifyChat(
               // 可以选择性地处理或忽略 agent_message
               // console.log('[Dify Service] Agent Message:', event.answer);
               // yield event.answer; // 如果需要显示思考过程，可以 yield
+              break;
+            case 'node_started': // 节点开始执行
+              console.log('[Dify Service] Node started:', event.data);
+              if (onNodeEvent) {
+                try {
+                  onNodeEvent(event as DifySseNodeStartedEvent);
+                } catch (callbackError) {
+                  console.error('[Dify Service] Error in onNodeEvent callback (node_started):', callbackError);
+                }
+              }
+              break;
+            case 'node_finished': // 节点执行完成
+              console.log('[Dify Service] Node finished:', event.data);
+              if (onNodeEvent) {
+                try {
+                  onNodeEvent(event as DifySseNodeFinishedEvent);
+                } catch (callbackError) {
+                  console.error('[Dify Service] Error in onNodeEvent callback (node_finished):', callbackError);
+                }
+              }
               break;
             case 'message': // Dify 返回的最终答案文本块
               if (event.answer) {

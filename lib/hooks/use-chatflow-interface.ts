@@ -15,12 +15,12 @@ import { useChatflowExecutionStore } from "@lib/stores/chatflow-execution-store"
  * - 集成节点执行跟踪功能
  */
 export function useChatflowInterface() {
-  // 复用现有的聊天接口逻辑
-  const chatInterface = useChatInterface()
-  
   // 获取节点跟踪相关的方法
   const { startExecution, handleNodeEvent, resetExecution } = useChatflowExecutionStore()
-
+  
+  // 使用基础的聊天接口，传递节点事件处理器
+  const chatInterface = useChatInterface(handleNodeEvent)
+  
   /**
    * 处理 Chatflow 提交
    * 将查询和表单数据构建为正确的 chat-messages API payload

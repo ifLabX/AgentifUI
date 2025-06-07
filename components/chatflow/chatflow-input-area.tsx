@@ -269,7 +269,7 @@ export function ChatflowInputArea({
           "text-sm font-serif",
           isDark ? "text-stone-400" : "text-stone-600"
         )}>
-          {hasFormConfig ? "填写完成后将开始智能对话" : "输入您的问题开始对话"}
+          {hasFormConfig ? "填写完成后将开始Chatflow" : "输入您的问题开始对话"}
         </p>
       </div>
 

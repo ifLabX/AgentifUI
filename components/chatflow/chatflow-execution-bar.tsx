@@ -61,12 +61,12 @@ export function ChatflowExecutionBar({ node, index, delay = 0 }: ChatflowExecuti
       case 'running':
         return <Loader2 className={cn(
           "h-4 w-4 animate-spin",
-          isDark ? "text-blue-400" : "text-blue-600"
+          isDark ? "text-stone-400" : "text-stone-600"
         )} />
       case 'completed':
         return <CheckCircle className={cn(
           "h-4 w-4",
-          isDark ? "text-green-400" : "text-green-600"
+          isDark ? "text-stone-400" : "text-stone-600"
         )} />
       case 'failed':
         return <XCircle className="h-4 w-4 text-red-500" />
@@ -136,15 +136,15 @@ export function ChatflowExecutionBar({ node, index, delay = 0 }: ChatflowExecuti
         return cn(
           baseStyles,
           isDark
-            ? "bg-blue-900/20 border-blue-700/50 shadow-lg shadow-blue-900/20"
-            : "bg-blue-50 border-blue-200 shadow-lg shadow-blue-100/50"
+            ? "bg-stone-700/50 border-stone-600 shadow-lg shadow-stone-900/30"
+            : "bg-stone-200/50 border-stone-300 shadow-lg shadow-stone-200/50"
         )
       case 'completed':
         return cn(
           baseStyles,
           isDark
-            ? "bg-green-900/20 border-green-700/50"
-            : "bg-green-50 border-green-200"
+            ? "bg-stone-600/30 border-stone-500"
+            : "bg-stone-100 border-stone-300"
         )
       case 'failed':
         return cn(
@@ -194,12 +194,12 @@ export function ChatflowExecutionBar({ node, index, delay = 0 }: ChatflowExecuti
             "text-xs px-2 py-0.5 rounded-full",
             node.status === 'running'
               ? isDark
-                ? "bg-blue-700/30 text-blue-200"
-                : "bg-blue-100 text-blue-700"
+                ? "bg-stone-600/40 text-stone-200"
+                : "bg-stone-300/60 text-stone-700"
               : node.status === 'completed'
                 ? isDark
-                  ? "bg-green-700/30 text-green-200"
-                  : "bg-green-100 text-green-700"
+                  ? "bg-stone-500/40 text-stone-100"
+                  : "bg-stone-200 text-stone-800"
                 : node.status === 'failed'
                   ? isDark
                     ? "bg-red-700/30 text-red-200"

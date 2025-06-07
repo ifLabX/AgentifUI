@@ -25,7 +25,7 @@ import { useChatStore, selectIsProcessing, ChatMessage } from '@lib/stores/chat-
 import { streamDifyChat, stopDifyStreamingTask } from '@lib/services/dify/chat-service';
 import { useSupabaseAuth } from '@lib/supabase/hooks'; // 假设 Supabase Auth Hook
 import { useCurrentApp } from '@lib/hooks/use-current-app'; // 使用新的 hook
-import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse } from '@lib/services/dify/types';
+import type { DifyChatRequestPayload, DifyStopTaskResponse, DifyStreamResponse, DifySseNodeStartedEvent, DifySseNodeFinishedEvent } from '@lib/services/dify/types';
 import type { ServiceInstance } from '@lib/types/database';
 import { useCreateConversation } from './use-create-conversation';
 import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
@@ -43,7 +43,7 @@ import { getConversationByExternalId } from '@lib/db/conversations';
 // --- END COMMENT ---
 const CHUNK_APPEND_INTERVAL = 30; 
 
-export function useChatInterface() {
+export function useChatInterface(onNodeEvent?: (event: DifySseNodeStartedEvent | DifySseNodeFinishedEvent) => void) {
   const router = useRouter();
   const currentPathname = usePathname();
   const { isWelcomeScreen, setIsWelcomeScreen } = useChatInputStore();

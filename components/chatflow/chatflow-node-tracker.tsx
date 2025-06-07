@@ -99,7 +99,7 @@ export function ChatflowNodeTracker({ isVisible, className }: ChatflowNodeTracke
             )}>
               <Loader2 className={cn(
                 "h-4 w-4 animate-spin",
-                isDark ? "text-blue-400" : "text-blue-600"
+                isDark ? "text-stone-400" : "text-stone-600"
               )} />
               <div>
                 <div className={cn(
