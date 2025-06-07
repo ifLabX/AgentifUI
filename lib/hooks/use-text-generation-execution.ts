@@ -56,8 +56,23 @@ export function useTextGenerationExecution(instanceId: string) {
     try {
       const { updateCompleteExecutionData } = await import('@lib/db/app-executions')
       
-      // 确定最终状态
-      const finalStatus: ExecutionStatus = 'completed'
+      // --- 更严格的状态判断 ---
+      let finalStatus: ExecutionStatus
+      
+      if (generatedText && generatedText.length > 0) {
+        // 有生成内容，视为成功完成
+        finalStatus = 'completed'
+        console.log('[文本生成] 检测到生成内容，状态设为completed')
+      } else if (finalResult?.error) {
+        // 有错误信息，视为失败
+        finalStatus = 'failed'
+        console.log('[文本生成] 检测到错误信息，状态设为failed')
+      } else {
+        // 其他情况，根据是否有messageId判断
+        finalStatus = messageId ? 'completed' : 'failed'
+        console.log('[文本生成] 根据messageId判断状态:', finalStatus)
+      }
+      
       const completedAt = new Date().toISOString()
       
       // --- 构建文本生成的metadata ---
@@ -65,15 +80,16 @@ export function useTextGenerationExecution(instanceId: string) {
         // Dify原始响应数据
         dify_response: {
           message_id: messageId,
-          created_at: finalResult.created_at || null,
-          conversation_id: finalResult.conversation_id || null,
+          created_at: finalResult?.created_at || null,
+          conversation_id: finalResult?.conversation_id || null,
         },
         
         // 生成内容
         generation_data: {
           generated_text: generatedText,
           text_length: generatedText.length,
-          word_count: generatedText.split(/\s+/).length,
+          word_count: generatedText.split(/\s+/).filter(word => word.length > 0).length,
+          has_content: generatedText.length > 0,
         },
         
         // 执行环境信息
@@ -82,8 +98,17 @@ export function useTextGenerationExecution(instanceId: string) {
           timestamp: new Date().toISOString(),
           instance_id: instanceId,
           execution_mode: 'streaming',
-          api_type: 'completion'
-        }
+          api_type: 'completion',
+          final_status: finalStatus
+        },
+        
+        // 错误信息（如果有）
+        ...(finalResult?.error && {
+          error_details: {
+            message: finalResult.error,
+            timestamp: completedAt
+          }
+        })
       }
       
       // --- 执行数据库更新 ---
@@ -93,15 +118,15 @@ export function useTextGenerationExecution(instanceId: string) {
         task_id: taskId,
         outputs: { generated_text: generatedText },
         total_steps: 1, // 文本生成通常是单步
-        total_tokens: finalResult.usage?.total_tokens || 0,
-        elapsed_time: finalResult.elapsed_time || null,
-        error_message: null,
+        total_tokens: finalResult?.usage?.total_tokens || 0,
+        elapsed_time: finalResult?.elapsed_time || null,
+        error_message: finalStatus === 'failed' ? (finalResult?.error || '文本生成失败') : null,
         completed_at: completedAt,
         metadata: completeMetadata
       })
       
       if (updateResult.success) {
-        console.log('[文本生成] ✅ 数据库更新成功')
+        console.log('[文本生成] ✅ 数据库更新成功，最终状态:', finalStatus)
         
         // 更新Store状态
         const completeExecution = updateResult.data
@@ -209,6 +234,7 @@ export function useTextGenerationExecution(instanceId: string) {
       let accumulatedText = ''
       let messageId: string | null = null
       let taskId: string | null = null
+      let completionResult: any = null
       
       // --- 步骤7: 处理流式响应 ---
       for await (const textChunk of streamResponse.answerStream) {
@@ -223,15 +249,40 @@ export function useTextGenerationExecution(instanceId: string) {
         // 更新进度（基于文本长度估算）
         const estimatedProgress = Math.min(accumulatedText.length / 1000 * 100, 90)
         getActions().setExecutionProgress(estimatedProgress)
+        
+        // --- 设置taskId以便停止时使用 ---
+        const currentTaskId = streamResponse.getTaskId()
+        if (currentTaskId && !getActions().difyTaskId) {
+          getActions().setDifyTaskId(currentTaskId)
+          console.log('[文本生成] 设置difyTaskId:', currentTaskId)
+        }
       }
       
-      // --- 步骤8: 等待完成 ---
-      const completionResult = await streamResponse.completionPromise
-      messageId = streamResponse.getMessageId()
-      taskId = streamResponse.getTaskId()
+      // --- 步骤8: 等待完成并获取最终结果 ---
+      try {
+        completionResult = await streamResponse.completionPromise
+        messageId = streamResponse.getMessageId()
+        taskId = streamResponse.getTaskId()
+        
+        console.log('[文本生成] 流式响应完成，获得最终结果:', {
+          messageId,
+          taskId,
+          textLength: accumulatedText.length,
+          usage: completionResult?.usage
+        })
+      } catch (completionError) {
+        console.error('[文本生成] 等待完成时出错:', completionError)
+        // 即使completionPromise失败，如果已有文本内容，仍然尝试保存
+        if (accumulatedText.length > 0) {
+          console.log('[文本生成] 尽管完成时出错，但仍有生成内容，继续保存')
+          completionResult = { usage: null, metadata: {} }
+        } else {
+          throw completionError
+        }
+      }
       
       // --- 步骤9: 保存完整数据 ---
-      await saveCompleteGenerationData(
+      const saveResult = await saveCompleteGenerationData(
         dbExecution.id,
         completionResult,
         taskId,
@@ -239,19 +290,40 @@ export function useTextGenerationExecution(instanceId: string) {
         accumulatedText
       )
       
+      if (!saveResult.success) {
+        console.error('[文本生成] 保存完整数据失败:', saveResult.error)
+        throw new Error(`保存数据失败: ${saveResult.error}`)
+      }
+      
       // --- 步骤10: 更新最终状态 ---
+      console.log('[文本生成] 开始更新最终状态')
+      
+      // 更新进度到100%
       getActions().setExecutionProgress(100)
+      
+      // 停止流式状态
       setIsStreaming(false)
+      
+      // 确保执行状态正确停止
+      getActions().stopExecution()
+      
+      // 更新当前执行记录为最新的完整数据
+      if (saveResult.data) {
+        getActions().updateCurrentExecution(saveResult.data)
+      }
       
              // --- 自动添加到常用应用 ---
        addToFavorites(targetApp.instance_id)
       
-      console.log('[文本生成] ✅ 执行完成')
+      console.log('[文本生成] ✅ 执行完成，状态已正确转换')
       
     } catch (error) {
       console.error('[文本生成] ❌ 执行失败:', error)
       
+      // 清理流式状态
       setIsStreaming(false)
+      
+      // 设置错误状态
       getActions().setError(
         error instanceof Error ? error.message : '文本生成失败',
         true // 允许重试
@@ -259,12 +331,22 @@ export function useTextGenerationExecution(instanceId: string) {
       
       // 更新数据库状态为失败
       if (currentExecution?.id) {
-        const { updateExecutionStatus } = await import('@lib/db/app-executions')
-        await updateExecutionStatus(
-          currentExecution.id, 
-          'failed', 
-          error instanceof Error ? error.message : '文本生成失败'
-        )
+        try {
+          const { updateExecutionStatus } = await import('@lib/db/app-executions')
+          await updateExecutionStatus(
+            currentExecution.id, 
+            'failed', 
+            error instanceof Error ? error.message : '文本生成失败'
+          )
+          
+          // 更新store中的执行状态
+          getActions().updateCurrentExecution({ 
+            status: 'failed',
+            error_message: error instanceof Error ? error.message : '文本生成失败'
+          })
+        } catch (updateError) {
+          console.error('[文本生成] 更新失败状态时出错:', updateError)
+        }
       }
     } finally {
       // 清理资源
@@ -279,38 +361,134 @@ export function useTextGenerationExecution(instanceId: string) {
     console.log('[文本生成] 停止执行')
     
     try {
-      // 中断流式响应
+      // 获取当前状态
+      const state = useWorkflowExecutionStore.getState()
+      const currentText = generatedText // 获取当前已生成的文本
+      
+      // 1. 中断流式响应
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
+        console.log('[文本生成] 已中断流式响应')
       }
       
-      // 如果有taskId，调用Dify停止API
-      const taskId = getActions().difyTaskId
-      if (taskId && currentExecution) {
-        const { useAppListStore } = await import('@lib/stores/app-list-store')
-        const apps = useAppListStore.getState().apps
-        const targetApp = apps.find(app => app.instance_id === instanceId)
-        
-                 if (targetApp) {
-           const { stopDifyCompletion } = await import('@lib/services/dify/completion-service')
-           await stopDifyCompletion(targetApp.instance_id, taskId, userId!)
-         }
+      // 2. 如果有taskId，调用Dify停止API
+      if (state.difyTaskId && userId) {
+        try {
+          const { useAppListStore } = await import('@lib/stores/app-list-store')
+          const apps = useAppListStore.getState().apps
+          const targetApp = apps.find(app => app.instance_id === instanceId)
+          
+          if (targetApp) {
+            const { stopDifyCompletion } = await import('@lib/services/dify/completion-service')
+            await stopDifyCompletion(targetApp.instance_id, state.difyTaskId, userId)
+            console.log('[文本生成] Dify任务已停止')
+          }
+        } catch (stopError) {
+          console.warn('[文本生成] 停止Dify任务失败:', stopError)
+          // 即使停止API失败，也继续保存数据
+        }
       }
       
-      // 更新状态
+      // 3. 更新Store状态
       getActions().stopExecution()
       setIsStreaming(false)
       
-      // 更新数据库状态
-      if (currentExecution?.id) {
-        const { updateExecutionStatus } = await import('@lib/db/app-executions')
-        await updateExecutionStatus(currentExecution.id, 'stopped')
+      // 4. 保存残缺文本到数据库（如果有内容）
+      if (currentExecution?.id && currentText && currentText.length > 0) {
+        try {
+          console.log('[文本生成] 保存停止时的残缺文本，长度:', currentText.length)
+          
+          // 构建停止时的完整数据
+          const stopMetadata = {
+            // Dify原始响应数据
+            dify_response: {
+              message_id: null, // 停止时可能没有messageId
+              task_id: state.difyTaskId,
+              stopped_by_user: true,
+            },
+            
+            // 生成内容
+            generation_data: {
+              generated_text: currentText,
+              text_length: currentText.length,
+              word_count: currentText.split(/\s+/).filter(word => word.length > 0).length,
+              has_content: true,
+              is_partial: true, // 标记为部分内容
+            },
+            
+            // 执行环境信息
+            execution_context: {
+              user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : null,
+              timestamp: new Date().toISOString(),
+              instance_id: instanceId,
+              execution_mode: 'streaming',
+              api_type: 'completion',
+              final_status: 'stopped',
+              stop_reason: 'user_manual'
+            }
+          }
+          
+          // 更新数据库记录
+          const { updateCompleteExecutionData } = await import('@lib/db/app-executions')
+          const updateResult = await updateCompleteExecutionData(currentExecution.id, {
+            status: 'stopped',
+            external_execution_id: null,
+            task_id: state.difyTaskId,
+            outputs: { generated_text: currentText },
+            total_steps: 1,
+            total_tokens: 0, // 停止时可能没有token统计
+            elapsed_time: null,
+            error_message: '用户手动停止',
+            completed_at: new Date().toISOString(),
+            metadata: stopMetadata
+          })
+          
+          if (updateResult.success) {
+            console.log('[文本生成] ✅ 残缺文本已保存到数据库')
+            
+            // 更新Store中的执行记录
+            getActions().updateCurrentExecution(updateResult.data)
+            getActions().addExecutionToHistory(updateResult.data)
+          } else {
+            console.error('[文本生成] ❌ 保存残缺文本失败:', updateResult.error)
+          }
+          
+        } catch (saveError) {
+          console.error('[文本生成] 保存停止状态时出错:', saveError)
+        }
+      } else {
+        // 没有生成内容，只更新状态
+        if (currentExecution?.id) {
+          try {
+            const { updateExecutionStatus } = await import('@lib/db/app-executions')
+            await updateExecutionStatus(
+              currentExecution.id, 
+              'stopped',
+              '用户手动停止',
+              new Date().toISOString()
+            )
+            
+            getActions().updateCurrentExecution({
+              status: 'stopped',
+              error_message: '用户手动停止',
+              completed_at: new Date().toISOString()
+            })
+            
+            console.log('[文本生成] ✅ 执行状态已更新为stopped')
+          } catch (updateError) {
+            console.error('[文本生成] 更新停止状态时出错:', updateError)
+          }
+        }
       }
       
     } catch (error) {
       console.error('[文本生成] 停止执行失败:', error)
+      getActions().setError('停止执行失败')
+    } finally {
+      // 清理资源
+      abortControllerRef.current = null
     }
-  }, [instanceId, userId, currentExecution, getActions])
+  }, [instanceId, userId, currentExecution, getActions, generatedText])
 
   /**
    * 重试文本生成

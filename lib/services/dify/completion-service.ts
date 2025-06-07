@@ -133,12 +133,15 @@ export async function streamDifyCompletion(
     async function* generateAnswerStream(): AsyncGenerator<string, void, undefined> {
       const reader = stream.getReader();
       const decoder = new TextDecoder();
+      let hasReceivedContent = false;
+      let completionResolved = false;
       
       try {
         while (true) {
           const { done, value } = await reader.read();
           
           if (done) {
+            console.log('[Dify Completion Service] 流读取完成')
             break;
           }
           
@@ -150,6 +153,16 @@ export async function streamDifyCompletion(
               const data = line.slice(6);
               
               if (data === '[DONE]') {
+                console.log('[Dify Completion Service] 收到[DONE]信号')
+                // 如果没有收到message_end事件，手动resolve
+                if (!completionResolved) {
+                  console.log('[Dify Completion Service] 未收到message_end，手动完成')
+                  completionResolve({
+                    usage: undefined,
+                    metadata: { stream_ended: true, has_content: hasReceivedContent }
+                  });
+                  completionResolved = true;
+                }
                 return;
               }
               
@@ -159,32 +172,78 @@ export async function streamDifyCompletion(
                 // 提取 messageId 和 taskId
                 if ('id' in event && event.id) {
                   messageId = event.id;
+                  console.log('[Dify Completion Service] 提取messageId:', messageId)
                 }
                 if ('task_id' in event && event.task_id) {
                   taskId = event.task_id;
+                  console.log('[Dify Completion Service] 提取taskId:', taskId)
                 }
                 
                 // 处理不同类型的事件
                 if (event.event === 'message' && 'answer' in event) {
+                  if (event.answer && event.answer.length > 0) {
+                    hasReceivedContent = true;
+                  }
                   yield event.answer;
-                } else if (event.event === 'message_end' && 'usage' in event) {
-                  // 完成时解析 Promise
-                  completionResolve({
+                } else if (event.event === 'message_end') {
+                  console.log('[Dify Completion Service] 收到message_end事件:', {
                     usage: event.usage,
-                    metadata: event.metadata
-                  });
+                    metadata: event.metadata,
+                    hasContent: hasReceivedContent
+                  })
+                  
+                  // 完成时解析 Promise
+                  if (!completionResolved) {
+                    completionResolve({
+                      usage: event.usage,
+                      metadata: {
+                        ...event.metadata,
+                        has_content: hasReceivedContent,
+                        message_id: messageId,
+                        task_id: taskId
+                      }
+                    });
+                    completionResolved = true;
+                  }
                 } else if (event.event === 'error') {
-                  completionReject(new Error(event.message));
+                  console.error('[Dify Completion Service] 收到error事件:', event.message)
+                  if (!completionResolved) {
+                    completionReject(new Error(event.message));
+                    completionResolved = true;
+                  }
                   return;
+                } else {
+                  // 记录其他事件类型
+                  console.log('[Dify Completion Service] 收到其他事件:', event.event)
                 }
               } catch (parseError) {
-                console.warn('[Dify Completion Service] 解析 SSE 事件失败:', parseError);
+                console.warn('[Dify Completion Service] 解析 SSE 事件失败:', parseError, '原始数据:', data);
               }
             }
           }
         }
+        
+        // 流正常结束但没有收到明确的完成信号
+        if (!completionResolved) {
+          console.log('[Dify Completion Service] 流正常结束，手动完成')
+          completionResolve({
+            usage: undefined,
+            metadata: { 
+              stream_completed: true, 
+              has_content: hasReceivedContent,
+              message_id: messageId,
+              task_id: taskId
+            }
+          });
+          completionResolved = true;
+        }
+        
       } catch (error) {
-        completionReject(error);
+        console.error('[Dify Completion Service] 流处理错误:', error)
+        if (!completionResolved) {
+          completionReject(error);
+          completionResolved = true;
+        }
         throw error;
       } finally {
         reader.releaseLock();
