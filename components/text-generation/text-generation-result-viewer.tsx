@@ -38,7 +38,12 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
     
     // 如果是对象，尝试提取文本内容
     if (data && typeof data === 'object') {
-      // 优先查找常见的文本字段
+      // --- 优先查找文本生成专用字段 ---
+      if (data.generated_text && typeof data.generated_text === 'string') {
+        return data.generated_text
+      }
+      
+      // --- 查找其他常见的文本字段 ---
       const textFields = ['text', 'content', 'output', 'result', 'answer', 'response']
       for (const field of textFields) {
         if (data[field] && typeof data[field] === 'string') {
@@ -46,7 +51,7 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
         }
       }
       
-      // 如果没有找到文本字段，返回JSON格式
+      // --- 如果没有找到文本字段，返回JSON格式 ---
       return JSON.stringify(data, null, 2)
     }
     
