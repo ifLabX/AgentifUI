@@ -25,6 +25,7 @@ import { DynamicSuggestedQuestions } from "@components/chat/dynamic-suggested-qu
 import { ChatInput } from "@components/chat-input"
 import { ChatflowInputArea } from "@components/chatflow/chatflow-input-area"
 import { ChatflowNodeTracker } from "@components/chatflow/chatflow-node-tracker"
+import { ChatflowFloatingController } from "@components/chatflow/chatflow-floating-controller"
 import { useProfile } from "@lib/hooks/use-profile"
 import { NavBar } from "@components/nav-bar/nav-bar"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
@@ -72,6 +73,31 @@ export default function AppDetailPage() {
   // 本地状态管理
   // --- END COMMENT ---
   const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // --- BEGIN COMMENT ---
+  // 节点跟踪器控制状态
+  // --- END COMMENT ---
+  const [showNodeTracker, setShowNodeTracker] = useState(true)
+  const [showFloatingController, setShowFloatingController] = useState(false)
+  
+  // --- BEGIN COMMENT ---
+  // 监听节点执行状态，自动显示/隐藏悬浮控制器
+  // --- END COMMENT ---
+  useEffect(() => {
+    const hasNodes = nodeTracker.nodes.length > 0
+    const isExecuting = nodeTracker.isExecuting
+    
+    if (hasNodes || isExecuting) {
+      setShowFloatingController(true)
+    } else {
+      // 延迟隐藏，给用户时间查看结果
+      const timer = setTimeout(() => {
+        setShowFloatingController(false)
+      }, 3000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [nodeTracker.nodes.length, nodeTracker.isExecuting])
   
   // --- BEGIN COMMENT ---
   // 添加滚动管理，确保消息列表能正确滚动
@@ -415,7 +441,7 @@ export default function AppDetailPage() {
               
               {/* --- Chatflow 节点跟踪器 --- */}
               <ChatflowNodeTracker
-                isVisible={nodeTracker.isExecuting || nodeTracker.nodes.length > 0}
+                isVisible={showNodeTracker && (nodeTracker.isExecuting || nodeTracker.nodes.length > 0)}
                 className={cn(
                   "fixed bottom-20 right-6 z-10 max-w-sm",
                   "transition-all duration-300"
@@ -427,6 +453,16 @@ export default function AppDetailPage() {
 
         {/* 滚动到底部按钮 */}
         <ScrollToBottomButton />
+        
+        {/* --- Chatflow 悬浮控制器 --- */}
+        <ChatflowFloatingController
+          isVisible={showFloatingController}
+          onToggleTracker={setShowNodeTracker}
+          onClose={() => {
+            setShowFloatingController(false)
+            setShowNodeTracker(false)
+          }}
+        />
 
         {/* --- 对话模式下的输入框 --- */}
         {!isWelcomeScreen && (

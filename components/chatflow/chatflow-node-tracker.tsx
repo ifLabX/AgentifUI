@@ -72,21 +72,6 @@ export function ChatflowNodeTracker({ isVisible, className }: ChatflowNodeTracke
           )}>
             节点执行进度
           </span>
-          
-          {/* 进度信息 */}
-          {executionProgress.total > 0 && (
-            <div className={cn(
-              "ml-auto text-xs font-mono",
-              isDark ? "text-stone-400" : "text-stone-500"
-            )}>
-              {executionProgress.current}/{executionProgress.total}
-              {executionProgress.percentage > 0 && (
-                <span className="ml-1">
-                  ({Math.round(executionProgress.percentage)}%)
-                </span>
-              )}
-            </div>
-          )}
         </div>
         
         {/* 节点列表 */}
