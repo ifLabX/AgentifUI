@@ -117,6 +117,7 @@ export function TextGenerationTracker({
           onRetry={onRetry || (() => {})}
           onReset={onReset || (() => {})}
           onShowResult={() => {}} // 文本生成不需要单独的结果查看器
+          showResultButton={false} // 文本生成不显示查看结果按钮
         />
       )}
       
@@ -200,11 +201,13 @@ export function TextGenerationTracker({
                   <button
                     onClick={handleDownloadText}
                     className={cn(
-                      "p-2 rounded-lg transition-colors",
-                      isDark
-                        ? "hover:bg-stone-700 text-stone-400 hover:text-stone-300"
-                        : "hover:bg-stone-100 text-stone-600 hover:text-stone-700"
+                      "flex items-center justify-center p-2 rounded-lg transition-colors",
+                      "text-stone-500 dark:text-stone-400",
+                      "hover:text-stone-700 dark:hover:text-stone-300",
+                      "hover:bg-stone-300/40 dark:hover:bg-stone-600/40",
+                      "focus:outline-none"
                     )}
+                    style={{ transform: 'translateZ(0)' }}
                     title="下载文本"
                   >
                     <Download className="h-4 w-4" />

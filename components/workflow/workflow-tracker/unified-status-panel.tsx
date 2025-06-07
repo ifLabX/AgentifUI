@@ -15,6 +15,7 @@ interface UnifiedStatusPanelProps {
   onRetry: () => void
   onReset: () => void
   onShowResult: () => void
+  showResultButton?: boolean // 是否显示查看结果按钮，默认为true
 }
 
 /**
@@ -35,7 +36,8 @@ export function UnifiedStatusPanel({
   onStop,
   onRetry,
   onReset,
-  onShowResult
+  onShowResult,
+  showResultButton = true
 }: UnifiedStatusPanelProps) {
   const { isDark } = useTheme()
   
@@ -122,7 +124,7 @@ export function UnifiedStatusPanel({
           {/* 右侧：主要操作按钮 */}
           <div className="flex items-center gap-2">
             {/* 查看结果按钮 */}
-            {overallStatus === 'completed' && currentExecution?.outputs && (
+            {showResultButton && overallStatus === 'completed' && currentExecution?.outputs && (
               <button
                 onClick={onShowResult}
                 className={cn(

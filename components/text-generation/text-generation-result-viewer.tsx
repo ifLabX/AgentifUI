@@ -264,22 +264,7 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
                         </span>
                       </div>
                     )}
-                    {execution.total_tokens && (
-                      <div>
-                        <span className={cn(
-                          "font-medium",
-                          isDark ? "text-stone-300" : "text-stone-700"
-                        )}>
-                          Token数：
-                        </span>
-                        <span className={cn(
-                          "ml-2",
-                          isDark ? "text-stone-400" : "text-stone-600"
-                        )}>
-                          {execution.total_tokens}
-                        </span>
-                      </div>
-                    )}
+
                   </div>
                 </div>
               )}
