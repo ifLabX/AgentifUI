@@ -8,7 +8,8 @@ import { useChatflowExecutionStore } from '@lib/stores/chatflow-execution-store'
 
 interface ChatflowFloatingControllerProps {
   isVisible: boolean
-  onToggleTracker: (show: boolean) => void
+  isTrackerVisible: boolean
+  onToggleTracker: () => void
   onClose: () => void
   className?: string
 }
@@ -23,12 +24,12 @@ interface ChatflowFloatingControllerProps {
  */
 export function ChatflowFloatingController({ 
   isVisible, 
+  isTrackerVisible,
   onToggleTracker, 
   onClose,
   className 
 }: ChatflowFloatingControllerProps) {
   const { isDark } = useTheme()
-  const [isTrackerVisible, setIsTrackerVisible] = useState(true)
   
   // 从 store 获取执行状态
   const nodes = useChatflowExecutionStore(state => state.nodes)
@@ -41,9 +42,7 @@ export function ChatflowFloatingController({
   }
   
   const handleToggleTracker = () => {
-    const newState = !isTrackerVisible
-    setIsTrackerVisible(newState)
-    onToggleTracker(newState)
+    onToggleTracker()
   }
   
   const getStatusColor = () => {

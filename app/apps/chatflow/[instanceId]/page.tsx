@@ -451,7 +451,8 @@ export default function AppDetailPage() {
         {/* --- Chatflow 悬浮控制器 --- */}
         <ChatflowFloatingController
           isVisible={showFloatingController}
-          onToggleTracker={setShowNodeTracker}
+          isTrackerVisible={showNodeTracker}
+          onToggleTracker={() => setShowNodeTracker(!showNodeTracker)}
           onClose={() => setShowFloatingController(false)}
         />
 
