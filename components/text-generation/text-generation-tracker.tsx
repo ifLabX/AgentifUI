@@ -6,6 +6,18 @@ import { cn } from '@lib/utils'
 import { UnifiedStatusPanel } from '@components/workflow/workflow-tracker/unified-status-panel'
 import { Play, Clock, CheckCircle, XCircle, Square, FileText, Loader2, Copy, Download, Check } from 'lucide-react'
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import type { Components } from 'react-markdown'
+import 'katex/dist/katex.min.css'
+import { 
+  InlineCode,
+  CodeBlock,
+  MarkdownTableContainer,
+  MarkdownBlockquote,
+} from '@components/chat/markdown-block'
 
 interface TextGenerationTrackerProps {
   isExecuting: boolean
@@ -37,15 +49,67 @@ export function TextGenerationTracker({
   onReset
 }: TextGenerationTrackerProps) {
   const { isDark } = useTheme()
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const markdownContainerRef = useRef<HTMLDivElement>(null)
   const [isCopied, setIsCopied] = useState(false)
   
   // --- 自动滚动到底部 ---
   useEffect(() => {
-    if (textAreaRef.current && isStreaming) {
-      textAreaRef.current.scrollTop = textAreaRef.current.scrollHeight
+    if (markdownContainerRef.current && isStreaming) {
+      markdownContainerRef.current.scrollTop = markdownContainerRef.current.scrollHeight
     }
   }, [generatedText, isStreaming])
+
+  // --- 复用助手消息的Markdown组件配置 ---
+  const markdownComponents: Components = {
+    code({ node, className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || '')
+      const language = match ? match[1] : ''
+      
+      if (language) {
+        return (
+          <CodeBlock
+            language={language}
+            className={className}
+            {...props}
+          >
+            {String(children).replace(/\n$/, '')}
+          </CodeBlock>
+        )
+      }
+      
+      return <InlineCode {...props}>{children}</InlineCode>
+    },
+    table({ children, ...props }: any) {
+      return <MarkdownTableContainer>{children}</MarkdownTableContainer>
+    },
+    blockquote({ children, ...props }: any) {
+      return <MarkdownBlockquote>{children}</MarkdownBlockquote>
+    },
+    p({ children, ...props }: any) {
+      return <p className="font-serif" {...props}>{children}</p>
+    },
+    h1({ children, ...props }: any) {
+      return <h1 className="font-serif" {...props}>{children}</h1>
+    },
+    h2({ children, ...props }: any) {
+      return <h2 className="font-serif" {...props}>{children}</h2>
+    },
+    h3({ children, ...props }: any) {
+      return <h3 className="font-serif" {...props}>{children}</h3>
+    },
+    h4({ children, ...props }: any) {
+      return <h4 className="font-serif" {...props}>{children}</h4>
+    },
+    ul({ children, ...props }: any) {
+      return <ul className="font-serif" {...props}>{children}</ul>
+    },
+    ol({ children, ...props }: any) {
+      return <ol className="font-serif" {...props}>{children}</ol>
+    },
+    li({ children, ...props }: any) {
+      return <li className="font-serif" {...props}>{children}</li>
+    },
+  }
   
   const getOverallStatus = () => {
     if (isExecuting || isStreaming) return 'running'
@@ -224,11 +288,11 @@ export function TextGenerationTracker({
             </div>
             
             {/* 文本显示区域 */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative overflow-hidden">
               {isExecuting && !generatedText ? (
                 // 加载状态
                 <div className={cn(
-                  "h-full flex items-center justify-center rounded-lg border-2 border-dashed",
+                  "absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed",
                   isDark ? "border-stone-600 bg-stone-800/50" : "border-stone-300 bg-stone-50"
                 )}>
                   <div className="flex items-center gap-3">
@@ -253,20 +317,38 @@ export function TextGenerationTracker({
                   </div>
                 </div>
               ) : (
-                // 文本内容
-                <textarea
-                  ref={textAreaRef}
-                  value={generatedText}
-                  readOnly
+                // Markdown渲染内容
+                <div
+                  ref={markdownContainerRef}
                   className={cn(
-                    "w-full h-full p-4 rounded-lg border resize-none font-serif",
+                    "absolute inset-0 p-4 rounded-lg border font-serif overflow-y-auto overscroll-contain",
                     "focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent",
+                    "assistant-message-content", // 复用助手消息的样式类
                     isDark
-                      ? "bg-stone-800 border-stone-600 text-stone-200 placeholder-stone-400"
-                      : "bg-white border-stone-300 text-stone-900 placeholder-stone-500"
+                      ? "bg-stone-800 border-stone-600 text-stone-200"
+                      : "bg-white border-stone-300 text-stone-900"
                   )}
-                  placeholder={isExecuting ? "正在生成文本..." : "生成的文本将显示在这里"}
-                />
+                  style={{
+                    scrollBehavior: 'auto'
+                  }}
+                >
+                  {generatedText ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm, remarkMath]}
+                      rehypePlugins={[rehypeKatex]}
+                      components={markdownComponents}
+                    >
+                      {generatedText}
+                    </ReactMarkdown>
+                  ) : (
+                    <div className={cn(
+                      "flex items-center justify-center h-full font-serif",
+                      isDark ? "text-stone-400" : "text-stone-500"
+                    )}>
+                      {isExecuting ? "正在生成文本..." : "生成的文本将显示在这里"}
+                    </div>
+                  )}
+                </div>
               )}
               
               {/* 流式生成指示器 */}

@@ -5,6 +5,18 @@ import { useTheme } from '@lib/hooks/use-theme'
 import { cn } from '@lib/utils'
 import { X, Download, Copy, Check } from 'lucide-react'
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import type { Components } from 'react-markdown'
+import 'katex/dist/katex.min.css'
+import { 
+  InlineCode,
+  CodeBlock,
+  MarkdownTableContainer,
+  MarkdownBlockquote,
+} from '@components/chat/markdown-block'
 
 interface TextGenerationResultViewerProps {
   result: any
@@ -28,6 +40,58 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
     const timer = setTimeout(() => setIsVisible(true), 50)
     return () => clearTimeout(timer)
   }, [])
+
+  // --- 复用助手消息的Markdown组件配置 ---
+  const markdownComponents: Components = {
+    code({ node, className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || '')
+      const language = match ? match[1] : ''
+      
+      if (language) {
+        return (
+          <CodeBlock
+            language={language}
+            className={className}
+            {...props}
+          >
+            {String(children).replace(/\n$/, '')}
+          </CodeBlock>
+        )
+      }
+      
+      return <InlineCode {...props}>{children}</InlineCode>
+    },
+    table({ children, ...props }: any) {
+      return <MarkdownTableContainer>{children}</MarkdownTableContainer>
+    },
+    blockquote({ children, ...props }: any) {
+      return <MarkdownBlockquote>{children}</MarkdownBlockquote>
+    },
+    p({ children, ...props }: any) {
+      return <p className="font-serif" {...props}>{children}</p>
+    },
+    h1({ children, ...props }: any) {
+      return <h1 className="font-serif" {...props}>{children}</h1>
+    },
+    h2({ children, ...props }: any) {
+      return <h2 className="font-serif" {...props}>{children}</h2>
+    },
+    h3({ children, ...props }: any) {
+      return <h3 className="font-serif" {...props}>{children}</h3>
+    },
+    h4({ children, ...props }: any) {
+      return <h4 className="font-serif" {...props}>{children}</h4>
+    },
+    ul({ children, ...props }: any) {
+      return <ul className="font-serif" {...props}>{children}</ul>
+    },
+    ol({ children, ...props }: any) {
+      return <ol className="font-serif" {...props}>{children}</ol>
+    },
+    li({ children, ...props }: any) {
+      return <li className="font-serif" {...props}>{children}</li>
+    },
+  }
   
   // --- 格式化内容 ---
   const formatContent = (data: any): string => {
@@ -304,10 +368,16 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
                   生成内容
                 </h3>
                 <div className={cn(
-                  "p-4 rounded-lg border font-serif whitespace-pre-wrap",
+                  "p-4 rounded-lg border font-serif assistant-message-content",
                   isDark ? "bg-stone-800 border-stone-700 text-stone-200" : "bg-white border-stone-200 text-stone-900"
                 )}>
-                  {formattedContent}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={markdownComponents}
+                  >
+                    {formattedContent}
+                  </ReactMarkdown>
                 </div>
               </div>
             </div>
