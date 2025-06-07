@@ -196,13 +196,14 @@ export default function TextGenerationPage({ params }: TextGenerationPageProps) 
   return (
     <div className={cn(
       "h-full w-full relative flex flex-col",
-      colors.mainBackground.tailwind
+      colors.mainBackground.tailwind,
+      colors.mainText.tailwind
     )}>
-      {/* 导航栏 */}
+      {/* --- 顶部导航栏 --- */}
       <NavBar />
       
-      {/* 主要内容区域 */}
-      <div className="flex-1 overflow-hidden">
+      {/* --- 主内容区域，为 NavBar 留出空间 --- */}
+      <div className="pt-14 flex-1 min-h-0">
         <TextGenerationLayout instanceId={instanceId} />
       </div>
     </div>

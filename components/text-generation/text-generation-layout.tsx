@@ -5,7 +5,7 @@ import { useTheme } from '@lib/hooks/use-theme'
 import { useMobile } from '@lib/hooks/use-mobile'
 import { cn } from '@lib/utils'
 import { WorkflowInputForm, WorkflowInputFormRef } from '@components/workflow/workflow-input-form'
-import { WorkflowTracker } from '@components/workflow/workflow-tracker'
+import { TextGenerationTracker } from './text-generation-tracker'
 import { ExecutionHistory } from '@components/workflow/execution-history'
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher'
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store'
@@ -51,6 +51,7 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
   
   // --- 保留原有状态管理 ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore()
+  const [mobileActiveTab, setMobileActiveTab] = useState<'form' | 'tracker' | 'history'>('form')
   
   // --- 表单重置引用 ---
   const formResetRef = useRef<WorkflowInputFormRef>(null)
@@ -175,27 +176,50 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
           />
         )}
         
-        {/* 移动端标签切换器 - 暂时简化 */}
-        <div className={cn(
-          "flex border-b",
-          isDark ? "border-stone-700 bg-stone-900" : "border-stone-200 bg-white"
-        )}>
-          <div className="flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-serif border-b-2 border-stone-600">
-            <FileText className="h-4 w-4" />
-            <span>文本生成</span>
-          </div>
-        </div>
+        {/* 移动端标签切换器 */}
+        <MobileTabSwitcher
+          activeTab={mobileActiveTab}
+          onTabChange={setMobileActiveTab}
+          hasHistory={showHistory}
+        />
         
         {/* 内容区域 */}
         <div className="flex-1 overflow-hidden">
-          <div className="h-full p-4">
-            <WorkflowInputForm
-              ref={formResetRef}
-              instanceId={instanceId}
-              onExecute={handleExecuteTextGeneration}
-              isExecuting={isExecuting}
-            />
-          </div>
+          {mobileActiveTab === 'form' && (
+            <div className="h-full p-4">
+              <WorkflowInputForm
+                instanceId={instanceId}
+                onExecute={handleExecuteTextGeneration}
+                isExecuting={isExecuting}
+                ref={formResetRef}
+              />
+            </div>
+          )}
+          
+          {mobileActiveTab === 'tracker' && (
+            <div className="h-full">
+              <TextGenerationTracker
+                isExecuting={isExecuting}
+                isStreaming={isStreaming}
+                generatedText={generatedText}
+                currentExecution={currentExecution}
+                onStop={handleStopExecution}
+                onRetry={handleRetryExecution}
+                onReset={handleCompleteReset}
+              />
+            </div>
+          )}
+          
+          {mobileActiveTab === 'history' && (
+            <div className="h-full">
+              <ExecutionHistory
+                instanceId={instanceId}
+                onClose={() => setMobileActiveTab('form')}
+                isMobile={true}
+                onViewResult={handleViewResult}
+              />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -203,62 +227,68 @@ export function TextGenerationLayout({ instanceId }: TextGenerationLayoutProps) 
 
   // --- 桌面端布局 ---
   return (
-    <div className="h-[calc(100vh-2.5rem)] flex">
+    <div className="h-[calc(100vh-2.5rem)] flex flex-col relative">
       {/* 全局错误提示 */}
       {error && (
-        <div className="absolute top-0 left-0 right-0 z-50">
-          <ErrorBanner
-            error={error}
-            canRetry={canRetry}
-            onRetry={handleRetryExecution}
-            onDismiss={handleClearError}
-          />
-        </div>
-      )}
-      
-      {/* 左侧：输入表单 */}
-      <div className={cn(
-        "flex-shrink-0 border-r overflow-hidden",
-        isDark ? "border-stone-700 bg-stone-900/50" : "border-stone-200 bg-stone-50/50",
-        showHistory ? "w-80" : "w-96"
-      )}>
-        <div className="h-full p-6">
-          <WorkflowInputForm
-            ref={formResetRef}
-            instanceId={instanceId}
-            onExecute={handleExecuteTextGeneration}
-            isExecuting={isExecuting}
-          />
-        </div>
-      </div>
-      
-      {/* 中间：工作流跟踪器（复用） */}
-      <div className="flex-1 overflow-hidden">
-        <WorkflowTracker
-          isExecuting={isExecuting}
-          executionResult={generatedText ? { generated_text: generatedText } : null}
-          currentExecution={currentExecution}
-          onNodeUpdate={handleNodeUpdate}
-          onStop={handleStopExecution}
+        <ErrorBanner
+          error={error}
+          canRetry={canRetry}
           onRetry={handleRetryExecution}
-          onReset={handleCompleteReset}
+          onDismiss={handleClearError}
         />
-      </div>
+      )}
       
-      {/* 右侧：历史记录（可折叠） */}
-      {showHistory && (
+      {/* 主内容区域 */}
+      <div className="flex-1 flex relative">
+        {/* 左侧：输入表单 */}
         <div className={cn(
-          "flex-shrink-0 w-80 border-l overflow-hidden",
-          isDark ? "border-stone-700 bg-stone-900/50" : "border-stone-200 bg-stone-50/50"
+          "flex-1 min-w-0 border-r transition-all duration-300",
+          isDark ? "border-stone-700" : "border-stone-200",
+          showHistory ? "lg:w-1/3" : "lg:w-1/2"
         )}>
-          <ExecutionHistory
-            instanceId={instanceId}
-            onClose={() => setShowHistory(false)}
-            isMobile={false}
-            onViewResult={handleViewResult}
+          <div className="h-full px-8 py-6 overflow-y-auto">
+            <WorkflowInputForm
+              instanceId={instanceId}
+              onExecute={handleExecuteTextGeneration}
+              isExecuting={isExecuting}
+              ref={formResetRef}
+            />
+          </div>
+        </div>
+        
+        {/* 右侧：文本生成跟踪器 */}
+        <div className={cn(
+          "flex-1 min-w-0 transition-all duration-300",
+          showHistory ? "lg:w-1/3" : "lg:w-1/2"
+        )}>
+          <TextGenerationTracker
+            isExecuting={isExecuting}
+            isStreaming={isStreaming}
+            generatedText={generatedText}
+            currentExecution={currentExecution}
+            onStop={handleStopExecution}
+            onRetry={handleRetryExecution}
+            onReset={handleCompleteReset}
           />
         </div>
-      )}
+        
+        {/* 历史记录侧边栏 */}
+        {showHistory && (
+          <div className={cn(
+            "w-80 min-w-72 border-l",
+            "transition-all duration-300 ease-in-out",
+            "transform-gpu", // 使用GPU加速
+            isDark ? "border-stone-700" : "border-stone-200"
+          )}>
+            <ExecutionHistory
+              instanceId={instanceId}
+              onClose={() => setShowHistory(false)}
+              isMobile={false}
+              onViewResult={handleViewResult}
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 } 
