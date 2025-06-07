@@ -392,7 +392,8 @@ export function useChatInterface(onNodeEvent?: (event: DifySseNodeStartedEvent |
             // 这样确保时序正确，避免复杂的定时器逻辑
             // --- END COMMENT ---
             console.log(`[handleSubmit] 数据库ID回调完成，用户消息已保存，助手消息将在流式响应结束后保存`);
-          }
+          },
+          onNodeEvent // 🎯 传递节点事件回调，支持chatflow节点控制
         );
 
         if (creationResult.error) {
@@ -529,7 +530,8 @@ export function useChatInterface(onNodeEvent?: (event: DifySseNodeStartedEvent |
                 });
               }
             }
-          }
+          },
+          onNodeEvent // 🎯 修复：传递节点事件回调，支持chatflow节点控制
         );
         answerStream = streamServiceResponse.answerStream;
         finalRealConvId = streamServiceResponse.getConversationId() || difyConversationId || undefined; // Fallback to currentConvId

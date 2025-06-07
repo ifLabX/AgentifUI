@@ -22,7 +22,7 @@ import { usePendingConversationStore, PendingConversation } from '@lib/stores/pe
 import { streamDifyChat } from '@lib/services/dify/chat-service';
 import { DifyStreamResponse } from '@lib/services/dify/types';
 import { renameConversation } from '@lib/services/dify/conversation-service';
-import type { DifyChatRequestPayload } from '@lib/services/dify/types';
+import type { DifyChatRequestPayload, DifySseNodeStartedEvent, DifySseNodeFinishedEvent } from '@lib/services/dify/types';
 import { useSupabaseAuth } from '@lib/supabase/hooks'; // For userId
 // import { useCurrentAppStore } from '@lib/stores/current-app-store'; // appId is passed as param
 import { createConversation } from '@lib/db'; // 使用新的优化版本
@@ -34,7 +34,8 @@ interface UseCreateConversationReturn {
     payload: Omit<DifyChatRequestPayload, 'response_mode' | 'conversation_id' | 'auto_generate_name'>,
     appId: string,
     userIdentifier: string,
-    onDbIdCreated?: (difyId: string, dbId: string) => void
+    onDbIdCreated?: (difyId: string, dbId: string) => void,
+    onNodeEvent?: (event: DifySseNodeStartedEvent | DifySseNodeFinishedEvent) => void // 🎯 新增：支持节点事件回调
   ) => Promise<{
     tempConvId: string;
     realConvId?: string; 
@@ -79,7 +80,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
       payloadData: Omit<DifyChatRequestPayload, 'response_mode' | 'conversation_id' | 'auto_generate_name'>,
       appId: string,
       userIdentifier: string,
-      onDbIdCreated?: (difyId: string, dbId: string) => void
+      onDbIdCreated?: (difyId: string, dbId: string) => void,
+      onNodeEvent?: (event: DifySseNodeStartedEvent | DifySseNodeFinishedEvent) => void // 🎯 新增：支持节点事件回调
     ): Promise<{
       tempConvId: string;
       realConvId?: string;
@@ -313,7 +315,8 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 console.error('[useCreateConversation] 数据库记录创建过程发生错误:', error);
               });
             }
-          }
+          },
+          onNodeEvent // 🎯 传递节点事件回调，支持chatflow节点控制
         );
         
         if (!realConvIdFromStream) realConvIdFromStream = streamResponse.getConversationId();
