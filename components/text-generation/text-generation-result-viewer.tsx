@@ -33,24 +33,43 @@ export function TextGenerationResultViewer({ result, execution, onClose }: TextG
   const formatContent = (data: any): string => {
     // 如果result包含生成的文本内容
     if (typeof data === 'string') {
-      return data
+      try {
+        // 尝试解析JSON字符串
+        const parsed = JSON.parse(data)
+        if (parsed && typeof parsed === 'object') {
+          return extractTextFromObject(parsed)
+        }
+      } catch {
+        // 如果不是JSON字符串，直接返回
+        return data
+      }
     }
     
-    // 如果是对象，尝试提取文本内容
+    // 如果是对象，提取文本内容
     if (data && typeof data === 'object') {
-      // 优先查找常见的文本字段
-      const textFields = ['text', 'content', 'output', 'result', 'answer', 'response']
-      for (const field of textFields) {
-        if (data[field] && typeof data[field] === 'string') {
-          return data[field]
-        }
-      }
-      
-      // 如果没有找到文本字段，返回JSON格式
-      return JSON.stringify(data, null, 2)
+      return extractTextFromObject(data)
     }
     
     return String(data || '暂无内容')
+  }
+  
+  // --- 从对象中提取文本内容 ---
+  const extractTextFromObject = (obj: any): string => {
+    // 优先查找generated_text字段（文本生成的主要输出）
+    if (obj.generated_text && typeof obj.generated_text === 'string') {
+      return obj.generated_text
+    }
+    
+    // 查找其他常见的文本字段
+    const textFields = ['text', 'content', 'output', 'result', 'answer', 'response']
+    for (const field of textFields) {
+      if (obj[field] && typeof obj[field] === 'string') {
+        return obj[field]
+      }
+    }
+    
+    // 如果没有找到文本字段，返回JSON格式
+    return JSON.stringify(obj, null, 2)
   }
   
   const formattedContent = formatContent(result)
