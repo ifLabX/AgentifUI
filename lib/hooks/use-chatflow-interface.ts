@@ -1,7 +1,8 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { useChatInterface } from "./use-chat-interface"
+import { useChatflowExecutionStore } from "@lib/stores/chatflow-execution-store"
 
 /**
  * Chatflow 接口 Hook
@@ -11,10 +12,14 @@ import { useChatInterface } from "./use-chat-interface"
  * - 处理表单数据转换为聊天消息
  * - 保持与现有聊天逻辑的兼容性
  * - 支持表单数据的结构化处理
+ * - 集成节点执行跟踪功能
  */
 export function useChatflowInterface() {
   // 复用现有的聊天接口逻辑
   const chatInterface = useChatInterface()
+  
+  // 获取节点跟踪相关的方法
+  const { startExecution, handleNodeEvent, resetExecution } = useChatflowExecutionStore()
 
   /**
    * 处理 Chatflow 提交
@@ -28,14 +33,17 @@ export function useChatflowInterface() {
     console.log('[useChatflowInterface] 处理 Chatflow 提交', { query, inputs, files })
     
     try {
-      // --- 步骤1: 构建用户消息内容 ---
+      // --- 步骤1: 启动节点跟踪 ---
+      startExecution()
+      
+      // --- 步骤2: 构建用户消息内容 ---
       // 显示给用户看的消息内容，包含查询和表单数据摘要
       const userMessage = formatChatflowMessage(query, inputs)
       
-      // --- 步骤2: 准备文件数据 ---
+      // --- 步骤3: 准备文件数据 ---
       const difyFiles = files ? formatFilesForDify(files) : undefined
       
-      // --- 步骤3: 使用修改后的handleSubmit传递inputs ---
+      // --- 步骤4: 使用修改后的handleSubmit传递inputs ---
       // 现在handleSubmit支持第三个参数inputs
       await chatInterface.handleSubmit(userMessage, difyFiles, inputs)
       
@@ -43,14 +51,68 @@ export function useChatflowInterface() {
       
     } catch (error) {
       console.error('[useChatflowInterface] Chatflow 提交失败:', error)
+      // 发生错误时停止执行跟踪
+      useChatflowExecutionStore.getState().setError(error instanceof Error ? error.message : '提交失败')
       throw error
     }
-  }, [chatInterface])
+  }, [chatInterface, startExecution])
+
+  // --- 监听 SSE 事件并更新节点状态 ---
+  useEffect(() => {
+    // 这里我们需要监听来自 useChatInterface 的 SSE 事件
+    // 由于 useChatInterface 可能没有直接暴露 SSE 事件监听器，
+    // 我们可能需要通过其他方式来获取节点状态更新
+    
+    // 临时方案：监听消息状态变化来推断节点状态
+    const { isWaitingForResponse } = chatInterface
+    
+    // 当开始等待响应时，添加一个通用的处理节点
+    if (isWaitingForResponse) {
+      const executionStore = useChatflowExecutionStore.getState()
+      
+      // 如果还没有节点，添加一个默认的处理节点
+      if (executionStore.nodes.length === 0) {
+        executionStore.addNode({
+          id: 'chatflow-processing',
+          title: 'Chatflow 处理',
+          status: 'running',
+          startTime: Date.now(),
+          description: '正在处理您的请求...',
+          type: 'chatflow'
+        })
+      }
+    } else {
+      // 当响应完成时，更新节点状态
+      const executionStore = useChatflowExecutionStore.getState()
+      const processingNode = executionStore.nodes.find(n => n.id === 'chatflow-processing')
+      
+      if (processingNode && processingNode.status === 'running') {
+        executionStore.updateNode('chatflow-processing', {
+          status: 'completed',
+          endTime: Date.now(),
+          description: '处理完成'
+        })
+        
+        // 延迟停止执行状态
+        setTimeout(() => {
+          executionStore.stopExecution()
+        }, 1000)
+      }
+    }
+  }, [chatInterface.isWaitingForResponse])
 
   // 返回扩展的接口
   return {
     ...chatInterface,
-    handleChatflowSubmit
+    handleChatflowSubmit,
+    // 暴露节点跟踪相关的状态和方法
+    nodeTracker: {
+      nodes: useChatflowExecutionStore(state => state.nodes),
+      isExecuting: useChatflowExecutionStore(state => state.isExecuting),
+      executionProgress: useChatflowExecutionStore(state => state.executionProgress),
+      error: useChatflowExecutionStore(state => state.error),
+      resetExecution
+    }
   }
 }
 

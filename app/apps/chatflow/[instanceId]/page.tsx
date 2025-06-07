@@ -24,6 +24,7 @@ import {
 import { DynamicSuggestedQuestions } from "@components/chat/dynamic-suggested-questions"
 import { ChatInput } from "@components/chat-input"
 import { ChatflowInputArea } from "@components/chatflow/chatflow-input-area"
+import { ChatflowNodeTracker } from "@components/chatflow/chatflow-node-tracker"
 import { useProfile } from "@lib/hooks/use-profile"
 import { NavBar } from "@components/nav-bar/nav-bar"
 import { useThemeColors } from "@lib/hooks/use-theme-colors"
@@ -53,6 +54,7 @@ export default function AppDetailPage() {
     handleStopProcessing,
     sendDirectMessage,
     handleChatflowSubmit,
+    nodeTracker
   } = useChatflowInterface()
   
   // --- BEGIN COMMENT ---
@@ -409,6 +411,15 @@ export default function AppDetailPage() {
                 messages={messages} 
                 isWaitingForResponse={isWaitingForResponse}
                 isLoadingInitial={false}
+              />
+              
+              {/* --- Chatflow 节点跟踪器 --- */}
+              <ChatflowNodeTracker
+                isVisible={nodeTracker.isExecuting || nodeTracker.nodes.length > 0}
+                className={cn(
+                  "fixed bottom-20 right-6 z-10 max-w-sm",
+                  "transition-all duration-300"
+                )}
               />
             </div>
           )}
