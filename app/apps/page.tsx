@@ -15,7 +15,10 @@ import {
   AppList, 
   AppLoading 
 } from "@components/apps"
-import { getDifyAppTypeInfo, getAllDifyAppTypes } from "@lib/types/dify-app-types"
+// --- BEGIN COMMENT ---
+// 🎯 移除Dify应用类型依赖 - 现在使用基于tag的分类系统
+// import { getDifyAppTypeInfo, getAllDifyAppTypes } from "@lib/types/dify-app-types"
+// --- END COMMENT ---
 import type { AppInstance } from "@components/apps/types"
 
 export default function AppsPage() {
@@ -111,16 +114,17 @@ export default function AppsPage() {
       const metadata = app.config?.app_metadata
       const difyParams = app.config?.dify_parameters
       
-      // 🎯 优化：从Dify应用类型获取更丰富的描述信息
+      // --- BEGIN COMMENT ---
+      // 🎯 重构：直接使用应用配置中的信息，移除对Dify应用类型映射的依赖
+      // 优先使用用户配置的描述信息，简化数据转换逻辑
+      // --- END COMMENT ---
       const difyAppType = metadata?.dify_apptype
-      const difyTypeInfo = difyAppType ? getDifyAppTypeInfo(difyAppType) : null
       
-      // 🎯 智能生成应用描述：优先使用配置的描述，然后根据应用类型生成
+      // --- BEGIN COMMENT ---
+      // 🎯 智能生成应用描述：优先使用配置的描述
+      // 移除对difyTypeInfo的依赖，使用更简单的fallback逻辑
+      // --- END COMMENT ---
       let description = metadata?.brief_description || app.description || difyParams?.opening_statement
-      
-      if (!description && difyTypeInfo) {
-        description = `${difyTypeInfo.description} - ${difyTypeInfo.features.join('、')}`
-      }
       
       if (!description) {
         description = '暂无描述'
@@ -132,9 +136,11 @@ export default function AppsPage() {
         description,
         appType: 'marketplace' as const,
         iconUrl: metadata?.icon_url,
-        // 🎯 优化：使用Dify应用类型作为主要分类
-        category: difyTypeInfo?.label || '其他',
-        difyAppType: difyAppType,
+        // --- BEGIN COMMENT ---
+        // 🎯 重构：移除category字段，改为完全基于tags进行分类
+        // category: metadata?.tags?.[0] || '其他', // 可选：使用第一个tag作为主分类
+        // --- END COMMENT ---
+        difyAppType: difyAppType, // 保留用于路由跳转
         tags: metadata?.tags || [],
         // 展示用的辅助信息
         isPopular: metadata?.is_common_model || false,
@@ -143,7 +149,10 @@ export default function AppsPage() {
       }
     })
 
-  // 🎯 重构分类逻辑：基于Dify应用类型 + 常用应用
+  // --- BEGIN COMMENT ---
+  // 🎯 重构分类逻辑：基于用户友好的tag分类，而非技术性的Dify应用类型
+  // 收集所有应用的tags，按使用频率和重要性动态生成分类
+  // --- END COMMENT ---
   const getDynamicCategories = () => {
     const categories = ['全部']
     
@@ -152,58 +161,105 @@ export default function AppsPage() {
       categories.push('常用应用')
     }
     
-    // 添加Dify应用类型分类
-    const appTypesInUse = new Set<string>()
+    // --- BEGIN COMMENT ---
+    // 🎯 收集所有应用中的tags，统计使用频率
+    // 优先显示使用频率高且用户关心的功能标签
+    // --- END COMMENT ---
+    const tagUsageMap = new Map<string, number>()
+    
     apps.forEach(app => {
-      if (app.difyAppType) {
-        appTypesInUse.add(app.difyAppType)
+      const tags = app.tags || []
+      tags.forEach(tag => {
+        tagUsageMap.set(tag, (tagUsageMap.get(tag) || 0) + 1)
+      })
+    })
+    
+    // --- BEGIN COMMENT ---
+    // 🎯 预定义标签优先级顺序 - 基于用户使用场景重要性
+    // 将用户最关心的功能分类排在前面
+    // --- END COMMENT ---
+    const tagPriorityOrder = [
+      // 核心功能类（用户最常用）
+      '写作', '翻译', '代码', '代码生成', '分析', '总结',
+      
+      // 内容类型
+      '文本生成', '对话', '助手', '文档', '数据分析',
+      
+      // 模型特性
+      '多模态', '对话模型', '推理模型', '文档模型',
+      
+      // 技术特性
+      '本地', '企业级', '快速响应', '高精度', '通用', '专业',
+      
+      // 工具类
+      '工具'
+    ]
+    
+    // --- BEGIN COMMENT ---
+    // 🎯 按优先级顺序添加存在的标签，确保重要标签排在前面
+    // 同时过滤掉使用频率过低的标签（可配置阈值）
+    // --- END COMMENT ---
+    const minUsageThreshold = 1 // 至少被1个应用使用才显示
+    
+    tagPriorityOrder.forEach(tag => {
+      const usageCount = tagUsageMap.get(tag) || 0
+      if (usageCount >= minUsageThreshold) {
+        categories.push(tag)
+        tagUsageMap.delete(tag) // 避免重复添加
       }
     })
     
-    // 按照预定义顺序添加应用类型
-    const allDifyTypes = getAllDifyAppTypes()
-    allDifyTypes.forEach(typeInfo => {
-      if (appTypesInUse.has(typeInfo.key)) {
-        categories.push(typeInfo.label)
-      }
-    })
+    // --- BEGIN COMMENT ---
+    // 🎯 添加其他未在优先级列表中的标签（按使用频率排序）
+    // 确保不遗漏用户自定义的有价值标签
+    // --- END COMMENT ---
+    const remainingTags = Array.from(tagUsageMap.entries())
+      .filter(([_, count]) => count >= minUsageThreshold)
+      .sort((a, b) => b[1] - a[1]) // 按使用频率降序
+      .map(([tag, _]) => tag)
     
-    // 添加其他分类（没有明确Dify类型的应用）
-    const hasOtherApps = apps.some(app => !app.difyAppType)
-    if (hasOtherApps) {
-      categories.push('其他')
-    }
+    categories.push(...remainingTags)
     
     return categories
   }
 
   const categories = getDynamicCategories()
 
-  // 🎯 优化过滤逻辑：支持Dify应用类型筛选
+  // --- BEGIN COMMENT ---
+  // 🎯 重构过滤逻辑：基于tag的用户友好分类筛选
+  // 支持直接根据应用的tags进行匹配，更贴近用户使用场景
+  // --- END COMMENT ---
   const filteredApps = apps.filter(app => {
     const matchesSearch = app.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     
-    // 🎯 新的分类匹配逻辑：基于Dify应用类型
+    // --- BEGIN COMMENT ---
+    // 🎯 新的分类匹配逻辑：基于tag的直接匹配
+    // 简化逻辑，直接检查应用的tags是否包含选定的分类
+    // --- END COMMENT ---
     let matchesCategory = false
     
     if (selectedCategory === "全部") {
       matchesCategory = true
     } else if (selectedCategory === "常用应用") {
       matchesCategory = favoriteApps.some(fav => fav.instanceId === app.instanceId)
-    } else if (selectedCategory === "其他") {
-      matchesCategory = !app.difyAppType
     } else {
-      // 检查是否匹配Dify应用类型
-      const difyTypeInfo = app.difyAppType ? getDifyAppTypeInfo(app.difyAppType) : null
-      matchesCategory = difyTypeInfo?.label === selectedCategory
+      // --- BEGIN COMMENT ---
+      // 🎯 直接检查应用的tags是否包含选定的分类标签
+      // 这比基于Dify应用类型的映射更直观和准确
+      // --- END COMMENT ---
+      const appTags = app.tags || []
+      matchesCategory = appTags.includes(selectedCategory)
     }
     
     return matchesSearch && matchesCategory
   })
 
-  // 🎯 优化排序逻辑：常用应用置顶，然后按应用类型分组
+  // --- BEGIN COMMENT ---
+  // 🎯 重构排序逻辑：常用应用置顶，然后按功能重要性和名称排序
+  // 移除对技术性Dify应用类型的依赖，基于用户使用偏好排序
+  // --- END COMMENT ---
   const sortedApps = [...filteredApps].sort((a, b) => {
     // 首先按是否为常用应用排序（常用应用置顶）
     const aIsFavorite = favoriteApps.some(fav => fav.instanceId === a.instanceId)
@@ -212,13 +268,24 @@ export default function AppsPage() {
     if (aIsFavorite && !bIsFavorite) return -1
     if (!aIsFavorite && bIsFavorite) return 1
     
-    // 然后按Dify应用类型排序
-    const typeOrder = ['chatbot', 'agent', 'chatflow', 'workflow', 'text-generation']
-    const aTypeIndex = a.difyAppType ? typeOrder.indexOf(a.difyAppType) : 999
-    const bTypeIndex = b.difyAppType ? typeOrder.indexOf(b.difyAppType) : 999
+    // --- BEGIN COMMENT ---
+    // 🎯 按功能标签重要性排序：核心功能 > 专业功能 > 其他
+    // 这比技术分类更符合用户的使用习惯
+    // --- END COMMENT ---
+    const getTagPriority = (tags: string[] = []) => {
+      const coreTags = ['写作', '翻译', '代码', '对话', '助手']
+      const professionalTags = ['分析', '总结', '文本生成', '数据分析']
+      
+      if (tags.some(tag => coreTags.includes(tag))) return 1 // 核心功能
+      if (tags.some(tag => professionalTags.includes(tag))) return 2 // 专业功能
+      return 3 // 其他功能
+    }
     
-    if (aTypeIndex !== bTypeIndex) {
-      return aTypeIndex - bTypeIndex
+    const aPriority = getTagPriority(a.tags)
+    const bPriority = getTagPriority(b.tags)
+    
+    if (aPriority !== bPriority) {
+      return aPriority - bPriority
     }
     
     // 最后按名称排序
