@@ -80,6 +80,24 @@ async function proxyToDify(
   const appId = params.appId;
   const slug = params.slug;
 
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：检查是否有临时配置（用于表单同步）
+  // 如果请求体中包含 _temp_config，则使用临时配置而不是数据库配置
+  // --- END COMMENT ---
+  let tempConfig: { apiUrl: string; apiKey: string } | null = null;
+  if (req.method === 'POST') {
+    try {
+      const body = await req.json();
+      if (body._temp_config && body._temp_config.apiUrl && body._temp_config.apiKey) {
+        tempConfig = body._temp_config;
+        console.log(`[App: ${appId}] [${req.method}] 检测到临时配置，将使用表单提供的配置`);
+      }
+    } catch (error) {
+      // 如果解析请求体失败，继续使用正常流程
+      console.log(`[App: ${appId}] [${req.method}] 无法解析请求体，使用正常配置流程`);
+    }
+  }
+
   // --- BEGIN OPTIMIZATION: Validate slug --- 
   // 检查 slug 是否有效，防止构造无效的目标 URL
   if (!slug || slug.length === 0) {
@@ -92,33 +110,36 @@ async function proxyToDify(
   // --- END OPTIMIZATION ---
 
   // --- BEGIN COMMENT ---
-  // 1. 获取特定 Dify 应用的配置。
-  //    `getDifyAppConfig` 函数现在从数据库获取 appId 对应的 apiKey 和 apiUrl。
-  //    如果数据库中没有找到配置，将返回 null。
+  // 1. 获取 Dify 应用配置
+  // 优先使用临时配置（表单同步），否则从数据库获取
   // --- END COMMENT ---
-  // --- BEGIN COMMENT ---
-  // 注意: 我们已经实现了从数据库获取配置的功能。
-  // getDifyAppConfig 内部实现已经更新为：
-  // 1. 首先检查缓存，如果有有效缓存则直接返回。
-  // 2. 连接数据库，根据传入的 appId 查询提供商、服务实例和 API 密钥。
-  // 3. 使用加密主密钥解密 API 密钥。
-  // 4. 返回配置并更新缓存。
-  // 这种方式提高了安全性，并支持集中管理多个 Dify 应用的凭据。
-  // --- END COMMENT ---
-  console.log(`[App: ${appId}] [${req.method}] Attempting to get configuration...`);
-  const difyConfig = await getDifyAppConfig(appId);
+  let difyApiKey: string;
+  let difyApiUrl: string;
+  let difyConfig: any = null;
 
-  // 2. 验证配置
-  if (!difyConfig) {
-    console.error(`[App: ${appId}] [${req.method}] Configuration not found.`);
-    // 返回 400 Bad Request，表明客户端提供的 appId 无效或未配置
-    return NextResponse.json(
-      { error: `Configuration for Dify app '${appId}' not found.` },
-      { status: 400 }
-    );
+  if (tempConfig) {
+    // 使用临时配置
+    console.log(`[App: ${appId}] [${req.method}] 使用临时配置`);
+    difyApiKey = tempConfig.apiKey;
+    difyApiUrl = tempConfig.apiUrl;
+  } else {
+    // 从数据库获取配置
+    console.log(`[App: ${appId}] [${req.method}] 从数据库获取配置...`);
+    difyConfig = await getDifyAppConfig(appId);
+
+    // 验证数据库配置
+    if (!difyConfig) {
+      console.error(`[App: ${appId}] [${req.method}] Configuration not found.`);
+      // 返回 400 Bad Request，表明客户端提供的 appId 无效或未配置
+      return NextResponse.json(
+        { error: `Configuration for Dify app '${appId}' not found.` },
+        { status: 400 }
+      );
+    }
+
+    difyApiKey = difyConfig.apiKey;
+    difyApiUrl = difyConfig.apiUrl;
   }
-
-  const { apiKey: difyApiKey, apiUrl: difyApiUrl } = difyConfig;
 
   // 再次检查获取到的 key 和 url 是否有效
   if (!difyApiKey || !difyApiUrl) {
@@ -130,7 +151,7 @@ async function proxyToDify(
 
   try {
     // 3. 构造目标 Dify URL
-    const slugPath = adjustApiPathByAppType(slug, difyConfig.appType);
+    const slugPath = adjustApiPathByAppType(slug, difyConfig?.appType);
     const targetUrl = `${difyApiUrl}/${slugPath}${req.nextUrl.search}`;
     console.log(`[App: ${appId}] [${req.method}] Proxying request to target URL: ${targetUrl}`);
 
@@ -149,7 +170,21 @@ async function proxyToDify(
 
     // 5. 执行 fetch 请求转发
     // 准备请求体和头部，处理特殊情况
-    let finalBody: BodyInit | null = req.method !== 'GET' && req.method !== 'HEAD' ? req.body : null;
+    let finalBody: BodyInit | null = null;
+    
+    // --- BEGIN COMMENT ---
+    // 🎯 处理请求体：如果使用临时配置，需要移除 _temp_config 字段
+    // --- END COMMENT ---
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      if (tempConfig) {
+        // 使用临时配置时，请求体应该为空（因为这些是 info/parameters 查询请求）
+        finalBody = null;
+      } else {
+        // 正常情况下使用原始请求体
+        finalBody = req.body;
+      }
+    }
+    
     const finalHeaders = new Headers(headers);
     const originalContentType = req.headers.get('Content-Type');
 
@@ -173,8 +208,13 @@ async function proxyToDify(
     }
 
     // 准备 fetch 选项
+    // --- BEGIN COMMENT ---
+    // 🎯 临时配置请求应该使用 GET 方法调用 Dify API
+    // --- END COMMENT ---
+    const actualMethod = tempConfig ? 'GET' : req.method;
+    
     const fetchOptions: RequestInit & { duplex: 'half' } = {
-        method: req.method,
+        method: actualMethod,
         headers: finalHeaders,
         body: finalBody,
         redirect: 'manual',

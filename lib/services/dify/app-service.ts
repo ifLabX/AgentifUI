@@ -389,18 +389,29 @@ export async function getDifyAppParametersWithConfig(
     throw new Error('API URL 和 API Key 都是必需的');
   }
   
-  // 构造直接的Dify API URL
-  const targetUrl = `${apiUrl}/parameters`;
+  // --- BEGIN COMMENT ---
+  // 🎯 架构修复：通过临时代理方式调用，避免直接调用外部API
+  // 创建一个临时的服务实例配置，通过代理服务器调用
+  // --- END COMMENT ---
   
   try {
-    console.log(`[Dify App Service] 使用表单配置同步参数: ${appId}`);
+    console.log(`[Dify App Service] 使用表单配置通过代理同步参数: ${appId}`);
     
-    const response = await fetch(targetUrl, {
-      method: 'GET',
+    // 通过代理服务器调用，但使用特殊的临时配置方式
+    const slug = 'parameters';
+    const proxyUrl = `/api/dify/${appId}/${slug}`;
+    
+    const response = await fetch(proxyUrl, {
+      method: 'POST', // 使用POST传递临时配置
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      }
+      },
+      body: JSON.stringify({
+        _temp_config: {
+          apiUrl,
+          apiKey
+        }
+      })
     });
 
     if (!response.ok) {
@@ -462,18 +473,29 @@ export async function getDifyAppInfoWithConfig(
     throw new Error('API URL 和 API Key 都是必需的');
   }
   
-  // 构造直接的Dify API URL
-  const targetUrl = `${apiUrl}/info`;
+  // --- BEGIN COMMENT ---
+  // 🎯 架构修复：通过临时代理方式调用，避免直接调用外部API
+  // 创建一个临时的服务实例配置，通过代理服务器调用
+  // --- END COMMENT ---
   
   try {
-    console.log(`[Dify App Service] 使用表单配置同步基本信息: ${appId}`);
+    console.log(`[Dify App Service] 使用表单配置通过代理同步基本信息: ${appId}`);
     
-    const response = await fetch(targetUrl, {
-      method: 'GET',
+    // 通过代理服务器调用，但使用特殊的临时配置方式
+    const slug = 'info';
+    const proxyUrl = `/api/dify/${appId}/${slug}`;
+    
+    const response = await fetch(proxyUrl, {
+      method: 'POST', // 使用POST传递临时配置
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      }
+      },
+      body: JSON.stringify({
+        _temp_config: {
+          apiUrl,
+          apiKey
+        }
+      })
     });
 
     if (!response.ok) {
