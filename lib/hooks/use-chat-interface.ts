@@ -43,6 +43,18 @@ import { getConversationByExternalId } from '@lib/db/conversations';
 // --- END COMMENT ---
 const CHUNK_APPEND_INTERVAL = 30; 
 
+// --- BEGIN COMMENT ---
+// 🎯 多提供商支持：聊天接口现在支持多提供商环境
+// ensureAppReady 和 validateConfig 方法已更新为使用默认提供商 fallback
+// 在 /chat/new 发送消息时会自动选择合适的提供商和应用
+// --- END COMMENT ---
+
+interface ConversationState {
+  difyConversationId: string | null;
+  dbConversationUUID: string | null;
+  conversationAppId: string | null;
+}
+
 export function useChatInterface(onNodeEvent?: (event: DifySseNodeStartedEvent | DifySseNodeFinishedEvent | DifySseIterationStartedEvent | DifySseIterationNextEvent | DifySseIterationCompletedEvent | DifySseParallelBranchStartedEvent | DifySseParallelBranchFinishedEvent | DifySseLoopStartedEvent | DifySseLoopNextEvent | DifySseLoopCompletedEvent) => void) {
   const router = useRouter();
   const currentPathname = usePathname();

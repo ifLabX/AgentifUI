@@ -94,6 +94,24 @@ export async function getProviderByName(name: string): Promise<Result<Provider |
 }
 
 /**
+ * 获取默认服务提供商（优化版本）
+ * @returns 默认服务提供商对象的Result，如果未找到则返回null
+ */
+export async function getDefaultProvider(): Promise<Result<Provider | null>> {
+  return dataService.findOne<Provider>(
+    'providers',
+    { 
+      is_default: true,
+      is_active: true 
+    },
+    {
+      cache: true,
+      cacheTTL: 10 * 60 * 1000, // 10分钟缓存
+    }
+  );
+}
+
+/**
  * 创建新的服务提供商（优化版本）
  * @param provider 服务提供商对象
  * @returns 创建的服务提供商对象Result，如果创建失败则返回错误
@@ -177,6 +195,15 @@ export async function getProviderByIdLegacy(id: string): Promise<Provider | null
  */
 export async function getProviderByNameLegacy(name: string): Promise<Provider | null> {
   const result = await getProviderByName(name);
+  return result.success ? result.data : null;
+}
+
+/**
+ * 获取默认服务提供商（兼容版本）
+ * @deprecated 请使用新版本并处理Result类型
+ */
+export async function getDefaultProviderLegacy(): Promise<Provider | null> {
+  const result = await getDefaultProvider();
   return result.success ? result.data : null;
 }
 

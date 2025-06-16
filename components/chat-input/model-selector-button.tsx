@@ -10,6 +10,12 @@ import { cn } from '@lib/utils';
 import { ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 
 // --- BEGIN COMMENT ---
+// 🎯 多提供商支持：模型选择器现在支持来自不同提供商的模型
+// 过滤逻辑基于 app_type === 'model'，不再限制特定提供商
+// 保持向后兼容，现有的 Dify 模型仍然正常工作
+// --- END COMMENT ---
+
+// --- BEGIN COMMENT ---
 // 从chat-input.tsx导入全局焦点管理器
 // --- END COMMENT ---
 import { useFocusManager } from './chat-input';
@@ -41,7 +47,8 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
 
   // --- BEGIN COMMENT ---
   // 🎯 过滤出模型类型的应用
-  // 只保留配置了app_type为model的应用
+  // 支持多提供商：只要 app_type === 'model' 就显示，不限制提供商
+  // 这样可以显示来自不同提供商（Dify、OpenAI、Claude等）的模型
   // --- END COMMENT ---
   const modelApps = apps.filter(app => {
     const metadata = app.config?.app_metadata;

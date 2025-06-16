@@ -16,8 +16,9 @@ import {
   AppLoading 
 } from "@components/apps"
 // --- BEGIN COMMENT ---
-// 🎯 移除Dify应用类型依赖 - 现在使用基于tag的分类系统
-// import { getDifyAppTypeInfo, getAllDifyAppTypes } from "@lib/types/dify-app-types"
+// 🎯 多提供商支持：应用市场现在支持来自不同提供商的应用
+// 过滤逻辑基于 app_type === 'marketplace'，不再限制特定提供商
+// 这样可以显示来自不同提供商的应用市场应用
 // --- END COMMENT ---
 import type { AppInstance } from "@components/apps/types"
 
@@ -94,12 +95,13 @@ export default function AppsPage() {
   }
 
   // 🎯 将原始应用数据转换为应用市场格式
-  // 过滤出应用市场类型的应用，并从config中提取显示信息
+  // 🎯 多提供商支持：过滤出应用市场类型的应用，支持所有提供商
+  // 过滤逻辑不再限制特定提供商，只要是 marketplace 类型就显示
   const apps: AppInstance[] = rawApps
     .filter(app => {
       const metadata = app.config?.app_metadata
       
-      // 🎯 效仿模型选择器的过滤逻辑：只保留marketplace类型
+      // 🎯 支持多提供商：只要 app_type === 'marketplace' 就显示
       if (metadata) {
         return metadata.app_type === 'marketplace' || metadata.is_marketplace_app === true
       }

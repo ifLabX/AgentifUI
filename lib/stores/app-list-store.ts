@@ -3,20 +3,21 @@ import type { DifyAppParametersResponse } from '@lib/services/dify/types';
 import type { ServiceInstanceConfig, UserAccessibleApp, AppVisibility } from '@lib/types/database';
 
 // --- BEGIN COMMENT ---
-// 简化的应用信息接口：移除permission_level字段
+// 🎯 应用信息接口，包含应用的基本信息和配置
+// 新增：provider_name 字段用于多提供商支持
 // --- END COMMENT ---
-interface AppInfo {
+export interface AppInfo {
   id: string;
   name: string;
   instance_id: string;
   display_name?: string;
   description?: string;
   config?: ServiceInstanceConfig;
-  // permission_level?: string; // ❌ 已删除
-  usage_quota?: number | null;
+  usage_quota?: number;
   used_count?: number;
-  quota_remaining?: number | null;
+  quota_remaining?: number;
   visibility?: AppVisibility;
+  provider_name?: string; // 🎯 新增：提供商名称，用于多提供商支持
 }
 
 // 🎯 新增：应用参数缓存接口
@@ -143,10 +144,12 @@ export const useAppListStore = create<AppListState>((set, get) => ({
           display_name: userApp.display_name || undefined,
           description: userApp.description || undefined,
           config: userApp.config,
-          usage_quota: userApp.usage_quota,
+          usage_quota: userApp.usage_quota ?? undefined,
           used_count: userApp.used_count,
-          quota_remaining: userApp.quota_remaining,
-          visibility: userApp.visibility
+          quota_remaining: userApp.quota_remaining ?? undefined,
+          visibility: userApp.visibility,
+          // 🎯 暂时注释掉，等待数据库层面支持
+          // provider_name: userApp.provider_name
         };
         
         // 🔧 使用service_instance_id作为唯一键去重
@@ -230,7 +233,9 @@ export const useAppListStore = create<AppListState>((set, get) => ({
       // --- END COMMENT ---
       const apps: AppInfo[] = rawApps.map(app => ({
         ...app,
-        visibility: app.visibility as AppVisibility || 'public'
+        visibility: app.visibility as AppVisibility || 'public',
+        // 🎯 暂时注释掉，等待数据库层面支持
+        // provider_name: app.provider_name
       }));
       
       set({ 
@@ -297,10 +302,12 @@ export const useAppListStore = create<AppListState>((set, get) => ({
           display_name: app.display_name || undefined,
           description: app.description || undefined,
           config: app.config,
-          usage_quota: app.usage_quota,
+          usage_quota: app.usage_quota ?? undefined,
           used_count: app.used_count,
-          quota_remaining: app.quota_remaining,
-          visibility: app.visibility
+          quota_remaining: app.quota_remaining ?? undefined,
+          visibility: app.visibility,
+          // 🎯 暂时注释掉，等待数据库层面支持
+          // provider_name: app.provider_name
         };
         
         // 🔧 关键修复：使用service_instance_id作为唯一键去重

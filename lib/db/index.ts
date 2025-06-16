@@ -63,6 +63,7 @@ export {
   getActiveProviders,
   getProviderById,
   getProviderByName,
+  getDefaultProvider,
   createProvider,
   updateProvider,
   deleteProvider
