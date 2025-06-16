@@ -92,9 +92,9 @@ export const getDifyAppConfig = async (
 };
 
 /**
- * 从数据库获取 Dify 应用配置
- * @param appId Dify 应用 ID
- * @returns Dify 应用配置
+ * 从数据库获取应用配置（支持多提供商）
+ * @param appId 应用 ID
+ * @returns 应用配置
  */
 async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig | null> {
   // 初始化 Supabase 客户端
@@ -109,54 +109,69 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
     return null; 
   }
   
-  // 1. 查找 Dify 提供商
-  const { data: provider, error: providerError } = await supabase
-    .from('providers')
-    .select('id, base_url')
-    .eq('name', 'Dify')
-    .single();
-    
-  if (providerError || !provider) {
-    console.error('Dify provider not found in database');
-    return null;
-  }
+  // --- BEGIN COMMENT ---
+  // 🎯 重构：支持多提供商，在所有活跃提供商中查找应用实例
+  // 不再硬编码只查找 Dify 提供商
+  // --- END COMMENT ---
   
-  // 2. 查找对应的服务实例
+  // 1. 直接查找对应的服务实例（包含提供商信息）
   const { data: instance, error: instanceError } = await supabase
     .from('service_instances')
-    .select('*')
-    .eq('provider_id', provider.id)
+    .select(`
+      *,
+      providers!inner(
+        id,
+        name,
+        base_url,
+        is_active
+      )
+    `)
     .eq('instance_id', appId)
+    .eq('providers.is_active', true)
     .single();
     
-  // --- BEGIN COMMENT ---
-  // 🎯 修复：移除对"default"的特殊处理，统一逻辑
-  // 如果没找到特定实例，都尝试使用is_default=true的实例作为fallback
-  // --- END COMMENT ---
   let serviceInstance = instance;
+  let provider = instance?.providers;
   
-  // 如果没有找到指定的实例，尝试使用默认实例作为fallback
+  // 如果没有找到指定的实例，尝试使用默认提供商的默认实例作为fallback
   if (instanceError || !serviceInstance) {
-    console.log(`[获取Dify配置] 未找到实例ID为 "${appId}" 的服务实例，尝试使用默认实例`);
+    console.log(`[获取应用配置] 未找到实例ID为 "${appId}" 的服务实例，尝试使用默认提供商的默认实例`);
     
+    // 获取默认提供商
+    const { data: defaultProvider, error: defaultProviderError } = await supabase
+      .from('providers')
+      .select('id, name, base_url')
+      .eq('is_default', true)
+      .eq('is_active', true)
+      .single();
+      
+    if (defaultProviderError || !defaultProvider) {
+      console.error(`[获取应用配置] 未找到默认提供商，appId: ${appId}`);
+      return null;
+    }
+    
+    // 获取默认提供商的默认实例
     const { data: defaultInstance, error: defaultInstanceError } = await supabase
       .from('service_instances')
       .select('*')
-      .eq('provider_id', provider.id)
+      .eq('provider_id', defaultProvider.id)
       .eq('is_default', true)
       .single();
       
     if (defaultInstanceError || !defaultInstance) {
-      console.error(`[获取Dify配置] 未找到默认服务实例，appId: ${appId}`);
+      console.error(`[获取应用配置] 未找到默认提供商的默认服务实例，appId: ${appId}`);
       return null;
     }
     
     serviceInstance = defaultInstance;
-    console.log(`[获取Dify配置] 使用默认实例: ${defaultInstance.instance_id} (原请求: ${appId})`);
+    provider = defaultProvider;
+    console.log(`[获取应用配置] 使用默认提供商 "${provider.name}" 的默认实例: ${defaultInstance.instance_id} (原请求: ${appId})`);
+  } else {
+    console.log(`[获取应用配置] 找到应用实例: ${appId}，提供商: ${provider.name}`);
   }
   
-  if (!serviceInstance) {
-    console.error(`No service instance found for Dify app "${appId}"`);
+  if (!serviceInstance || !provider) {
+    console.error(`No service instance or provider found for app "${appId}"`);
     return null;
   }
   
@@ -176,7 +191,7 @@ async function getDifyConfigFromDatabase(appId: string): Promise<DifyAppConfig |
     .single();
     
   if (apiKeyError || !apiKey) {
-    console.error('No API key found for Dify');
+    console.error(`No API key found for app "${appId}"`);
     return null;
   }
   

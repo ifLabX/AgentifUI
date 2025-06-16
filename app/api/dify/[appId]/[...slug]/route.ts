@@ -83,18 +83,30 @@ async function proxyToDify(
   // --- BEGIN COMMENT ---
   // 🎯 新增：检查是否有临时配置（用于表单同步）
   // 如果请求体中包含 _temp_config，则使用临时配置而不是数据库配置
+  // 🎯 修复：避免重复读取请求体，先克隆请求以保留原始请求体
   // --- END COMMENT ---
   let tempConfig: { apiUrl: string; apiKey: string } | null = null;
+  let requestBody: any = null;
+  
   if (req.method === 'POST') {
     try {
-      const body = await req.json();
+      // 克隆请求以避免消费原始请求体
+      const clonedReq = req.clone();
+      const body = await clonedReq.json();
+      requestBody = body; // 保存解析后的请求体
+      
       if (body._temp_config && body._temp_config.apiUrl && body._temp_config.apiKey) {
         tempConfig = body._temp_config;
         console.log(`[App: ${appId}] [${req.method}] 检测到临时配置，将使用表单提供的配置`);
+        
+        // 移除临时配置字段，避免传递给 Dify API
+        const { _temp_config, ...cleanBody } = body;
+        requestBody = cleanBody;
       }
     } catch (error) {
       // 如果解析请求体失败，继续使用正常流程
       console.log(`[App: ${appId}] [${req.method}] 无法解析请求体，使用正常配置流程`);
+      requestBody = null;
     }
   }
 
@@ -173,14 +185,17 @@ async function proxyToDify(
     let finalBody: BodyInit | null = null;
     
     // --- BEGIN COMMENT ---
-    // 🎯 处理请求体：如果使用临时配置，需要移除 _temp_config 字段
+    // 🎯 处理请求体：使用之前解析和清理过的请求体
     // --- END COMMENT ---
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       if (tempConfig) {
         // 使用临时配置时，请求体应该为空（因为这些是 info/parameters 查询请求）
         finalBody = null;
+      } else if (requestBody !== null) {
+        // 使用之前解析过的请求体
+        finalBody = JSON.stringify(requestBody);
       } else {
-        // 正常情况下使用原始请求体
+        // 如果没有解析过请求体，使用原始请求体
         finalBody = req.body;
       }
     }
