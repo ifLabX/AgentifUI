@@ -185,48 +185,57 @@ export function useAutoAddFavoriteApp() {
     console.log(`[addToFavorites] 添加应用到常用列表: ${instanceId}`)
     
     try {
-      // 🎯 修复：先获取Dify提供商的ID，然后使用providerId查询服务实例
-      const { getProviderByName } = await import('@lib/db/providers')
-      const providerResult = await getProviderByName('Dify')
+      // --- BEGIN COMMENT ---
+      // 🎯 重构：支持多提供商，在所有活跃提供商中查找应用实例
+      // 不再硬编码只查找 Dify 提供商
+      // --- END COMMENT ---
+      const { createClient } = await import('@lib/supabase/client')
+      const supabase = createClient()
       
-      if (!providerResult.success || !providerResult.data) {
-        console.error(`[addToFavorites] 未找到Dify提供商`)
+      // 直接查找应用实例（包含提供商信息）
+      const { data: instance, error: instanceError } = await supabase
+        .from('service_instances')
+        .select(`
+          *,
+          providers!inner(
+            id,
+            name,
+            is_active
+          )
+        `)
+        .eq('instance_id', instanceId)
+        .eq('providers.is_active', true)
+        .single()
+      
+      if (instanceError || !instance) {
+        console.error(`[addToFavorites] 查询应用信息失败: ${instanceId}`, instanceError)
         return
       }
       
-      const providerId = providerResult.data.id
+      // 处理查找到的应用实例
+      const appMetadata = instance.config?.app_metadata
+      console.log(`[addToFavorites] 找到应用实例: ${instanceId}，提供商: ${instance.providers?.name}`)
       
-      // 获取应用信息
-      const { getServiceInstanceByInstanceId } = await import('@lib/db/service-instances')
-      const result = await getServiceInstanceByInstanceId(providerId, instanceId)
+      // 🎯 关键修复：只添加marketplace类型的应用，跳过model类型
+      const appType = appMetadata?.app_type || 'marketplace'
       
-      if (result.success && result.data) {
-        const instance = result.data
-        const appMetadata = instance.config?.app_metadata
-        
-        // 🎯 关键修复：只添加marketplace类型的应用，跳过model类型
-        const appType = appMetadata?.app_type || 'marketplace'
-        
-        if (appType !== 'marketplace') {
-          console.log(`[addToFavorites] 跳过非marketplace应用: ${instance.display_name || instanceId} (类型: ${appType})`)
-          return
-        }
-
-        const favoriteApp = {
-          instanceId: instance.instance_id,
-          displayName: instance.display_name || instance.instance_id,
-          description: instance.description || appMetadata?.brief_description,
-          iconUrl: appMetadata?.icon_url,
-          appType: 'marketplace' as const,
-          dify_apptype: appMetadata?.dify_apptype || 'chatflow'
-        }
-        
-        addFavoriteApp(favoriteApp)
-        
-        console.log(`[addToFavorites] 成功添加到常用应用: ${instance.display_name || instanceId}`)
-      } else {
-        console.error(`[addToFavorites] 查询应用信息失败: ${instanceId}`)
+      if (appType !== 'marketplace') {
+        console.log(`[addToFavorites] 跳过非marketplace应用: ${instance.display_name || instanceId} (类型: ${appType})`)
+        return
       }
+
+      const favoriteApp = {
+        instanceId: instance.instance_id,
+        displayName: instance.display_name || instance.instance_id,
+        description: instance.description || appMetadata?.brief_description,
+        iconUrl: appMetadata?.icon_url,
+        appType: 'marketplace' as const,
+        dify_apptype: appMetadata?.dify_apptype || 'chatflow'
+      }
+      
+      addFavoriteApp(favoriteApp)
+      
+      console.log(`[addToFavorites] 成功添加到常用应用: ${instance.display_name || instanceId}`)
     } catch (error) {
       console.error(`[addToFavorites] 添加到常用应用失败:`, error instanceof Error ? error.message : String(error))
     }
