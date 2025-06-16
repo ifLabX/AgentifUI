@@ -16,20 +16,28 @@ export async function getAllDifyApps(): Promise<Array<{
   visibility?: string;
 }>> {
   try {
-    // 获取Dify提供商
-    const providerResult = await getProviderByName('Dify');
-    if (!providerResult.success || !providerResult.data) {
-      throw new Error('未找到Dify提供商');
-    }
-
-    // 获取所有Dify服务实例（包括visibility字段）
+    // --- BEGIN COMMENT ---
+    // 🎯 重构：支持多提供商，获取所有活跃提供商的应用实例
+    // --- END COMMENT ---
     const { createClient } = await import('@lib/supabase/client');
     const supabase = createClient();
     
     const { data: instances, error } = await supabase
       .from('service_instances')
-      .select('id, instance_id, display_name, description, config, visibility')
-      .eq('provider_id', providerResult.data.id)
+      .select(`
+        id, 
+        instance_id, 
+        display_name, 
+        description, 
+        config, 
+        visibility,
+        providers!inner(
+          id,
+          name,
+          is_active
+        )
+      `)
+      .eq('providers.is_active', true)
       .order('display_name');
       
     if (error) {
@@ -47,7 +55,7 @@ export async function getAllDifyApps(): Promise<Array<{
     })) || [];
     
   } catch (error) {
-    console.error('获取Dify应用列表失败:', error);
+    console.error('获取应用列表失败:', error);
     throw error;
   }
 }
@@ -66,20 +74,28 @@ export async function getPublicDifyApps(): Promise<Array<{
   visibility?: string;
 }>> {
   try {
-    // 获取Dify提供商
-    const providerResult = await getProviderByName('Dify');
-    if (!providerResult.success || !providerResult.data) {
-      throw new Error('未找到Dify提供商');
-    }
-
-    // 只获取公开的Dify服务实例
+    // --- BEGIN COMMENT ---
+    // 🎯 重构：支持多提供商，获取所有活跃提供商的公开应用实例
+    // --- END COMMENT ---
     const { createClient } = await import('@lib/supabase/client');
     const supabase = createClient();
     
     const { data: instances, error } = await supabase
       .from('service_instances')
-      .select('id, instance_id, display_name, description, config, visibility')
-      .eq('provider_id', providerResult.data.id)
+      .select(`
+        id, 
+        instance_id, 
+        display_name, 
+        description, 
+        config, 
+        visibility,
+        providers!inner(
+          id,
+          name,
+          is_active
+        )
+      `)
+      .eq('providers.is_active', true)
       .in('visibility', ['public']) // 只获取公开应用
       .order('display_name');
       
@@ -98,7 +114,7 @@ export async function getPublicDifyApps(): Promise<Array<{
     })) || [];
     
   } catch (error) {
-    console.error('获取公开Dify应用列表失败:', error);
+    console.error('获取公开应用列表失败:', error);
     throw error;
   }
 }

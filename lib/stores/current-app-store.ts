@@ -23,26 +23,19 @@ interface CurrentAppState {
 }
 
 // --- BEGIN COMMENT ---
-// 🎯 重构：移除硬编码，使用默认提供商作为 fallback
+// 🎯 重构：完全移除硬编码，仅依赖数据库的 is_default 字段
 // 获取默认提供商的辅助函数，支持多提供商环境
 // --- END COMMENT ---
 async function getDefaultProviderForApp(): Promise<Provider> {
-  // 首先尝试获取系统默认提供商
+  // 获取系统默认提供商（基于 is_default 字段）
   const defaultProviderResult = await getDefaultProvider();
   
   if (defaultProviderResult.success && defaultProviderResult.data) {
     return defaultProviderResult.data;
   }
   
-  // 如果没有默认提供商，尝试获取 Dify 提供商作为 fallback
-  const difyProviderResult = await getProviderByName('Dify');
-  
-  if (difyProviderResult.success && difyProviderResult.data) {
-    return difyProviderResult.data;
-  }
-  
-  // 如果 Dify 也不存在，抛出错误
-  throw new Error('未找到可用的提供商。请确保至少有一个活跃的提供商，并设置为默认提供商。');
+  // 如果没有设置默认提供商，抛出错误要求管理员配置
+  throw new Error('未找到默认提供商。请在管理面板中设置一个提供商为默认提供商。');
 }
 
 export const useCurrentAppStore = create<CurrentAppState>()(
