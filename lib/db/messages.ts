@@ -139,6 +139,7 @@ export function chatMessageToDbMessage(
  * @param status 消息状态
  * @param errorMessage 错误信息
  * @returns 保存后的消息对象Result
+ * 🎯 优化：移除metadata.sequence_index，使用数据库字段
  */
 export async function createPlaceholderAssistantMessage(
   conversationId: string,
@@ -147,12 +148,16 @@ export async function createPlaceholderAssistantMessage(
 ): Promise<Result<Message>> {
   console.log(`[createPlaceholderAssistantMessage] 创建占位助手消息，对话ID=${conversationId}`);
   
+  // --- BEGIN COMMENT ---
+  // 🎯 优化：移除metadata中的sequence_index
+  // sequence_order字段会在saveMessage中自动设置为1（助手消息）
+  // --- END COMMENT ---
   return saveMessage({
     conversation_id: conversationId,
     user_id: null,
     role: 'assistant',
     content: errorMessage || '助手消息生成失败',
-    metadata: { error: true, errorMessage, sequence_index: 1 },
+    metadata: { error: true, errorMessage }, // 🎯 移除sequence_index
     status
   });
 }

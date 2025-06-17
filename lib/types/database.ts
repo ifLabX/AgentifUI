@@ -137,10 +137,12 @@ export interface Message {
   // external_id: Dify 中的消息 ID
   // token_count: 消息的 token 数量，用于统计使用量
   // is_synced: 消息是否已同步到 Dify
+  // sequence_order: 消息序列顺序，用于优化排序性能（0=用户消息，1=助手消息，2=系统消息）
   // --- END COMMENT ---
   external_id: string | null;
   token_count: number | null;
   is_synced: boolean;
+  sequence_order: number;
 }
 
 // API密钥管理

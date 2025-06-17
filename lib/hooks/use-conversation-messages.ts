@@ -153,54 +153,25 @@ export function useConversationMessages() {
     return null;
   }, [pathname]);
   
-  /**
-   * 按创建时间对消息进行排序，确保消息顺序正确
-   */
-  const sortMessagesByTime = useCallback((messages: Message[]): Message[] => {
-    // 首先按创建时间排序
-    // 如果创建时间相同，按sequence_index排序作为第二顺序
-    // 如果上述均相同，按ID排序确保稳定性
-    return [...messages].sort((a, b) => {
-      // 获取聊天窗口的创建时间
-      const timeA = new Date(a.created_at).getTime();
-      const timeB = new Date(b.created_at).getTime();
-      
-      // 计算时间差的绝对值
-      const timeDiff = Math.abs(timeA - timeB);
-      
-      // 如果时间相差在一秒内，认为可能是同一轮对话的消息
-      // 此时优先使用sequence_index排序
-      if (timeDiff < 1000) {
-        // 获取序列索引
-        const seqA = a.metadata?.sequence_index ?? (a.role === 'user' ? 0 : 1);
-        const seqB = b.metadata?.sequence_index ?? (b.role === 'user' ? 0 : 1);
-        
-        if (seqA !== seqB) {
-          return seqA - seqB; // 用户消息(0)在前，助手消息(1)在后
-        }
-      }
-      
-      // 时间差超过阈值或sequence_index相同，按时间排序
-      if (timeA !== timeB) {
-        return timeA - timeB;
-      }
-      
-      // 最后按ID排序确保稳定性
-      return a.id.localeCompare(b.id);
-    });
-  }, []);
+    // --- BEGIN COMMENT ---
+  // 🎯 优化：简化排序逻辑，数据库已提供正确排序
+  // 移除复杂的客户端排序，依赖数据库层的高性能排序
+  // --- END COMMENT ---
   
   /**
-   * 确保消息以正确的顺序组织，并且用户-助手消息对保持合理的顺序
+   * 组织消息顺序（已优化）
+   * 🎯 由于数据库查询已经按照created_at、sequence_order、id进行了正确排序，
+   * 客户端不再需要复杂的排序逻辑，直接返回即可
    */
   const organizeMessages = useCallback((messages: Message[]): Message[] => {
-    // 先按创建时间排序
-    const sortedMessages = sortMessagesByTime(messages);
-    
-    // stableMessages中已经考虑了sequence_index对于时间接近的消息
-    // 所以这里可以直接返回排序后的结果
-    return sortedMessages;
-  }, [sortMessagesByTime]);
+    // --- BEGIN COMMENT ---
+    // 🎯 性能优化：数据库已经提供了正确的排序
+    // 按照 created_at ASC, sequence_order ASC, id DESC 的顺序
+    // 这里直接返回，避免额外的客户端排序开销
+    // --- END COMMENT ---
+    console.log(`[useConversationMessages] 消息已在数据库层排序，跳过客户端排序，消息数量: ${messages.length}`);
+    return messages;
+  }, []);
   
   /**
    * 从Dify对话ID获取数据库对话ID（使用新的优化接口）

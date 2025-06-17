@@ -671,8 +671,9 @@ export function useChatInterface(onNodeEvent?: (event: DifySseNodeStartedEvent |
               frontend_metadata: {
                 stopped_manually: existingMessage?.metadata?.stopped_manually,
                 stopped_at: existingMessage?.metadata?.stopped_at,
-                attachments: existingMessage?.metadata?.attachments,
-                sequence_index: existingMessage?.metadata?.sequence_index || 1
+                attachments: existingMessage?.metadata?.attachments
+                // 🎯 优化：移除sequence_index，现在使用数据库字段sequence_order
+                // sequence_index: existingMessage?.metadata?.sequence_index || 1
               }
             };
             
