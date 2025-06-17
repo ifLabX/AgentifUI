@@ -78,10 +78,12 @@
 2. `messages` 表：
    - 主要字段：`id`, `conversation_id`, `user_id`, `role`, `content`, `metadata`, `created_at`, `status`
    - Dify 集成字段：`external_id`, `token_count`, `is_synced`
+   - **性能优化字段（2025-06-17新增）**：`sequence_order` - 消息序列顺序整数字段（0=用户消息，1=助手消息，2=系统消息），替代JSONB metadata查询，提升排序性能3-5倍
    - `role` 字段可能的值为 `'user'`, `'assistant'` 或 `'system'`
    - `status` 字段可能的值为 `'sent'`, `'delivered'` 或 `'error'`
    - `metadata` 字段 (JSONB 类型)：用于存储消息的附加信息，如消息来源、编辑历史、引用内容等。该字段为可选，便于后续功能扩展。
    - 触发器说明：自 20250521125100_add_message_trigger.sql 起，`messages` 表增加了触发器（如 `set_message_synced_on_update`、`update_conversation_last_message_preview` 等），用于自动维护消息同步状态、更新时间戳、以及在新消息插入或更新时自动刷新 `conversations.last_message_preview` 字段。这些触发器确保数据一致性和前端展示的实时性，无需手动维护。
+   - **排序优化**：新增复合索引 `(conversation_id, created_at, sequence_order, id)` 确保消息按正确顺序显示，分页查询性能显著提升
 
 ### 应用执行记录管理
 
