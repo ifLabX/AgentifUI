@@ -79,17 +79,17 @@ export class MessageService {
       }
 
       // --- BEGIN COMMENT ---
-      // 🎯 优化查询：使用sequence_order字段替代JSONB查询
-      // 提升查询性能3-5倍，特别是在大数据量情况下
+      // 🎯 修复：使用sequence_order字段替代JSONB查询，并确保正确排序
+      // 按时间正序、sequence_order正序、ID正序，确保分页时消息顺序正确
       // --- END COMMENT ---
       // 构建查询
       let query = dataService['supabase']
         .from('messages')
         .select('*')
         .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
         .order('sequence_order', { ascending: true }) // 🎯 优化：使用整数字段排序
-        .order('id', { ascending: false }); // 保证排序稳定性
+        .order('id', { ascending: true });
 
       // 应用游标条件
       if (cursorData) {
@@ -158,17 +158,17 @@ export class MessageService {
     const { cache = true } = options;
     
     // --- BEGIN COMMENT ---
-    // 🎯 使用自定义查询以支持多字段排序
-    // 先按时间倒序，再按sequence_order正序，最后按ID倒序确保稳定性
+    // 🎯 修复：使用正确的排序顺序
+    // 按时间正序、sequence_order正序、ID正序，确保消息按正确的时间线显示
     // --- END COMMENT ---
          return dataService.query(async () => {
        const { data: messages, error } = await dataService['supabase']
          .from('messages')
          .select('*')
          .eq('conversation_id', conversationId)
-         .order('created_at', { ascending: false })
+         .order('created_at', { ascending: true })
          .order('sequence_order', { ascending: true })
-         .order('id', { ascending: false })
+         .order('id', { ascending: true })
          .limit(limit);
 
        if (error) {

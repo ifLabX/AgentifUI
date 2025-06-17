@@ -286,8 +286,9 @@ export function useConversationMessages() {
       // 按时间排序并组织消息顺序
       const organizedMessages = organizeMessages(dbMessages);
       
-      // 取最后的MESSAGES_PER_PAGE条消息
-      const latestMessages = organizedMessages.slice(-MESSAGES_PER_PAGE);
+      // 🎯 修复：数据库现在按正序返回，直接使用限制数量即可
+      // 不再需要slice(-MESSAGES_PER_PAGE)，因为数据库查询已经限制了数量
+      const latestMessages = organizedMessages;
       
       // 将数据库消息转换为前端消息对象
       const chatMessages = latestMessages.map(dbMessageToChatMessage);
@@ -379,17 +380,17 @@ export function useConversationMessages() {
       // --- END COMMENT ---
       startLoading('more');
       
-      // 计算要跳过的消息数
-      const currentPage = loaderState.current.page;
-      const skip = currentPage * MESSAGES_PER_PAGE;
+      // 🎯 修复：使用简单的偏移量分页，基于已加载的消息数量
+      const existingMessages = useChatStore.getState().messages;
+      const currentOffset = existingMessages.length;
       
-      console.log(`[useConversationMessages] 加载更多历史消息，页码=${currentPage+1}，跳过=${skip}`);
+      console.log(`[useConversationMessages] 加载更多历史消息，当前偏移量=${currentOffset}`);
       
       // --- BEGIN COMMENT ---
-      // 使用新的messageService获取所有消息，然后手动分页
-      // 这是临时方案，后续可以优化为真正的游标分页
+      // 🎯 修复：使用简单但有效的偏移量分页
+      // 获取下一页的消息，跳过已加载的消息数量
       // --- END COMMENT ---
-      const result = await messageService.getLatestMessages(dbConversationId, 1000, { cache: true }); // 获取大量消息用于分页
+      const result = await messageService.getLatestMessages(dbConversationId, MESSAGES_PER_PAGE + currentOffset, { cache: true });
       
       // 如果请求已被取消或对话ID已改变，则放弃处理结果
       if (signal.aborted || loaderState.current.currentId !== dbConversationId) {
@@ -406,30 +407,22 @@ export function useConversationMessages() {
       
       const allMessages = result.data;
       
-      // 更新总消息数
-      loaderState.current.totalMessages = allMessages.length;
-      
-      // 如果已经加载了所有消息
-      if (skip >= allMessages.length) {
+      // 检查是否还有更多消息可加载
+      if (allMessages.length <= currentOffset) {
         setHasMoreMessages(false);
         finishLoading('complete');
         console.log(`[useConversationMessages] 没有更多历史消息`);
         return;
       }
       
-      // 按时间排序并组织消息顺序
-      const organizedMessages = organizeMessages(allMessages);
+      // 获取新的消息（排除已加载的）
+      const newMessages = allMessages.slice(0, allMessages.length - currentOffset);
       
-      // 获取当前页的消息
-      const endIndex = Math.max(0, organizedMessages.length - skip);
-      const startIndex = Math.max(0, endIndex - MESSAGES_PER_PAGE);
-      const pageMessages = organizedMessages.slice(startIndex, endIndex);
-      
-      // 检查是否还有更多消息可加载
-      if (startIndex === 0) {
+      if (newMessages.length === 0) {
         setHasMoreMessages(false);
-        // 如果没有更多消息，设置加载状态为完成
         finishLoading('complete');
+        console.log(`[useConversationMessages] 没有新的历史消息`);
+        return;
       }
       
       // 记录当前滚动位置
@@ -437,20 +430,23 @@ export function useConversationMessages() {
       const oldScrollHeight = scrollContainer?.scrollHeight || 0;
       const oldScrollTop = scrollContainer?.scrollTop || 0;
       
+      // 按时间排序并组织消息顺序
+      const organizedMessages = organizeMessages(newMessages);
+      
       // 将数据库消息转换为前端消息对象
-      const newChatMessages = pageMessages.map(dbMessageToChatMessage);
+      const newChatMessages = organizedMessages.map(dbMessageToChatMessage);
       
       // 当前消息
       const currentMessages = useChatStore.getState().messages;
       
-      // 批量添加到现有消息的前面
+      // 批量添加到现有消息的前面（因为是历史消息）
       const updatedMessages = [...newChatMessages, ...currentMessages];
       useChatStore.setState({ messages: updatedMessages });
       
       // 增加页码
-      loaderState.current.page = currentPage + 1;
+      loaderState.current.page++;
       
-      console.log(`[useConversationMessages] 加载了${pageMessages.length}条历史消息`);
+      console.log(`[useConversationMessages] 加载了${newMessages.length}条历史消息`);
       
       // --- BEGIN COMMENT ---
       // 加载完成后重置加载状态
