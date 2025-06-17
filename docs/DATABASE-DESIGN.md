@@ -2,8 +2,8 @@
 
 本文档详细描述了 AgentifUI 平台的数据库设计，包括表结构、关系、安全机制和特性。本文档与当前数据库状态完全同步，包含所有已应用的迁移文件。
 
-**文档更新日期**: 2025-06-15  
-**数据库版本**: 包含至 20250615204425_fix_sso_provider_id_type_issue.sql 的所有迁移
+**文档更新日期**: 2025-06-17  
+**数据库版本**: 包含至 20250617140818_drop_sso_views.sql 的所有迁移
 
 ## 目录
 
@@ -47,8 +47,9 @@
 | created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP |
 | updated_at | TIMESTAMP WITH TIME ZONE | 更新时间 | DEFAULT CURRENT_TIMESTAMP |
 | last_login | TIMESTAMP WITH TIME ZONE | 最后登录时间 | |
-| auth_source | TEXT | 认证来源 | DEFAULT 'email'，支持 email/google/github/phone |
+| auth_source | TEXT | 认证来源 | DEFAULT 'email'，支持 email/google/github/phone/bistu_sso |
 | sso_provider_id | UUID | SSO提供商ID | 引用 sso_providers(id) |
+| employee_number | TEXT | 学工号 | 北京信息科技大学统一身份标识，唯一约束 |
 
 **枚举类型定义：**
 - `user_role`: ENUM ('admin', 'manager', 'user')
@@ -264,7 +265,7 @@
 
 #### sso_providers
 
-存储SSO提供商信息。
+存储SSO提供商信息，支持多种单点登录协议。
 
 | 字段名 | 类型 | 描述 | 约束 |
 |--------|------|------|------|
@@ -278,6 +279,28 @@
 | enabled | BOOLEAN | 是否启用 | DEFAULT TRUE |
 | created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP |
 | updated_at | TIMESTAMP WITH TIME ZONE | 更新时间 | DEFAULT CURRENT_TIMESTAMP |
+
+**枚举类型定义：**
+- `sso_protocol`: ENUM ('OIDC', 'SAML', 'CAS')
+
+**协议支持说明：**
+- `OIDC`: OpenID Connect 协议
+- `SAML`: SAML 2.0 协议  
+- `CAS`: CAS 2.0/3.0 协议（支持北京信息科技大学统一认证）
+
+**北信CAS配置示例：**
+```json
+{
+  "base_url": "https://sso.bistu.edu.cn",
+  "login_endpoint": "/login",
+  "logout_endpoint": "/logout", 
+  "validate_endpoint": "/serviceValidate",
+  "validate_endpoint_v3": "/p3/serviceValidate",
+  "version": "2.0",
+  "attributes_enabled": true,
+  "support_attributes": ["employeeNumber", "log_username"]
+}
+```
 
 #### domain_sso_mappings
 
@@ -570,6 +593,44 @@ SELECT public.initialize_admin('admin@example.com');
 - 验证用户存在性
 - 提供操作确认通知
 
+#### SSO用户管理
+
+**函数：** `find_user_by_employee_number(emp_num TEXT)`
+
+根据学工号查找用户信息，专用于北信SSO登录：
+
+```sql
+SELECT * FROM find_user_by_employee_number('2021011221');
+```
+
+**返回字段：**
+- `user_id`: 用户UUID
+- `full_name`: 用户全名
+- `username`: 用户名
+- `employee_number`: 学工号
+- `last_login`: 最后登录时间
+- `auth_source`: 认证来源
+- `status`: 账户状态
+
+**安全特性：**
+- 使用 `SECURITY DEFINER` 模式
+- 只返回活跃状态用户
+- 验证学工号格式
+
+**函数：** `create_sso_user(emp_number TEXT, user_name TEXT, sso_provider_uuid UUID)`
+
+为SSO用户创建新账户，用于首次登录：
+
+```sql
+SELECT create_sso_user('2021011221', 'zhang.san', '10000000-0000-0000-0000-000000000001');
+```
+
+**特性：**
+- 自动处理用户名冲突（添加数字后缀）
+- 验证学工号唯一性
+- 自动设置认证来源为 'bistu_sso'
+- 设置初始登录时间
+
 ### 数据库安全最佳实践
 
 1. **最小权限原则**：
@@ -724,6 +785,11 @@ VALUES ('00000000-0000-0000-0000-000000000001');
 - `20250609174230_fix_enum_reference.sql`: 修复枚举引用
 - `20250609214000_add_admin_user_functions.sql`: 添加管理员用户函数
 - `20250609214100_fix_org_members_foreign_key.sql`: 修复组织成员外键
+
+### 2025-06-17 SSO集成更新 - 北京信息科技大学CAS认证
+- `20250617185201_fix_enum_transaction_issue.sql`: 修复PostgreSQL枚举类型事务问题，添加CAS协议支持
+- `20250617185202_add_bistu_sso_data.sql`: 北信SSO集成数据迁移，添加学工号字段、SSO函数和配置
+- `20250617140818_drop_sso_views.sql`: 清理SSO统计视图，简化数据库对象
 - `20250609214200_remove_deprecated_admin_views.sql`: 移除过时管理员视图
 - `20250609214300_fix_admin_users_function_types.sql`: 修复管理员用户函数类型
 - `20250609214400_fix_phone_column_type.sql`: 修复手机号列类型
