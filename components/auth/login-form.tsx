@@ -8,6 +8,7 @@ import { createClient } from '../../lib/supabase/client';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { SocialAuthButtons } from './social-auth-buttons';
+import { BistuSSOCard } from './bistu-sso-button';
 
 export function LoginForm() {
   const router = useRouter();
@@ -77,6 +78,11 @@ export function LoginForm() {
           {error}
         </div>
       )}
+
+      {/* --- BEGIN COMMENT --- */}
+      {/* 北信SSO登录区域 */}
+      {/* --- END COMMENT --- */}
+      <BistuSSOCard returnUrl="/chat" />
 
       {/* --- BEGIN COMMENT --- */}
       {/* 社交登录区域 */}

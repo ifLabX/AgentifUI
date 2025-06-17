@@ -37,6 +37,7 @@ export interface Profile {
   status: AccountStatus;
   last_login: string | null;
   sso_provider_id: string | null;
+  employee_number?: string | null;
 }
 
 export interface UserPreference {
