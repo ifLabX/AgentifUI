@@ -67,6 +67,18 @@ export default function LoginPage() {
     switch (error) {
       case 'oauth_failed':
         return 'OAuth登录失败，请重试或使用其他登录方式';
+      case 'sso_callback_failed':
+        return 'SSO认证回调处理失败，请重新尝试登录';
+      case 'ticket_validation_failed':
+        return 'SSO票据验证失败，请重新登录';
+      case 'invalid_employee_number':
+        return '学工号格式不正确，请联系管理员';
+      case 'user_creation_failed':
+        return '账户创建失败，请联系管理员';
+      case 'sso_provider_not_found':
+        return 'SSO服务配置错误，请联系管理员';
+      case 'missing_ticket':
+        return '认证参数缺失，请重新登录';
       default:
         return '登录过程中出现错误，请稍后重试';
     }
