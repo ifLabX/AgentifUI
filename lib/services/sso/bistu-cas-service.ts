@@ -22,8 +22,9 @@ export interface BistuUserInfo {
   username: string;        // 用户名
   success: boolean;        // 验证是否成功
   attributes?: {
-    log_username?: string;
-    [key: string]: any;
+    name?: string;         // 真实姓名（来自cas:name）
+    username?: string;     // 学工号（来自cas:username）
+    [key: string]: any;    // 其他可能的属性
   };
   rawResponse?: string;    // 原始XML响应（调试用）
 }
@@ -52,12 +53,13 @@ export class BistuCASService {
 
     // --- BEGIN COMMENT ---
     // 初始化XML解析器，配置适合CAS响应的选项
+    // 禁用属性值解析，确保文本内容保持原始类型
     // --- END COMMENT ---
     this.xmlParser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
       textNodeName: '#text',
-      parseAttributeValue: true,
+      parseAttributeValue: false, // 禁用属性值自动类型转换
       trimValues: true,
     });
   }
@@ -171,6 +173,13 @@ export class BistuCASService {
       const xmlText = await response.text();
       console.log('Received CAS validation response');
       
+      // --- BEGIN COMMENT ---
+      // 在CAS服务层也打印原始XML响应，方便调试
+      // --- END COMMENT ---
+      console.log('=== CAS服务层收到的原始XML ===');
+      console.log(xmlText);
+      console.log('=== CAS服务层XML响应结束 ===');
+      
       return this.parseValidationResponse(xmlText);
     } catch (error) {
       console.error('CAS ticket validation failed:', error);
@@ -195,7 +204,20 @@ export class BistuCASService {
     try {
       console.log('Parsing CAS response XML...');
       
+      // --- BEGIN COMMENT ---
+      // 打印XML解析前的原始内容长度和前100个字符预览
+      // --- END COMMENT ---
+      console.log(`XML长度: ${xmlText.length} 字符`);
+      console.log(`XML预览: ${xmlText.substring(0, 200)}${xmlText.length > 200 ? '...' : ''}`);
+      
       const parsed = this.xmlParser.parse(xmlText);
+      
+      // --- BEGIN COMMENT ---
+      // 打印解析后的完整JSON结构
+      // --- END COMMENT ---
+      console.log('=== XML解析后的完整结构 ===');
+      console.log(JSON.stringify(parsed, null, 2));
+      console.log('=== 解析结构结束 ===');
       const serviceResponse = parsed['cas:serviceResponse'];
 
       if (!serviceResponse) {
@@ -211,25 +233,32 @@ export class BistuCASService {
         const attributes = success['cas:attributes'] || {};
 
         // --- BEGIN COMMENT ---
-        // 提取用户信息，学工号是关键标识符
+        // 提取用户信息，根据北信CAS实际返回结果：
+        // - cas:user 是学工号（如：2021011221）
+        // - cas:attributes 包含 cas:name（真实姓名）和 cas:username（学工号）
+        // 确保所有字段都转换为字符串类型
         // --- END COMMENT ---
-        const employeeNumber = attributes['cas:employeeNumber'] || user;
-        const username = user;
+        const username = String(user || ''); // cas:user 字段，实际是学工号，确保为字符串
+        const employeeNumber = String(user || ''); // 学工号就是 cas:user 字段的值，确保为字符串
+        const realName = String(attributes['cas:name'] || ''); // 真实姓名
+        const casUsername = String(attributes['cas:username'] || ''); // CAS中的username字段，通常也是学工号
 
-        console.log(`CAS authentication successful for user: ${username}, employee: ${employeeNumber}`);
+        console.log(`CAS authentication successful for user: ${username}, employee: ${employeeNumber}, name: ${realName}, cas:username: ${casUsername}`);
 
         return {
           username,
           employeeNumber,
           success: true,
           attributes: {
-            log_username: attributes['cas:log_username'] || '',
+            name: realName,
+            username: casUsername, // cas:username字段，确保为字符串类型
             // --- BEGIN COMMENT ---
-            // 保存所有属性以备后续使用
+            // 保存所有属性以备后续使用，移除 cas: 前缀
             // --- END COMMENT ---
             ...Object.keys(attributes).reduce((acc, key) => {
               if (key.startsWith('cas:')) {
-                acc[key.replace('cas:', '')] = attributes[key];
+                const cleanKey = key.replace('cas:', '');
+                acc[cleanKey] = String(attributes[key] || ''); // 确保所有值都是字符串
               }
               return acc;
             }, {} as Record<string, any>),
@@ -285,8 +314,7 @@ export class BistuCASService {
     }
     
     // --- BEGIN COMMENT ---
-    // 北信学工号通常为10位数字，可根据实际情况调整
-    // TODO: 请根据实际的学工号格式调整此正则表达式
+    // 根据北信实际测试结果，学工号为10位数字（如：2021011221）
     // --- END COMMENT ---
     const pattern = /^\d{10}$/;
     return pattern.test(employeeNumber.trim());
