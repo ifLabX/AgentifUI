@@ -14,6 +14,18 @@ export async function middleware(request: NextRequest) {
   const url = new URL(request.url)
   const pathname = url.pathname
 
+  // 检查是否为SSO登录成功回调，如果是则暂时跳过认证检查
+  // 允许前端有时间处理SSO会话建立
+  const ssoLoginSuccess = url.searchParams.get('sso_login') === 'success';
+  const hasSsoUserCookie = request.cookies.get('sso_user_data');
+
+  // 如果是SSO登录成功回调或者有SSO用户数据cookie，暂时跳过认证检查
+  // 让前端组件有机会建立Supabase会话
+  if (ssoLoginSuccess || hasSsoUserCookie) {
+    console.log(`[Middleware] SSO session detected, allowing request to ${pathname}`);
+    return response;
+  }
+
   // 优先级最高：如果用户直接访问 /chat，则重定向到 /chat/new
   // 这样确保总是从一个明确的新对话状态开始。
   if (pathname === '/chat') {
