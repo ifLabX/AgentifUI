@@ -3,7 +3,7 @@
 // 处理SSO用户的创建、查找和管理
 // --- END COMMENT ---
 
-import { createClient } from '@lib/supabase/server';
+import { createClient, createAdminClient } from '@lib/supabase/server';
 import type { Profile } from '@lib/types/database';
 
 // --- BEGIN COMMENT ---
@@ -30,7 +30,7 @@ export interface SSOUserLookupResult {
 // --- END COMMENT ---
 export class SSOUserService {
   /**
-   * 通过学工号查找用户
+   * 通过学工号查找用户（实际通过邮箱查找）
    * @param employeeNumber 学工号
    * @returns 用户信息或null
    */
@@ -42,60 +42,48 @@ export class SSOUserService {
     try {
       const supabase = await createClient();
       
-      console.log(`Looking up user by employee number: ${employeeNumber}`);
+      // --- BEGIN COMMENT ---
+      // 构建SSO用户的邮箱地址（学工号@bistu.edu.cn）
+      // 通过邮箱查找用户，因为email字段在触发器中会被正确设置
+      // --- END COMMENT ---
+      const email = `${employeeNumber.trim()}@bistu.edu.cn`;
+      console.log(`Looking up user by email: ${email} (for employee: ${employeeNumber})`);
 
       // --- BEGIN COMMENT ---
-      // 使用数据库函数查找用户，确保安全性和性能
+      // 直接通过email字段查找profiles记录，避免依赖可能缺失的employee_number字段
+      // 不过滤status，因为触发器可能没有设置该字段
       // --- END COMMENT ---
-      const { data, error } = await supabase.rpc('find_user_by_employee_number', {
-        emp_num: employeeNumber.trim(),
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', email)
+        .single();
 
       if (error) {
-        console.error('Error finding user by employee number:', error);
+        if (error.code === 'PGRST116') {
+          // 未找到记录
+          console.log(`No user found with email: ${email}`);
+          return null;
+        }
+        console.error('Error finding user by email:', error);
         throw error;
       }
 
-      // --- BEGIN COMMENT ---
-      // 函数返回数组，取第一个结果
-      // --- END COMMENT ---
-      const userRecord = data && data.length > 0 ? data[0] : null;
-
-      if (userRecord) {
-        console.log(`Found user: ${userRecord.username} (${userRecord.employee_number})`);
-        
-        // --- BEGIN COMMENT ---
-        // 转换数据库函数返回的格式为Profile接口格式
-        // --- END COMMENT ---
-        return {
-          id: userRecord.user_id,
-          full_name: userRecord.full_name,
-          username: userRecord.username,
-          employee_number: userRecord.employee_number,
-          last_login: userRecord.last_login,
-          auth_source: userRecord.auth_source,
-          status: userRecord.status,
-          // --- BEGIN COMMENT ---
-          // 其他字段使用默认值或从其他查询获取
-          // --- END COMMENT ---
-          avatar_url: undefined,
-          role: 'user',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          sso_provider_id: null,
-        } as Profile;
+      if (data) {
+        console.log(`Found user: ${data.username} (email: ${data.email})`);
+        return data as Profile;
       }
 
-      console.log(`No user found with employee number: ${employeeNumber}`);
+      console.log(`No user found with email: ${email}`);
       return null;
     } catch (error) {
-      console.error('Failed to find user by employee number:', error);
+      console.error('Failed to find user by employee number (via email):', error);
       throw new Error(`Failed to find user: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
   /**
-   * 创建SSO用户
+   * 创建SSO用户 - 使用Supabase Admin API
    * @param userData 用户数据
    * @returns 创建的用户信息
    */
@@ -108,54 +96,235 @@ export class SSOUserService {
     }
 
     try {
+      // --- BEGIN COMMENT ---
+      // 使用普通客户端查找用户，使用Admin客户端创建用户
+      // --- END COMMENT ---
       const supabase = await createClient();
+      const adminSupabase = await createAdminClient();
       
       console.log(`Creating SSO user: ${userData.username} (${userData.employeeNumber})`);
 
       // --- BEGIN COMMENT ---
-      // 检查学工号是否已存在
+      // 检查用户是否已存在（通过邮箱查找）
       // --- END COMMENT ---
       const existingUser = await this.findUserByEmployeeNumber(userData.employeeNumber);
       if (existingUser) {
-        throw new Error(`User with employee number ${userData.employeeNumber} already exists`);
+        console.log(`User already exists for employee ${userData.employeeNumber}, returning existing user`);
+        return existingUser;
       }
 
       // --- BEGIN COMMENT ---
-      // 调用数据库函数创建用户
+      // 使用Supabase Admin API创建auth.users记录
+      // 这样会同时创建auth.users记录和通过触发器自动创建profiles记录
       // --- END COMMENT ---
-      const { data: userId, error } = await supabase.rpc('create_sso_user', {
-        emp_number: userData.employeeNumber.trim(),
-        user_name: userData.fullName || userData.username.trim(),
-        sso_provider_uuid: userData.ssoProviderId,
+      const email = `${userData.employeeNumber}@bistu.edu.cn`; // 使用学工号生成邮箱
+      
+      const { data: authUser, error: authError } = await adminSupabase.auth.admin.createUser({
+        email,
+        user_metadata: {
+          full_name: userData.fullName || userData.username,
+          username: userData.username,
+          employee_number: userData.employeeNumber,
+          auth_source: 'bistu_sso',
+          sso_provider_id: userData.ssoProviderId,
+        },
+        app_metadata: {
+          provider: 'bistu_sso',
+          employee_number: userData.employeeNumber,
+        },
+        email_confirm: true, // SSO用户自动确认邮箱
       });
 
-      if (error) {
-        console.error('Error creating SSO user:', error);
-        throw error;
+      // --- BEGIN COMMENT ---
+      // 处理邮箱冲突问题
+      // 如果邮箱已存在，说明用户已经注册过，尝试查找现有用户
+      // --- END COMMENT ---
+      if (authError && authError.message.includes('already been registered')) {
+        console.log(`Email ${email} already exists, trying to find existing user`);
+        
+        // --- BEGIN COMMENT ---
+        // 重新查找用户，这次应该能找到（因为auth用户已存在）
+        // --- END COMMENT ---
+        const existingUser = await this.findUserByEmployeeNumber(userData.employeeNumber);
+        if (existingUser) {
+          console.log(`Found existing user via email lookup: ${existingUser.id}`);
+          return existingUser;
+        } else {
+          // --- BEGIN COMMENT ---
+          // 如果仍然找不到，说明auth.users存在但profiles不存在，这是数据不一致问题
+          // --- END COMMENT ---
+          console.error('Auth user exists but no corresponding profile found');
+          throw new Error('账户数据不一致，请联系管理员');
+        }
       }
-
-      if (!userId) {
-        throw new Error('Failed to create user: no user ID returned');
-      }
-
-      console.log(`Successfully created SSO user with ID: ${userId}`);
 
       // --- BEGIN COMMENT ---
-      // 获取创建的用户完整信息
+      // 如果是其他类型的auth错误，直接抛出
       // --- END COMMENT ---
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (profileError) {
-        console.error('Error fetching created user profile:', profileError);
-        throw profileError;
+      if (authError) {
+        console.error('Error creating auth user:', authError);
+        throw authError;
       }
 
+      if (!authUser.user) {
+        throw new Error('Failed to create auth user: no user returned');
+      }
+
+      console.log(`Successfully created auth.users record with ID: ${authUser.user.id}`);
+
+      // --- BEGIN COMMENT ---
+      // 等待触发器创建profiles记录，然后通过邮箱查找用户
+      // 使用重试机制，通过邮箱查找比ID查找更可靠
+      // --- END COMMENT ---
+      let profile = null;
+      let retryCount = 0;
+      const maxRetries = 3; // 减少重试次数
+      
+      while (retryCount < maxRetries) {
+        try {
+          // 先等待触发器执行
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // --- BEGIN COMMENT ---
+          // 使用邮箱查找用户，因为email字段在触发器中会被正确设置
+          // --- END COMMENT ---
+          profile = await this.findUserByEmployeeNumber(userData.employeeNumber);
+          
+          if (profile) {
+            console.log('Successfully found user via email after trigger execution');
+            
+            // --- BEGIN COMMENT ---
+            // 更新SSO专用字段（employee_number, sso_provider_id等）
+            // --- END COMMENT ---
+            const { data: updatedProfile, error: updateError } = await supabase
+              .from('profiles')
+              .update({
+                employee_number: userData.employeeNumber,
+                auth_source: 'bistu_sso',
+                sso_provider_id: userData.ssoProviderId,
+                full_name: userData.fullName || userData.username,
+                username: userData.username,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', profile.id)
+              .select()
+              .single();
+              
+            if (updateError) {
+              console.warn('Failed to update SSO fields, but user exists:', updateError);
+              // 不阻断流程，返回原始profile
+            } else {
+              profile = updatedProfile;
+            }
+            
+            break; // 成功，退出重试循环
+          } else {
+            retryCount++;
+            console.log(`Profile not found via email yet, retry ${retryCount}/${maxRetries}`);
+          }
+        } catch (error) {
+          retryCount++;
+          console.warn(`Profile lookup attempt ${retryCount} failed:`, error);
+          if (retryCount >= maxRetries) {
+            break; // 退出重试，进入备用方案
+          }
+        }
+      }
+
+      // --- BEGIN COMMENT ---
+      // 备用方案：如果触发器创建的记录无法通过email查找到，使用Admin客户端直接查找并更新
+      // --- END COMMENT ---
       if (!profile) {
-        throw new Error('Created user profile not found');
+        console.log('Trying admin client to find and update existing profile...');
+        
+        try {
+          const adminSupabaseForProfile = await createAdminClient();
+          
+          // --- BEGIN COMMENT ---
+          // 使用Admin客户端直接通过ID查找profiles记录（绕过RLS）
+          // --- END COMMENT ---
+          const { data: existingProfile, error: findError } = await adminSupabaseForProfile
+            .from('profiles')
+            .select('*')
+            .eq('id', authUser.user.id)
+            .single();
+
+          if (!findError && existingProfile) {
+            console.log('Found existing profile via admin client, updating SSO fields...');
+            
+            // --- BEGIN COMMENT ---
+            // 更新现有记录的SSO字段
+            // --- END COMMENT ---
+            const { data: updatedProfile, error: updateError } = await adminSupabaseForProfile
+              .from('profiles')
+              .update({
+                employee_number: userData.employeeNumber,
+                auth_source: 'bistu_sso',
+                sso_provider_id: userData.ssoProviderId,
+                full_name: userData.fullName || userData.username,
+                username: userData.username,
+                email: email, // 确保email字段正确
+                status: 'active', // 确保status为active
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', authUser.user.id)
+              .select()
+              .single();
+
+            if (updateError) {
+              console.error('Failed to update existing profile:', updateError);
+              throw updateError;
+            }
+
+            profile = updatedProfile;
+            console.log('Successfully updated existing profile with SSO fields');
+          } else {
+            // --- BEGIN COMMENT ---
+            // 如果真的没有profiles记录，创建新的
+            // --- END COMMENT ---
+            console.log('No profile found, creating new one with admin client...');
+            
+            const { data: newProfile, error: createError } = await adminSupabaseForProfile
+              .from('profiles')
+              .insert({
+                id: authUser.user.id,
+                employee_number: userData.employeeNumber,
+                username: userData.username,
+                full_name: userData.fullName || userData.username,
+                auth_source: 'bistu_sso',
+                sso_provider_id: userData.ssoProviderId,
+                email: email,
+                status: 'active',
+                role: 'user',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                last_login: new Date().toISOString(),
+              })
+              .select()
+              .single();
+
+            if (createError) {
+              console.error('Failed to create new profile with admin client:', createError);
+              throw createError;
+            }
+
+            profile = newProfile;
+            console.log('Successfully created new profile with admin client');
+          }
+        } catch (adminError) {
+          const errorMsg = 'Failed to handle profile with admin client';
+          console.error(errorMsg, adminError);
+          
+          // 清理已创建的auth用户
+          try {
+            await adminSupabase.auth.admin.deleteUser(authUser.user.id);
+            console.log('Cleaned up auth user after profile handling failure');
+          } catch (cleanupError) {
+            console.error('Failed to cleanup auth user:', cleanupError);
+          }
+          
+          throw new Error(errorMsg);
+        }
       }
 
       console.log(`SSO user created successfully: ${profile.username}`);
@@ -314,17 +483,27 @@ export class SSOUserService {
    * @param employeeNumber 学工号
    * @returns 是否有效
    */
-  static validateEmployeeNumber(employeeNumber: string): boolean {
-    if (!employeeNumber || typeof employeeNumber !== 'string') {
+  static validateEmployeeNumber(employeeNumber: any): boolean {
+    // --- BEGIN COMMENT ---
+    // 先检查是否存在值
+    // --- END COMMENT ---
+    if (employeeNumber === null || employeeNumber === undefined) {
       return false;
     }
     
     // --- BEGIN COMMENT ---
-    // 北信学工号格式验证
-    // TODO: 请根据实际的学工号格式调整此正则表达式
-    // 当前假设为10位数字，您可能需要根据实际情况修改
+    // 转换为字符串类型，处理可能的数字类型输入
     // --- END COMMENT ---
-    const trimmed = employeeNumber.trim();
+    const employeeStr = String(employeeNumber);
+    
+    if (!employeeStr) {
+      return false;
+    }
+    
+    // --- BEGIN COMMENT ---
+    // 根据北信实际测试结果，学工号为10位数字（如：2021011221）
+    // --- END COMMENT ---
+    const trimmed = employeeStr.trim();
     const pattern = /^\d{10}$/;
     return pattern.test(trimmed);
   }
