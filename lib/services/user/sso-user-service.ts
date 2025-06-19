@@ -50,8 +50,7 @@ export class SSOUserService {
       console.log(`Looking up user by email: ${email} (for employee: ${employeeNumber})`);
 
       // --- BEGIN COMMENT ---
-      // 直接通过email字段查找profiles记录，避免依赖可能缺失的employee_number字段
-      // 不过滤status，因为触发器可能没有设置该字段
+      // 首先尝试通过普通客户端查找（受RLS策略限制）
       // --- END COMMENT ---
       const { data, error } = await supabase
         .from('profiles')
@@ -61,16 +60,45 @@ export class SSOUserService {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          // 未找到记录
-          console.log(`No user found with email: ${email}`);
-          return null;
+          console.log(`No user found with email via normal client: ${email}, trying admin client...`);
+          
+          // --- BEGIN COMMENT ---
+          // 如果普通客户端找不到，尝试使用Admin客户端（绕过RLS）
+          // 这对于SSO用户查找很重要，因为可能存在RLS策略限制
+          // --- END COMMENT ---
+          try {
+            const adminSupabase = await createAdminClient();
+            const { data: adminData, error: adminError } = await adminSupabase
+              .from('profiles')
+              .select('*')
+              .eq('email', email)
+              .single();
+
+            if (adminError) {
+              if (adminError.code === 'PGRST116') {
+                console.log(`No user found with email via admin client: ${email}`);
+                return null;
+              }
+              console.error('Error finding user by email via admin client:', adminError);
+              throw adminError;
+            }
+
+            if (adminData) {
+              console.log(`Found user via admin client: ${adminData.username} (email: ${adminData.email})`);
+              return adminData as Profile;
+            }
+          } catch (adminError) {
+            console.warn('Admin client lookup failed, user may not exist:', adminError);
+            return null;
+          }
+        } else {
+          console.error('Error finding user by email:', error);
+          throw error;
         }
-        console.error('Error finding user by email:', error);
-        throw error;
       }
 
       if (data) {
-        console.log(`Found user: ${data.username} (email: ${data.email})`);
+        console.log(`Found user via normal client: ${data.username} (email: ${data.email})`);
         return data as Profile;
       }
 
@@ -79,6 +107,48 @@ export class SSOUserService {
     } catch (error) {
       console.error('Failed to find user by employee number (via email):', error);
       throw new Error(`Failed to find user: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * 通过ID直接查找用户（使用Admin客户端，绕过RLS）
+   * @param userId 用户ID
+   * @returns 用户信息或null
+   */
+  static async findUserByIdWithAdmin(userId: string): Promise<Profile | null> {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+
+    try {
+      const adminSupabase = await createAdminClient();
+      
+      console.log(`Looking up user by ID with admin client: ${userId}`);
+
+      const { data, error } = await adminSupabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          console.log(`No user found with ID: ${userId}`);
+          return null;
+        }
+        console.error('Error finding user by ID:', error);
+        throw error;
+      }
+
+      if (data) {
+        console.log(`Found user by ID: ${data.username} (${data.email})`);
+        return data as Profile;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Failed to find user by ID:', error);
+      throw new Error(`Failed to find user by ID: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -119,6 +189,8 @@ export class SSOUserService {
       // --- END COMMENT ---
       const email = `${userData.employeeNumber}@bistu.edu.cn`; // 使用学工号生成邮箱
       
+      console.log(`Creating auth user with email: ${email}, employee_number: ${userData.employeeNumber}`);
+      
       const { data: authUser, error: authError } = await adminSupabase.auth.admin.createUser({
         email,
         user_metadata: {
@@ -143,19 +215,76 @@ export class SSOUserService {
         console.log(`Email ${email} already exists, trying to find existing user`);
         
         // --- BEGIN COMMENT ---
-        // 重新查找用户，这次应该能找到（因为auth用户已存在）
+        // 策略1：重新查找用户，使用增强的查找方法（包括Admin客户端）
         // --- END COMMENT ---
         const existingUser = await this.findUserByEmployeeNumber(userData.employeeNumber);
         if (existingUser) {
           console.log(`Found existing user via email lookup: ${existingUser.id}`);
           return existingUser;
-        } else {
-          // --- BEGIN COMMENT ---
-          // 如果仍然找不到，说明auth.users存在但profiles不存在，这是数据不一致问题
-          // --- END COMMENT ---
-          console.error('Auth user exists but no corresponding profile found');
-          throw new Error('账户数据不一致，请联系管理员');
         }
+
+        // --- BEGIN COMMENT ---
+        // 策略2：如果邮箱查找失败，尝试通过Auth API获取用户ID，然后直接查找Profile
+        // --- END COMMENT ---
+        console.log('Email lookup failed, trying to find auth user and corresponding profile...');
+        try {
+          // 使用Admin API查找auth.users记录
+          const { data: authUsers, error: authLookupError } = await adminSupabase.auth.admin.listUsers();
+          
+          if (!authLookupError && authUsers?.users) {
+            const authUser = authUsers.users.find(user => user.email === email);
+            if (authUser) {
+              console.log(`Found auth.users record with ID: ${authUser.id}`);
+              
+              // 直接通过ID查找Profile
+              const profileUser = await this.findUserByIdWithAdmin(authUser.id);
+              if (profileUser) {
+                console.log(`Found corresponding profile: ${profileUser.username}`);
+                return profileUser;
+              } else {
+                console.log('Profile not found, creating one...');
+                
+                // --- BEGIN COMMENT ---
+                // 如果auth.users存在但profiles不存在，创建profiles记录
+                // --- END COMMENT ---
+                const { data: newProfile, error: createError } = await adminSupabase
+                  .from('profiles')
+                  .insert({
+                    id: authUser.id,
+                    employee_number: userData.employeeNumber,
+                    username: userData.username,
+                    full_name: userData.fullName || userData.username,
+                    auth_source: 'bistu_sso',
+                    sso_provider_id: userData.ssoProviderId,
+                    email: email,
+                    status: 'active',
+                    role: 'user',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    last_login: new Date().toISOString(),
+                  })
+                  .select()
+                  .single();
+
+                                 if (createError) {
+                   console.error('Failed to create missing profile:', createError);
+                   throw new Error('PROFILE_CREATION_FAILED');
+                 }
+
+                console.log('Successfully created missing profile');
+                return newProfile as Profile;
+              }
+            }
+          }
+        } catch (lookupError) {
+          console.warn('Failed to lookup auth user:', lookupError);
+        }
+
+        // --- BEGIN COMMENT ---
+        // 如果所有策略都失败，抛出错误
+        // --- END COMMENT ---
+                 console.error('Auth user exists but no corresponding profile found and could not create one');
+         throw new Error('ACCOUNT_DATA_INCONSISTENT');
       }
 
       // --- BEGIN COMMENT ---
@@ -195,7 +324,10 @@ export class SSOUserService {
             
             // --- BEGIN COMMENT ---
             // 更新SSO专用字段（employee_number, sso_provider_id等）
+            // 确保employee_number字段被正确设置
             // --- END COMMENT ---
+            console.log(`Updating profile ${profile.id} with employee_number: ${userData.employeeNumber}`);
+            
             const { data: updatedProfile, error: updateError } = await supabase
               .from('profiles')
               .update({
@@ -204,6 +336,7 @@ export class SSOUserService {
                 sso_provider_id: userData.ssoProviderId,
                 full_name: userData.fullName || userData.username,
                 username: userData.username,
+                email: email, // 确保邮箱正确设置
                 updated_at: new Date().toISOString(),
               })
               .eq('id', profile.id)
@@ -255,6 +388,8 @@ export class SSOUserService {
             // --- BEGIN COMMENT ---
             // 更新现有记录的SSO字段
             // --- END COMMENT ---
+            console.log(`Updating existing profile ${authUser.user.id} with employee_number: ${userData.employeeNumber}, email: ${email}`);
+            
             const { data: updatedProfile, error: updateError } = await adminSupabaseForProfile
               .from('profiles')
               .update({
@@ -282,7 +417,7 @@ export class SSOUserService {
             // --- BEGIN COMMENT ---
             // 如果真的没有profiles记录，创建新的
             // --- END COMMENT ---
-            console.log('No profile found, creating new one with admin client...');
+            console.log(`No profile found, creating new one with admin client for user ${authUser.user.id}, employee_number: ${userData.employeeNumber}, email: ${email}`);
             
             const { data: newProfile, error: createError } = await adminSupabaseForProfile
               .from('profiles')
