@@ -74,7 +74,11 @@ export default function LoginPage() {
       case 'invalid_employee_number':
         return '学工号格式不正确，请联系管理员';
       case 'user_creation_failed':
-        return '账户创建失败，请联系管理员';
+        return '账户创建失败，这可能是由于账户数据不一致导致的。请尝试重新登录，如果问题持续存在，请联系管理员';
+      case 'account_data_inconsistent':
+        return '账户数据不一致，系统正在尝试自动修复。请稍等片刻后重新登录';
+      case 'profile_creation_failed':
+        return '用户档案创建失败，请联系管理员协助解决';
       case 'sso_provider_not_found':
         return 'SSO服务配置错误，请联系管理员';
       case 'missing_ticket':

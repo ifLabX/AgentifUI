@@ -152,8 +152,21 @@ export async function GET(request: NextRequest) {
         console.log(`Successfully created new SSO user: ${user.id} (${realName})`);
       } catch (createError) {
         console.error('Failed to create SSO user:', createError);
+        
+        // --- BEGIN COMMENT ---
+        // 根据错误类型返回不同的错误码
+        // --- END COMMENT ---
+        let errorCode = 'user_creation_failed';
+        if (createError instanceof Error) {
+          if (createError.message === 'ACCOUNT_DATA_INCONSISTENT') {
+            errorCode = 'account_data_inconsistent';
+          } else if (createError.message === 'PROFILE_CREATION_FAILED') {
+            errorCode = 'profile_creation_failed';
+          }
+        }
+        
         return NextResponse.redirect(
-          new URL('/login?error=user_creation_failed&message=账户创建失败，请联系管理员', appUrl)
+          new URL(`/login?error=${errorCode}`, appUrl)
         );
       }
     } else {
@@ -173,23 +186,28 @@ export async function GET(request: NextRequest) {
     // --- BEGIN COMMENT ---
     // 简化SSO会话处理逻辑
     // 直接重定向到登录页面，并传递用户信息，让前端通过常规Supabase认证流程登录
+    // 修复：确保使用正确的学工号构建邮箱，优先使用employeeNumberStr
     // --- END COMMENT ---
+    const userEmail = `${user.employee_number || employeeNumberStr}@bistu.edu.cn`;
+    console.log(`Setting user email in URL: ${userEmail} (from employee_number: ${user.employee_number}, employeeNumberStr: ${employeeNumberStr})`);
+    
     const successUrl = new URL('/login', appUrl);
     successUrl.searchParams.set('sso_login', 'success');
     successUrl.searchParams.set('welcome', user.full_name || user.username || 'User');
     successUrl.searchParams.set('redirect_to', returnUrl);
     successUrl.searchParams.set('user_id', user.id);
-    successUrl.searchParams.set('user_email', `${user.employee_number}@bistu.edu.cn`);
+    successUrl.searchParams.set('user_email', userEmail);
     
     const response = NextResponse.redirect(successUrl);
     
     // --- BEGIN COMMENT ---
     // 设置简化的SSO用户信息cookie，前端可以使用这些信息进行登录
+    // 修复：确保cookie中的邮箱和学工号一致
     // --- END COMMENT ---
     const ssoUserData = {
       userId: user.id,
-      email: `${user.employee_number}@bistu.edu.cn`,
-      employeeNumber: user.employee_number,
+      email: userEmail,
+      employeeNumber: user.employee_number || employeeNumberStr,
       username: user.username,
       fullName: user.full_name,
       authSource: 'bistu_sso',
