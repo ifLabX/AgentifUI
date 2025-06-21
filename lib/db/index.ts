@@ -234,3 +234,35 @@ export function debugServiceStatus(): void {
     console.groupEnd();
   }
 }
+
+// --- BEGIN COMMENT ---
+// 数据库访问层统一导出
+// 提供所有数据库操作的统一入口
+// --- END COMMENT ---
+
+// 用户和配置文件
+export * from './users';
+export * from './profiles';
+
+// 对话和消息
+export * from './conversations';
+export * from './messages';
+
+// API管理
+export * from './providers';
+export * from './service-instances';
+export * from './api-keys';
+
+// 应用执行
+export * from './app-executions';
+
+// 权限管理
+export * from './department-app-permissions';
+export * from './department-permissions-sync';
+
+// --- BEGIN COMMENT ---
+// 🎯 SSO配置管理
+// 注意：SSO相关函数仅供服务器端使用，不通过index.ts导出
+// 需要使用时请直接从 './sso-providers' 导入
+// --- END COMMENT ---
+// export * from './sso-providers'; // 注释掉，避免客户端导入服务器端代码

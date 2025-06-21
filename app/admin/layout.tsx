@@ -93,6 +93,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       description: '管理组织结构和部门权限'
     },
     { 
+      text: 'SSO 配置', 
+      icon: ShieldCheck, 
+      href: '/admin/sso',
+      description: '管理SSO提供商和单点登录配置'
+    },
+    { 
       text: '数据统计', 
       icon: BarChart3, 
       href: '/admin/analytics',
