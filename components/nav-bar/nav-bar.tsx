@@ -26,7 +26,7 @@ export function NavBar() {
   const pathname = usePathname()
   const { colors } = useThemeColors()
   const { colors: settingsColors } = useSettingsColors()
-  const { isExpanded, isLocked } = useSidebarStore()
+  const { isExpanded } = useSidebarStore()
 
   if (isMobile) {
     return null
@@ -40,11 +40,9 @@ export function NavBar() {
 
   // --- BEGIN COMMENT ---
   // 计算左边距：桌面端始终为sidebar留出空间
-  // 未锁定时：为slim状态留出16的空间
-  // 锁定时：根据展开状态设置相应边距
+  // 根据展开状态设置相应边距
   // --- END COMMENT ---
   const getLeftMargin = () => {
-    if (!isLocked) return "left-0 md:left-16" // 未锁定时为slim状态留出空间
     return isExpanded ? "left-0 md:left-64" : "left-0 md:left-16"
   }
 
@@ -55,7 +53,7 @@ export function NavBar() {
         className={cn(
           "fixed top-0 right-4 h-12 z-20", 
           getLeftMargin(),
-          "transition-[left] duration-300 ease-in-out",
+          "transition-[left] duration-150 ease-in-out",
           backgroundColor,
           "flex items-center justify-between pl-4 pr-2",
         )}

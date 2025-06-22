@@ -34,7 +34,7 @@ export function SidebarChatList({
   onSelectChat,
   clickingChatId = null
 }: SidebarChatListProps) {
-  const { isExpanded, lockExpanded } = useSidebarStore() 
+  const { isExpanded } = useSidebarStore() 
   const isMobile = useMobile()
   const router = useRouter()
   const { 

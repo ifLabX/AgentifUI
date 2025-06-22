@@ -27,15 +27,17 @@ export function SidebarButton({
   disableLockBehavior = false,
   ...props 
 }: SidebarButtonProps) {
-  const { isExpanded, lockExpanded } = useSidebarStore()
+  const { isExpanded } = useSidebarStore()
   const { isDark } = useTheme()
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDisabled) return;
     
-    if (!disableLockBehavior) {
-      lockExpanded()
-    }
+    // 点击后移除focus，避免影响父容器的cursor显示
+    const target = e.currentTarget;
+    setTimeout(() => {
+      target.blur();
+    }, 100);
     
     onClick?.(e)
   }
@@ -44,10 +46,6 @@ export function SidebarButton({
     if (isDisabled) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      
-      if (!disableLockBehavior) {
-        lockExpanded();
-      }
       
       const mockEvent = { ...e, type: 'click' } as unknown as React.MouseEvent<HTMLDivElement>; 
       onClick?.(mockEvent);
@@ -61,11 +59,12 @@ export function SidebarButton({
       aria-disabled={isDisabled}
       className={cn(
         "relative flex items-center rounded-lg px-3 py-2 text-sm font-medium",
-        "transition-all duration-200 ease-in-out",
+        "transition-all duration-150 ease-in-out",
         "outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+        "select-none", // 防止文字选中
         isDark ? "focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900" : "focus-visible:ring-primary focus-visible:ring-offset-background",
         "border border-transparent",
-        "h-10 min-h-[2.5rem]",
+        "h-10",
         isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
         !isDark && !isDisabled && [
           "text-stone-600",

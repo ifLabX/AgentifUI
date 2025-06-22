@@ -46,7 +46,7 @@ export default function ChatPage() {
   // --- BEGIN COMMENT ---
   // 获取sidebar状态和mobile状态，用于计算backdrop边距
   // --- END COMMENT ---
-  const { isExpanded, isLocked } = useSidebarStore();
+  const { isExpanded } = useSidebarStore();
   const isMobile = useMobile();
   
   // --- BEGIN COMMENT ---

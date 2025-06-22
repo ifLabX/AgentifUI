@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 export function SidebarFooter() {
   const isMobile = useMobile()
   const router = useRouter()
-  const { isExpanded, isLocked } = useSidebarStore()
+  const { isExpanded } = useSidebarStore()
   return (
     <div className={cn(
       "flex flex-col gap-1.5 p-3 mt-auto",
@@ -20,7 +20,6 @@ export function SidebarFooter() {
           "h-5 w-5 transition-transform duration-300 group-hover:rotate-45",
         )} />}
         onClick={() => {
-          useSidebarStore.setState({ isExpanded: true, isLocked: true })
           router.push('/settings')
         }}
         aria-label="设置"

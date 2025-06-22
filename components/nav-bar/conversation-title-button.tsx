@@ -29,7 +29,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
   const pathname = usePathname();
   const params = useParams();
   const { currentConversationId } = useChatStore();
-  const { isExpanded, isLocked, isHovering, selectItem } = useSidebarStore();
+  const { isExpanded, selectItem } = useSidebarStore();
   const { conversations, refresh } = useCombinedConversations();
   // --- BEGIN COMMENT ---
   // 🎯 新增：获取完整对话列表，用于查找历史对话标题
@@ -182,9 +182,9 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
   const conversationTitle = getDisplayTitle();
   
   // --- BEGIN COMMENT ---
-  // 动态隐藏策略：当sidebar悬停展开时隐藏，锁定展开时不隐藏
+  // 移除动态隐藏策略，现在使用简单的点击模式
   // --- END COMMENT ---
-  const shouldHide = isHovering && !isLocked;
+  const shouldHide = false;
 
   // --- BEGIN COMMENT ---
   // 处理重命名功能 - 使用InputDialog组件

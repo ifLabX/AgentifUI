@@ -23,7 +23,6 @@ export function SidebarContent() {
     selectedType, 
     selectedId, 
     selectItem,
-    lockExpanded,
     contentVisible,
     updateContentVisibility,
     showContent
@@ -112,7 +111,7 @@ export function SidebarContent() {
           "scrollbar-thin scrollbar-track-transparent",
           isDark ? "scrollbar-thumb-gray-600" : "scrollbar-thumb-accent",
           // 在移动端上不应用动画效果，直接显示
-          !isMobile && isExpanded && "transition-[opacity,transform] duration-300 ease-in-out", 
+          !isMobile && isExpanded && "transition-[opacity,transform] duration-150 ease-in-out", 
           // 控制可见性和动画状态
           isExpanded 
             ? (contentVisible 

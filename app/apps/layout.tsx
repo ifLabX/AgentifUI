@@ -13,7 +13,7 @@ interface AppsLayoutProps {
 }
 
 export default function AppsLayout({ children }: AppsLayoutProps) {
-  const { isExpanded, isLocked, isMounted, setMounted } = useSidebarStore()
+  const { isExpanded, isMounted, setMounted } = useSidebarStore()
   const isMobile = useMobile()
   const { isDark } = useTheme()
   
@@ -24,12 +24,10 @@ export default function AppsLayout({ children }: AppsLayoutProps) {
 
   // --- BEGIN COMMENT ---
   // 计算主内容区域的左边距
-  // 仅在桌面端且侧边栏锁定时，根据展开状态设置边距
-  // 悬停展开时不设置边距（覆盖模式）
+  // 根据sidebar展开状态设置边距，推动主内容
   // --- END COMMENT ---
   const getMainMarginLeft = () => {
     if (isMobile) return "ml-0"
-    if (!isLocked) return "ml-16" // 未锁定时保持slim状态的边距
     return isExpanded ? "ml-64" : "ml-16"
   }
 
@@ -54,7 +52,7 @@ export default function AppsLayout({ children }: AppsLayoutProps) {
           "w-full h-screen overflow-auto", // 使用 w-full 而不是 flex-1
           getMainMarginLeft(),
           // 过渡效果
-          "transition-[margin-left] duration-300 ease-in-out"
+          "transition-[margin-left] duration-150 ease-in-out"
         )}
       >
         <div className="h-full p-0">{children}</div>

@@ -18,7 +18,7 @@ interface SettingsLayoutProps {
 }
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
-  const { isExpanded, isLocked, isMounted, setMounted } = useSidebarStore()
+  const { isExpanded, isMounted, setMounted } = useSidebarStore()
   const isMobile = useMobile()
   const { colors, isDark } = useSettingsColors()
   const router = useRouter()
@@ -37,7 +37,6 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
   // --- END COMMENT ---
   const getMainMarginLeft = () => {
     if (isMobile) return "ml-0"
-    if (!isLocked) return "ml-16" // 未锁定时保持slim状态的边距
     return isExpanded ? "ml-64" : "ml-16"
   }
 
@@ -64,7 +63,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         className={cn(
           "w-full h-screen overflow-auto",
           getMainMarginLeft(),
-          "transition-[margin-left] duration-300 ease-in-out",
+          "transition-[margin-left] duration-150 ease-in-out",
           colors.textColor.tailwind,
           // --- 为navbar留出顶部空间 ---
           "pt-12"

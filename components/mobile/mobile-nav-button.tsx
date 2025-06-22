@@ -23,6 +23,7 @@ export function MobileNavButton() {
         "fixed top-4 left-4 z-50 md:hidden", // 仅在移动设备上显示，固定在左上角
         "flex items-center justify-center",
         "w-10 h-10 rounded-full",
+        "select-none", // 防止文字选中
         
         // 去掉transition效果
         
