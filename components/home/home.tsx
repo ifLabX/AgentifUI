@@ -123,9 +123,9 @@ export function Home() {
             className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
           >
             {[
-              { title: "大模型集成", description: "支持多种模型供应商，包括OpenAI、Anthropic、Dify等，满足不同企业需求" },
-              { title: "RAG知识增强", description: "集成检索增强生成(RAG)技术，实现私有知识库和上下文感知" },
-              { title: "企业级部署", description: "支持私有化部署，保障数据安全，基于Dify后端提供稳定可靠的服务" }
+              { title: "多模型支持", description: "兼容多种主流大语言模型，支持API接入与本地化部署，满足不同算力与使用场景需求。" },
+              { title: "能力融合平台", description: "集成问答、数据分析、应用交互等能力，构建统一的智能服务框架，支持插件与工作流扩展。" },
+              { title: "高教场景优化", description: "聚焦高等教育需求，融合教学、科研与管理场景，提升教育数字化服务水平与智能化体验。" }
             ].map((feature, index) => (
               <motion.div 
                 key={index}
