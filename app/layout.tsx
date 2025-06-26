@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Crimson_Pro, Playfair_Display, Noto_Sans_SC, Noto_Serif_SC } from "next/font/google";
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import { TooltipContainer } from "@components/ui/tooltip";
 import { Toaster } from 'react-hot-toast';
 import { Toaster as SonnerToaster } from 'sonner';
@@ -58,11 +60,16 @@ export const metadata: Metadata = {
   description: "企业级大模型应用",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // --- BEGIN COMMENT ---
+  // 获取当前语言环境和翻译消息
+  // --- END COMMENT ---
+  const locale = await getLocale();
+  const messages = await getMessages();
   // --- BEGIN COMMENT ---
   // 🎯 组合所有字体变量类名，确保在整个应用中可用
   // --- END COMMENT ---
@@ -75,15 +82,16 @@ export default function RootLayout({
   );
 
   return (
-    <html lang="zh-CN" className={fontClasses} suppressHydrationWarning>
+    <html lang={locale} className={fontClasses} suppressHydrationWarning>
       <head>
         {/* Removed the manually added theme initialization script */}
         {/* Let next-themes handle the initial theme setting */}
       </head>
       <body>
         <Providers> { /* 使用 Providers 包裹 */ }
-          {/* 添加 DynamicTitle 组件，确保它能在所有页面中生效 */}
-          <DynamicTitle />
+          <NextIntlClientProvider messages={messages}>
+            {/* 添加 DynamicTitle 组件，确保它能在所有页面中生效 */}
+            <DynamicTitle />
           <ClientLayout fontClasses={fontClasses}>
             {/* 🎯 条件渲染 Sidebar - 根据路由决定是否显示，避免路由切换时重新挂载 */}
             <ConditionalSidebar />
@@ -121,6 +129,7 @@ export default function RootLayout({
               className="font-serif"
             />
           </ClientLayout>
+          </NextIntlClientProvider>
         </Providers>
         {process.env.ENABLE_STAGEWISE_TOOLBAR === "true" && process.env.NODE_ENV === "development" && <StagewiseToolbarWrapper />}
       </body>

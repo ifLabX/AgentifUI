@@ -1,0 +1,84 @@
+{
+  "common": {
+    "ui": {
+      "submit": "提交",
+      "cancel": "取消",
+      "save": "保存",
+      "delete": "删除",
+      "edit": "编辑",
+      "close": "关闭",
+      "back": "返回",
+      "next": "下一步",
+      "search": "搜索",
+      "loading": "加载中..."
+    },
+    "navigation": {
+      "home": "首页",
+      "chat": "聊天",
+      "apps": "应用",
+      "admin": "管理",
+      "settings": "设置",
+      "about": "关于",
+      "login": "登录",
+      "logout": "退出",
+      "register": "注册"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "AgentifUI",
+      "subtitle": "探索AI的无限可能，打造智能新体验",
+      "getStarted": "立即开始",
+      "learnMore": "了解更多",
+      "features": {
+        "feature1": {
+          "title": "大模型集成",
+          "description": "支持多种模型供应商，包括OpenAI、Anthropic、Dify等，满足不同企业需求"
+        },
+        "feature2": {
+          "title": "RAG知识增强", 
+          "description": "集成检索增强生成(RAG)技术，实现私有知识库和上下文感知"
+        },
+        "feature3": {
+          "title": "企业级部署",
+          "description": "支持私有化部署，保障数据安全，基于Dify后端提供稳定可靠的服务"
+        }
+      },
+      "copyright": "© {year} AgentifUI. 探索AI的无限可能。"
+    },
+    "chat": {
+      "newChat": "新对话",
+      "sendMessage": "发送",
+      "inputPlaceholder": "输入您的消息...",
+      "noMessages": "还没有消息",
+      "typing": "正在输入..."
+    },
+    "auth": {
+      "loginTitle": "登录",
+      "registerTitle": "注册",
+      "email": "邮箱",
+      "password": "密码",
+      "forgotPassword": "忘记密码？",
+      "noAccount": "还没有账户？",
+      "hasAccount": "已有账户？"
+    },
+    "settings": {
+      "title": "设置",
+      "profile": "个人资料",
+      "account": "账户",
+      "appearance": "外观",
+      "language": "语言"
+    },
+    "admin": {
+      "title": "管理后台",
+      "users": "用户管理",
+      "organizations": "组织管理",
+      "analytics": "数据分析"
+    }
+  },
+  "errors": {
+    "notFound": "页面未找到",
+    "serverError": "服务器错误",
+    "unauthorized": "未授权访问"
+  }
+} 

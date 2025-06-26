@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
 
 // --- BEGIN COMMENT ---
 // 配置 Next.js，使用传统 webpack 避免 Turbopack 字体加载问题
+// 集成 next-intl 插件
 // --- END COMMENT ---
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -50,4 +54,4 @@ const nextConfig: NextConfig = {
   // 使用传统 webpack，字体加载正常
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

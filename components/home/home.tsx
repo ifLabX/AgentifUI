@@ -7,12 +7,15 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@lib/supabase/client';
 import { useTheme } from '@lib/hooks/use-theme';
 import { AdminButton } from '@components/admin/admin-button';
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from '@components/ui/language-switcher';
 
 export function Home() {
   const router = useRouter();
   const { isDark } = useTheme();
   const supabase = createClient();
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const t = useTranslations('pages.home');
 
   const handleStartClick = async () => {
     try {
@@ -83,9 +86,13 @@ export function Home() {
     <AnimatePresence>
       <div className="w-full py-12 px-4 sm:px-6 lg:px-8 relative">
         {/* --- BEGIN COMMENT ---
-        管理员入口按钮，仅对管理员用户显示
+        右上角工具栏：管理员按钮（左）+ 语言切换器（右）
+        使用绝对定位，响应式设计
         --- END COMMENT --- */}
-        <AdminButton variant="floating" />
+        <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3">
+          <AdminButton />
+          <LanguageSwitcher variant="floating" />
+        </div>
 
         <motion.div 
           initial={{ opacity: 0 }}
@@ -102,7 +109,7 @@ export function Home() {
               transition={{ duration: 0.6 }}
               className={`text-5xl md:text-6xl font-bold bg-gradient-to-r ${colors.titleGradient} bg-clip-text text-transparent mb-6 leading-tight py-2`}
             >
-              AgentifUI
+              {t('title')}
             </motion.h1>
             
             <motion.p 
@@ -111,7 +118,7 @@ export function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className={`text-xl md:text-2xl ${colors.textColor} max-w-3xl mx-auto font-light`}
             >
-              探索AI的无限可能，打造智能新体验
+              {t('subtitle')}
             </motion.p>
           </div>
           
@@ -123,9 +130,9 @@ export function Home() {
             className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
           >
             {[
-              { title: "大模型集成", description: "支持多种模型供应商，包括OpenAI、Anthropic、Dify等，满足不同企业需求" },
-              { title: "RAG知识增强", description: "集成检索增强生成(RAG)技术，实现私有知识库和上下文感知" },
-              { title: "企业级部署", description: "支持私有化部署，保障数据安全，基于Dify后端提供稳定可靠的服务" }
+              { title: t('features.feature1.title'), description: t('features.feature1.description') },
+              { title: t('features.feature2.title'), description: t('features.feature2.description') },
+              { title: t('features.feature3.title'), description: t('features.feature3.description') }
             ].map((feature, index) => (
               <motion.div 
                 key={index}
@@ -155,7 +162,7 @@ export function Home() {
               className={`${colors.primaryButton} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200 cursor-pointer hover:scale-105`}
               onClick={handleStartClick}
             >
-              立即开始
+              {t('getStarted')}
             </Button>
             <Button 
               size="lg" 
@@ -163,7 +170,7 @@ export function Home() {
               className={`${colors.secondaryButton} px-8 py-3 h-auto text-base font-medium rounded-lg transition-all duration-200 cursor-pointer hover:scale-105`}
               onClick={handleLearnMoreClick}
             >
-              了解更多
+              {t('learnMore')}
             </Button>
           </motion.div>
           
@@ -175,7 +182,7 @@ export function Home() {
             className={`text-center ${colors.textColor} text-sm`}
           >
             <p>
-              © <span suppressHydrationWarning>{new Date().getFullYear()}</span> AgentifUI. 探索AI的无限可能。
+              {t('copyright', { year: new Date().getFullYear() })}
             </p>
           </motion.div>
         </motion.div>

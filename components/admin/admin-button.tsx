@@ -1,105 +1,62 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { Settings, Wrench } from 'lucide-react'
-import { cn } from '@lib/utils'
+import Link from 'next/link'
+import { Wrench } from 'lucide-react'
+import { useAdminAuth } from '@lib/hooks/use-admin-auth'
 import { useTheme } from '@lib/hooks/use-theme'
-import { useProfile } from '@lib/hooks/use-profile'
-
-interface AdminButtonProps {
-  variant?: 'floating' | 'navbar'
-}
+import { useTranslations } from 'next-intl'
+import { cn } from '@lib/utils'
 
 /**
  * 管理员按钮组件
  * 特点：
- * - 支持两种变体：floating（首页右上角浮动）和navbar（导航栏内嵌）
- * - 使用isDark适配主题颜色
- * - 使用useProfile hook检查管理员权限，利用localStorage缓存
- * - 带有动画效果和hover交互
+ * - 仅对管理员用户显示，提供进入管理后台的入口
+ * - 使用与语言切换器一致的样式设计，参考 sidebar button 的悬停效果
+ * - 支持多语言显示
  */
-export function AdminButton({ variant = 'floating' }: AdminButtonProps) {
-  const router = useRouter()
+export function AdminButton() {
+  const { isAdmin } = useAdminAuth(false)
   const { isDark } = useTheme()
-  
-  // --- BEGIN COMMENT ---
-  // 使用useProfile hook获取用户信息，包含缓存机制
-  // --- END COMMENT ---
-  const { profile, isLoading } = useProfile()
+  const t = useTranslations('pages.admin')
 
   // --- BEGIN COMMENT ---
-  // 管理员入口点击处理
+  // 非管理员用户不显示此按钮
   // --- END COMMENT ---
-  const handleAdminClick = () => {
-    router.push('/admin')
-  }
-
-  // --- BEGIN COMMENT ---
-  // 根据主题获取颜色配置
-  // --- END COMMENT ---
-  const getAdminButtonColors = () => {
-    if (isDark) {
-      return 'bg-stone-700/80 hover:bg-stone-600/90 border-stone-600 text-stone-200'
-    } else {
-      return 'bg-stone-100/80 hover:bg-stone-200/90 border-stone-300 text-stone-700'
-    }
-  }
-
-  // --- BEGIN COMMENT ---
-  // 检查是否为管理员：profile存在且role为admin
-  // --- END COMMENT ---
-  const isAdmin = profile?.role === 'admin'
-
-  // --- BEGIN COMMENT ---
-  // 如果不是管理员或正在加载，不显示按钮
-  // --- END COMMENT ---
-  if (!isAdmin || isLoading) {
+  if (!isAdmin) {
     return null
   }
 
   // --- BEGIN COMMENT ---
-  // floating变体：用于首页右上角，带有完整的动画效果
+  // 根据主题获取按钮样式：参考 sidebar button 的悬停效果
   // --- END COMMENT ---
-  if (variant === 'floating') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.5 }}
-        className="fixed top-6 right-6 z-50"
-      >
-        <button
-          onClick={handleAdminClick}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-lg border backdrop-blur-sm",
-            "transition-all duration-200 hover:scale-105 font-serif cursor-pointer",
-            "shadow-lg hover:shadow-xl",
-            getAdminButtonColors()
-          )}
-        >
-          <Wrench className="h-4 w-4" />
-          <span className="text-sm font-medium">管理后台</span>
-        </button>
-      </motion.div>
-    )
+  const getButtonColors = () => {
+    if (isDark) {
+      return "bg-stone-800/50 hover:bg-stone-600/60 text-gray-200 border-stone-600/30"
+    }
+    return "bg-stone-200/50 hover:bg-stone-300/80 text-stone-600 border-stone-400/30"
   }
 
-  // --- BEGIN COMMENT ---
-  // navbar变体：用于导航栏，样式简洁
-  // --- END COMMENT ---
   return (
-    <button
-      onClick={handleAdminClick}
-      className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-md border",
-        "transition-all duration-200 hover:scale-105 font-serif cursor-pointer",
-        "shadow-sm hover:shadow-md",
-        getAdminButtonColors()
-      )}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.5 }}
     >
-      <Wrench className="h-4 w-4" />
-      <span className="text-sm font-medium">管理</span>
-    </button>
+      <Link
+        href="/admin"
+        className={cn(
+          "flex items-center gap-2 px-4 py-2 rounded-lg border backdrop-blur-sm",
+          "transition-colors duration-200 cursor-pointer font-serif h-10",
+          "shadow-sm hover:shadow-md no-underline",
+          getButtonColors()
+        )}
+      >
+        <Wrench className="h-4 w-4" />
+        <span className="text-sm font-medium hidden sm:inline">
+          {t('title')}
+        </span>
+      </Link>
+    </motion.div>
   )
 } 
