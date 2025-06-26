@@ -67,7 +67,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
     
     const conversationId = chatMatch[1];
     // 排除 /chat/new 页面
-    return conversationId !== 'new' && conversationId !== 'recents';
+    return conversationId !== 'new' && conversationId !== 'history';
   }, [pathname]);
 
   // --- BEGIN COMMENT ---
@@ -101,7 +101,7 @@ export function ConversationTitleButton({ className }: ConversationTitleButtonPr
 
   // --- BEGIN COMMENT ---
   // 🎯 新增：当combinedConversations找不到对话时，从完整对话列表中查找
-  // 这样确保从recents页面点击历史对话时能瞬间显示正确标题
+  // 这样确保从history页面点击历史对话时能瞬间显示正确标题
   // --- END COMMENT ---
   const fallbackConversation = React.useMemo(() => {
     if (currentConversation || !currentConversationId) return null;

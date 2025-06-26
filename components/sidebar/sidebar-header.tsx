@@ -396,7 +396,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           )} />}
           disableLockBehavior={true}
           onClick={() => {
-            router.push('/chat/recents');
+            router.push('/chat/history');
           }}
           aria-label="历史对话"
           variant="transparent"
@@ -429,7 +429,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               />
             </div>
           }
-          id="sidebar-header-recents-tooltip"
+          id="sidebar-header-history-tooltip"
           placement="right"
           size="sm"
           showArrow={false}
@@ -443,7 +443,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             )} />}
             disableLockBehavior={true}
             onClick={() => {
-              router.push('/chat/recents');
+              router.push('/chat/history');
             }}
             aria-label="历史对话"
             variant="transparent"

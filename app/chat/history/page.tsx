@@ -1,6 +1,6 @@
 "use client"
 
-import { Recents } from "@components/recents"
+import { History } from "@components/history"
 import { NavBar } from "@components/nav-bar"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useEffect } from "react"
@@ -9,11 +9,11 @@ import { cn } from "@lib/utils"
 
 // --- BEGIN COMMENT ---
 // 历史对话页面
-// 使用 Recents 组件显示历史对话列表
+// 使用 History 组件显示历史对话列表
 // 与侧边栏集成，支持动态伸缩
 // 参考 settings 页面的实现，保持简单的挂载逻辑
 // --- END COMMENT ---
-export default function RecentsPage() {
+export default function HistoryPage() {
   const { isExpanded } = useSidebarStore()
   const { isDark } = useTheme()
   
@@ -35,7 +35,7 @@ export default function RecentsPage() {
         // --- 为navbar留出顶部空间 ---
         "pt-12"
       )}>
-        <Recents />
+        <History />
       </div>
     </>
   )

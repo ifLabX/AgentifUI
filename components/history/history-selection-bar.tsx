@@ -9,7 +9,7 @@ import { useTheme } from "@lib/hooks/use-theme"
 // 历史对话选择操作栏组件
 // 提供全选、取消选择和批量删除功能
 // --- END COMMENT ---
-interface RecentsSelectionBarProps {
+interface HistorySelectionBarProps {
   isSelectionMode: boolean
   selectedCount: number
   totalCount: number
@@ -21,7 +21,7 @@ interface RecentsSelectionBarProps {
   isDeleting?: boolean
 }
 
-export function RecentsSelectionBar({
+export function HistorySelectionBar({
   isSelectionMode,
   selectedCount,
   totalCount,
@@ -31,7 +31,7 @@ export function RecentsSelectionBar({
   onBatchDelete,
   onCancelSelection,
   isDeleting = false
-}: RecentsSelectionBarProps) {
+}: HistorySelectionBarProps) {
   const { isDark } = useTheme()
   
   // --- BEGIN COMMENT ---

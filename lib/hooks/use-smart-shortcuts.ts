@@ -86,7 +86,7 @@ export function useSmartShortcuts(options: {
       {
         keys: { key: 'h', metaKey: platformKeys.isMac, ctrlKey: !platformKeys.isMac },
         category: SHORTCUT_CATEGORIES.NAVIGATION,
-        handler: () => router.push('/chat/recents'),
+        handler: () => router.push('/chat/history'),
         description: '历史对话',
         preventDefault: true
       },

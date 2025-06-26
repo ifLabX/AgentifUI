@@ -145,7 +145,7 @@ export function DesktopUserAvatar() {
         {
             icon: Clock,
             label: "历史对话",
-            action: () => router.push("/chat/recents"),
+            action: () => router.push("/chat/history"),
         },
         {
             icon: Sliders,

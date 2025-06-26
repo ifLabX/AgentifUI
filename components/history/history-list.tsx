@@ -16,7 +16,7 @@ import { conversationEvents } from '@lib/hooks/use-combined-conversations'
 // 历史对话列表组件
 // 显示对话列表，支持搜索、删除、重命名等功能和多选功能
 // --- END COMMENT ---
-interface RecentsListProps {
+interface HistoryListProps {
   conversations: Conversation[]
   isLoading: boolean
   onConversationClick: (id: string) => void
@@ -34,7 +34,7 @@ interface RecentsListProps {
 // 历史对话列表组件
 // 确保组件正确返回 React 元素
 // --- END COMMENT ---
-export function RecentsList({
+export function HistoryList({
   conversations,
   isLoading,
   onConversationClick,
@@ -46,7 +46,7 @@ export function RecentsList({
   isSelectionMode = false,
   selectedConversations = new Set(),
   onSelectConversation
-}: RecentsListProps): React.ReactElement {
+}: HistoryListProps): React.ReactElement {
   const { isDark } = useTheme()
   const listRef = React.useRef<HTMLDivElement>(null)
   
@@ -184,7 +184,7 @@ export function RecentsList({
       }
       
       if (document.title !== fullTitle) {
-        console.log(`[RecentsTitle] 检测到标题被覆盖，恢复为: ${fullTitle}`)
+        console.log(`[HistoryTitle] 检测到标题被覆盖，恢复为: ${fullTitle}`)
         document.title = fullTitle
       }
       
@@ -320,7 +320,7 @@ export function RecentsList({
                 >
                   <button
                     onClick={(e) => {
-                      const dropdownId = `recents-dropdown-${conversation.id}`
+                      const dropdownId = `history-dropdown-${conversation.id}`
                       const buttonRect = e.currentTarget.getBoundingClientRect()
                       // --- BEGIN COMMENT ---
                       // 调整下拉菜单的位置，向左偏移一点，确保完全可见
@@ -339,7 +339,7 @@ export function RecentsList({
                       isDark ? "active:bg-white/20" : "active:bg-black/10",
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     )}
-                    data-more-button-id={`recents-dropdown-${conversation.id}`}
+                    data-more-button-id={`history-dropdown-${conversation.id}`}
                     aria-label="更多选项"
                   >
                     <MoreHorizontal className="w-4 h-4" />
@@ -347,7 +347,7 @@ export function RecentsList({
                   
                   {/* 下拉菜单内容 */}
                   <DropdownMenu
-                    id={`recents-dropdown-${conversation.id}`}
+                    id={`history-dropdown-${conversation.id}`}
                     minWidth={150}
                     className={cn(
                       isDark ? "bg-stone-800 border border-stone-700" : "bg-white border border-stone-200",

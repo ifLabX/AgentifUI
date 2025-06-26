@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 // 历史对话页面的头部组件
 // 包含标题和返回按钮
 // --- END COMMENT ---
-export function RecentsHeader() {
+export function HistoryHeader() {
   const { isDark } = useTheme()
   const router = useRouter()
   

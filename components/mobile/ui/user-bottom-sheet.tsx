@@ -177,7 +177,7 @@ export function UserBottomSheet({
               <Clock className="w-5 h-5" />,
               "历史对话",
               () => {
-                router.push('/chat/recents')
+                router.push('/chat/history')
                 onClose()
               }
             )}

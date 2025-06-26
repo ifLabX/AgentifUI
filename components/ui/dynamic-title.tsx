@@ -231,7 +231,7 @@ export function DynamicTitle() {
           return { title: '新对话 | ' + baseTitle, priority: 2, isStable: true }
         }
         
-        if (currentPath === '/chat/recents') {
+        if (currentPath === '/chat/history') {
           return { title: '历史对话 | ' + baseTitle, priority: 2, isStable: true }
         }
         

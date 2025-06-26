@@ -11,8 +11,8 @@ import { useChatInputStore } from "@lib/stores/chat-input-store"
 import { useChatTransitionStore } from "@lib/stores/chat-transition-store"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { useAllConversations } from "@lib/hooks/use-all-conversations"
-import { RecentsList } from "./recents-list"
-import { RecentsSelectionBar } from "./recents-selection-bar"
+import { HistoryList } from "./history-list"
+import { HistorySelectionBar } from "./history-selection-bar"
 import { useChatWidth } from "@lib/hooks/use-chat-width"
 import { conversationEvents } from "@lib/hooks/use-combined-conversations"
 import { ConfirmDialog } from "@components/ui"
@@ -22,7 +22,7 @@ import { useChatInterface } from '@lib/hooks/use-chat-interface'
 // 历史对话页面组件
 // 显示所有历史对话，支持搜索功能和多选删除功能
 // --- END COMMENT ---
-export function Recents() {
+export function History() {
   const { isDark } = useTheme()
   const { colors } = useThemeColors()
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -353,7 +353,7 @@ export function Recents() {
           "w-full mx-auto",
           widthClass, paddingClass
         )}>
-          <RecentsSelectionBar
+          <HistorySelectionBar
             isSelectionMode={isSelectionMode}
             selectedCount={selectedConversations.size}
             totalCount={filteredConversations.length}
@@ -371,7 +371,7 @@ export function Recents() {
           "w-full mx-auto",
           widthClass, paddingClass
         )}>
-          <RecentsList 
+          <HistoryList 
             conversations={filteredConversations}
             isLoading={isLoading}
             onConversationClick={handleConversationClick}

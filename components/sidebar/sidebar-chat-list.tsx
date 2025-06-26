@@ -241,9 +241,9 @@ export function SidebarChatList({
     
     // 检查当前路由是否是聊天页面
     // 当路由以 /chat/ 开头时，才考虑聊天项的选中状态
-    // 当路由是 /chat/recents 时，不考虑聊天项的选中状态
+    // 当路由是 /chat/history 时，不考虑聊天项的选中状态
     if (!pathname.startsWith('/chat/')) return false;
-    if (pathname === '/chat/recents') return false;
+    if (pathname === '/chat/history') return false;
     
     // 直接ID匹配
     if (chat.id === selectedId) return true;
