@@ -9,6 +9,7 @@ import { useProfile } from '@lib/hooks/use-profile';
 import { Profile } from '@lib/types/database';
 import { UserCircle } from 'lucide-react';
 import { useTheme } from '@lib/hooks/use-theme';
+import { useTranslations } from 'next-intl';
 
 // --- BEGIN COMMENT ---
 // 生成用户头像的首字母（与desktop-user-avatar保持一致）
@@ -51,6 +52,8 @@ const getAvatarBgColor = (name: string) => {
 export default function ProfileSettingsPage() {
   const { colors } = useSettingsColors();
   const { isDark } = useTheme();
+  const t = useTranslations('pages.settings.profileSettings');
+  const tCommon = useTranslations('common.ui');
   
   // --- BEGIN COMMENT ---
   // 使用useProfile hook获取包含组织信息的完整用户资料
@@ -73,7 +76,7 @@ export default function ProfileSettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6 font-serif">个人资料</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
         
         <div className={cn(
           "rounded-lg p-6 mb-6",
@@ -83,7 +86,7 @@ export default function ProfileSettingsPage() {
             "text-lg font-medium mb-4 font-serif",
             isDark ? "text-red-200" : "text-red-800"
           )}>
-            加载资料时出错
+            {t('loadProfileError')}
           </h2>
           <p className="mb-4 font-serif">{error.message}</p>
           <button
@@ -93,7 +96,7 @@ export default function ProfileSettingsPage() {
               isDark ? "bg-red-800/50 hover:bg-red-700/50 text-red-200" : "bg-red-100 hover:bg-red-200 text-red-800"
             )}
           >
-            重试
+            {tCommon('retry')}
           </button>
         </div>
       </motion.div>
@@ -108,7 +111,7 @@ export default function ProfileSettingsPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6 font-serif">个人资料</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
         
         <div className={cn(
           "w-full rounded-lg",
@@ -193,7 +196,7 @@ export default function ProfileSettingsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold mb-6 font-serif">个人资料</h1>
+      <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
       
       {profile && (
         <div className={cn(
@@ -209,7 +212,7 @@ export default function ProfileSettingsPage() {
               {profile.avatar_url ? (
                 <img
                   src={profile.avatar_url}
-                  alt={`${profile.full_name || profile.username || '用户'}的头像`}
+                  alt={`${profile.full_name || profile.username || tCommon('user')}的头像`}
                   className="w-16 h-16 rounded-full object-cover"
                   style={{
                     border: "none",
@@ -223,21 +226,21 @@ export default function ProfileSettingsPage() {
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center text-white font-medium text-lg"
                   style={{
-                    backgroundColor: getAvatarBgColor(profile.full_name || profile.username || '用户'),
+                    backgroundColor: getAvatarBgColor(profile.full_name || profile.username || tCommon('user')),
                     border: "none",
                   }}
                 >
-                  {getInitials(profile.full_name || profile.username || '用户')}
+                  {getInitials(profile.full_name || profile.username || tCommon('user'))}
                 </div>
               )}
             </div>
             <div className="ml-4">
-              <h2 className="text-lg font-medium font-serif">{profile.full_name || profile.username || '用户'}</h2>
+              <h2 className="text-lg font-medium font-serif">{profile.full_name || profile.username || tCommon('user')}</h2>
               <p className={cn(
                 "text-sm font-serif",
                 colors.secondaryTextColor.tailwind
               )}>
-                {profile.role === 'admin' ? '管理员' : '用户'}
+                {profile.role === 'admin' ? t('roles.admin') : t('roles.user')}
               </p>
             </div>
           </div>

@@ -32,12 +32,19 @@ const Item: React.FC<DropdownMenuV2ItemProps> = ({
   const context = useContext(DropdownMenuV2Context);
   const { isDark } = useTheme();
 
-  const handleItemClick = () => { 
+  const handleItemClick = (e: React.MouseEvent) => { 
+    e.preventDefault()
+    e.stopPropagation()
+    
     if (disabled) return
-    onClick?.(); 
+    
     if (context) { 
       context.closeMenu();
     }
+    
+    setTimeout(() => {
+      onClick?.();
+    }, 0);
   };
 
   return (
@@ -152,8 +159,21 @@ export function DropdownMenuV2({
     if (!isOpen) return
 
     const handleGlobalClick = (event: MouseEvent) => {
+      // --- BEGIN COMMENT ---
+      // 🎯 修复：检查点击的元素，如果是dropdown内容区域则不关闭
+      // 这样可以确保点击菜单项时不会被全局监听器干扰
+      // --- END COMMENT ---
+      const target = event.target as Node
+      
       // 如果点击的是组件内部，不关闭菜单
-      if (containerRef.current && containerRef.current.contains(event.target as Node)) {
+      if (containerRef.current && containerRef.current.contains(target)) {
+        return
+      }
+      
+      // 如果点击的是portal中的dropdown内容，也不关闭菜单
+      // 通过检查点击元素是否包含dropdown相关的class来判断
+      const clickedElement = event.target as Element
+      if (clickedElement.closest && clickedElement.closest('[data-dropdown-content="true"]')) {
         return
       }
       
@@ -161,10 +181,15 @@ export function DropdownMenuV2({
       setIsOpen(false)
     }
 
-    // 添加全局点击监听器
-    document.addEventListener('mousedown', handleGlobalClick)
+    // --- BEGIN COMMENT ---
+    // 🎯 使用setTimeout延迟添加监听器，避免与当前点击事件冲突
+    // --- END COMMENT ---
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleGlobalClick)
+    }, 0)
     
     return () => {
+      clearTimeout(timeoutId)
       document.removeEventListener('mousedown', handleGlobalClick)
     }
   }, [isOpen, setIsOpen])
@@ -252,6 +277,7 @@ export function DropdownMenuV2({
           contentClassName
         )}
         style={{ minWidth: `${minWidth}px` }}
+        data-dropdown-content="true"
       >
         {children}
       </div>

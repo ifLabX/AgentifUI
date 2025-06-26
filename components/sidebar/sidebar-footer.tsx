@@ -7,11 +7,14 @@ import { MobileUserButton } from "@components/mobile"
 import { useMobile } from "@lib/hooks/use-mobile"
 import { useRouter } from "next/navigation"
 import { TooltipWrapper } from "@components/ui/tooltip-wrapper"
+import { useTranslations } from 'next-intl'
 
 export function SidebarFooter() {
   const isMobile = useMobile()
   const router = useRouter()
   const { isExpanded } = useSidebarStore()
+  const t = useTranslations('sidebar')
+  
   return (
     <div className={cn(
       "flex flex-col gap-1.5 p-3 mt-auto",
@@ -28,15 +31,15 @@ export function SidebarFooter() {
             onClick={() => {
               router.push('/settings')
             }}
-            aria-label="设置"
+            aria-label={t('settings')}
             variant="transparent"
             className="group"
           >
-            <span className="font-serif">设置</span>
+            <span className="font-serif">{t('settings')}</span>
           </SidebarButton>
         ) : (
           <TooltipWrapper
-            content="设置"
+            content={t('settings')}
             id="sidebar-footer-settings-tooltip"
             placement="right"
             size="sm"
@@ -49,11 +52,11 @@ export function SidebarFooter() {
               onClick={() => {
                 router.push('/settings')
               }}
-              aria-label="设置"
+              aria-label={t('settings')}
               variant="transparent"
               className="group"
             >
-              <span className="font-serif">设置</span>
+              <span className="font-serif">{t('settings')}</span>
             </SidebarButton>
           </TooltipWrapper>
         )

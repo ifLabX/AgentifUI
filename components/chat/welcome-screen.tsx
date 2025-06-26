@@ -7,6 +7,7 @@ import { TypeWriter } from "@components/ui/typewriter"
 import { useCurrentApp } from "@lib/hooks/use-current-app"
 import { useWelcomeLayout } from "@lib/hooks/use-welcome-layout"
 import { useTypewriterStore } from "@lib/stores/ui/typewriter-store"
+import { useTranslations } from 'next-intl'
 
 interface WelcomeScreenProps {
   className?: string
@@ -14,7 +15,7 @@ interface WelcomeScreenProps {
 }
 
 // 北京时间获取方式
-const getTimeBasedGreeting = () => {
+const getTimeBasedGreeting = (t: (key: string) => string) => {
   const now = new Date();
   const beijingTime = new Intl.DateTimeFormat('zh-CN', {
     timeZone: 'Asia/Shanghai',
@@ -25,18 +26,19 @@ const getTimeBasedGreeting = () => {
   const hour = parseInt(beijingTime);
   
   if (hour >= 6 && hour < 12) {
-    return "早上好";
+    return t('greeting.morning');
   } else if (hour >= 12 && hour < 18) {
-    return "下午好";
+    return t('greeting.afternoon');
   } else if (hour >= 18 && hour < 22) {
-    return "晚上好";
+    return t('greeting.evening');
   } else {
-    return "夜深了";
+    return t('greeting.night');
   }
 };
 
 export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { isDark } = useTheme()
+  const t = useTranslations('pages.chat')
   const [finalText, setFinalText] = useState("")
   // --- BEGIN COMMENT ---
   // 🎯 新增：TypeWriter重置键，确保应用切换时能够重新打字
@@ -187,13 +189,13 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
         // --- BEGIN COMMENT ---
         // 情况2：没有开场白但有用户名 → 个性化时间问候
         // --- END COMMENT ---
-        welcomeText = `${getTimeBasedGreeting()}，${username}`;
+        welcomeText = `${getTimeBasedGreeting(t)}，${username}`;
         console.log('[WelcomeScreen] 使用用户名问候:', welcomeText);
       } else {
         // --- BEGIN COMMENT ---
         // 情况3：没有用户名 → 默认时间问候
         // --- END COMMENT ---
-        welcomeText = getTimeBasedGreeting();
+        welcomeText = getTimeBasedGreeting(t);
         console.log('[WelcomeScreen] 使用默认问候:', welcomeText);
       }
       
@@ -215,7 +217,8 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     currentAppInstance?.instance_id,
     isValidating,     // 🚨 修复：重新监听验证状态
     isLoading,        // 🚨 修复：重新监听加载状态
-    resetWelcomeTypewriter
+    resetWelcomeTypewriter,
+    t
   ]);
 
   // --- BEGIN COMMENT ---

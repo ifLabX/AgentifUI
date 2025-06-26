@@ -6,6 +6,7 @@ import { cn } from '@lib/utils';
 import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { useLogout } from '@lib/hooks/use-logout';
 import { LogOut, Shield, Key, AlertCircle, Mail } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 // --- BEGIN COMMENT ---
 // 账号设置组件
@@ -19,6 +20,8 @@ interface AccountSettingsProps {
 export function AccountSettings({ email, authSource }: AccountSettingsProps) {
   const { colors, isDark } = useSettingsColors();
   const { logout } = useLogout();
+  const t = useTranslations('pages.settings.accountSettings');
+  const tCommon = useTranslations('common.ui');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -58,7 +61,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
         <h3 className={cn(
           "text-lg font-medium mb-4 font-serif",
           colors.textColor.tailwind
-        )}>账号信息</h3>
+        )}>{t('accountInfo')}</h3>
         
         <div className="space-y-4">
           {email && (
@@ -72,7 +75,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                 <Mail className={cn("w-5 h-5", colors.secondaryTextColor.tailwind)} />
               </div>
               <div className="ml-4">
-                <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>登录邮箱</p>
+                <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>{t('loginEmail')}</p>
                 <p className={cn("font-serif", colors.textColor.tailwind)}>{email}</p>
               </div>
             </div>
@@ -89,7 +92,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                 <Key className={cn("w-5 h-5", colors.secondaryTextColor.tailwind)} />
               </div>
               <div className="ml-4">
-                <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>认证方式</p>
+                <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>{t('authMethod')}</p>
                 <p className={cn("font-serif", colors.textColor.tailwind)}>{authSource}</p>
               </div>
             </div>
@@ -106,7 +109,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
         <h3 className={cn(
           "text-lg font-medium mb-4 font-serif",
           colors.textColor.tailwind
-        )}>安全设置</h3>
+        )}>{t('securitySettings')}</h3>
         
         <div className="space-y-4">
           {/* 退出登录按钮 */}
@@ -122,7 +125,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
               )}
             >
               <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
-              <span className="font-serif">确定要退出登录吗？</span>
+              <span className="font-serif">{t('confirmLogout')}</span>
             </motion.div>
           ) : null}
           
@@ -132,7 +135,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
               colors.textColor.tailwind
             )}>
               <LogOut className="w-5 h-5 mr-2" />
-              <span>退出当前账号</span>
+              <span>{t('logoutAccount')}</span>
             </div>
             
             <div className="flex gap-3">
@@ -151,7 +154,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                     "border"
                   )}
                 >
-                  取消
+                  {tCommon('cancel')}
                 </button>
               )}
               
@@ -171,7 +174,7 @@ export function AccountSettings({ email, authSource }: AccountSettingsProps) {
                     : `${colors.primaryButtonBackground.tailwind} ${colors.primaryButtonHover.tailwind} ${colors.primaryButtonText.tailwind}`
                 )}
               >
-                {isLoggingOut ? '退出中...' : (showConfirm ? '确认退出' : '退出登录')}
+                {isLoggingOut ? t('loggingOut') : (showConfirm ? t('confirmLogoutBtn') : t('logout'))}
               </button>
             </div>
           </div>

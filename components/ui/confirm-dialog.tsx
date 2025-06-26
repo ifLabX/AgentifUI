@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 import { cn } from '@lib/utils';
 import { useMobile } from '@lib/hooks';
 import { useTheme } from '@lib/hooks/use-theme';
@@ -32,13 +33,15 @@ export function ConfirmDialog({
   title,
   message,
   confirmText,
-  cancelText = '取消',
+  cancelText,
   variant = 'default',
   isLoading = false,
   icon = 'warning'
 }: ConfirmDialogProps) {
   const { isDark } = useTheme();
   const isMobile = useMobile();
+  const t = useTranslations('common.ui');
+  const finalCancelText = cancelText || t('cancel');
   const dialogRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = React.useState(false);
 
@@ -257,7 +260,7 @@ export function ConfirmDialog({
                 : 'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/30 focus:ring-offset-white'
             )}
           >
-            {cancelText}
+            {finalCancelText}
           </button>
           <button
             onClick={onConfirm}
@@ -271,7 +274,7 @@ export function ConfirmDialog({
               isDark ? 'focus:ring-offset-stone-900' : 'focus:ring-offset-white'
             )}
           >
-            {isLoading ? '处理中...' : confirmText}
+            {isLoading ? t('loading') : confirmText}
           </button>
         </div>
 
@@ -378,7 +381,7 @@ export function ConfirmDialog({
                 isDark ? 'focus:ring-offset-stone-900' : 'focus:ring-offset-white'
               )}
             >
-              {isLoading ? '处理中...' : confirmText}
+              {isLoading ? t('loading') : confirmText}
             </button>
             <button
               onClick={onClose}
@@ -393,7 +396,7 @@ export function ConfirmDialog({
                   : 'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/30 focus:ring-offset-white'
               )}
             >
-              {cancelText}
+              {finalCancelText}
             </button>
           </div>
         </div>

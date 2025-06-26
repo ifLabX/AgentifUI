@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 import { cn } from '@lib/utils';
 import { useMobile } from '@lib/hooks';
 import { useTheme } from '@lib/hooks/use-theme';
@@ -36,12 +37,14 @@ export function InputDialog({
   placeholder,
   defaultValue = '',
   confirmText,
-  cancelText = '取消',
+  cancelText,
   isLoading = false,
   maxLength = 100
 }: InputDialogProps) {
   const { isDark } = useTheme();
   const isMobile = useMobile();
+  const t = useTranslations('common.ui');
+  const finalCancelText = cancelText || t('cancel');
   const dialogRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [mounted, setMounted] = useState(false);
@@ -286,7 +289,7 @@ export function InputDialog({
                   : 'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/30 focus:ring-offset-white'
               )}
             >
-              {cancelText}
+              {finalCancelText}
             </button>
             <button
               type="submit"
@@ -301,7 +304,7 @@ export function InputDialog({
                   : 'bg-stone-600 hover:bg-stone-700 focus:ring-stone-500/30 text-white shadow-lg shadow-stone-900/10 focus:ring-offset-white'
               )}
             >
-              {isLoading ? '处理中...' : confirmText}
+              {isLoading ? t('loading') : confirmText}
             </button>
           </div>
 
@@ -442,7 +445,7 @@ export function InputDialog({
                       : 'bg-stone-600 hover:bg-stone-700 focus:ring-stone-500/30 text-white shadow-lg shadow-stone-900/10 focus:ring-offset-white'
                   )}
                 >
-                  {isLoading ? '处理中...' : confirmText}
+                  {isLoading ? t('loading') : confirmText}
                 </button>
                 <button
                   type="button"
@@ -458,7 +461,7 @@ export function InputDialog({
                       : 'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/30 focus:ring-offset-white'
                   )}
                 >
-                  {cancelText}
+                  {finalCancelText}
                 </button>
               </div>
             </div>

@@ -9,6 +9,7 @@ import { createClient } from '@lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { LogOut, Shield } from 'lucide-react';
 import { useTheme } from '@lib/hooks/use-theme';
+import { useTranslations } from 'next-intl';
 
 // --- BEGIN COMMENT ---
 // 账号设置页面
@@ -17,6 +18,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 export default function AccountSettingsPage() {
   const { colors } = useSettingsColors();
   const { isDark } = useTheme();
+  const t = useTranslations('pages.settings.accountSettings');
+  const tCommon = useTranslations('common.ui');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -42,18 +45,18 @@ export default function AccountSettingsPage() {
         
         // 获取用户邮箱和认证来源
         setUserEmail(user.email || null);
-        setAuthSource(user.app_metadata?.provider || '邮箱密码');
+        setAuthSource(user.app_metadata?.provider || t('emailPasswordAuth'));
         
       } catch (err) {
         console.error('加载用户账号信息失败:', err);
-        setError(err instanceof Error ? err : new Error('加载用户账号信息失败'));
+        setError(err instanceof Error ? err : new Error(t('loadAccountError')));
       } finally {
         setIsLoading(false);
       }
     }
     
     loadUserAccount();
-  }, [router, supabase.auth]);
+  }, [router, supabase.auth, t]);
   
   // 处理错误情况
   if (error) {
@@ -63,7 +66,7 @@ export default function AccountSettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6 font-serif">账号设置</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
         
         <div className={cn(
           "rounded-lg p-6 mb-6",
@@ -75,7 +78,7 @@ export default function AccountSettingsPage() {
             "text-lg font-medium mb-4 font-serif",
             isDark ? "text-red-200" : "text-red-800"
           )}>
-            加载账号信息时出错
+            {t('loadAccountError')}
           </h2>
           <p className="mb-4 font-serif">{error.message}</p>
           <button
@@ -87,7 +90,7 @@ export default function AccountSettingsPage() {
                 : "bg-red-100 hover:bg-red-200 text-red-800"
             )}
           >
-            重试
+            {t('retry')}
           </button>
         </div>
       </motion.div>
@@ -102,7 +105,7 @@ export default function AccountSettingsPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6 font-serif">账号设置</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
         
         <div className={cn(
           "w-full rounded-lg",
@@ -150,7 +153,7 @@ export default function AccountSettingsPage() {
           <h3 className={cn(
             "text-lg font-medium mb-4 font-serif",
             colors.textColor.tailwind
-          )}>安全设置</h3>
+          )}>{t('securitySettings')}</h3>
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -159,7 +162,7 @@ export default function AccountSettingsPage() {
                 colors.textColor.tailwind
               )}>
                 <LogOut className="w-5 h-5 mr-2" />
-                <span>退出当前账号</span>
+                <span>{t('logoutAccount')}</span>
               </div>
               
               <button
@@ -171,7 +174,7 @@ export default function AccountSettingsPage() {
                     : "bg-stone-300 text-stone-500"
                 )}
               >
-                删除账号
+                {t('deleteAccount')}
               </button>
             </div>
           </div>
@@ -186,7 +189,7 @@ export default function AccountSettingsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold mb-6 font-serif">账号设置</h1>
+      <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
       
       <AccountSettings 
         email={userEmail || undefined}

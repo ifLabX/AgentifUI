@@ -2,7 +2,7 @@
   "common": {
     "ui": {
       "submit": "Submit",
-      "cancel": "Cancel", 
+      "cancel": "Cancel",
       "save": "Save",
       "delete": "Delete",
       "edit": "Edit",
@@ -15,7 +15,7 @@
     "navigation": {
       "home": "Home",
       "chat": "Chat",
-      "apps": "Apps", 
+      "apps": "Apps",
       "admin": "Admin",
       "settings": "Settings",
       "about": "About",
@@ -51,7 +51,15 @@
       "sendMessage": "Send",
       "inputPlaceholder": "Type your message...",
       "noMessages": "No messages yet",
-      "typing": "Typing..."
+      "typing": "Typing...",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening",
+        "night": "It's getting late"
+      },
+      "recentChats": "Recent Chats",
+      "historyChats": "Chat History"
     },
     "auth": {
       "loginTitle": "Login",
@@ -67,12 +75,95 @@
       "profile": "Profile",
       "account": "Account",
       "appearance": "Appearance",
-      "language": "Language"
+      "language": "Language",
+      "navigation": {
+        "overview": "Overview",
+        "profileNav": "Profile",
+        "accountNav": "Account Settings",
+        "appearanceNav": "Appearance",
+        "languageNav": "Language"
+      },
+      "descriptions": {
+        "overview": "Manage your personal preferences and customize your app experience",
+        "profileDesc": "Update personal information, avatar and account settings",
+        "accountDesc": "Manage your account security and login information",
+        "appearanceDesc": "Customize themes, colors and interface layout",
+        "languageDesc": "Choose your preferred display language and region settings"
+      },
+      "accountSettings": {
+        "title": "Account Settings",
+        "accountInfo": "Account Information",
+        "loginEmail": "Login Email",
+        "authMethod": "Authentication Method",
+        "emailPasswordAuth": "Email & Password",
+        "securitySettings": "Security Settings",
+        "logoutAccount": "Sign out of current account",
+        "confirmLogout": "Are you sure you want to sign out?",
+        "confirmLogoutBtn": "Confirm Sign Out",
+        "logout": "Sign Out",
+        "loggingOut": "Signing out...",
+        "loadAccountError": "Error loading account information",
+        "retry": "Retry",
+        "deleteAccount": "Delete Account"
+      },
+      "profileSettings": {
+        "title": "Profile",
+        "accountInfo": "Account Information",
+        "organization": "Organization",
+        "registrationTime": "Registration Time",
+        "accountRole": "Account Role",
+        "lastLogin": "Last Login",
+        "editProfile": "Edit Profile",
+        "name": "Name",
+        "nickname": "Username",
+        "avatarUrl": "Avatar URL",
+        "profileUpdated": "Profile updated successfully",
+        "updateFailed": "Failed to update profile",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "namePlaceholder": "Enter your name",
+        "usernamePlaceholder": "Enter your username",
+        "avatarPlaceholder": "Enter avatar image URL",
+        "avatarHint": "Enter a valid image URL, square images recommended",
+        "roles": {
+          "admin": "Administrator",
+          "manager": "Manager",
+          "user": "User"
+        },
+        "status": {
+          "notRecorded": "Not recorded",
+          "notSet": "Not set",
+          "noOrganization": "No organization"
+        },
+        "loadProfileError": "Error loading profile"
+      },
+      "appearanceSettings": {
+        "title": "Appearance Settings",
+        "theme": "Theme",
+        "themeDescription": "Choose your preferred display mode",
+        "themes": {
+          "light": "Light Mode",
+          "dark": "Dark Mode",
+          "system": "Follow System"
+        },
+        "preview": {
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System"
+        }
+      },
+      "languageSettings": {
+        "title": "Language Settings",
+        "language": "Language",
+        "languageDescription": "Choose your preferred display language",
+        "currentLanguage": "Current Language",
+        "switchLanguage": "Switch Language"
+      }
     },
     "admin": {
       "title": "Admin Dashboard",
       "users": "User Management",
-      "organizations": "Organization Management", 
+      "organizations": "Organization Management",
       "analytics": "Analytics"
     }
   },
@@ -80,5 +171,39 @@
     "notFound": "Page not found",
     "serverError": "Server error",
     "unauthorized": "Unauthorized access"
+  },
+  "sidebar": {
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "newChat": "New Chat",
+    "historyChats": "Chat History",
+    "appsMarket": "Apps Market",
+    "settings": "Settings",
+    "recentChats": "Recent Chats",
+    "moreOptions": "More Options",
+    "rename": "Rename",
+    "deleteChat": "Delete Chat",
+    "untitled": "Untitled",
+    "creating": "Creating...",
+    "favoriteApps": "Favorite Apps",
+    "loading": "Loading...",
+    "startWorkflow": "Start Workflow",
+    "startTextGeneration": "Start Text Generation",
+    "startChat": "Start Chat",
+    "hideApp": "Hide App",
+    "renameDialog": {
+      "title": "Rename Conversation",
+      "label": "Conversation Name",
+      "placeholder": "Enter new conversation name",
+      "confirmText": "Confirm Rename"
+    },
+    "deleteDialog": {
+      "confirmText": "Confirm Delete",
+      "confirmMessage": "Are you sure you want to delete conversation \"{title}\"? This action cannot be undone."
+    },
+    "syncingMessage": "Conversation data is syncing, please try to {action} later.",
+    "operationFailed": "Operation failed, please try again later.",
+    "saveFailed": "Failed to save conversation",
+    "createFailed": "Failed to create conversation"
   }
-} 
+}

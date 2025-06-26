@@ -1,6 +1,7 @@
 "use client"
 import React from "react"
 import { ArrowRightToLine, ArrowLeftToLine, CirclePlus, MessageCirclePlus, Edit3, Edit, SquarePen, Pen, Feather, LayoutGrid, Clock } from "lucide-react"
+import { useTranslations } from 'next-intl'
 import { SidebarButton } from "./sidebar-button"
 import { useSidebarStore } from "@lib/stores/sidebar-store"
 import { cn } from "@lib/utils"
@@ -22,6 +23,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   const { isExpanded, toggleSidebar } = useSidebarStore()
   const { isDark } = useTheme()
   const router = useRouter()
+  const t = useTranslations('sidebar')
   
   // --- BEGIN COMMENT ---
   // 🎯 使用正确的快捷键映射
@@ -121,7 +123,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         --- END COMMENT --- */}
         {!isExpanded ? (
           <TooltipWrapper
-            content="展开"
+            content={t('expand')}
             id="sidebar-header-expand-tooltip"
             placement="right"
             size="sm"
@@ -155,7 +157,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                   toggleSidebar();
                 }
               }}
-              aria-label="展开"
+              aria-label={t('expand')}
               className={cn(
                 "group relative flex items-center justify-center px-2 py-2 text-sm font-medium",
                 // --- BEGIN COMMENT ---
@@ -239,7 +241,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                 toggleSidebar();
               }
             }}
-            aria-label="收起"
+            aria-label={t('collapse')}
             className={cn(
               "group relative flex items-center justify-center px-2 py-2 text-sm font-medium",
               // --- BEGIN COMMENT ---
@@ -329,14 +331,14 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           )} />}
           disableLockBehavior={true}
           onClick={handleNewChat}
-          aria-label="新对话"
+          aria-label={t('newChat')}
           variant="transparent"
           className={cn(
             "group font-medium transition-all duration-150 ease-out",
             "flex items-center justify-between w-full"
           )}
         >
-          <span className="font-serif">新对话</span>
+          <span className="font-serif">{t('newChat')}</span>
           {/* 悬停时显示的快捷键 */}
           <div className={cn(
             "opacity-0 group-hover:opacity-60 transition-opacity duration-200",
@@ -353,7 +355,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         <TooltipWrapper
           content={
             <div className="flex items-center gap-2.5">
-              <span>新对话</span>
+              <span>{t('newChat')}</span>
               <KeyCombination 
                 keys={newChatShortcut.symbols}
                 size="sm"
@@ -374,13 +376,13 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             )} />}
             disableLockBehavior={true}
             onClick={handleNewChat}
-            aria-label="新对话"
+            aria-label={t('newChat')}
             variant="transparent"
             className={cn(
               "group font-medium transition-all duration-150 ease-out"
             )}
           >
-            <span className="font-serif">新对话</span>
+            <span className="font-serif">{t('newChat')}</span>
           </SidebarButton>
         </TooltipWrapper>
       )}
@@ -398,14 +400,14 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           onClick={() => {
             router.push('/chat/history');
           }}
-          aria-label="历史对话"
+          aria-label={t('historyChats')}
           variant="transparent"
           className={cn(
             "group font-medium transition-all duration-150 ease-out",
             "flex items-center justify-between w-full"
           )}
         >
-          <span className="font-serif">历史对话</span>
+          <span className="font-serif">{t('historyChats')}</span>
           {/* 悬停时显示的快捷键 */}
           <div className={cn(
             "opacity-0 group-hover:opacity-60 transition-opacity duration-200",
@@ -422,7 +424,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         <TooltipWrapper
           content={
             <div className="flex items-center gap-2.5">
-              <span>历史对话</span>
+              <span>{t('historyChats')}</span>
               <KeyCombination 
                 keys={recentChatsShortcut.symbols}
                 size="sm"
@@ -445,13 +447,13 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             onClick={() => {
               router.push('/chat/history');
             }}
-            aria-label="历史对话"
+            aria-label={t('historyChats')}
             variant="transparent"
             className={cn(
               "group font-medium transition-all duration-150 ease-out"
             )}
           >
-            <span className="font-serif">历史对话</span>
+            <span className="font-serif">{t('historyChats')}</span>
           </SidebarButton>
         </TooltipWrapper>
       )}
@@ -469,14 +471,14 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           onClick={() => {
             router.push('/apps');
           }}
-          aria-label="应用市场"
+          aria-label={t('appsMarket')}
           variant="transparent"
           className={cn(
             "group font-medium transition-all duration-150 ease-out",
             "flex items-center justify-between w-full"
           )}
         >
-          <span className="font-serif">应用市场</span>
+          <span className="font-serif">{t('appsMarket')}</span>
           {/* 悬停时显示的快捷键 */}
           <div className={cn(
             "opacity-0 group-hover:opacity-60 transition-opacity duration-200",
@@ -493,7 +495,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         <TooltipWrapper
           content={
             <div className="flex items-center gap-2.5">
-              <span>应用市场</span>
+              <span>{t('appsMarket')}</span>
               <KeyCombination 
                 keys={appsMarketShortcut.symbols}
                 size="sm"
@@ -516,13 +518,13 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             onClick={() => {
               router.push('/apps');
             }}
-            aria-label="应用市场"
+            aria-label={t('appsMarket')}
             variant="transparent"
             className={cn(
               "group font-medium transition-all duration-150 ease-out"
             )}
           >
-            <span className="font-serif">应用市场</span>
+            <span className="font-serif">{t('appsMarket')}</span>
           </SidebarButton>
         </TooltipWrapper>
       )}

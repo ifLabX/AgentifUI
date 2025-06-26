@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { MessageSquare, ChevronDown, ChevronUp, Trash, Edit, Clock, Pen } from "lucide-react"
+import { useTranslations } from 'next-intl'
 import { SidebarListButton } from "./sidebar-list-button" // 使用新的 SidebarListButton 组件
 import { SidebarChatIcon } from "./sidebar-chat-icon"
 // import { ChatSkeleton } from "./chat-skeleton"
@@ -39,6 +40,7 @@ export function SidebarChatList({
   const isMobile = useMobile()
   const router = useRouter()
   const { colors } = useThemeColors()
+  const t = useTranslations('sidebar')
   const { 
     conversations, 
     isLoading: isLoadingConversations, 
@@ -135,7 +137,7 @@ export function SidebarChatList({
     
     const supabasePK = selectedConversation.supabase_pk;
     if (!supabasePK) {
-      alert("对话数据正在同步中，请稍后再尝试重命名。");
+      alert(t('syncingMessage'));
       setShowRenameDialog(false);
       return;
     }
@@ -162,11 +164,11 @@ export function SidebarChatList({
         setShowRenameDialog(false);
       } else {
         console.error('重命名对话失败:', result.error);
-        alert('重命名会话失败。');
+        alert(t('operationFailed'));
       }
     } catch (error) {
       console.error('重命名对话操作出错:', error);
-      alert('操作出错，请稍后再试。');
+      alert(t('operationFailed'));
     } finally {
       setIsOperating(false);
     }
@@ -185,7 +187,7 @@ export function SidebarChatList({
     
     const supabasePK = selectedConversation.supabase_pk;
     if (!supabasePK) {
-      alert("对话数据正在同步中，请稍后再尝试删除。");
+      alert(t('syncingMessage'));
       setShowDeleteDialog(false);
       return;
     }
@@ -210,11 +212,11 @@ export function SidebarChatList({
         setShowDeleteDialog(false);
       } else {
         console.error('删除对话失败:', result.error);
-        alert('删除会话失败。');
+        alert(t('operationFailed'));
       }
     } catch (error) {
       console.error('删除对话操作出错:', error);
-      alert('操作出错，请稍后再试。');
+      alert(t('operationFailed'));
     } finally {
       setIsOperating(false);
     }
@@ -282,7 +284,7 @@ export function SidebarChatList({
   // 考虑到右侧 more button 的占位，确保骨架屏宽度适当
   // --- END COMMENT ---
   const renderChatItemContent = (chat: CombinedConversation, isItemLoading: boolean) => {
-    const title = chat.title || '新对话';
+    const title = chat.title || t('untitled');
     
     // --- BEGIN COMMENT ---
     // 🎯 检查是否需要使用打字机效果
@@ -350,7 +352,7 @@ export function SidebarChatList({
         onOpenChange={handleMenuOpenChange}
         trigger={
           <MoreButtonV2
-            aria-label="更多选项"
+            aria-label={t('moreOptions')}
             disabled={itemIsLoading || !canPerformActions || isTempChat}
             isMenuOpen={isMenuOpen}
             isItemSelected={isItemSelected}
@@ -367,7 +369,7 @@ export function SidebarChatList({
           onClick={() => handleRename(chat.id)}
           disabled={itemIsLoading || !canPerformActions || isTempChat}
         >
-          重命名
+{t('rename')}
         </DropdownMenuV2.Item>
         <DropdownMenuV2.Item
           icon={<Trash className="w-3.5 h-3.5" />}
@@ -375,7 +377,7 @@ export function SidebarChatList({
           onClick={() => handleDelete(chat.id)}
           disabled={itemIsLoading || !canPerformActions || isTempChat}
         >
-          删除对话
+{t('deleteChat')}
         </DropdownMenuV2.Item>
       </DropdownMenuV2>
     );
@@ -416,7 +418,7 @@ export function SidebarChatList({
             "text-xs font-medium font-serif leading-none",
             isDark ? "text-stone-400" : "text-stone-500"
           )}>
-            近期对话
+{t('recentChats')}
           </span>
         </div>
         
@@ -545,11 +547,11 @@ export function SidebarChatList({
         isOpen={showRenameDialog}
         onClose={() => !isOperating && setShowRenameDialog(false)}
         onConfirm={handleRenameConfirm}
-        title="重命名对话"
-        label="对话名称"
-        placeholder="输入新的对话名称"
-        defaultValue={selectedConversation?.title || '新对话'}
-        confirmText="确认重命名"
+        title={t('renameDialog.title')}
+        label={t('renameDialog.label')}
+        placeholder={t('renameDialog.placeholder')}
+        defaultValue={selectedConversation?.title || t('untitled')}
+        confirmText={t('renameDialog.confirmText')}
         isLoading={isOperating}
         maxLength={50}
       />
@@ -561,9 +563,9 @@ export function SidebarChatList({
         isOpen={showDeleteDialog}
         onClose={() => !isOperating && setShowDeleteDialog(false)}
         onConfirm={handleDeleteConfirm}
-        title="删除对话"
-        message={`确定要删除会话 "${selectedConversation?.title || '新对话'}" 吗？此操作无法撤销。`}
-        confirmText="确认删除"
+        title={t('deleteChat')}
+        message={t('deleteDialog.confirmMessage', { title: selectedConversation?.title || t('untitled') })}
+        confirmText={t('deleteDialog.confirmText')}
         variant="danger"
         icon="delete"
         isLoading={isOperating}

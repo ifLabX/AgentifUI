@@ -2,48 +2,61 @@
 
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { useTranslations } from 'next-intl'
 import { cn } from "@lib/utils"
 import { useSettingsColors } from '@lib/hooks/use-settings-colors'
-import { User, Palette, KeyRound, Shield, Sliders } from "lucide-react"
+import { User, Palette, KeyRound, Shield, Sliders, Globe } from "lucide-react"
 
 // --- BEGIN COMMENT ---
 // 定义设置选项，包括图标、标题和路径
+// 标题将通过翻译动态获取
 // --- END COMMENT ---
-export const settingsNavItems = [
+export const getSettingsNavItems = (t: any) => [
   {
-    title: "概览",
+    title: t('navigation.overview'),
     href: "/settings",
     icon: Sliders
   },
   {
-    title: "个人资料",
+    title: t('navigation.profileNav'),
     href: "/settings/profile",
     icon: User
   },
   {
-    title: "账号设置",
+    title: t('navigation.accountNav'),
     href: "/settings/account",
     icon: KeyRound
   },
   {
-    title: "外观",
+    title: t('navigation.appearanceNav'),
     href: "/settings/appearance",
     icon: Palette
+  },
+  {
+    title: t('navigation.languageNav'),
+    href: "/settings/language",
+    icon: Globe
   }
 ]
+
+// --- BEGIN COMMENT ---
+// 静态导出已移除，统一使用 getSettingsNavItems(t) 获取国际化导航项
+// 如需在其他文件中使用，请导入翻译hooks并调用 getSettingsNavItems(t)
+// --- END COMMENT ---
 
 export function SettingsSidebar() {
   const pathname = usePathname()
   const { colors } = useSettingsColors();
+  const t = useTranslations('pages.settings');
   
   return (
     <div className="h-full">
       <div className="py-6">
         <div className="px-4 mb-6">
-          <h2 className="text-xl font-semibold font-serif">设置</h2>
+          <h2 className="text-xl font-semibold font-serif">{t('title')}</h2>
         </div>
         <nav className="space-y-1 px-2">
-          {settingsNavItems.map((item) => {
+          {getSettingsNavItems(t).map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
             

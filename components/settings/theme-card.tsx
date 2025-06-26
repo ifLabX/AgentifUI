@@ -2,6 +2,7 @@
 
 import { cn } from "@lib/utils"
 import { useTheme } from "@lib/hooks/use-theme"
+import { useTranslations } from 'next-intl'
 
 // --- BEGIN COMMENT ---
 // 主题卡片组件
@@ -16,6 +17,7 @@ interface ThemeCardProps {
 
 export function ThemeCard({ title, theme, currentTheme, onClick }: ThemeCardProps) {
   const { isDark } = useTheme()
+  const t = useTranslations('pages.settings.appearanceSettings.preview')
   const isActive = currentTheme === theme
   
   // 根据主题类型渲染不同的预览内容
@@ -24,19 +26,19 @@ export function ThemeCard({ title, theme, currentTheme, onClick }: ThemeCardProp
       case "light":
         return (
           <div className="bg-stone-100 border border-stone-200 h-24 mb-4 rounded-md flex items-center justify-center">
-            <span className="text-stone-900 font-serif">亮色</span>
+            <span className="text-stone-900 font-serif">{t('light')}</span>
           </div>
         )
       case "dark":
         return (
           <div className="bg-stone-800 border border-stone-700 h-24 mb-4 rounded-md flex items-center justify-center">
-            <span className="text-stone-100 font-serif">暗色</span>
+            <span className="text-stone-100 font-serif">{t('dark')}</span>
           </div>
         )
       case "system":
         return (
           <div className="bg-gradient-to-r from-stone-100 to-stone-800 h-24 mb-4 rounded-md flex items-center justify-center">
-            <span className="text-stone-900 bg-white px-2 rounded font-serif">系统</span>
+            <span className="text-stone-900 bg-white px-2 rounded font-serif">{t('system')}</span>
           </div>
         )
     }

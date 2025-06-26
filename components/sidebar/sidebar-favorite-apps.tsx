@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslations } from 'next-intl'
 import { useRouter } from "next/navigation"
 import { Zap, Bot, Plus, HeartOff, Heart, Edit, ChevronDown, ChevronRight, Pen, Trash } from "lucide-react"
 import { cn } from "@lib/utils"
@@ -34,6 +35,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
   const { clearMessages } = useChatStore()
   const { isExpanded, selectItem, selectedType, selectedId } = useSidebarStore()
   const { colors } = useThemeColors()
+  const t = useTranslations('sidebar')
   const {
     favoriteApps,
     removeFavoriteApp,
@@ -251,7 +253,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
         onOpenChange={handleMenuOpenChange}
         trigger={
           <MoreButtonV2
-            aria-label="更多选项"
+            aria-label={t('moreOptions')}
             disabled={isAppBusy} // 🎯 应用忙碌时禁用
             isMenuOpen={isMenuOpen}
             isItemSelected={false}
@@ -271,9 +273,9 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
           {/* --- BEGIN COMMENT ---
           根据应用类型显示不同的按钮文本
           --- END COMMENT --- */}
-          {app.dify_apptype === 'workflow' ? '开始工作流' : 
-           app.dify_apptype === 'text-generation' ? '开始文本生成' : 
-           '开始对话'}
+          {app.dify_apptype === 'workflow' ? t('startWorkflow') : 
+           app.dify_apptype === 'text-generation' ? t('startTextGeneration') : 
+           t('startChat')}
         </DropdownMenuV2.Item>
         <DropdownMenuV2.Item
           icon={<HeartOff className="w-3.5 h-3.5" />}
@@ -283,7 +285,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
           }}
           disabled={isAppBusy} // 🎯 应用忙碌时禁用
         >
-          隐藏该应用
+          {t('hideApp')}
         </DropdownMenuV2.Item>
       </DropdownMenuV2>
     )
@@ -321,7 +323,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
               "text-xs font-medium font-serif leading-none",
               isDark ? "text-stone-400" : "text-stone-500"
             )}>
-              常用应用
+              {t('favoriteApps')}
             </span>
             
             {/* --- BEGIN COMMENT ---
@@ -344,7 +346,7 @@ export function SidebarFavoriteApps({ isDark, contentVisible }: SidebarFavoriteA
           "px-3 py-1 text-xs font-serif",
           isDark ? "text-gray-500" : "text-gray-400"
         )}>
-          加载中...
+          {t('loading')}
         </div>
       )}
 

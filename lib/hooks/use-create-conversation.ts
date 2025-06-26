@@ -28,6 +28,7 @@ import { useSupabaseAuth } from '@lib/supabase/hooks'; // For userId
 import { createConversation } from '@lib/db'; // 使用新的优化版本
 import { useChatStore } from '@lib/stores/chat-store'; // To set local conversation ID
 import { useAutoAddFavoriteApp } from '@lib/stores/favorite-apps-store';
+import { useTranslations } from 'next-intl';
 
 interface UseCreateConversationReturn {
   initiateNewConversation: (
@@ -51,6 +52,7 @@ interface UseCreateConversationReturn {
 export function useCreateConversation(): UseCreateConversationReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any>(null);
+  const t = useTranslations('sidebar');
 
   const addPending = usePendingConversationStore((state) => state.addPending);
   const addPendingWithLimit = usePendingConversationStore((state) => state.addPendingWithLimit);
@@ -98,7 +100,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
       // --- BEGIN COMMENT ---
       // 🎯 使用新的addPendingWithLimit方法，支持自动"挤出"效果
       // --- END COMMENT ---
-      addPendingWithLimit(tempConvId, "创建中...", 20, (evictedCount) => {
+      addPendingWithLimit(tempConvId, t('creating'), 20, (evictedCount) => {
         console.log(`[useCreateConversation] 新对话创建触发挤出效果，预计挤出${evictedCount}个对话`);
         // 这里可以添加动画效果或通知用户
       }); 
@@ -183,7 +185,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 if (!currentUserId || !appId) {
                   console.error("[useCreateConversation] Cannot save to DB: userId or appId is missing.", { currentUserId, appId });
                   updateStatusInPendingStore(currentTempConvId, 'failed'); 
-                  updateTitleInPendingStore(currentTempConvId, "保存对话失败", true);
+                  updateTitleInPendingStore(currentTempConvId, t('saveFailed'), true);
                   return;
                 }
                 try {
@@ -231,7 +233,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                 } catch (dbError) {
                   console.error(`[useCreateConversation] Error saving conversation (difyId: ${difyConvId}) to DB:`, dbError);
                   updateStatusInPendingStore(currentTempConvId, 'failed');
-                  updateTitleInPendingStore(currentTempConvId, "保存对话失败", true);
+                  updateTitleInPendingStore(currentTempConvId, t('saveFailed'), true);
                   return null;
                 }
               };
@@ -242,14 +244,14 @@ export function useCreateConversation(): UseCreateConversationReturn {
               // --- END COMMENT ---
               (async () => {
                 // 立即创建数据库记录，使用临时标题
-                const tempTitle = "创建中...";
+                const tempTitle = t('creating');
                 console.log(`[useCreateConversation] 立即创建数据库记录，Dify对话ID=${id}`);
                 const dbId = await saveConversationToDb(id, tempTitle, tempConvId);
                 
                 // 异步获取正式标题并更新数据库记录
                 renameConversation(appId, id, { user: userIdentifier, auto_generate: true })
                   .then(async renameResponse => { 
-                    const finalTitle = (renameResponse && renameResponse.name) ? renameResponse.name : "新对话";
+                    const finalTitle = (renameResponse && renameResponse.name) ? renameResponse.name : t('untitled');
                     console.log(`[useCreateConversation] 标题获取成功，启动打字机效果: ${finalTitle}`);
                     
                     // --- BEGIN COMMENT ---
@@ -281,7 +283,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   })
                   .catch(async renameError => { 
                     console.error(`[useCreateConversation] 标题获取失败，使用默认标题:`, renameError);
-                    const fallbackTitle = "新对话";
+                    const fallbackTitle = t('untitled');
                     
                     // --- BEGIN COMMENT ---
                     // 🎯 启动打字机效果显示默认标题
@@ -349,7 +351,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
         setError(e);
         setIsLoading(false);
         updateStatusInPendingStore(tempConvId, 'failed'); 
-        updateTitleInPendingStore(tempConvId, "创建对话失败", true);
+        updateTitleInPendingStore(tempConvId, t('createFailed'), true);
         return { tempConvId, error: e };
       }
     },

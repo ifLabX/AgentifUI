@@ -1,11 +1,12 @@
 "use client"
 
 import { useSettingsColors } from '@lib/hooks/use-settings-colors'
+import { useTranslations } from 'next-intl'
 import { cn } from "@lib/utils"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { User, Palette, Settings } from "lucide-react"
-import { settingsNavItems } from "@components/settings/settings-sidebar"
+import { getSettingsNavItems } from "@components/settings/settings-sidebar"
 
 // --- BEGIN COMMENT ---
 // 设置页面入口
@@ -13,19 +14,22 @@ import { settingsNavItems } from "@components/settings/settings-sidebar"
 // --- END COMMENT ---
 export default function SettingsPage() {
   const { colors } = useSettingsColors();
+  const t = useTranslations('pages.settings');
   
   // --- BEGIN COMMENT ---
   // 设置项描述，为每个设置页面提供说明文本
   // --- END COMMENT ---
   const settingsDescriptions: Record<string, string> = {
-    "/settings": "管理您的个人偏好，自定义应用体验",
-    "/settings/profile": "更新个人信息、头像和账号设置",
-    "/settings/account": "管理您的账号安全和登录信息",
-    "/settings/appearance": "自定义主题、颜色和界面布局"
+    "/settings": t('descriptions.overview'),
+    "/settings/profile": t('descriptions.profileDesc'),
+    "/settings/account": t('descriptions.accountDesc'),
+    "/settings/appearance": t('descriptions.appearanceDesc'),
+    "/settings/language": t('descriptions.languageDesc')
   }
   
   // 过滤掉当前页面（概览）
-  const filteredItems = settingsNavItems.filter(item => item.href !== "/settings")
+  const navItems = getSettingsNavItems(t);
+  const filteredItems = navItems.filter(item => item.href !== "/settings")
   
   return (
     <div>
@@ -34,10 +38,10 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-6 font-serif">设置</h1>
+        <h1 className="text-2xl font-bold mb-6 font-serif">{t('title')}</h1>
         
         <p className={`${colors.secondaryTextColor.tailwind} mb-8 font-serif`}>
-          管理您的个人偏好，自定义应用体验
+          {t('descriptions.overview')}
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

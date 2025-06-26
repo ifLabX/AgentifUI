@@ -9,6 +9,7 @@ import { Profile as ExtendedProfile } from "@lib/hooks/use-profile";
 import { updateUserProfile } from "@lib/db/profiles";
 import { updateProfileCache } from "@lib/hooks/use-profile";
 import { User, Mail, AtSign, Calendar, Check, AlertCircle, Building2 } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 // --- BEGIN COMMENT ---
 // 个人资料表单组件
@@ -25,6 +26,7 @@ interface ProfileFormProps {
 
 export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
   const { colors, isDark } = useSettingsColors();
+  const t = useTranslations('pages.settings.profileSettings');
   
   // --- BEGIN COMMENT ---
   // 检查是否为SSO单点登录模式
@@ -110,7 +112,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
 
         setMessage({
           type: "success",
-          text: "个人资料已更新",
+          text: t('profileUpdated'),
         });
 
         // 调用成功回调
@@ -118,12 +120,12 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           onSuccess();
         }
       } else {
-        throw new Error(result.error?.message || "更新资料失败");
+        throw new Error(result.error?.message || t('updateFailed'));
       }
     } catch (error: any) {
       setMessage({
         type: "error",
-        text: error.message || "更新资料失败",
+        text: error.message || t('updateFailed'),
       });
     } finally {
       setIsSubmitting(false);
@@ -132,11 +134,18 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
 
   // --- BEGIN COMMENT ---
   // 格式化日期显示
+  // 根据当前语言环境动态选择本地化格式
   // --- END COMMENT ---
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "未记录";
+    if (!dateString) return t('status.notRecorded');
     const date = new Date(dateString);
-    return date.toLocaleDateString("zh-CN", {
+    
+    // 根据当前语言环境选择合适的本地化格式
+    const locale = typeof window !== 'undefined' 
+      ? (document.cookie.includes('NEXT_LOCALE=en-US') ? 'en-US' : 'zh-CN')
+      : 'zh-CN';
+    
+    return date.toLocaleDateString(locale, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -181,7 +190,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         <h3
           className={cn("text-lg font-medium mb-4 font-serif", colors.textColor.tailwind)}
         >
-          账户信息
+          {t('accountInfo')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -191,10 +200,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             />
             <div>
               <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
-                所属企业
+                {t('organization')}
               </p>
               <p className={cn("font-serif", colors.textColor.tailwind)}>
-                {profile.organization?.name || "无企业关联"}
+                {profile.organization?.name || t('status.noOrganization')}
                 {/* --- BEGIN COMMENT --- */}
                 {/* 显示部门信息，格式B：用户名 (部门) */}
                 {/* --- END COMMENT --- */}
@@ -213,7 +222,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             />
             <div>
               <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
-                注册时间
+                {t('registrationTime')}
               </p>
               <p className={cn("font-serif", colors.textColor.tailwind)}>
                 {formatDate(profile.created_at)}
@@ -227,10 +236,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             />
             <div>
               <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
-                账户角色
+                {t('accountRole')}
               </p>
               <p className={cn("font-serif", colors.textColor.tailwind)}>
-                {profile.role === "admin" ? "管理员" : profile.role === "manager" ? "经理" : "普通用户"}
+                {profile.role === "admin" ? t('roles.admin') : profile.role === "manager" ? t('roles.manager') : t('roles.user')}
               </p>
             </div>
           </div>
@@ -241,12 +250,12 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             />
             <div>
               <p className={cn("text-sm font-serif", colors.secondaryTextColor.tailwind)}>
-                上次登录
+                {t('lastLogin')}
               </p>
               <p className={cn("font-serif", colors.textColor.tailwind)}>
                 {profile.auth_last_sign_in_at
                   ? formatDate(profile.auth_last_sign_in_at)
-                  : "未记录"}
+                  : t('status.notRecorded')}
               </p>
             </div>
           </div>
@@ -256,7 +265,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       {/* 个人资料表单 */}
       <div className="space-y-6">
         <h3 className={cn("text-lg font-medium font-serif", colors.textColor.tailwind)}>
-          {isSSOOnlyMode ? "个人资料" : "编辑个人资料"}
+          {isSSOOnlyMode ? t('title') : t('editProfile')}
         </h3>
 
         {/* 姓名字段 */}
@@ -268,7 +277,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               colors.textColor.tailwind
             )}
           >
-            姓名
+            {t('name')}
           </label>
           {isSSOOnlyMode ? (
             // --- BEGIN COMMENT ---
@@ -288,7 +297,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                 className={cn("w-5 h-5 mr-3", colors.secondaryTextColor.tailwind)}
               />
               <span className={cn("font-serif", colors.textColor.tailwind)}>
-                {profile.full_name || "未设置"}
+                {profile.full_name || t('status.notSet')}
               </span>
             </div>
           ) : (
@@ -319,7 +328,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                   "outline-none",
                   colors.textColor.tailwind
                 )}
-                placeholder="请输入您的姓名"
+                placeholder={t('namePlaceholder')}
               />
             </div>
           )}
@@ -334,7 +343,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               colors.textColor.tailwind
             )}
           >
-            昵称
+            {t('nickname')}
           </label>
           <div
             className={cn(
@@ -360,7 +369,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                 "outline-none",
                 colors.textColor.tailwind
               )}
-              placeholder="请输入您的用户名"
+              placeholder={t('usernamePlaceholder')}
             />
           </div>
         </div>
@@ -375,7 +384,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                 colors.textColor.tailwind
               )}
             >
-              头像URL
+              {t('avatarUrl')}
             </label>
             <div
               className={cn(
@@ -398,11 +407,11 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                   "outline-none",
                   colors.textColor.tailwind
                 )}
-                placeholder="请输入头像图片URL"
+                placeholder={t('avatarPlaceholder')}
               />
             </div>
             <p className={cn("text-xs font-serif", colors.secondaryTextColor.tailwind)}>
-              输入有效的图片URL，建议使用正方形图片
+              {t('avatarHint')}
             </p>
           </div>
         )}
@@ -422,7 +431,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
         >
-          {isSubmitting ? "保存中..." : "保存修改"}
+          {isSubmitting ? t('saving') : t('saveChanges')}
         </button>
       </div>
     </form>

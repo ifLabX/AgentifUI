@@ -36,7 +36,7 @@
           "description": "支持多种模型供应商，包括OpenAI、Anthropic、Dify等，满足不同企业需求"
         },
         "feature2": {
-          "title": "RAG知识增强", 
+          "title": "RAG知识增强",
           "description": "集成检索增强生成(RAG)技术，实现私有知识库和上下文感知"
         },
         "feature3": {
@@ -51,7 +51,15 @@
       "sendMessage": "发送",
       "inputPlaceholder": "输入您的消息...",
       "noMessages": "还没有消息",
-      "typing": "正在输入..."
+      "typing": "正在输入...",
+      "greeting": {
+        "morning": "早上好",
+        "afternoon": "下午好",
+        "evening": "晚上好",
+        "night": "夜深了"
+      },
+      "recentChats": "近期对话",
+      "historyChats": "历史对话"
     },
     "auth": {
       "loginTitle": "登录",
@@ -67,7 +75,90 @@
       "profile": "个人资料",
       "account": "账户",
       "appearance": "外观",
-      "language": "语言"
+      "language": "语言",
+      "navigation": {
+        "overview": "概览",
+        "profileNav": "个人资料",
+        "accountNav": "账号设置",
+        "appearanceNav": "外观",
+        "languageNav": "语言"
+      },
+      "descriptions": {
+        "overview": "管理您的个人偏好，自定义应用体验",
+        "profileDesc": "更新个人信息、头像和账号设置",
+        "accountDesc": "管理您的账号安全和登录信息",
+        "appearanceDesc": "自定义主题、颜色和界面布局",
+        "languageDesc": "选择您偏好的显示语言和地区设置"
+      },
+      "accountSettings": {
+        "title": "账号设置",
+        "accountInfo": "账号信息",
+        "loginEmail": "登录邮箱",
+        "authMethod": "认证方式",
+        "emailPasswordAuth": "邮箱密码",
+        "securitySettings": "安全设置",
+        "logoutAccount": "退出当前账号",
+        "confirmLogout": "确定要退出登录吗？",
+        "confirmLogoutBtn": "确认退出",
+        "logout": "退出登录",
+        "loggingOut": "退出中...",
+        "loadAccountError": "加载账号信息时出错",
+        "retry": "重试",
+        "deleteAccount": "删除账号"
+      },
+      "profileSettings": {
+        "title": "个人资料",
+        "accountInfo": "账户信息",
+        "organization": "所属企业",
+        "registrationTime": "注册时间",
+        "accountRole": "账户角色",
+        "lastLogin": "上次登录",
+        "editProfile": "编辑个人资料",
+        "name": "姓名",
+        "nickname": "昵称",
+        "avatarUrl": "头像URL",
+        "profileUpdated": "个人资料已更新",
+        "updateFailed": "更新资料失败",
+        "saving": "保存中...",
+        "saveChanges": "保存修改",
+        "namePlaceholder": "请输入您的姓名",
+        "usernamePlaceholder": "请输入您的用户名",
+        "avatarPlaceholder": "请输入头像图片URL",
+        "avatarHint": "输入有效的图片URL，建议使用正方形图片",
+        "roles": {
+          "admin": "管理员",
+          "manager": "经理",
+          "user": "普通用户"
+        },
+        "status": {
+          "notRecorded": "未记录",
+          "notSet": "未设置",
+          "noOrganization": "无企业关联"
+        },
+        "loadProfileError": "加载资料时出错"
+      },
+      "appearanceSettings": {
+        "title": "外观设置",
+        "theme": "主题",
+        "themeDescription": "选择您偏好的显示模式",
+        "themes": {
+          "light": "浅色模式",
+          "dark": "深色模式",
+          "system": "跟随系统"
+        },
+        "preview": {
+          "light": "亮色",
+          "dark": "暗色",
+          "system": "系统"
+        }
+      },
+      "languageSettings": {
+        "title": "语言设置",
+        "language": "语言",
+        "languageDescription": "选择您偏好的显示语言",
+        "currentLanguage": "当前语言",
+        "switchLanguage": "切换语言"
+      }
     },
     "admin": {
       "title": "管理后台",
@@ -80,5 +171,39 @@
     "notFound": "页面未找到",
     "serverError": "服务器错误",
     "unauthorized": "未授权访问"
+  },
+  "sidebar": {
+    "expand": "展开",
+    "collapse": "收起",
+    "newChat": "新对话",
+    "historyChats": "历史对话",
+    "appsMarket": "应用市场",
+    "settings": "设置",
+    "recentChats": "近期对话",
+    "moreOptions": "更多选项",
+    "rename": "重命名",
+    "deleteChat": "删除对话",
+    "untitled": "无标题",
+    "creating": "创建中...",
+    "favoriteApps": "常用应用",
+    "loading": "加载中...",
+    "startWorkflow": "开始工作流",
+    "startTextGeneration": "开始文本生成",
+    "startChat": "开始对话",
+    "hideApp": "隐藏该应用",
+    "renameDialog": {
+      "title": "重命名对话",
+      "label": "对话名称",
+      "placeholder": "输入新的对话名称",
+      "confirmText": "确认重命名"
+    },
+    "deleteDialog": {
+      "confirmText": "确认删除",
+      "confirmMessage": "确定要删除会话 \"{title}\" 吗？此操作无法撤销。"
+    },
+    "syncingMessage": "对话数据正在同步中，请稍后再尝试{action}。",
+    "operationFailed": "操作失败，请稍后再试。",
+    "saveFailed": "保存对话失败",
+    "createFailed": "创建对话失败"
   }
-} 
+}

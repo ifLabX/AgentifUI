@@ -10,6 +10,7 @@ import { useMobile } from "@lib/hooks"
 import { useSettingsColors } from '@lib/hooks/use-settings-colors'
 import { useRouter } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 interface SettingsLayoutProps {
   children: React.ReactNode
@@ -20,6 +21,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
   const isMobile = useMobile()
   const { colors, isDark } = useSettingsColors()
   const router = useRouter()
+  const t = useTranslations('common.ui')
 
   // --- BEGIN COMMENT ---
   // 🎯 移除重复的 setMounted 调用，现在由全局 ClientLayout 统一管理
@@ -109,7 +111,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                 )}
               >
                 <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-                <span className="hidden sm:inline font-serif">返回</span>
+                <span className="hidden sm:inline font-serif">{t('back')}</span>
               </button>
             </div>
 

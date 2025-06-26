@@ -110,7 +110,7 @@ export function SidebarButton({
         {isExpanded && children && (
           <div className={cn(
             "ml-2 flex-1 min-w-0 truncate",
-            "flex items-center leading-none"
+            "flex items-center leading-normal"
           )}> 
             {children}
           </div>
