@@ -3,84 +3,84 @@ description: ⚠️ Database Migration Rule (AgentifUI)  Before creating any dat
 globs: 
 alwaysApply: false
 ---
-# 数据库开发完整流程规则
+# Database Development Complete Process Rule
 
-## 规则描述
+## Rule Description
 
-本规则定义了AgentifUI项目中所有数据库相关操作的完整开发流程。任何涉及数据库的修改、添加、删除操作都必须严格按照此规则执行，确保数据安全、类型一致性和文档同步。
+This rule defines the complete development process for all database-related operations in the AgentifUI project. Any database modifications, additions, or deletions must strictly follow this rule to ensure data safety, type consistency, and documentation synchronization.
 
-## 核心原则
+## Core Principles
 
-1. **安全第一**: 所有数据库操作必须经过充分评估和测试
-2. **类型同步**: 数据库结构变更必须同步更新TypeScript类型定义
-3. **文档同步**: 所有变更必须及时更新相关文档
-4. **代码同步**: 相关业务逻辑代码必须同步更新
-5. **原子提交**: 迁移文件、类型定义、文档作为一个整体提交
+1. **Safety First**: All database operations must be thoroughly evaluated and tested
+2. **Type Synchronization**: Database structure changes must synchronously update TypeScript type definitions
+3. **Documentation Synchronization**: All changes must promptly update related documentation
+4. **Code Synchronization**: Related business logic code must be synchronously updated
+5. **Atomic Commits**: Migration files, type definitions, and documentation as a unified commit
 
-## 完整开发流程
+## Complete Development Process
 
-### 第一阶段：需求分析和影响评估
+### Phase 1: Requirements Analysis and Impact Assessment
 
-#### 1.1 需求理解
-- 明确数据库变更的具体需求和目标
-- 分析变更的业务背景和技术必要性
-- 确定变更范围（表结构、索引、约束、函数等）
+#### 1.1 Requirements Understanding
+- Clarify specific requirements and objectives for database changes
+- Analyze business background and technical necessity of changes
+- Determine scope of changes (table structure, indexes, constraints, functions, etc.)
 
-#### 1.2 影响评估
-必须全面评估以下影响范围：
+#### 1.2 Impact Assessment
+Must comprehensively assess the following impact scope:
 
-**数据库层面影响：**
-- 表结构变更对现有数据的影响
-- 外键约束和级联删除的影响
-- 索引性能的影响
-- RLS策略的影响
-- 触发器和函数的影响
+**Database Level Impact:**
+- Impact of table structure changes on existing data
+- Impact of foreign key constraints and cascade deletions
+- Impact on index performance
+- Impact on RLS policies
+- Impact on triggers and functions
 
-**应用层面影响：**
-- TypeScript类型定义需要更新的文件
-- 业务逻辑代码需要修改的位置
-- API接口的兼容性影响
-- 前端组件的数据结构依赖
+**Application Level Impact:**
+- TypeScript type definition files that need updating
+- Business logic code locations that need modification
+- API interface compatibility impact
+- Frontend component data structure dependencies
 
-**系统层面影响：**
-- 数据迁移的复杂度和风险
-- 系统停机时间评估
-- 回滚策略制定
+**System Level Impact:**
+- Complexity and risk of data migration
+- System downtime assessment
+- Rollback strategy formulation
 
-#### 1.3 风险评估
-- **高风险操作**: DROP TABLE、ALTER COLUMN类型变更、删除约束
-- **中风险操作**: ADD COLUMN、CREATE INDEX、修改RLS策略
-- **低风险操作**: INSERT数据、UPDATE配置、CREATE FUNCTION
+#### 1.3 Risk Assessment
+- **High-risk operations**: DROP TABLE, ALTER COLUMN type changes, delete constraints
+- **Medium-risk operations**: ADD COLUMN, CREATE INDEX, modify RLS policies
+- **Low-risk operations**: INSERT data, UPDATE configuration, CREATE FUNCTION
 
-### 第二阶段：迁移文件创建
+### Phase 2: Migration File Creation
 
-#### 2.1 获取标准时间戳
+#### 2.1 Get Standard Timestamp
 ```bash
-# 使用date命令获取标准格式时间戳
+# Use date command to get standard format timestamp
 date +%Y%m%d%H%M%S
 ```
 
-#### 2.2 创建迁移文件
-迁移文件命名格式：`{timestamp}_{descriptive_name}.sql`
+#### 2.2 Create Migration File
+Migration file naming format: `{timestamp}_{descriptive_name}.sql`
 
-**示例：**
+**Example:**
 ```
 supabase/migrations/20250621091656_add_user_preferences_table.sql
 ```
 
-#### 2.3 迁移文件编写规范
+#### 2.3 Migration File Writing Standards
 
-**文件头部注释：**
+**File Header Comments:**
 ```sql
--- 迁移文件: 20250621091656_add_user_preferences_table.sql
--- 描述: 添加用户偏好设置表，支持主题、语言等个性化配置
--- 影响范围: 新增表，不影响现有数据
--- 风险级别: 低风险
+-- Migration file: 20250621091656_add_user_preferences_table.sql
+-- Description: Add user preference settings table, support theme, language and other personalized configurations
+-- Impact scope: New table, does not affect existing data
+-- Risk level: Low risk
 ```
 
-**必须包含的检查：**
+**Must Include Checks:**
 ```sql
--- 检查表是否已存在
+-- Check if table already exists
 DO $$
 BEGIN
     IF NOT EXISTS (
@@ -88,37 +88,37 @@ BEGIN
         WHERE table_schema = 'public' 
         AND table_name = 'user_preferences'
     ) THEN
-        -- 创建表的SQL语句
+        -- SQL statements to create table
     END IF;
 END $$;
 ```
 
-**必须包含的注释：**
+**Must Include Comments:**
 ```sql
--- 为新表/字段添加注释
-COMMENT ON TABLE user_preferences IS '用户个性化偏好设置表';
-COMMENT ON COLUMN user_preferences.theme IS '界面主题设置';
+-- Add comments for new tables/fields
+COMMENT ON TABLE user_preferences IS 'User personalized preference settings table';
+COMMENT ON COLUMN user_preferences.theme IS 'Interface theme settings';
 ```
 
-### 第三阶段：类型定义同步
+### Phase 3: Type Definition Synchronization
 
-#### 3.1 更新核心类型文件
+#### 3.1 Update Core Type Files
 
-必须检查并更新以下文件：
+Must check and update the following files:
 
-**[lib/types/database.ts](mdc:lib/types/database.ts)** - 核心数据库类型定义
-- 更新相关接口定义
-- 添加新的枚举类型
-- 确保字段类型与数据库一致
+**[lib/types/database.ts](mdc:lib/types/database.ts)** - Core database type definitions
+- Update related interface definitions
+- Add new enum types
+- Ensure field types are consistent with database
 
-**[lib/supabase/types.ts](mdc:lib/supabase/types.ts)** - Supabase自动生成类型
-- 通常需要重新生成或手动同步
-- 确保Row、Insert、Update类型完整
+**[lib/supabase/types.ts](mdc:lib/supabase/types.ts)** - Supabase auto-generated types
+- Usually need to regenerate or manually sync
+- Ensure Row, Insert, Update types are complete
 
-#### 3.2 类型定义更新示例
+#### 3.2 Type Definition Update Example
 
 ```typescript
-// 在 lib/types/database.ts 中添加新接口
+// Add new interface in lib/types/database.ts
 export interface UserPreference {
   id: string;
   user_id: string;
@@ -129,37 +129,37 @@ export interface UserPreference {
   updated_at: string;
 }
 
-// 更新Database命名空间
+// Update Database namespace
 export namespace Database {
   export interface Tables {
-    // ... 现有表
+    // ... existing tables
     user_preferences: UserPreference;
   }
 }
 ```
 
-### 第四阶段：业务代码同步
+### Phase 4: Business Code Synchronization
 
-#### 4.1 检查lib目录结构
+#### 4.1 Check lib Directory Structure
 
-必须检查以下目录中的相关文件：
+Must check related files in the following directories:
 
-**[lib/db/](mdc:lib/db)** - 数据库操作层
-- 检查是否需要新增数据访问函数
-- 更新现有查询函数的类型定义
-- 添加新表的CRUD操作
+**[lib/db/](mdc:lib/db)** - Database operations layer
+- Check if new data access functions need to be added
+- Update type definitions of existing query functions
+- Add CRUD operations for new tables
 
-**[lib/hooks/](mdc:lib/hooks)** - React Hooks层
-- 检查是否需要新增自定义hooks
-- 更新现有hooks的类型定义
-- 确保数据获取逻辑正确
+**[lib/hooks/](mdc:lib/hooks)** - React Hooks layer
+- Check if new custom hooks need to be added
+- Update type definitions of existing hooks
+- Ensure data fetching logic is correct
 
-**[lib/services/](mdc:lib/services)** - 服务层
-- 检查业务逻辑服务是否需要更新
-- 更新API调用的数据结构
-- 确保服务间的数据传递正确
+**[lib/services/](mdc:lib/services)** - Service layer
+- Check if business logic services need updating
+- Update data structures of API calls
+- Ensure data transfer between services is correct
 
-#### 4.2 代码更新示例
+#### 4.2 Code Update Example
 
 ```typescript
 // lib/db/user-preferences.ts
@@ -168,222 +168,222 @@ import { Database } from '@/lib/types/database';
 type UserPreference = Database['Tables']['user_preferences'];
 
 export async function getUserPreferences(userId: string): Promise<UserPreference | null> {
-  // 实现数据访问逻辑
+  // Implement data access logic
 }
 
 // lib/hooks/use-user-preferences.ts
 export function useUserPreferences() {
-  // 实现React Hook逻辑
+  // Implement React Hook logic
 }
 ```
 
-### 第五阶段：测试和验证
+### Phase 5: Testing and Validation
 
-#### 5.1 本地测试
+#### 5.1 Local Testing
 ```bash
-# 推送迁移到本地数据库
+# Push migration to local database
 supabase db push
 
-# 检查迁移是否成功
+# Check if migration was successful
 supabase db status
 ```
 
-#### 5.2 类型检查
+#### 5.2 Type Checking
 ```bash
-# TypeScript类型检查
+# TypeScript type checking
 npx tsc --noEmit
 
-# 构建测试
+# Build testing
 pnpm run build
 ```
 
-#### 5.3 功能测试
-- 测试新增功能是否正常工作
-- 测试现有功能是否受到影响
-- 测试数据的完整性和一致性
+#### 5.3 Functional Testing
+- Test if new features work properly
+- Test if existing features are affected
+- Test data integrity and consistency
 
-### 第六阶段：错误处理
+### Phase 6: Error Handling
 
-#### 6.1 迁移失败处理
-如果`supabase db push`失败：
-1. 仔细阅读错误信息
-2. 修改迁移文件中的问题
-3. 重新执行推送
-4. 记录问题和解决方案
+#### 6.1 Migration Failure Handling
+If `supabase db push` fails:
+1. Carefully read error messages
+2. Fix problems in migration file
+3. Re-execute push
+4. Record problems and solutions
 
-#### 6.2 类型错误处理
-如果TypeScript检查失败：
-1. 根据错误信息定位问题文件
-2. 更新相关的类型定义
-3. 确保所有引用都已更新
-4. 重新执行类型检查
+#### 6.2 Type Error Handling
+If TypeScript checking fails:
+1. Locate problem files based on error messages
+2. Update related type definitions
+3. Ensure all references are updated
+4. Re-execute type checking
 
-### 第七阶段：文档更新
+### Phase 7: Documentation Updates
 
-#### 7.1 必须更新的文档
+#### 7.1 Must Update Documentation
 
-**[docs/DATABASE-DESIGN.md](mdc:docs/DATABASE-DESIGN.md)** - 数据库设计文档
-- 更新表结构描述
-- 更新ER图（如果有结构性变更）
-- 更新迁移文件记录
-- 更新设计特点说明
+**[docs/DATABASE-DESIGN.md](mdc:docs/DATABASE-DESIGN.md)** - Database design documentation
+- Update table structure descriptions
+- Update ER diagrams (if structural changes)
+- Update migration file records
+- Update design feature descriptions
 
-**[docs/supabase-docs.md](mdc:docs/supabase-docs.md)** - Supabase使用文档
-- 更新数据表结构说明
-- 更新RLS策略描述
-- 更新相关迁移文件记录
-- 更新使用示例
+**[docs/supabase-docs.md](mdc:docs/supabase-docs.md)** - Supabase usage documentation
+- Update data table structure descriptions
+- Update RLS policy descriptions
+- Update related migration file records
+- Update usage examples
 
-#### 7.2 文档更新要求
+#### 7.2 Documentation Update Requirements
 
-**准确性要求：**
-- 所有表结构描述必须与实际数据库一致
-- 字段类型、约束、默认值必须准确
-- 关系描述必须正确
+**Accuracy Requirements:**
+- All table structure descriptions must be consistent with actual database
+- Field types, constraints, default values must be accurate
+- Relationship descriptions must be correct
 
-**完整性要求：**
-- 新增的表必须完整描述
-- 修改的字段必须更新说明
-- 相关的索引、触发器必须记录
+**Completeness Requirements:**
+- New tables must be completely described
+- Modified fields must update descriptions
+- Related indexes, triggers must be recorded
 
-**时效性要求：**
-- 文档更新必须与代码更改同步进行
-- 不允许文档滞后于实际实现
+**Timeliness Requirements:**
+- Documentation updates must be synchronized with code changes
+- Documentation cannot lag behind actual implementation
 
-### 第八阶段：Git提交
+### Phase 8: Git Commit
 
-#### 8.1 提交内容检查
+#### 8.1 Commit Content Check
 
-确保以下文件都已正确更新：
-- [ ] 迁移文件 (`supabase/migrations/*.sql`)
-- [ ] 核心类型定义 (`lib/types/database.ts`)
-- [ ] Supabase类型定义 (`lib/supabase/types.ts`)
-- [ ] 相关业务代码 (`lib/db/`, `lib/hooks/`, `lib/services/`)
-- [ ] 数据库设计文档 (`docs/DATABASE-DESIGN.md`)
-- [ ] Supabase文档 (`docs/supabase-docs.md`)
+Ensure the following files are all correctly updated:
+- [ ] Migration files (`supabase/migrations/*.sql`)
+- [ ] Core type definitions (`lib/types/database.ts`)
+- [ ] Supabase type definitions (`lib/supabase/types.ts`)
+- [ ] Related business code (`lib/db/`, `lib/hooks/`, `lib/services/`)
+- [ ] Database design documentation (`docs/DATABASE-DESIGN.md`)
+- [ ] Supabase documentation (`docs/supabase-docs.md`)
 
-#### 8.2 提交信息规范
+#### 8.2 Commit Message Standards
 
-使用[git-commit-rule](mdc:git-commit-rule)规范：
+Use [git-commit-rule](mdc:git-commit-rule) standards:
 
 ```
-feat(database): 添加用户偏好设置表
+feat(database): add user preference settings table
 
-- 新增user_preferences表支持主题和语言设置
-- 更新相关TypeScript类型定义
-- 添加数据访问层和React Hooks
-- 更新数据库设计文档
+- Add user_preferences table supporting theme and language settings
+- Update related TypeScript type definitions
+- Add data access layer and React Hooks
+- Update database design documentation
 
-迁移文件: 20250621091656_add_user_preferences_table.sql
-影响范围: 新增功能，无破坏性变更
-测试状态: ✅ 本地测试通过
+Migration file: 20250621091656_add_user_preferences_table.sql
+Impact scope: New functionality, no breaking changes
+Test status: ✅ Local testing passed
 ```
 
-#### 8.3 提交策略
+#### 8.3 Commit Strategy
 
-**单次原子提交：**
-- 所有相关文件必须在一次提交中完成
-- 不允许分批提交导致的不一致状态
-- 提交前必须确保所有测试通过
+**Single Atomic Commit:**
+- All related files must be completed in one commit
+- Do not allow batch commits causing inconsistent states
+- Must ensure all tests pass before committing
 
-## 特殊场景处理
+## Special Scenario Handling
 
-### 破坏性变更处理
+### Breaking Changes Handling
 
-对于可能导致数据丢失或不兼容的变更：
+For changes that may cause data loss or incompatibility:
 
-1. **数据备份**：变更前必须备份相关数据
-2. **迁移策略**：制定详细的数据迁移计划
-3. **回滚计划**：准备完整的回滚方案
-4. **分步执行**：将复杂变更分解为多个安全步骤
+1. **Data Backup**: Must backup related data before changes
+2. **Migration Strategy**: Develop detailed data migration plan
+3. **Rollback Plan**: Prepare complete rollback solution
+4. **Phased Execution**: Break complex changes into multiple safe steps
 
-### 生产环境部署
+### Production Environment Deployment
 
-1. **预发布测试**：在预发布环境充分测试
-2. **维护窗口**：选择合适的维护时间窗口
-3. **监控准备**：准备相关监控和告警
-4. **团队通知**：提前通知相关团队成员
+1. **Pre-release Testing**: Thoroughly test in pre-release environment
+2. **Maintenance Window**: Choose appropriate maintenance time window
+3. **Monitoring Preparation**: Prepare related monitoring and alerts
+4. **Team Notification**: Notify related team members in advance
 
-### 紧急修复
+### Emergency Fixes
 
-对于紧急数据库问题的修复：
+For emergency database issue fixes:
 
-1. **快速评估**：快速但准确地评估问题影响
-2. **最小变更**：采用最小化的修复方案
-3. **文档补充**：事后及时补充完整文档
-4. **复盘总结**：问题解决后进行复盘
+1. **Quick Assessment**: Quick but accurate assessment of problem impact
+2. **Minimal Fix**: Adopt minimal risk solution
+3. **Documentation Supplement**: Promptly supplement complete documentation after resolution
+4. **Post-mortem Review**: Conduct post-mortem after problem resolution
 
-## 工具和命令参考
+## Tools and Command Reference
 
-### 常用Supabase命令
+### Common Supabase Commands
 ```bash
-# 查看数据库状态
+# View database status
 supabase db status
 
-# 推送迁移
+# Push migration
 supabase db push
 
-# 重置本地数据库
+# Reset local database
 supabase db reset
 
-# 生成类型定义
+# Generate type definitions
 supabase gen types typescript --local > lib/supabase/types.ts
 ```
 
-### 常用开发命令
+### Common Development Commands
 ```bash
-# 获取时间戳
+# Get timestamp
 date +%Y%m%d%H%M%S
 
-# TypeScript检查
+# TypeScript checking
 npx tsc --noEmit
 
-# 构建测试
+# Build testing
 pnpm run build
 
-# 运行测试
+# Run tests
 pnpm run test
 ```
 
-## 检查清单
+## Checklist
 
-在完成数据库开发任务前，请确认以下检查清单：
+Before completing database development tasks, please confirm the following checklist:
 
-### 开发阶段
-- [ ] 需求分析完成，影响范围明确
-- [ ] 风险评估完成，制定应对策略
-- [ ] 迁移文件按规范创建和编写
-- [ ] 本地数据库测试通过
+### Development Phase
+- [ ] Requirements analysis completed, impact scope clear
+- [ ] Risk assessment completed, response strategies formulated
+- [ ] Migration files created and written according to standards
+- [ ] Local database testing passed
 
-### 代码同步阶段
-- [ ] 核心类型定义已更新
-- [ ] Supabase类型定义已同步
-- [ ] 相关业务代码已更新
-- [ ] TypeScript类型检查通过
-- [ ] 构建测试通过
+### Code Synchronization Phase
+- [ ] Core type definitions updated
+- [ ] Supabase type definitions synchronized
+- [ ] Related business code updated
+- [ ] TypeScript type checking passed
+- [ ] Build testing passed
 
-### 文档更新阶段
-- [ ] DATABASE-DESIGN.md已更新
-- [ ] supabase-docs.md已更新
-- [ ] 文档内容准确完整
-- [ ] 迁移记录已添加
+### Documentation Update Phase
+- [ ] DATABASE-DESIGN.md updated
+- [ ] supabase-docs.md updated
+- [ ] Documentation content accurate and complete
+- [ ] Migration records added
 
-### 提交阶段
-- [ ] 所有相关文件已准备就绪
-- [ ] 提交信息符合规范
-- [ ] 原子提交包含完整变更
-- [ ] 团队成员已通知（如需要）
+### Commit Phase
+- [ ] All related files ready
+- [ ] Commit message follows standards
+- [ ] Atomic commit contains complete changes
+- [ ] Team members notified (if needed)
 
-## 违规处理
+## Violation Handling
 
-违反本规则的行为包括但不限于：
-- 直接修改数据库而不创建迁移文件
-- 类型定义与数据库结构不一致
-- 文档更新滞后或缺失
-- 分批提交导致的不一致状态
+Violations of this rule include but are not limited to:
+- Directly modifying database without creating migration files
+- Type definitions inconsistent with database structure
+- Documentation updates lagging or missing
+- Batch commits causing inconsistent states
 
-发现违规行为时，必须立即停止相关操作，按规范重新执行完整流程。
+When violations are discovered, must immediately stop related operations and re-execute the complete process according to standards.
 
-## 规则维护
+## Rule Maintenance
 
-本规则会根据项目发展和最佳实践的演进持续更新。任何对规则的修改都必须经过团队讨论和确认。
+This rule will be continuously updated based on project development and best practice evolution. Any modifications to the rule must be discussed and confirmed by the team.

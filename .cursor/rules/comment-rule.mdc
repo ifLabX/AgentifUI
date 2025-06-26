@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## Core Requirements
 
-- **Language**: All comments MUST be in Simplified Chinese (中文)
+- **Language**: All comments MUST be in English
 - **Purpose**: Explain *why*, not just *what* (unless complex)
 - **Style**: Concise and clear
 
@@ -17,7 +17,7 @@ Use `---` separators for significant comment changes:
 
 ```typescript
 // --- BEGIN COMMENT ---
-// 这里是重要的中文注释，解释复杂逻辑的原因
+// Important English comment explaining the reason for complex logic
 // --- END COMMENT ---
 function complexFunction() {
   // ... implementation ...
@@ -29,34 +29,34 @@ function complexFunction() {
 ### Class Grouping
 ```tsx
 <div className={cn(
-  // 基础样式
+  // Base styles
   "bg-white rounded-lg shadow-md",
   
-  // 响应式布局
+  // Responsive layout
   "flex flex-col md:flex-row lg:items-center",
   
-  // 响应式间距
+  // Responsive spacing
   "p-4 md:p-6 lg:p-8",
   
-  // 条件样式
+  // Conditional styles
   isActive && "border-blue-500 border-2"
 )}>
 ```
 
 ### Responsive Breakpoint Comments
 ```tsx
-{/* --- 响应式导航栏 --- */}
-{/* 移动端：垂直菜单，隐藏在汉堡菜单后 */}
-{/* 平板及以上：水平排列，直接显示 */}
+{/* --- Responsive navigation bar --- */}
+{/* Mobile: vertical menu, hidden behind hamburger menu */}
+{/* Tablet and above: horizontal layout, directly displayed */}
 <nav className="flex flex-col md:flex-row">
 ```
 
 ### Conditional Rendering
 ```tsx
-{/* --- 仅在移动端显示的组件 --- */}
+{/* --- Mobile-only component --- */}
 {isMobileView && <MobileNavigation />}
 
-{/* --- 仅在桌面端显示的组件 --- */}
+{/* --- Desktop-only component --- */}
 {!isMobileView && <DesktopNavigation />}
 ```
 
@@ -70,85 +70,85 @@ function complexFunction() {
 
 The primary goal of these commenting guidelines is to make the codebase easier to understand and maintain for everyone involved. Use comments thoughtfully to enhance code clarity.
 
-## 响应式Tailwind CSS类的注释规范
+## Responsive Tailwind CSS Class Comment Standards
 
-使用Tailwind CSS进行响应式开发时，应遵循以下注释规范：
+When using Tailwind CSS for responsive development, follow these comment standards:
 
-### Tailwind类分组注释
+### Tailwind Class Grouping Comments
 
-对于复杂的Tailwind类名组合，应按功能分组并添加注释：
+For complex Tailwind class combinations, group by function and add comments:
 
 ```tsx
 <div 
   className={cn(
-    // 基础样式
+    // Base styles
     "bg-white rounded-lg shadow-md",
     
-    // 响应式布局
+    // Responsive layout
     "flex flex-col md:flex-row lg:items-center",
     
-    // 响应式间距
+    // Responsive spacing
     "p-4 md:p-6 lg:p-8",
     
-    // 响应式尺寸
+    // Responsive sizing
     "w-full max-w-sm md:max-w-md lg:max-w-lg",
     
-    // 条件样式
+    // Conditional styles
     isActive && "border-blue-500 border-2",
     
-    // 自定义类名
+    // Custom class names
     className
   )}
 >
-  {/* 内容 */}
+  {/* Content */}
 </div>
 ```
 
-### 响应式断点注释
+### Responsive Breakpoint Comments
 
-当使用复杂的响应式类组合时，添加断点注释说明不同屏幕尺寸下的行为：
+When using complex responsive class combinations, add breakpoint comments explaining behavior at different screen sizes:
 
 ```tsx
-{/* --- 响应式导航栏 --- */}
-{/* 移动端：垂直菜单，隐藏在汉堡菜单后 */}
-{/* 平板及以上：水平排列，直接显示 */}
+{/* --- Responsive navigation bar --- */}
+{/* Mobile: vertical menu, hidden behind hamburger menu */}
+{/* Tablet and above: horizontal layout, directly displayed */}
 <nav className="
   flex flex-col md:flex-row 
   fixed md:relative 
   w-full md:w-auto
 ">
-  {/* 导航链接 */}
+  {/* Navigation links */}
 </nav>
 ```
 
-### 条件渲染注释
+### Conditional Rendering Comments
 
-对于基于屏幕尺寸的条件渲染，添加清晰的注释说明：
+For conditional rendering based on screen size, add clear explanatory comments:
 
 ```tsx
-{/* --- 仅在移动端显示的组件 --- */}
+{/* --- Mobile-only component --- */}
 {isMobileView && (
   <MobileNavigation />
 )}
 
-{/* --- 仅在桌面端显示的组件 --- */}
+{/* --- Desktop-only component --- */}
 {!isMobileView && (
   <DesktopNavigation />
 )}
 ```
 
-### 复杂响应式逻辑注释
+### Complex Responsive Logic Comments
 
-对于复杂的响应式布局逻辑，添加详细注释说明：
+For complex responsive layout logic, add detailed explanatory comments:
 
 ```tsx
 {/* 
-  --- 布局逻辑说明 ---
-  小屏幕：单列垂直排列，图片在上，文字在下
-  中等屏幕：双列水平排列，图片在左，文字在右
-  大屏幕：保持双列，但增加间距和内边距
+  --- Layout logic explanation ---
+  Small screens: single column vertical layout, image on top, text below
+  Medium screens: two-column horizontal layout, image on left, text on right
+  Large screens: maintain two columns, but increase spacing and padding
 */}
 ```
 
-遵循这些注释规范将使响应式设计的意图更加清晰，提高代码可读性和可维护性。
+Following these comment standards will make responsive design intentions clearer and improve code readability and maintainability.
 

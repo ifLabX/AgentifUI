@@ -3,75 +3,75 @@ description:
 globs: 
 alwaysApply: false
 ---
-# API 路由设计指南
+# API Routes Design Guide
 
-本文档提供关于AgentifUI项目API路由的设计规范和开发指南。
+This document provides design specifications and development guidelines for API routes in the AgentifUI project.
 
-## 路由结构
+## Route Structure
 
-API路由位于`app/api/`目录下，采用Next.js 13+ App Router模式组织：
+API routes are located in the `app/api/` directory, organized using Next.js 13+ App Router pattern:
 
 ```
 app/api/
-  ├── auth/               # 认证相关API
-  │   ├── identify/       # 用户身份识别
-  │   └── sso/            # 单点登录
-  │       └── initiate/   # SSO启动端点
-  └── dify/               # Dify API集成
-      └── [appId]/        # 动态路由，基于Dify应用ID
-          └── [...slug]/  # 通配路由处理器
-              └── route.ts # 代理实现
+  ├── auth/               # Authentication-related APIs
+  │   ├── identify/       # User identity identification
+  │   └── sso/            # Single sign-on
+  │       └── initiate/   # SSO initiation endpoint
+  └── dify/               # Dify API integration
+      └── [appId]/        # Dynamic route based on Dify app ID
+          └── [...slug]/  # Catch-all route handler
+              └── route.ts # Proxy implementation
 ```
 
-## 路由命名规范
+## Route Naming Conventions
 
-1. **目录命名**：
-   - 使用小写kebab-case（例如：`user-profile/`）
-   - 使用方括号表示动态路由段（例如：`[appId]/`）
-   - 使用扩展语法表示通配路由（例如：`[...slug]/`）
+1. **Directory Naming**:
+   - Use lowercase kebab-case (e.g., `user-profile/`)
+   - Use square brackets for dynamic route segments (e.g., `[appId]/`)
+   - Use spread syntax for catch-all routes (e.g., `[...slug]/`)
 
-2. **文件命名**：
-   - 主要使用`route.ts`作为API处理文件
-   - 相关辅助功能可以创建同级别的其他文件（例如：`utils.ts`）
+2. **File Naming**:
+   - Primarily use `route.ts` as API handler file
+   - Related helper functions can create other files at the same level (e.g., `utils.ts`)
 
-## 路由处理函数
+## Route Handler Functions
 
-每个API路由应该导出以下标准HTTP方法之一或多个作为处理函数：
+Each API route should export one or more of the following standard HTTP methods as handler functions:
 
 ```typescript
 // app/api/example/route.ts
 export async function GET(request: Request) {
-  // 处理GET请求
+  // Handle GET requests
 }
 
 export async function POST(request: Request) {
-  // 处理POST请求
+  // Handle POST requests
 }
 
-// 其他方法：PUT, DELETE, PATCH, HEAD, OPTIONS
+// Other methods: PUT, DELETE, PATCH, HEAD, OPTIONS
 ```
 
-## 最佳实践
+## Best Practices
 
-1. **路由组织**：
-   - 按功能域或服务组织路由
-   - 保持合理的嵌套深度（不超过4级）
+1. **Route Organization**:
+   - Organize routes by functional domain or service
+   - Maintain reasonable nesting depth (no more than 4 levels)
 
-2. **请求验证**：
-   - 对所有入站请求进行严格验证
-   - 使用类型安全的请求解析（例如Zod）
+2. **Request Validation**:
+   - Strictly validate all inbound requests
+   - Use type-safe request parsing (e.g., Zod)
 
-3. **错误处理**：
-   - 使用标准HTTP状态码
-   - 提供清晰的错误消息
-   - 实现统一的错误响应结构
+3. **Error Handling**:
+   - Use standard HTTP status codes
+   - Provide clear error messages
+   - Implement unified error response structure
 
-4. **响应格式**：
-   - 使用一致的响应格式
-   - 必要时支持内容协商（Content-Type）
+4. **Response Format**:
+   - Use consistent response format
+   - Support content negotiation (Content-Type) when necessary
 
 ```typescript
-// 标准响应结构示例
+// Standard response structure example
 export type ApiResponse<T> = {
   success: boolean;
   data?: T;
@@ -82,17 +82,17 @@ export type ApiResponse<T> = {
 };
 ```
 
-5. **中间件集成**：
-   - 路由中间件应该在项目根目录的`middleware.ts`中定义
-   - 按需为特定路由配置中间件
+5. **Middleware Integration**:
+   - Route middleware should be defined in `middleware.ts` at project root
+   - Configure middleware for specific routes as needed
 
-## Dify API代理模式
+## Dify API Proxy Pattern
 
-当实现Dify API代理时，请遵循以下模式：
+When implementing Dify API proxy, follow these patterns:
 
-1. 使用动态段和通配段捕获所有Dify API路径
-2. 在代理实现中保持请求和响应头的一致性
-3. 必要时处理流式响应
-4. 实现适当的错误处理和超时处理
+1. Use dynamic segments and catch-all segments to capture all Dify API paths
+2. Maintain consistency of request and response headers in proxy implementation
+3. Handle streaming responses when necessary
+4. Implement appropriate error handling and timeout handling
 
-例如，查看[app/api/dify/[appId]/[...slug]/route.ts](mdc:app/api/dify/[appId]/[...slug]/route.ts)了解完整实现。
+For example, see [app/api/dify/[appId]/[...slug]/route.ts](mdc:app/api/dify/[appId]/[...slug]/route.ts) for complete implementation.

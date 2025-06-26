@@ -1,77 +1,77 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
-# 状态管理指南
+# State Management Guide
 
-本文档描述了 AgentifUI 项目中使用的状态管理方案，特别是使用 Zustand 进行状态管理的模式。
+This document describes the state management approach used in the AgentifUI project, particularly the patterns for using Zustand for state management.
 
-## 状态管理技术栈
+## State Management Tech Stack
 
-项目使用 [Zustand](https://github.com/pmndrs/zustand) 作为主要的状态管理解决方案，这是一个轻量级的状态管理库，具有以下特点：
+The project uses [Zustand](mdc:https:/github.com/pmndrs/zustand) as the primary state management solution, which is a lightweight state management library with the following features:
 
-- 基于 hooks 的简洁 API
-- 不需要 Provider 包装
-- 支持状态分片和选择性订阅
-- 支持中间件（例如，持久化、devtools）
+- Hook-based clean API
+- No Provider wrapper required
+- Supports state slicing and selective subscriptions
+- Supports middleware (e.g., persistence, devtools)
 
-## Store 组织结构
+## Store Organization Structure
 
-Store 文件存放在 `lib/stores/` 目录中，根据功能域进行组织:
+Store files are located in the `lib/stores/` directory, organized by functional domains:
 
 ```
 lib/stores/
-├── chat-input-store.ts    # 聊天输入相关状态
-├── chat-layout-store.ts   # 聊天布局相关状态
-├── sidebar-store.ts       # 侧边栏状态
-├── theme-store.ts         # 主题相关状态
-└── ui/                    # UI相关状态的子目录
-    └── prompt-panel-store.ts  # 提示面板状态
+├── chat-input-store.ts    # Chat input related state
+├── chat-layout-store.ts   # Chat layout related state
+├── sidebar-store.ts       # Sidebar state
+├── theme-store.ts         # Theme related state
+└── ui/                    # UI-related state subdirectory
+    └── prompt-panel-store.ts  # Prompt panel state
 ```
 
-## Store 实现模式
+## Store Implementation Patterns
 
-### 基本 Store 模式
+### Basic Store Pattern
 
 ```typescript
 import { create } from 'zustand';
 
 interface StateType {
-  // 状态属性
+  // State properties
   someState: string;
-  // 操作方法
+  // Action methods
   setSomeState: (value: string) => void;
 }
 
 export const useMyStore = create<StateType>((set) => ({
-  // 初始状态
+  // Initial state
   someState: 'initial value',
-  // 更新方法
+  // Update methods
   setSomeState: (value) => set({ someState: value }),
 }));
 ```
 
-### 常量导出模式
+### Constant Export Pattern
 
-对于需要在多个组件中共享的常量值，store 文件中通常会导出这些常量:
+For constant values that need to be shared across multiple components, store files typically export these constants:
 
 ```typescript
-// 在 store 文件中定义和导出常量
+// Define and export constants in store file
 export const SOME_CONSTANT = 'value';
 
-// 然后在 store 和组件中都可以使用
+// Then can be used in both store and components
 ```
 
-## 聊天布局状态管理
+## Chat Layout State Management
 
-聊天布局状态 ([lib/stores/chat-layout-store.ts](mdc:lib/stores/chat-layout-store.ts)) 是一个典型示例:
+Chat layout state ([lib/stores/chat-layout-store.ts](mdc:lib/stores/chat-layout-store.ts)) is a typical example:
 
 ```typescript
 import { create } from 'zustand';
 
 interface ChatLayoutState {
-  inputHeight: number; // 存储输入框的实际高度
+  inputHeight: number; // Store actual height of input box
   setInputHeight: (height: number) => void;
   resetInputHeight: () => void;
 }
@@ -79,7 +79,7 @@ interface ChatLayoutState {
 const INITIAL_INPUT_HEIGHT = 48; 
 
 export const useChatLayoutStore = create<ChatLayoutState>((set) => ({
-  inputHeight: INITIAL_INPUT_HEIGHT, // 初始高度
+  inputHeight: INITIAL_INPUT_HEIGHT, // Initial height
   setInputHeight: (height) => set({ inputHeight: height }),
   resetInputHeight: () => set({ inputHeight: INITIAL_INPUT_HEIGHT }),
 }));
@@ -87,45 +87,45 @@ export const useChatLayoutStore = create<ChatLayoutState>((set) => ({
 export { INITIAL_INPUT_HEIGHT };
 ```
 
-该 store:
-- 跟踪输入框高度 (`inputHeight`)
-- 提供更新方法 (`setInputHeight`)
-- 提供重置方法 (`resetInputHeight`)
-- 导出初始常量值 (`INITIAL_INPUT_HEIGHT`)
+This store:
+- Tracks input box height (`inputHeight`)
+- Provides update method (`setInputHeight`)
+- Provides reset method (`resetInputHeight`)
+- Exports initial constant value (`INITIAL_INPUT_HEIGHT`)
 
-## 在组件中使用 Store
+## Using Store in Components
 
-以 `ChatInput` 组件为例：
+Using the `ChatInput` component as an example:
 
 ```tsx
 import { useChatLayoutStore, INITIAL_INPUT_HEIGHT } from '@lib/stores/chat-layout-store';
 
 const Component = () => {
-  // 获取状态和方法
+  // Get state and methods
   const { inputHeight, setInputHeight } = useChatLayoutStore();
   
-  // 使用状态
+  // Use state
   useEffect(() => {
-    // 在合适的时机更新状态
+    // Update state at appropriate times
     setInputHeight(newHeight);
     
-    // 清理函数
+    // Cleanup function
     return () => resetInputHeight();
   }, [setInputHeight, resetInputHeight]);
   
   return (
-    // 根据状态渲染UI
+    // Render UI based on state
     <div style={{ height: `${inputHeight}px` }}>
-      {/* 组件内容 */}
+      {/* Component content */}
     </div>
   );
 };
 ```
 
-## 最佳实践
+## Best Practices
 
-1. **状态分割**: 将不相关的状态分割到不同的 store 中
-2. **选择性订阅**: 只订阅组件所需的状态片段，减少不必要的重渲染
-3. **导出常量**: 将与 store 相关的常量从 store 文件中导出，确保一致性
-4. **使用 useCallback**: 对于传递给子组件的更新函数，使用 useCallback 包装以减少不必要的重渲染
-5. **清理函数**: 在组件卸载时重置相关状态
+1. **State Splitting**: Split unrelated state into different stores
+2. **Selective Subscription**: Only subscribe to state slices needed by components to reduce unnecessary re-renders
+3. **Export Constants**: Export constants related to store from store files to ensure consistency
+4. **Use useCallback**: Wrap update functions passed to child components with useCallback to reduce unnecessary re-renders
+5. **Cleanup Functions**: Reset relevant state when components unmount

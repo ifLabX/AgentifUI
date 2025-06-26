@@ -347,21 +347,21 @@ app/
 4. **Directory Grouping**:
    - Use parentheses `()` to group related code without affecting the URL structure in app directory (e.g., `(auth)`, `(dashboard)`).
 
-5. **响应式开发规范**:
-   - 所有组件必须使用Tailwind CSS进行响应式设计
-   - 遵循移动优先(Mobile-First)的开发方法
-   - 组织结构应支持不同屏幕尺寸下的组件复用
+5. **Responsive Development Standards**:
+   - All components must use Tailwind CSS for responsive design
+   - Follow Mobile-First development approach
+   - Organization structure should support component reuse across different screen sizes
 
-## 响应式开发指南
+## Responsive Development Guide
 
-为确保项目在各种设备上具有良好的用户体验，所有前端组件必须遵循以下响应式开发规范：
+To ensure the project has a good user experience on various devices, all frontend components must follow these responsive development standards:
 
-### 统一宽度管理
+### Unified Width Management
 
-所有聊天相关组件应使用 `useChatWidth` Hook 来保持一致的宽度：
+All chat-related components should use the `useChatWidth` Hook to maintain consistent width:
 
 ```typescript
-// 使用示例
+// Usage example
 const { widthClass, paddingClass } = useChatWidth()
 
 return (
@@ -370,47 +370,47 @@ return (
     widthClass,
     paddingClass
   )}>
-    {/* 组件内容 */}
+    {/* Component content */}
   </div>
 )
 ```
 
-### Tailwind CSS断点使用
+### Tailwind CSS Breakpoint Usage
 
 ```
-sm: 640px   - 小型设备（如手机横屏）
-md: 768px   - 中型设备（如平板）
-lg: 1024px  - 大型设备（如笔记本）
-xl: 1280px  - 特大型设备（如台式机）
-2xl: 1536px - 超大型设备
+sm: 640px   - Small devices (e.g., mobile landscape)
+md: 768px   - Medium devices (e.g., tablets)
+lg: 1024px  - Large devices (e.g., laptops)
+xl: 1280px  - Extra large devices (e.g., desktops)
+2xl: 1536px - Extra extra large devices
 ```
 
-### 响应式开发原则
+### Responsive Development Principles
 
-1. **移动优先设计**:
-   - 始终先为移动设备设计界面
-   - 使用媒体查询扩展到更大屏幕
-   - 示例: `className="text-sm md:text-base lg:text-lg"`
+1. **Mobile-First Design**:
+   - Always design for mobile devices first
+   - Use media queries to expand to larger screens
+   - Example: `className="text-sm md:text-base lg:text-lg"`
 
-2. **弹性布局**:
-   - 使用Flexbox和Grid进行页面布局
-   - 适当使用`flex-col`和`flex-row`在不同屏幕尺寸间切换
-   - 示例: `className="flex flex-col md:flex-row"`
+2. **Flexible Layout**:
+   - Use Flexbox and Grid for page layout
+   - Appropriately use `flex-col` and `flex-row` to switch between different screen sizes
+   - Example: `className="flex flex-col md:flex-row"`
 
-3. **响应式间距和尺寸**:
-   - 使用响应式间距和尺寸类
-   - 示例: `className="p-4 md:p-6 lg:p-8"`
+3. **Responsive Spacing and Sizing**:
+   - Use responsive spacing and sizing classes
+   - Example: `className="p-4 md:p-6 lg:p-8"`
 
-4. **内容适应**:
-   - 长文本在小屏幕上应适当截断或重排
-   - 图片应适当缩放并保持比例
-   - 示例: `className="w-full max-w-md lg:max-w-lg"`
+4. **Content Adaptation**:
+   - Long text should be appropriately truncated or rewrapped on small screens
+   - Images should scale appropriately while maintaining aspect ratio
+   - Example: `className="w-full max-w-md lg:max-w-lg"`
 
-5. **组件组织**:
-   - 复杂组件应拆分为子组件，便于在不同屏幕尺寸下重组
-   - 使用条件渲染为不同屏幕尺寸提供不同UI方案
+5. **Component Organization**:
+   - Complex components should be split into sub-components for easy reorganization across different screen sizes
+   - Use conditional rendering to provide different UI solutions for different screen sizes
 
-### 聊天组件响应式示例
+### Chat Component Responsive Example
 
 ```tsx
 // components/chat/chat-loader.tsx
@@ -424,13 +424,13 @@ export const ChatLoader = ({ messages }: ChatLoaderProps) => {
       paddingClass,
       "overflow-y-auto pb-32"
     )}>
-      {/* 消息列表 */}
+      {/* Message list */}
     </div>
   )
 }
 ```
 
-遵循这些响应式开发规范可确保应用在各种设备上都有一致且良好的用户体验。
+Following these responsive development standards ensures the application has consistent and good user experience across various devices.
 
 Following these guidelines ensures code consistency and maintainability. Please refer to this document when adding new files or modifying directory structure.
 

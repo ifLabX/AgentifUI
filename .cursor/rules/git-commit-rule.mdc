@@ -5,137 +5,137 @@ alwaysApply: false
 ---
 # Git Commit Rule
 
-## 提交模式选择
+## Commit Mode Selection
 
-### 精简模式 (推荐用于简单更改)
-单行提交，适用于：
-- 简单的bug修复
-- 小功能添加
-- 依赖更新
-- 文档更新
-- 样式调整
+### Simple Mode (Recommended for simple changes)
+Single-line commits, suitable for:
+- Simple bug fixes
+- Small feature additions
+- Dependency updates
+- Documentation updates
+- Style adjustments
 
-### 详细模式 (用于复杂更改)
-多行提交，适用于：
-- 复杂的新功能
-- 重大重构
-- 破坏性更改
-- 需要详细说明的重要修复
+### Detailed Mode (For complex changes)
+Multi-line commits, suitable for:
+- Complex new features
+- Major refactoring
+- Breaking changes
+- Important fixes requiring detailed explanation
 
-## 精简模式格式
+## Simple Mode Format
 
 ```
-<type>(<scope>): <subject in Chinese>
+<type>(<scope>): <subject in English>
 ```
 
-### 精简模式示例
+### Simple Mode Examples
 ```bash
-git commit -m "feat(api): 添加用户登录API"
-git commit -m "fix(ui): 修复按钮样式问题"
-git commit -m "feat(chat): 添加消息发送功能"
-git commit -m "fix(sidebar): 修复移动端显示问题"
-git commit -m "chore(deps): 更新React版本"
-git commit -m "docs: 更新配置文档"
-git commit -m "refactor(auth): 优化认证逻辑"
-git commit -m "perf(api): 提升查询性能"
+git commit -m "feat(api): add user login API"
+git commit -m "fix(ui): fix button style issue"
+git commit -m "feat(chat): add message sending functionality"
+git commit -m "fix(sidebar): fix mobile display issue"
+git commit -m "chore(deps): update React version"
+git commit -m "docs: update configuration documentation"
+git commit -m "refactor(auth): optimize authentication logic"
+git commit -m "perf(api): improve query performance"
 ```
 
-## 详细模式格式
+## Detailed Mode Format
 
 ```
-<type>(<scope>): <subject in Chinese>
+<type>(<scope>): <subject in English>
 
-<body in Chinese> (optional)
+<body in English> (optional)
 
 <footer> (optional)
 ```
 
-### 详细模式示例
+### Detailed Mode Examples
 ```bash
-git commit -m "feat(api): 添加用户认证API端点" \
+git commit -m "feat(api): add user authentication API endpoints" \
            -m "" \
-           -m "实现基于JWT的认证机制，支持用户登录和令牌刷新功能。" \
-           -m "添加了相应的单元测试和文档。" \
+           -m "Implement JWT-based authentication mechanism supporting user login and token refresh functionality." \
+           -m "Added corresponding unit tests and documentation." \
            -m "" \
            -m "Closes #123"
 ```
 
-### 破坏性更改示例
+### Breaking Changes Example
 ```bash
-git commit -m "feat(auth): 重构用户认证系统" \
+git commit -m "feat(auth): refactor user authentication system" \
            -m "" \
-           -m "升级到新的认证架构，提供更好的安全性和性能。" \
+           -m "Upgrade to new authentication architecture providing better security and performance." \
            -m "" \
-           -m "BREAKING CHANGE: 旧的认证令牌将不再有效，用户需要重新登录。"
+           -m "BREAKING CHANGE: Old authentication tokens will no longer be valid, users need to log in again."
 ```
 
 ## Types
 
-- **feat**: 新功能或增强
-- **fix**: 错误修复
-- **docs**: 仅文档更改
-- **style**: 格式化、缺少分号等
-- **refactor**: 既不修复错误也不添加功能的代码更改
-- **perf**: 性能改进
-- **test**: 添加或修正测试
-- **chore**: 构建过程、辅助工具、库等
-- **revert**: 撤销之前的提交
+- **feat**: New features or enhancements
+- **fix**: Bug fixes
+- **docs**: Documentation-only changes
+- **style**: Formatting, missing semicolons, etc.
+- **refactor**: Code changes that neither fix bugs nor add features
+- **perf**: Performance improvements
+- **test**: Adding or correcting tests
+- **chore**: Build process, auxiliary tools, libraries, etc.
+- **revert**: Reverting previous commits
 
-## Scope (可选)
+## Scope (Optional)
 
-- **api**: 后端API相关更改
-- **ui**: 通用UI组件 (buttons, inputs, etc.)
-- **chat**: 聊天相关组件和功能
-- **sidebar**: 侧边栏组件和导航
-- **auth**: 认证/授权组件和逻辑
-- **admin**: 管理面板组件
-- **workflow**: 工作流相关组件
-- **settings**: 设置和配置组件
-- **mobile**: 移动端特定组件和响应式设计
-- **embed**: 嵌入式组件和集成
-- **nav**: 导航组件 (nav-bar, etc.)
-- **home**: 首页组件
-- **db**: 数据库相关更改
-- **config**: 配置更改
-- **deps**: 依赖更新
-- **core**: 核心功能
-- **route**: 路由更改
-- **hooks**: 自定义React hooks
-- **store**: 状态管理 (Zustand stores)
-- **utils**: 工具函数和助手
-- **types**: TypeScript类型定义
-- **style**: 样式和CSS更改
-- **all**: 代码库的多个部分
+- **api**: Backend API-related changes
+- **ui**: Generic UI components (buttons, inputs, etc.)
+- **chat**: Chat-related components and functionality
+- **sidebar**: Sidebar components and navigation
+- **auth**: Authentication/authorization components and logic
+- **admin**: Admin panel components
+- **workflow**: Workflow-related components
+- **settings**: Settings and configuration components
+- **mobile**: Mobile-specific components and responsive design
+- **embed**: Embedded components and integrations
+- **nav**: Navigation components (nav-bar, etc.)
+- **home**: Home page components
+- **db**: Database-related changes
+- **config**: Configuration changes
+- **deps**: Dependency updates
+- **core**: Core functionality
+- **route**: Route changes
+- **hooks**: Custom React hooks
+- **store**: State management (Zustand stores)
+- **utils**: Utility functions and helpers
+- **types**: TypeScript type definitions
+- **style**: Styles and CSS changes
+- **all**: Multiple parts of the codebase
 
-## Subject规则
+## Subject Rules
 
-- 使用中文描述
-- 以动词开头
-- 末尾不加句号
-- 最大50个字符
-- 使用祈使语气现在时 (如"添加..."而不是"添加了...")
+- Use English description
+- Start with a verb
+- No period at the end
+- Maximum 50 characters
+- Use imperative present tense (e.g., "add..." not "added...")
 
-## 详细模式格式规则
+## Detailed Mode Format Rules
 
-- **第一个 `-m`**: 主要提交信息 (type, scope, subject)
-- **第二个 `-m`**: 空字符串 `""` 用于主题和正文之间的空行
-- **后续 `-m`**: 详细解释、原因、影响
-- **最后 `-m`**: 页脚信息 (issue引用、破坏性更改)
+- **First `-m`**: Main commit message (type, scope, subject)
+- **Second `-m`**: Empty string `""` for blank line between subject and body
+- **Subsequent `-m`**: Detailed explanation, reasons, impact
+- **Last `-m`**: Footer information (issue references, breaking changes)
 
-## Scope选择指南
+## Scope Selection Guide
 
-- **组件特定**: 对特定组件的更改使用具体的scope (chat, sidebar, auth)
-- **通用UI**: 可重用UI组件使用 `ui` (buttons, inputs, modals)
-- **跨组件**: 影响多个组件的更改使用 `core`
-- **基础设施**: 非功能性更改使用 `config`, `deps`, `utils`
-- **多个区域**: 跨越多个不相关区域的更改使用 `all`
+- **Component-specific**: Use specific scope for changes to specific components (chat, sidebar, auth)
+- **Generic UI**: Use `ui` for reusable UI components (buttons, inputs, modals)
+- **Cross-component**: Use `core` for changes affecting multiple components
+- **Infrastructure**: Use `config`, `deps`, `utils` for non-functional changes
+- **Multiple areas**: Use `all` for changes spanning multiple unrelated areas
 
-## 中文语言指南
+## English Language Guidelines
 
-- 使用简体中文
-- 简洁明了
-- 尽可能避免技术术语
-- 以动作动词开头
-- 专注于改变了什么以及为什么
+- Use clear and concise English
+- Avoid unnecessary technical jargon
+- Start with action verbs
+- Focus on what changed and why
+- Use proper grammar and spelling
 
 
