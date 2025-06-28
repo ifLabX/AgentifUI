@@ -427,7 +427,7 @@ export function SidebarChatList({
 
         {/* --- 待处理对话列表 --- */}
         {pendingChats.length > 0 && (
-          <div className="mb-1.5 pt-1"> {/* 减小底部边距，添加顶部间距 */}
+          <div className="mb-0.5 pt-1"> {/* 🟢 修复：mb-1.5 改为 mb-0.5，与内部间距一致 */}
             <div className="space-y-0.5 px-3"> {/* 减小列表项之间的间距 */}
               {pendingChats.map(chat => {
                 const itemIsLoading = chat.pendingStatus === 'creating' ||
@@ -482,7 +482,7 @@ export function SidebarChatList({
         )}
 
         {/* --- 已保存对话列表 --- */}
-        <div className="pt-1"> {/* 添加顶部间距，与粘性标题分离 */}
+        <div className="pt-0.5"> {/* 🟢 修复：pt-1 改为 pt-0.5，与内部间距一致 */}
           <div className="space-y-0.5 px-3"> {/* 减小列表项之间的间距 */}
             {visibleUnpinnedChats.map(chat => {
               // --- BEGIN COMMENT ---
