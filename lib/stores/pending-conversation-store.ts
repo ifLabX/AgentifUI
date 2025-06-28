@@ -57,6 +57,11 @@ interface PendingConversationState {
   completeTitleTypewriter: (id: string) => void; // 完成标题打字机效果
   
   // --- BEGIN COMMENT ---
+  // 🎯 新增：原子性状态更新，避免竞态条件
+  // --- END COMMENT ---
+  markAsPersistedComplete: (id: string, supabasePK: string, finalTitle?: string) => void; // 原子性标记为完全持久化状态
+  
+  // --- BEGIN COMMENT ---
   // Selectors / Getters (可选，但推荐，以便在 store 外部安全地访问状态)
   // --- END COMMENT ---
   getPendingByTempId: (tempId: string) => PendingConversation | undefined;
@@ -401,6 +406,41 @@ export const usePendingConversationStore = create<PendingConversationState>((set
       }
       
       return { pendingConversations: newMap };
+    });
+  },
+
+  // --- BEGIN COMMENT ---
+  // 🎯 新增：原子性状态更新，避免竞态条件
+  // --- END COMMENT ---
+  markAsPersistedComplete: (id: string, supabasePK: string, finalTitle?: string) => {
+    set((state) => {
+      const newMap = new Map(state.pendingConversations);
+      let entryKey: string | undefined = id;
+      let entry = newMap.get(id); // 尝试按 tempId 查找
+
+      if (!entry) { // 如果按 tempId 没找到，尝试按 realId 查找
+        for (const [key, value] of newMap.entries()) {
+          if (value.realId === id) {
+            entry = value;
+            entryKey = key;
+            break;
+          }
+        }
+      }
+      
+      if (entry && entryKey) {
+        newMap.set(entryKey, { 
+          ...entry, 
+          status: 'title_resolved',
+          isTitleFinal: true,
+          title: finalTitle || entry.title,
+          supabase_pk: supabasePK,
+          updatedAt: new Date().toISOString() 
+        });
+        return { pendingConversations: newMap };
+      }
+      console.warn(`[PendingConversationStore] markAsPersistedComplete: 未找到ID: ${id}`);
+      return state;
     });
   },
 }));

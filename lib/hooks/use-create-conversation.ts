@@ -215,9 +215,9 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     console.log(`[useCreateConversation] 添加应用到常用列表: ${appId}`);
                     addToFavorites(appId);
                     
-                    setSupabasePKInPendingStore(difyConvId, localConversation.id); 
-                    updateStatusInPendingStore(currentTempConvId, 'title_resolved'); 
-                    markAsOptimistic(difyConvId);
+                    // 🎯 增强：使用原子性更新，避免竞态条件
+                    const { markAsPersistedComplete } = usePendingConversationStore.getState();
+                    markAsPersistedComplete(difyConvId, localConversation.id);
 
                     // 立即调用回调函数，通知数据库ID创建完成
                     if (typeof onDbIdCreated === 'function') {

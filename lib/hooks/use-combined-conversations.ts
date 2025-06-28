@@ -217,12 +217,14 @@ export function useCombinedConversations() {
   }, [refreshDbConversations, pendingConversations]);
 
   // --- BEGIN COMMENT ---
-  // 🎯 修复：安全的临时对话清理机制
-  // 移除过早的自动清理，改为基于时间的过期清理，确保临时对话不会因消息保存延迟而消失
+  // 🎯 增强：安全的临时对话清理机制
+  // 增加时间缓冲和更严格的清理条件，确保pending对话不会意外消失
   // 只清理满足以下所有条件的临时对话：
-  // 1. 已存在超过10分钟（足够长的时间确保所有操作完成）
+  // 1. 已存在超过15分钟（增加缓冲时间，确保所有操作完成）
   // 2. 已有对应的数据库记录
   // 3. 状态为已完成（persisted_optimistic 或 title_resolved）
+  // 4. 必须有数据库主键（确保真正保存到数据库）
+  // 5. 标题必须是最终确定的
   // --- END COMMENT ---
   useEffect(() => {
     const dbRealIds = new Set(dbConversations.map(c => c.external_id || c.id));
@@ -236,38 +238,51 @@ export function useCombinedConversations() {
         const createdTime = new Date(p.createdAt).getTime();
         const ageInMinutes = (now - createdTime) / (1000 * 60);
         
-        // 只清理满足所有条件的临时对话：
-        // 1. 超过10分钟（确保足够时间完成所有操作）
-        // 2. 有真实ID且数据库中存在对应记录
-        // 3. 状态为已完成
-        if (ageInMinutes > 10 && 
-            p.realId && 
-            dbRealIds.has(p.realId) &&
-            (p.status === 'persisted_optimistic' || p.status === 'title_resolved')) {
-          
-          console.log(`[useCombinedConversations] 清理过期临时对话: ${p.tempId} (realId: ${p.realId}, 年龄: ${ageInMinutes.toFixed(1)}分钟)`);
+        // 🎯 增强：更严格的清理条件，避免竞态条件
+        const shouldCleanup = (
+          // 基本条件：超过15分钟（增加缓冲时间）
+          ageInMinutes > 15 && 
+          // 必须有真实ID
+          p.realId && 
+          // 数据库中存在对应记录
+          dbRealIds.has(p.realId) &&
+          // 状态必须是最终完成状态
+          (p.status === 'persisted_optimistic' || p.status === 'title_resolved') &&
+          // 🎯 新增：必须有数据库主键，确保真正保存到数据库
+          p.supabase_pk &&
+          // 🎯 新增：标题必须是最终确定的
+          p.isTitleFinal
+        );
+        
+        if (shouldCleanup) {
+          console.log(`[useCombinedConversations] 清理已确认保存的临时对话: ${p.tempId} (realId: ${p.realId}, 年龄: ${ageInMinutes.toFixed(1)}分钟)`);
           removePending(p.tempId);
         } else if (p.realId && dbRealIds.has(p.realId)) {
-          // 记录未清理的原因，便于调试
+          // 详细记录保留原因，便于调试
           const reasons = [];
-          if (ageInMinutes <= 10) reasons.push(`年龄不足(${ageInMinutes.toFixed(1)}分钟)`);
+          if (ageInMinutes <= 15) reasons.push(`年龄不足(${ageInMinutes.toFixed(1)}分钟)`);
           if (p.status !== 'persisted_optimistic' && p.status !== 'title_resolved') reasons.push(`状态未完成(${p.status})`);
+          if (!p.supabase_pk) reasons.push('无数据库主键');
+          if (!p.isTitleFinal) reasons.push('标题未确定');
           
-          if (reasons.length > 0) {
+          if (reasons.length > 0 && ageInMinutes > 5) { // 只记录超过5分钟的情况
             console.log(`[useCombinedConversations] 保留临时对话 ${p.tempId}: ${reasons.join(', ')}`);
           }
         }
       });
     };
     
-    // 立即执行一次清理
-    cleanupExpiredPendingConversations();
+    // 🎯 增强：延迟首次执行，避免初始化时误删
+    const initialDelay = setTimeout(cleanupExpiredPendingConversations, 30000); // 30秒后首次执行
     
-    // 每2分钟检查一次过期项（频率适中，不会影响性能）
-    const intervalId = setInterval(cleanupExpiredPendingConversations, 2 * 60 * 1000);
+    // 每3分钟检查一次（降低频率，减少竞态风险）
+    const intervalId = setInterval(cleanupExpiredPendingConversations, 3 * 60 * 1000);
     
     // 清理定时器
-    return () => clearInterval(intervalId);
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(intervalId);
+    };
   }, [dbConversations, pendingArray]);
 
   // --- BEGIN COMMENT ---
