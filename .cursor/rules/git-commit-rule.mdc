@@ -69,6 +69,21 @@ git commit -m "feat(auth): refactor user authentication system" \
            -m "BREAKING CHANGE: Old authentication tokens will no longer be valid, users need to log in again."
 ```
 
+## High-Risk Commits
+
+For commits that modify core functionality and may need to be reverted:
+
+### Risk Flag
+- **RISKY_REVERT_CANDIDATE**: Add this flag to subject line for high-risk commits that may require rollback
+
+### High-Risk Example
+```bash
+git commit -m "fix(core): enhance state management - RISKY_REVERT_CANDIDATE" \
+           -m "" \
+           -m "Core state management changes that may cause unexpected behavior." \
+           -m "REVERT: git revert HEAD if issues occur"
+```
+
 ## Types
 
 - **feat**: New features or enhancements
