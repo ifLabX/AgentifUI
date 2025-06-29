@@ -54,16 +54,9 @@ function adjustApiPathByAppType(
   return originalPath;
 }
 
-// --- 辅助函数：创建带有基本 CORS 和 Content-Type 的最小化响应头 ---
+// --- 辅助函数：创建带有 Content-Type 的最小化响应头 ---
 function createMinimalHeaders(contentType?: string): Headers {
   const headers = new Headers();
-  // 设置基础的 CORS 头 (生产环境应配置更严格的源)
-  headers.set('Access-Control-Allow-Origin', '*');
-  headers.set(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PUT, DELETE, OPTIONS, PATCH'
-  );
-  headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   // 如果提供了 Content-Type，则设置它
   if (contentType) {
@@ -127,13 +120,15 @@ async function proxyToDify(
     console.error(
       `[App: ${appId}] [${req.method}] Invalid request: Slug path is missing.`
     );
-    return new Response(
+    const baseResponse = new Response(
       JSON.stringify({ error: 'Invalid request: slug path is missing.' }),
       {
         status: 400,
         headers: createMinimalHeaders('application/json'), // 使用辅助函数
       }
     );
+
+    return baseResponse;
   }
   // --- END OPTIMIZATION ---
 
@@ -159,10 +154,12 @@ async function proxyToDify(
     if (!difyConfig) {
       console.error(`[App: ${appId}] [${req.method}] Configuration not found.`);
       // 返回 400 Bad Request，表明客户端提供的 appId 无效或未配置
-      return NextResponse.json(
+      const baseResponse = NextResponse.json(
         { error: `Configuration for Dify app '${appId}' not found.` },
         { status: 400 }
       );
+
+      return baseResponse;
     }
 
     difyApiKey = difyConfig.apiKey;
@@ -175,10 +172,12 @@ async function proxyToDify(
       `[App: ${appId}] [${req.method}] Invalid configuration loaded (missing key or URL).`
     );
     // 返回 500 Internal Server Error，表明服务器端配置问题
-    return NextResponse.json(
+    const baseResponse = NextResponse.json(
       { error: `Server configuration error for app '${appId}'.` },
       { status: 500 }
     );
+
+    return baseResponse;
   }
   console.log(
     `[App: ${appId}] [${req.method}] Configuration loaded successfully.`
@@ -297,23 +296,15 @@ async function proxyToDify(
           headersToForward.set(key, value);
         }
       });
-      // 添加 CORS 响应头 (生产环境应配置更严格的源)
-      headersToForward.set('Access-Control-Allow-Origin', '*');
-      headersToForward.set(
-        'Access-Control-Allow-Methods',
-        'GET, POST, PUT, DELETE, OPTIONS'
-      );
-      headersToForward.set(
-        'Access-Control-Allow-Headers',
-        'Content-Type, Authorization'
-      );
 
-      // 返回 204 响应，body 必须为 null
-      return new Response(null, {
+      // 返回 204 响应，body 必须为 null，中间件会自动添加CORS头
+      const baseResponse = new Response(null, {
         status: 204,
         statusText: 'No Content',
         headers: headersToForward,
       });
+
+      return baseResponse;
     }
     // --- END MODIFICATION / 结束修改 ---
 
@@ -422,12 +413,14 @@ async function proxyToDify(
           },
         });
 
-        // 返回包含我们手动创建的流的响应
-        return new Response(stream, {
+        // 返回包含我们手动创建的流的响应，中间件会自动添加CORS头
+        const baseResponse = new Response(stream, {
           status: response.status,
           statusText: response.statusText,
-          headers: sseHeaders, // 使用包含必要 SSE 头和 CORS 头的 Headers
+          headers: sseHeaders,
         });
+
+        return baseResponse;
       }
       // --- END SSE Robust Handling ---
 
@@ -445,12 +438,14 @@ async function proxyToDify(
             audioHeaders.set(key, value);
           }
         });
-        // 对于一次性流，直接管道通常是高效且足够稳定的
-        return new Response(response.body, {
+        // 对于一次性流，直接管道通常是高效且足够稳定的，中间件会自动添加CORS头
+        const baseResponse = new Response(response.body, {
           status: response.status,
           statusText: response.statusText,
           headers: audioHeaders,
         });
+
+        return baseResponse;
       }
       // 处理常规响应 (主要是 JSON 或 Text)
       else {
@@ -462,11 +457,13 @@ async function proxyToDify(
             `[App: ${appId}] [${req.method}] Returning native Response with minimal headers for success JSON.`
           );
           // --- REFACTOR: Use minimal header helper ---
-          return new Response(JSON.stringify(jsonData), {
+          const baseResponse = new Response(JSON.stringify(jsonData), {
             status: response.status,
             statusText: response.statusText,
             headers: createMinimalHeaders('application/json'), // 使用辅助函数
           });
+
+          return baseResponse;
           // --- END REFACTOR ---
         } catch (parseError) {
           // 非 JSON，返回文本
@@ -476,11 +473,13 @@ async function proxyToDify(
           // --- REFACTOR: Use minimal header helper ---
           const originalDifyContentType =
             response.headers.get('content-type') || 'text/plain';
-          return new Response(responseData, {
+          const baseResponse = new Response(responseData, {
             status: response.status,
             statusText: response.statusText,
             headers: createMinimalHeaders(originalDifyContentType), // 使用辅助函数，并传递原始类型
           });
+
+          return baseResponse;
           // --- END REFACTOR ---
         }
       }
@@ -500,11 +499,13 @@ async function proxyToDify(
             `[App: ${appId}] [${req.method}] Returning native Response with minimal headers for error JSON.`
           );
           // --- REFACTOR: Use minimal header helper ---
-          return new Response(JSON.stringify(errorJson), {
+          const baseResponse = new Response(JSON.stringify(errorJson), {
             status: response.status,
             statusText: response.statusText,
             headers: createMinimalHeaders('application/json'), // 使用辅助函数
           });
+
+          return baseResponse;
           // --- END REFACTOR ---
         } catch {
           // 错误响应不是 JSON，返回文本
@@ -514,11 +515,13 @@ async function proxyToDify(
           // --- REFACTOR: Use minimal header helper ---
           const originalDifyErrorContentType =
             response.headers.get('content-type') || 'text/plain';
-          return new Response(errorText, {
+          const baseResponse = new Response(errorText, {
             status: response.status,
             statusText: response.statusText,
             headers: createMinimalHeaders(originalDifyErrorContentType), // 使用辅助函数
           });
+
+          return baseResponse;
           // --- END REFACTOR ---
         }
       } catch (readError) {
@@ -528,7 +531,7 @@ async function proxyToDify(
           readError
         );
         const finalErrorHeaders = createMinimalHeaders('application/json'); // 使用辅助函数
-        return new Response(
+        const baseResponse = new Response(
           JSON.stringify({
             error: `Failed to read Dify error response body. Status: ${response.status}`,
           }),
@@ -537,6 +540,8 @@ async function proxyToDify(
             headers: finalErrorHeaders,
           }
         );
+
+        return baseResponse;
       }
     }
   } catch (error: any) {
@@ -545,13 +550,15 @@ async function proxyToDify(
       `[App: ${appId}] [${req.method}] Dify proxy fetch/processing error:`,
       error
     );
-    return NextResponse.json(
+    const baseResponse = NextResponse.json(
       {
         error: `Failed to connect or process response from Dify service for app '${appId}' during ${req.method}.`,
         details: error.message,
       },
       { status: 502 } // 502 Bad Gateway
     );
+
+    return baseResponse;
   }
 }
 
@@ -595,11 +602,13 @@ export async function PATCH(
 
 // --- BEGIN OPTIMIZATION: Explicit OPTIONS handler ---
 // 添加明确的 OPTIONS 请求处理函数，以确保 CORS 预检请求在各种部署环境下都能正确响应
-export async function OPTIONS() {
+export async function OPTIONS(req: NextRequest) {
   console.log('[OPTIONS Request] Responding to preflight request.');
-  return new Response(null, {
+  const baseResponse = new Response(null, {
     status: 204, // No Content for preflight
-    headers: createMinimalHeaders(), // 使用辅助函数设置 CORS 头
+    headers: createMinimalHeaders(),
   });
+
+  return baseResponse;
 }
 // --- END OPTIMIZATION ---

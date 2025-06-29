@@ -1,3 +1,8 @@
+import {
+  createCorsHeaders,
+  handleCorsPreflightRequest,
+} from '@lib/config/cors-config';
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -6,14 +11,40 @@ import { createServerClient } from '@supabase/ssr';
 // 这个中间件会拦截所有请求。
 // 使用 Supabase 的认证逻辑处理路由保护。
 export async function middleware(request: NextRequest) {
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  // --- BEGIN COMMENT ---
+  // 1. 优先处理CORS预检请求
+  // --- END COMMENT ---
+  if (request.method === 'OPTIONS') {
+    console.log(`[Middleware] CORS预检请求: ${pathname}`);
+    return handleCorsPreflightRequest(request);
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
 
-  const url = new URL(request.url);
-  const pathname = url.pathname;
+  // --- BEGIN COMMENT ---
+  // 2. 为所有API路由自动添加CORS头
+  // 这样所有API都获得统一的CORS保护，无需手动添加
+  // --- END COMMENT ---
+  if (pathname.startsWith('/api/')) {
+    const origin = request.headers.get('origin');
+    const corsHeaders = createCorsHeaders(origin);
+
+    // 添加CORS头到响应
+    corsHeaders.forEach((value, key) => {
+      response.headers.set(key, value);
+    });
+
+    console.log(
+      `[Middleware] 为API路由添加CORS头: ${pathname}${origin ? ` (Origin: ${origin})` : ' (无Origin头)'}`
+    );
+  }
 
   // 检查是否为SSO登录成功回调，如果是则暂时跳过认证检查
   // 允许前端有时间处理SSO会话建立
