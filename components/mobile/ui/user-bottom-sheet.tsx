@@ -38,13 +38,19 @@ export function UserBottomSheet({
   const t = useTranslations('mobile.user');
   const tBottomSheet = useTranslations('mobile.bottomSheet');
   const tMenu = useTranslations('mobile.menu');
+  const tRoles = useTranslations('pages.settings.profileSettings.roles');
 
   // 使用 useProfile hook 获取用户信息
   const { profile } = useProfile();
 
   // 从 profile 中提取用户信息
   const userName = profile?.full_name || profile?.username || t('defaultUser');
-  const userCompany = '群组系统'; // 简化显示
+  const userRole =
+    profile?.role === 'admin'
+      ? tRoles('admin')
+      : profile?.role === 'manager'
+        ? tRoles('manager')
+        : tRoles('user'); // 显示用户角色而不是固定的"群组系统"
 
   // 处理登录
   const handleLogin = () => {
@@ -123,7 +129,7 @@ export function UserBottomSheet({
                 isDark ? 'text-stone-400' : 'text-stone-500'
               )}
             >
-              {userCompany}
+              {userRole}
             </div>
           </div>
 

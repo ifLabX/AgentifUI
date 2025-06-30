@@ -520,7 +520,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                           isDark ? 'text-stone-500' : 'text-stone-500'
                         )}
                       >
-                        群组系统
+                        -
                       </p>
                     </div>
                   </td>

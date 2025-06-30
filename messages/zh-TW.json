@@ -703,8 +703,7 @@
         },
         "status": {
           "notRecorded": "未記錄",
-          "notSet": "未設定",
-          "noOrganization": "無群組關聯"
+          "notSet": "未設置"
         },
         "loadProfileError": "載入資料時發生錯誤",
         "avatar": {
@@ -840,18 +839,17 @@
   },
   "navbar": {
     "user": {
-      "userMenu": "使用者選單",
-      "login": "登入",
-      "logout": "登出",
-      "loggingOut": "登出中...",
+      "userMenu": "用戶選單",
+      "login": "登錄",
+      "logout": "退出登錄",
+      "loggingOut": "退出中...",
       "register": "註冊新帳戶",
       "history": "歷史對話",
       "settings": "設定",
       "about": "關於",
       "admin": "管理後台",
-      "noOrganization": "無群組關聯",
-      "loginPrompt": "登入以使用更多功能",
-      "loginDescription": "存取您的對話歷史和個人設定"
+      "loginPrompt": "登錄以使用更多功能",
+      "loginDescription": "訪問您的對話歷史和個人設定"
     },
     "conversation": {
       "newChat": "新對話",
@@ -923,15 +921,14 @@
   },
   "mobile": {
     "navigation": {
-      "openMenu": "開啟選單",
-      "openUserMenu": "開啟使用者選單"
+      "openMenu": "打開選單",
+      "openUserMenu": "打開用戶選單"
     },
     "user": {
-      "defaultUser": "使用者",
-      "loginRegister": "登入/註冊",
-      "noOrganization": "無群組關聯",
+      "defaultUser": "用戶",
+      "loginRegister": "登錄/註冊",
       "avatarAlt": "{userName}的頭像",
-      "loginPrompt": "登入以使用更多功能"
+      "loginPrompt": "登錄以使用更多功能"
     },
     "bottomSheet": {
       "userMenu": "使用者選單",

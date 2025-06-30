@@ -702,9 +702,8 @@
           "user": "ユーザー"
         },
         "status": {
-          "notRecorded": "未記録",
-          "notSet": "未設定",
-          "noOrganization": "グループなし"
+          "notRecorded": "記録なし",
+          "notSet": "未設定"
         },
         "loadProfileError": "プロフィールの読み込みエラー",
         "avatar": {
@@ -849,8 +848,7 @@
       "settings": "設定",
       "about": "について",
       "admin": "管理パネル",
-      "noOrganization": "グループなし",
-      "loginPrompt": "ログインしてより多くの機能をご利用ください",
+      "loginPrompt": "より多くの機能にアクセスするにはログインしてください",
       "loginDescription": "チャット履歴と個人設定にアクセス"
     },
     "conversation": {
@@ -929,7 +927,6 @@
     "user": {
       "defaultUser": "ユーザー",
       "loginRegister": "ログイン/登録",
-      "noOrganization": "グループなし",
       "avatarAlt": "{userName}のアバター",
       "loginPrompt": "より多くの機能にアクセスするにはログインしてください"
     },

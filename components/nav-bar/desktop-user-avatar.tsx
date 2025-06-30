@@ -46,6 +46,7 @@ export function DesktopUserAvatar() {
   const { logout } = useLogout();
   const router = useRouter();
   const t = useTranslations('navbar.user');
+  const tRoles = useTranslations('pages.settings.profileSettings.roles');
 
   // 使用useProfile hook获取用户信息，自动处理缓存和认证状态同步
   const { profile } = useProfile();
@@ -189,7 +190,12 @@ export function DesktopUserAvatar() {
 
   const isLoggedIn = !!profile;
   const userName = profile?.full_name || profile?.username || t('userMenu');
-  const userCompany = '群组系统'; // 简化显示，移除组织部门概念
+  const userRole =
+    profile?.role === 'admin'
+      ? tRoles('admin')
+      : profile?.role === 'manager'
+        ? tRoles('manager')
+        : tRoles('user'); // 显示用户角色而不是固定的"群组系统"
   const avatarUrl = profile?.avatar_url;
 
   // 使用当前主题状态而不是hook，避免闪烁
@@ -304,7 +310,7 @@ export function DesktopUserAvatar() {
                           color: effectiveTheme ? '#a8a29e' : '#78716c',
                         }}
                       >
-                        {userCompany}
+                        {userRole}
                       </p>
                     </div>
                   </div>

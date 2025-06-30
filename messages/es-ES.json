@@ -703,8 +703,7 @@
         },
         "status": {
           "notRecorded": "No registrado",
-          "notSet": "No establecido",
-          "noOrganization": "Sin grupo"
+          "notSet": "No establecido"
         },
         "loadProfileError": "Error al cargar perfil",
         "avatar": {
@@ -844,12 +843,11 @@
       "login": "Iniciar Sesión",
       "logout": "Cerrar Sesión",
       "loggingOut": "Cerrando sesión...",
-      "register": "Crear Cuenta",
+      "register": "Registrarse",
       "history": "Historial de Chat",
       "settings": "Configuración",
       "about": "Acerca de",
       "admin": "Panel de Administración",
-      "noOrganization": "Sin grupo",
       "loginPrompt": "Inicia sesión para acceder a más funciones",
       "loginDescription": "Accede a tu historial de chat y configuración personal"
     },
@@ -929,7 +927,6 @@
     "user": {
       "defaultUser": "Usuario",
       "loginRegister": "Iniciar Sesión/Registrarse",
-      "noOrganization": "Sin grupo",
       "avatarAlt": "Avatar de {userName}",
       "loginPrompt": "Inicia sesión para acceder a más funciones"
     },

@@ -703,8 +703,7 @@
         },
         "status": {
           "notRecorded": "未记录",
-          "notSet": "未设置",
-          "noOrganization": "无群组关联"
+          "notSet": "未设置"
         },
         "loadProfileError": "加载资料时出错",
         "avatar": {
@@ -849,7 +848,6 @@
       "settings": "设置",
       "about": "关于",
       "admin": "管理后台",
-      "noOrganization": "无群组关联",
       "loginPrompt": "登录以使用更多功能",
       "loginDescription": "访问您的对话历史和个人设置"
     },
@@ -929,7 +927,6 @@
     "user": {
       "defaultUser": "用户",
       "loginRegister": "登录/注册",
-      "noOrganization": "无群组关联",
       "avatarAlt": "{userName}的头像",
       "loginPrompt": "登录以使用更多功能"
     },
