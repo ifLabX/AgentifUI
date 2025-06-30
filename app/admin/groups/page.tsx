@@ -51,14 +51,7 @@ export default function GroupsPage() {
   );
 
   return (
-    <div
-      className={cn(
-        'min-h-screen',
-        isDark
-          ? 'bg-gradient-to-br from-stone-950 via-stone-900 to-stone-800'
-          : 'bg-gradient-to-br from-stone-50 via-white to-stone-100'
-      )}
-    >
+    <div className="min-h-full">
       <div className="mx-auto max-w-7xl p-6">
         {/* 页面标题和操作栏 */}
         <GroupsHeader onCreateGroup={() => setShowCreateModal(true)} />

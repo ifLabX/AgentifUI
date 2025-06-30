@@ -202,11 +202,18 @@ export const useGroupManagementStore = create<GroupManagementState>(
         const result = await createGroup(data);
 
         if (result.success) {
-          // 重新加载群组列表
-          await get().loadGroups();
-          await get().loadStats();
-
-          set(state => ({ loading: { ...state.loading, creating: false } }));
+          // 直接添加新群组到列表，避免重新加载
+          const newGroup = { ...result.data, member_count: 0 };
+          set(state => ({
+            groups: [newGroup, ...state.groups],
+            // 立即更新统计数据
+            stats: {
+              ...state.stats,
+              totalGroups: state.stats.totalGroups + 1,
+              activeGroups: state.stats.activeGroups + 1,
+            },
+            loading: { ...state.loading, creating: false },
+          }));
           return true;
         } else {
           set(state => ({
@@ -274,6 +281,10 @@ export const useGroupManagementStore = create<GroupManagementState>(
         const result = await deleteGroup(groupId);
 
         if (result.success) {
+          // 获取被删除群组的成员数量，用于更新统计
+          const deletedGroup = get().groups.find(g => g.id === groupId);
+          const memberCount = deletedGroup?.member_count || 0;
+
           // 更新本地状态
           set(state => ({
             groups: state.groups.filter(group => group.id !== groupId),
@@ -284,11 +295,16 @@ export const useGroupManagementStore = create<GroupManagementState>(
                 ([id]) => id !== groupId
               )
             ),
+            // 立即更新统计数据
+            stats: {
+              ...state.stats,
+              totalGroups: state.stats.totalGroups - 1,
+              totalMembers: state.stats.totalMembers - memberCount,
+              activeGroups: state.stats.activeGroups - 1,
+            },
             loading: { ...state.loading, deleting: false },
           }));
 
-          // 重新加载统计数据
-          await get().loadStats();
           return true;
         } else {
           set(state => ({
@@ -314,7 +330,18 @@ export const useGroupManagementStore = create<GroupManagementState>(
         if (result.success) {
           // 重新加载该群组的成员列表
           await get().loadGroupMembers(groupId);
-          await get().loadStats();
+          // 更新群组列表中的成员数量和统计数据
+          set(state => ({
+            groups: state.groups.map(group =>
+              group.id === groupId
+                ? { ...group, member_count: (group.member_count || 0) + 1 }
+                : group
+            ),
+            stats: {
+              ...state.stats,
+              totalMembers: state.stats.totalMembers + 1,
+            },
+          }));
           return true;
         } else {
           set({ error: result.error.message });
@@ -334,7 +361,21 @@ export const useGroupManagementStore = create<GroupManagementState>(
         if (result.success) {
           // 重新加载该群组的成员列表
           await get().loadGroupMembers(groupId);
-          await get().loadStats();
+          // 更新群组列表中的成员数量和统计数据
+          set(state => ({
+            groups: state.groups.map(group =>
+              group.id === groupId
+                ? {
+                    ...group,
+                    member_count: Math.max((group.member_count || 0) - 1, 0),
+                  }
+                : group
+            ),
+            stats: {
+              ...state.stats,
+              totalMembers: Math.max(state.stats.totalMembers - 1, 0),
+            },
+          }));
           return true;
         } else {
           set({ error: result.error.message });

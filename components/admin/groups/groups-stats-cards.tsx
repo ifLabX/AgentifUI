@@ -32,8 +32,11 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
       color: 'green',
     },
     {
-      title: '活跃群组',
-      value: stats.activeGroups,
+      title: '平均成员数',
+      value:
+        stats.totalGroups > 0
+          ? Math.round(stats.totalMembers / stats.totalGroups)
+          : 0,
       icon: Activity,
       color: 'purple',
     },
@@ -54,11 +57,16 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
         bg: isDark ? 'bg-purple-500/20' : 'bg-purple-100',
       },
     };
-    return colorMap[color as keyof typeof colorMap];
+    return (
+      colorMap[color as keyof typeof colorMap] || {
+        icon: isDark ? 'text-stone-300' : 'text-stone-600',
+        bg: isDark ? 'bg-stone-700' : 'bg-stone-100',
+      }
+    );
   };
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
       {statsData.map(stat => {
         const colorClasses = getColorClasses(stat.color);
         const Icon = stat.icon;
@@ -67,17 +75,17 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
           <div
             key={stat.title}
             className={cn(
-              'rounded-xl border p-6 shadow-lg backdrop-blur-sm transition-all duration-200 hover:shadow-xl',
+              'rounded-xl border p-6 transition-all duration-200',
               isDark
-                ? 'border-stone-700/50 bg-stone-800/60 shadow-stone-900/20'
-                : 'border-stone-200/50 bg-white/80 shadow-stone-200/50'
+                ? 'border-stone-700 bg-stone-800'
+                : 'border-stone-200 bg-white'
             )}
           >
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex-1">
                 <p
                   className={cn(
-                    'mb-2 font-serif text-sm font-medium',
+                    'mb-1 font-serif text-sm font-medium',
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
@@ -85,14 +93,14 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
                 </p>
                 <div
                   className={cn(
-                    'font-serif text-3xl font-bold',
+                    'font-serif text-2xl font-bold',
                     isDark ? 'text-stone-100' : 'text-stone-900'
                   )}
                 >
                   {isLoading ? (
                     <div
                       className={cn(
-                        'h-8 w-16 animate-pulse rounded',
+                        'h-7 w-12 animate-pulse rounded',
                         isDark ? 'bg-stone-700' : 'bg-stone-200'
                       )}
                     />
@@ -103,11 +111,11 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
               </div>
               <div
                 className={cn(
-                  'flex h-12 w-12 items-center justify-center rounded-lg',
+                  'ml-4 flex h-10 w-10 items-center justify-center rounded-lg',
                   colorClasses.bg
                 )}
               >
-                <Icon className={cn('h-6 w-6', colorClasses.icon)} />
+                <Icon className={cn('h-5 w-5', colorClasses.icon)} />
               </div>
             </div>
           </div>

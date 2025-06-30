@@ -120,13 +120,13 @@ export function EditGroupModal({
             <div
               className={cn(
                 'flex h-10 w-10 items-center justify-center rounded-lg',
-                isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                isDark ? 'bg-stone-700' : 'bg-stone-100'
               )}
             >
               <Building2
                 className={cn(
                   'h-5 w-5',
-                  isDark ? 'text-blue-400' : 'text-blue-600'
+                  isDark ? 'text-stone-300' : 'text-stone-600'
                 )}
               />
             </div>
@@ -256,8 +256,8 @@ export function EditGroupModal({
               className={cn(
                 'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 font-serif text-sm transition-all duration-200',
                 isDark
-                  ? 'bg-blue-600 text-white hover:bg-blue-500'
-                  : 'bg-blue-600 text-white hover:bg-blue-700',
+                  ? 'bg-stone-700 text-stone-100 hover:bg-stone-600'
+                  : 'bg-stone-900 text-white hover:bg-stone-800',
                 loading.updating && 'cursor-not-allowed opacity-50'
               )}
             >

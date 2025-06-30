@@ -505,3 +505,61 @@ export async function incrementAppUsage(
     return failure(new Error('使用计数更新失败'));
   }
 }
+
+// --- BEGIN COMMENT ---
+// 🔍 用户搜索功能（用于群组成员管理）
+// --- END COMMENT ---
+
+export interface SearchableUser {
+  id: string;
+  username: string | null;
+  full_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  role: string;
+  status: string;
+}
+
+/**
+ * 搜索用户（用于添加到群组）
+ */
+export async function searchUsersForGroup(
+  searchTerm: string,
+  excludeUserIds: string[] = []
+): Promise<Result<SearchableUser[]>> {
+  try {
+    const supabase = createClient();
+
+    let query = supabase
+      .from('profiles')
+      .select('id, username, full_name, email, avatar_url, role, status')
+      .eq('status', 'active')
+      .limit(20);
+
+    // 排除指定的用户ID（如已在群组中的用户）
+    if (excludeUserIds.length > 0) {
+      query = query.not('id', 'in', `(${excludeUserIds.join(',')})`);
+    }
+
+    // 搜索条件：用户名、全名或邮箱包含搜索词
+    if (searchTerm.trim()) {
+      query = query.or(
+        `username.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`
+      );
+    }
+
+    const { data, error } = await query.order('created_at', {
+      ascending: false,
+    });
+
+    if (error) {
+      console.error('搜索用户失败:', error);
+      return failure(new Error(error.message));
+    }
+
+    return success(data || []);
+  } catch (error) {
+    console.error('搜索用户异常:', error);
+    return failure(new Error('搜索用户失败'));
+  }
+}
