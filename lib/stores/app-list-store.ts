@@ -1,9 +1,6 @@
+import type { UserAccessibleApp } from '@lib/db/group-permissions';
 import type { DifyAppParametersResponse } from '@lib/services/dify/types';
-import type {
-  AppVisibility,
-  ServiceInstanceConfig,
-  UserAccessibleApp,
-} from '@lib/types/database';
+import type { AppVisibility, ServiceInstanceConfig } from '@lib/types/database';
 import { create } from 'zustand';
 
 // --- BEGIN COMMENT ---
@@ -143,12 +140,12 @@ export const useAppListStore = create<AppListState>((set, get) => ({
     try {
       // 🎯 使用权限管理API获取用户可访问的应用
       const { getUserAccessibleApps } = await import(
-        '@lib/db/department-app-permissions'
+        '@lib/db/group-permissions'
       );
       const result = await getUserAccessibleApps(user.id);
 
       if (!result.success) {
-        throw new Error(result.error);
+        throw new Error(result.error.message);
       }
 
       // --- BEGIN COMMENT ---
@@ -324,12 +321,12 @@ export const useAppListStore = create<AppListState>((set, get) => ({
 
     try {
       const { getUserAccessibleApps } = await import(
-        '@lib/db/department-app-permissions'
+        '@lib/db/group-permissions'
       );
       const result = await getUserAccessibleApps(userId);
 
       if (!result.success) {
-        throw new Error(result.error);
+        throw new Error(result.error.message);
       }
 
       // 转换UserAccessibleApp到AppInfo格式，并去重
@@ -390,7 +387,7 @@ export const useAppListStore = create<AppListState>((set, get) => ({
 
     try {
       const { checkUserAppPermission } = await import(
-        '@lib/db/department-app-permissions'
+        '@lib/db/group-permissions'
       );
       const result = await checkUserAppPermission(
         state.currentUserId,
@@ -398,7 +395,9 @@ export const useAppListStore = create<AppListState>((set, get) => ({
       );
 
       if (!result.success) {
-        console.warn(`[AppListStore] 检查应用权限失败: ${result.error}`);
+        console.warn(
+          `[AppListStore] 检查应用权限失败: ${result.error.message}`
+        );
         return false;
       }
 

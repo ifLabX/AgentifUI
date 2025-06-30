@@ -8,7 +8,7 @@
 // 枚举类型
 export type UserRole = 'admin' | 'manager' | 'user';
 export type AccountStatus = 'active' | 'suspended' | 'pending';
-export type OrgMemberRole = 'owner' | 'admin' | 'member';
+// export type OrgMemberRole = 'owner' | 'admin' | 'member'; // 已删除：不再使用组织成员角色
 export type MessageRole = 'user' | 'assistant' | 'system';
 export type MessageStatus = 'sent' | 'delivered' | 'error';
 
@@ -64,54 +64,35 @@ export interface UserPreference {
   updated_at: string;
 }
 
-// 组织和成员管理
-export interface Organization {
+// --- BEGIN COMMENT ---
+// 🎯 群组权限管理 - 简化版权限系统
+// 替代复杂的组织架构，使用简单的群组概念
+// --- END COMMENT ---
+export type AppVisibility = 'public' | 'group_only' | 'private';
+
+export interface Group {
   id: string;
   name: string;
-  logo_url: string | null;
-  settings: Record<string, any>;
+  description: string | null;
+  created_by: string;
   created_at: string;
-  updated_at: string;
 }
 
-export interface OrgMember {
+export interface GroupMember {
   id: string;
-  org_id: string;
+  group_id: string;
   user_id: string;
-  role: OrgMemberRole;
-  department: string | null;
-  job_title: string | null;
   created_at: string;
-  updated_at: string;
 }
 
-// --- BEGIN COMMENT ---
-// 🎯 更新：部门应用权限管理
-// 改为基于部门的权限控制，更符合实际业务需求
-// --- END COMMENT ---
-// --- BEGIN COMMENT ---
-// 🎯 应用权限级别类型 - 已删除，简化权限设计
-// export type AppPermissionLevel = 'full' | 'read_only' | 'restricted';
-// --- END COMMENT ---
-export type AppVisibility = 'public' | 'org_only' | 'private';
-
-// --- BEGIN COMMENT ---
-// 🎯 部门应用权限接口 - 简化版本
-// 删除了混淆的permission_level字段，只保留核心的is_enabled和usage_quota
-// --- END COMMENT ---
-export interface DepartmentAppPermission {
+export interface GroupAppPermission {
   id: string;
-  org_id: string;
-  department: string;
+  group_id: string;
   service_instance_id: string;
   is_enabled: boolean;
-  // permission_level: AppPermissionLevel; // ❌ 已删除 - 造成混淆的字段
   usage_quota: number | null; // NULL表示无限制
   used_count: number;
-  quota_reset_date: string;
-  settings: Record<string, any>;
   created_at: string;
-  updated_at: string;
 }
 
 // 聊天和消息
@@ -448,8 +429,7 @@ export interface AppExecution {
 }
 
 // --- BEGIN COMMENT ---
-// 🎯 用户可访问应用的扩展信息
-// 简化版本：删除了permission_level字段
+// 🎯 用户可访问应用的扩展信息 - 群组版本
 // --- END COMMENT ---
 export interface UserAccessibleApp {
   service_instance_id: string;
@@ -459,12 +439,10 @@ export interface UserAccessibleApp {
   api_path: string;
   visibility: AppVisibility;
   config: ServiceInstanceConfig;
-  // permission_level: AppPermissionLevel; // ❌ 已删除
   usage_quota: number | null;
   used_count: number;
   quota_remaining: number | null;
-  department: string | null;
-  org_name: string | null;
+  group_name: string | null;
 }
 
 // --- BEGIN COMMENT ---
@@ -482,8 +460,8 @@ export namespace Database {
   export interface Tables {
     profiles: Profile;
     user_preferences: UserPreference;
-    organizations: Organization;
-    org_members: OrgMember;
+    groups: Group;
+    group_members: GroupMember;
     conversations: Conversation;
     messages: Message;
     providers: Provider;
@@ -496,7 +474,7 @@ export namespace Database {
     ai_configs: AiConfig;
     api_logs: ApiLog;
     app_executions: AppExecution;
-    department_app_permissions: DepartmentAppPermission;
+    group_app_permissions: GroupAppPermission;
     user_accessible_apps: UserAccessibleApp;
     app_permission_checks: AppPermissionCheck;
   }
