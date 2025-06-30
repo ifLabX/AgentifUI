@@ -32,7 +32,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
     return (
       <div
         className={cn(
-          'rounded-xl border p-8 text-center',
+          'rounded-xl border p-6 text-center',
           isDark
             ? 'border-stone-700 bg-stone-800'
             : 'border-stone-200 bg-stone-50'
@@ -40,13 +40,13 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
       >
         <Building2
           className={cn(
-            'mx-auto mb-4 h-12 w-12',
+            'mx-auto mb-3 h-10 w-10',
             isDark ? 'text-stone-400' : 'text-stone-500'
           )}
         />
         <h3
           className={cn(
-            'mb-2 font-serif text-lg font-semibold',
+            'mb-1 font-serif text-base font-semibold',
             isDark ? 'text-stone-200' : 'text-stone-800'
           )}
         >
@@ -54,7 +54,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
         </h3>
         <p
           className={cn(
-            'font-serif text-sm',
+            'font-serif text-xs',
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
@@ -65,7 +65,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {groups.map(group => {
         const groupPermission = app.groupPermissions.find(
           p => p.group_id === group.id
@@ -76,7 +76,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
           <div
             key={group.id}
             className={cn(
-              'rounded-lg border p-4 transition-all duration-200',
+              'rounded-lg border p-3 transition-all duration-200',
               isDark
                 ? 'border-stone-700 bg-stone-800'
                 : 'border-stone-200 bg-white'
@@ -87,13 +87,13 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
               <div className="flex items-center gap-3">
                 <div
                   className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-lg',
+                    'flex h-8 w-8 items-center justify-center rounded-lg',
                     isDark ? 'bg-stone-700' : 'bg-stone-100'
                   )}
                 >
                   <Building2
                     className={cn(
-                      'h-5 w-5',
+                      'h-4 w-4',
                       isDark ? 'text-stone-300' : 'text-stone-600'
                     )}
                   />
@@ -101,7 +101,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                 <div>
                   <h5
                     className={cn(
-                      'font-serif font-semibold',
+                      'font-serif text-sm font-semibold',
                       isDark ? 'text-stone-100' : 'text-stone-900'
                     )}
                   >
@@ -109,7 +109,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                   </h5>
                   <p
                     className={cn(
-                      'font-serif text-sm',
+                      'font-serif text-xs',
                       isDark ? 'text-stone-400' : 'text-stone-600'
                     )}
                   >
@@ -120,10 +120,10 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
               </div>
 
               {/* 开关控制 */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <span
                   className={cn(
-                    'font-serif text-sm font-medium',
+                    'font-serif text-xs font-medium',
                     isEnabled
                       ? 'text-green-600'
                       : isDark
@@ -138,7 +138,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                   onClick={() => handleTogglePermission(group.id, !isEnabled)}
                   disabled={loading.updating}
                   className={cn(
-                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200',
+                    'relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200',
                     'disabled:cursor-not-allowed disabled:opacity-50',
                     isEnabled
                       ? 'bg-green-600'
@@ -150,8 +150,8 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                 >
                   <span
                     className={cn(
-                      'inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200',
-                      isEnabled ? 'translate-x-6' : 'translate-x-1'
+                      'inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200',
+                      isEnabled ? 'translate-x-5' : 'translate-x-1'
                     )}
                   />
                 </button>

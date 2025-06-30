@@ -328,7 +328,8 @@
         "completed": "Generación completada",
         "failed": "Error en la generación",
         "stopped": "Detenido",
-        "waiting": "Esperando generar"
+        "waiting": "Esperando generar",
+        "result": "Resultado de generación"
       },
       "progress": "Progreso: {percent}%",
       "buttons": {
@@ -347,11 +348,63 @@
         "generating": "Generando texto...",
         "result": "El texto generado se mostrará aquí"
       },
+      "loadingState": {
+        "title": "Generando Texto",
+        "description": "Por favor espera, generando contenido para ti..."
+      },
       "streamingIndicator": "Generando",
       "stats": {
         "characters": "Caracteres: {count}",
         "words": "Palabras: {count}",
         "tokensUsed": "Tokens utilizados: {count}"
+      }
+    },
+    "difyAppTypes": {
+      "workflow": {
+        "label": "Flujo de Trabajo",
+        "description": "Proceso de flujo de trabajo automatizado",
+        "features": {
+          "automation": "Automatización",
+          "batchProcessing": "Procesamiento por Lotes",
+          "processControl": "Control de Procesos"
+        }
+      },
+      "text-generation": {
+        "label": "Generación de Texto",
+        "description": "Aplicación de generación de texto único",
+        "features": {
+          "textGeneration": "Generación de Texto",
+          "contentCreation": "Creación de Contenido",
+          "formattedOutput": "Salida Formateada"
+        }
+      },
+      "chatbot": {
+        "label": "Chatbot",
+        "description": "Chatbot conversacional básico",
+        "features": {
+          "conversation": "Conversación",
+          "fileUpload": "Subida de Archivos",
+          "speechToText": "Voz a Texto"
+        }
+      },
+      "agent": {
+        "label": "Agente",
+        "description": "Agente inteligente con llamada de herramientas",
+        "features": {
+          "conversation": "Conversación",
+          "toolCalling": "Llamada de Herramientas",
+          "reasoningChain": "Cadena de Razonamiento",
+          "multiTurnTasks": "Tareas Multivuelta"
+        }
+      },
+      "chatflow": {
+        "label": "Flujo de Chat",
+        "description": "Aplicación de flujo de trabajo conversacional",
+        "features": {
+          "processOrchestration": "Orquestación de Procesos",
+          "conditionalBranching": "Ramificación Condicional",
+          "conversationManagement": "Gestión de Conversaciones"
+        }
       }
     },
     "apps": {

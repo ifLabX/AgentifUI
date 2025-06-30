@@ -66,7 +66,7 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
   };
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
       {statsData.map(stat => {
         const colorClasses = getColorClasses(stat.color);
         const Icon = stat.icon;
@@ -75,17 +75,17 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
           <div
             key={stat.title}
             className={cn(
-              'rounded-xl border p-6 transition-all duration-200',
+              'rounded-xl border p-4 shadow-sm backdrop-blur-sm transition-all duration-200',
               isDark
-                ? 'border-stone-700 bg-stone-800'
-                : 'border-stone-200 bg-white'
+                ? 'border-stone-700/50 bg-stone-800/50'
+                : 'border-stone-200/50 bg-white/80'
             )}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p
                   className={cn(
-                    'mb-1 font-serif text-sm font-medium',
+                    'mb-1 font-serif text-xs font-medium',
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
@@ -93,14 +93,14 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
                 </p>
                 <div
                   className={cn(
-                    'font-serif text-2xl font-bold',
+                    'font-serif text-xl font-bold',
                     isDark ? 'text-stone-100' : 'text-stone-900'
                   )}
                 >
                   {isLoading ? (
                     <div
                       className={cn(
-                        'h-7 w-12 animate-pulse rounded',
+                        'h-6 w-10 animate-pulse rounded',
                         isDark ? 'bg-stone-700' : 'bg-stone-200'
                       )}
                     />
@@ -111,11 +111,11 @@ export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
               </div>
               <div
                 className={cn(
-                  'ml-4 flex h-10 w-10 items-center justify-center rounded-lg',
+                  'ml-3 flex h-8 w-8 items-center justify-center rounded-lg',
                   colorClasses.bg
                 )}
               >
-                <Icon className={cn('h-5 w-5', colorClasses.icon)} />
+                <Icon className={cn('h-4 w-4', colorClasses.icon)} />
               </div>
             </div>
           </div>

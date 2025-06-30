@@ -15,11 +15,11 @@ export function PermissionHeader() {
   };
 
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1
           className={cn(
-            'mb-3 bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent',
+            'mb-2 bg-gradient-to-r bg-clip-text font-serif text-3xl font-bold text-transparent',
             isDark
               ? 'from-stone-100 to-stone-300'
               : 'from-stone-800 to-stone-600'
@@ -29,10 +29,11 @@ export function PermissionHeader() {
         </h1>
         <p
           className={cn(
-            'text-base',
+            'flex items-center gap-2 font-serif text-sm',
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
+          <Shield className="h-4 w-4" />
           统一管理应用可见性和群组权限分配
         </p>
       </div>
@@ -43,12 +44,12 @@ export function PermissionHeader() {
           onClick={handleRefresh}
           disabled={loading.apps || loading.groups}
           className={cn(
-            'flex items-center gap-2 rounded-lg border px-4 py-2.5 font-serif text-sm transition-all duration-200',
+            'flex items-center gap-2 rounded-xl border px-4 py-2.5 font-serif shadow-sm transition-all duration-200',
             loading.apps || loading.groups
               ? 'cursor-not-allowed opacity-50'
               : isDark
-                ? 'border-stone-600 bg-stone-800 text-stone-300 hover:border-stone-500 hover:bg-stone-700'
-                : 'border-stone-300 bg-white text-stone-700 hover:border-stone-400 hover:bg-stone-50'
+                ? 'border-stone-600/50 text-stone-300 hover:border-stone-500 hover:bg-stone-700/50 hover:shadow-md'
+                : 'border-stone-300/50 text-stone-700 backdrop-blur-sm hover:border-stone-400 hover:bg-stone-50/80 hover:shadow-md'
           )}
         >
           <RefreshCw
@@ -57,7 +58,7 @@ export function PermissionHeader() {
               (loading.apps || loading.groups) && 'animate-spin'
             )}
           />
-          <span>刷新数据</span>
+          <span className="hidden sm:inline">刷新数据</span>
         </button>
       </div>
     </div>

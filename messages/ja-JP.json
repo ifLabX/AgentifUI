@@ -328,7 +328,8 @@
         "completed": "生成完了",
         "failed": "生成失敗",
         "stopped": "停止済み",
-        "waiting": "生成待機中"
+        "waiting": "生成待機中",
+        "result": "生成結果"
       },
       "progress": "進捗: {percent}%",
       "buttons": {
@@ -347,11 +348,63 @@
         "generating": "テキスト生成中...",
         "result": "生成されたテキストがここに表示されます"
       },
+      "loadingState": {
+        "title": "テキスト生成中",
+        "description": "お待ちください、コンテンツを生成しています..."
+      },
       "streamingIndicator": "生成中",
       "stats": {
         "characters": "文字数: {count}",
         "words": "単語数: {count}",
         "tokensUsed": "使用トークン: {count}"
+      }
+    },
+    "difyAppTypes": {
+      "workflow": {
+        "label": "ワークフロー",
+        "description": "自動化されたワークフロープロセス",
+        "features": {
+          "automation": "自動化",
+          "batchProcessing": "バッチ処理",
+          "processControl": "プロセス制御"
+        }
+      },
+      "text-generation": {
+        "label": "テキスト生成",
+        "description": "単一テキスト生成アプリケーション",
+        "features": {
+          "textGeneration": "テキスト生成",
+          "contentCreation": "コンテンツ作成",
+          "formattedOutput": "フォーマット済み出力"
+        }
+      },
+      "chatbot": {
+        "label": "チャットボット",
+        "description": "基本的な会話チャットボット",
+        "features": {
+          "conversation": "会話",
+          "fileUpload": "ファイルアップロード",
+          "speechToText": "音声をテキストに"
+        }
+      },
+      "agent": {
+        "label": "エージェント",
+        "description": "ツール呼び出し対応インテリジェントエージェント",
+        "features": {
+          "conversation": "会話",
+          "toolCalling": "ツール呼び出し",
+          "reasoningChain": "推論チェーン",
+          "multiTurnTasks": "マルチターンタスク"
+        }
+      },
+      "chatflow": {
+        "label": "チャットフロー",
+        "description": "会話ワークフローアプリケーション",
+        "features": {
+          "processOrchestration": "プロセスオーケストレーション",
+          "conditionalBranching": "条件分岐",
+          "conversationManagement": "会話管理"
+        }
       }
     },
     "apps": {

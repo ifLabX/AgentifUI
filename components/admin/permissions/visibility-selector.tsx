@@ -60,7 +60,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {visibilityOptions.map(option => {
         const Icon = option.icon;
         const isSelected = app.visibility === option.value;
@@ -72,7 +72,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
             onClick={() => handleVisibilityChange(option.value)}
             disabled={isUpdating}
             className={cn(
-              'w-full rounded-xl border p-4 text-left transition-all duration-200',
+              'w-full rounded-lg border p-3 text-left transition-all duration-200',
               'disabled:cursor-not-allowed disabled:opacity-50',
               isSelected
                 ? isDark
@@ -86,7 +86,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
             <div className="flex items-start gap-3">
               <div
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-lg',
+                  'flex h-8 w-8 items-center justify-center rounded-lg',
                   isSelected
                     ? isDark
                       ? 'bg-stone-600'
@@ -98,7 +98,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
               >
                 <Icon
                   className={cn(
-                    'h-5 w-5',
+                    'h-4 w-4',
                     isSelected
                       ? option.color
                       : isDark
@@ -112,7 +112,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
                 <div className="mb-1 flex items-center gap-2">
                   <h5
                     className={cn(
-                      'font-serif font-semibold',
+                      'font-serif text-sm font-semibold',
                       isDark ? 'text-stone-100' : 'text-stone-900'
                     )}
                   >
@@ -121,7 +121,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
                   {isSelected && (
                     <div
                       className={cn(
-                        'rounded-full px-2 py-1 text-xs font-medium',
+                        'rounded-full px-2 py-0.5 text-xs font-medium',
                         isDark
                           ? 'bg-stone-600 text-stone-200'
                           : 'bg-stone-200 text-stone-700'
@@ -133,7 +133,7 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
                 </div>
                 <p
                   className={cn(
-                    'font-serif text-sm',
+                    'font-serif text-xs',
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >

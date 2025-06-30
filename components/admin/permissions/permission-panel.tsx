@@ -16,17 +16,17 @@ export function PermissionPanel() {
 
   if (!selectedApp) {
     return (
-      <div className="flex h-full items-center justify-center p-8">
+      <div className="flex h-full items-center justify-center p-6">
         <div className="text-center">
           <Blocks
             className={cn(
-              'mx-auto mb-4 h-16 w-16',
+              'mx-auto mb-3 h-12 w-12',
               isDark ? 'text-stone-400' : 'text-stone-500'
             )}
           />
           <h3
             className={cn(
-              'mb-2 font-serif text-lg font-semibold',
+              'mb-1 font-serif text-base font-semibold',
               isDark ? 'text-stone-200' : 'text-stone-800'
             )}
           >
@@ -34,7 +34,7 @@ export function PermissionPanel() {
           </h3>
           <p
             className={cn(
-              'font-serif text-sm',
+              'font-serif text-xs',
               isDark ? 'text-stone-400' : 'text-stone-600'
             )}
           >
@@ -46,20 +46,20 @@ export function PermissionPanel() {
   }
 
   return (
-    <div className="h-full overflow-y-auto p-6">
-      <div className="space-y-6">
+    <div className="h-full overflow-y-auto p-4">
+      <div className="space-y-4">
         {/* 应用信息 */}
         <div>
-          <div className="mb-4 flex items-center gap-3">
+          <div className="mb-3 flex items-center gap-3">
             <div
               className={cn(
-                'flex h-12 w-12 items-center justify-center rounded-xl',
+                'flex h-10 w-10 items-center justify-center rounded-xl',
                 isDark ? 'bg-stone-700' : 'bg-stone-100'
               )}
             >
               <Blocks
                 className={cn(
-                  'h-6 w-6',
+                  'h-5 w-5',
                   isDark ? 'text-stone-300' : 'text-stone-600'
                 )}
               />
@@ -67,7 +67,7 @@ export function PermissionPanel() {
             <div>
               <h3
                 className={cn(
-                  'font-serif text-xl font-semibold',
+                  'font-serif text-lg font-semibold',
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
@@ -76,7 +76,7 @@ export function PermissionPanel() {
               {selectedApp.description && (
                 <p
                   className={cn(
-                    'font-serif text-sm',
+                    'font-serif text-xs',
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
@@ -91,7 +91,7 @@ export function PermissionPanel() {
         <div>
           <h4
             className={cn(
-              'mb-3 font-serif text-lg font-semibold',
+              'mb-2 font-serif text-base font-semibold',
               isDark ? 'text-stone-200' : 'text-stone-800'
             )}
           >
@@ -105,7 +105,7 @@ export function PermissionPanel() {
           <div>
             <h4
               className={cn(
-                'mb-3 font-serif text-lg font-semibold',
+                'mb-2 font-serif text-base font-semibold',
                 isDark ? 'text-stone-200' : 'text-stone-800'
               )}
             >
@@ -113,7 +113,7 @@ export function PermissionPanel() {
             </h4>
             <p
               className={cn(
-                'mb-4 font-serif text-sm',
+                'mb-3 font-serif text-xs',
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
@@ -126,7 +126,7 @@ export function PermissionPanel() {
         {/* 权限说明 */}
         <div
           className={cn(
-            'rounded-lg border p-4',
+            'rounded-lg border p-3',
             isDark
               ? 'border-stone-700 bg-stone-800'
               : 'border-stone-200 bg-stone-50'
@@ -134,13 +134,13 @@ export function PermissionPanel() {
         >
           <h5
             className={cn(
-              'mb-2 font-serif text-sm font-semibold',
+              'mb-2 font-serif text-xs font-semibold',
               isDark ? 'text-stone-200' : 'text-stone-800'
             )}
           >
             权限说明
           </h5>
-          <div className="space-y-2 text-xs">
+          <div className="space-y-1 text-xs">
             <div className="flex items-center gap-2">
               <Globe className="h-3 w-3 text-green-500" />
               <span

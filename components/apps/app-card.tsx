@@ -41,10 +41,13 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
   const { addFavoriteApp, removeFavoriteApp, isFavorite } =
     useFavoriteAppsStore();
   const t = useTranslations('pages.apps.market');
+  const tDifyTypes = useTranslations('pages.difyAppTypes');
 
   // 获取Dify应用类型信息
   const difyAppType = app.config?.app_metadata?.dify_apptype || app.difyAppType;
-  const difyTypeInfo = difyAppType ? getDifyAppTypeInfo(difyAppType) : null;
+  const difyTypeInfo = difyAppType
+    ? getDifyAppTypeInfo(difyAppType, tDifyTypes)
+    : null;
 
   // 检查是否为收藏应用
   const isAppFavorite = isFavorite(app.instanceId);

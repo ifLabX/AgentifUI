@@ -20,6 +20,8 @@ import remarkMath from 'remark-math';
 
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface TextGenerationTrackerProps {
   isExecuting: boolean;
   isStreaming: boolean;
@@ -52,6 +54,7 @@ export function TextGenerationTracker({
   const { isDark } = useTheme();
   const markdownContainerRef = useRef<HTMLDivElement>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const t = useTranslations('pages.textGeneration');
 
   // --- 自动滚动到底部 ---
   useEffect(() => {
@@ -220,7 +223,7 @@ export function TextGenerationTracker({
                     isDark ? 'text-stone-200' : 'text-stone-800'
                   )}
                 >
-                  等待生成
+                  {t('emptyState.title')}
                 </h3>
                 <p
                   className={cn(
@@ -228,7 +231,7 @@ export function TextGenerationTracker({
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
-                  填写左侧表单并点击执行按钮开始文本生成
+                  {t('emptyState.description')}
                 </p>
               </div>
             </div>
@@ -245,7 +248,9 @@ export function TextGenerationTracker({
                     isDark ? 'text-stone-200' : 'text-stone-800'
                   )}
                 >
-                  {isExecuting || isStreaming ? '正在生成...' : '生成结果'}
+                  {isExecuting || isStreaming
+                    ? t('status.generating')
+                    : t('status.result')}
                 </h3>
               </div>
 
@@ -254,7 +259,7 @@ export function TextGenerationTracker({
                 <div className="flex items-center gap-2">
                   {/* 复制按钮 */}
                   <TooltipWrapper
-                    content={isCopied ? '已复制' : '复制文本'}
+                    content={isCopied ? t('buttons.copied') : t('buttons.copy')}
                     id="text-generation-copy-btn"
                     placement="bottom"
                     size="sm"
@@ -275,7 +280,9 @@ export function TextGenerationTracker({
                         'focus:outline-none'
                       )}
                       style={{ transform: 'translateZ(0)' }}
-                      aria-label={isCopied ? '已复制' : '复制文本'}
+                      aria-label={
+                        isCopied ? t('buttons.copied') : t('buttons.copy')
+                      }
                     >
                       {isCopied ? (
                         <Check className="h-4 w-4" />
@@ -287,7 +294,7 @@ export function TextGenerationTracker({
 
                   {/* 下载按钮 */}
                   <TooltipWrapper
-                    content="下载文本"
+                    content={t('buttons.download')}
                     id="text-generation-download-btn"
                     placement="bottom"
                     size="sm"
@@ -308,7 +315,7 @@ export function TextGenerationTracker({
                         'focus:outline-none'
                       )}
                       style={{ transform: 'translateZ(0)' }}
-                      aria-label="下载文本"
+                      aria-label={t('buttons.download')}
                     >
                       <Download className="h-4 w-4" />
                     </button>
@@ -343,7 +350,7 @@ export function TextGenerationTracker({
                           isDark ? 'text-stone-200' : 'text-stone-800'
                         )}
                       >
-                        文本生成中
+                        {t('loadingState.title')}
                       </div>
                       <div
                         className={cn(
@@ -351,7 +358,7 @@ export function TextGenerationTracker({
                           isDark ? 'text-stone-400' : 'text-stone-600'
                         )}
                       >
-                        请稍候，正在为您生成内容...
+                        {t('loadingState.description')}
                       </div>
                     </div>
                   </div>
@@ -388,8 +395,8 @@ export function TextGenerationTracker({
                       )}
                     >
                       {isExecuting
-                        ? '正在生成文本...'
-                        : '生成的文本将显示在这里'}
+                        ? t('placeholder.generating')
+                        : t('placeholder.result')}
                     </div>
                   )}
                 </div>
@@ -406,7 +413,7 @@ export function TextGenerationTracker({
                   )}
                 >
                   <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-                  <span className="font-serif">实时生成中</span>
+                  <span className="font-serif">{t('streamingIndicator')}</span>
                 </div>
               )}
             </div>

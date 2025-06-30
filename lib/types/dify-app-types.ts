@@ -24,8 +24,113 @@ export interface DifyAppTypeInfo {
 }
 
 /**
- * Dify应用类型配置映射
- * 根据官方文档定义的五种应用类型
+ * 获取Dify应用类型的翻译信息
+ * @param type Dify应用类型
+ * @param t 翻译函数
+ * @returns 应用类型信息，如果类型无效则返回null
+ */
+export function getDifyAppTypeInfo(
+  type: string,
+  t?: (key: string) => string
+): DifyAppTypeInfo | null {
+  const typeKey = type as DifyAppType;
+
+  if (!Object.keys(DIFY_APP_TYPES_CONFIG).includes(typeKey)) {
+    return null;
+  }
+
+  const config = DIFY_APP_TYPES_CONFIG[typeKey];
+
+  // 如果提供了翻译函数，使用翻译；否则使用默认值
+  if (t) {
+    return {
+      key: config.key,
+      label: t(`${typeKey}.label`),
+      description: t(`${typeKey}.description`),
+      icon: config.icon,
+      apiEndpoint: config.apiEndpoint,
+      features: config.featureKeys.map(key => t(`${typeKey}.features.${key}`)),
+      color: config.color,
+    };
+  }
+
+  // 如果没有翻译函数，返回向后兼容的默认值
+  return DIFY_APP_TYPES[typeKey] || null;
+}
+
+/**
+ * Dify应用类型基础配置（不含翻译文本）
+ */
+const DIFY_APP_TYPES_CONFIG: Record<
+  DifyAppType,
+  Omit<DifyAppTypeInfo, 'label' | 'description' | 'features'> & {
+    featureKeys: string[];
+  }
+> = {
+  chatbot: {
+    key: 'chatbot',
+    icon: '🤖',
+    apiEndpoint: 'chat-messages',
+    featureKeys: ['conversation', 'fileUpload', 'speechToText'],
+    color: {
+      primary: 'blue',
+      secondary: 'blue-100',
+    },
+  },
+  agent: {
+    key: 'agent',
+    icon: '🦾',
+    apiEndpoint: 'chat-messages',
+    featureKeys: [
+      'conversation',
+      'toolCalling',
+      'reasoningChain',
+      'multiTurnTasks',
+    ],
+    color: {
+      primary: 'purple',
+      secondary: 'purple-100',
+    },
+  },
+  chatflow: {
+    key: 'chatflow',
+    icon: '🔄',
+    apiEndpoint: 'chat-messages',
+    featureKeys: [
+      'processOrchestration',
+      'conditionalBranching',
+      'conversationManagement',
+    ],
+    color: {
+      primary: 'green',
+      secondary: 'green-100',
+    },
+  },
+  workflow: {
+    key: 'workflow',
+    icon: '⚡',
+    apiEndpoint: 'workflows/run',
+    featureKeys: ['automation', 'batchProcessing', 'processControl'],
+    color: {
+      primary: 'orange',
+      secondary: 'orange-100',
+    },
+  },
+  'text-generation': {
+    key: 'text-generation',
+    icon: '📝',
+    apiEndpoint: 'completion-messages',
+    featureKeys: ['textGeneration', 'contentCreation', 'formattedOutput'],
+    color: {
+      primary: 'pink',
+      secondary: 'pink-100',
+    },
+  },
+};
+
+/**
+ * Dify应用类型配置映射（使用默认标签，用于向后兼容）
+ * @deprecated 建议使用 getDifyAppTypeInfo 函数并传入翻译函数
  */
 export const DIFY_APP_TYPES: Record<DifyAppType, DifyAppTypeInfo> = {
   chatbot: {
@@ -89,15 +194,6 @@ export const DIFY_APP_TYPES: Record<DifyAppType, DifyAppTypeInfo> = {
     },
   },
 };
-
-/**
- * 获取应用类型信息
- * @param type Dify应用类型
- * @returns 应用类型信息，如果类型无效则返回null
- */
-export function getDifyAppTypeInfo(type: string): DifyAppTypeInfo | null {
-  return DIFY_APP_TYPES[type as DifyAppType] || null;
-}
 
 /**
  * 检查是否为有效的Dify应用类型

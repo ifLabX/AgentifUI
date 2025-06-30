@@ -324,11 +324,12 @@
     },
     "textGeneration": {
       "status": {
-        "generating": "正在生成文字...",
+        "generating": "正在生成文本...",
         "completed": "生成完成",
         "failed": "生成失敗",
         "stopped": "已停止",
-        "waiting": "等待生成"
+        "waiting": "等待生成",
+        "result": "生成結果"
       },
       "progress": "進度: {percent}%",
       "buttons": {
@@ -344,14 +345,66 @@
         "description": "填寫左側表單並點擊執行按鈕開始文字生成"
       },
       "placeholder": {
-        "generating": "正在生成文字...",
-        "result": "生成的文字將在這裡顯示"
+        "generating": "正在生成文本...",
+        "result": "生成的文本將顯示在這裡"
       },
-      "streamingIndicator": "正在生成",
+      "loadingState": {
+        "title": "文本生成中",
+        "description": "請稍候，正在為您生成內容..."
+      },
+      "streamingIndicator": "生成中",
       "stats": {
         "characters": "字元數: {count}",
         "words": "詞數: {count}",
         "tokensUsed": "Token 使用: {count}"
+      }
+    },
+    "difyAppTypes": {
+      "workflow": {
+        "label": "工作流",
+        "description": "自動化工作流程",
+        "features": {
+          "automation": "自動化",
+          "batchProcessing": "批次處理",
+          "processControl": "流程控制"
+        }
+      },
+      "text-generation": {
+        "label": "文本生成",
+        "description": "單次文本生成應用",
+        "features": {
+          "textGeneration": "文本生成",
+          "contentCreation": "內容創作",
+          "formattedOutput": "格式化輸出"
+        }
+      },
+      "chatbot": {
+        "label": "聊天機器人",
+        "description": "基礎對話聊天機器人",
+        "features": {
+          "conversation": "對話",
+          "fileUpload": "檔案上傳",
+          "speechToText": "語音轉文字"
+        }
+      },
+      "agent": {
+        "label": "智能代理",
+        "description": "支援工具調用的智能代理",
+        "features": {
+          "conversation": "對話",
+          "toolCalling": "工具調用",
+          "reasoningChain": "推理鏈",
+          "multiTurnTasks": "多輪任務"
+        }
+      },
+      "chatflow": {
+        "label": "對話流",
+        "description": "對話流程編排應用",
+        "features": {
+          "processOrchestration": "流程編排",
+          "conditionalBranching": "條件分支",
+          "conversationManagement": "對話管理"
+        }
       }
     },
     "apps": {

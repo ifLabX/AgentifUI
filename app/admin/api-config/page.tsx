@@ -40,6 +40,7 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 
 import React, { useEffect, useState } from 'react';
@@ -51,78 +52,12 @@ interface ApiConfigPageProps {
   instances?: ServiceInstance[];
 }
 
-interface FeedbackState {
-  open: boolean;
-  message: string;
-  severity: 'success' | 'error' | 'info' | 'warning';
-}
-
-const Toast = ({
-  feedback,
-  onClose,
-}: {
-  feedback: FeedbackState;
-  onClose: () => void;
-}) => {
-  const { isDark } = useTheme();
-
-  useEffect(() => {
-    if (feedback.open) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 3000); // 3秒后自动关闭
-
-      return () => clearTimeout(timer);
-    }
-  }, [feedback.open, onClose]);
-
-  if (!feedback.open) return null;
-
-  return (
-    <div className="fixed top-4 left-1/2 z-50 mx-4 w-full max-w-sm -translate-x-1/2 transform">
-      <div
-        className={cn(
-          'animate-in slide-in-from-top-2 rounded-lg border p-4 shadow-lg',
-          feedback.severity === 'success' &&
-            'border-green-600 bg-green-500 text-white',
-          feedback.severity === 'error' &&
-            'border-red-600 bg-red-500 text-white',
-          feedback.severity === 'warning' &&
-            'border-yellow-600 bg-yellow-500 text-white',
-          feedback.severity === 'info' &&
-            (isDark
-              ? 'border-stone-700 bg-stone-800 text-stone-100'
-              : 'border-stone-200 bg-white text-stone-900')
-        )}
-      >
-        <div className="flex items-center gap-2">
-          {feedback.severity === 'success' && (
-            <CheckCircle className="h-5 w-5" />
-          )}
-          {feedback.severity === 'error' && <XCircle className="h-5 w-5" />}
-          {feedback.severity === 'warning' && (
-            <AlertCircle className="h-5 w-5" />
-          )}
-          {feedback.severity === 'info' && <AlertCircle className="h-5 w-5" />}
-          <span className="font-serif text-sm font-medium">
-            {feedback.message}
-          </span>
-          <button onClick={onClose} className="ml-auto">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const InstanceForm = ({
   instance,
   isEditing,
   onSave,
   onCancel,
   isProcessing,
-  showFeedback,
   defaultProviderId,
 }: {
   instance: Partial<ServiceInstance> | null;
@@ -130,10 +65,6 @@ const InstanceForm = ({
   onSave: (data: any) => void;
   onCancel: () => void;
   isProcessing: boolean;
-  showFeedback: (
-    message: string,
-    severity: 'success' | 'error' | 'info' | 'warning'
-  ) => void;
   defaultProviderId?: string | null;
 }) => {
   const { isDark } = useTheme();
@@ -389,7 +320,7 @@ const InstanceForm = ({
     // 🎯 检查实时验证错误
     // --- END COMMENT ---
     if (instanceIdError) {
-      showFeedback(`应用ID格式错误: ${instanceIdError}`, 'error');
+      toast.error(`应用ID格式错误: ${instanceIdError}`);
       return;
     }
 
@@ -398,7 +329,7 @@ const InstanceForm = ({
     // --- END COMMENT ---
     const validationErrors = validateDifyFormData(formData);
     if (validationErrors.length > 0) {
-      showFeedback(validationErrors.join(', '), 'error');
+      toast.error(validationErrors.join(', '));
       return;
     }
 
@@ -464,12 +395,12 @@ const InstanceForm = ({
     // 🎯 新建模式下需要API URL和API Key，编辑模式下需要instance_id
     // --- END COMMENT ---
     if (!isEditing && (!formData.config.api_url || !formData.apiKey)) {
-      showFeedback('请先填写API URL和API Key', 'warning');
+      toast('请先填写API URL和API Key');
       return;
     }
 
     if (isEditing && !formData.instance_id) {
-      showFeedback('请先填写应用ID', 'warning');
+      toast('请先填写应用ID');
       return;
     }
 
@@ -536,7 +467,7 @@ const InstanceForm = ({
 
         // 检查表单配置是否完整
         if (!formData.config.api_url || !formData.apiKey) {
-          showFeedback('请先填写API URL和API Key', 'warning');
+          toast('请先填写API URL和API Key');
           return;
         }
 
@@ -690,12 +621,12 @@ const InstanceForm = ({
         successMessage += ` 已自动生成应用ID：${actualInstanceId}`;
       }
 
-      showFeedback(successMessage, 'success');
+      toast.success(successMessage);
     } catch (error) {
       console.error('[同步配置] 同步失败:', error);
       const errorMessage =
         error instanceof Error ? error.message : '同步配置失败';
-      showFeedback(`同步失败: ${errorMessage}`, 'error');
+      toast.error(`同步失败: ${errorMessage}`);
     } finally {
       setIsSyncing(false);
     }
@@ -769,17 +700,14 @@ const InstanceForm = ({
                           .getState()
                           .setDefaultInstance(instance.id)
                           .then(() => {
-                            showFeedback('默认应用设置成功', 'success');
+                            toast.success('默认应用设置成功');
                           })
                           .catch(error => {
                             console.error('设置默认应用失败:', error);
-                            showFeedback('设置默认应用失败', 'error');
+                            toast.error('设置默认应用失败');
                           });
                       } else {
-                        showFeedback(
-                          '实例ID不存在，无法设置为默认应用',
-                          'error'
-                        );
+                        toast.error('实例ID不存在，无法设置为默认应用');
                       }
                     }
                   }}
@@ -1824,11 +1752,7 @@ export default function ApiConfigPage() {
   const [selectedInstance, setSelectedInstance] =
     useState<ServiceInstance | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [feedback, setFeedback] = useState<FeedbackState>({
-    open: false,
-    message: '',
-    severity: 'info',
-  });
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [currentFilterProviderId, setCurrentFilterProviderId] = useState<
@@ -1863,7 +1787,7 @@ export default function ApiConfigPage() {
     const handleDefaultInstanceChanged = (event: CustomEvent) => {
       const { instanceId } = event.detail;
       // --- 始终显示成功提示，不管是否是当前选中的实例 ---
-      showFeedback('默认应用设置成功', 'success');
+      toast.success('默认应用设置成功');
 
       // --- 重新加载服务实例数据以更新UI状态 ---
       setTimeout(() => {
@@ -1916,17 +1840,6 @@ export default function ApiConfigPage() {
     };
   }, [showAddForm, selectedInstance]);
 
-  const showFeedback = (
-    message: string,
-    severity: FeedbackState['severity'] = 'info'
-  ) => {
-    setFeedback({ open: true, message, severity });
-  };
-
-  const handleCloseFeedback = () => {
-    setFeedback({ open: false, message: '', severity: 'info' });
-  };
-
   const handleClearSelection = () => {
     setSelectedInstance(null);
     setShowAddForm(false);
@@ -1946,7 +1859,7 @@ export default function ApiConfigPage() {
   const handleProviderChange = () => {
     // 重新加载providers数据
     window.dispatchEvent(new CustomEvent('reloadProviders'));
-    showFeedback('提供商配置已更新', 'success');
+    toast.success('提供商配置已更新');
   };
 
   useEffect(() => {
@@ -1994,7 +1907,7 @@ export default function ApiConfigPage() {
               // --- 使用用户选择的提供商 ---
               const providerId = data.selectedProviderId;
               if (!providerId) {
-                showFeedback('请选择服务提供商', 'error');
+                toast.error('请选择服务提供商');
                 setIsProcessing(false);
                 return;
               }
@@ -2002,13 +1915,13 @@ export default function ApiConfigPage() {
               // 验证选择的提供商是否有效
               const selectedProvider = providers.find(p => p.id === providerId);
               if (!selectedProvider) {
-                showFeedback('选择的服务提供商无效', 'error');
+                toast.error('选择的服务提供商无效');
                 setIsProcessing(false);
                 return;
               }
 
               if (!selectedProvider.is_active) {
-                showFeedback('选择的服务提供商未激活', 'error');
+                toast.error('选择的服务提供商未激活');
                 setIsProcessing(false);
                 return;
               }
@@ -2021,7 +1934,7 @@ export default function ApiConfigPage() {
                 data.apiKey
               )
                 .then(newInstance => {
-                  showFeedback('应用实例创建成功', 'success');
+                  toast.success('应用实例创建成功');
 
                   // --- 如果选择了设为默认，则在创建成功后设置为默认应用 ---
                   if (setAsDefault && newInstance?.id) {
@@ -2029,14 +1942,11 @@ export default function ApiConfigPage() {
                       .getState()
                       .setDefaultInstance(newInstance.id)
                       .then(() => {
-                        showFeedback('应用实例已设为默认应用', 'success');
+                        toast.success('应用实例已设为默认应用');
                       })
                       .catch(error => {
                         console.error('设置默认应用失败:', error);
-                        showFeedback(
-                          '应用创建成功，但设置默认应用失败',
-                          'warning'
-                        );
+                        toast('应用创建成功，但设置默认应用失败');
                       });
                   }
                 })
@@ -2045,7 +1955,7 @@ export default function ApiConfigPage() {
                 })
                 .catch(error => {
                   console.error('创建失败:', error);
-                  showFeedback('创建应用实例失败', 'error');
+                  toast.error('创建应用实例失败');
                 })
                 .finally(() => {
                   setIsProcessing(false);
@@ -2053,7 +1963,6 @@ export default function ApiConfigPage() {
             }}
             onCancel={handleClearSelection}
             isProcessing={isProcessing}
-            showFeedback={showFeedback}
           />
         </div>
       ) : selectedInstance ? (
@@ -2100,12 +2009,12 @@ export default function ApiConfigPage() {
               setIsProcessing(true);
               updateInstance(selectedInstance.id, data, data.apiKey)
                 .then(() => {
-                  showFeedback('应用实例更新成功', 'success');
+                  toast.success('应用实例更新成功');
                   handleClearSelection();
                 })
                 .catch(error => {
                   console.error('更新失败:', error);
-                  showFeedback('更新应用实例失败', 'error');
+                  toast.error('更新应用实例失败');
                 })
                 .finally(() => {
                   setIsProcessing(false);
@@ -2113,7 +2022,6 @@ export default function ApiConfigPage() {
             }}
             onCancel={handleClearSelection}
             isProcessing={isProcessing}
-            showFeedback={showFeedback}
           />
         </div>
       ) : (
@@ -2139,8 +2047,6 @@ export default function ApiConfigPage() {
           </div>
         </div>
       )}
-
-      <Toast feedback={feedback} onClose={handleCloseFeedback} />
 
       {/* --- Provider管理模态框 --- */}
       <ProviderManagementModal

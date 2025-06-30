@@ -324,11 +324,12 @@
     },
     "textGeneration": {
       "status": {
-        "generating": "正在生成文本...",
+        "generating": "正在生成...",
         "completed": "生成完成",
         "failed": "生成失败",
         "stopped": "已停止",
-        "waiting": "等待生成"
+        "waiting": "等待生成",
+        "result": "生成结果"
       },
       "progress": "进度: {percent}%",
       "buttons": {
@@ -340,14 +341,18 @@
         "reset": "重置"
       },
       "emptyState": {
-        "title": "等待生成文本",
+        "title": "等待生成",
         "description": "填写左侧表单并点击执行按钮开始文本生成"
       },
       "placeholder": {
         "generating": "正在生成文本...",
-        "result": "生成的文本将在这里显示"
+        "result": "生成的文本将显示在这里"
       },
-      "streamingIndicator": "正在生成",
+      "loadingState": {
+        "title": "文本生成中",
+        "description": "请稍候，正在为您生成内容..."
+      },
+      "streamingIndicator": "实时生成中",
       "stats": {
         "characters": "字符数: {count}",
         "words": "词数: {count}",
@@ -829,6 +834,54 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". 探索大模型应用的未来。"
+      }
+    },
+    "difyAppTypes": {
+      "workflow": {
+        "label": "工作流",
+        "description": "自动化工作流程",
+        "features": {
+          "automation": "自动化",
+          "batchProcessing": "批处理",
+          "processControl": "流程控制"
+        }
+      },
+      "text-generation": {
+        "label": "文本生成",
+        "description": "单次文本生成应用",
+        "features": {
+          "textGeneration": "文本生成",
+          "contentCreation": "内容创作",
+          "formattedOutput": "格式化输出"
+        }
+      },
+      "chatbot": {
+        "label": "聊天机器人",
+        "description": "基础对话聊天机器人",
+        "features": {
+          "conversation": "对话",
+          "fileUpload": "文件上传",
+          "speechToText": "语音转文字"
+        }
+      },
+      "agent": {
+        "label": "智能代理",
+        "description": "支持工具调用的智能代理",
+        "features": {
+          "conversation": "对话",
+          "toolCalling": "工具调用",
+          "reasoningChain": "推理链",
+          "multiTurnTasks": "多轮任务"
+        }
+      },
+      "chatflow": {
+        "label": "对话流",
+        "description": "对话流程编排应用",
+        "features": {
+          "processOrchestration": "流程编排",
+          "conditionalBranching": "条件分支",
+          "conversationManagement": "对话管理"
+        }
       }
     }
   },

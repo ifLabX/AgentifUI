@@ -19,11 +19,11 @@ export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
   };
 
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1
           className={cn(
-            'mb-3 bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent',
+            'mb-2 bg-gradient-to-r bg-clip-text font-serif text-3xl font-bold text-transparent',
             isDark
               ? 'from-stone-100 to-stone-300'
               : 'from-stone-800 to-stone-600'
@@ -33,10 +33,11 @@ export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
         </h1>
         <p
           className={cn(
-            'text-base',
+            'flex items-center gap-2 font-serif text-sm',
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
+          <Building2 className="h-4 w-4" />
           管理用户群组和应用权限分配
         </p>
       </div>

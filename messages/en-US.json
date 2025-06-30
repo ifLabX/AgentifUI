@@ -328,7 +328,8 @@
         "completed": "Generation completed",
         "failed": "Generation failed",
         "stopped": "Stopped",
-        "waiting": "Waiting to generate"
+        "waiting": "Waiting to generate",
+        "result": "Generation result"
       },
       "progress": "Progress: {percent}%",
       "buttons": {
@@ -347,11 +348,63 @@
         "generating": "Generating text...",
         "result": "Generated text will be displayed here"
       },
+      "loadingState": {
+        "title": "Generating Text",
+        "description": "Please wait, generating content for you..."
+      },
       "streamingIndicator": "Generating",
       "stats": {
         "characters": "Characters: {count}",
         "words": "Words: {count}",
         "tokensUsed": "Tokens used: {count}"
+      }
+    },
+    "difyAppTypes": {
+      "workflow": {
+        "label": "Workflow",
+        "description": "Automated workflow process",
+        "features": {
+          "automation": "Automation",
+          "batchProcessing": "Batch Processing",
+          "processControl": "Process Control"
+        }
+      },
+      "text-generation": {
+        "label": "Text Generation",
+        "description": "Single text generation application",
+        "features": {
+          "textGeneration": "Text Generation",
+          "contentCreation": "Content Creation",
+          "formattedOutput": "Formatted Output"
+        }
+      },
+      "chatbot": {
+        "label": "Chatbot",
+        "description": "Basic conversational chatbot",
+        "features": {
+          "conversation": "Conversation",
+          "fileUpload": "File Upload",
+          "speechToText": "Speech to Text"
+        }
+      },
+      "agent": {
+        "label": "Agent",
+        "description": "Intelligent agent with tool calling",
+        "features": {
+          "conversation": "Conversation",
+          "toolCalling": "Tool Calling",
+          "reasoningChain": "Reasoning Chain",
+          "multiTurnTasks": "Multi-turn Tasks"
+        }
+      },
+      "chatflow": {
+        "label": "Chatflow",
+        "description": "Conversational workflow application",
+        "features": {
+          "processOrchestration": "Process Orchestration",
+          "conditionalBranching": "Conditional Branching",
+          "conversationManagement": "Conversation Management"
+        }
       }
     },
     "apps": {
