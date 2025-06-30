@@ -3,7 +3,7 @@
 本文档详细描述了 AgentifUI 平台的数据库设计，包括表结构、关系、安全机制和特性。本文档与当前数据库状态完全同步，包含所有已应用的迁移文件。
 
 **文档更新日期**: 2025-06-30
-**数据库版本**: 包含至 20250630021741_migrate_to_groups_system.sql 的所有迁移
+**数据库版本**: 包含至 20250630034523_fix_group_members_foreign_key.sql 的所有迁移
 
 ## 目录
 
@@ -89,13 +89,13 @@
 
 存储群组成员关系，简化的成员管理。
 
-| 字段名     | 类型                     | 描述     | 约束                          |
-| ---------- | ------------------------ | -------- | ----------------------------- |
-| id         | UUID                     | 关系ID   | 主键                          |
-| group_id   | UUID                     | 群组ID   | 引用 groups(id)，NOT NULL     |
-| user_id    | UUID                     | 用户ID   | 引用 auth.users(id)，NOT NULL |
-| created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP     |
-|            |                          |          | UNIQUE(group_id, user_id)     |
+| 字段名     | 类型                     | 描述     | 约束                        |
+| ---------- | ------------------------ | -------- | --------------------------- |
+| id         | UUID                     | 关系ID   | 主键                        |
+| group_id   | UUID                     | 群组ID   | 引用 groups(id)，NOT NULL   |
+| user_id    | UUID                     | 用户ID   | 引用 profiles(id)，NOT NULL |
+| created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP   |
+|            |                          |          | UNIQUE(group_id, user_id)   |
 
 ### 群组应用权限管理
 
@@ -119,6 +119,13 @@
 - **简化设计**: 基于群组的二元权限控制（启用/禁用）
 - **配额管理**: 支持群组级使用配额限制
 - **权限逻辑**: public(全员) | group_only(群组成员) | private(管理员)
+
+**外键关系修复（20250630034523）：**
+
+- **问题修复**: `group_members.user_id` 外键从 `auth.users(id)` 修改为 `profiles(id)`
+- **解决原因**: 确保群组成员查询时可以正确关联 profiles 表获取用户信息
+- **影响范围**: 修复了群组成员列表查询中的关系查询错误
+- **安全保证**: 保持级联删除行为，确保用户删除时清理群组成员关系
 
 ### 聊天和消息
 

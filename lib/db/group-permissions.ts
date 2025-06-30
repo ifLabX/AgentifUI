@@ -75,25 +75,33 @@ export async function getGroups(): Promise<Result<Group[]>> {
   try {
     const supabase = createClient();
 
-    const { data, error } = await supabase
+    // 首先获取群组基本信息
+    const { data: groupsData, error: groupsError } = await supabase
       .from('groups')
-      .select(
-        `
-        *,
-        group_members(count)
-      `
-      )
+      .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('获取群组列表失败:', error);
-      return failure(new Error(error.message));
+    if (groupsError) {
+      console.error('获取群组列表失败:', groupsError);
+      return failure(new Error(groupsError.message));
     }
 
-    const groups = data.map(group => ({
-      ...group,
-      member_count: group.group_members?.[0]?.count || 0,
-    }));
+    // 然后获取每个群组的成员数量
+    const groups = await Promise.all(
+      (groupsData || []).map(async group => {
+        const { count, error: countError } = await supabase
+          .from('group_members')
+          .select('*', { count: 'exact', head: true })
+          .eq('group_id', group.id);
+
+        if (countError) {
+          console.warn(`获取群组 ${group.id} 成员数量失败:`, countError);
+          return { ...group, member_count: 0 };
+        }
+
+        return { ...group, member_count: count || 0 };
+      })
+    );
 
     return success(groups);
   } catch (error) {
