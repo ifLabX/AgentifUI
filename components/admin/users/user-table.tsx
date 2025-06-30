@@ -366,7 +366,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                群组信息
+                群组
               </th>
               <th
                 className={cn(
@@ -509,19 +509,49 @@ export const UserTable: React.FC<UserTableProps> = ({
                   </td>
 
                   {/* --- BEGIN COMMENT ---
-                  群组信息列 - 优化布局，限制高度，使用tooltip显示完整信息
+                  群组信息列 - 显示用户所属的群组信息
                   --- END COMMENT --- */}
                   <td className="px-4 py-4">
-                    {/* 群组系统下暂时不显示群组信息 */}
-                    <div className="flex h-16 items-center">
-                      <p
-                        className={cn(
-                          'font-serif text-sm',
-                          isDark ? 'text-stone-500' : 'text-stone-500'
-                        )}
-                      >
-                        -
-                      </p>
+                    <div className="flex h-16 flex-col justify-center space-y-1">
+                      {user.groups && user.groups.length > 0 ? (
+                        <>
+                          {user.groups.slice(0, 2).map((group, index) => (
+                            <p
+                              key={group.id}
+                              className={cn(
+                                'truncate font-serif text-sm',
+                                isDark ? 'text-stone-300' : 'text-stone-700'
+                              )}
+                              title={group.description || group.name}
+                            >
+                              {group.name}
+                            </p>
+                          ))}
+                          {user.groups.length > 2 && (
+                            <p
+                              className={cn(
+                                'truncate font-serif text-xs',
+                                isDark ? 'text-stone-400' : 'text-stone-500'
+                              )}
+                              title={`还有 ${user.groups.length - 2} 个群组：${user.groups
+                                .slice(2)
+                                .map(g => g.name)
+                                .join(', ')}`}
+                            >
+                              +{user.groups.length - 2} 个群组
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p
+                          className={cn(
+                            'font-serif text-sm',
+                            isDark ? 'text-stone-500' : 'text-stone-500'
+                          )}
+                        >
+                          未加入群组
+                        </p>
+                      )}
                     </div>
                   </td>
 

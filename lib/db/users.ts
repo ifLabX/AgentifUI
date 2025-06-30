@@ -37,6 +37,13 @@ export interface EnhancedUser {
   profile_created_at: string;
   profile_updated_at: string;
   last_login?: string;
+  // 群组信息
+  groups?: Array<{
+    id: string;
+    name: string;
+    description?: string | null;
+    joined_at: string;
+  }>;
   // 注意：组织相关字段已移除，改用群组系统
 }
 
@@ -165,11 +172,42 @@ export async function getUserList(filters: UserFilters = {}): Promise<
     const totalPages = Math.ceil(total / pageSize);
 
     // --- BEGIN COMMENT ---
-    // 合并profiles和auth.users数据
+    // 合并profiles和auth.users数据，并获取群组信息
     // --- END COMMENT ---
-    const enhancedUsers: EnhancedUser[] = (profiles || []).map(
-      (profile: any) => {
+    const enhancedUsers: EnhancedUser[] = await Promise.all(
+      (profiles || []).map(async (profile: any) => {
         const authUser = authUsers.find(au => au.id === profile.id);
+
+        // 获取用户的群组信息
+        let userGroups: Array<{
+          id: string;
+          name: string;
+          description?: string | null;
+          joined_at: string;
+        }> = [];
+
+        try {
+          const { data: groupData, error: groupError } = await supabase
+            .from('group_members')
+            .select(
+              `
+              created_at,
+              groups:group_id(id, name, description)
+            `
+            )
+            .eq('user_id', profile.id);
+
+          if (!groupError && groupData) {
+            userGroups = groupData.map((item: any) => ({
+              id: item.groups.id,
+              name: item.groups.name,
+              description: item.groups.description,
+              joined_at: item.created_at,
+            }));
+          }
+        } catch (error) {
+          console.warn(`获取用户 ${profile.id} 群组信息失败:`, error);
+        }
 
         return {
           id: profile.id,
@@ -191,8 +229,9 @@ export async function getUserList(filters: UserFilters = {}): Promise<
           profile_created_at: profile.created_at,
           profile_updated_at: profile.updated_at,
           last_login: profile.last_login,
+          groups: userGroups,
         };
-      }
+      })
     );
 
     return success({
@@ -267,6 +306,7 @@ export async function getUserById(
       phone_confirmed_at: userDetail.phone_confirmed
         ? new Date().toISOString()
         : null,
+      groups: userDetail.groups,
     };
 
     return success(enhancedUser);
