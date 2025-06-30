@@ -88,6 +88,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/admin/users',
       description: '管理用户账户和权限',
     },
+    {
+      text: '群组管理',
+      icon: Building2,
+      href: '/admin/groups',
+      description: '管理用户和群组，配置群组应用权限',
+    },
   ];
 
   // --- BEGIN COMMENT ---

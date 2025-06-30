@@ -100,6 +100,12 @@ export default function AdminPage() {
       icon: Users,
       href: '/admin/users',
     },
+    {
+      title: '群组管理',
+      description: '管理用户和群组，配置群组应用权限',
+      icon: Building2,
+      href: '/admin/groups',
+    },
   ];
 
   return (
