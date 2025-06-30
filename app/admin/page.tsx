@@ -100,12 +100,6 @@ export default function AdminPage() {
       icon: Users,
       href: '/admin/users',
     },
-    {
-      title: '组织管理',
-      description: '管理组织结构、部门和成员关系，优化团队协作',
-      icon: Building2,
-      href: '/admin/organizations',
-    },
   ];
 
   return (

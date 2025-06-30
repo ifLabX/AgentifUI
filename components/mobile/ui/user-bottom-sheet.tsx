@@ -44,7 +44,7 @@ export function UserBottomSheet({
 
   // 从 profile 中提取用户信息
   const userName = profile?.full_name || profile?.username || t('defaultUser');
-  const userCompany = profile?.organization?.name || t('noOrganization');
+  const userCompany = '群组系统'; // 简化显示
 
   // 处理登录
   const handleLogin = () => {

@@ -366,7 +366,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                组织信息
+                群组信息
               </th>
               <th
                 className={cn(
@@ -454,56 +454,20 @@ export const UserTable: React.FC<UserTableProps> = ({
                   用户信息列 - 优化布局和截断处理
                   --- END COMMENT --- */}
                   <td className="px-4 py-4">
-                    <div className="flex min-w-0 items-center gap-3">
-                      {/* --- 用户头像 --- */}
-                      <div
-                        className={cn(
-                          'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold',
-                          isDark
-                            ? 'bg-stone-700 text-stone-300'
-                            : 'bg-stone-200 text-stone-700'
-                        )}
-                      >
-                        {user.avatar_url ? (
-                          <img
-                            src={user.avatar_url}
-                            alt={user.full_name || '用户头像'}
-                            className="h-10 w-10 rounded-full object-cover"
-                          />
-                        ) : (
-                          <span className="font-serif">
-                            {(user.full_name ||
-                              user.username ||
-                              user.email ||
-                              'U')[0].toUpperCase()}
+                    <div className="flex items-center space-x-2">
+                      {/* 移除组织信息显示 */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center space-x-1">
+                          <span className="font-serif text-sm font-medium">
+                            {user.full_name || user.username || '未设置'}
                           </span>
-                        )}
-                      </div>
-
-                      {/* --- 用户名称和用户名 --- */}
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className={cn(
-                            'truncate font-serif text-sm font-medium',
-                            isDark ? 'text-stone-100' : 'text-stone-900'
+                          {user.role === 'admin' && (
+                            <span className="text-xs text-red-500">👑</span>
                           )}
-                          title={
-                            user.full_name || user.username || '未设置姓名'
-                          }
-                        >
-                          {user.full_name || user.username || '未设置姓名'}
-                        </p>
-                        {user.username && (
-                          <p
-                            className={cn(
-                              'mt-0.5 truncate font-serif text-xs',
-                              isDark ? 'text-stone-500' : 'text-stone-500'
-                            )}
-                            title={`@${user.username}`}
-                          >
-                            @{user.username}
-                          </p>
-                        )}
+                        </div>
+                        <span className="font-serif text-xs text-stone-500">
+                          @{user.username || '未设置'}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -545,60 +509,20 @@ export const UserTable: React.FC<UserTableProps> = ({
                   </td>
 
                   {/* --- BEGIN COMMENT ---
-                  组织信息列 - 优化布局，限制高度，使用tooltip显示完整信息
+                  群组信息列 - 优化布局，限制高度，使用tooltip显示完整信息
                   --- END COMMENT --- */}
                   <td className="px-4 py-4">
-                    {user.organization_name ? (
-                      <div
-                        className="min-w-0 space-y-0.5"
-                        title={`组织: ${user.organization_name}${user.department ? `\n部门: ${user.department}` : ''}${user.job_title ? `\n职位: ${user.job_title}` : ''}`}
+                    {/* 群组系统下暂时不显示群组信息 */}
+                    <div className="flex h-16 items-center">
+                      <p
+                        className={cn(
+                          'font-serif text-sm',
+                          isDark ? 'text-stone-500' : 'text-stone-500'
+                        )}
                       >
-                        <p
-                          className={cn(
-                            'flex items-center gap-1 truncate font-serif text-sm font-medium',
-                            isDark ? 'text-stone-200' : 'text-stone-800'
-                          )}
-                        >
-                          <span className="text-xs">🏢</span>
-                          <span className="truncate">
-                            {user.organization_name}
-                          </span>
-                        </p>
-                        {user.department && (
-                          <p
-                            className={cn(
-                              'flex items-center gap-1 truncate font-serif text-xs',
-                              isDark ? 'text-stone-400' : 'text-stone-600'
-                            )}
-                          >
-                            <span className="text-xs">🏛️</span>
-                            <span className="truncate">{user.department}</span>
-                          </p>
-                        )}
-                        {user.job_title && (
-                          <p
-                            className={cn(
-                              'flex items-center gap-1 truncate font-serif text-xs',
-                              isDark ? 'text-stone-400' : 'text-stone-600'
-                            )}
-                          >
-                            <span className="text-xs">💼</span>
-                            <span className="truncate">{user.job_title}</span>
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex h-16 items-center">
-                        <p
-                          className={cn(
-                            'font-serif text-sm',
-                            isDark ? 'text-stone-500' : 'text-stone-500'
-                          )}
-                        >
-                          未加入组织
-                        </p>
-                      </div>
-                    )}
+                        群组系统
+                      </p>
+                    </div>
                   </td>
 
                   {/* --- BEGIN COMMENT ---

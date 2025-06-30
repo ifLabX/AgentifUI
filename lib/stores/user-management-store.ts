@@ -11,9 +11,6 @@ import {
   batchUpdateUserRole,
   batchUpdateUserStatus,
   deleteUser,
-  getDepartmentOptions,
-  getDepartmentOptionsByOrganization,
-  getOrganizationOptions,
   getUserById,
   getUserList,
   getUserStats,
@@ -37,8 +34,7 @@ interface LoadingState {
 
 // 筛选选项类型
 interface FilterOptions {
-  organizations: Array<{ value: string; label: string }>;
-  departments: Array<{ value: string; label: string }>;
+  // 简化后的筛选选项，移除组织和部门概念
 }
 
 // 用户管理状态接口
@@ -74,7 +70,7 @@ interface UserManagementState {
   loadStats: () => Promise<void>;
   loadUserDetail: (userId: string) => Promise<void>;
   loadFilterOptions: () => Promise<void>;
-  loadDepartmentsByOrganization: (organizationName: string) => Promise<void>;
+
   updateFilters: (filters: Partial<UserFilters>) => void;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
@@ -120,8 +116,7 @@ const initialState = {
   selectedUser: null,
   selectedUserIds: [],
   filterOptions: {
-    organizations: [],
-    departments: [],
+    // 群组系统下已简化，无需组织部门选项
   },
   filters: {
     page: 1,
@@ -247,40 +242,16 @@ export const useUserManagementStore = create<UserManagementState>()(
         }
       },
 
-      // 加载筛选选项
+      // 加载筛选选项（简化后无需加载组织部门选项）
       loadFilterOptions: async () => {
-        try {
-          const [orgResult, deptResult] = await Promise.all([
-            getOrganizationOptions(),
-            getDepartmentOptions(),
-          ]);
-
-          set(state => ({
-            filterOptions: {
-              organizations: orgResult.success ? orgResult.data : [],
-              departments: deptResult.success ? deptResult.data : [],
-            },
-          }));
-        } catch (error) {
-          console.error('加载筛选选项失败:', error);
-        }
+        // 群组系统下无需预加载筛选选项
+        console.log('筛选选项加载：群组系统下已简化');
       },
 
-      // 根据组织加载部门选项
+      // 根据组织加载部门选项（已移除）
       loadDepartmentsByOrganization: async (organizationName: string) => {
-        try {
-          const result =
-            await getDepartmentOptionsByOrganization(organizationName);
-
-          set(state => ({
-            filterOptions: {
-              ...state.filterOptions,
-              departments: result.success ? result.data : [],
-            },
-          }));
-        } catch (error) {
-          console.error('加载组织部门选项失败:', error);
-        }
+        // 群组系统下此功能已移除
+        console.log('部门选项加载：群组系统下已移除');
       },
 
       // 更新筛选条件

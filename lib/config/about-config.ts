@@ -26,7 +26,7 @@ export const defaultAboutConfig: AboutPageConfig = {
   title: '关于 AgentifUI',
   subtitle: '连接 AI 与企业，打造大模型应用新体验',
   mission:
-    'AgentifUI 致力于利用大型语言模型的力量，为企业提供创新的应用解决方案。我们整合了多种模型供应商的能力，并基于 Dify 后端提供稳定、可靠的服务，帮助组织充分利用 AI 技术的价值。',
+    'AgentifUI 致力于利用大型语言模型的力量，为企业提供创新的应用解决方案。我们整合了多种模型供应商的能力，并基于 Dify 后端提供稳定、可靠的服务，帮助团队充分利用 AI 技术的价值。',
   valueCards: [
     {
       id: '1',

@@ -81,8 +81,6 @@ export function DynamicTitle() {
     (path: string): string => {
       if (path === '/admin') return `${t('admin.main')} | ${baseTitle}`;
       if (path === '/admin/users') return `${t('admin.users')} | ${baseTitle}`;
-      if (path === '/admin/organizations')
-        return `${t('admin.organizations')} | ${baseTitle}`;
       if (path === '/admin/api-config')
         return `${t('admin.apiConfig')} | ${baseTitle}`;
       if (path === '/admin/security')

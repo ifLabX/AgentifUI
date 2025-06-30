@@ -177,10 +177,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           full_name: result.data.full_name || null,
           username: result.data.username || null,
           avatar_url: result.data.avatar_url || null,
-          organization: profile.organization,
-          organization_role: profile.organization_role,
-          department: profile.department,
-          job_title: profile.job_title,
+          // 移除组织相关字段
           auth_last_sign_in_at: profile.auth_last_sign_in_at,
         };
         updateProfileCache(extendedProfile, profile.id);
@@ -361,17 +358,6 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                     ? t('roles.manager')
                     : t('roles.user')}
               </span>
-              {profile.organization?.name && (
-                <span
-                  className={cn(
-                    'font-serif',
-                    colors.secondaryTextColor.tailwind
-                  )}
-                >
-                  {profile.organization.name}
-                  {profile.department && ` (${profile.department})`}
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -395,27 +381,6 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         </h3>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div className="flex items-center space-x-2">
-            <Building2
-              className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}
-            />
-            <div>
-              <p
-                className={cn(
-                  'font-serif text-xs',
-                  colors.secondaryTextColor.tailwind
-                )}
-              >
-                {t('organization')}
-              </p>
-              <p
-                className={cn('font-serif text-sm', colors.textColor.tailwind)}
-              >
-                {profile.organization?.name || t('status.noOrganization')}
-              </p>
-            </div>
-          </div>
-
           <div className="flex items-center space-x-2">
             <Calendar
               className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}

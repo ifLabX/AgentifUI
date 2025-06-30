@@ -684,7 +684,6 @@
       "profileSettings": {
         "title": "個人資料",
         "accountInfo": "帳戶資訊",
-        "organization": "所屬企業",
         "registrationTime": "註冊時間",
         "accountRole": "帳戶角色",
         "lastLogin": "上次登入",
@@ -705,7 +704,7 @@
         "status": {
           "notRecorded": "未記錄",
           "notSet": "未設定",
-          "noOrganization": "無企業關聯"
+          "noOrganization": "無群組關聯"
         },
         "loadProfileError": "載入資料時發生錯誤",
         "avatar": {
@@ -795,7 +794,6 @@
     "admin": {
       "title": "管理後台",
       "users": "使用者管理",
-      "organizations": "組織管理",
       "analytics": "資料分析"
     },
     "about": {
@@ -851,7 +849,7 @@
       "settings": "設定",
       "about": "關於",
       "admin": "管理後台",
-      "noOrganization": "無企業關聯",
+      "noOrganization": "無群組關聯",
       "loginPrompt": "登入以使用更多功能",
       "loginDescription": "存取您的對話歷史和個人設定"
     },
@@ -931,7 +929,7 @@
     "user": {
       "defaultUser": "使用者",
       "loginRegister": "登入/註冊",
-      "noOrganization": "無企業關聯",
+      "noOrganization": "無群組關聯",
       "avatarAlt": "{userName}的頭像",
       "loginPrompt": "登入以使用更多功能"
     },
@@ -972,7 +970,6 @@
     "admin": {
       "main": "管理後台",
       "users": "使用者管理",
-      "organizations": "組織管理",
       "apiConfig": "API設定",
       "security": "安全設定",
       "analytics": "資料分析",

@@ -684,7 +684,6 @@
       "profileSettings": {
         "title": "个人资料",
         "accountInfo": "账户信息",
-        "organization": "所属企业",
         "registrationTime": "注册时间",
         "accountRole": "账户角色",
         "lastLogin": "上次登录",
@@ -705,7 +704,7 @@
         "status": {
           "notRecorded": "未记录",
           "notSet": "未设置",
-          "noOrganization": "无企业关联"
+          "noOrganization": "无群组关联"
         },
         "loadProfileError": "加载资料时出错",
         "avatar": {
@@ -795,7 +794,6 @@
     "admin": {
       "title": "管理后台",
       "users": "用户管理",
-      "organizations": "组织管理",
       "analytics": "数据分析"
     },
     "about": {
@@ -804,7 +802,7 @@
       "loading": "加载中...",
       "mission": {
         "title": "我们的使命",
-        "description": "AgentifUI 致力于利用大型语言模型的力量，为企业提供创新的应用解决方案。我们整合了多种模型供应商的能力，并基于 Dify 后端提供稳定、可靠的服务，帮助组织充分利用 AI 技术的价值。"
+        "description": "AgentifUI 致力于利用大型语言模型的力量，为企业提供创新的应用解决方案。我们整合了多种模型供应商的能力，并基于 Dify 后端提供稳定、可靠的服务，帮助团队充分利用 AI 技术的价值。"
       },
       "values": {
         "title": "我们的价值观",
@@ -851,7 +849,7 @@
       "settings": "设置",
       "about": "关于",
       "admin": "管理后台",
-      "noOrganization": "无企业关联",
+      "noOrganization": "无群组关联",
       "loginPrompt": "登录以使用更多功能",
       "loginDescription": "访问您的对话历史和个人设置"
     },
@@ -931,7 +929,7 @@
     "user": {
       "defaultUser": "用户",
       "loginRegister": "登录/注册",
-      "noOrganization": "无企业关联",
+      "noOrganization": "无群组关联",
       "avatarAlt": "{userName}的头像",
       "loginPrompt": "登录以使用更多功能"
     },
@@ -972,7 +970,6 @@
     "admin": {
       "main": "管理后台",
       "users": "用户管理",
-      "organizations": "组织管理",
       "apiConfig": "API配置",
       "security": "安全设置",
       "analytics": "数据分析",

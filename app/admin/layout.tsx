@@ -88,12 +88,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/admin/users',
       description: '管理用户账户和权限',
     },
-    {
-      text: '组织管理',
-      icon: Building2,
-      href: '/admin/organizations',
-      description: '管理组织结构和部门权限',
-    },
   ];
 
   // --- BEGIN COMMENT ---

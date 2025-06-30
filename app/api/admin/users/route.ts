@@ -2,9 +2,12 @@ import { createClient } from '@lib/supabase/server';
 
 import { NextRequest, NextResponse } from 'next/server';
 
-// --- BEGIN COMMENT ---
-// 获取用户列表（简化版，用于组织管理中的用户选择）
-// --- END COMMENT ---
+/**
+ * Admin Users API Route
+ *
+ * 处理管理员用户管理相关的API请求
+ * 获取用户列表（简化版，用于群组管理中的用户选择）
+ */
 export async function GET() {
   try {
     const supabase = await createClient();

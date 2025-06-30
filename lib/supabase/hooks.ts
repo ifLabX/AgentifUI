@@ -114,8 +114,8 @@ export const useProfile = () => {
 };
 
 /**
- * 组织钩子
- * 提供用户所属组织信息
+ * 群组钩子
+ * 提供用户所属群组信息
  */
 export const useOrganizations = () => {
   const { user } = useSupabaseAuth();

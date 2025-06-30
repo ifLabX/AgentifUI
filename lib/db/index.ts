@@ -128,12 +128,11 @@ export {
   updateUserProfile,
   setUserAsAdmin,
   isUserAdmin,
-  getUserOrganization,
 } from './profiles';
 
 // --- BEGIN COMMENT ---
-// 组织管理相关函数（计划添加）
-// 暂时通过 getUserOrganization 获取基本组织信息
+// 群组管理相关函数（计划添加）
+// 暂时通过群组权限获取基本群组信息
 // --- END COMMENT ---
 
 // 兼容版本（保持原有API）
@@ -145,7 +144,6 @@ export {
   updateUserProfileLegacy,
   setUserAsAdminLegacy,
   isUserAdminLegacy,
-  getUserOrganizationLegacy,
 } from './profiles';
 
 // 对话相关函数

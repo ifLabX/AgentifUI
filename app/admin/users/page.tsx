@@ -43,7 +43,7 @@ export default function UsersManagementPage() {
     loadUsers,
     loadStats,
     loadFilterOptions,
-    loadDepartmentsByOrganization,
+
     updateFilters,
     setPage,
     toggleUserSelection,
@@ -168,14 +168,8 @@ export default function UsersManagementPage() {
       role: undefined,
       status: undefined,
       auth_source: undefined,
-      organization: undefined,
-      department: undefined,
       search: undefined,
-      sortBy: 'created_at',
-      sortOrder: 'desc',
     });
-    // 重置时重新加载所有筛选选项
-    loadFilterOptions();
   };
 
   // --- BEGIN COMMENT ---
@@ -455,9 +449,6 @@ export default function UsersManagementPage() {
           filters={filters}
           onFiltersChange={updateFilters}
           onReset={handleResetFilters}
-          organizationOptions={filterOptions.organizations}
-          departmentOptions={filterOptions.departments}
-          onOrganizationChange={loadDepartmentsByOrganization}
         />
 
         {/* --- BEGIN COMMENT ---

@@ -185,7 +185,7 @@ export const useAppListStore = create<AppListState>((set, get) => ({
       });
 
       console.log(
-        `[AppListStore] 成功获取 ${apps.length} 个用户可访问应用（包含组织权限）`
+        `[AppListStore] 成功获取 ${apps.length} 个用户可访问应用（包含群组权限）`
       );
 
       // 🎯 后台同步：更新常用应用信息

@@ -684,7 +684,6 @@
       "profileSettings": {
         "title": "プロフィール",
         "accountInfo": "アカウント情報",
-        "organization": "組織",
         "registrationTime": "登録日時",
         "accountRole": "アカウント役割",
         "lastLogin": "最終ログイン",
@@ -705,7 +704,7 @@
         "status": {
           "notRecorded": "未記録",
           "notSet": "未設定",
-          "noOrganization": "組織なし"
+          "noOrganization": "グループなし"
         },
         "loadProfileError": "プロフィールの読み込みエラー",
         "avatar": {
@@ -795,7 +794,6 @@
     "admin": {
       "title": "管理パネル",
       "users": "ユーザー管理",
-      "organizations": "組織管理",
       "analytics": "分析"
     },
     "about": {
@@ -851,7 +849,7 @@
       "settings": "設定",
       "about": "について",
       "admin": "管理パネル",
-      "noOrganization": "組織なし",
+      "noOrganization": "グループなし",
       "loginPrompt": "ログインしてより多くの機能をご利用ください",
       "loginDescription": "チャット履歴と個人設定にアクセス"
     },
@@ -931,7 +929,7 @@
     "user": {
       "defaultUser": "ユーザー",
       "loginRegister": "ログイン/登録",
-      "noOrganization": "組織なし",
+      "noOrganization": "グループなし",
       "avatarAlt": "{userName}のアバター",
       "loginPrompt": "より多くの機能にアクセスするにはログインしてください"
     },
@@ -972,7 +970,6 @@
     "admin": {
       "main": "管理パネル",
       "users": "ユーザー管理",
-      "organizations": "組織管理",
       "apiConfig": "API設定",
       "security": "セキュリティ設定",
       "analytics": "データ分析",

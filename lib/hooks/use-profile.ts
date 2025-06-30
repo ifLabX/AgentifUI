@@ -1,8 +1,3 @@
-import {
-  getCurrentUserProfile,
-  getUserOrganization,
-  getUserProfileById,
-} from '@lib/db';
 import { createClient } from '@lib/supabase/client';
 // 使用新的优化数据库接口
 import { useSupabaseAuth } from '@lib/supabase/hooks';
@@ -22,18 +17,6 @@ export interface Profile {
   updated_at: string | null;
   created_at: string | null;
   employee_number?: string | null; // 新增：学工号字段（可选，仅SSO用户有值）
-  // --- BEGIN COMMENT ---
-  // 企业组织信息：包含企业基本信息、用户在组织中的角色和部门信息
-  // --- END COMMENT ---
-  organization?: {
-    id: string;
-    name: string;
-    logo_url: string | null;
-    created_at: string;
-  } | null;
-  organization_role?: string | null;
-  department?: string | null;
-  job_title?: string | null;
   // --- BEGIN COMMENT ---
   // auth.users表的信息：用于settings页面显示
   // --- END COMMENT ---
@@ -198,28 +181,12 @@ export function useProfile(userId?: string): UseProfileResult {
       }
 
       // --- BEGIN COMMENT ---
-      // 使用和管理界面相同的查询方式：从profiles表开始，关联查询组织信息
-      // 这样可以确保获取到完整的用户信息和组织信息
+      // 查询用户资料信息
       // --- END COMMENT ---
       const supabase = createClient();
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select(
-          `
-          *,
-          org_members (
-            role,
-            department,
-            job_title,
-            organizations (
-              id,
-              name,
-              logo_url,
-              created_at
-            )
-          )
-        `
-        )
+        .select('*')
         .eq('id', targetUserId)
         .maybeSingle();
 
@@ -232,12 +199,6 @@ export function useProfile(userId?: string): UseProfileResult {
         setError(new Error('用户资料不存在'));
         return;
       }
-
-      // --- BEGIN COMMENT ---
-      // 处理组织信息：和管理界面使用相同的逻辑
-      // --- END COMMENT ---
-      const orgMember = profileData.org_members?.[0]; // 取第一个组织
-      const organization = orgMember?.organizations;
 
       // --- BEGIN COMMENT ---
       // 获取auth.users中的last_sign_in_at信息
@@ -256,20 +217,6 @@ export function useProfile(userId?: string): UseProfileResult {
         created_at: profileData.created_at,
         updated_at: profileData.updated_at,
         employee_number: profileData.employee_number, // 新增：包含学工号数据
-        // --- BEGIN COMMENT ---
-        // 组织信息：使用和管理界面相同的处理逻辑
-        // --- END COMMENT ---
-        organization: organization
-          ? {
-              id: organization.id,
-              name: organization.name,
-              logo_url: organization.logo_url,
-              created_at: organization.created_at,
-            }
-          : null,
-        organization_role: orgMember?.role || null,
-        department: orgMember?.department || null,
-        job_title: orgMember?.job_title || null,
         // --- BEGIN COMMENT ---
         // 添加auth信息用于settings页面显示
         // --- END COMMENT ---

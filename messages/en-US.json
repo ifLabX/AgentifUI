@@ -684,7 +684,6 @@
       "profileSettings": {
         "title": "Profile",
         "accountInfo": "Account Information",
-        "organization": "Organization",
         "registrationTime": "Registration Time",
         "accountRole": "Account Role",
         "lastLogin": "Last Login",
@@ -705,7 +704,7 @@
         "status": {
           "notRecorded": "Not recorded",
           "notSet": "Not set",
-          "noOrganization": "No organization"
+          "noOrganization": "No group"
         },
         "loadProfileError": "Error loading profile",
         "avatar": {
@@ -795,7 +794,6 @@
     "admin": {
       "title": "Admin Panel",
       "users": "User Management",
-      "organizations": "Organization Management",
       "analytics": "Analytics"
     },
     "about": {
@@ -851,7 +849,7 @@
       "settings": "Settings",
       "about": "About",
       "admin": "Admin Panel",
-      "noOrganization": "No organization",
+      "noOrganization": "No group",
       "loginPrompt": "Login to access more features",
       "loginDescription": "Access your chat history and personal settings"
     },
@@ -931,7 +929,7 @@
     "user": {
       "defaultUser": "User",
       "loginRegister": "Login/Register",
-      "noOrganization": "No organization",
+      "noOrganization": "No group",
       "avatarAlt": "{userName}'s avatar",
       "loginPrompt": "Login to access more features"
     },
@@ -972,7 +970,6 @@
     "admin": {
       "main": "Admin Panel",
       "users": "User Management",
-      "organizations": "Organization Management",
       "apiConfig": "API Configuration",
       "security": "Security Settings",
       "analytics": "Data Analytics",

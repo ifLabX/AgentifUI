@@ -37,13 +37,7 @@ export interface EnhancedUser {
   profile_created_at: string;
   profile_updated_at: string;
   last_login?: string;
-  // --- BEGIN COMMENT ---
-  // 组织信息：用户所属的企业、部门和职位
-  // --- END COMMENT ---
-  organization_name?: string | null;
-  organization_role?: string | null;
-  department?: string | null;
-  job_title?: string | null;
+  // 注意：组织相关字段已移除，改用群组系统
 }
 
 // 用户统计信息
@@ -66,8 +60,6 @@ export interface UserFilters {
   status?: AccountStatus;
   auth_source?: string;
   search?: string; // 搜索邮箱、用户名、全名
-  department?: string; // 按部门筛选
-  organization?: string; // 按企业筛选
   sortBy?: 'created_at' | 'last_sign_in_at' | 'email' | 'full_name';
   sortOrder?: 'asc' | 'desc';
   page?: number;
@@ -94,8 +86,6 @@ export async function getUserList(filters: UserFilters = {}): Promise<
       status,
       auth_source,
       search,
-      department,
-      organization,
       sortBy = 'created_at',
       sortOrder = 'desc',
       page = 1,
@@ -104,24 +94,8 @@ export async function getUserList(filters: UserFilters = {}): Promise<
 
     // --- BEGIN COMMENT ---
     // 获取用户信息，包含auth.users表的邮箱和手机号信息
-    // 同时关联查询组织信息
     // --- END COMMENT ---
-    let query = supabase.from('profiles').select(
-      `
-        *,
-        org_members (
-          role,
-          department,
-          job_title,
-          organizations (
-            id,
-            name,
-            logo_url
-          )
-        )
-      `,
-      { count: 'exact' }
-    );
+    let query = supabase.from('profiles').select('*', { count: 'exact' });
 
     // 应用筛选条件
     if (role) {
@@ -139,21 +113,7 @@ export async function getUserList(filters: UserFilters = {}): Promise<
       );
     }
 
-    // --- BEGIN COMMENT ---
-    // 组织和部门筛选：通过关联的org_members表进行筛选
-    // 注意：这里需要使用inner join来确保只返回有组织关联的用户
-    // --- END COMMENT ---
-    if (organization || department) {
-      // 如果有组织或部门筛选，需要确保用户有org_members记录
-      query = query.not('org_members', 'is', null);
-
-      if (organization) {
-        query = query.eq('org_members.organizations.name', organization);
-      }
-      if (department) {
-        query = query.eq('org_members.department', department);
-      }
-    }
+    // 注意：组织和部门筛选已移除，改用群组系统
 
     // 应用排序
     query = query.order(sortBy, { ascending: sortOrder === 'asc' });
@@ -205,13 +165,11 @@ export async function getUserList(filters: UserFilters = {}): Promise<
     const totalPages = Math.ceil(total / pageSize);
 
     // --- BEGIN COMMENT ---
-    // 合并profiles和auth.users数据，包含组织信息
+    // 合并profiles和auth.users数据
     // --- END COMMENT ---
     const enhancedUsers: EnhancedUser[] = (profiles || []).map(
       (profile: any) => {
         const authUser = authUsers.find(au => au.id === profile.id);
-        const orgMember = profile.org_members?.[0]; // 取第一个组织
-        const organization = orgMember?.organizations;
 
         return {
           id: profile.id,
@@ -233,13 +191,6 @@ export async function getUserList(filters: UserFilters = {}): Promise<
           profile_created_at: profile.created_at,
           profile_updated_at: profile.updated_at,
           last_login: profile.last_login,
-          // --- BEGIN COMMENT ---
-          // 组织信息字段
-          // --- END COMMENT ---
-          organization_name: organization?.name || null,
-          organization_role: orgMember?.role || null,
-          department: orgMember?.department || null,
-          job_title: orgMember?.job_title || null,
         };
       }
     );
@@ -499,111 +450,4 @@ export async function batchUpdateUserRole(
   }
 }
 
-/**
- * 获取所有可用的组织列表（用于筛选下拉框）
- */
-export async function getOrganizationOptions(): Promise<
-  Result<Array<{ value: string; label: string }>>
-> {
-  try {
-    const { data, error } = await supabase
-      .from('organizations')
-      .select('name')
-      .order('name');
-
-    if (error) {
-      console.error('获取组织列表失败:', error);
-      return failure(new Error(`获取组织列表失败: ${error.message}`));
-    }
-
-    const options = (data || []).map(org => ({
-      value: org.name,
-      label: org.name,
-    }));
-
-    return success(options);
-  } catch (error) {
-    console.error('获取组织列表异常:', error);
-    return failure(
-      error instanceof Error ? error : new Error('获取组织列表失败')
-    );
-  }
-}
-
-/**
- * 获取所有可用的部门列表（用于筛选下拉框）
- */
-export async function getDepartmentOptions(): Promise<
-  Result<Array<{ value: string; label: string }>>
-> {
-  try {
-    const { data, error } = await supabase
-      .from('org_members')
-      .select('department')
-      .not('department', 'is', null)
-      .order('department');
-
-    if (error) {
-      console.error('获取部门列表失败:', error);
-      return failure(new Error(`获取部门列表失败: ${error.message}`));
-    }
-
-    // 去重并格式化
-    const uniqueDepartments = [
-      ...new Set((data || []).map(item => item.department).filter(Boolean)),
-    ];
-    const options = uniqueDepartments.map(dept => ({
-      value: dept,
-      label: dept,
-    }));
-
-    return success(options);
-  } catch (error) {
-    console.error('获取部门列表异常:', error);
-    return failure(
-      error instanceof Error ? error : new Error('获取部门列表失败')
-    );
-  }
-}
-
-/**
- * 根据组织获取该组织下的部门列表
- */
-export async function getDepartmentOptionsByOrganization(
-  organizationName: string
-): Promise<Result<Array<{ value: string; label: string }>>> {
-  try {
-    const { data, error } = await supabase
-      .from('org_members')
-      .select(
-        `
-        department,
-        organizations!inner(name)
-      `
-      )
-      .eq('organizations.name', organizationName)
-      .not('department', 'is', null)
-      .order('department');
-
-    if (error) {
-      console.error('获取组织部门列表失败:', error);
-      return failure(new Error(`获取组织部门列表失败: ${error.message}`));
-    }
-
-    // 去重并格式化
-    const uniqueDepartments = [
-      ...new Set((data || []).map(item => item.department).filter(Boolean)),
-    ];
-    const options = uniqueDepartments.map(dept => ({
-      value: dept,
-      label: dept,
-    }));
-
-    return success(options);
-  } catch (error) {
-    console.error('获取组织部门列表异常:', error);
-    return failure(
-      error instanceof Error ? error : new Error('获取组织部门列表失败')
-    );
-  }
-}
+// 注意：组织和部门选项函数已移除，改用群组系统

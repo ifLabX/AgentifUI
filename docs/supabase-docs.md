@@ -2,18 +2,17 @@
 
 本文档记录了AgentifUI项目中的数据库结构、功能和使用方法。本文档与当前数据库状态完全同步。
 
-**文档更新日期**: 2025-06-28  
-**数据库版本**: 包含至 20250628214015_create_avatar_storage_properly.sql 的所有迁移
+**文档更新日期**: 2025-06-30  
+**数据库版本**: 包含至 20250630021741_migrate_to_groups_system.sql 的所有迁移
 
 ## 当前系统状态
 
-- ✅ **组织权限管理**: 完整的部门级应用权限控制系统，简化权限设计
-- ✅ **多部门支持**: 用户可在同组织多个部门任职
+- ✅ **群组权限管理**: 简化的群组级应用权限控制系统，二元权限设计
 - ✅ **RLS安全策略**: 完全修复了所有权限问题和无限递归问题，系统稳定运行
 - ✅ **安全视图优化**: 修复security_definer视图警告，明确权限控制
 - ✅ **用户管理**: 使用函数方式替代了过时的管理员视图
 - ✅ **中间件权限**: 前端路由级别的管理员权限验证
-- ✅ **应用访问控制**: 基于权限的应用可见性管理，二元权限控制
+- ✅ **应用访问控制**: 基于群组的应用可见性管理，简化权限逻辑
 - ✅ **北信科SSO集成**: 完整的CAS 2.0单点登录系统，支持统一认证
 - ✅ **学工号管理**: 支持北信科学工号字段和身份验证，类型定义完整
 - ✅ **SSO用户管理**: 自动创建SSO用户账户，安全的身份映射
@@ -23,6 +22,7 @@
 - ✅ **动态SSO配置管理**: 扩展SSO提供商表，支持UI配置、协议模板和统一配置结构
 - ✅ **SSO协议模板系统**: 使用TypeScript配置文件管理SSO协议模板，提升类型安全性和开发体验
 - ✅ **头像存储系统**: 完整的Supabase Storage头像上传功能，支持公共访问和安全的权限控制
+- ✅ **架构简化**: 从复杂的组织+部门架构迁移到简单的群组权限系统
 
 ## 数据库概述
 
@@ -81,7 +81,7 @@
 ### 对话和消息管理
 
 1. `conversations` 表：
-   - 主要字段：`id`, `org_id`, `user_id`, `ai_config_id`, `title`, `summary`, `settings`, `created_at`, `updated_at`, `status`
+   - 主要字段：`id`, `user_id`, `ai_config_id`, `title`, `summary`, `settings`, `created_at`, `updated_at`, `status`
    - Dify 集成字段：`external_id`, `app_id`, `last_message_preview`, `metadata`
    - `metadata` 字段 (JSONB 类型)：存储对话的额外元数据，如是否置顶、标签、归档状态、最后活跃时间等。示例：`{"pinned":true,"tags":["重要"],"archived":false,"last_active_at":"2024-05-22T12:00:00Z"}`。该字段支持灵活扩展，便于前端自定义对话属性。
    - `last_message_preview` 字段：用于在侧边栏等位置展示对话的最后一条消息摘要。20250522193000 迁移后，该字段格式已调整为 JSONB，包含 `content`（消息内容预览）、`role`（消息角色）、`created_at`（消息时间）等。例如：`{"content":"你好，有什么可以帮您？","role":"assistant","created_at":"2024-05-22T19:30:00Z"}`。这样便于前端直接渲染不同角色和时间的消息预览。
@@ -206,137 +206,81 @@ CREATE POLICY "管理员可以查看所有执行记录" ON app_executions
    - 存储特定服务提供商的实例配置
    - `provider_id` 和 `instance_id` 组合具有唯一性约束
    - **默认应用唯一性约束**：通过部分唯一索引确保每个提供商最多只能有一个默认应用（`is_default = TRUE`）
-   - `visibility` 字段：应用可见性控制（'public', 'org_only', 'private'），默认为 'public'
+   - `visibility` 字段：应用可见性控制（'public', 'group_only', 'private'），默认为 'public'
 
 3. `api_keys` 表：
    - 主要字段：`id`, `provider_id`, `service_instance_id`, `user_id`, `key_value`, `is_default`, `usage_count`, `last_used_at`, `created_at`, `updated_at`
    - 存储用于访问外部 API 的密钥
 
-### 组织和成员管理
+### 群组和成员管理
 
-1. `organizations` 表：
-   - 主要字段：`id`, `name`, `logo_url`, `settings`, `created_at`, `updated_at`
+1. `groups` 表：
+   - 主要字段：`id`, `name`, `description`, `created_by`, `created_at`, `updated_at`
+   - 简化的群组管理，支持基础的群组信息和创建者跟踪
 
-2. `org_members` 表：
-   - 主要字段：`id`, `org_id`, `user_id`, `role`, `department`, `job_title`, `created_at`, `updated_at`
-   - `role` 字段可能的值为 `'owner'`, `'admin'` 或 `'member'`
-   - `department` 字段：部门名称，用于部门级权限控制
-   - `job_title` 字段：职位名称
+2. `group_members` 表：
+   - 主要字段：`id`, `user_id`, `group_id`, `role`, `joined_at`
+   - `role` 字段可能的值为 `'admin'` 或 `'member'`
+   - 简化的群组成员关系，移除复杂的部门概念
 
-### 部门应用权限管理
+### 群组应用权限管理
 
-**`department_app_permissions` 表** - 实现部门级应用访问权限控制：
-
-**⚠️ 重要说明：此表不包含任何自动生成的虚拟数据，所有权限记录都必须通过管理界面手动配置。**
+**`group_app_permissions` 表** - 实现群组级应用访问权限控制：
 
 #### 表结构设计
 
 1. **权限控制字段**：
    - `id`: 主键，UUID 类型
-   - `org_id`: 组织ID，关联 organizations 表
-   - `department`: 部门名称，与 org_members.department 对应
-   - `service_instance_id`: 服务实例ID，关联 service_instances 表
-   - `is_enabled`: 是否启用权限，布尔类型
-
-2. **权限级别和配额**：
-   - `permission_level`: 权限级别枚举（'full', 'read_only', 'restricted'）
-   - `usage_quota`: 月度使用配额，NULL 表示无限制
-   - `used_count`: 当月已使用次数
-   - `quota_reset_date`: 配额重置日期
-
-3. **扩展和时间戳**：
-   - `settings`: 扩展配置，JSONB 格式
-   - `created_at`, `updated_at`: 时间戳字段
-
-#### 权限配置原则
-
-1. **手动配置原则**：
-   - 所有权限记录必须通过管理界面手动创建
-   - 系统不会自动为组织×部门×应用的组合创建权限记录
-   - 确保权限控制的精确性和安全性
-
-2. **默认拒绝策略**：
-   - 如果部门没有权限记录，则无法访问 `org_only` 类型的应用
-   - 只有 `public` 应用对所有用户可见
-   - 管理员需要明确授权部门访问特定应用
-
-3. **数据清理保证**：
-   - 迁移文件 `20250610140000_clean_virtual_department_permissions.sql` 已清空所有虚拟数据
-   - 修改了同步函数，移除自动创建权限的逻辑
-   - 确保数据库中只包含真实的权限配置
+   - `group_id`: 群组ID，关联 groups 表
+   - `app_id`: 应用ID，关联 service_instances 表
+   - `granted_at`: 权限授予时间
 
 #### 权限控制机制
 
-1. **三元组权限控制**：
-   - 基于 `(org_id + department + service_instance_id)` 的精确权限控制
-   - 唯一约束确保一个部门对一个应用只有一条权限记录
+1. **简化权限控制**：
+   - 基于 `(group_id + app_id)` 的二元权限控制
+   - 唯一约束确保一个群组对一个应用只有一条权限记录
 
 2. **应用可见性管理**：
    - `public`: 公开应用，所有用户可见
-   - `org_only`: 组织应用，只有被授权的部门成员可见
-   - `private`: 私有应用，预留给未来扩展
-
-3. **权限级别说明**：
-   - `full`: 完全访问权限
-   - `read_only`: 只读权限
-   - `restricted`: 受限权限
+   - `group_only`: 群组应用，只有群组成员可见
+   - `private`: 私有应用，只有管理员可见
 
 #### 核心数据库函数
 
 1. **`get_user_accessible_apps(user_id UUID)`**：
    - 获取用户可访问的应用列表
-   - 基于用户所属部门的权限配置
+   - 基于用户所属群组的权限配置
    - 支持应用可见性过滤
 
-2. **`check_user_app_permission(user_id UUID, app_instance_id TEXT)`**：
+2. **`check_user_app_permission(user_id UUID, app_id UUID)`**：
    - 检查用户对特定应用的访问权限
-   - 返回权限状态、级别和剩余配额
-   - 支持配额限制检查
+   - 简化的权限检查逻辑
 
-3. **`increment_app_usage(user_id UUID, app_instance_id TEXT)`**：
+3. **`increment_app_usage(user_id UUID, app_id UUID, increment_value INTEGER)`**：
    - 增加应用使用计数
-   - 支持配额管理和限制检查
-   - 自动更新部门使用统计
-
-4. **`reset_monthly_quotas()`**：
-   - 重置所有部门的月度使用配额
-   - 支持定期配额重置
-
-#### 索引优化
-
-```sql
--- 部门查询优化
-CREATE INDEX idx_dept_app_permissions_org_dept ON department_app_permissions(org_id, department);
-
--- 应用查询优化
-CREATE INDEX idx_dept_app_permissions_service_instance_id ON department_app_permissions(service_instance_id);
-
--- 权限过滤优化
-CREATE INDEX idx_dept_app_permissions_enabled ON department_app_permissions(org_id, department, is_enabled);
-```
+   - 简化的使用统计
 
 #### 行级安全策略
 
 ```sql
--- 用户可以查看自己部门的应用权限
-CREATE POLICY "用户可以查看自己部门的应用权限" ON department_app_permissions
+-- 用户可以查看自己群组的应用权限
+CREATE POLICY "用户可以查看自己群组的应用权限" ON group_app_permissions
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM org_members
-      WHERE org_members.org_id = department_app_permissions.org_id
-      AND org_members.department = department_app_permissions.department
-      AND org_members.user_id = auth.uid()
+      SELECT 1 FROM group_members
+      WHERE group_members.group_id = group_app_permissions.group_id
+      AND group_members.user_id = auth.uid()
     )
   );
 
--- 组织管理员可以管理所有部门的应用权限
-CREATE POLICY "组织管理员可以管理部门应用权限" ON department_app_permissions
+-- 管理员可以管理所有群组的应用权限
+CREATE POLICY "管理员可以管理群组应用权限" ON group_app_permissions
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM org_members
-      WHERE org_members.org_id = department_app_permissions.org_id
-      AND org_members.user_id = auth.uid()
-      AND org_members.role IN ('owner', 'admin')
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'admin'
     )
   );
 ```
@@ -858,6 +802,33 @@ if (!isAdmin) return <AccessDenied />;
   - **简化系统架构**：移除数据库表依赖，减少系统复杂度，提升维护效率
   - **开发体验优化**：配置修改无需数据库迁移，支持版本控制和代码审查
   - **安全迁移**：包含完整的存在性检查和清理验证，确保迁移过程安全可靠
+
+### 2025-06-30 架构简化 - 群组权限系统迁移
+
+- `/supabase/migrations/20250630021741_migrate_to_groups_system.sql`: 从复杂的组织+部门架构迁移到简化的群组权限系统
+
+  **架构重构特性：**
+  - **删除复杂架构**：移除 organizations、org_members、department_app_permissions 表和相关枚举
+  - **创建群组系统**：新增 groups、group_members、group_app_permissions 三个核心表
+  - **权限简化**：从三层权限(系统-组织-部门)简化为二层权限(系统-群组)
+  - **可见性更新**：service_instances.visibility 从 'org_only' 改为 'group_only'
+  - **函数重构**：更新权限检查函数，简化权限逻辑
+  - **RLS策略重建**：为新的群组表创建行级安全策略
+  - **管理员控制**：群组功能仅对管理员开放，普通用户不可见
+  - **数据安全**：完整的事务控制，确保迁移过程数据一致性
+
+  **权限模型对比：**
+
+  ```
+  旧架构: public | org_only(组织+部门) | private
+  新架构: public | group_only(群组成员) | private(管理员)
+  ```
+
+  **迁移影响：**
+  - 数据库层：完全重构权限表结构
+  - 后端服务：更新权限检查逻辑
+  - 前端组件：简化权限管理界面
+  - 用户体验：更直观的群组权限概念
 
 ### 2025-06-24 RLS安全增强 - API表行级安全策略检查
 

@@ -684,7 +684,6 @@
       "profileSettings": {
         "title": "Perfil",
         "accountInfo": "Información de Cuenta",
-        "organization": "Organización",
         "registrationTime": "Tiempo de Registro",
         "accountRole": "Rol de Cuenta",
         "lastLogin": "Último Inicio de Sesión",
@@ -705,7 +704,7 @@
         "status": {
           "notRecorded": "No registrado",
           "notSet": "No establecido",
-          "noOrganization": "Sin organización"
+          "noOrganization": "Sin grupo"
         },
         "loadProfileError": "Error al cargar perfil",
         "avatar": {
@@ -795,7 +794,6 @@
     "admin": {
       "title": "Panel de Administración",
       "users": "Gestión de Usuarios",
-      "organizations": "Gestión de Organizaciones",
       "analytics": "Analíticas"
     },
     "about": {
@@ -851,7 +849,7 @@
       "settings": "Configuración",
       "about": "Acerca de",
       "admin": "Panel de Administración",
-      "noOrganization": "Sin organización",
+      "noOrganization": "Sin grupo",
       "loginPrompt": "Inicia sesión para acceder a más funciones",
       "loginDescription": "Accede a tu historial de chat y configuración personal"
     },
@@ -931,7 +929,7 @@
     "user": {
       "defaultUser": "Usuario",
       "loginRegister": "Iniciar Sesión/Registrarse",
-      "noOrganization": "Sin organización",
+      "noOrganization": "Sin grupo",
       "avatarAlt": "Avatar de {userName}",
       "loginPrompt": "Inicia sesión para acceder a más funciones"
     },
@@ -972,7 +970,6 @@
     "admin": {
       "main": "Panel de Administración",
       "users": "Gestión de Usuarios",
-      "organizations": "Gestión de Organizaciones",
       "apiConfig": "Configuración de API",
       "security": "Configuración de Seguridad",
       "analytics": "Análisis de Datos",
