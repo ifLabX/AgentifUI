@@ -31,7 +31,7 @@ VALUES
 INSERT INTO domain_sso_mappings (domain, sso_provider_id, enabled)
 VALUES
   ('example.com', '00000000-0000-0000-0000-000000000002', true),
-  ('google.com', '00000000-0000-0000-0000-000000000003', true);
+  ('google.com', '00000000-0000-0000-0000-000000000003', true); 
 
 -- --- BEGIN COMMENT ---
 -- 示例群组数据（可选，实际部署时可以删除）

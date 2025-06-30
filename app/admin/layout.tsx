@@ -94,6 +94,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/admin/groups',
       description: '管理用户和群组，配置群组应用权限',
     },
+    {
+      text: '应用权限管理',
+      icon: ShieldCheck,
+      href: '/admin/permissions',
+      description: '管理应用可见性和群组权限',
+    },
   ];
 
   // --- BEGIN COMMENT ---

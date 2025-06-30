@@ -2,7 +2,14 @@
 
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
-import { ArrowRight, Bell, Building2, Key, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  Bell,
+  Building2,
+  Key,
+  ShieldCheck,
+  Users,
+} from 'lucide-react';
 
 import React from 'react';
 
@@ -105,6 +112,12 @@ export default function AdminPage() {
       description: '管理用户和群组，配置群组应用权限',
       icon: Building2,
       href: '/admin/groups',
+    },
+    {
+      title: '应用权限管理',
+      description: '管理应用可见性和群组权限',
+      icon: ShieldCheck,
+      href: '/admin/permissions',
     },
   ];
 

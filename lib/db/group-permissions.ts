@@ -345,30 +345,63 @@ export async function setGroupAppPermission(
   try {
     const supabase = createClient();
 
-    const { data: permission, error } = await supabase
-      .from('group_app_permissions')
-      .upsert([
-        {
-          group_id: groupId,
-          service_instance_id: serviceInstanceId,
-          is_enabled: data.is_enabled,
-          usage_quota: data.usage_quota || null,
-        },
-      ])
-      .select(
+    // --- BEGIN COMMENT ---
+    // 🎯 权限设置逻辑优化
+    // enabled=true: 插入/更新记录
+    // enabled=false: 删除记录（避免唯一约束冲突）
+    // --- END COMMENT ---
+
+    if (data.is_enabled) {
+      // 启用权限：插入或更新记录
+      const { data: permission, error } = await supabase
+        .from('group_app_permissions')
+        .upsert([
+          {
+            group_id: groupId,
+            service_instance_id: serviceInstanceId,
+            is_enabled: true,
+            usage_quota: data.usage_quota || null,
+          },
+        ])
+        .select(
+          `
+          *,
+          app:service_instances(id, display_name, instance_id, visibility)
         `
-        *,
-        app:service_instances(id, display_name, instance_id, visibility)
-      `
-      )
-      .single();
+        )
+        .single();
 
-    if (error) {
-      console.error('设置群组应用权限失败:', error);
-      return failure(new Error(error.message));
+      if (error) {
+        console.error('设置群组应用权限失败:', error);
+        return failure(new Error(error.message));
+      }
+
+      return success(permission);
+    } else {
+      // 禁用权限：删除记录
+      const { error } = await supabase
+        .from('group_app_permissions')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('service_instance_id', serviceInstanceId);
+
+      if (error) {
+        console.error('删除群组应用权限失败:', error);
+        return failure(new Error(error.message));
+      }
+
+      // 返回一个虚拟的禁用状态记录，用于保持接口一致性
+      return success({
+        id: '',
+        group_id: groupId,
+        service_instance_id: serviceInstanceId,
+        is_enabled: false,
+        usage_quota: null,
+        used_count: 0,
+        created_at: new Date().toISOString(),
+        app: undefined,
+      } as GroupAppPermission);
     }
-
-    return success(permission);
   } catch (error) {
     console.error('设置群组应用权限异常:', error);
     return failure(new Error('设置群组应用权限失败'));
@@ -400,6 +433,33 @@ export async function removeGroupAppPermission(
   } catch (error) {
     console.error('删除群组应用权限异常:', error);
     return failure(new Error('删除群组应用权限失败'));
+  }
+}
+
+/**
+ * 删除指定应用的所有组权限记录（仅管理员）
+ * 用于权限切换时清理孤儿记录
+ */
+export async function removeAllGroupAppPermissions(
+  serviceInstanceId: string
+): Promise<Result<void>> {
+  try {
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('group_app_permissions')
+      .delete()
+      .eq('service_instance_id', serviceInstanceId);
+
+    if (error) {
+      console.error('删除应用的所有组权限失败:', error);
+      return failure(new Error(error.message));
+    }
+
+    return success(undefined);
+  } catch (error) {
+    console.error('删除应用的所有组权限异常:', error);
+    return failure(new Error('删除应用的所有组权限失败'));
   }
 }
 
