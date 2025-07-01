@@ -7,6 +7,10 @@ import {
   MarkdownTableContainer,
 } from '@components/chat/markdown-block';
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper';
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import 'katex/dist/katex.min.css';
@@ -37,6 +41,7 @@ export function TextGenerationResultViewer({
   onClose,
 }: TextGenerationResultViewerProps) {
   const { isDark } = useTheme();
+  const { formatDate } = useDateFormatter();
   const [isVisible, setIsVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -411,8 +416,9 @@ export function TextGenerationResultViewer({
                             isDark ? 'text-stone-400' : 'text-stone-600'
                           )}
                         >
-                          {new Date(execution.created_at).toLocaleString(
-                            'zh-CN'
+                          {formatDate(
+                            execution.created_at,
+                            DateFormatPresets.dateTime
                           )}
                         </span>
                       </div>

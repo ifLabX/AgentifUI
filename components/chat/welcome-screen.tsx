@@ -3,38 +3,25 @@
 import { TypeWriter } from '@components/ui/typewriter';
 import { useTheme } from '@lib/hooks';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
+import { useDateFormatter } from '@lib/hooks/use-date-formatter';
 import { useWelcomeLayout } from '@lib/hooks/use-welcome-layout';
 import { useTypewriterStore } from '@lib/stores/ui/typewriter-store';
 import { cn } from '@lib/utils';
 
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useTranslations } from 'next-intl';
-
 interface WelcomeScreenProps {
   className?: string;
   username?: string | null;
 }
 
-// 根据用户本地时间获取问候语
-const getTimeBasedGreeting = (t: (key: string) => string) => {
-  const now = new Date();
-  const hour = now.getHours();
-
-  if (hour >= 6 && hour < 12) {
-    return t('greeting.morning');
-  } else if (hour >= 12 && hour < 18) {
-    return t('greeting.afternoon');
-  } else if (hour >= 18 && hour < 22) {
-    return t('greeting.evening');
-  } else {
-    return t('greeting.night');
-  }
-};
-
 export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
   const { isDark } = useTheme();
-  const t = useTranslations('pages.chat');
+
+  // --- BEGIN COMMENT ---
+  // 🎯 使用统一的时间格式化Hook，替代重复的问候语逻辑
+  // --- END COMMENT ---
+  const { getTimeBasedGreeting } = useDateFormatter();
   const [finalText, setFinalText] = useState('');
   // --- BEGIN COMMENT ---
   // 🎯 新增：TypeWriter重置键，确保应用切换时能够重新打字
@@ -192,13 +179,13 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
         // --- BEGIN COMMENT ---
         // 情况2：没有开场白但有用户名 → 个性化时间问候
         // --- END COMMENT ---
-        welcomeText = `${getTimeBasedGreeting(t)}，${username}`;
+        welcomeText = getTimeBasedGreeting({ includeUsername: true, username });
         console.log('[WelcomeScreen] 使用用户名问候:', welcomeText);
       } else {
         // --- BEGIN COMMENT ---
         // 情况3：没有用户名 → 默认时间问候
         // --- END COMMENT ---
-        welcomeText = getTimeBasedGreeting(t);
+        welcomeText = getTimeBasedGreeting();
         console.log('[WelcomeScreen] 使用默认问候:', welcomeText);
       }
 
@@ -220,7 +207,7 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
     isValidating, // 🚨 修复：重新监听验证状态
     isLoading, // 🚨 修复：重新监听加载状态
     resetWelcomeTypewriter,
-    t,
+    getTimeBasedGreeting,
   ]);
 
   // --- BEGIN COMMENT ---

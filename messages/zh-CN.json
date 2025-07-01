@@ -14,6 +14,18 @@
         "cancel": "取消",
         "loggingOut": "退出中..."
       }
+    },
+    "time": {
+      "notRecorded": "未记录",
+      "invalidDate": "无效日期",
+      "formatError": "格式化错误",
+      "greeting": {
+        "morning": "早上好",
+        "afternoon": "下午好",
+        "evening": "晚上好",
+        "night": "夜深了",
+        "default": "您好"
+      }
     }
   },
   "pages": {
@@ -48,12 +60,6 @@
       "inputPlaceholder": "输入您的消息...",
       "noMessages": "还没有消息",
       "typing": "正在输入...",
-      "greeting": {
-        "morning": "早上好",
-        "afternoon": "下午好",
-        "evening": "晚上好",
-        "night": "夜深了"
-      },
       "recentChats": "近期对话",
       "historyChats": "历史对话",
       "input": {

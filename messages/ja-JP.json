@@ -14,6 +14,18 @@
         "cancel": "キャンセル",
         "loggingOut": "ログアウト中..."
       }
+    },
+    "time": {
+      "notRecorded": "記録なし",
+      "invalidDate": "無効な日付",
+      "formatError": "フォーマットエラー",
+      "greeting": {
+        "morning": "おはようございます",
+        "afternoon": "こんにちは",
+        "evening": "こんばんは",
+        "night": "遅い時間ですね",
+        "default": "こんにちは"
+      }
     }
   },
   "pages": {
@@ -48,12 +60,6 @@
       "inputPlaceholder": "メッセージを入力...",
       "noMessages": "まだメッセージがありません",
       "typing": "入力中...",
-      "greeting": {
-        "morning": "おはようございます",
-        "afternoon": "こんにちは",
-        "evening": "こんばんは",
-        "night": "遅い時間ですね"
-      },
       "recentChats": "最近のチャット",
       "historyChats": "チャット履歴",
       "input": {

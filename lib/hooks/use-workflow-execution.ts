@@ -6,6 +6,8 @@ import type { AppExecution, ExecutionStatus } from '@lib/types/database';
 
 import { useCallback, useEffect, useRef } from 'react';
 
+import { useDateFormatter } from './use-date-formatter';
+
 /**
  * 工作流执行Hook - 万无一失的数据保存版本
  *
@@ -18,6 +20,7 @@ import { useCallback, useEffect, useRef } from 'react';
 export function useWorkflowExecution(instanceId: string) {
   const { profile } = useProfile();
   const userId = profile?.id;
+  const { formatDate } = useDateFormatter();
 
   // --- BEGIN COMMENT ---
   // 添加常用应用管理hook
@@ -246,7 +249,7 @@ export function useWorkflowExecution(instanceId: string) {
           execution_type: 'workflow',
           external_execution_id: null,
           task_id: null,
-          title: `工作流执行 - ${new Date().toLocaleString()}`,
+          title: createTitle(),
           inputs: formData,
           outputs: null,
           status: 'pending',
@@ -471,7 +474,14 @@ export function useWorkflowExecution(instanceId: string) {
         }
       }
     },
-    [instanceId, userId, getActions, saveCompleteExecutionData, addToFavorites]
+    [
+      instanceId,
+      userId,
+      getActions,
+      saveCompleteExecutionData,
+      addToFavorites,
+      formatDate,
+    ]
   );
 
   /**
@@ -689,6 +699,9 @@ export function useWorkflowExecution(instanceId: string) {
       loadWorkflowHistory();
     }
   }, [userId, instanceId, loadWorkflowHistory]);
+
+  const createTitle = () =>
+    `工作流执行 - ${formatDate(new Date(), { includeTime: true, style: 'medium' })}`;
 
   return {
     // --- 状态 ---

@@ -3,6 +3,10 @@
 import { ConfirmDialog, InputDialog } from '@components/ui';
 import { DropdownMenu } from '@components/ui/dropdown-menu';
 import { conversationEvents } from '@lib/hooks/use-combined-conversations';
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { Conversation } from '@lib/types/database';
@@ -59,6 +63,7 @@ export function HistoryList({
   const { isDark } = useTheme();
   const t = useTranslations('history');
   const format = useFormatter();
+  const { formatDate } = useDateFormatter();
 
   // --- BEGIN COMMENT ---
   // Dialog状态管理
@@ -149,30 +154,6 @@ export function HistoryList({
   };
 
   // --- BEGIN COMMENT ---
-  // 格式化日期显示
-  // 使用next-intl的useFormatter钩子，实现真正的国际化日期格式化
-  // 自动根据当前语言环境选择合适的格式，无需硬编码
-  // --- END COMMENT ---
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-
-    try {
-      const date = new Date(dateString);
-      // 使用next-intl的dateTime格式化，会根据当前locale自动选择合适的格式
-      return format.dateTime(date, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch (error) {
-      console.warn('日期格式化失败:', error);
-      return dateString;
-    }
-  };
-
-  // --- BEGIN COMMENT ---
   // 处理对话项点击，包含标题设置逻辑
   // --- END COMMENT ---
   const handleConversationItemClick = (conversation: Conversation) => {
@@ -192,7 +173,7 @@ export function HistoryList({
     const title = conversation.title || t('newChat');
     const preview = conversation.last_message_preview || t('noMessagePreview');
     const date = conversation.updated_at
-      ? formatDate(conversation.updated_at)
+      ? formatDate(conversation.updated_at, DateFormatPresets.dateTime)
       : '';
     const conversationId = conversation.id;
     const isSelected = conversationId

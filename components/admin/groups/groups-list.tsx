@@ -1,6 +1,10 @@
 'use client';
 
 import type { Group } from '@lib/db/group-permissions';
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useGroupManagementStore } from '@lib/stores/group-management-store';
 import { cn } from '@lib/utils';
@@ -33,6 +37,7 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
   const [viewingMembersGroup, setViewingMembersGroup] = useState<Group | null>(
     null
   );
+  const { formatDate } = useDateFormatter();
 
   const handleDeleteGroup = async (group: Group) => {
     if (window.confirm(`确定要删除群组"${group.name}"吗？此操作不可撤销。`)) {
@@ -45,14 +50,6 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
 
   const handleViewMembers = (group: Group) => {
     setViewingMembersGroup(group);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
   };
 
   if (isLoading) {
@@ -295,7 +292,10 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
                         isDark ? 'text-stone-400' : 'text-stone-500'
                       )}
                     >
-                      {formatDate(group.created_at)}
+                      {formatDate(
+                        group.created_at,
+                        DateFormatPresets.shortDate
+                      )}
                     </span>
                   </div>
                 </div>

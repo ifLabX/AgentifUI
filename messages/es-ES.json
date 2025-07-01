@@ -14,6 +14,18 @@
         "cancel": "Cancelar",
         "loggingOut": "Cerrando sesión..."
       }
+    },
+    "time": {
+      "notRecorded": "No registrado",
+      "invalidDate": "Fecha inválida",
+      "formatError": "Error de formato",
+      "greeting": {
+        "morning": "Buenos días",
+        "afternoon": "Buenas tardes",
+        "evening": "Buenas tardes",
+        "night": "Se está haciendo tarde",
+        "default": "Hola"
+      }
     }
   },
   "pages": {
@@ -48,12 +60,6 @@
       "inputPlaceholder": "Escribe tu mensaje...",
       "noMessages": "Aún no hay mensajes",
       "typing": "Escribiendo...",
-      "greeting": {
-        "morning": "Buenos días",
-        "afternoon": "Buenas tardes",
-        "evening": "Buenas tardes",
-        "night": "Se está haciendo tarde"
-      },
       "recentChats": "Chats Recientes",
       "historyChats": "Historial de Chat",
       "input": {

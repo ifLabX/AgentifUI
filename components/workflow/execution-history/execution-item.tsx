@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
@@ -39,6 +43,7 @@ export function ExecutionItem({
   const { isDark } = useTheme();
   const { colors } = useThemeColors();
   const t = useTranslations('pages.workflow.status');
+  const { formatDate } = useDateFormatter();
 
   const getStatusIcon = () => {
     switch (execution.status) {
@@ -85,16 +90,6 @@ export function ExecutionItem({
       default:
         return t('unknown');
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('zh-CN', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   return (
@@ -152,7 +147,7 @@ export function ExecutionItem({
           {/* 时间和耗时 */}
           <div className="flex items-center gap-3 font-serif text-xs">
             <span className={cn(isDark ? 'text-stone-500' : 'text-stone-500')}>
-              {formatDate(execution.created_at)}
+              {formatDate(execution.created_at, DateFormatPresets.dateTime)}
             </span>
 
             {execution.elapsed_time && (

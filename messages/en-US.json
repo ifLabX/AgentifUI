@@ -14,6 +14,18 @@
         "cancel": "Cancel",
         "loggingOut": "Logging out..."
       }
+    },
+    "time": {
+      "notRecorded": "Not recorded",
+      "invalidDate": "Invalid date",
+      "formatError": "Format error",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening",
+        "night": "It's getting late",
+        "default": "Hello"
+      }
     }
   },
   "pages": {
@@ -48,12 +60,6 @@
       "inputPlaceholder": "Type your message...",
       "noMessages": "No messages yet",
       "typing": "Typing...",
-      "greeting": {
-        "morning": "Good morning",
-        "afternoon": "Good afternoon",
-        "evening": "Good evening",
-        "night": "It's getting late"
-      },
       "recentChats": "Recent Chats",
       "historyChats": "Chat History",
       "input": {

@@ -3,6 +3,10 @@
 import { UserAvatar } from '@components/ui';
 import { Dropdown } from '@components/ui/dropdown';
 import type { EnhancedUser } from '@lib/db/users';
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
@@ -56,6 +60,7 @@ export const UserTable: React.FC<UserTableProps> = ({
 }) => {
   const { isDark } = useTheme();
   const { profile: currentUserProfile } = useProfile(); // 获取当前用户信息
+  const { formatDate } = useDateFormatter();
 
   // --- BEGIN COMMENT ---
   // 检查是否可以更改用户角色（防止管理员降级其他管理员）
@@ -196,20 +201,6 @@ export const UserTable: React.FC<UserTableProps> = ({
         : 'bg-stone-100 text-stone-700 border-stone-300',
     };
     return variantMap[variant];
-  };
-
-  // --- BEGIN COMMENT ---
-  // 格式化日期
-  // --- END COMMENT ---
-  const formatDate = (dateString?: string | null) => {
-    if (!dateString) return '从未';
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   // --- BEGIN COMMENT ---
@@ -614,9 +605,15 @@ export const UserTable: React.FC<UserTableProps> = ({
                         'truncate font-serif text-sm',
                         isDark ? 'text-stone-300' : 'text-stone-700'
                       )}
-                      title={formatDate(user.last_sign_in_at)}
+                      title={formatDate(
+                        user.last_sign_in_at,
+                        DateFormatPresets.dateTime
+                      )}
                     >
-                      {formatDate(user.last_sign_in_at)}
+                      {formatDate(
+                        user.last_sign_in_at,
+                        DateFormatPresets.dateTime
+                      )}
                     </p>
                   </td>
 
@@ -629,9 +626,12 @@ export const UserTable: React.FC<UserTableProps> = ({
                         'truncate font-serif text-sm',
                         isDark ? 'text-stone-300' : 'text-stone-700'
                       )}
-                      title={formatDate(user.created_at)}
+                      title={formatDate(
+                        user.created_at,
+                        DateFormatPresets.dateTime
+                      )}
                     >
-                      {formatDate(user.created_at)}
+                      {formatDate(user.created_at, DateFormatPresets.dateTime)}
                     </p>
                   </td>
 

@@ -2,6 +2,10 @@
 
 import { UserAvatar } from '@components/ui';
 import { updateUserProfile } from '@lib/db/profiles';
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { Profile as ExtendedProfile } from '@lib/hooks/use-profile';
 import { updateProfileCache } from '@lib/hooks/use-profile';
 import { useProfile } from '@lib/hooks/use-profile';
@@ -45,6 +49,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
   const t = useTranslations('pages.settings.profileSettings');
   const format = useFormatter();
   const { mutate: refreshProfile } = useProfile(); // 添加刷新profile的功能
+  const { formatDate } = useDateFormatter();
 
   // --- BEGIN COMMENT ---
   // 检查是否为SSO单点登录模式
@@ -168,27 +173,6 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  // --- BEGIN COMMENT ---
-  // 格式化日期显示
-  // 使用next-intl的useFormatter钩子，实现真正的国际化日期格式化
-  // 自动根据当前语言环境选择合适的格式，无需硬编码
-  // --- END COMMENT ---
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return t('status.notRecorded');
-
-    try {
-      const date = new Date(dateString);
-      // 使用next-intl的dateTime格式化，会根据当前locale自动选择合适的格式
-      return format.dateTime(date, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch (error) {
-      return t('status.notRecorded');
     }
   };
 
@@ -329,7 +313,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               <p
                 className={cn('font-serif text-sm', colors.textColor.tailwind)}
               >
-                {formatDate(profile.created_at)}
+                {formatDate(profile.created_at, DateFormatPresets.mediumDate)}
               </p>
             </div>
           </div>
@@ -351,7 +335,10 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                 className={cn('font-serif text-sm', colors.textColor.tailwind)}
               >
                 {profile.auth_last_sign_in_at
-                  ? formatDate(profile.auth_last_sign_in_at)
+                  ? formatDate(
+                      profile.auth_last_sign_in_at,
+                      DateFormatPresets.dateTime
+                    )
                   : t('status.notRecorded')}
               </p>
             </div>

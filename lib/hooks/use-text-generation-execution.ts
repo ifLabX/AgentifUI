@@ -6,6 +6,8 @@ import type { AppExecution, ExecutionStatus } from '@lib/types/database';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useDateFormatter } from './use-date-formatter';
+
 /**
  * 文本生成执行Hook - 复用workflow架构
  *
@@ -18,6 +20,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export function useTextGenerationExecution(instanceId: string) {
   const { profile } = useProfile();
   const userId = profile?.id;
+  const { formatDate } = useDateFormatter();
 
   // --- 添加常用应用管理hook ---
   const { addToFavorites } = useAutoAddFavoriteApp();
@@ -216,7 +219,7 @@ export function useTextGenerationExecution(instanceId: string) {
           execution_type: 'text-generation',
           external_execution_id: null,
           task_id: null,
-          title: `文本生成 - ${new Date().toLocaleString()}`,
+          title: createTitle(),
           inputs: formData,
           outputs: null,
           status: 'pending',
@@ -399,6 +402,7 @@ export function useTextGenerationExecution(instanceId: string) {
       saveCompleteGenerationData,
       addToFavorites,
       currentExecution,
+      formatDate,
     ]
   );
 
@@ -638,6 +642,9 @@ export function useTextGenerationExecution(instanceId: string) {
   useEffect(() => {
     loadTextGenerationHistory();
   }, [loadTextGenerationHistory]);
+
+  const createTitle = () =>
+    `文本生成 - ${formatDate(new Date(), { includeTime: true, style: 'medium' })}`;
 
   return {
     // 状态

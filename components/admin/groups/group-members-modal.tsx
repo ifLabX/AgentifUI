@@ -6,6 +6,10 @@ import type {
   SearchableUser,
 } from '@lib/db/group-permissions';
 import { searchUsersForGroup } from '@lib/db/group-permissions';
+import {
+  DateFormatPresets,
+  useDateFormatter,
+} from '@lib/hooks/use-date-formatter';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useGroupManagementStore } from '@lib/stores/group-management-store';
 import { cn } from '@lib/utils';
@@ -39,6 +43,7 @@ export function GroupMembersModal({
   const { isDark } = useTheme();
   const { groupMembers, loading, loadGroupMembers, addMember, removeMember } =
     useGroupManagementStore();
+  const { formatDate } = useDateFormatter();
 
   const [showAddMember, setShowAddMember] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -82,16 +87,6 @@ export function GroupMembersModal({
         );
       }
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   if (!isOpen) return null;
@@ -325,7 +320,11 @@ export function GroupMembersModal({
                               isDark ? 'text-stone-500' : 'text-stone-500'
                             )}
                           >
-                            加入于 {formatDate(member.created_at)}
+                            加入于{' '}
+                            {formatDate(
+                              member.created_at,
+                              DateFormatPresets.dateTime
+                            )}
                           </span>
                         </div>
                       </div>
