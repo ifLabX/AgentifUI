@@ -30,22 +30,22 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "探索AI的無限可能，打造智慧新體驗",
+      "title": "BistuCopilot",
+      "subtitle": "北京資訊科技大學智慧代理應用平台",
       "getStarted": "立即開始",
       "learnMore": "了解更多",
       "features": {
         "feature1": {
-          "title": "大模型整合",
-          "description": "支援多種模型供應商，包括OpenAI、Anthropic、Dify等，滿足不同企業需求"
+          "title": "多模型支援",
+          "description": "相容多種主流大語言模型，支援API接入與本地化部署，滿足不同算力與使用場景需求。"
         },
         "feature2": {
-          "title": "RAG知識增強",
-          "description": "整合檢索增強生成(RAG)技術，實現私有知識庫和上下文感知"
+          "title": "能力融合平台",
+          "description": "整合問答、資料分析、應用互動等能力，建構統一的智慧服務框架，支援外掛與工作流程擴充。"
         },
         "feature3": {
-          "title": "企業級部署",
-          "description": "支援私有化部署，保障資料安全，基於Dify後端提供穩定可靠的服務"
+          "title": "校園場景最佳化",
+          "description": "聚焦學校師生需求，融合教學、科研與管理場景，提升教育數位化服務水準與智慧化體驗。"
         }
       },
       "copyright": {
@@ -535,7 +535,7 @@
       },
       "register": {
         "title": "註冊",
-        "subtitle": "加入 AgentifUI，開啟 AI 智慧之旅",
+        "subtitle": "加入 BistuCopilot，開啟 AI 智慧之旅",
         "nameLabel": "姓名",
         "usernameLabel": "暱稱",
         "usernameOptional": "(可選)",
@@ -568,7 +568,7 @@
         }
       },
       "phoneLoginPage": {
-        "title": "AgentifUI",
+        "title": "BistuCopilot",
         "subtitle": "智慧對話，觸手可及",
         "orSeparator": "或者",
         "emailLoginLink": "使用電子郵件密碼登入",
@@ -905,31 +905,31 @@
       "analytics": "資料分析"
     },
     "about": {
-      "title": "關於 AgentifUI",
-      "subtitle": "連接 AI 與企業，打造大模型應用新體驗",
+      "title": "關於 BistuCopilot",
+      "subtitle": "連接 AI 與學校，打造人工智慧應用新體驗",
       "loading": "載入中...",
       "mission": {
         "title": "我們的使命",
-        "description": "AgentifUI 致力於利用大型語言模型的力量，為企業提供創新的應用解決方案。我們整合了多種模型供應商的能力，並基於 Dify 後端提供穩定、可靠的服務，幫助組織充分利用 AI 技術的價值。"
+        "description": "BistuCopilot 利用人工智慧的力量，面向教學、科研與校園治理提供可落地、可持續的 AI 解決方案，讓師生在安全可控的本地環境裡即取即用生成式智慧服務，釋放創新活力、提升校園體驗。"
       },
       "values": {
         "title": "我們的價值觀",
         "items": {
           "innovation": {
             "title": "技術創新",
-            "description": "持續整合前沿的大模型技術，為企業提供領先的 AI 解決方案"
+            "description": "本地多模型快速迭代，零程式碼拖拽生成高質場景智慧應用。"
           },
           "security": {
             "title": "資料安全",
-            "description": "支援私有化部署和嚴格的資料保護措施，確保企業資料的安全與隱私"
+            "description": "信創棧校內部署，分級權限稽核全鏈路可溯，資料不出校園。"
           },
           "flexibility": {
             "title": "靈活客製",
-            "description": "提供高度可客製的解決方案，滿足不同行業和情境的特定需求"
+            "description": "外掛資料源可插拔，單機至叢集彈性擴容，覆蓋多場景需求。"
           },
           "knowledge": {
             "title": "知識增強",
-            "description": "透過 RAG 技術實現私有知識庫的整合，增強模型的上下文感知能力"
+            "description": "RAG混合檢索聚合校規課程與指南，回答上下文精準可追溯。"
           }
         }
       },
@@ -994,7 +994,7 @@
     }
   },
   "sidebar": {
-    "appName": "AgentifUI",
+    "appName": "BistuCopilot",
     "expand": "展開",
     "collapse": "收起",
     "newChat": "新對話",
@@ -1066,7 +1066,7 @@
     "spinner": "載入中"
   },
   "dynamicTitle": {
-    "base": "AgentifUI",
+    "base": "BistuCopilot",
     "settings": {
       "main": "設定",
       "profile": "個人資料",

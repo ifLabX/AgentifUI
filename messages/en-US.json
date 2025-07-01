@@ -30,22 +30,22 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "Explore the infinite possibilities of AI and create intelligent new experiences",
+      "title": "BistuCopilot",
+      "subtitle": "Beijing Information Science & Technology University Intelligent Agent Application Platform",
       "getStarted": "Get Started",
       "learnMore": "Learn More",
       "features": {
         "feature1": {
-          "title": "Large Model Integration",
-          "description": "Support for multiple model providers including OpenAI, Anthropic, Dify, etc., meeting different enterprise needs"
+          "title": "Multi-Model Support",
+          "description": "Compatible with various mainstream large language models, supporting API integration and local deployment to meet different computing power and usage scenario requirements."
         },
         "feature2": {
-          "title": "RAG Knowledge Enhancement",
-          "description": "Integrate Retrieval-Augmented Generation (RAG) technology to enable private knowledge bases and context awareness"
+          "title": "Capability Integration Platform",
+          "description": "Integrates Q&A, data analysis, application interaction and other capabilities to build a unified intelligent service framework, supporting plugin and workflow extensions."
         },
         "feature3": {
-          "title": "Enterprise Deployment",
-          "description": "Support for private deployment, ensuring data security, providing stable and reliable services based on Dify backend"
+          "title": "Campus Scenario Optimization",
+          "description": "Focuses on the needs of school teachers and students, integrating teaching, research and management scenarios to improve the level of educational digitalization services and intelligent experience."
         }
       },
       "copyright": {
@@ -535,7 +535,7 @@
       },
       "register": {
         "title": "Register",
-        "subtitle": "Join AgentifUI and start your AI journey",
+        "subtitle": "Join BistuCopilot and start your AI journey",
         "nameLabel": "Full Name",
         "usernameLabel": "Username",
         "usernameOptional": "(optional)",
@@ -568,7 +568,7 @@
         }
       },
       "phoneLoginPage": {
-        "title": "AgentifUI",
+        "title": "BistuCopilot",
         "subtitle": "Intelligent conversation at your fingertips",
         "orSeparator": "Or",
         "emailLoginLink": "Login with email and password",
@@ -905,31 +905,31 @@
       "analytics": "Analytics"
     },
     "about": {
-      "title": "About AgentifUI",
-      "subtitle": "Connecting AI with enterprises, creating new experiences with large language models",
+      "title": "About BistuCopilot",
+      "subtitle": "Connecting AI with schools, creating new experiences with artificial intelligence applications",
       "loading": "Loading...",
       "mission": {
         "title": "Our Mission",
-        "description": "AgentifUI is committed to leveraging the power of large language models to provide innovative application solutions for enterprises. We integrate capabilities from multiple model providers and provide stable, reliable services based on Dify backend, helping organizations fully utilize the value of AI technology."
+        "description": "BistuCopilot utilizes the power of artificial intelligence to provide implementable and sustainable AI solutions for teaching, research, and campus governance, allowing teachers and students to access and use generative intelligent services immediately in a secure and controllable local environment, unleashing innovation vitality and enhancing campus experience."
       },
       "values": {
         "title": "Our Values",
         "items": {
           "innovation": {
             "title": "Technical Innovation",
-            "description": "Continuously integrate cutting-edge large model technologies to provide leading AI solutions for enterprises"
+            "description": "Local multi-model rapid iteration, zero-code drag-and-drop generation of high-quality scenario intelligent applications."
           },
           "security": {
             "title": "Data Security",
-            "description": "Support private deployment and strict data protection measures to ensure the security and privacy of enterprise data"
+            "description": "Self-developed stack deployed within campus, hierarchical permission audit with full traceability, data never leaves campus."
           },
           "flexibility": {
             "title": "Flexible Customization",
-            "description": "Provide highly customizable solutions to meet specific needs of different industries and scenarios"
+            "description": "Pluggable plugin data sources, elastic scaling from single machine to cluster, covering multi-scenario requirements."
           },
           "knowledge": {
             "title": "Knowledge Enhancement",
-            "description": "Integrate private knowledge bases through RAG technology to enhance model's contextual awareness capabilities"
+            "description": "RAG hybrid retrieval aggregates campus regulations, courses, and guidelines, providing precise and traceable contextual answers."
           }
         }
       },
@@ -994,7 +994,7 @@
     }
   },
   "sidebar": {
-    "appName": "AgentifUI",
+    "appName": "BistuCopilot",
     "expand": "Expand",
     "collapse": "Collapse",
     "newChat": "New Chat",
@@ -1066,7 +1066,7 @@
     "spinner": "Loading"
   },
   "dynamicTitle": {
-    "base": "AgentifUI",
+    "base": "BistuCopilot",
     "settings": {
       "main": "Settings",
       "profile": "Profile",

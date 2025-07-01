@@ -30,22 +30,22 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "Explora las posibilidades infinitas de la IA y crea nuevas experiencias inteligentes",
+      "title": "BistuCopilot",
+      "subtitle": "Plataforma de Aplicaciones de Agentes Inteligentes de la Universidad de Ciencia y Tecnología de la Información de Beijing",
       "getStarted": "Comenzar",
       "learnMore": "Saber más",
       "features": {
         "feature1": {
-          "title": "Integración de Modelos Grandes",
-          "description": "Soporte para múltiples proveedores de modelos incluyendo OpenAI, Anthropic, Dify, etc., satisfaciendo diferentes necesidades empresariales"
+          "title": "Soporte Multi-Modelo",
+          "description": "Compatible con varios modelos de lenguaje principales, soporta integración API y despliegue local para satisfacer diferentes requisitos de potencia de cálculo y escenarios de uso."
         },
         "feature2": {
-          "title": "Mejora de Conocimiento RAG",
-          "description": "Integra tecnología de Generación Aumentada por Recuperación (RAG) para habilitar bases de conocimiento privadas y conciencia contextual"
+          "title": "Plataforma de Integración de Capacidades",
+          "description": "Integra capacidades de preguntas y respuestas, análisis de datos, interacción de aplicaciones, etc., para construir un marco de servicio inteligente unificado, soportando extensiones de plugins y flujos de trabajo."
         },
         "feature3": {
-          "title": "Despliegue Empresarial",
-          "description": "Soporte para despliegue privado, garantizando la seguridad de datos, proporcionando servicios estables y confiables basados en backend Dify"
+          "title": "Optimización de Escenarios Universitarios",
+          "description": "Se enfoca en las necesidades de profesores y estudiantes universitarios, integrando escenarios de enseñanza, investigación y gestión para mejorar el nivel de servicios de digitalización educativa y experiencia inteligente."
         }
       },
       "copyright": {
@@ -535,7 +535,7 @@
       },
       "register": {
         "title": "Registrarse",
-        "subtitle": "Únete a AgentifUI y comienza tu viaje de IA",
+        "subtitle": "Únete a BistuCopilot y comienza tu viaje de IA",
         "nameLabel": "Nombre Completo",
         "usernameLabel": "Nombre de Usuario",
         "usernameOptional": "(opcional)",
@@ -568,7 +568,7 @@
         }
       },
       "phoneLoginPage": {
-        "title": "AgentifUI",
+        "title": "BistuCopilot",
         "subtitle": "Conversación inteligente al alcance de tus dedos",
         "orSeparator": "O",
         "emailLoginLink": "Iniciar sesión con correo y contraseña",
@@ -905,31 +905,31 @@
       "analytics": "Analíticas"
     },
     "about": {
-      "title": "Acerca de AgentifUI",
-      "subtitle": "Conectando IA con empresas, creando nuevas experiencias con modelos de lenguaje grandes",
+      "title": "Acerca de BistuCopilot",
+      "subtitle": "Conectando IA con escuelas, creando nuevas experiencias con aplicaciones de inteligencia artificial",
       "loading": "Cargando...",
       "mission": {
         "title": "Nuestra Misión",
-        "description": "AgentifUI se compromete a aprovechar el poder de los modelos de lenguaje grandes para proporcionar soluciones de aplicación innovadoras para empresas. Integramos capacidades de múltiples proveedores de modelos y proporcionamos servicios estables y confiables basados en backend Dify, ayudando a las organizaciones a utilizar completamente el valor de la tecnología IA."
+        "description": "BistuCopilot utiliza el poder de la inteligencia artificial para proporcionar soluciones de IA implementables y sostenibles para la enseñanza, investigación y gobernanza del campus, permitiendo a profesores y estudiantes acceder y usar servicios inteligentes generativos inmediatamente en un entorno local seguro y controlable, liberando vitalidad innovadora y mejorando la experiencia del campus."
       },
       "values": {
         "title": "Nuestros Valores",
         "items": {
           "innovation": {
             "title": "Innovación Técnica",
-            "description": "Integrar continuamente tecnologías de modelos grandes de vanguardia para proporcionar soluciones IA líderes para empresas"
+            "description": "Iteración rápida de multi-modelos locales, generación de aplicaciones inteligentes de escenarios de alta calidad mediante arrastrar y soltar sin código."
           },
           "security": {
             "title": "Seguridad de Datos",
-            "description": "Soporte para despliegue privado y medidas estrictas de protección de datos para garantizar la seguridad y privacidad de los datos empresariales"
+            "description": "Stack auto-desarrollado desplegado dentro del campus, auditoría de permisos jerárquicos con trazabilidad completa, los datos nunca salen del campus."
           },
           "flexibility": {
             "title": "Personalización Flexible",
-            "description": "Proporcionar soluciones altamente personalizables para satisfacer necesidades específicas de diferentes industrias y escenarios"
+            "description": "Fuentes de datos de plugins conectables, escalado elástico de máquina única a clúster, cubriendo requisitos de múltiples escenarios."
           },
           "knowledge": {
             "title": "Mejora de Conocimiento",
-            "description": "Integrar bases de conocimiento privadas a través de tecnología RAG para mejorar las capacidades de conciencia contextual del modelo"
+            "description": "La recuperación híbrida RAG agrega regulaciones del campus, cursos y guías, proporcionando respuestas contextuales precisas y rastreables."
           }
         }
       },
@@ -994,7 +994,7 @@
     }
   },
   "sidebar": {
-    "appName": "AgentifUI",
+    "appName": "BistuCopilot",
     "expand": "Expandir",
     "collapse": "Contraer",
     "newChat": "Nuevo Chat",
@@ -1066,7 +1066,7 @@
     "spinner": "Cargando"
   },
   "dynamicTitle": {
-    "base": "AgentifUI",
+    "base": "BistuCopilot",
     "settings": {
       "main": "Configuración",
       "profile": "Perfil",

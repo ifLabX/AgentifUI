@@ -30,22 +30,22 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "AIの無限の可能性を探求し、インテリジェントな新体験を創造",
+      "title": "BistuCopilot",
+      "subtitle": "北京情報科技大学インテリジェントエージェントアプリケーションプラットフォーム",
       "getStarted": "始める",
       "learnMore": "詳しく見る",
       "features": {
         "feature1": {
-          "title": "大規模モデル統合",
-          "description": "OpenAI、Anthropic、Difyなど複数のモデルプロバイダーをサポートし、様々な企業ニーズに対応"
+          "title": "マルチモデルサポート",
+          "description": "様々な主流大規模言語モデルと互換性があり、API統合とローカル展開をサポートし、異なる計算能力と使用シナリオ要件を満たします。"
         },
         "feature2": {
-          "title": "RAG知識強化",
-          "description": "検索拡張生成（RAG）技術を統合し、プライベート知識ベースとコンテキスト認識を実現"
+          "title": "能力統合プラットフォーム",
+          "description": "Q&A、データ分析、アプリケーション相互作用などの能力を統合し、統一されたインテリジェントサービスフレームワークを構築し、プラグインとワークフロー拡張をサポートします。"
         },
         "feature3": {
-          "title": "エンタープライズ展開",
-          "description": "プライベート展開をサポートし、データセキュリティを保証、Difyバックエンドに基づく安定した信頼性の高いサービスを提供"
+          "title": "キャンパスシナリオ最適化",
+          "description": "学校の教師と学生のニーズに焦点を当て、教育、研究、管理シナリオを統合し、教育デジタル化サービスレベルとインテリジェント体験を向上させます。"
         }
       },
       "copyright": {
@@ -535,7 +535,7 @@
       },
       "register": {
         "title": "登録",
-        "subtitle": "AgentifUIに参加して、AIの旅を始めましょう",
+        "subtitle": "BistuCopilotに参加して、AIの旅を始めましょう",
         "nameLabel": "氏名",
         "usernameLabel": "ユーザー名",
         "usernameOptional": "（任意）",
@@ -568,7 +568,7 @@
         }
       },
       "phoneLoginPage": {
-        "title": "AgentifUI",
+        "title": "BistuCopilot",
         "subtitle": "インテリジェント会話があなたの手に",
         "orSeparator": "または",
         "emailLoginLink": "メールアドレスとパスワードでログイン",
@@ -905,31 +905,31 @@
       "analytics": "分析"
     },
     "about": {
-      "title": "AgentifUIについて",
-      "subtitle": "AIと企業を繋ぎ、大規模言語モデルで新しい体験を創造",
+      "title": "BistuCopilotについて",
+      "subtitle": "AIと学校を繋ぎ、人工知能アプリケーションで新しい体験を創造",
       "loading": "読み込み中...",
       "mission": {
         "title": "私たちの使命",
-        "description": "AgentifUIは大規模言語モデルの力を活用し、企業に革新的なアプリケーションソリューションを提供することに取り組んでいます。複数のモデルプロバイダーの能力を統合し、Difyバックエンドに基づく安定した信頼性の高いサービスを提供し、組織がAI技術の価値を最大限に活用できるよう支援します。"
+        "description": "BistuCopilotは人工知能の力を活用し、教育、研究、キャンパス管理において実装可能で持続可能なAIソリューションを提供し、教師と学生が安全で制御可能なローカル環境で生成的インテリジェントサービスを即座にアクセスして使用できるようにし、革新活力を解放し、キャンパス体験を向上させます。"
       },
       "values": {
         "title": "私たちの価値観",
         "items": {
           "innovation": {
             "title": "技術革新",
-            "description": "最先端の大規模モデル技術を継続的に統合し、企業に最先端のAIソリューションを提供"
+            "description": "ローカルマルチモデル高速反復、ゼロコードドラッグ＆ドロップによる高品質シナリオインテリジェントアプリケーション生成。"
           },
           "security": {
             "title": "データセキュリティ",
-            "description": "プライベート展開と厳格なデータ保護措置をサポートし、企業データのセキュリティとプライバシーを保証"
+            "description": "自主開発スタックのキャンパス内展開、階層権限監査による完全トレーサビリティ、データはキャンパスから外に出ません。"
           },
           "flexibility": {
             "title": "柔軟なカスタマイズ",
-            "description": "高度にカスタマイズ可能なソリューションを提供し、異なる業界とシナリオの特定のニーズに対応"
+            "description": "プラグイン可能なデータソース、単一マシンからクラスターまでの弾性スケーリング、マルチシナリオ要件をカバー。"
           },
           "knowledge": {
             "title": "知識強化",
-            "description": "RAG技術を通じてプライベート知識ベースを統合し、モデルのコンテキスト認識能力を強化"
+            "description": "RAGハイブリッド検索がキャンパス規則、コース、ガイドラインを集約し、精密で追跡可能なコンテキスト回答を提供。"
           }
         }
       },
@@ -994,7 +994,7 @@
     }
   },
   "sidebar": {
-    "appName": "AgentifUI",
+    "appName": "BistuCopilot",
     "expand": "展開",
     "collapse": "折りたたむ",
     "newChat": "新しいチャット",
@@ -1066,7 +1066,7 @@
     "spinner": "読み込み中"
   },
   "dynamicTitle": {
-    "base": "AgentifUI",
+    "base": "BistuCopilot",
     "settings": {
       "main": "設定",
       "profile": "プロフィール",
