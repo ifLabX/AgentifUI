@@ -68,6 +68,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       description: '管理应用实例和配置参数',
     },
     {
+      text: 'SSO 配置',
+      icon: Settings,
+      href: '/admin/sso',
+      description: '统一身份认证系统配置管理',
+    },
+    {
       text: '关于与通知',
       icon: Bell,
       href: '/admin/content',
