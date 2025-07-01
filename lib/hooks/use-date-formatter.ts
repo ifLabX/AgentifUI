@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { useUserTimezone } from './use-user-timezone';
+
 // --- BEGIN COMMENT ---
 // 时间格式化选项接口
 // --- END COMMENT ---
@@ -30,6 +32,7 @@ export interface TimeGreetingOptions {
 export function useDateFormatter(defaultTimezone?: string) {
   const format = useFormatter();
   const t = useTranslations('common.time');
+  const { timezone: userTimezone } = useUserTimezone();
 
   // --- BEGIN COMMENT ---
   // 核心日期格式化函数
@@ -50,11 +53,11 @@ export function useDateFormatter(defaultTimezone?: string) {
 
         // 检查日期有效性
         if (isNaN(date.getTime())) {
-          console.warn('[useDateFormatter] 无效的日期:', dateInput);
+          console.warn('[useDateFormatter] Invalid date:', dateInput);
           return t('invalidDate');
         }
 
-        const timezone = options.timezone || defaultTimezone;
+        const timezone = options.timezone || defaultTimezone || userTimezone;
 
         // 构建格式化选项 - 使用next-intl兼容的类型
         const formatOptions: any = {
@@ -119,7 +122,7 @@ export function useDateFormatter(defaultTimezone?: string) {
         return typeof dateInput === 'string' ? dateInput : t('formatError');
       }
     };
-  }, [format, t, defaultTimezone]);
+  }, [format, t, defaultTimezone, userTimezone]);
 
   // --- BEGIN COMMENT ---
   // 相对时间格式化（如：2小时前）
@@ -152,19 +155,22 @@ export function useDateFormatter(defaultTimezone?: string) {
   // --- BEGIN COMMENT ---
   // 基于时间的问候语生成
   // 🎯 这是核心的时间问候功能，使用 common.time.greeting 翻译路径
+  // 🚨 修复：使用用户时区设置生成问候语
   // --- END COMMENT ---
   const getTimeBasedGreeting = useMemo(() => {
     return (options: TimeGreetingOptions = {}): string => {
       try {
         const now = new Date();
 
-        // 获取指定时区的小时数
+        // 获取指定时区的小时数 - 优先使用用户时区设置
         let hour: number;
-        if (options.timezone) {
+        const timezone = options.timezone || userTimezone;
+
+        if (timezone) {
           const timeString = new Intl.DateTimeFormat('en', {
             hour: 'numeric',
             hour12: false,
-            timeZone: options.timezone,
+            timeZone: timezone,
           }).format(now);
           hour = parseInt(timeString, 10);
         } else {
@@ -196,7 +202,7 @@ export function useDateFormatter(defaultTimezone?: string) {
         return t('greeting.default');
       }
     };
-  }, [t]);
+  }, [t, userTimezone]);
 
   // --- BEGIN COMMENT ---
   // 格式化执行时间（毫秒转可读格式）

@@ -1,8 +1,11 @@
 'use client';
 
 import { ThemeCard } from '@components/settings';
+import { TimezoneSelector } from '@components/settings/appearance/timezone-selector';
 import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { useTheme } from '@lib/hooks/use-theme';
+import { useUserTimezone } from '@lib/hooks/use-user-timezone';
+import { cn } from '@lib/utils';
 import { motion } from 'framer-motion';
 
 import { useState } from 'react';
@@ -15,9 +18,11 @@ import { useTranslations } from 'next-intl';
 // --- END COMMENT ---
 export default function AppearanceSettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { timezone, updateTimezone } = useUserTimezone();
   const { colors } = useSettingsColors();
   const t = useTranslations('pages.settings.appearanceSettings');
   const [isSaving, setIsSaving] = useState(false);
+  const [isTimezoneUpdating, setIsTimezoneUpdating] = useState(false);
 
   // --- BEGIN COMMENT ---
   // 处理主题变更
@@ -32,6 +37,26 @@ export default function AppearanceSettingsPage() {
     // 模拟保存延迟
     setTimeout(() => {
       setIsSaving(false);
+    }, 300);
+  };
+
+  // --- BEGIN COMMENT ---
+  // 处理时区变更
+  // 使用localStorage存储用户时区偏好
+  // --- END COMMENT ---
+  const handleTimezoneChange = (newTimezone: string) => {
+    setIsTimezoneUpdating(true);
+
+    // 更新时区设置
+    const success = updateTimezone(newTimezone);
+
+    if (success) {
+      console.log(`[AppearanceSettings] 时区已更新为: ${newTimezone}`);
+    }
+
+    // 模拟保存延迟
+    setTimeout(() => {
+      setIsTimezoneUpdating(false);
     }, 300);
   };
 
@@ -80,6 +105,24 @@ export default function AppearanceSettingsPage() {
               onClick={() => handleThemeChange('dark')}
             />
           </div>
+        </section>
+
+        {/* 时区设置 */}
+        <section>
+          <h2 className="mb-4 font-serif text-lg font-medium">
+            {t('timezone')}
+          </h2>
+          <p
+            className={`${colors.secondaryTextColor.tailwind} mb-6 font-serif`}
+          >
+            {t('timezoneDescription')}
+          </p>
+
+          <TimezoneSelector
+            value={timezone}
+            onChange={handleTimezoneChange}
+            className="max-w-md"
+          />
         </section>
       </div>
     </motion.div>

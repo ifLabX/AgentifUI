@@ -3,3 +3,4 @@
 // --- END COMMENT ---
 export { LanguageCard } from './language-card';
 export { ThemeCard } from './theme-card';
+export { TimezoneSelector } from './timezone-selector';

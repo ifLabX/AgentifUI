@@ -28,7 +28,7 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { Provider } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { Edit, Plus, Save, Trash2, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 
 import React, { useEffect, useState } from 'react';
 
