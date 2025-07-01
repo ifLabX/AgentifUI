@@ -1,7 +1,7 @@
 'use client';
 
+import { UserAvatar } from '@components/ui';
 import { cn } from '@lib/utils';
-import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 import { Loader2 } from 'lucide-react';
 
 import { useTranslations } from 'next-intl';
@@ -39,31 +39,17 @@ export function AvatarPreview({
   return (
     <div className="flex flex-col items-center space-y-3">
       <div className="relative">
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt={t('currentAvatar')}
-            className={cn(
-              sizeClasses[size],
-              'rounded-full object-cover ring-2',
-              isDark ? 'ring-stone-700' : 'ring-stone-200',
-              isUploading && 'opacity-75'
-            )}
-          />
-        ) : (
-          <div
-            className={cn(
-              'flex items-center justify-center rounded-full font-medium text-white ring-2',
-              sizeClasses[size],
-              isDark ? 'ring-stone-700' : 'ring-stone-200'
-            )}
-            style={{
-              backgroundColor: getAvatarBgColor(userName),
-            }}
-          >
-            {getInitials(userName)}
-          </div>
-        )}
+        <UserAvatar
+          avatarUrl={avatarUrl}
+          userName={userName}
+          size={size}
+          className={cn(
+            'ring-2',
+            isDark ? 'ring-stone-700' : 'ring-stone-200',
+            isUploading && 'opacity-75'
+          )}
+          alt={t('currentAvatar')}
+        />
 
         {/* 上传进度覆盖层 */}
         {isUploading && (

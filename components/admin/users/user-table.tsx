@@ -1,11 +1,11 @@
 'use client';
 
+import { UserAvatar } from '@components/ui';
 import { Dropdown } from '@components/ui/dropdown';
 import type { EnhancedUser } from '@lib/db/users';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
-import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 import {
   CheckSquare,
   Clock,
@@ -457,44 +457,12 @@ export const UserTable: React.FC<UserTableProps> = ({
                   <td className="px-4 py-4">
                     <div className="flex items-center space-x-3">
                       {/* 用户头像 */}
-                      <div className="relative flex-shrink-0">
-                        {user.avatar_url ? (
-                          <img
-                            src={user.avatar_url}
-                            alt={`${user.full_name || user.username || '用户'}的头像`}
-                            className="h-10 w-10 rounded-full object-cover"
-                            onError={e => {
-                              // 头像加载失败时显示默认头像
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const parent = target.parentElement;
-                              if (parent) {
-                                const fallback = parent.querySelector(
-                                  '.avatar-fallback'
-                                ) as HTMLElement;
-                                if (fallback) {
-                                  fallback.style.display = 'flex';
-                                }
-                              }
-                            }}
-                          />
-                        ) : null}
-                        {/* 默认头像（当没有头像或加载失败时显示） */}
-                        <div
-                          className={cn(
-                            'avatar-fallback absolute inset-0 flex h-10 w-10 items-center justify-center rounded-full text-xs font-medium text-white',
-                            user.avatar_url ? 'hidden' : 'flex'
-                          )}
-                          style={{
-                            backgroundColor: getAvatarBgColor(
-                              user.full_name || user.username || '未设置'
-                            ),
-                          }}
-                        >
-                          {getInitials(
-                            user.full_name || user.username || '未设置'
-                          )}
-                        </div>
+                      <div className="flex-shrink-0">
+                        <UserAvatar
+                          avatarUrl={user.avatar_url}
+                          userName={user.full_name || user.username || '用户'}
+                          size="md"
+                        />
                       </div>
 
                       {/* 用户信息 */}

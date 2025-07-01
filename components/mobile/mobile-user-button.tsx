@@ -1,12 +1,11 @@
 'use client';
 
-import { LogoutConfirmDialog } from '@components/ui';
+import { LogoutConfirmDialog, UserAvatar } from '@components/ui';
 import { useMobile } from '@lib/hooks/use-mobile';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
-import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 import { User } from 'lucide-react';
 
 import React, { useState } from 'react';
@@ -88,26 +87,12 @@ export function MobileUserButton() {
         {/* 左侧头像 */}
         <span className="flex h-8 w-8 items-center justify-center">
           {isLoggedIn ? (
-            avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={t('avatarAlt', { userName })}
-                className="h-8 w-8 rounded-full object-cover"
-                onError={e => {
-                  // 头像加载失败时隐藏图片
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            ) : (
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium text-white"
-                style={{
-                  backgroundColor: getAvatarBgColor(userName),
-                }}
-              >
-                {getInitials(userName)}
-              </div>
-            )
+            <UserAvatar
+              avatarUrl={avatarUrl}
+              userName={userName}
+              size="sm"
+              alt={t('avatarAlt', { userName })}
+            />
           ) : (
             <span
               className={cn(

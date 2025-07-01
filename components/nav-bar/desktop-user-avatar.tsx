@@ -1,11 +1,10 @@
 'use client';
 
-import { LogoutConfirmDialog } from '@components/ui';
+import { LogoutConfirmDialog, UserAvatar } from '@components/ui';
 import { useLogout } from '@lib/hooks/use-logout';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
-import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 import {
   Clock,
   Info,
@@ -185,7 +184,7 @@ export function DesktopUserAvatar() {
         <button
           ref={triggerRef}
           onClick={toggleDropdown}
-          className="relative cursor-pointer rounded-full transition-all duration-200 hover:ring-2 hover:ring-gray-400/30 focus:outline-none"
+          className="relative cursor-pointer rounded-full transition-all duration-200 hover:ring-2 hover:ring-gray-400/50 focus:outline-none"
           style={{
             padding: 0,
             width: '36px',
@@ -199,30 +198,12 @@ export function DesktopUserAvatar() {
           {isLoggedIn ? (
             <>
               {/* 纯圆形头像 - 无边框 */}
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={`${userName}的头像`}
-                  className="h-9 w-9 rounded-full object-cover transition-all duration-200"
-                  style={{
-                    border: 'none',
-                  }}
-                  onError={e => {
-                    // 头像加载失败时隐藏图片
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium text-white transition-all duration-200"
-                  style={{
-                    backgroundColor: getAvatarBgColor(userName),
-                    border: 'none',
-                  }}
-                >
-                  {getInitials(userName)}
-                </div>
-              )}
+              <UserAvatar
+                avatarUrl={avatarUrl}
+                userName={userName}
+                size="lg"
+                className="h-9 w-9 transition-all duration-200"
+              />
             </>
           ) : (
             <div

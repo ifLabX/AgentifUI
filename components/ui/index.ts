@@ -19,3 +19,4 @@ export { Popover, PopoverItem, PopoverDivider } from './popover';
 export { TypeWriter } from './typewriter';
 export { SuggestedQuestionButton } from './suggested-question-button';
 export { AdaptiveKeyBadge, KeyCombination } from './adaptive-key-badge';
+export { UserAvatar } from './user-avatar';

@@ -1,5 +1,6 @@
 'use client';
 
+import { UserAvatar } from '@components/ui';
 import { updateUserProfile } from '@lib/db/profiles';
 import { Profile as ExtendedProfile } from '@lib/hooks/use-profile';
 import { updateProfileCache } from '@lib/hooks/use-profile';
@@ -7,7 +8,6 @@ import { useProfile } from '@lib/hooks/use-profile';
 import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { Profile as DatabaseProfile } from '@lib/types/database';
 import { cn } from '@lib/utils';
-import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 import { motion } from 'framer-motion';
 import {
   AlertCircle,
@@ -230,79 +230,44 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         <div className="flex items-center space-x-4">
           {/* 用户头像 - 缩小尺寸 */}
           <div className="relative">
-            {profile.avatar_url ? (
-              <div
-                className="group relative cursor-pointer"
-                onClick={() => setShowAvatarModal(true)}
-              >
-                <img
-                  src={profile.avatar_url}
-                  alt={t('avatar.userAvatar', {
-                    userName:
-                      profile.full_name ||
-                      profile.username ||
-                      t('avatar.defaultUser'),
-                  })}
-                  className="h-16 w-16 rounded-full object-cover transition-all duration-300 group-hover:opacity-80"
-                  onError={e => {
-                    // 头像加载失败时隐藏图片
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                {/* 悬停时显示编辑提示文字 */}
-                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <span className="text-xs font-medium text-white">
-                    {t('avatar.editHover')}
-                  </span>
-                </div>
-                {/* 右下角编辑指示器 */}
-                <div
-                  className={cn(
-                    'absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full border shadow-sm transition-all duration-300 group-hover:scale-105',
-                    isDark
-                      ? 'border-stone-700 bg-stone-600 text-stone-200 group-hover:bg-stone-500'
-                      : 'border-white bg-stone-200 text-stone-600 group-hover:bg-stone-300'
-                  )}
-                >
-                  <Camera className="h-2.5 w-2.5" />
-                </div>
-              </div>
-            ) : (
-              <div
-                className="group relative flex h-16 w-16 cursor-pointer items-center justify-center rounded-full text-lg font-medium text-white transition-all duration-300"
-                style={{
-                  backgroundColor: getAvatarBgColor(
-                    profile.full_name ||
-                      profile.username ||
-                      t('avatar.defaultUser')
-                  ),
-                }}
-                onClick={() => setShowAvatarModal(true)}
-              >
-                {getInitials(
+            <div
+              className="group relative cursor-pointer"
+              onClick={() => setShowAvatarModal(true)}
+            >
+              <UserAvatar
+                avatarUrl={profile.avatar_url}
+                userName={
                   profile.full_name ||
+                  profile.username ||
+                  t('avatar.defaultUser')
+                }
+                size="xl"
+                className="h-16 w-16 transition-all duration-300 group-hover:opacity-80"
+                alt={t('avatar.userAvatar', {
+                  userName:
+                    profile.full_name ||
                     profile.username ||
-                    t('avatar.defaultUser')
-                )}
-                {/* 悬停时显示编辑提示文字 */}
-                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <span className="text-xs font-medium text-white">
-                    {t('avatar.editHover')}
-                  </span>
-                </div>
-                {/* 右下角编辑指示器 */}
-                <div
-                  className={cn(
-                    'absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full border shadow-sm transition-all duration-300 group-hover:scale-105',
-                    isDark
-                      ? 'border-stone-700 bg-stone-600 text-stone-200 group-hover:bg-stone-500'
-                      : 'border-white bg-stone-200 text-stone-600 group-hover:bg-stone-300'
-                  )}
-                >
-                  <Camera className="h-2.5 w-2.5" />
-                </div>
+                    t('avatar.defaultUser'),
+                })}
+              />
+              {/* 悬停时显示编辑提示文字 */}
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-all duration-300 group-hover:opacity-100">
+                <span className="text-xs font-medium text-white">
+                  {t('avatar.editHover')}
+                </span>
               </div>
-            )}
+              {/* 右下角编辑指示器 */}
+              <div
+                className={cn(
+                  'absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full border shadow-sm transition-all duration-300 group-hover:scale-105',
+                  isDark
+                    ? 'border-stone-700 bg-stone-600 text-stone-200 group-hover:bg-stone-500'
+                    : 'border-white bg-stone-200 text-stone-600 group-hover:bg-stone-300'
+                )}
+              >
+                <Camera className="h-2.5 w-2.5" />
+              </div>
+            </div>
           </div>
 
           {/* 用户基本信息 - 简化布局 */}
