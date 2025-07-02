@@ -914,24 +914,24 @@
       },
       "values": {
         "title": "Our Values",
-        "items": {
-          "innovation": {
+        "items": [
+          {
             "title": "Technical Innovation",
             "description": "Continuously integrate cutting-edge large model technologies to provide leading AI solutions for enterprises"
           },
-          "security": {
+          {
             "title": "Data Security",
             "description": "Support private deployment and strict data protection measures to ensure the security and privacy of enterprise data"
           },
-          "flexibility": {
+          {
             "title": "Flexible Customization",
             "description": "Provide highly customizable solutions to meet specific needs of different industries and scenarios"
           },
-          "knowledge": {
+          {
             "title": "Knowledge Enhancement",
             "description": "Integrate private knowledge bases through RAG technology to enhance model's contextual awareness capabilities"
           }
-        }
+        ]
       },
       "buttonText": "Start Exploring",
       "copyright": {

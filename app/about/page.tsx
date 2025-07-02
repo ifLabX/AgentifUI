@@ -131,30 +131,12 @@ export default function AboutPage() {
   }
 
   // --- BEGIN COMMENT ---
-  // 构建价值观卡片数据
+  // 从翻译文件获取价值观卡片数据 (数组结构)
   // --- END COMMENT ---
-  const valueCards = [
-    {
-      id: 'innovation',
-      title: t('values.items.innovation.title'),
-      description: t('values.items.innovation.description'),
-    },
-    {
-      id: 'security',
-      title: t('values.items.security.title'),
-      description: t('values.items.security.description'),
-    },
-    {
-      id: 'flexibility',
-      title: t('values.items.flexibility.title'),
-      description: t('values.items.flexibility.description'),
-    },
-    {
-      id: 'knowledge',
-      title: t('values.items.knowledge.title'),
-      description: t('values.items.knowledge.description'),
-    },
-  ];
+  const valueCards = t.raw('values.items') as Array<{
+    title: string;
+    description: string;
+  }>;
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
@@ -237,7 +219,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
             {valueCards.map((value, index) => (
               <motion.div
-                key={value.id}
+                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}

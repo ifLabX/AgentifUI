@@ -866,24 +866,24 @@
       },
       "values": {
         "title": "我们的价值观",
-        "items": {
-          "innovation": {
+        "items": [
+          {
             "title": "技术创新",
             "description": "持续集成前沿的大模型技术，为企业提供领先的 AI 解决方案"
           },
-          "security": {
+          {
             "title": "数据安全",
             "description": "支持私有化部署和严格的数据保护措施，确保企业数据的安全与隐私"
           },
-          "flexibility": {
+          {
             "title": "灵活定制",
             "description": "提供高度可定制的解决方案，满足不同行业和场景的特定需求"
           },
-          "knowledge": {
+          {
             "title": "知识增强",
             "description": "通过 RAG 技术实现私有知识库的整合，增强模型的上下文感知能力"
           }
-        }
+        ]
       },
       "buttonText": "开始探索",
       "copyright": {

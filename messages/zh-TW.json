@@ -914,24 +914,24 @@
       },
       "values": {
         "title": "我們的價值觀",
-        "items": {
-          "innovation": {
+        "items": [
+          {
             "title": "技術創新",
             "description": "持續整合前沿的大模型技術，為企業提供領先的 AI 解決方案"
           },
-          "security": {
+          {
             "title": "資料安全",
             "description": "支援私有化部署和嚴格的資料保護措施，確保企業資料的安全與隱私"
           },
-          "flexibility": {
+          {
             "title": "靈活客製",
             "description": "提供高度可客製的解決方案，滿足不同行業和情境的特定需求"
           },
-          "knowledge": {
+          {
             "title": "知識增強",
             "description": "透過 RAG 技術實現私有知識庫的整合，增強模型的上下文感知能力"
           }
-        }
+        ]
       },
       "buttonText": "開始探索",
       "copyright": {

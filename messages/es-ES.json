@@ -914,24 +914,24 @@
       },
       "values": {
         "title": "Nuestros Valores",
-        "items": {
-          "innovation": {
+        "items": [
+          {
             "title": "Innovación Técnica",
             "description": "Integrar continuamente tecnologías de modelos grandes de vanguardia para proporcionar soluciones IA líderes para empresas"
           },
-          "security": {
+          {
             "title": "Seguridad de Datos",
             "description": "Soporte para despliegue privado y medidas estrictas de protección de datos para garantizar la seguridad y privacidad de los datos empresariales"
           },
-          "flexibility": {
+          {
             "title": "Personalización Flexible",
             "description": "Proporcionar soluciones altamente personalizables para satisfacer necesidades específicas de diferentes industrias y escenarios"
           },
-          "knowledge": {
+          {
             "title": "Mejora de Conocimiento",
             "description": "Integrar bases de conocimiento privadas a través de tecnología RAG para mejorar las capacidades de conciencia contextual del modelo"
           }
-        }
+        ]
       },
       "buttonText": "Comenzar a Explorar",
       "copyright": {
