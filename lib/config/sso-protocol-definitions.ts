@@ -59,6 +59,7 @@ export const CAS_TEMPLATE: ProtocolTemplate = {
         login: '/login',
         logout: '/logout',
         validate: '/serviceValidate',
+        validate_v3: '/p3/serviceValidate',
       },
       attributes_mapping: {
         employee_id: 'cas:user',
@@ -91,9 +92,7 @@ export const CAS_TEMPLATE: ProtocolTemplate = {
       }
     },
     version: (value: string) => {
-      return (
-        ['1.0', '2.0', '3.0'].includes(value) || '支持的版本: 1.0, 2.0, 3.0'
-      );
+      return ['2.0', '3.0'].includes(value) || '支持的版本: 2.0, 3.0';
     },
   },
 };
