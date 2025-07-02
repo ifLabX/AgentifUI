@@ -2,7 +2,7 @@
 // 北京信息科技大学SSO登录入口
 // 处理用户发起的SSO登录请求，重定向到CAS服务器
 // --- END COMMENT ---
-import { createBistuCASService } from '@lib/services/sso/bistu-cas-service';
+import { createBistuCASService } from '@lib/services/admin/sso/bistu-cas-service';
 
 import { NextRequest, NextResponse } from 'next/server';
 

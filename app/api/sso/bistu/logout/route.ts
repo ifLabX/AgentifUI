@@ -2,7 +2,7 @@
 // 北京信息科技大学SSO注销处理
 // 处理用户注销请求，清除本地会话并重定向到CAS注销页面
 // --- END COMMENT ---
-import { createBistuCASService } from '@lib/services/sso/bistu-cas-service';
+import { createBistuCASService } from '@lib/services/admin/sso/bistu-cas-service';
 
 import { NextRequest, NextResponse } from 'next/server';
 

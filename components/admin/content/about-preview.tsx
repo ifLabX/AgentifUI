@@ -5,7 +5,25 @@ import { cn } from '@lib/utils';
 
 import React from 'react';
 
-import { AboutPageConfig } from './about-editor';
+// --- BEGIN COMMENT ---
+// 移除对 about-editor 的依赖，因为类型现在在 page.tsx 中管理
+// --- END COMMENT ---
+
+// 重新定义类型，因为它们将从 about-config.ts 中删除
+export interface ValueCard {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export interface AboutPageConfig {
+  title: string;
+  subtitle: string;
+  mission: string;
+  valueCards: ValueCard[];
+  buttonText: string;
+  copyrightText: string;
+}
 
 interface AboutPreviewProps {
   config: AboutPageConfig;
@@ -68,9 +86,9 @@ export function AboutPreview({ config, previewDevice }: AboutPreviewProps) {
         };
       case 'tablet':
         return {
-          container: 'mx-auto bg-black rounded-xl p-3 shadow-2xl',
+          container: 'mx-auto bg-black rounded-xl p-3 shadow-2xl mt-40',
           screen:
-            'w-[768px] h-[1024px] bg-white rounded-lg overflow-hidden relative',
+            'w-[600px] h-[800px] bg-white rounded-lg overflow-hidden relative',
           content: 'h-full overflow-y-auto',
           mainClass: 'min-h-full w-full py-6 px-6',
           innerContainer: 'max-w-2xl mx-auto',

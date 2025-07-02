@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  AboutEditor,
-  AboutPageConfig,
-} from '@components/admin/content/about-editor';
+import { AboutEditor } from '@components/admin/content/about-editor';
 import { AboutPreview } from '@components/admin/content/about-preview';
 // --- BEGIN COMMENT ---
 // 导入所有原子化组件
@@ -16,12 +13,9 @@ import {
 import NotificationPreview from '@components/admin/content/notification-preview';
 import { PreviewToolbar } from '@components/admin/content/preview-toolbar';
 import { ResizableSplitPane } from '@components/ui/resizable-split-pane';
-import {
-  defaultAboutConfig,
-  getAboutConfig,
-  saveAboutConfig,
-} from '@lib/config/about-config';
+import type { SupportedLocale } from '@lib/config/language-config';
 import { useTheme } from '@lib/hooks/use-theme';
+import { TranslationService } from '@lib/services/admin/content/translation-service';
 import { cn } from '@lib/utils';
 import { Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -29,6 +23,24 @@ import toast from 'react-hot-toast';
 import React, { useEffect, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+
+// --- BEGIN COMMENT ---
+// 临时类型定义，因为about-config.ts将被删除
+// --- END COMMENT ---
+interface ValueCard {
+  id: string;
+  title: string;
+  description: string;
+}
+
+interface AboutPageConfig {
+  title: string;
+  subtitle: string;
+  mission: string;
+  valueCards: ValueCard[];
+  buttonText: string;
+  copyrightText: string;
+}
 
 export default function ContentManagementPage() {
   const { isDark } = useTheme();
@@ -50,35 +62,45 @@ export default function ContentManagementPage() {
   const [showFullscreenPreview, setShowFullscreenPreview] = useState(false);
 
   // --- BEGIN COMMENT ---
-  // About页面配置状态
+  // About页面翻译状态
   // --- END COMMENT ---
-  const [aboutConfig, setAboutConfig] =
-    useState<AboutPageConfig>(defaultAboutConfig);
-  const [originalAboutConfig, setOriginalAboutConfig] =
-    useState<AboutPageConfig>(defaultAboutConfig);
+  const [aboutTranslations, setAboutTranslations] = useState<Record<
+    SupportedLocale,
+    any
+  > | null>(null);
+  const [originalAboutTranslations, setOriginalAboutTranslations] =
+    useState<Record<SupportedLocale, any> | null>(null);
+  const [currentLocale, setCurrentLocale] = useState<SupportedLocale>('zh-CN');
+  const [supportedLocales, setSupportedLocales] = useState<SupportedLocale[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   // --- BEGIN COMMENT ---
-  // 加载About页面配置
+  // 加载About页面翻译
   // --- END COMMENT ---
   useEffect(() => {
-    const loadAboutConfig = async () => {
+    const loadAboutTranslations = async () => {
+      setIsLoading(true);
       try {
-        const config = await getAboutConfig();
-        setAboutConfig(config);
-        setOriginalAboutConfig(config);
+        const translations =
+          await TranslationService.getAboutPageTranslations();
+        const locales = await TranslationService.getSupportedLanguages();
+        setAboutTranslations(translations);
+        setOriginalAboutTranslations(translations);
+        setSupportedLocales(locales);
       } catch (error) {
-        console.error('Failed to load about config:', error);
-        // 加载失败时使用默认配置
-        setAboutConfig(defaultAboutConfig);
-        setOriginalAboutConfig(defaultAboutConfig);
+        console.error('Failed to load about translations:', error);
+        toast.error('加载翻译数据失败');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadAboutConfig();
-  }, []);
+    if (activeTab === 'about') {
+      loadAboutTranslations();
+    }
+  }, [activeTab]);
 
   // --- BEGIN COMMENT ---
   // 通知初始配置
@@ -132,11 +154,17 @@ export default function ContentManagementPage() {
   // --- END COMMENT ---
   useEffect(() => {
     const aboutChanged =
-      JSON.stringify(aboutConfig) !== JSON.stringify(originalAboutConfig);
+      JSON.stringify(aboutTranslations) !==
+      JSON.stringify(originalAboutTranslations);
     const notificationsChanged =
       JSON.stringify(notifications) !== JSON.stringify(originalNotifications);
     setHasChanges(aboutChanged || notificationsChanged);
-  }, [aboutConfig, notifications, originalAboutConfig, originalNotifications]);
+  }, [
+    aboutTranslations,
+    notifications,
+    originalAboutTranslations,
+    originalNotifications,
+  ]);
 
   // --- BEGIN COMMENT ---
   // 标签切换处理函数
@@ -149,41 +177,22 @@ export default function ContentManagementPage() {
   };
 
   // --- BEGIN COMMENT ---
-  // 保存配置 (集成真正的About配置保存)
+  // 保存配置
   // --- END COMMENT ---
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // --- BEGIN COMMENT ---
-      // 保存About页面配置
-      // --- END COMMENT ---
-      await saveAboutConfig(aboutConfig);
+      if (activeTab === 'about' && aboutTranslations) {
+        await TranslationService.updateAboutPageTranslations(aboutTranslations);
+        setOriginalAboutTranslations({ ...aboutTranslations });
+      } else {
+        // ... 通知保存逻辑
+        setOriginalNotifications([...notifications]);
+      }
 
-      // --- BEGIN COMMENT ---
-      // 这里可以添加通知配置的保存逻辑
-      // await saveNotificationConfig(notifications)
-      // --- END COMMENT ---
-
-      // --- BEGIN COMMENT ---
-      // 保存成功后更新原始配置，重置hasChanges状态
-      // --- END COMMENT ---
-      setOriginalAboutConfig({ ...aboutConfig });
-      setOriginalNotifications([...notifications]);
-
-      console.log('配置保存成功:', {
-        about: aboutConfig,
-        notifications: notifications,
-      });
-
-      // --- BEGIN COMMENT ---
-      // 显示保存成功提示
-      // --- END COMMENT ---
       toast.success('配置保存成功');
     } catch (error) {
       console.error('保存配置失败:', error);
-      // --- BEGIN COMMENT ---
-      // 显示保存失败提示
-      // --- END COMMENT ---
       toast.error('保存配置失败，请重试');
     } finally {
       setIsSaving(false);
@@ -194,16 +203,21 @@ export default function ContentManagementPage() {
   // 重置所有更改到原始状态
   // --- END COMMENT ---
   const handleReset = () => {
-    setAboutConfig({ ...originalAboutConfig });
-    setNotifications([...originalNotifications]);
-    setSelectedNotification(originalNotifications[0] || null);
+    if (activeTab === 'about' && originalAboutTranslations) {
+      setAboutTranslations({ ...originalAboutTranslations });
+    } else {
+      setNotifications([...originalNotifications]);
+      setSelectedNotification(originalNotifications[0] || null);
+    }
   };
 
   // --- BEGIN COMMENT ---
-  // 处理About配置变更
+  // 处理About翻译变更
   // --- END COMMENT ---
-  const handleAboutConfigChange = (newConfig: AboutPageConfig) => {
-    setAboutConfig(newConfig);
+  const handleAboutTranslationsChange = (
+    newTranslations: Record<SupportedLocale, any>
+  ) => {
+    setAboutTranslations(newTranslations);
   };
 
   // --- BEGIN COMMENT ---
@@ -245,6 +259,37 @@ export default function ContentManagementPage() {
     setShowFullscreenPreview(false);
   };
 
+  // --- BEGIN COMMENT ---
+  // 将翻译数据转换为预览组件可用的格式
+  // --- END COMMENT ---
+  const transformTranslationToPreviewConfig = (
+    translations: Record<SupportedLocale, any> | null,
+    locale: SupportedLocale
+  ): AboutPageConfig | null => {
+    const t = translations?.[locale];
+    if (!t) return null;
+
+    return {
+      title: t.title || '',
+      subtitle: t.subtitle || '',
+      mission: t.mission?.description || '',
+      valueCards: (t.values?.items || []).map((item: any, index: number) => ({
+        id: `value-${index}`,
+        title: item.title,
+        description: item.description,
+      })),
+      buttonText: t.buttonText || '',
+      copyrightText: t.copyright
+        ? `${t.copyright.prefix?.replace('{year}', new Date().getFullYear()) || ''}${t.copyright.linkText || ''}${t.copyright.suffix || ''}`
+        : '',
+    };
+  };
+
+  const aboutPreviewConfig = transformTranslationToPreviewConfig(
+    aboutTranslations,
+    currentLocale
+  );
+
   return (
     <div
       className={cn(
@@ -282,9 +327,6 @@ export default function ContentManagementPage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              {/* --- BEGIN COMMENT ---
-              显示预览按钮 (当预览隐藏时显示)
-              --- END COMMENT --- */}
               {!showPreview && (
                 <button
                   onClick={() => setShowPreview(true)}
@@ -299,7 +341,6 @@ export default function ContentManagementPage() {
                   显示预览
                 </button>
               )}
-
               <ContentTabs
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
@@ -309,16 +350,13 @@ export default function ContentManagementPage() {
         </div>
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      主内容区域 - 编辑器和预览面板
-      --- END COMMENT --- */}
       <div className="flex min-h-0 flex-1 flex-col">
         {showPreview ? (
           <ResizableSplitPane
             storageKey="content-management-split-pane"
-            defaultLeftWidth={35}
-            minLeftWidth={25}
-            maxLeftWidth={65}
+            defaultLeftWidth={50}
+            minLeftWidth={30}
+            maxLeftWidth={70}
             left={
               <div
                 className={cn(
@@ -326,144 +364,32 @@ export default function ContentManagementPage() {
                   isDark ? 'bg-stone-800' : 'bg-white'
                 )}
               >
-                <div className="flex-1 overflow-auto">
-                  <div className="p-6">
-                    {activeTab === 'about' ? (
-                      <AboutEditor
-                        config={aboutConfig}
-                        onChange={handleAboutConfigChange}
-                      />
-                    ) : (
-                      <NotificationEditor
-                        notifications={notifications}
-                        selectedNotification={selectedNotification}
-                        onNotificationsChange={handleNotificationsChange}
-                        onSelectedChange={handleSelectedNotificationChange}
-                      />
-                    )}
-
-                    {/* --- BEGIN COMMENT ---
-                    保存操作区域 - 集成到编辑区域底部
-                    --- END COMMENT --- */}
-                    <div
-                      className={cn(
-                        'mt-8 border-t pt-6',
-                        isDark ? 'border-stone-600' : 'border-stone-200'
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {hasChanges && (
-                            <div
-                              className={cn(
-                                'flex items-center gap-2 text-sm',
-                                isDark ? 'text-stone-400' : 'text-stone-600'
-                              )}
-                            >
-                              <div className="h-2 w-2 rounded-full bg-orange-500" />
-                              <span>有未保存的更改</span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={handleReset}
-                            disabled={!hasChanges || isSaving}
-                            className={cn(
-                              'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-                              hasChanges && !isSaving
-                                ? isDark
-                                  ? 'text-stone-300 hover:bg-stone-700'
-                                  : 'text-stone-600 hover:bg-stone-100'
-                                : 'cursor-not-allowed text-stone-500'
-                            )}
-                          >
-                            重置
-                          </button>
-
-                          <button
-                            onClick={handleSave}
-                            disabled={!hasChanges || isSaving}
-                            className={cn(
-                              'rounded-lg px-6 py-2 text-sm font-medium transition-colors',
-                              hasChanges && !isSaving
-                                ? isDark
-                                  ? 'bg-stone-100 text-stone-900 hover:bg-white'
-                                  : 'bg-stone-900 text-white hover:bg-stone-800'
-                                : 'cursor-not-allowed bg-stone-300 text-stone-500'
-                            )}
-                          >
-                            {isSaving ? '保存中...' : '保存更改'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            right={
-              <div className="flex min-w-0 flex-1 flex-col">
-                {/* --- BEGIN COMMENT ---
-                预览工具栏
-                --- END COMMENT --- */}
-                <PreviewToolbar
-                  activeTab={activeTab}
-                  previewDevice={previewDevice}
-                  onDeviceChange={setPreviewDevice}
-                  showPreview={showPreview}
-                  onPreviewToggle={() => setShowPreview(!showPreview)}
-                  onFullscreenPreview={handleFullscreenPreview}
-                />
-
-                {/* --- BEGIN COMMENT ---
-                预览内容区域
-                --- END COMMENT --- */}
-                <div className="min-h-0 flex-1">
+                <div className="flex-1 overflow-auto p-6">
                   {activeTab === 'about' ? (
-                    <AboutPreview
-                      config={aboutConfig}
-                      previewDevice={previewDevice}
-                    />
+                    isLoading || !aboutTranslations ? (
+                      <div>加载中...</div>
+                    ) : (
+                      <AboutEditor
+                        translations={aboutTranslations}
+                        currentLocale={currentLocale}
+                        supportedLocales={supportedLocales}
+                        onTranslationsChange={handleAboutTranslationsChange}
+                        onLocaleChange={setCurrentLocale}
+                      />
+                    )
                   ) : (
-                    <NotificationPreview notification={selectedNotification} />
+                    <NotificationEditor
+                      notifications={notifications}
+                      selectedNotification={selectedNotification}
+                      onNotificationsChange={handleNotificationsChange}
+                      onSelectedChange={handleSelectedNotificationChange}
+                    />
                   )}
                 </div>
-              </div>
-            }
-          />
-        ) : (
-          <div
-            className={cn(
-              'relative flex-1 border-r',
-              isDark
-                ? 'border-stone-600 bg-stone-800'
-                : 'border-stone-200 bg-white'
-            )}
-          >
-            <div className="h-full overflow-auto">
-              <div className="p-6">
-                {activeTab === 'about' ? (
-                  <AboutEditor
-                    config={aboutConfig}
-                    onChange={handleAboutConfigChange}
-                  />
-                ) : (
-                  <NotificationEditor
-                    notifications={notifications}
-                    selectedNotification={selectedNotification}
-                    onNotificationsChange={handleNotificationsChange}
-                    onSelectedChange={handleSelectedNotificationChange}
-                  />
-                )}
-
-                {/* --- BEGIN COMMENT ---
-                保存操作区域 - 集成到编辑区域底部
-                --- END COMMENT --- */}
+                {/* --- 保存操作区域 --- */}
                 <div
                   className={cn(
-                    'mt-8 border-t pt-6',
+                    'flex-shrink-0 border-t p-4',
                     isDark ? 'border-stone-600' : 'border-stone-200'
                   )}
                 >
@@ -481,7 +407,6 @@ export default function ContentManagementPage() {
                         </div>
                       )}
                     </div>
-
                     <div className="flex items-center gap-3">
                       <button
                         onClick={handleReset}
@@ -497,7 +422,6 @@ export default function ContentManagementPage() {
                       >
                         重置
                       </button>
-
                       <button
                         onClick={handleSave}
                         disabled={!hasChanges || isSaving}
@@ -510,10 +434,123 @@ export default function ContentManagementPage() {
                             : 'cursor-not-allowed bg-stone-300 text-stone-500'
                         )}
                       >
-                        {isSaving ? '保存中...' : '保存更改'}
+                        {isSaving ? '保存中...' : '保存'}
                       </button>
                     </div>
                   </div>
+                </div>
+              </div>
+            }
+            right={
+              <div className="flex h-full min-w-0 flex-col">
+                <PreviewToolbar
+                  activeTab={activeTab}
+                  previewDevice={previewDevice}
+                  onDeviceChange={setPreviewDevice}
+                  showPreview={showPreview}
+                  onPreviewToggle={() => setShowPreview(!showPreview)}
+                  onFullscreenPreview={handleFullscreenPreview}
+                />
+                <div className="min-h-0 flex-1 overflow-auto">
+                  {activeTab === 'about' ? (
+                    aboutPreviewConfig ? (
+                      <AboutPreview
+                        config={aboutPreviewConfig}
+                        previewDevice={previewDevice}
+                      />
+                    ) : (
+                      <div>加载预览...</div>
+                    )
+                  ) : (
+                    <NotificationPreview notification={selectedNotification} />
+                  )}
+                </div>
+              </div>
+            }
+          />
+        ) : (
+          <div
+            className={cn(
+              'relative flex-1 border-r',
+              isDark
+                ? 'border-stone-600 bg-stone-800'
+                : 'border-stone-200 bg-white'
+            )}
+          >
+            <div className="h-full overflow-auto p-6">
+              {activeTab === 'about' ? (
+                isLoading || !aboutTranslations ? (
+                  <div>加载中...</div>
+                ) : (
+                  <AboutEditor
+                    translations={aboutTranslations}
+                    currentLocale={currentLocale}
+                    supportedLocales={supportedLocales}
+                    onTranslationsChange={handleAboutTranslationsChange}
+                    onLocaleChange={setCurrentLocale}
+                  />
+                )
+              ) : (
+                <NotificationEditor
+                  notifications={notifications}
+                  selectedNotification={selectedNotification}
+                  onNotificationsChange={handleNotificationsChange}
+                  onSelectedChange={handleSelectedNotificationChange}
+                />
+              )}
+            </div>
+            {/* --- 保存操作区域 (无预览时) --- */}
+            <div
+              className={cn(
+                'bg-opacity-80 absolute right-0 bottom-0 left-0 border-t p-4 backdrop-blur-sm',
+                isDark
+                  ? 'border-stone-600 bg-stone-800'
+                  : 'border-stone-200 bg-white'
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  {hasChanges && (
+                    <div
+                      className={cn(
+                        'flex items-center gap-2 text-sm',
+                        isDark ? 'text-stone-400' : 'text-stone-600'
+                      )}
+                    >
+                      <div className="h-2 w-2 rounded-full bg-orange-500" />
+                      <span>有未保存的更改</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleReset}
+                    disabled={!hasChanges || isSaving}
+                    className={cn(
+                      'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                      !hasChanges || isSaving
+                        ? 'cursor-not-allowed text-stone-500'
+                        : isDark
+                          ? 'text-stone-300 hover:bg-stone-700'
+                          : 'text-stone-600 hover:bg-stone-100'
+                    )}
+                  >
+                    重置
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={!hasChanges || isSaving}
+                    className={cn(
+                      'rounded-lg px-6 py-2 text-sm font-medium transition-colors',
+                      !hasChanges || isSaving
+                        ? 'cursor-not-allowed bg-stone-300 text-stone-500'
+                        : isDark
+                          ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                          : 'bg-stone-900 text-white hover:bg-stone-800'
+                    )}
+                  >
+                    {isSaving ? '保存中...' : '保存'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -521,13 +558,9 @@ export default function ContentManagementPage() {
         )}
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      全屏预览模态框
-      --- END COMMENT --- */}
-      {showFullscreenPreview && activeTab === 'about' && (
+      {showFullscreenPreview && activeTab === 'about' && aboutPreviewConfig && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
           <div className="flex h-full flex-col">
-            {/* 全屏预览工具栏 */}
             <div
               className={cn(
                 'flex items-center justify-between border-b px-6 py-4',
@@ -549,7 +582,7 @@ export default function ContentManagementPage() {
                     isDark ? 'text-stone-300' : 'text-stone-700'
                   )}
                 >
-                  全屏预览 - {aboutConfig.title}
+                  全屏预览 - {aboutPreviewConfig.title}
                 </span>
               </div>
               <button
@@ -564,10 +597,11 @@ export default function ContentManagementPage() {
                 关闭预览
               </button>
             </div>
-
-            {/* 全屏预览内容 */}
             <div className="flex-1 overflow-auto">
-              <AboutPreview config={aboutConfig} previewDevice="desktop" />
+              <AboutPreview
+                config={aboutPreviewConfig}
+                previewDevice="desktop"
+              />
             </div>
           </div>
         </div>

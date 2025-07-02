@@ -2,8 +2,8 @@
 // 北京信息科技大学SSO回调处理
 // 处理CAS服务器的回调，验证ticket，创建或查找用户，建立会话
 // --- END COMMENT ---
-import { createBistuCASService } from '@lib/services/sso/bistu-cas-service';
-import { SSOUserService } from '@lib/services/user/sso-user-service';
+import { createBistuCASService } from '@lib/services/admin/sso/bistu-cas-service';
+import { SSOUserService } from '@lib/services/admin/user/sso-user-service';
 import { createAdminClient } from '@lib/supabase/server';
 
 import { cookies } from 'next/headers';

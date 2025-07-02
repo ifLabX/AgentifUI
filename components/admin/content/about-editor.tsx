@@ -1,6 +1,13 @@
 'use client';
 
-import type { AboutPageConfig, ValueCard } from '@lib/config/about-config';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/ui/select';
+import type { SupportedLocale } from '@lib/config/language-config';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Plus, Trash2 } from 'lucide-react';
@@ -8,63 +15,75 @@ import { Plus, Trash2 } from 'lucide-react';
 import React from 'react';
 
 // --- BEGIN COMMENT ---
-// 导出配置类型供其他组件使用
+// 编辑器现在直接处理翻译对象，不再需要独立的配置类型
 // --- END COMMENT ---
-export type { AboutPageConfig, ValueCard };
 
 interface AboutEditorProps {
-  config: AboutPageConfig;
-  onChange: (config: AboutPageConfig) => void;
+  translations: Record<SupportedLocale, any>;
+  currentLocale: SupportedLocale;
+  supportedLocales: SupportedLocale[];
+  onTranslationsChange: (newTranslations: Record<SupportedLocale, any>) => void;
+  onLocaleChange: (newLocale: SupportedLocale) => void;
 }
 
-export function AboutEditor({ config, onChange }: AboutEditorProps) {
+export function AboutEditor({
+  translations,
+  currentLocale,
+  supportedLocales,
+  onTranslationsChange,
+  onLocaleChange,
+}: AboutEditorProps) {
   const { isDark } = useTheme();
+  const currentTranslation = translations[currentLocale] || {};
 
   // --- BEGIN COMMENT ---
-  // 添加新的价值观卡片
+  // 统一的字段更新处理器，支持点状路径
   // --- END COMMENT ---
-  const addValueCard = () => {
-    const newCard: ValueCard = {
-      id: Date.now().toString(),
-      title: '新价值观',
-      description: '请输入价值观描述...',
-    };
-    onChange({
-      ...config,
-      valueCards: [...config.valueCards, newCard],
-    });
+  const handleFieldChange = (field: string, value: any) => {
+    const newTranslations = JSON.parse(JSON.stringify(translations)); // Deep copy
+    const fieldParts = field.split('.');
+    let current = newTranslations[currentLocale];
+
+    for (let i = 0; i < fieldParts.length - 1; i++) {
+      if (!current[fieldParts[i]]) {
+        current[fieldParts[i]] = {};
+      }
+      current = current[fieldParts[i]];
+    }
+
+    current[fieldParts[fieldParts.length - 1]] = value;
+    onTranslationsChange(newTranslations);
   };
 
-  // --- BEGIN COMMENT ---
-  // 删除价值观卡片
-  // --- END COMMENT ---
-  const removeValueCard = (id: string) => {
-    onChange({
-      ...config,
-      valueCards: config.valueCards.filter(card => card.id !== id),
-    });
-  };
-
-  // --- BEGIN COMMENT ---
-  // 更新价值观卡片
-  // --- END COMMENT ---
-  const updateValueCard = (
-    id: string,
-    field: keyof ValueCard,
+  const handleValueCardChange = (
+    index: number,
+    field: 'title' | 'description',
     value: string
   ) => {
-    onChange({
-      ...config,
-      valueCards: config.valueCards.map(card =>
-        card.id === id ? { ...card, [field]: value } : card
-      ),
-    });
+    const newItems = [...(currentTranslation.values?.items || [])];
+    newItems[index] = { ...newItems[index], [field]: value };
+    handleFieldChange('values.items', newItems);
+  };
+
+  const addValueCard = () => {
+    const newItems = [
+      ...(currentTranslation.values?.items || []),
+      { title: '', description: '' },
+    ];
+    handleFieldChange('values.items', newItems);
+  };
+
+  const removeValueCard = (index: number) => {
+    const newItems = (currentTranslation.values?.items || []).filter(
+      (_: any, i: number) => i !== index
+    );
+    handleFieldChange('values.items', newItems);
   };
 
   return (
     <div className="space-y-6">
       {/* --- BEGIN COMMENT ---
-      标题设置
+      语言切换器
       --- END COMMENT --- */}
       <div>
         <label
@@ -73,12 +92,47 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          页面标题
+          编辑语言
+        </label>
+        <Select
+          value={currentLocale}
+          onValueChange={value => onLocaleChange(value as SupportedLocale)}
+        >
+          <SelectTrigger
+            className={cn(
+              isDark
+                ? 'border-stone-600 bg-stone-700'
+                : 'border-stone-300 bg-white'
+            )}
+          >
+            <SelectValue placeholder="选择语言" />
+          </SelectTrigger>
+          <SelectContent>
+            {supportedLocales.map(locale => (
+              <SelectItem key={locale} value={locale}>
+                {locale}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* --- BEGIN COMMENT ---
+      页面标题设置
+      --- END COMMENT --- */}
+      <div>
+        <label
+          className={cn(
+            'mb-2 block text-sm font-medium',
+            isDark ? 'text-stone-300' : 'text-stone-700'
+          )}
+        >
+          页面标题 (title)
         </label>
         <input
           type="text"
-          value={config.title}
-          onChange={e => onChange({ ...config, title: e.target.value })}
+          value={currentTranslation.title || ''}
+          onChange={e => handleFieldChange('title', e.target.value)}
           className={cn(
             'w-full rounded-lg border px-3 py-2 text-sm',
             isDark
@@ -98,12 +152,12 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          副标题
+          副标题 (subtitle)
         </label>
         <input
           type="text"
-          value={config.subtitle}
-          onChange={e => onChange({ ...config, subtitle: e.target.value })}
+          value={currentTranslation.subtitle || ''}
+          onChange={e => handleFieldChange('subtitle', e.target.value)}
           className={cn(
             'w-full rounded-lg border px-3 py-2 text-sm',
             isDark
@@ -123,11 +177,13 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          使命描述
+          使命描述 (mission.description)
         </label>
         <textarea
-          value={config.mission}
-          onChange={e => onChange({ ...config, mission: e.target.value })}
+          value={currentTranslation.mission?.description || ''}
+          onChange={e =>
+            handleFieldChange('mission.description', e.target.value)
+          }
           rows={4}
           className={cn(
             'w-full resize-none rounded-lg border px-3 py-2 text-sm',
@@ -149,7 +205,7 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            价值观卡片
+            价值观卡片 (values.items)
           </label>
           <button
             onClick={addValueCard}
@@ -164,75 +220,78 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
           </button>
         </div>
 
-        <div className="space-y-3">
-          {config.valueCards.map((card, index) => (
-            <div
-              key={card.id}
-              className={cn(
-                'rounded-lg border p-3',
-                isDark
-                  ? 'border-stone-600 bg-stone-700'
-                  : 'border-stone-200 bg-stone-50'
-              )}
-            >
-              <div className="mb-2 flex items-center justify-between">
-                <span
-                  className={cn(
-                    'text-xs font-medium',
-                    isDark ? 'text-stone-400' : 'text-stone-500'
-                  )}
-                >
-                  卡片 {index + 1}
-                </span>
-                <button
-                  onClick={() => removeValueCard(card.id)}
-                  className={cn(
-                    'rounded p-1 transition-colors',
-                    isDark
-                      ? 'text-red-400 hover:bg-red-900/30'
-                      : 'text-red-600 hover:bg-red-100'
-                  )}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
+        <div className="space-y-4">
+          {(currentTranslation.values?.items || []).map(
+            (card: any, index: number) => (
+              <div
+                key={index}
+                className={cn(
+                  'rounded-lg border p-4',
+                  isDark ? 'border-stone-600' : 'border-stone-200'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <p
+                    className={cn(
+                      'text-sm font-medium',
+                      isDark ? 'text-stone-300' : 'text-stone-700'
+                    )}
+                  >
+                    卡片 #{index + 1}
+                  </p>
+                  <button
+                    onClick={() => removeValueCard(index)}
+                    className={cn(
+                      'rounded p-1 text-red-500 transition-colors',
+                      isDark ? 'hover:bg-red-900/50' : 'hover:bg-red-100'
+                    )}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  <input
+                    type="text"
+                    placeholder="标题 (title)"
+                    value={card.title}
+                    onChange={e =>
+                      handleValueCardChange(index, 'title', e.target.value)
+                    }
+                    className={cn(
+                      'w-full rounded-md border px-3 py-1.5 text-sm',
+                      isDark
+                        ? 'border-stone-500 bg-stone-600 text-stone-100'
+                        : 'border-stone-300 bg-white text-stone-900'
+                    )}
+                  />
+                  <textarea
+                    placeholder="描述 (description)"
+                    value={card.description}
+                    onChange={e =>
+                      handleValueCardChange(
+                        index,
+                        'description',
+                        e.target.value
+                      )
+                    }
+                    rows={3}
+                    className={cn(
+                      'w-full resize-none rounded-md border px-3 py-1.5 text-sm',
+                      isDark
+                        ? 'border-stone-500 bg-stone-600 text-stone-100'
+                        : 'border-stone-300 bg-white text-stone-900'
+                    )}
+                  />
+                </div>
               </div>
-
-              <input
-                type="text"
-                value={card.title}
-                onChange={e =>
-                  updateValueCard(card.id, 'title', e.target.value)
-                }
-                placeholder="标题"
-                className={cn(
-                  'mb-2 w-full rounded border px-2 py-1 text-xs',
-                  isDark
-                    ? 'border-stone-500 bg-stone-800 text-stone-100'
-                    : 'border-stone-300 bg-white text-stone-900'
-                )}
-              />
-
-              <textarea
-                value={card.description}
-                onChange={e =>
-                  updateValueCard(card.id, 'description', e.target.value)
-                }
-                placeholder="描述"
-                rows={2}
-                className={cn(
-                  'w-full resize-none rounded border px-2 py-1 text-xs',
-                  isDark
-                    ? 'border-stone-500 bg-stone-800 text-stone-100'
-                    : 'border-stone-300 bg-white text-stone-900'
-                )}
-              />
-            </div>
-          ))}
+            )
+          )}
         </div>
       </div>
 
       {/* --- BEGIN COMMENT ---
-      按钮文案
+      按钮文字
       --- END COMMENT --- */}
       <div>
         <label
@@ -241,12 +300,12 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          按钮文案
+          按钮文字 (buttonText)
         </label>
         <input
           type="text"
-          value={config.buttonText}
-          onChange={e => onChange({ ...config, buttonText: e.target.value })}
+          value={currentTranslation.buttonText || ''}
+          onChange={e => handleFieldChange('buttonText', e.target.value)}
           className={cn(
             'w-full rounded-lg border px-3 py-2 text-sm',
             isDark
@@ -257,25 +316,53 @@ export function AboutEditor({ config, onChange }: AboutEditorProps) {
       </div>
 
       {/* --- BEGIN COMMENT ---
-      版权文案
+      版权信息
       --- END COMMENT --- */}
-      <div>
+      <div className="space-y-3 rounded-lg border p-4">
         <label
           className={cn(
-            'mb-2 block text-sm font-medium',
+            'block text-sm font-medium',
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          版权文案
+          版权信息 (copyright)
         </label>
+
         <input
           type="text"
-          value={config.copyrightText}
-          onChange={e => onChange({ ...config, copyrightText: e.target.value })}
+          placeholder="前缀 (prefix)"
+          value={currentTranslation.copyright?.prefix || ''}
+          onChange={e => handleFieldChange('copyright.prefix', e.target.value)}
           className={cn(
-            'w-full rounded-lg border px-3 py-2 text-sm',
+            'w-full rounded-md border px-3 py-1.5 text-sm',
             isDark
-              ? 'border-stone-600 bg-stone-700 text-stone-100'
+              ? 'border-stone-500 bg-stone-600 text-stone-100'
+              : 'border-stone-300 bg-white text-stone-900'
+          )}
+        />
+        <input
+          type="text"
+          placeholder="链接文字 (linkText)"
+          value={currentTranslation.copyright?.linkText || ''}
+          onChange={e =>
+            handleFieldChange('copyright.linkText', e.target.value)
+          }
+          className={cn(
+            'w-full rounded-md border px-3 py-1.5 text-sm',
+            isDark
+              ? 'border-stone-500 bg-stone-600 text-stone-100'
+              : 'border-stone-300 bg-white text-stone-900'
+          )}
+        />
+        <input
+          type="text"
+          placeholder="后缀 (suffix)"
+          value={currentTranslation.copyright?.suffix || ''}
+          onChange={e => handleFieldChange('copyright.suffix', e.target.value)}
+          className={cn(
+            'w-full rounded-md border px-3 py-1.5 text-sm',
+            isDark
+              ? 'border-stone-500 bg-stone-600 text-stone-100'
               : 'border-stone-300 bg-white text-stone-900'
           )}
         />

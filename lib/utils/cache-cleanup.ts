@@ -18,8 +18,8 @@ const CACHE_KEYS = {
   // 应用相关缓存
   LAST_USED_MODEL_APP: 'last-used-model-app-id',
 
-  // 关于页面配置（可选保留，全局配置）
-  ABOUT_PAGE_CONFIG: 'about-page-config',
+  // 关于页面配置（可选保留，全局配置） - 已被移除
+  // ABOUT_PAGE_CONFIG: 'about-page-config',
 
   // 其他需要清理的键名前缀
   RESIZABLE_PANE_PREFIX: 'split-pane-',
@@ -46,7 +46,15 @@ const USER_SPECIFIC_CACHE_KEYS = [
 // --- END COMMENT ---
 const GLOBAL_CONFIG_CACHE_KEYS = [
   CACHE_KEYS.THEME,
-  CACHE_KEYS.ABOUT_PAGE_CONFIG,
+  // CACHE_KEYS.ABOUT_PAGE_CONFIG, // 已被移除
+];
+
+// --- BEGIN COMMENT ---
+// 登出时需要清理的缓存
+// 将敏感缓存和用户特定缓存合并
+// --- END COMMENT ---
+const LOGOUT_CLEANUP_KEYS = [
+  ...new Set([...SENSITIVE_CACHE_KEYS, ...USER_SPECIFIC_CACHE_KEYS]),
 ];
 
 /**
