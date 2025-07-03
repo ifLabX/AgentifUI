@@ -4,7 +4,7 @@
 // --- END COMMENT ---
 import { getSSOConfig } from '@lib/config/sso-config';
 import { ProtocolTemplateHelper } from '@lib/config/sso-protocol-definitions';
-import { SSODatabaseService } from '@lib/services/sso/data/sso-database-service';
+import { SSODatabaseService } from '@lib/services/admin/sso/data/sso-database-service';
 import { createClient } from '@lib/supabase/server';
 
 import { NextRequest, NextResponse } from 'next/server';

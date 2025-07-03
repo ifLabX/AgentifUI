@@ -3,8 +3,8 @@
 // 核心功能：处理用户注销，清除本地会话并重定向到SSO提供商注销页面
 // 确保完整的注销流程，包括本地和远程会话清理
 // --- END COMMENT ---
-import { SSOServiceFactory } from '@lib/services/sso/core/service-factory';
-import { SSOProviderService } from '@lib/services/sso/data/sso-provider-service';
+import { SSOServiceFactory } from '@lib/services/admin/sso/core/service-factory';
+import { SSOProviderService } from '@lib/services/admin/sso/data/sso-provider-service';
 
 import { NextRequest, NextResponse } from 'next/server';
 

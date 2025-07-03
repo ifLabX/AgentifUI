@@ -4,9 +4,9 @@
 // 解决CAS和OIDC回调处理，确保用户信息正确同步到本地系统
 // --- END COMMENT ---
 import { createSSOSessionToken } from '@lib/auth/sso-session';
-import { SSOServiceFactory } from '@lib/services/sso/core/service-factory';
-import { SSOProviderService } from '@lib/services/sso/data/sso-provider-service';
-import { UserSyncService } from '@lib/services/sso/user/user-sync-service';
+import { SSOServiceFactory } from '@lib/services/admin/sso/core/service-factory';
+import { SSOProviderService } from '@lib/services/admin/sso/data/sso-provider-service';
+import { UserSyncService } from '@lib/services/admin/sso/user/user-sync-service';
 
 import { NextRequest, NextResponse } from 'next/server';
 

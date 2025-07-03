@@ -2,7 +2,7 @@
 // 单个SSO提供商管理API
 // 提供获取、更新、删除单个提供商的功能
 // --- END COMMENT ---
-import { SSODatabaseService } from '@lib/services/sso/data/sso-database-service';
+import { SSODatabaseService } from '@lib/services/admin/sso/data/sso-database-service';
 import { createClient } from '@lib/supabase/server';
 
 import { NextRequest, NextResponse } from 'next/server';

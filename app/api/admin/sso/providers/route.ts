@@ -2,7 +2,7 @@
 // SSO提供商管理API
 // 提供完整的CRUD操作，仅管理员可访问
 // --- END COMMENT ---
-import { SSODatabaseService } from '@lib/services/sso/data/sso-database-service';
+import { SSODatabaseService } from '@lib/services/admin/sso/data/sso-database-service';
 import { createClient } from '@lib/supabase/server';
 
 import { NextRequest, NextResponse } from 'next/server';
