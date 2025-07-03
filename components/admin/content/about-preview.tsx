@@ -86,9 +86,9 @@ export function AboutPreview({ config, previewDevice }: AboutPreviewProps) {
         };
       case 'tablet':
         return {
-          container: 'mx-auto bg-black rounded-xl p-3 shadow-2xl mt-40',
+          container: 'mx-auto bg-black rounded-xl p-3 shadow-2xl mt-50',
           screen:
-            'w-[600px] h-[800px] bg-white rounded-lg overflow-hidden relative',
+            'w-[768px] h-[1024px] bg-white rounded-lg overflow-hidden relative',
           content: 'h-full overflow-y-auto',
           mainClass: 'min-h-full w-full py-6 px-6',
           innerContainer: 'max-w-2xl mx-auto',

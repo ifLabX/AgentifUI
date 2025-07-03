@@ -34,20 +34,20 @@
       "subtitle": "探索AI的无限可能，打造智能新体验",
       "getStarted": "立即开始",
       "learnMore": "了解更多",
-      "features": {
-        "feature1": {
+      "features": [
+        {
           "title": "大模型集成",
           "description": "支持多种模型供应商，包括OpenAI、Anthropic、Dify等，满足不同企业需求"
         },
-        "feature2": {
+        {
           "title": "RAG知识增强",
           "description": "集成检索增强生成(RAG)技术，实现私有知识库和上下文感知"
         },
-        "feature3": {
+        {
           "title": "企业级部署",
           "description": "支持私有化部署，保障数据安全，基于Dify后端提供稳定可靠的服务"
         }
-      },
+      ],
       "copyright": {
         "prefix": "© {year} ",
         "linkText": "AgentifUI",

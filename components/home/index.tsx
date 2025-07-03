@@ -136,20 +136,7 @@ export function Home() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-3"
           >
-            {[
-              {
-                title: t('features.feature1.title'),
-                description: t('features.feature1.description'),
-              },
-              {
-                title: t('features.feature2.title'),
-                description: t('features.feature2.description'),
-              },
-              {
-                title: t('features.feature3.title'),
-                description: t('features.feature3.description'),
-              },
-            ].map((feature, index) => (
+            {(t.raw('features') as any[]).map((feature, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}

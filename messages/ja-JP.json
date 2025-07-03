@@ -34,20 +34,20 @@
       "subtitle": "AIの無限の可能性を探求し、インテリジェントな新体験を創造",
       "getStarted": "始める",
       "learnMore": "詳しく見る",
-      "features": {
-        "feature1": {
+      "features": [
+        {
           "title": "大規模モデル統合",
           "description": "OpenAI、Anthropic、Difyなど複数のモデルプロバイダーをサポートし、様々な企業ニーズに対応"
         },
-        "feature2": {
+        {
           "title": "RAG知識強化",
           "description": "検索拡張生成（RAG）技術を統合し、プライベート知識ベースとコンテキスト認識を実現"
         },
-        "feature3": {
+        {
           "title": "エンタープライズ展開",
           "description": "プライベート展開をサポートし、データセキュリティを保証、Difyバックエンドに基づく安定した信頼性の高いサービスを提供"
         }
-      },
+      ],
       "copyright": {
         "prefix": "© {year} ",
         "linkText": "AgentifUI",

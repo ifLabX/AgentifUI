@@ -34,20 +34,20 @@
       "subtitle": "Explore the infinite possibilities of AI and create intelligent new experiences",
       "getStarted": "Get Started",
       "learnMore": "Learn More",
-      "features": {
-        "feature1": {
+      "features": [
+        {
           "title": "Large Model Integration",
           "description": "Support for multiple model providers including OpenAI, Anthropic, Dify, etc., meeting different enterprise needs"
         },
-        "feature2": {
+        {
           "title": "RAG Knowledge Enhancement",
           "description": "Integrate Retrieval-Augmented Generation (RAG) technology to enable private knowledge bases and context awareness"
         },
-        "feature3": {
+        {
           "title": "Enterprise Deployment",
           "description": "Support for private deployment, ensuring data security, providing stable and reliable services based on Dify backend"
         }
-      },
+      ],
       "copyright": {
         "prefix": "© {year} ",
         "linkText": "AgentifUI",

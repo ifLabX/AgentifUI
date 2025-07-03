@@ -14,11 +14,7 @@ import { Plus, Trash2 } from 'lucide-react';
 
 import React from 'react';
 
-// --- BEGIN COMMENT ---
-// 编辑器现在直接处理翻译对象，不再需要独立的配置类型
-// --- END COMMENT ---
-
-interface AboutEditorProps {
+interface HomeEditorProps {
   translations: Record<SupportedLocale, any>;
   currentLocale: SupportedLocale;
   supportedLocales: SupportedLocale[];
@@ -26,21 +22,18 @@ interface AboutEditorProps {
   onLocaleChange: (newLocale: SupportedLocale) => void;
 }
 
-export function AboutEditor({
+export function HomeEditor({
   translations,
   currentLocale,
   supportedLocales,
   onTranslationsChange,
   onLocaleChange,
-}: AboutEditorProps) {
+}: HomeEditorProps) {
   const { isDark } = useTheme();
   const currentTranslation = translations[currentLocale] || {};
 
-  // --- BEGIN COMMENT ---
-  // 统一的字段更新处理器，支持点状路径
-  // --- END COMMENT ---
   const handleFieldChange = (field: string, value: any) => {
-    const newTranslations = JSON.parse(JSON.stringify(translations)); // Deep copy
+    const newTranslations = JSON.parse(JSON.stringify(translations));
     const fieldParts = field.split('.');
     let current = newTranslations[currentLocale];
 
@@ -55,36 +48,33 @@ export function AboutEditor({
     onTranslationsChange(newTranslations);
   };
 
-  const handleValueCardChange = (
+  const handleFeatureCardChange = (
     index: number,
     field: 'title' | 'description',
     value: string
   ) => {
-    const newItems = [...(currentTranslation.values?.items || [])];
+    const newItems = [...(currentTranslation.features || [])];
     newItems[index] = { ...newItems[index], [field]: value };
-    handleFieldChange('values.items', newItems);
+    handleFieldChange('features', newItems);
   };
 
-  const addValueCard = () => {
+  const addFeatureCard = () => {
     const newItems = [
-      ...(currentTranslation.values?.items || []),
+      ...(currentTranslation.features || []),
       { title: '', description: '' },
     ];
-    handleFieldChange('values.items', newItems);
+    handleFieldChange('features', newItems);
   };
 
-  const removeValueCard = (index: number) => {
-    const newItems = (currentTranslation.values?.items || []).filter(
+  const removeFeatureCard = (index: number) => {
+    const newItems = (currentTranslation.features || []).filter(
       (_: any, i: number) => i !== index
     );
-    handleFieldChange('values.items', newItems);
+    handleFieldChange('features', newItems);
   };
 
   return (
     <div className="space-y-6">
-      {/* --- BEGIN COMMENT ---
-      语言切换器
-      --- END COMMENT --- */}
       <div>
         <label
           className={cn(
@@ -118,9 +108,6 @@ export function AboutEditor({
         </Select>
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      页面标题设置
-      --- END COMMENT --- */}
       <div>
         <label
           className={cn(
@@ -143,9 +130,6 @@ export function AboutEditor({
         />
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      副标题设置
-      --- END COMMENT --- */}
       <div>
         <label
           className={cn(
@@ -155,37 +139,10 @@ export function AboutEditor({
         >
           副标题 (subtitle)
         </label>
-        <input
-          type="text"
+        <textarea
           value={currentTranslation.subtitle || ''}
           onChange={e => handleFieldChange('subtitle', e.target.value)}
-          className={cn(
-            'w-full rounded-lg border px-3 py-2 text-sm',
-            isDark
-              ? 'border-stone-600 bg-stone-700 text-stone-100'
-              : 'border-stone-300 bg-white text-stone-900'
-          )}
-        />
-      </div>
-
-      {/* --- BEGIN COMMENT ---
-      使命描述
-      --- END COMMENT --- */}
-      <div>
-        <label
-          className={cn(
-            'mb-2 block text-sm font-medium',
-            isDark ? 'text-stone-300' : 'text-stone-700'
-          )}
-        >
-          使命描述 (mission.description)
-        </label>
-        <textarea
-          value={currentTranslation.mission?.description || ''}
-          onChange={e =>
-            handleFieldChange('mission.description', e.target.value)
-          }
-          rows={4}
+          rows={3}
           className={cn(
             'w-full resize-none rounded-lg border px-3 py-2 text-sm',
             isDark
@@ -195,9 +152,6 @@ export function AboutEditor({
         />
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      价值观卡片管理
-      --- END COMMENT --- */}
       <div>
         <div className="mb-3 flex items-center justify-between">
           <label
@@ -206,10 +160,10 @@ export function AboutEditor({
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            价值观卡片 (values.items)
+            特性卡片 (features)
           </label>
           <button
-            onClick={addValueCard}
+            onClick={addFeatureCard}
             className={cn(
               'rounded p-1 transition-colors',
               isDark
@@ -222,7 +176,7 @@ export function AboutEditor({
         </div>
 
         <div className="space-y-4">
-          {(currentTranslation.values?.items || []).map(
+          {(currentTranslation.features || []).map(
             (card: any, index: number) => (
               <div
                 key={index}
@@ -241,7 +195,7 @@ export function AboutEditor({
                     卡片 #{index + 1}
                   </p>
                   <button
-                    onClick={() => removeValueCard(index)}
+                    onClick={() => removeFeatureCard(index)}
                     className={cn(
                       'rounded p-1 text-red-500 transition-colors',
                       isDark ? 'hover:bg-red-900/50' : 'hover:bg-red-100'
@@ -257,7 +211,7 @@ export function AboutEditor({
                     placeholder="标题 (title)"
                     value={card.title}
                     onChange={e =>
-                      handleValueCardChange(index, 'title', e.target.value)
+                      handleFeatureCardChange(index, 'title', e.target.value)
                     }
                     className={cn(
                       'w-full rounded-md border px-3 py-1.5 text-sm',
@@ -270,7 +224,7 @@ export function AboutEditor({
                     placeholder="描述 (description)"
                     value={card.description}
                     onChange={e =>
-                      handleValueCardChange(
+                      handleFeatureCardChange(
                         index,
                         'description',
                         e.target.value
@@ -291,34 +245,51 @@ export function AboutEditor({
         </div>
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      按钮文字
-      --- END COMMENT --- */}
-      <div>
-        <label
-          className={cn(
-            'mb-2 block text-sm font-medium',
-            isDark ? 'text-stone-300' : 'text-stone-700'
-          )}
-        >
-          按钮文字 (buttonText)
-        </label>
-        <input
-          type="text"
-          value={currentTranslation.buttonText || ''}
-          onChange={e => handleFieldChange('buttonText', e.target.value)}
-          className={cn(
-            'w-full rounded-lg border px-3 py-2 text-sm',
-            isDark
-              ? 'border-stone-600 bg-stone-700 text-stone-100'
-              : 'border-stone-300 bg-white text-stone-900'
-          )}
-        />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div>
+          <label
+            className={cn(
+              'mb-2 block text-sm font-medium',
+              isDark ? 'text-stone-300' : 'text-stone-700'
+            )}
+          >
+            主按钮 (getStarted)
+          </label>
+          <input
+            type="text"
+            value={currentTranslation.getStarted || ''}
+            onChange={e => handleFieldChange('getStarted', e.target.value)}
+            className={cn(
+              'w-full rounded-lg border px-3 py-2 text-sm',
+              isDark
+                ? 'border-stone-600 bg-stone-700 text-stone-100'
+                : 'border-stone-300 bg-white text-stone-900'
+            )}
+          />
+        </div>
+        <div>
+          <label
+            className={cn(
+              'mb-2 block text-sm font-medium',
+              isDark ? 'text-stone-300' : 'text-stone-700'
+            )}
+          >
+            次按钮 (learnMore)
+          </label>
+          <input
+            type="text"
+            value={currentTranslation.learnMore || ''}
+            onChange={e => handleFieldChange('learnMore', e.target.value)}
+            className={cn(
+              'w-full rounded-lg border px-3 py-2 text-sm',
+              isDark
+                ? 'border-stone-600 bg-stone-700 text-stone-100'
+                : 'border-stone-300 bg-white text-stone-900'
+            )}
+          />
+        </div>
       </div>
 
-      {/* --- BEGIN COMMENT ---
-      版权信息
-      --- END COMMENT --- */}
       <div>
         <label
           className={cn(

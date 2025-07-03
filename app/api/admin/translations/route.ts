@@ -77,7 +77,8 @@ async function writeTranslationFile(locale: string, data: any): Promise<void> {
     await acquireLock(filePath);
 
     // 写入临时文件
-    await fs.writeFile(tempPath, JSON.stringify(data, null, 2), 'utf-8');
+    const fileContent = JSON.stringify(data, null, 2) + '\\n';
+    await fs.writeFile(tempPath, fileContent, 'utf-8');
 
     // 原子性重命名
     await fs.rename(tempPath, filePath);
