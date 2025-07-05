@@ -78,6 +78,61 @@ TypeScript编译检查必须通过，不能有任何类型错误。组件的导�
 
 避免在组件中拼接翻译文本。如果必须组合，优先考虑参数化翻译或重新设计翻译结构。
 
+## 优化验证流程
+
+### 验证工具
+
+项目提供了两个验证工具来确保重构质量：
+
+1. **`scripts/validate-i18n-consistency.py`** - 完整的一致性验证脚本
+   - 检查所有翻译文件行数一致性
+   - 验证JSON格式正确性
+   - 验证结构键完全一致
+   - 提供详细的差异报告
+
+2. **`scripts/i18n-refactor-helper.py`** - 重构助手工具
+   - 自动备份和恢复功能
+   - 快速检查功能
+   - 集成验证功能
+   - 增量验证支持
+
+### 优化的工作流程
+
+建议按照以下5个阶段进行重构，每个阶段都有自动化验证：
+
+**阶段0：准备和备份**
+
+```bash
+python scripts/i18n-refactor-helper.py backup
+```
+
+**阶段1-4：按原有流程进行重构**
+
+- 每完成一个阶段后运行验证
+
+```bash
+python scripts/validate-i18n-consistency.py
+```
+
+**阶段5：最终验证和清理**
+
+```bash
+# 验证并自动清理备份
+python scripts/i18n-refactor-helper.py check
+
+# 或者分步执行
+python scripts/validate-i18n-consistency.py
+python scripts/i18n-refactor-helper.py cleanup
+```
+
+### 安全保障
+
+- 每次重构前自动备份
+- 出现问题时可快速恢复
+- 增量验证及时发现问题
+- 验证通过后自动清理备份文件
+- 严格的重构原则确保代码质量
+
 ## 重构成功标准
 
 重构完成后，项目应该支持四种语言的完整显示，所有硬编码中文文本被移除，组件功能完全不受影响，代码通过所有质量检查，翻译文件结构规范且一致。

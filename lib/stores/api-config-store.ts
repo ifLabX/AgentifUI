@@ -64,7 +64,7 @@ interface ApiConfigState {
 // 辅助函数：处理Result类型的返回值
 function handleResult<T>(result: Result<T>, operation: string): T {
   if (!result.success) {
-    throw new Error(`${operation}失败: ${result.error.message}`);
+    throw new Error(`${operation} failed: ${result.error.message}`);
   }
   return result.data;
 }
@@ -95,7 +95,10 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         config: instance.config || {},
       });
 
-      const newInstance = handleResult(newInstanceResult, '创建服务实例');
+      const newInstance = handleResult(
+        newInstanceResult,
+        'Create service instance'
+      );
 
       // 更新本地状态 - 添加新实例到列表
       const { serviceInstances } = get();
@@ -113,7 +116,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         });
 
         if (!response.ok) {
-          throw new Error('加密失败');
+          throw new Error('Encryption failed');
         }
 
         const { encryptedKey } = await response.json();
@@ -132,7 +135,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           true
         ); // 标记密钥已加密
 
-        const newApiKey = handleResult(newApiKeyResult, '创建 API 密钥');
+        const newApiKey = handleResult(newApiKeyResult, 'Create API key');
 
         // 更新本地状态 - 添加新密钥到列表
         const { apiKeys } = get();
@@ -141,7 +144,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
       return newInstance;
     } catch (error) {
-      console.error('创建应用实例时出错:', error);
+      console.error('Error creating app instance:', error);
       throw error;
     }
   },
@@ -153,11 +156,11 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       const existingInstanceResult = await getServiceInstanceById(id);
       const existingInstance = handleResult(
         existingInstanceResult,
-        '获取应用实例'
+        'Get app instance'
       );
 
       if (!existingInstance) {
-        throw new Error('未找到要更新的应用实例');
+        throw new Error('App instance not found for update');
       }
 
       // 🎯 修复：正确处理config字段的更新
@@ -186,7 +189,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
       const updatedInstance = handleResult(
         updatedInstanceResult,
-        '更新服务实例'
+        'Update service instance'
       );
 
       // 更新本地状态 - 更新实例列表中的对应项
@@ -209,14 +212,14 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         });
 
         if (!response.ok) {
-          throw new Error('加密失败');
+          throw new Error('Encryption failed');
         }
 
         const { encryptedKey } = await response.json();
 
         // 查找现有 API 密钥
         const existingKeyResult = await getApiKeyByServiceInstance(id);
-        const existingKey = handleResult(existingKeyResult, '获取 API 密钥');
+        const existingKey = handleResult(existingKeyResult, 'Get API key');
 
         if (existingKey) {
           // 更新现有密钥 - 使用更新后的 updateApiKey 函数
@@ -227,7 +230,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             true // 标记密钥已加密
           );
 
-          const updatedKey = handleResult(updatedKeyResult, '更新 API 密钥');
+          const updatedKey = handleResult(updatedKeyResult, 'Update API key');
 
           // 更新本地状态 - 更新密钥列表中的对应项
           const { apiKeys } = get();
@@ -252,7 +255,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             true
           ); // 标记密钥已加密
 
-          const newKey = handleResult(newKeyResult, '创建 API 密钥');
+          const newKey = handleResult(newKeyResult, 'Create API key');
 
           // 更新本地状态 - 添加新密钥到列表
           const { apiKeys } = get();
@@ -262,7 +265,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
       return updatedInstance;
     } catch (error) {
-      console.error('更新应用实例时出错:', error);
+      console.error('Error updating app instance:', error);
       throw error;
     }
   },
@@ -274,11 +277,11 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       const existingInstanceResult = await getServiceInstanceById(id);
       const existingInstance = handleResult(
         existingInstanceResult,
-        '获取应用实例'
+        'Get app instance'
       );
 
       if (!existingInstance) {
-        throw new Error('未找到要删除的应用实例');
+        throw new Error('App instance not found for deletion');
       }
 
       // 🎯 新增：删除应用实例时同步从常用应用存储中移除
@@ -286,11 +289,11 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
       // 查找并删除相关的 API 密钥
       const existingKeyResult = await getApiKeyByServiceInstance(id);
-      const existingKey = handleResult(existingKeyResult, '获取 API 密钥');
+      const existingKey = handleResult(existingKeyResult, 'Get API key');
 
       if (existingKey) {
         const deletedResult = await deleteApiKey(existingKey.id);
-        handleResult(deletedResult, '删除 API 密钥');
+        handleResult(deletedResult, 'Delete API key');
 
         // 更新本地状态 - 从密钥列表中移除
         const { apiKeys } = get();
@@ -299,7 +302,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
       // 删除服务实例
       const deletedResult = await deleteServiceInstance(id);
-      handleResult(deletedResult, '删除服务实例');
+      handleResult(deletedResult, 'Delete service instance');
 
       // 更新本地状态 - 从实例列表中移除
       const { serviceInstances } = get();
@@ -319,7 +322,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         // 不抛出错误，因为这不应该阻止主要的删除操作
       }
     } catch (error) {
-      console.error('删除应用实例时出错:', error);
+      console.error('Error deleting app instance:', error);
       throw error;
     }
   },
@@ -329,7 +332,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
     try {
       // 调用数据库函数设置默认实例
       const result = await setDefaultServiceInstance(instanceId);
-      const updatedInstance = handleResult(result, '设置默认应用实例');
+      const updatedInstance = handleResult(result, 'Set default app instance');
 
       // 更新本地状态 - 更新所有相关实例的is_default状态
       const { serviceInstances } = get();
@@ -345,7 +348,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         })),
       });
     } catch (error) {
-      console.error('设置默认应用实例时出错:', error);
+      console.error('Error setting default app instance:', error);
       throw error;
     }
   },
@@ -362,7 +365,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       // 使用数据库函数获取所有提供商
       console.time('[API Config] 获取提供商');
       const providersResult = await getActiveProviders();
-      const providers = handleResult(providersResult, '获取活跃提供商');
+      const providers = handleResult(providersResult, 'Get active providers');
       console.timeEnd('[API Config] 获取提供商');
 
       // 🚀 优化：并行获取每个提供商的服务实例
@@ -376,7 +379,10 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             instances: result.success ? result.data : [],
           }))
           .catch(error => {
-            console.warn(`获取提供商 ${provider.name} 的服务实例失败:`, error);
+            console.warn(
+              `Failed to get service instances for provider ${provider.name}:`,
+              error
+            );
             return {
               provider,
               result: { success: false, error },
@@ -395,7 +401,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           serviceInstances.push(...instances);
         } else {
           console.error(
-            `获取提供商 ${provider.name} 的服务实例失败:`,
+            `Failed to get service instances for provider ${provider.name}:`,
             result.error
           );
         }
@@ -420,7 +426,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           }))
           .catch(error => {
             console.warn(
-              `获取服务实例 ${instance.display_name || instance.instance_id} 的 API 密钥失败:`,
+              `Failed to get API key for service instance ${instance.display_name || instance.instance_id}:`,
               error
             );
             return {
@@ -441,7 +447,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           apiKeys.push(apiKey);
         } else if (!result.success) {
           console.error(
-            `获取服务实例 ${instance.display_name || instance.instance_id} 的 API 密钥失败:`,
+            `Failed to get API key for service instance ${instance.display_name || instance.instance_id}:`,
             result.error
           );
         }
@@ -502,7 +508,10 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           is_default: false,
         });
 
-        const newProvider = handleResult(newProviderResult, '创建 Dify 提供商');
+        const newProvider = handleResult(
+          newProviderResult,
+          'Create Dify provider'
+        );
         difyProvider = newProvider;
 
         // 更新提供商列表
@@ -519,7 +528,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
         const updatedProvider = handleResult(
           updatedProviderResult,
-          '更新 Dify 提供商'
+          'Update Dify provider'
         );
 
         // 更新本地状态
@@ -552,7 +561,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
           const newInstance = handleResult(
             newInstanceResult,
-            '创建默认服务实例'
+            'Create default service instance'
           );
           defaultInstance = newInstance;
 
@@ -570,7 +579,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
         });
 
         if (!response.ok) {
-          throw new Error('加密失败');
+          throw new Error('Encryption failed');
         }
 
         const { encryptedKey } = await response.json();
@@ -590,7 +599,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
 
           const updatedKey = handleResult(
             updatedKeyResult,
-            '更新默认 API 密钥'
+            'Update default API key'
           );
 
           // 更新本地状态
@@ -614,7 +623,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             true
           ); // 标记密钥已加密
 
-          const newKey = handleResult(newKeyResult, '创建默认 API 密钥');
+          const newKey = handleResult(newKeyResult, 'Create default API key');
 
           // 更新 API 密钥列表
           set({ apiKeys: [...apiKeys, newKey] });
@@ -624,7 +633,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
       // 清空输入
       set({ newApiKey: '', isUpdating: false });
     } catch (error) {
-      console.error('更新 Dify 配置时出错:', error);
+      console.error('Error updating Dify config:', error);
       set({
         error:
           error instanceof Error ? error : new Error('更新 Dify 配置时出错'),

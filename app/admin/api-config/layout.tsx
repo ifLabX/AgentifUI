@@ -26,6 +26,7 @@ import {
 
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface ApiConfigLayoutProps {
@@ -51,20 +52,20 @@ const getAppTypeIcon = (difyAppType?: string) => {
 };
 
 // 根据Dify应用类型获取类型标签和颜色
-const getAppTypeInfo = (difyAppType?: string) => {
+const getAppTypeInfo = (tDifyTypes: any, difyAppType?: string) => {
   switch (difyAppType) {
     case 'chatbot':
-      return { label: '聊天助手', color: 'emerald' };
+      return { label: tDifyTypes('chatbot.label'), color: 'emerald' };
     case 'agent':
-      return { label: '智能代理', color: 'violet' };
+      return { label: tDifyTypes('agent.label'), color: 'violet' };
     case 'chatflow':
-      return { label: '对话流', color: 'amber' };
+      return { label: tDifyTypes('chatflow.label'), color: 'amber' };
     case 'workflow':
-      return { label: '工作流', color: 'rose' };
+      return { label: tDifyTypes('workflow.label'), color: 'rose' };
     case 'text-generation':
-      return { label: '文本生成', color: 'cyan' };
+      return { label: tDifyTypes('text-generation.label'), color: 'cyan' };
     default:
-      return { label: '应用', color: 'stone' };
+      return { label: tDifyTypes('chatbot.label'), color: 'stone' };
   }
 };
 
@@ -73,6 +74,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations('pages.admin.apiConfig.layout');
+  const tDifyTypes = useTranslations('difyAppTypes');
+  const tDebug = useTranslations('debug');
 
   const {
     serviceInstances: instances,
@@ -233,17 +237,17 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       inst => inst.instance_id === instanceId
     );
     if (!instanceToDelete) {
-      alert('未找到要删除的实例');
+      alert(t('instanceNotFound'));
       return;
     }
 
     // --- 检查是否为默认应用 ---
     if (instanceToDelete.is_default) {
-      alert('默认应用不可删除，请先设置其他应用为默认应用');
+      alert(t('defaultAppCannotDelete'));
       return;
     }
 
-    if (!confirm('确定要删除此应用实例吗？此操作不可撤销。')) {
+    if (!confirm(t('deleteConfirm'))) {
       return;
     }
 
@@ -259,7 +263,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       );
     } catch (error) {
       console.error('删除失败:', error);
-      alert('删除应用实例失败');
+      alert(t('deleteInstanceFailed'));
     } finally {
       setIsProcessing(false);
     }
@@ -267,9 +271,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
 
   const handleSetDefaultInstance = async (instanceId: string) => {
     // --- 添加调试信息 ---
-    console.log('设置默认应用 - 传入ID:', instanceId);
+    console.log(tDebug('setDefaultApp'), instanceId);
     console.log(
-      '当前所有实例:',
+      tDebug('currentInstances'),
       instances.map(inst => ({
         id: inst.id,
         instance_id: inst.instance_id,
@@ -280,12 +284,12 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
     // --- 修复：使用数据库ID查找实例 ---
     const instanceToSet = instances.find(inst => inst.id === instanceId);
     if (!instanceToSet) {
-      console.error('未找到实例，传入ID:', instanceId);
-      alert('未找到要设置的实例');
+      console.error(tDebug('instanceNotFound'), instanceId);
+      alert(t('instanceNotFoundForDefault'));
       return;
     }
 
-    console.log('找到实例:', instanceToSet);
+    console.log(tDebug('foundInstance'), instanceToSet);
 
     if (instanceToSet.is_default) {
       return; // 已经是默认应用，无需操作
@@ -293,7 +297,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
 
     if (
       !confirm(
-        `确定要将"${instanceToSet.display_name || '此应用'}"设置为默认应用吗？`
+        t('setDefaultConfirm', {
+          name: instanceToSet.display_name || 'this app',
+        })
       )
     ) {
       return;
@@ -310,8 +316,8 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         })
       );
     } catch (error) {
-      console.error('设置默认应用失败:', error);
-      alert('设置默认应用失败');
+      console.error(tDebug('setDefaultFailed'), error);
+      alert(t('setDefaultFailed'));
     } finally {
       setIsProcessing(false);
     }
@@ -387,7 +393,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                加载应用实例中...
+                {t('loading')}
               </p>
             </div>
           ) : filteredInstances.length === 0 ? (
@@ -399,7 +405,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                {filterProviderId ? '该提供商暂无应用实例' : '暂无应用实例'}
+                {filterProviderId
+                  ? t('noInstancesForProvider')
+                  : t('noInstances')}
               </p>
               <button
                 onClick={() => {
@@ -412,7 +420,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                     : 'text-stone-600 hover:text-stone-800'
                 )}
               >
-                添加第一个应用
+                {t('addFirstApp')}
               </button>
             </div>
           ) : (
@@ -420,7 +428,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
               {filteredInstances.map(instance => {
                 const difyAppType = instance.config?.app_metadata?.dify_apptype;
                 const AppIcon = getAppTypeIcon(difyAppType);
-                const typeInfo = getAppTypeInfo(difyAppType);
+                const typeInfo = getAppTypeInfo(tDifyTypes, difyAppType);
                 const provider = providers.find(
                   p => p.id === instance.provider_id
                 );
@@ -483,7 +491,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                               )}
                             >
                               <Star className="h-2.5 w-2.5" />
-                              默认
+                              {t('defaultApp')}
                             </span>
                           )}
                         </div>
@@ -539,7 +547,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                                 : 'text-stone-500 hover:bg-amber-100 hover:text-amber-700 focus:ring-amber-300',
                               isProcessing && 'cursor-not-allowed opacity-50'
                             )}
-                            title="设为默认应用"
+                            title={t('setAsDefault')}
                           >
                             <StarOff className="h-3.5 w-3.5" />
                           </button>

@@ -35,6 +35,8 @@ import {
 
 import React, { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface DifyParametersPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -48,9 +50,10 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   onClose,
   config,
   onSave,
-  instanceName = '应用实例',
+  instanceName = 'this app',
 }) => {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.apiConfig.difyParametersPanel');
   const [localConfig, setLocalConfig] =
     useState<DifyParametersSimplifiedConfig>(config);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -67,7 +70,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
   );
   const [maxFiles, setMaxFiles] = useState(3);
   const [enabledFileTypes, setEnabledFileTypes] = useState<Set<string>>(
-    new Set(['图片'])
+    new Set(['image'])
   );
   const [customFileTypes, setCustomFileTypes] = useState<string>(''); // 新增：自定义文件类型
 
@@ -76,7 +79,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
     fileUploadEnabled: false,
     uploadMethod: 'both' as 'local' | 'url' | 'both',
     maxFiles: 3,
-    enabledFileTypes: new Set<string>(['图片']),
+    enabledFileTypes: new Set<string>(['image']),
     customFileTypes: '',
   });
 
@@ -202,13 +205,14 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
 
           if (hasStandardTypes) {
             // 如果有标准类型，只添加标准类型
-            if (allowedTypes.includes('image')) enabledTypesSet.add('图片');
-            if (allowedTypes.includes('document')) enabledTypesSet.add('文档');
-            if (allowedTypes.includes('audio')) enabledTypesSet.add('音频');
-            if (allowedTypes.includes('video')) enabledTypesSet.add('视频');
+            if (allowedTypes.includes('image')) enabledTypesSet.add('image');
+            if (allowedTypes.includes('document'))
+              enabledTypesSet.add('document');
+            if (allowedTypes.includes('audio')) enabledTypesSet.add('audio');
+            if (allowedTypes.includes('video')) enabledTypesSet.add('video');
           } else if (allowedTypes.includes('custom')) {
             // 如果包含 custom，说明选择了"其他文件类型"
-            enabledTypesSet.add('其他文件类型');
+            enabledTypesSet.add('other');
             // 从 allowed_file_extensions 获取自定义扩展名
             if (fileUploadConfig.allowed_file_extensions) {
               customFileTypesValue =
@@ -217,16 +221,17 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
           } else {
             // 如果没有标准类型也没有custom，可能是其他未知类型
             console.warn('[文件上传初始化] 未知的文件类型:', allowedTypes);
-            enabledTypesSet.add('其他文件类型');
+            enabledTypesSet.add('other');
           }
         } else {
           // 回退到检查具体的文件类型配置
-          if (fileUploadConfig.image?.enabled) enabledTypesSet.add('图片');
-          if (fileUploadConfig.document?.enabled) enabledTypesSet.add('文档');
-          if (fileUploadConfig.audio?.enabled) enabledTypesSet.add('音频');
-          if (fileUploadConfig.video?.enabled) enabledTypesSet.add('视频');
+          if (fileUploadConfig.image?.enabled) enabledTypesSet.add('image');
+          if (fileUploadConfig.document?.enabled)
+            enabledTypesSet.add('document');
+          if (fileUploadConfig.audio?.enabled) enabledTypesSet.add('audio');
+          if (fileUploadConfig.video?.enabled) enabledTypesSet.add('video');
           if (fileUploadConfig.other?.enabled) {
-            enabledTypesSet.add('其他文件类型');
+            enabledTypesSet.add('other');
             customFileTypesValue =
               (fileUploadConfig.other as any).custom_extensions?.join(', ') ||
               '';
@@ -371,7 +376,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
           ? ['remote_url']
           : ['local_file', 'remote_url'];
 
-    if (enabledFileTypes.has('图片')) {
+    if (enabledFileTypes.has('image')) {
       fileUploadConfig.image = {
         enabled: true,
         number_limits: maxFiles,
@@ -379,7 +384,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
 
-    if (enabledFileTypes.has('文档')) {
+    if (enabledFileTypes.has('document')) {
       fileUploadConfig.document = {
         enabled: true,
         number_limits: maxFiles,
@@ -387,7 +392,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
 
-    if (enabledFileTypes.has('音频')) {
+    if (enabledFileTypes.has('audio')) {
       fileUploadConfig.audio = {
         enabled: true,
         number_limits: maxFiles,
@@ -395,7 +400,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
 
-    if (enabledFileTypes.has('视频')) {
+    if (enabledFileTypes.has('video')) {
       fileUploadConfig.video = {
         enabled: true,
         number_limits: maxFiles,
@@ -403,7 +408,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
       };
     }
 
-    if (enabledFileTypes.has('其他文件类型') && customFileTypes.trim()) {
+    if (enabledFileTypes.has('other') && customFileTypes.trim()) {
       fileUploadConfig.other = {
         enabled: true,
         number_limits: maxFiles,
@@ -484,7 +489,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
-                {instanceName} - Dify 参数配置
+                {t('title', { instanceName })}
               </h2>
 
               {/* 关闭按钮 */}
@@ -527,7 +532,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         isDark ? 'text-stone-200' : 'text-stone-800'
                       )}
                     >
-                      开场白配置
+                      {t('sections.basic.title')}
                     </span>
                     {expandedSections.has('basic') ? (
                       <ChevronDown
@@ -563,7 +568,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                             isDark ? 'text-stone-300' : 'text-stone-700'
                           )}
                         >
-                          开场白内容
+                          {t('sections.basic.openingStatement.label')}
                         </label>
                         <textarea
                           value={localConfig.opening_statement || ''}
@@ -576,7 +581,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                               ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                               : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
                           )}
-                          placeholder="输入开场白内容..."
+                          placeholder={t(
+                            'sections.basic.openingStatement.placeholder'
+                          )}
                           rows={3}
                         />
                       </div>
@@ -589,7 +596,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                             isDark ? 'text-stone-300' : 'text-stone-700'
                           )}
                         >
-                          开场推荐问题
+                          {t('sections.basic.suggestedQuestions.label')}
                         </label>
                         <div className="space-y-3">
                           {(localConfig.suggested_questions || []).map(
@@ -610,7 +617,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                       ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                                       : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
                                   )}
-                                  placeholder={`推荐问题 ${index + 1}`}
+                                  placeholder={t(
+                                    'sections.basic.suggestedQuestions.placeholder'
+                                  )}
                                 />
                                 <button
                                   onClick={() => removeSuggestedQuestion(index)}
@@ -638,7 +647,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                             )}
                           >
                             <Plus className="h-4 w-4" />
-                            添加推荐问题
+                            {t('sections.basic.suggestedQuestions.addButton')}
                           </button>
                         </div>
                       </div>
@@ -667,7 +676,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-200' : 'text-stone-800'
                         )}
                       >
-                        回答后推荐问题
+                        {t('sections.basic.suggestedQuestions.label')}
                       </span>
                     </div>
                     <label className="relative inline-flex cursor-pointer items-center">
@@ -733,7 +742,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-200' : 'text-stone-800'
                         )}
                       >
-                        文件上传功能
+                        {t('sections.fileUpload.title')}
                       </span>
                     </div>
                     <div className="flex h-6 items-center gap-3">
@@ -809,7 +818,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-200' : 'text-stone-800'
                         )}
                       >
-                        语音转文本
+                        {t('sections.speechToText.title')}
                       </span>
                     </div>
                     <label className="relative inline-flex cursor-pointer items-center">
@@ -873,7 +882,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         isDark ? 'text-stone-200' : 'text-stone-800'
                       )}
                     >
-                      文本转语音
+                      {t('sections.textToSpeech.title')}
                     </span>
                     <div className="flex items-center gap-2">
                       <span
@@ -889,8 +898,8 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         )}
                       >
                         {localConfig.text_to_speech?.enabled
-                          ? '已启用'
-                          : '已禁用'}
+                          ? t('sections.textToSpeech.enabled')
+                          : t('sections.textToSpeech.disabled')}
                       </span>
                       {expandedSections.has('tts') ? (
                         <ChevronDown className="h-4 w-4 text-stone-400" />
@@ -917,7 +926,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                             isDark ? 'text-stone-300' : 'text-stone-700'
                           )}
                         >
-                          启用文本转语音
+                          {t('sections.textToSpeech.enableLabel')}
                         </label>
                         <label className="relative inline-flex cursor-pointer items-center">
                           <input
@@ -968,7 +977,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 isDark ? 'text-stone-300' : 'text-stone-700'
                               )}
                             >
-                              语音类型
+                              {t('sections.textToSpeech.voiceType.label')}
                             </label>
                             <input
                               type="text"
@@ -985,7 +994,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                   ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                                   : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
                               )}
-                              placeholder="例如: alloy, echo, fable"
+                              placeholder={t(
+                                'sections.textToSpeech.voiceType.placeholder'
+                              )}
                             />
                           </div>
 
@@ -997,7 +1008,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 isDark ? 'text-stone-300' : 'text-stone-700'
                               )}
                             >
-                              语言
+                              {t('sections.textToSpeech.language.label')}
                             </label>
                             <select
                               value={localConfig.text_to_speech?.language || ''}
@@ -1014,11 +1025,23 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                   : 'border-stone-300 bg-white text-stone-900'
                               )}
                             >
-                              <option value="">选择语言</option>
-                              <option value="zh">中文</option>
-                              <option value="en">英文</option>
-                              <option value="ja">日文</option>
-                              <option value="ko">韩文</option>
+                              <option value="">
+                                {t(
+                                  'sections.textToSpeech.language.selectPlaceholder'
+                                )}
+                              </option>
+                              <option value="zh">
+                                {t('sections.textToSpeech.language.options.zh')}
+                              </option>
+                              <option value="en">
+                                {t('sections.textToSpeech.language.options.en')}
+                              </option>
+                              <option value="ja">
+                                {t('sections.textToSpeech.language.options.ja')}
+                              </option>
+                              <option value="ko">
+                                {t('sections.textToSpeech.language.options.ko')}
+                              </option>
                             </select>
                           </div>
 
@@ -1030,7 +1053,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 isDark ? 'text-stone-300' : 'text-stone-700'
                               )}
                             >
-                              自动播放
+                              {t('sections.textToSpeech.autoPlay.label')}
                             </label>
                             <div className="flex gap-2">
                               <button
@@ -1053,7 +1076,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                       : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                                 )}
                               >
-                                开启
+                                {t('sections.textToSpeech.autoPlay.enabled')}
                               </button>
                               <button
                                 type="button"
@@ -1075,7 +1098,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                       : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                                 )}
                               >
-                                关闭
+                                {t('sections.textToSpeech.autoPlay.disabled')}
                               </button>
                             </div>
                           </div>
@@ -1106,7 +1129,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-200' : 'text-stone-800'
                         )}
                       >
-                        引用和归属
+                        {t('sections.retrieverResource.title')}
                       </span>
                     </div>
                     <label className="relative inline-flex cursor-pointer items-center">
@@ -1170,7 +1193,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-200' : 'text-stone-800'
                         )}
                       >
-                        标记回复
+                        {t('sections.annotationReply.title')}
                       </span>
                     </div>
                     <label className="relative inline-flex cursor-pointer items-center">
@@ -1234,7 +1257,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         isDark ? 'text-stone-200' : 'text-stone-800'
                       )}
                     >
-                      用户输入表单
+                      {t('sections.userInputForm.title')}
                     </span>
                     <div className="flex items-center gap-2">
                       <span
@@ -1243,7 +1266,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-400' : 'text-stone-600'
                         )}
                       >
-                        {localConfig.user_input_form?.length || 0} 个字段
+                        {t('sections.userInputForm.fieldsCount', {
+                          count: localConfig.user_input_form?.length || 0,
+                        })}
                       </span>
                       {expandedSections.has('user_input') ? (
                         <ChevronDown className="h-4 w-4 text-stone-400" />
@@ -1268,8 +1293,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-400' : 'text-stone-600'
                         )}
                       >
-                        用户输入表单配置通常由 Dify
-                        应用自动生成，建议通过同步功能获取最新配置。
+                        {t('sections.userInputForm.description')}
                       </div>
 
                       {(localConfig.user_input_form || []).length > 0 ? (
@@ -1300,7 +1324,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                       )}
                                     >
                                       {fieldConfig?.label ||
-                                        `字段 ${index + 1}`}
+                                        t('sections.userInputForm.fieldLabel', {
+                                          index: index + 1,
+                                        })}
                                     </span>
                                     <span
                                       className={cn(
@@ -1321,9 +1347,21 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                         : 'text-stone-600'
                                     )}
                                   >
-                                    变量名: {fieldConfig?.variable || 'N/A'} |
-                                    必填: {fieldConfig?.required ? '是' : '否'}{' '}
-                                    | 默认值: {fieldConfig?.default || '无'}
+                                    {t('sections.userInputForm.fieldInfo', {
+                                      variable: fieldConfig?.variable || 'N/A',
+                                      required: fieldConfig?.required
+                                        ? t(
+                                            'sections.userInputForm.fieldRequired'
+                                          )
+                                        : t(
+                                            'sections.userInputForm.fieldOptional'
+                                          ),
+                                      defaultValue:
+                                        fieldConfig?.default ||
+                                        t(
+                                          'sections.userInputForm.fieldNoDefault'
+                                        ),
+                                    })}
                                   </div>
                                 </div>
                               );
@@ -1337,7 +1375,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                             isDark ? 'text-stone-500' : 'text-stone-400'
                           )}
                         >
-                          暂无用户输入表单配置
+                          {t('sections.userInputForm.noFields')}
                         </div>
                       )}
                     </div>
@@ -1367,7 +1405,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         isDark ? 'text-stone-200' : 'text-stone-800'
                       )}
                     >
-                      系统参数
+                      {t('sections.systemParameters.title')}
                     </span>
                     {expandedSections.has('system') ? (
                       <ChevronDown className="h-4 w-4 text-stone-400" />
@@ -1394,7 +1432,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                               isDark ? 'text-stone-300' : 'text-stone-700'
                             )}
                           >
-                            文档大小限制 (MB)
+                            {t('sections.systemParameters.fileSizeLimit')}
                           </label>
                           <input
                             type="number"
@@ -1427,7 +1465,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                               isDark ? 'text-stone-300' : 'text-stone-700'
                             )}
                           >
-                            图片大小限制 (MB)
+                            {t('sections.systemParameters.imageSizeLimit')}
                           </label>
                           <input
                             type="number"
@@ -1460,7 +1498,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                               isDark ? 'text-stone-300' : 'text-stone-700'
                             )}
                           >
-                            音频大小限制 (MB)
+                            {t('sections.systemParameters.audioSizeLimit')}
                           </label>
                           <input
                             type="number"
@@ -1493,7 +1531,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                               isDark ? 'text-stone-300' : 'text-stone-700'
                             )}
                           >
-                            视频大小限制 (MB)
+                            {t('sections.systemParameters.videoSizeLimit')}
                           </label>
                           <input
                             type="number"
@@ -1538,7 +1576,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
-                  您有未保存的更改
+                  {t('unsavedChanges')}
                 </p>
               )}
 
@@ -1557,7 +1595,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   )}
                 >
                   <RotateCcw className="h-4 w-4" />
-                  取消
+                  {t('buttons.cancel')}
                 </button>
                 <button
                   onClick={handleSave}
@@ -1573,7 +1611,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                   )}
                 >
                   <Save className="h-4 w-4" />
-                  保存
+                  {t('buttons.save')}
                 </button>
               </div>
             </div>
@@ -1611,7 +1649,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                       isDark ? 'text-stone-100' : 'text-stone-900'
                     )}
                   >
-                    文件上传配置
+                    {t('fileUploadModal.title')}
                   </h3>
                   <button
                     onClick={handleFileUploadCancel}
@@ -1637,7 +1675,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-300' : 'text-stone-700'
                         )}
                       >
-                        上传文件类型
+                        {t('fileUploadModal.uploadMethod.label')}
                       </label>
                       <div className="flex gap-1.5">
                         <button
@@ -1653,7 +1691,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                           )}
                         >
-                          本地上传
+                          {t('fileUploadModal.uploadMethod.local')}
                         </button>
                         <button
                           onClick={() => setUploadMethod('url')}
@@ -1668,7 +1706,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                           )}
                         >
-                          URL
+                          {t('fileUploadModal.uploadMethod.url')}
                         </button>
                         <button
                           onClick={() => setUploadMethod('both')}
@@ -1683,7 +1721,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                           )}
                         >
-                          两者
+                          {t('fileUploadModal.uploadMethod.both')}
                         </button>
                       </div>
                     </div>
@@ -1696,7 +1734,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-300' : 'text-stone-700'
                         )}
                       >
-                        最大上传数
+                        {t('fileUploadModal.maxFiles.label')}
                       </label>
                       <p
                         className={cn(
@@ -1704,8 +1742,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-400' : 'text-stone-600'
                         )}
                       >
-                        文档 &lt; 15MB, 图片 &lt; 10MB, 音频 &lt; 50MB, 视频
-                        &lt; 100MB
+                        {t('fileUploadModal.maxFiles.description')}
                       </p>
                       <div className="flex items-center gap-3">
                         <input
@@ -1738,7 +1775,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                           isDark ? 'text-stone-300' : 'text-stone-700'
                         )}
                       >
-                        支持的文件类型
+                        {t('fileUploadModal.fileTypes.label')}
                       </label>
                       <div className="space-y-2">
                         {Object.entries(FILE_TYPE_CONFIG).map(
@@ -1785,7 +1822,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                             : 'text-stone-800'
                                         )}
                                       >
-                                        {fileType}
+                                        {t(
+                                          `fileUploadModal.fileTypes.${fileType}`
+                                        )}
                                       </div>
                                       <div
                                         className={cn(
@@ -1825,7 +1864,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                 </div>
 
                                 {/* --- 其他文件类型的自定义输入 --- */}
-                                {fileType === '其他文件类型' && isEnabled && (
+                                {fileType === 'other' && isEnabled && (
                                   <div
                                     className={cn(
                                       'ml-4 rounded-lg border p-3',
@@ -1842,7 +1881,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                           : 'text-stone-700'
                                       )}
                                     >
-                                      自定义文件扩展名（用逗号或空格分隔）
+                                      {t(
+                                        'fileUploadModal.fileTypes.customDescription'
+                                      )}
                                     </label>
                                     <input
                                       type="text"
@@ -1856,7 +1897,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                           ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                                           : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
                                       )}
-                                      placeholder="例如: zip, rar, 7z, tar"
+                                      placeholder={t(
+                                        'fileUploadModal.fileTypes.customPlaceholder'
+                                      )}
                                     />
                                     <p
                                       className={cn(
@@ -1866,8 +1909,9 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                                           : 'text-stone-600'
                                       )}
                                     >
-                                      支持格式：zip, rar, 7z, tar, gz, bz2, xz
-                                      等
+                                      {t(
+                                        'fileUploadModal.fileTypes.customDescription'
+                                      )}
                                     </p>
                                   </div>
                                 )}
@@ -1896,7 +1940,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                     )}
                   >
-                    取消
+                    {t('buttons.cancel')}
                   </button>
                   <button
                     onClick={handleFileUploadSave}
@@ -1907,7 +1951,7 @@ const DifyParametersPanel: React.FC<DifyParametersPanelProps> = ({
                         : 'bg-stone-700 text-white hover:bg-stone-800'
                     )}
                   >
-                    确定
+                    {t('buttons.confirm')}
                   </button>
                 </div>
               </div>

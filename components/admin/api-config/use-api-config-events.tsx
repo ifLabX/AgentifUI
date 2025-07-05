@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 
 import { useEffect } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface UseApiConfigEventsProps {
   showAddForm: boolean;
   selectedInstance: ServiceInstance | null;
@@ -20,6 +22,7 @@ export const useApiConfigEvents = ({
   setShowAddForm,
   setCurrentFilterProviderId,
 }: UseApiConfigEventsProps) => {
+  const t = useTranslations('pages.admin.apiConfig.useApiConfigEvents');
   useEffect(() => {
     const handleSelectInstance = (event: CustomEvent) => {
       const instance = event.detail as ServiceInstance;
@@ -48,7 +51,7 @@ export const useApiConfigEvents = ({
     const handleDefaultInstanceChanged = (event: CustomEvent) => {
       const { instanceId } = event.detail;
       // --- 始终显示成功提示，不管是否是当前选中的实例 ---
-      toast.success('默认应用设置成功');
+      toast.success(t('defaultInstanceSetSuccess'));
 
       // --- 重新加载服务实例数据以更新UI状态 ---
       setTimeout(() => {

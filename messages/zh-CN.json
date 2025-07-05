@@ -854,7 +854,464 @@
     "admin": {
       "title": "管理后台",
       "users": "用户管理",
-      "analytics": "数据分析"
+      "analytics": "数据分析",
+      "main": {
+        "title": "管理后台概览",
+        "subtitle": "欢迎使用 AgentifUI 管理后台，在这里您可以管理系统的各项配置和设置"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI 管理后台",
+        "breadcrumbRoot": "管理后台",
+        "menuItems": {
+          "main": {
+            "text": "管理主页",
+            "description": "管理后台概览"
+          },
+          "apiConfig": {
+            "text": "API 配置",
+            "description": "管理应用实例和配置参数"
+          },
+          "content": {
+            "text": "关于与通知",
+            "description": "管理About页面和系统通知推送"
+          },
+          "users": {
+            "text": "用户管理",
+            "description": "管理用户账户和权限"
+          },
+          "groups": {
+            "text": "群组管理",
+            "description": "管理用户和群组，配置群组应用权限"
+          },
+          "permissions": {
+            "text": "应用权限管理",
+            "description": "管理应用可见性和群组权限"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "重新编译",
+            "messages": {
+              "startRebuild": "开始重新编译和部署...",
+              "startRebuildDescription": "这个过程可能需要几分钟，请保持耐心。",
+              "buildInProgress": "构建正在进行中",
+              "buildInProgressDescription": "请等待当前构建完成后再试。",
+              "authFailed": "认证失败",
+              "authFailedDescription": "请重新登录后再试。",
+              "permissionDenied": "权限不足",
+              "permissionDeniedDescription": "您没有权限执行此操作。",
+              "unknownError": "发生未知错误",
+              "buildComplete": "构建完成！",
+              "buildCompleteDescription": "应用将在2秒后自动重启以应用更改。",
+              "appRestarting": "应用重启中...",
+              "appRestartingDescription": "页面将在重启完成后自动刷新。",
+              "deployFailed": "部署失败",
+              "networkError": "网络错误，请检查连接后重试。"
+            }
+          },
+          "returnToChatButton": {
+            "text": "返回对话"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "刷新数据",
+            "save": "保存更改",
+            "saving": "保存中...",
+            "reset": "重置",
+            "create": "创建",
+            "cancel": "取消",
+            "confirm": "确定"
+          },
+          "status": {
+            "hasUnsavedChanges": "有未保存的更改",
+            "saving": "正在保存...",
+            "allChangesSaved": "所有更改已保存"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "选择应用实例",
+          "description": "从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例"
+        },
+        "formActions": {
+          "save": "保存",
+          "saving": "保存中...",
+          "cancel": "取消"
+        },
+        "providerManagement": {
+          "buttonText": "管理提供商",
+          "modal": {
+            "title": "管理服务提供商",
+            "providerList": "提供商列表",
+            "addProvider": "添加提供商",
+            "editProvider": "编辑提供商",
+            "addNewProvider": "添加新提供商",
+            "loading": "加载中...",
+            "noProviders": "暂无提供商配置",
+            "deleteConfirm": "确定要删除提供商\"{name}\"吗？此操作不可撤销。",
+            "messages": {
+              "loadFailed": "加载提供商列表失败",
+              "createSuccess": "提供商创建成功",
+              "createFailed": "创建提供商失败",
+              "updateSuccess": "提供商更新成功",
+              "updateFailed": "更新提供商失败",
+              "deleteSuccess": "提供商删除成功",
+              "deleteFailed": "删除提供商失败",
+              "saveFailed": "保存提供商失败"
+            },
+            "providerTypes": {
+              "llm": "LLM (大语言模型)",
+              "platform": "Platform (聚合平台)",
+              "embedding": "Embedding (向量化)",
+              "tts": "TTS (文本转语音)",
+              "stt": "STT (语音转文本)",
+              "vision": "Vision (图像识别)",
+              "multimodal": "Multimodal (多模态)"
+            },
+            "authTypes": {
+              "api_key": "API Key",
+              "bearer_token": "Bearer Token",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Basic Auth"
+            },
+            "status": {
+              "enabled": "已启用",
+              "disabled": "已禁用",
+              "default": "默认提供商"
+            },
+            "form": {
+              "name": {
+                "label": "提供商名称",
+                "placeholder": "例如：Dify、OpenAI、Claude",
+                "required": "提供商名称不能为空"
+              },
+              "type": {
+                "label": "提供商类型",
+                "placeholder": "选择提供商类型",
+                "required": "请选择提供商类型"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "例如：https://api.dify.ai/v1",
+                "required": "API URL不能为空",
+                "invalid": "请输入有效的URL格式"
+              },
+              "authType": {
+                "label": "认证类型",
+                "placeholder": "选择认证类型",
+                "required": "请选择认证类型"
+              },
+              "isActive": {
+                "label": "启用状态"
+              },
+              "isDefault": {
+                "label": "默认提供商",
+                "description": "系统中只能有一个默认提供商，设置后其他提供商的默认状态将被自动清除",
+                "setAsDefault": "设为默认",
+                "notDefault": "非默认"
+              },
+              "authMethod": "认证方式"
+            },
+            "buttons": {
+              "cancel": "取消",
+              "save": "保存",
+              "saving": "保存中..."
+            }
+          }
+        },
+        "layout": {
+          "loading": "加载应用实例中...",
+          "noInstances": "暂无应用实例",
+          "noInstancesForProvider": "该提供商暂无应用实例",
+          "addFirstApp": "添加第一个应用",
+          "defaultApp": "默认",
+          "deleteConfirm": "确定要删除此应用实例吗？此操作不可撤销。",
+          "defaultAppCannotDelete": "默认应用不可删除，请先设置其他应用为默认应用",
+          "instanceNotFound": "未找到要删除的实例",
+          "deleteInstanceFailed": "删除应用实例失败",
+          "setDefaultConfirm": "确定要将\"{name}\"设置为默认应用吗？",
+          "instanceNotFoundForDefault": "未找到要设置的实例",
+          "setDefaultFailed": "设置默认应用失败",
+          "setAsDefault": "设为默认应用"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "API 密钥 (key_value)",
+          "providerBinding": "供应商绑定",
+          "urlPlaceholder": "URL 将自动使用所选供应商的配置",
+          "urlBindingInfo": "URL 与服务供应商绑定，修改请在\"管理提供商\"中操作",
+          "currentProvider": "当前供应商: {name}",
+          "unknownProvider": "未知供应商",
+          "keyConfigured": "已配置",
+          "keyNotConfigured": "未配置",
+          "keyPlaceholderEdit": "留空则不更新 API 密钥",
+          "keyPlaceholderNew": "输入 API 密钥",
+          "keyEditHint": "留空输入框将保持现有密钥不变",
+          "tagsLabel": "应用标签 (tags)",
+          "tagCategories": {
+            "modelType": "模型类型",
+            "useCase": "应用场景",
+            "features": "技术特性"
+          },
+          "predefinedTags": {
+            "conversationModel": "对话模型",
+            "reasoningModel": "推理模型",
+            "documentModel": "文档模型",
+            "multimodal": "多模态",
+            "textGeneration": "文本生成",
+            "codeGeneration": "代码生成",
+            "dataAnalysis": "数据分析",
+            "translation": "翻译",
+            "highAccuracy": "高精度",
+            "fastResponse": "快速响应",
+            "localDeployment": "本地部署",
+            "enterpriseGrade": "企业级"
+          },
+          "customTagPlaceholder": "自定义标签（回车添加）",
+          "tagHelpText": "标签用于应用分类和搜索"
+        },
+        "providerSelector": {
+          "placeholder": "请选择提供商",
+          "defaultLabel": "默认",
+          "noProviders": "暂无可用的服务提供商"
+        },
+        "customProviderSelector": {
+          "placeholder": "请选择提供商",
+          "defaultLabel": "默认",
+          "noProviders": "暂无可用的服务提供商"
+        },
+        "instanceFilter": {
+          "allApps": "全部应用",
+          "providerApps": "{name}应用",
+          "defaultLabel": "默认",
+          "totalCount": "共 {count} 个",
+          "noProviders": "暂无可用的服务提供商"
+        },
+        "events": {
+          "defaultSetSuccess": "默认应用设置成功"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "请选择服务提供商",
+            "invalidProvider": "选择的服务提供商无效",
+            "inactiveProvider": "选择的服务提供商未激活",
+            "createFailed": "创建应用实例失败",
+            "updateFailed": "更新应用实例失败",
+            "setDefaultFailed": "设置默认应用失败"
+          },
+          "success": {
+            "instanceCreated": "应用实例创建成功",
+            "instanceUpdated": "应用实例更新成功",
+            "setAsDefault": "应用实例已设为默认应用"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "应用创建成功，但设置默认应用失败"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify 参数配置",
+          "defaultInstanceName": "应用实例",
+          "unsavedChanges": "您有未保存的更改",
+          "sections": {
+            "basic": {
+              "title": "基础配置",
+              "openingStatement": {
+                "label": "开场白内容",
+                "placeholder": "输入开场白内容..."
+              },
+              "suggestedQuestions": {
+                "label": "开场推荐问题",
+                "addButton": "添加推荐问题",
+                "placeholder": "输入推荐问题..."
+              }
+            },
+            "fileUpload": {
+              "title": "文件上传功能",
+              "enabled": "已启用",
+              "disabled": "已禁用"
+            },
+            "speechToText": {
+              "title": "语音转文本",
+              "enabled": "已启用",
+              "disabled": "已禁用"
+            },
+            "textToSpeech": {
+              "title": "文本转语音",
+              "enabled": "已启用",
+              "disabled": "已禁用",
+              "enableLabel": "启用文本转语音",
+              "voiceType": {
+                "label": "语音类型",
+                "placeholder": "例如: alloy, echo, fable"
+              },
+              "language": {
+                "label": "语言",
+                "selectPlaceholder": "选择语言",
+                "options": {
+                  "zh": "中文",
+                  "en": "英文",
+                  "ja": "日文",
+                  "ko": "韩文"
+                }
+              },
+              "autoPlay": {
+                "label": "自动播放",
+                "enabled": "开启",
+                "disabled": "关闭"
+              }
+            },
+            "retrieverResource": {
+              "title": "引用和归属"
+            },
+            "annotationReply": {
+              "title": "标记回复"
+            },
+            "userInputForm": {
+              "title": "用户输入表单",
+              "fieldsCount": "{count} 个字段",
+              "description": "用户输入表单配置通常由 Dify 应用自动生成，建议通过同步功能获取最新配置。",
+              "fieldInfo": "变量名: {variable} | 必填: {required} | 默认值: {defaultValue}",
+              "fieldRequired": "是",
+              "fieldOptional": "否",
+              "fieldNoDefault": "无",
+              "fieldLabel": "字段 {index}",
+              "noFields": "暂无用户输入表单配置"
+            },
+            "systemParameters": {
+              "title": "系统参数",
+              "fileSizeLimit": "文档大小限制 (MB)",
+              "imageSizeLimit": "图片大小限制 (MB)",
+              "audioSizeLimit": "音频大小限制 (MB)",
+              "videoSizeLimit": "视频大小限制 (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "文件上传配置",
+            "uploadMethod": {
+              "label": "上传文件类型",
+              "local": "本地上传",
+              "url": "URL链接",
+              "both": "两种方式"
+            },
+            "maxFiles": {
+              "label": "最大文件数量",
+              "description": "文档 < 15MB, 图片 < 10MB, 音频 < 50MB, 视频 < 100MB"
+            },
+            "fileTypes": {
+              "label": "支持的文件类型",
+              "image": "图片",
+              "document": "文档",
+              "audio": "音频",
+              "video": "视频",
+              "other": "其他文件类型",
+              "customPlaceholder": "例如: zip, rar, 7z, tar",
+              "customDescription": "支持格式：zip, rar, 7z, tar, gz, bz2, xz 等"
+            }
+          },
+          "buttons": {
+            "cancel": "取消",
+            "save": "保存",
+            "confirm": "确定"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "编辑应用实例",
+            "add": "添加应用实例"
+          },
+          "unsavedChanges": "有未保存的更改",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "不能包含空格（会影响URL路由）",
+              "invalidChars": "只能包含字母、数字、连字符(-)、下划线(_)和点(.)",
+              "tooLong": "长度不能超过50个字符",
+              "mustStartWithAlphanumeric": "必须以字母或数字开头",
+              "formatError": "应用ID格式错误",
+              "notModifiable": "应用 ID 创建后不可修改",
+              "formatDescription": "只能包含字母、数字、连字符(-)、下划线(_)和点(.)，不能包含空格。可先同步配置自动生成。"
+            },
+            "formValidationFailed": "表单验证失败",
+            "fillApiCredentials": "请先填写API URL和API Key",
+            "fillInstanceId": "请先填写应用ID"
+          },
+          "sync": {
+            "basicInfo": "基本信息",
+            "paramConfig": "参数配置",
+            "noDataReceived": "未能从 Dify API 获取到任何配置数据，请检查应用ID和API配置是否正确",
+            "successMessage": "成功从 Dify API 同步{items}！",
+            "autoGeneratedId": " 已自动生成应用ID：{instanceId}",
+            "syncFailed": "同步配置失败",
+            "syncFailedTitle": "同步失败",
+            "syncing": "同步中...",
+            "syncFromDify": "从Dify同步配置",
+            "syncFromDifyWithAutoId": "从 Dify API 同步配置（应用ID为空时将自动生成）",
+            "syncFromDifyDescription": "从 Dify API 同步配置",
+            "syncButtonDisabled": "请先填写API URL和API Key"
+          },
+          "defaultApp": {
+            "setAsDefault": "设为默认",
+            "isDefault": "默认应用",
+            "willSetAsDefault": "将设为默认",
+            "setDefaultConfirm": "确定要将\"{name}\"设置为默认应用吗？",
+            "setDefaultSuccess": "默认应用设置成功",
+            "setDefaultFailed": "设置默认应用失败",
+            "instanceNotFound": "实例ID不存在，无法设置为默认应用"
+          },
+          "provider": {
+            "title": "服务提供商",
+            "current": "当前应用的服务提供商（不可修改）",
+            "select": "选择服务提供商",
+            "unknown": "未知提供商",
+            "selectPlaceholder": "请选择提供商",
+            "configUpdated": "提供商配置已更新"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "应用 ID (instance_id) *",
+              "placeholder": "输入应用 ID",
+              "generateButton": "生成ID",
+              "generateTooltip": "点击生成随机UUID作为应用ID"
+            },
+            "displayName": {
+              "label": "显示名称 (display_name) *",
+              "placeholder": "输入显示名称"
+            },
+            "description": {
+              "label": "应用描述 (description)",
+              "placeholder": "输入应用描述"
+            }
+          },
+          "appType": {
+            "label": "应用类型 (app_type) *",
+            "model": {
+              "title": "模型 (Model)",
+              "description": "用于模型切换"
+            },
+            "marketplace": {
+              "title": "应用市场 (Marketplace)",
+              "description": "用于应用市场"
+            },
+            "note": "选择\"模型\"类型的应用会出现在聊天界面的模型选择器中"
+          },
+          "syncConfirm": {
+            "updateDescription": "是否将描述更新为：\"{description}\"？"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify 应用类型 (dify_apptype) *",
+            "titleCompact": "Dify 应用类型",
+            "description": "选择适合您应用场景的 Dify 应用类型。不同类型具有不同的功能特性和适用场景。"
+          },
+          "difyConfig": {
+            "title": "Dify 参数配置",
+            "appTypeNote": "选择\"模型\"类型的应用会出现在聊天界面的模型选择器中"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "默认应用设置成功"
+        }
+      }
     },
     "about": {
       "title": "关于 AgentifUI",
@@ -891,55 +1348,30 @@
         "linkText": "AgentifUI",
         "suffix": ". 探索大模型应用的未来。"
       }
-    },
-    "difyAppTypes": {
-      "workflow": {
-        "label": "工作流",
-        "description": "自动化工作流程",
-        "features": {
-          "automation": "自动化",
-          "batchProcessing": "批处理",
-          "processControl": "流程控制"
-        }
-      },
-      "text-generation": {
-        "label": "文本生成",
-        "description": "单次文本生成应用",
-        "features": {
-          "textGeneration": "文本生成",
-          "contentCreation": "内容创作",
-          "formattedOutput": "格式化输出"
-        }
-      },
-      "chatbot": {
-        "label": "聊天机器人",
-        "description": "基础对话聊天机器人",
-        "features": {
-          "conversation": "对话",
-          "fileUpload": "文件上传",
-          "speechToText": "语音转文字"
-        }
-      },
-      "agent": {
-        "label": "智能代理",
-        "description": "支持工具调用的智能代理",
-        "features": {
-          "conversation": "对话",
-          "toolCalling": "工具调用",
-          "reasoningChain": "推理链",
-          "multiTurnTasks": "多轮任务"
-        }
-      },
-      "chatflow": {
-        "label": "对话流",
-        "description": "对话流程编排应用",
-        "features": {
-          "processOrchestration": "流程编排",
-          "conditionalBranching": "条件分支",
-          "conversationManagement": "对话管理"
-        }
-      }
     }
+  },
+  "debug": {
+    "setDefaultApp": "设置默认应用 - 传入ID:",
+    "currentInstances": "当前所有实例:",
+    "instanceNotFound": "未找到实例，传入ID:",
+    "foundInstance": "找到实例:",
+    "setDefaultFailed": "设置默认应用失败:",
+    "syncConfig": "同步配置",
+    "syncFailed": "同步失败:",
+    "syncSuccess": "同步成功"
+  },
+  "buttons": {
+    "syncInProgress": "同步中...",
+    "syncConfig": "同步配置",
+    "tooltip": {
+      "syncFromDify": "从 Dify API 同步配置",
+      "syncFromDifyEdit": "从 Dify API 同步配置",
+      "syncFromDifyCreate": "从 Dify API 同步配置（应用ID为空时将自动生成）",
+      "fillCredentials": "请先填写API URL和API Key"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "是否将显示名称更新为：\"{name}\"？"
   },
   "errors": {
     "notFound": "页面未找到",
@@ -1157,6 +1589,54 @@
       "batchDeleteSuccess": "成功删除 {success} 个对话，{failed} 个删除失败",
       "batchDeleteFailed": "删除失败，请稍后重试",
       "error": "操作出错，请稍后再试"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "工作流",
+      "description": "自动化工作流程",
+      "features": {
+        "automation": "自动化",
+        "batchProcessing": "批处理",
+        "processControl": "流程控制"
+      }
+    },
+    "text-generation": {
+      "label": "文本生成",
+      "description": "单次文本生成应用",
+      "features": {
+        "textGeneration": "文本生成",
+        "contentCreation": "内容创作",
+        "formattedOutput": "格式化输出"
+      }
+    },
+    "chatbot": {
+      "label": "聊天机器人",
+      "description": "基础对话聊天机器人",
+      "features": {
+        "conversation": "对话",
+        "fileUpload": "文件上传",
+        "speechToText": "语音转文字"
+      }
+    },
+    "agent": {
+      "label": "智能代理",
+      "description": "支持工具调用的智能代理",
+      "features": {
+        "conversation": "对话",
+        "toolCalling": "工具调用",
+        "reasoningChain": "推理链",
+        "multiTurnTasks": "多轮任务"
+      }
+    },
+    "chatflow": {
+      "label": "对话流",
+      "description": "对话流程编排应用",
+      "features": {
+        "processOrchestration": "流程编排",
+        "conditionalBranching": "条件分支",
+        "conversationManagement": "对话管理"
+      }
     }
   }
 }

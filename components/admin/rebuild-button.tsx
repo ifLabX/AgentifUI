@@ -8,14 +8,17 @@ import { toast } from 'sonner';
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 export function RebuildButton() {
   const [isLoading, setIsLoading] = useState(false);
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.layout.actions.rebuildButton');
 
   const handleRebuild = async () => {
     setIsLoading(true);
-    toast.info('开始重新编译和部署...', {
-      description: '这个过程可能需要几分钟，请保持耐心。',
+    toast.info(t('messages.startRebuild'), {
+      description: t('messages.startRebuildDescription'),
     });
 
     try {
@@ -27,30 +30,30 @@ export function RebuildButton() {
 
       if (!response.ok) {
         if (response.status === 429) {
-          toast.warning('构建正在进行中', {
-            description: '请等待当前构建完成后再试。',
+          toast.warning(t('messages.buildInProgress'), {
+            description: t('messages.buildInProgressDescription'),
           });
         } else if (response.status === 401) {
-          toast.error('认证失败', {
-            description: '请重新登录后再试。',
+          toast.error(t('messages.authFailed'), {
+            description: t('messages.authFailedDescription'),
           });
         } else if (response.status === 403) {
-          toast.error('权限不足', {
-            description: '您没有权限执行此操作。',
+          toast.error(t('messages.permissionDenied'), {
+            description: t('messages.permissionDeniedDescription'),
           });
         } else {
-          throw new Error(result.error || '发生未知错误');
+          throw new Error(result.error || t('messages.unknownError'));
         }
         return;
       }
 
-      toast.success('构建完成！', {
-        description: '应用将在2秒后自动重启以应用更改。',
+      toast.success(t('messages.buildComplete'), {
+        description: t('messages.buildCompleteDescription'),
       });
 
       setTimeout(() => {
-        toast.info('应用重启中...', {
-          description: '页面将在重启完成后自动刷新。',
+        toast.info(t('messages.appRestarting'), {
+          description: t('messages.appRestartingDescription'),
         });
       }, 3000);
 
@@ -59,8 +62,8 @@ export function RebuildButton() {
       }, 8000);
     } catch (error: any) {
       console.error('Rebuild error:', error);
-      toast.error('部署失败', {
-        description: error.message || '网络错误，请检查连接后重试。',
+      toast.error(t('messages.deployFailed'), {
+        description: error.message || t('messages.networkError'),
       });
     } finally {
       setIsLoading(false);
@@ -85,7 +88,7 @@ export function RebuildButton() {
       ) : (
         <Rocket className="h-4 w-4" />
       )}
-      <span className="hidden text-sm sm:inline">重新编译</span>
+      <span className="hidden text-sm sm:inline">{t('text')}</span>
     </button>
   );
 }

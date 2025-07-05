@@ -41,7 +41,7 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
   const { addFavoriteApp, removeFavoriteApp, isFavorite } =
     useFavoriteAppsStore();
   const t = useTranslations('pages.apps.market');
-  const tDifyTypes = useTranslations('pages.difyAppTypes');
+  const tDifyTypes = useTranslations('difyAppTypes');
 
   // 获取Dify应用类型信息
   const difyAppType = app.config?.app_metadata?.dify_apptype || app.difyAppType;

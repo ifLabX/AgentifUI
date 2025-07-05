@@ -13,6 +13,7 @@ import {
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface AdminCardProps {
@@ -84,40 +85,38 @@ function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
 
 export default function AdminPage() {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.main');
+  const tLayout = useTranslations('pages.admin.layout');
 
   // Admin function card configuration
   const adminCards: AdminCardProps[] = [
     {
-      title: 'API 配置',
-      description:
-        'Manage application instances, configuration parameters and API keys to ensure system runs properly',
+      title: tLayout('menuItems.apiConfig.text'),
+      description: tLayout('menuItems.apiConfig.description'),
       icon: Key,
       href: '/admin/api-config',
     },
     {
-      title: '关于与通知',
-      description:
-        'Manage About page content and system notifications to improve user experience',
+      title: tLayout('menuItems.content.text'),
+      description: tLayout('menuItems.content.description'),
       icon: Bell,
       href: '/admin/content',
     },
     {
-      title: '用户管理',
-      description:
-        'Manage user accounts, permissions and access control to maintain system security',
+      title: tLayout('menuItems.users.text'),
+      description: tLayout('menuItems.users.description'),
       icon: Users,
       href: '/admin/users',
     },
     {
-      title: '群组管理',
-      description:
-        'Manage users and groups, configure group application permissions',
+      title: tLayout('menuItems.groups.text'),
+      description: tLayout('menuItems.groups.description'),
       icon: Building2,
       href: '/admin/groups',
     },
     {
-      title: '应用权限管理',
-      description: 'Manage application visibility and group permissions',
+      title: tLayout('menuItems.permissions.text'),
+      description: tLayout('menuItems.permissions.description'),
       icon: ShieldCheck,
       href: '/admin/permissions',
     },
@@ -136,7 +135,7 @@ export default function AdminPage() {
                 : 'from-stone-800 to-stone-600'
             )}
           >
-            管理后台概览
+            {t('title')}
           </h1>
           <p
             className={cn(
@@ -144,7 +143,7 @@ export default function AdminPage() {
               isDark ? 'text-stone-400' : 'text-stone-600'
             )}
           >
-            欢迎使用 AgentifUI 管理后台，在这里您可以管理系统的各项配置和设置
+            {t('subtitle')}
           </p>
         </div>
 

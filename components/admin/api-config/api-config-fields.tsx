@@ -6,6 +6,8 @@ import { Eye, EyeOff, Globe, Key } from 'lucide-react';
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface Provider {
   id: string;
   name: string;
@@ -42,6 +44,7 @@ export const ApiConfigFields = ({
 }: ApiConfigFieldsProps) => {
   const { isDark } = useTheme();
   const [showApiKey, setShowApiKey] = useState(false);
+  const t = useTranslations('pages.admin.apiConfig.fields');
 
   const getApiUrl = () => {
     if (formData.config.api_url) return formData.config.api_url;
@@ -62,7 +65,7 @@ export const ApiConfigFields = ({
       const currentProvider = providers.find(
         p => p.id === instance.provider_id
       );
-      return currentProvider ? currentProvider.name : '未知供应商';
+      return currentProvider ? currentProvider.name : t('unknownProvider');
     }
     return null;
   };
@@ -78,7 +81,7 @@ export const ApiConfigFields = ({
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            API URL (config.api_url)
+            {t('apiUrl')}
           </label>
 
           {/* 供应商绑定提示标签 */}
@@ -91,7 +94,7 @@ export const ApiConfigFields = ({
             )}
           >
             <Globe className="h-3 w-3" />
-            供应商绑定
+            {t('providerBinding')}
           </span>
         </div>
 
@@ -107,7 +110,7 @@ export const ApiConfigFields = ({
               ? 'border-stone-600 bg-stone-800/50 text-stone-300'
               : 'border-stone-300 bg-stone-100/50 text-stone-600'
           )}
-          placeholder="URL 将自动使用所选供应商的配置"
+          placeholder={t('urlPlaceholder')}
         />
 
         <div
@@ -122,9 +125,14 @@ export const ApiConfigFields = ({
             <Globe className="mt-0.5 h-3 w-3 flex-shrink-0" />
             <div>
               <ul className="space-y-1 text-xs">
-                <li>• URL 与服务供应商绑定，修改请在"管理提供商"中操作</li>
+                <li>• {t('urlBindingInfo')}</li>
                 {isEditing && instance && instance.provider_id && (
-                  <li>• 当前供应商: {getCurrentProviderName()}</li>
+                  <li>
+                    •{' '}
+                    {t('currentProvider', {
+                      name: getCurrentProviderName() || '',
+                    })}
+                  </li>
                 )}
               </ul>
             </div>
@@ -141,7 +149,7 @@ export const ApiConfigFields = ({
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            API 密钥 (key_value) {!isEditing && '*'}
+            {t('apiKey')} {!isEditing && '*'}
           </label>
 
           {/* --- API密钥配置状态标签 - 靠上对齐，避免挤压输入框 --- */}
@@ -159,7 +167,7 @@ export const ApiConfigFields = ({
               )}
             >
               <Key className="h-3 w-3" />
-              {hasApiKey ? '已配置' : '未配置'}
+              {hasApiKey ? t('keyConfigured') : t('keyNotConfigured')}
             </span>
           )}
         </div>
@@ -177,7 +185,9 @@ export const ApiConfigFields = ({
                 ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                 : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
             )}
-            placeholder={isEditing ? '留空则不更新 API 密钥' : '输入 API 密钥'}
+            placeholder={
+              isEditing ? t('keyPlaceholderEdit') : t('keyPlaceholderNew')
+            }
             required={!isEditing}
           />
           <button
@@ -201,7 +211,7 @@ export const ApiConfigFields = ({
               isDark ? 'text-stone-400' : 'text-stone-500'
             )}
           >
-            留空输入框将保持现有密钥不变
+            {t('keyEditHint')}
           </p>
         )}
       </div>

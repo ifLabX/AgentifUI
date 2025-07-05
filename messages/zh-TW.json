@@ -365,54 +365,6 @@
         "tokensUsed": "Token 使用: {count}"
       }
     },
-    "difyAppTypes": {
-      "workflow": {
-        "label": "工作流",
-        "description": "自動化工作流程",
-        "features": {
-          "automation": "自動化",
-          "batchProcessing": "批次處理",
-          "processControl": "流程控制"
-        }
-      },
-      "text-generation": {
-        "label": "文本生成",
-        "description": "單次文本生成應用",
-        "features": {
-          "textGeneration": "文本生成",
-          "contentCreation": "內容創作",
-          "formattedOutput": "格式化輸出"
-        }
-      },
-      "chatbot": {
-        "label": "聊天機器人",
-        "description": "基礎對話聊天機器人",
-        "features": {
-          "conversation": "對話",
-          "fileUpload": "檔案上傳",
-          "speechToText": "語音轉文字"
-        }
-      },
-      "agent": {
-        "label": "智能代理",
-        "description": "支援工具調用的智能代理",
-        "features": {
-          "conversation": "對話",
-          "toolCalling": "工具調用",
-          "reasoningChain": "推理鏈",
-          "multiTurnTasks": "多輪任務"
-        }
-      },
-      "chatflow": {
-        "label": "對話流",
-        "description": "對話流程編排應用",
-        "features": {
-          "processOrchestration": "流程編排",
-          "conditionalBranching": "條件分支",
-          "conversationManagement": "對話管理"
-        }
-      }
-    },
     "apps": {
       "startChatWith": "與 {appName} 開始對話...",
       "continueChatWith": "與 {appName} 繼續對話...",
@@ -902,7 +854,464 @@
     "admin": {
       "title": "管理後台",
       "users": "使用者管理",
-      "analytics": "資料分析"
+      "analytics": "資料分析",
+      "main": {
+        "title": "管理後台概覽",
+        "subtitle": "歡迎使用 AgentifUI 管理後台，在這裡您可以管理系統的各項設定和配置"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI 管理後台",
+        "breadcrumbRoot": "管理後台",
+        "menuItems": {
+          "main": {
+            "text": "管理主頁",
+            "description": "管理後台概覽"
+          },
+          "apiConfig": {
+            "text": "API 設定",
+            "description": "管理應用程式實例和設定參數"
+          },
+          "content": {
+            "text": "關於與通知",
+            "description": "管理關於頁面和系統通知推送"
+          },
+          "users": {
+            "text": "使用者管理",
+            "description": "管理使用者帳戶和權限"
+          },
+          "groups": {
+            "text": "群組管理",
+            "description": "管理使用者和群組，設定群組應用程式權限"
+          },
+          "permissions": {
+            "text": "應用程式權限管理",
+            "description": "管理應用程式可見性和群組權限"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "重新編譯",
+            "messages": {
+              "startRebuild": "開始重新編譯和部署...",
+              "startRebuildDescription": "這個過程可能需要幾分鐘，請保持耐心。",
+              "buildInProgress": "構建正在進行中",
+              "buildInProgressDescription": "請等待目前構建完成後再試。",
+              "authFailed": "認證失敗",
+              "authFailedDescription": "請重新登入後再試。",
+              "permissionDenied": "權限不足",
+              "permissionDeniedDescription": "您沒有權限執行此操作。",
+              "unknownError": "發生未知錯誤",
+              "buildComplete": "構建完成！",
+              "buildCompleteDescription": "應用將在2秒後自動重啟以套用更改。",
+              "appRestarting": "應用重啟中...",
+              "appRestartingDescription": "頁面將在重啟完成後自動重新整理。",
+              "deployFailed": "部署失敗",
+              "networkError": "網路錯誤，請檢查連線後重試。"
+            }
+          },
+          "returnToChatButton": {
+            "text": "返回對話"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "重新整理資料",
+            "save": "儲存變更",
+            "saving": "儲存中...",
+            "reset": "重設",
+            "create": "建立",
+            "cancel": "取消",
+            "confirm": "確定"
+          },
+          "status": {
+            "hasUnsavedChanges": "有未儲存的變更",
+            "saving": "儲存中...",
+            "allChangesSaved": "所有變更已儲存"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "選擇應用程式實例",
+          "description": "從左側列表中選擇一個應用程式實例來查看和編輯其設定，或點擊新增按鈕建立新的應用程式實例"
+        },
+        "formActions": {
+          "save": "儲存",
+          "saving": "儲存中...",
+          "cancel": "取消"
+        },
+        "providerManagement": {
+          "buttonText": "管理提供商",
+          "modal": {
+            "title": "管理服務提供商",
+            "providerList": "提供商列表",
+            "addProvider": "新增提供商",
+            "editProvider": "編輯提供商",
+            "addNewProvider": "新增新提供商",
+            "loading": "載入中...",
+            "noProviders": "暫無提供商配置",
+            "deleteConfirm": "確定要刪除提供商「{name}」嗎？此操作不可撤銷。",
+            "messages": {
+              "loadFailed": "載入提供商列表失敗",
+              "createSuccess": "提供商建立成功",
+              "createFailed": "建立提供商失敗",
+              "updateSuccess": "提供商更新成功",
+              "updateFailed": "更新提供商失敗",
+              "deleteSuccess": "提供商刪除成功",
+              "deleteFailed": "刪除提供商失敗",
+              "saveFailed": "儲存提供商失敗"
+            },
+            "providerTypes": {
+              "llm": "LLM (大語言模型)",
+              "platform": "Platform (聚合平台)",
+              "embedding": "Embedding (向量化)",
+              "tts": "TTS (文字轉語音)",
+              "stt": "STT (語音轉文字)",
+              "vision": "Vision (圖像識別)",
+              "multimodal": "Multimodal (多模態)"
+            },
+            "authTypes": {
+              "api_key": "API Key",
+              "bearer_token": "Bearer Token",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Basic Auth"
+            },
+            "status": {
+              "enabled": "已啟用",
+              "disabled": "已停用",
+              "default": "預設提供商"
+            },
+            "form": {
+              "name": {
+                "label": "提供商名稱",
+                "placeholder": "例如：Dify、OpenAI、Claude",
+                "required": "提供商名稱不能為空"
+              },
+              "type": {
+                "label": "提供商類型",
+                "placeholder": "選擇提供商類型",
+                "required": "請選擇提供商類型"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "例如：https://api.dify.ai/v1",
+                "required": "API URL不能為空",
+                "invalid": "請輸入有效的URL格式"
+              },
+              "authType": {
+                "label": "認證類型",
+                "placeholder": "選擇認證類型",
+                "required": "請選擇認證類型"
+              },
+              "isActive": {
+                "label": "啟用狀態"
+              },
+              "isDefault": {
+                "label": "預設提供商",
+                "description": "系統中只能有一個預設提供商，設定後其他提供商的預設狀態將被自動清除",
+                "setAsDefault": "設為預設",
+                "notDefault": "非預設"
+              },
+              "authMethod": "認證方式"
+            },
+            "buttons": {
+              "cancel": "取消",
+              "save": "儲存",
+              "saving": "儲存中..."
+            }
+          }
+        },
+        "layout": {
+          "loading": "載入應用程式實例中...",
+          "noInstances": "暫無應用程式實例",
+          "noInstancesForProvider": "該提供商暫無應用程式實例",
+          "addFirstApp": "新增第一個應用程式",
+          "defaultApp": "預設",
+          "deleteConfirm": "確定要刪除此應用程式實例嗎？此操作不可復原。",
+          "defaultAppCannotDelete": "預設應用程式不可刪除，請先設定其他應用程式為預設應用程式",
+          "instanceNotFound": "未找到要刪除的實例",
+          "deleteInstanceFailed": "刪除應用程式實例失敗",
+          "setDefaultConfirm": "確定要將\"{name}\"設定為預設應用程式嗎？",
+          "instanceNotFoundForDefault": "未找到要設定的實例",
+          "setDefaultFailed": "設定預設應用程式失敗",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "API 密鑰 (key_value)",
+          "providerBinding": "供應商綁定",
+          "urlPlaceholder": "URL 將自動使用所選供應商的設定",
+          "urlBindingInfo": "URL 與服務供應商綁定，修改請在\"管理提供商\"中操作",
+          "currentProvider": "目前供應商: {name}",
+          "unknownProvider": "未知供應商",
+          "keyConfigured": "已設定",
+          "keyNotConfigured": "未設定",
+          "keyPlaceholderEdit": "留空則不更新 API 密鑰",
+          "keyPlaceholderNew": "輸入 API 密鑰",
+          "keyEditHint": "留空輸入框將保持現有密鑰不變",
+          "tagsLabel": "應用程式標籤 (tags)",
+          "tagCategories": {
+            "modelType": "模型類型",
+            "useCase": "應用場景",
+            "features": "技術特性"
+          },
+          "predefinedTags": {
+            "conversationModel": "對話模型",
+            "reasoningModel": "推理模型",
+            "documentModel": "文檔模型",
+            "multimodal": "多模態",
+            "textGeneration": "文本生成",
+            "codeGeneration": "代碼生成",
+            "dataAnalysis": "數據分析",
+            "translation": "翻譯",
+            "highAccuracy": "高精度",
+            "fastResponse": "快速響應",
+            "localDeployment": "本地部署",
+            "enterpriseGrade": "企業級"
+          },
+          "customTagPlaceholder": "自定義標籤（按Enter添加）",
+          "tagHelpText": "標籤用於應用程式分類和搜尋"
+        },
+        "providerSelector": {
+          "placeholder": "請選擇提供商",
+          "defaultLabel": "預設",
+          "noProviders": "暫無可用的服務提供商"
+        },
+        "customProviderSelector": {
+          "placeholder": "請選擇提供商",
+          "defaultLabel": "預設",
+          "noProviders": "暫無可用的服務提供商"
+        },
+        "instanceFilter": {
+          "allApps": "全部應用程式",
+          "providerApps": "{name}應用程式",
+          "defaultLabel": "預設",
+          "totalCount": "共 {count} 個",
+          "noProviders": "暫無可用的服務提供商"
+        },
+        "events": {
+          "defaultSetSuccess": "預設應用程式設定成功"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "請選擇服務提供商",
+            "invalidProvider": "選擇的服務提供商無效",
+            "inactiveProvider": "選擇的服務提供商未啟用",
+            "createFailed": "建立應用程式實例失敗",
+            "updateFailed": "更新應用程式實例失敗",
+            "setDefaultFailed": "設定預設應用程式失敗"
+          },
+          "success": {
+            "instanceCreated": "應用程式實例建立成功",
+            "instanceUpdated": "應用程式實例更新成功",
+            "setAsDefault": "應用程式實例已設為預設應用程式"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "應用程式建立成功，但設定預設應用程式失敗"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify 參數配置",
+          "defaultInstanceName": "應用實例",
+          "unsavedChanges": "您有未儲存的變更",
+          "sections": {
+            "basic": {
+              "title": "基礎配置",
+              "openingStatement": {
+                "label": "開場白內容",
+                "placeholder": "輸入開場白內容..."
+              },
+              "suggestedQuestions": {
+                "label": "開場推薦問題",
+                "addButton": "新增推薦問題",
+                "placeholder": "輸入推薦問題..."
+              }
+            },
+            "fileUpload": {
+              "title": "檔案上傳功能",
+              "enabled": "已啟用",
+              "disabled": "已停用"
+            },
+            "speechToText": {
+              "title": "語音轉文字",
+              "enabled": "已啟用",
+              "disabled": "已停用"
+            },
+            "textToSpeech": {
+              "title": "文字轉語音",
+              "enabled": "已啟用",
+              "disabled": "已停用",
+              "enableLabel": "啟用文字轉語音",
+              "voiceType": {
+                "label": "語音類型",
+                "placeholder": "例如：alloy, echo, fable"
+              },
+              "language": {
+                "label": "語言",
+                "selectPlaceholder": "選擇語言",
+                "options": {
+                  "zh": "中文",
+                  "en": "英文",
+                  "ja": "日文",
+                  "ko": "韓文"
+                }
+              },
+              "autoPlay": {
+                "label": "自動播放",
+                "enabled": "開啟",
+                "disabled": "關閉"
+              }
+            },
+            "retrieverResource": {
+              "title": "引用和歸屬"
+            },
+            "annotationReply": {
+              "title": "註釋回覆"
+            },
+            "userInputForm": {
+              "title": "使用者輸入表單",
+              "fieldsCount": "{count} 個欄位",
+              "description": "使用者輸入表單配置通常由 Dify 應用程式自動生成。建議透過同步功能取得最新配置。",
+              "fieldInfo": "變數：{variable} | 必填：{required} | 預設值：{defaultValue}",
+              "fieldRequired": "是",
+              "fieldOptional": "否",
+              "fieldNoDefault": "無",
+              "fieldLabel": "欄位 {index}",
+              "noFields": "無使用者輸入表單配置"
+            },
+            "systemParameters": {
+              "title": "系統參數",
+              "fileSizeLimit": "文件大小限制 (MB)",
+              "imageSizeLimit": "圖片大小限制 (MB)",
+              "audioSizeLimit": "音訊大小限制 (MB)",
+              "videoSizeLimit": "影片大小限制 (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "檔案上傳配置",
+            "uploadMethod": {
+              "label": "上傳方式",
+              "local": "本地上傳",
+              "url": "URL 連結",
+              "both": "兩種方式"
+            },
+            "maxFiles": {
+              "label": "最大檔案數量",
+              "description": "文件 < 15MB, 圖片 < 10MB, 音訊 < 50MB, 影片 < 100MB"
+            },
+            "fileTypes": {
+              "label": "支援的檔案類型",
+              "image": "圖片",
+              "document": "文件",
+              "audio": "音訊",
+              "video": "影片",
+              "other": "其他檔案類型",
+              "customPlaceholder": "例如：zip, rar, 7z, tar",
+              "customDescription": "支援格式：zip, rar, 7z, tar, gz, bz2, xz 等"
+            }
+          },
+          "buttons": {
+            "cancel": "取消",
+            "save": "儲存",
+            "confirm": "確認"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "編輯應用實例",
+            "add": "新增應用實例"
+          },
+          "unsavedChanges": "有未儲存的變更",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "不能包含空格（會影響URL路由）",
+              "invalidChars": "只能包含字母、數字、連字符(-)、底線(_)和點(.)",
+              "tooLong": "長度不能超過50個字符",
+              "mustStartWithAlphanumeric": "必須以字母或數字開頭",
+              "formatError": "應用ID格式錯誤",
+              "notModifiable": "應用 ID 建立後不可修改",
+              "formatDescription": "只能包含字母、數字、連字符(-)、底線(_)和點(.)，不能包含空格。可先同步配置自動生成。"
+            },
+            "formValidationFailed": "表單驗證失敗",
+            "fillApiCredentials": "請先填寫API URL和API Key",
+            "fillInstanceId": "請先填寫應用ID"
+          },
+          "sync": {
+            "basicInfo": "基本資訊",
+            "paramConfig": "參數配置",
+            "noDataReceived": "未能從 Dify API 取得任何配置資料，請檢查應用ID和API配置是否正確",
+            "successMessage": "成功從 Dify API 同步{items}！",
+            "autoGeneratedId": " 已自動生成應用ID：{instanceId}",
+            "syncFailed": "同步配置失敗",
+            "syncFailedTitle": "同步失敗",
+            "syncing": "同步中...",
+            "syncFromDify": "從Dify同步配置",
+            "syncFromDifyWithAutoId": "從 Dify API 同步配置（應用ID為空時將自動生成）",
+            "syncFromDifyDescription": "從 Dify API 同步配置",
+            "syncButtonDisabled": "請先填寫API URL和API Key"
+          },
+          "defaultApp": {
+            "setAsDefault": "設為預設",
+            "isDefault": "預設應用",
+            "willSetAsDefault": "將設為預設",
+            "setDefaultConfirm": "確定要將\"{name}\"設定為預設應用嗎？",
+            "setDefaultSuccess": "預設應用設定成功",
+            "setDefaultFailed": "設定預設應用失敗",
+            "instanceNotFound": "實例ID不存在，無法設定為預設應用"
+          },
+          "provider": {
+            "title": "服務提供商",
+            "current": "目前應用的服務提供商（不可修改）",
+            "select": "選擇服務提供商",
+            "unknown": "未知提供商",
+            "selectPlaceholder": "請選擇提供商",
+            "configUpdated": "提供商配置已更新"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "應用 ID (instance_id) *",
+              "placeholder": "輸入應用 ID",
+              "generateButton": "生成ID",
+              "generateTooltip": "點擊生成隨機UUID作為應用ID"
+            },
+            "displayName": {
+              "label": "顯示名稱 (display_name) *",
+              "placeholder": "輸入顯示名稱"
+            },
+            "description": {
+              "label": "應用描述 (description)",
+              "placeholder": "輸入應用描述"
+            }
+          },
+          "appType": {
+            "label": "應用類型 (app_type) *",
+            "model": {
+              "title": "模型",
+              "description": "用於模型切換"
+            },
+            "marketplace": {
+              "title": "應用市場",
+              "description": "用於應用市場"
+            },
+            "note": "選擇\"模型\"類型的應用會出現在聊天介面的模型選擇器中"
+          },
+          "syncConfirm": {
+            "updateDescription": "是否將描述更新為：\"{description}\"？"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify 應用類型 (dify_apptype) *",
+            "titleCompact": "Dify 應用類型",
+            "description": "選擇適合您應用場景的 Dify 應用類型。不同類型具有不同的功能特性和適用場景。"
+          },
+          "difyConfig": {
+            "title": "Dify 參數配置",
+            "appTypeNote": "選擇\"模型\"類型的應用會出現在聊天介面的模型選擇器中"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "預設應用程式設定成功"
+        }
+      }
     },
     "about": {
       "title": "關於 AgentifUI",
@@ -940,6 +1349,29 @@
         "suffix": ". 探索大模型應用的未來。"
       }
     }
+  },
+  "debug": {
+    "setDefaultApp": "設定預設應用程式 - 傳入ID:",
+    "currentInstances": "目前所有實例:",
+    "instanceNotFound": "未找到實例，傳入ID:",
+    "foundInstance": "找到實例:",
+    "setDefaultFailed": "設定預設應用程式失敗:",
+    "syncConfig": "同步設定",
+    "syncFailed": "同步失敗:",
+    "syncSuccess": "同步成功"
+  },
+  "buttons": {
+    "syncInProgress": "同步中...",
+    "syncConfig": "同步設定",
+    "tooltip": {
+      "syncFromDify": "從 Dify API 同步設定",
+      "syncFromDifyEdit": "從 Dify API 同步設定",
+      "syncFromDifyCreate": "從 Dify API 同步設定（應用程式ID為空時將自動生成）",
+      "fillCredentials": "請先填寫API URL和API金鑰"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "是否將顯示名稱更新為：\"{name}\"？"
   },
   "errors": {
     "notFound": "頁面未找到",
@@ -1157,6 +1589,54 @@
       "batchDeleteSuccess": "成功刪除 {success} 個對話，{failed} 個刪除失敗",
       "batchDeleteFailed": "刪除失敗，請稍後重試",
       "error": "操作出錯，請稍後再試"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "工作流",
+      "description": "自動化工作流程",
+      "features": {
+        "automation": "自動化",
+        "batchProcessing": "批次處理",
+        "processControl": "流程控制"
+      }
+    },
+    "text-generation": {
+      "label": "文本生成",
+      "description": "單次文本生成應用",
+      "features": {
+        "textGeneration": "文本生成",
+        "contentCreation": "內容創作",
+        "formattedOutput": "格式化輸出"
+      }
+    },
+    "chatbot": {
+      "label": "聊天機器人",
+      "description": "基礎對話聊天機器人",
+      "features": {
+        "conversation": "對話",
+        "fileUpload": "檔案上傳",
+        "speechToText": "語音轉文字"
+      }
+    },
+    "agent": {
+      "label": "智能代理",
+      "description": "支援工具調用的智能代理",
+      "features": {
+        "conversation": "對話",
+        "toolCalling": "工具調用",
+        "reasoningChain": "推理鏈",
+        "multiTurnTasks": "多輪任務"
+      }
+    },
+    "chatflow": {
+      "label": "對話流",
+      "description": "對話流程編排應用",
+      "features": {
+        "processOrchestration": "流程編排",
+        "conditionalBranching": "條件分支",
+        "conversationManagement": "對話管理"
+      }
     }
   }
 }

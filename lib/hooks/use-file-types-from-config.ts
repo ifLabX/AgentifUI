@@ -29,14 +29,13 @@ const generateAcceptString = (extensions: string[]): string => {
   return extensions.map(ext => `.${ext}`).join(',');
 };
 
-// 🎯 英文到中文的文件类型映射
-// 数据库中存储的是英文关键字，需要映射到文件类型配置中的中文关键字
+// File type mapping - database stores English keys, map to FILE_TYPE_CONFIG keys
 const FILE_TYPE_MAPPING: Record<string, FileTypeKey> = {
-  document: '文档',
-  image: '图片',
-  audio: '音频',
-  video: '视频',
-  custom: '其他文件类型',
+  document: 'document',
+  image: 'image',
+  audio: 'audio',
+  video: 'video',
+  custom: 'other',
 };
 
 // 从配置获取文件类型的钩子 - 修复字段解析逻辑
@@ -105,24 +104,24 @@ export function useFileTypesFromConfig() {
       allowedExtensions,
     });
 
-    // 🎯 根据allowed_file_types数组生成启用的文件类型
+    // Generate enabled file types based on allowed_file_types array
     allowedFileTypes.forEach((fileTypeKey: string) => {
-      const chineseKey = FILE_TYPE_MAPPING[fileTypeKey] || fileTypeKey;
-      const config = FILE_TYPE_CONFIG[chineseKey as FileTypeKey];
+      const configKey = FILE_TYPE_MAPPING[fileTypeKey] || fileTypeKey;
+      const config = FILE_TYPE_CONFIG[configKey as FileTypeKey];
       if (config) {
         enabledTypes.push({
-          title: chineseKey,
+          title: configKey, // Store the English key, translation will be handled by the component
           extensions: [...config.extensions],
           icon: React.createElement(config.icon, { className: 'h-4 w-4' }),
           acceptString: generateAcceptString(config.extensions),
           maxSize: config.maxSize,
         });
         console.log(
-          `[useFileTypesFromConfig] 添加文件类型: ${fileTypeKey} -> ${chineseKey}`
+          `[useFileTypesFromConfig] Added file type: ${fileTypeKey} -> ${configKey}`
         );
       } else {
         console.warn(
-          `[useFileTypesFromConfig] 未知的文件类型: ${fileTypeKey} (映射到 ${chineseKey})`
+          `[useFileTypesFromConfig] Unknown file type: ${fileTypeKey} (mapped to ${configKey})`
         );
       }
     });

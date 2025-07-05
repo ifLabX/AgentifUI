@@ -7,6 +7,8 @@ import { Check, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 
 import React, { memo, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface InstanceFilterSelectorProps {
   providers: Provider[];
   selectedProviderId: string | null; // null表示"全部"
@@ -26,6 +28,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
 }: InstanceFilterSelectorProps) {
   const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations('pages.admin.apiConfig.instanceFilter');
 
   // 获取当前选中的提供商信息
   const selectedProvider = selectedProviderId
@@ -55,7 +58,9 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
               isDark ? 'text-stone-100' : 'text-stone-900'
             )}
           >
-            {selectedProvider ? `${selectedProvider.name}应用` : '全部应用'}
+            {selectedProvider
+              ? t('providerApps', { name: selectedProvider.name })
+              : t('allApps')}
           </h2>
           {selectedProvider?.is_default && (
             <span
@@ -66,7 +71,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
                   : 'bg-stone-200 text-stone-800'
               )}
             >
-              默认
+              {t('defaultLabel')}
             </span>
           )}
         </div>
@@ -95,7 +100,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
           isDark ? 'text-stone-400' : 'text-stone-600'
         )}
       >
-        共 {instanceCount} 个
+        {t('totalCount', { count: instanceCount })}
       </div>
 
       {/* Dropdown menu: fully mimic conversation-title-button style */}
@@ -134,7 +139,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
                     : 'text-stone-700 hover:bg-stone-200/40'
               )}
             >
-              <span>全部应用</span>
+              <span>{t('allApps')}</span>
 
               {!selectedProviderId && (
                 <Check className="h-4 w-4 flex-shrink-0" />
@@ -181,7 +186,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
                             : 'bg-stone-200 text-stone-800'
                         )}
                       >
-                        默认
+                        {t('defaultLabel')}
                       </span>
                     )}
                   </div>
@@ -200,7 +205,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
                   isDark ? 'text-stone-400' : 'text-stone-500'
                 )}
               >
-                暂无可用的服务提供商
+                {t('noProviders')}
               </div>
             )}
           </div>

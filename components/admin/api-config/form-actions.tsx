@@ -6,6 +6,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Loader2, Save } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface FormActionsProps {
   isProcessing: boolean;
   onCancel: () => void;
@@ -14,6 +16,7 @@ interface FormActionsProps {
 export const FormActions = ({ isProcessing, onCancel }: FormActionsProps) => {
   const { isDark } = useTheme();
   const saveShortcut = useFormattedShortcut('SAVE_SUBMIT');
+  const t = useTranslations('pages.admin.apiConfig.formActions');
 
   return (
     <div className="flex gap-3 pt-4">
@@ -32,7 +35,7 @@ export const FormActions = ({ isProcessing, onCancel }: FormActionsProps) => {
         ) : (
           <Save className="h-4 w-4" />
         )}
-        <span>{isProcessing ? '保存中...' : '保存'}</span>
+        <span>{isProcessing ? t('saving') : t('save')}</span>
         {!isProcessing && (
           <KeyCombination
             keys={saveShortcut.symbols}
@@ -52,7 +55,7 @@ export const FormActions = ({ isProcessing, onCancel }: FormActionsProps) => {
             : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
         )}
       >
-        取消
+        {t('cancel')}
       </button>
     </div>
   );

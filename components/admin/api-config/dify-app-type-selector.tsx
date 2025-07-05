@@ -7,11 +7,26 @@ import {
 } from '@lib/types/dify-app-types';
 import { cn } from '@lib/utils';
 
+import { useTranslations } from 'next-intl';
+
 interface DifyAppTypeSelectorProps {
   value: DifyAppType | undefined;
   onChange: (type: DifyAppType) => void;
   className?: string;
 }
+
+// Feature keys mapping for each app type
+const FEATURE_KEYS_MAP: Record<DifyAppType, string[]> = {
+  chatbot: ['conversation', 'fileUpload', 'speechToText'],
+  agent: ['conversation', 'toolCalling', 'reasoningChain', 'multiTurnTasks'],
+  chatflow: [
+    'processOrchestration',
+    'conditionalBranching',
+    'conversationManagement',
+  ],
+  workflow: ['automation', 'batchProcessing', 'processControl'],
+  'text-generation': ['textGeneration', 'contentCreation', 'formattedOutput'],
+};
 
 /**
  * Dify应用类型选择器组件
@@ -24,6 +39,10 @@ export function DifyAppTypeSelector({
 }: DifyAppTypeSelectorProps) {
   const { isDark } = useThemeColors();
   const allTypes = getAllDifyAppTypes();
+  const tSelector = useTranslations(
+    'pages.admin.apiConfig.page.difyAppTypeSelector'
+  );
+  const tDifyTypes = useTranslations('difyAppTypes');
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -35,7 +54,7 @@ export function DifyAppTypeSelector({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          Dify应用类型 (dify_apptype) *
+          {tSelector('title')}
         </label>
 
         {/* --- 响应式网格布局：移动端1列，平板2列，桌面3列 --- */}
@@ -67,7 +86,7 @@ export function DifyAppTypeSelector({
                       isDark ? 'text-stone-100' : 'text-stone-900'
                     )}
                   >
-                    {typeInfo.label}
+                    {tDifyTypes(`${typeInfo.key}.label`)}
                   </div>
                   <div
                     className={cn(
@@ -75,7 +94,7 @@ export function DifyAppTypeSelector({
                       isDark ? 'text-stone-400' : 'text-stone-600'
                     )}
                   >
-                    {typeInfo.description}
+                    {tDifyTypes(`${typeInfo.key}.description`)}
                   </div>
                 </div>
 
@@ -105,9 +124,9 @@ export function DifyAppTypeSelector({
 
               {/* --- 底部：功能特性标签 --- */}
               <div className="mt-1 flex w-full flex-wrap gap-1">
-                {typeInfo.features.slice(0, 3).map(feature => (
+                {FEATURE_KEYS_MAP[typeInfo.key]?.slice(0, 3).map(featureKey => (
                   <span
-                    key={feature}
+                    key={featureKey}
                     className={cn(
                       'rounded px-2 py-0.5 font-serif text-xs',
                       isDark
@@ -115,7 +134,7 @@ export function DifyAppTypeSelector({
                         : 'bg-stone-200 text-stone-600'
                     )}
                   >
-                    {feature}
+                    {tDifyTypes(`${typeInfo.key}.features.${featureKey}`)}
                   </span>
                 ))}
               </div>
@@ -130,8 +149,7 @@ export function DifyAppTypeSelector({
             isDark ? 'text-stone-400' : 'text-stone-500'
           )}
         >
-          根据Dify官方文档选择对应的应用类型，影响API调用端点和功能特性。
-          不同类型的应用支持不同的功能和交互方式。
+          {tSelector('description')}
         </p>
       </div>
     </div>
@@ -149,6 +167,10 @@ export function DifyAppTypeSelectorCompact({
 }: DifyAppTypeSelectorProps) {
   const { isDark } = useThemeColors();
   const allTypes = getAllDifyAppTypes();
+  const tSelector = useTranslations(
+    'pages.admin.apiConfig.page.difyAppTypeSelector'
+  );
+  const tDifyTypes = useTranslations('difyAppTypes');
 
   return (
     <div className={cn(className)}>
@@ -158,7 +180,7 @@ export function DifyAppTypeSelectorCompact({
           isDark ? 'text-stone-300' : 'text-stone-700'
         )}
       >
-        Dify应用类型 *
+        {tSelector('titleCompact')}
       </label>
 
       <select
@@ -173,7 +195,8 @@ export function DifyAppTypeSelectorCompact({
       >
         {allTypes.map(typeInfo => (
           <option key={typeInfo.key} value={typeInfo.key}>
-            {typeInfo.icon} {typeInfo.label} - {typeInfo.description}
+            {typeInfo.icon} {tDifyTypes(`${typeInfo.key}.label`)} -{' '}
+            {tDifyTypes(`${typeInfo.key}.description`)}
           </option>
         ))}
       </select>

@@ -365,54 +365,6 @@
         "tokensUsed": "Tokens used: {count}"
       }
     },
-    "difyAppTypes": {
-      "workflow": {
-        "label": "Workflow",
-        "description": "Automated workflow process",
-        "features": {
-          "automation": "Automation",
-          "batchProcessing": "Batch Processing",
-          "processControl": "Process Control"
-        }
-      },
-      "text-generation": {
-        "label": "Text Generation",
-        "description": "Single text generation application",
-        "features": {
-          "textGeneration": "Text Generation",
-          "contentCreation": "Content Creation",
-          "formattedOutput": "Formatted Output"
-        }
-      },
-      "chatbot": {
-        "label": "Chatbot",
-        "description": "Basic conversational chatbot",
-        "features": {
-          "conversation": "Conversation",
-          "fileUpload": "File Upload",
-          "speechToText": "Speech to Text"
-        }
-      },
-      "agent": {
-        "label": "Agent",
-        "description": "Intelligent agent with tool calling",
-        "features": {
-          "conversation": "Conversation",
-          "toolCalling": "Tool Calling",
-          "reasoningChain": "Reasoning Chain",
-          "multiTurnTasks": "Multi-turn Tasks"
-        }
-      },
-      "chatflow": {
-        "label": "Chatflow",
-        "description": "Conversational workflow application",
-        "features": {
-          "processOrchestration": "Process Orchestration",
-          "conditionalBranching": "Conditional Branching",
-          "conversationManagement": "Conversation Management"
-        }
-      }
-    },
     "apps": {
       "startChatWith": "Start chatting with {appName}...",
       "continueChatWith": "Continue chatting with {appName}...",
@@ -902,7 +854,464 @@
     "admin": {
       "title": "Admin Panel",
       "users": "User Management",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "main": {
+        "title": "Admin Panel Overview",
+        "subtitle": "Welcome to the AgentifUI Admin Panel. Here you can manage various system configurations and settings"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI Admin Panel",
+        "breadcrumbRoot": "Admin Panel",
+        "menuItems": {
+          "main": {
+            "text": "Admin Home",
+            "description": "Admin panel overview"
+          },
+          "apiConfig": {
+            "text": "API Configuration",
+            "description": "Manage application instances and configuration parameters"
+          },
+          "content": {
+            "text": "About & Notifications",
+            "description": "Manage About page and system notification push"
+          },
+          "users": {
+            "text": "User Management",
+            "description": "Manage user accounts and permissions"
+          },
+          "groups": {
+            "text": "Group Management",
+            "description": "Manage users and groups, configure group application permissions"
+          },
+          "permissions": {
+            "text": "App Permission Management",
+            "description": "Manage application visibility and group permissions"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "Rebuild",
+            "messages": {
+              "startRebuild": "Starting rebuild and deployment...",
+              "startRebuildDescription": "This process may take a few minutes, please be patient.",
+              "buildInProgress": "Build in progress",
+              "buildInProgressDescription": "Please wait for the current build to complete before trying again.",
+              "authFailed": "Authentication failed",
+              "authFailedDescription": "Please log in again and try.",
+              "permissionDenied": "Permission denied",
+              "permissionDeniedDescription": "You do not have permission to perform this operation.",
+              "unknownError": "Unknown error occurred",
+              "buildComplete": "Build complete!",
+              "buildCompleteDescription": "The application will automatically restart in 2 seconds to apply changes.",
+              "appRestarting": "Application restarting...",
+              "appRestartingDescription": "The page will automatically refresh after restart is complete.",
+              "deployFailed": "Deployment failed",
+              "networkError": "Network error, please check connection and try again."
+            }
+          },
+          "returnToChatButton": {
+            "text": "Return to Chat"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "Refresh Data",
+            "save": "Save Changes",
+            "saving": "Saving...",
+            "reset": "Reset",
+            "create": "Create",
+            "cancel": "Cancel",
+            "confirm": "Confirm"
+          },
+          "status": {
+            "hasUnsavedChanges": "Has unsaved changes",
+            "saving": "Saving...",
+            "allChangesSaved": "All changes saved"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "Select Application Instance",
+          "description": "Select an application instance from the left list to view and edit its configuration, or click the add button to create a new application instance"
+        },
+        "formActions": {
+          "save": "Save",
+          "saving": "Saving...",
+          "cancel": "Cancel"
+        },
+        "providerManagement": {
+          "buttonText": "Manage Providers",
+          "modal": {
+            "title": "Manage Service Providers",
+            "providerList": "Provider List",
+            "addProvider": "Add Provider",
+            "editProvider": "Edit Provider",
+            "addNewProvider": "Add New Provider",
+            "loading": "Loading...",
+            "noProviders": "No providers configured",
+            "deleteConfirm": "Are you sure you want to delete provider \"{name}\"? This action cannot be undone.",
+            "messages": {
+              "loadFailed": "Failed to load provider list",
+              "createSuccess": "Provider created successfully",
+              "createFailed": "Failed to create provider",
+              "updateSuccess": "Provider updated successfully",
+              "updateFailed": "Failed to update provider",
+              "deleteSuccess": "Provider deleted successfully",
+              "deleteFailed": "Failed to delete provider",
+              "saveFailed": "Failed to save provider"
+            },
+            "providerTypes": {
+              "llm": "LLM (Large Language Model)",
+              "platform": "Platform (Aggregation Platform)",
+              "embedding": "Embedding (Vectorization)",
+              "tts": "TTS (Text to Speech)",
+              "stt": "STT (Speech to Text)",
+              "vision": "Vision (Image Recognition)",
+              "multimodal": "Multimodal"
+            },
+            "authTypes": {
+              "api_key": "API Key",
+              "bearer_token": "Bearer Token",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Basic Auth"
+            },
+            "status": {
+              "enabled": "Enabled",
+              "disabled": "Disabled",
+              "default": "Default Provider"
+            },
+            "form": {
+              "name": {
+                "label": "Provider Name",
+                "placeholder": "e.g.: Dify, OpenAI, Claude",
+                "required": "Provider name cannot be empty"
+              },
+              "type": {
+                "label": "Provider Type",
+                "placeholder": "Select provider type",
+                "required": "Please select provider type"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "e.g.: https://api.dify.ai/v1",
+                "required": "API URL cannot be empty",
+                "invalid": "Please enter a valid URL format"
+              },
+              "authType": {
+                "label": "Authentication Type",
+                "placeholder": "Select authentication type",
+                "required": "Please select authentication type"
+              },
+              "isActive": {
+                "label": "Enable Status"
+              },
+              "isDefault": {
+                "label": "Default Provider",
+                "description": "Only one default provider can exist in the system. Setting this will automatically clear the default status of other providers.",
+                "setAsDefault": "Set as Default",
+                "notDefault": "Not Default"
+              },
+              "authMethod": "Authentication Method"
+            },
+            "buttons": {
+              "cancel": "Cancel",
+              "save": "Save",
+              "saving": "Saving..."
+            }
+          }
+        },
+        "layout": {
+          "loading": "Loading application instances...",
+          "noInstances": "No application instances",
+          "noInstancesForProvider": "No application instances for this provider",
+          "addFirstApp": "Add first application",
+          "defaultApp": "Default",
+          "deleteConfirm": "Are you sure you want to delete this application instance? This action cannot be undone.",
+          "defaultAppCannotDelete": "Default application cannot be deleted. Please set another application as default first.",
+          "instanceNotFound": "Instance to delete not found",
+          "deleteInstanceFailed": "Failed to delete application instance",
+          "setDefaultConfirm": "Are you sure you want to set \"{name}\" as the default application?",
+          "instanceNotFoundForDefault": "Instance to set as default not found",
+          "setDefaultFailed": "Failed to set default application",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "API Key (key_value)",
+          "providerBinding": "Provider Binding",
+          "urlPlaceholder": "URL will automatically use the selected provider's configuration",
+          "urlBindingInfo": "URL is bound to service provider, modify in \"Manage Providers\"",
+          "currentProvider": "Current provider: {name}",
+          "unknownProvider": "Unknown provider",
+          "keyConfigured": "Configured",
+          "keyNotConfigured": "Not configured",
+          "keyPlaceholderEdit": "Leave empty to keep existing API key",
+          "keyPlaceholderNew": "Enter API key",
+          "keyEditHint": "Leaving the input field empty will keep the existing key unchanged",
+          "tagsLabel": "Application Tags (tags)",
+          "tagCategories": {
+            "modelType": "Model Type",
+            "useCase": "Use Case",
+            "features": "Technical Features"
+          },
+          "predefinedTags": {
+            "conversationModel": "Conversation Model",
+            "reasoningModel": "Reasoning Model",
+            "documentModel": "Document Model",
+            "multimodal": "Multimodal",
+            "textGeneration": "Text Generation",
+            "codeGeneration": "Code Generation",
+            "dataAnalysis": "Data Analysis",
+            "translation": "Translation",
+            "highAccuracy": "High Accuracy",
+            "fastResponse": "Fast Response",
+            "localDeployment": "Local Deployment",
+            "enterpriseGrade": "Enterprise Grade"
+          },
+          "customTagPlaceholder": "Custom tag (press Enter to add)",
+          "tagHelpText": "Tags are used for application classification and search"
+        },
+        "providerSelector": {
+          "placeholder": "Please select provider",
+          "defaultLabel": "Default",
+          "noProviders": "No available service providers"
+        },
+        "customProviderSelector": {
+          "placeholder": "Please select provider",
+          "defaultLabel": "Default",
+          "noProviders": "No available service providers"
+        },
+        "instanceFilter": {
+          "allApps": "All Applications",
+          "providerApps": "{name} Applications",
+          "defaultLabel": "Default",
+          "totalCount": "Total {count}",
+          "noProviders": "No available service providers"
+        },
+        "events": {
+          "defaultSetSuccess": "Default application set successfully"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "Please select a service provider",
+            "invalidProvider": "Selected service provider is invalid",
+            "inactiveProvider": "Selected service provider is not active",
+            "createFailed": "Failed to create application instance",
+            "updateFailed": "Failed to update application instance",
+            "setDefaultFailed": "Failed to set default application"
+          },
+          "success": {
+            "instanceCreated": "Application instance created successfully",
+            "instanceUpdated": "Application instance updated successfully",
+            "setAsDefault": "Application instance set as default"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "Application created successfully, but failed to set as default"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify Parameter Configuration",
+          "defaultInstanceName": "this app",
+          "unsavedChanges": "You have unsaved changes",
+          "sections": {
+            "basic": {
+              "title": "Basic Configuration",
+              "openingStatement": {
+                "label": "Opening Statement",
+                "placeholder": "Enter opening statement..."
+              },
+              "suggestedQuestions": {
+                "label": "Suggested Questions",
+                "addButton": "Add Suggested Question",
+                "placeholder": "Enter suggested question..."
+              }
+            },
+            "fileUpload": {
+              "title": "File Upload Feature",
+              "enabled": "Enabled",
+              "disabled": "Disabled"
+            },
+            "speechToText": {
+              "title": "Speech to Text",
+              "enabled": "Enabled",
+              "disabled": "Disabled"
+            },
+            "textToSpeech": {
+              "title": "Text to Speech",
+              "enabled": "Enabled",
+              "disabled": "Disabled",
+              "enableLabel": "Enable Text to Speech",
+              "voiceType": {
+                "label": "Voice Type",
+                "placeholder": "e.g.: alloy, echo, fable"
+              },
+              "language": {
+                "label": "Language",
+                "selectPlaceholder": "Select Language",
+                "options": {
+                  "zh": "Chinese",
+                  "en": "English",
+                  "ja": "Japanese",
+                  "ko": "Korean"
+                }
+              },
+              "autoPlay": {
+                "label": "Auto Play",
+                "enabled": "On",
+                "disabled": "Off"
+              }
+            },
+            "retrieverResource": {
+              "title": "Citation and Attribution"
+            },
+            "annotationReply": {
+              "title": "Annotation Reply"
+            },
+            "userInputForm": {
+              "title": "User Input Form",
+              "fieldsCount": "{count} fields",
+              "description": "User input form configuration is usually auto-generated by Dify application. It's recommended to get the latest configuration through sync function.",
+              "fieldInfo": "Variable: {variable} | Required: {required} | Default: {defaultValue}",
+              "fieldRequired": "Yes",
+              "fieldOptional": "No",
+              "fieldNoDefault": "None",
+              "fieldLabel": "Field {index}",
+              "noFields": "No user input form configuration"
+            },
+            "systemParameters": {
+              "title": "System Parameters",
+              "fileSizeLimit": "Document Size Limit (MB)",
+              "imageSizeLimit": "Image Size Limit (MB)",
+              "audioSizeLimit": "Audio Size Limit (MB)",
+              "videoSizeLimit": "Video Size Limit (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "File Upload Configuration",
+            "uploadMethod": {
+              "label": "Upload Method",
+              "local": "Local Upload",
+              "url": "URL Link",
+              "both": "Both Methods"
+            },
+            "maxFiles": {
+              "label": "Maximum File Count",
+              "description": "Documents < 15MB, Images < 10MB, Audio < 50MB, Video < 100MB"
+            },
+            "fileTypes": {
+              "label": "Supported File Types",
+              "image": "Image",
+              "document": "Document",
+              "audio": "Audio",
+              "video": "Video",
+              "other": "Other File Types",
+              "customPlaceholder": "e.g.: zip, rar, 7z, tar",
+              "customDescription": "Supported formats: zip, rar, 7z, tar, gz, bz2, xz, etc."
+            }
+          },
+          "buttons": {
+            "cancel": "Cancel",
+            "save": "Save",
+            "confirm": "Confirm"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "Edit Application Instance",
+            "add": "Add Application Instance"
+          },
+          "unsavedChanges": "Unsaved changes",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "Cannot contain spaces (affects URL routing)",
+              "invalidChars": "Can only contain letters, numbers, hyphens (-), underscores (_), and dots (.)",
+              "tooLong": "Length cannot exceed 50 characters",
+              "mustStartWithAlphanumeric": "Must start with a letter or number",
+              "formatError": "Application ID format error",
+              "notModifiable": "Application ID cannot be modified after creation",
+              "formatDescription": "Can only contain letters, numbers, hyphens (-), underscores (_), and dots (.). No spaces allowed. You can sync configuration to auto-generate."
+            },
+            "formValidationFailed": "Form validation failed",
+            "fillApiCredentials": "Please fill in API URL and API Key first",
+            "fillInstanceId": "Please fill in Application ID first"
+          },
+          "sync": {
+            "basicInfo": "Basic Information",
+            "paramConfig": "Parameter Configuration",
+            "noDataReceived": "Unable to retrieve any configuration data from Dify API. Please check if Application ID and API configuration are correct",
+            "successMessage": "Successfully synced {items} from Dify API!",
+            "autoGeneratedId": " Auto-generated Application ID: {instanceId}",
+            "syncFailed": "Configuration sync failed",
+            "syncFailedTitle": "Sync Failed",
+            "syncing": "Syncing...",
+            "syncFromDify": "Sync from Dify",
+            "syncFromDifyWithAutoId": "Sync from Dify API (will auto-generate Application ID if empty)",
+            "syncFromDifyDescription": "Sync configuration from Dify API",
+            "syncButtonDisabled": "Please fill in API URL and API Key first"
+          },
+          "defaultApp": {
+            "setAsDefault": "Set as Default",
+            "isDefault": "Default App",
+            "willSetAsDefault": "Will Set as Default",
+            "setDefaultConfirm": "Are you sure you want to set \"{name}\" as the default application?",
+            "setDefaultSuccess": "Default application set successfully",
+            "setDefaultFailed": "Failed to set default application",
+            "instanceNotFound": "Instance ID does not exist, cannot set as default application"
+          },
+          "provider": {
+            "title": "Service Provider",
+            "current": "Current application service provider (cannot be modified)",
+            "select": "Select service provider",
+            "unknown": "Unknown Provider",
+            "selectPlaceholder": "Please select provider",
+            "configUpdated": "Provider configuration updated"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "Application ID (instance_id) *",
+              "placeholder": "Enter Application ID",
+              "generateButton": "Generate ID",
+              "generateTooltip": "Click to generate random UUID as Application ID"
+            },
+            "displayName": {
+              "label": "Display Name (display_name) *",
+              "placeholder": "Enter display name"
+            },
+            "description": {
+              "label": "Application Description (description)",
+              "placeholder": "Enter application description"
+            }
+          },
+          "appType": {
+            "label": "Application Type (app_type) *",
+            "model": {
+              "title": "Model",
+              "description": "For model switching"
+            },
+            "marketplace": {
+              "title": "Marketplace",
+              "description": "For application marketplace"
+            },
+            "note": "Applications with \"Model\" type will appear in the chat interface model selector"
+          },
+          "syncConfirm": {
+            "updateDescription": "Update description to: \"{description}\"?"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify Application Type (dify_apptype) *",
+            "titleCompact": "Dify Application Type",
+            "description": "Choose the Dify application type that fits your use case. Different types have different features and applicable scenarios."
+          },
+          "difyConfig": {
+            "title": "Dify Parameter Configuration",
+            "appTypeNote": "Applications with \"Model\" type will appear in the chat interface model selector"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "Default application set successfully"
+        }
+      }
     },
     "about": {
       "title": "About AgentifUI",
@@ -940,6 +1349,29 @@
         "suffix": ". Explore the future of large model applications."
       }
     }
+  },
+  "debug": {
+    "setDefaultApp": "Setting default app - passed ID:",
+    "currentInstances": "Current all instances:",
+    "instanceNotFound": "Instance not found, passed ID:",
+    "foundInstance": "Found instance:",
+    "setDefaultFailed": "Failed to set default app:",
+    "syncConfig": "Sync config",
+    "syncFailed": "Sync failed:",
+    "syncSuccess": "Sync success"
+  },
+  "buttons": {
+    "syncInProgress": "Syncing...",
+    "syncConfig": "Sync Config",
+    "tooltip": {
+      "syncFromDify": "Sync configuration from Dify API",
+      "syncFromDifyEdit": "Sync configuration from Dify API",
+      "syncFromDifyCreate": "Sync configuration from Dify API (auto-generate ID if empty)",
+      "fillCredentials": "Please fill in API URL and API Key first"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "Update display name to: \"{name}\"?"
   },
   "errors": {
     "notFound": "Page not found",
@@ -1157,6 +1589,54 @@
       "batchDeleteSuccess": "Successfully deleted {success} conversations, {failed} failed to delete",
       "batchDeleteFailed": "Deletion failed, please try again later",
       "error": "Operation failed, please try again later"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "Workflow",
+      "description": "Automated workflow process",
+      "features": {
+        "automation": "Automation",
+        "batchProcessing": "Batch Processing",
+        "processControl": "Process Control"
+      }
+    },
+    "text-generation": {
+      "label": "Text Generation",
+      "description": "Single text generation application",
+      "features": {
+        "textGeneration": "Text Generation",
+        "contentCreation": "Content Creation",
+        "formattedOutput": "Formatted Output"
+      }
+    },
+    "chatbot": {
+      "label": "Chatbot",
+      "description": "Basic conversational chatbot",
+      "features": {
+        "conversation": "Conversation",
+        "fileUpload": "File Upload",
+        "speechToText": "Speech to Text"
+      }
+    },
+    "agent": {
+      "label": "Agent",
+      "description": "Intelligent agent with tool calling",
+      "features": {
+        "conversation": "Conversation",
+        "toolCalling": "Tool Calling",
+        "reasoningChain": "Reasoning Chain",
+        "multiTurnTasks": "Multi-turn Tasks"
+      }
+    },
+    "chatflow": {
+      "label": "Chatflow",
+      "description": "Conversational workflow application",
+      "features": {
+        "processOrchestration": "Process Orchestration",
+        "conditionalBranching": "Conditional Branching",
+        "conversationManagement": "Conversation Management"
+      }
     }
   }
 }

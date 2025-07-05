@@ -32,6 +32,8 @@ import { toast } from 'sonner';
 
 import React, { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 // 提供商类型枚举，基于数据库分析的建议
 const PROVIDER_TYPES = [
   { value: 'llm', label: 'LLM (大语言模型)' },
@@ -72,6 +74,7 @@ export function ProviderManagementModal({
   onProviderChange,
 }: ProviderManagementModalProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.apiConfig.providerManagement.modal');
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
@@ -94,11 +97,11 @@ export function ProviderManagementModal({
       if (result.success) {
         setProviders(result.data);
       } else {
-        toast.error('加载提供商列表失败');
+        toast.error(t('messages.loadFailed'));
       }
     } catch (error) {
-      console.error('加载提供商失败:', error);
-      toast.error('加载提供商列表失败');
+      console.error('Failed to load providers:', error);
+      toast.error(t('messages.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -116,26 +119,26 @@ export function ProviderManagementModal({
     const newErrors: Partial<ProviderFormData> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = '提供商名称不能为空';
+      newErrors.name = t('form.name.required');
     }
 
     if (!formData.type) {
-      newErrors.type = '请选择提供商类型';
+      newErrors.type = t('form.type.required');
     }
 
     if (!formData.base_url.trim()) {
-      newErrors.base_url = 'API URL不能为空';
+      newErrors.base_url = t('form.baseUrl.required');
     } else {
       // 简单的URL格式验证
       try {
         new URL(formData.base_url);
       } catch {
-        newErrors.base_url = '请输入有效的URL格式';
+        newErrors.base_url = t('form.baseUrl.invalid');
       }
     }
 
     if (!formData.auth_type) {
-      newErrors.auth_type = '请选择认证类型';
+      newErrors.auth_type = t('form.authType.required');
     }
 
     setErrors(newErrors);
@@ -190,28 +193,28 @@ export function ProviderManagementModal({
         // 创建新提供商
         const result = await createProvider(formData);
         if (result.success) {
-          toast.success('提供商创建成功');
+          toast.success(t('messages.createSuccess'));
           await loadProviders();
           resetForm();
           onProviderChange?.();
         } else {
-          toast.error('创建提供商失败');
+          toast.error(t('messages.createFailed'));
         }
       } else if (editingProvider) {
         // 更新现有提供商
         const result = await updateProvider(editingProvider.id, formData);
         if (result.success) {
-          toast.success('提供商更新成功');
+          toast.success(t('messages.updateSuccess'));
           await loadProviders();
           resetForm();
           onProviderChange?.();
         } else {
-          toast.error('更新提供商失败');
+          toast.error(t('messages.updateFailed'));
         }
       }
     } catch (error) {
-      console.error('保存提供商失败:', error);
-      toast.error('保存提供商失败');
+      console.error('Failed to save provider:', error);
+      toast.error(t('messages.saveFailed'));
     } finally {
       setLoading(false);
     }
@@ -219,7 +222,7 @@ export function ProviderManagementModal({
 
   // 删除提供商
   const handleDeleteProvider = async (provider: Provider) => {
-    if (!confirm(`确定要删除提供商"${provider.name}"吗？此操作不可撤销。`)) {
+    if (!confirm(t('deleteConfirm', { name: provider.name }))) {
       return;
     }
 
@@ -227,15 +230,15 @@ export function ProviderManagementModal({
     try {
       const result = await deleteProvider(provider.id);
       if (result.success) {
-        toast.success('提供商删除成功');
+        toast.success(t('messages.deleteSuccess'));
         await loadProviders();
         onProviderChange?.();
       } else {
-        toast.error('删除提供商失败');
+        toast.error(t('messages.deleteFailed'));
       }
     } catch (error) {
-      console.error('删除提供商失败:', error);
-      toast.error('删除提供商失败');
+      console.error('Failed to delete provider:', error);
+      toast.error(t('messages.deleteFailed'));
     } finally {
       setLoading(false);
     }
@@ -251,20 +254,20 @@ export function ProviderManagementModal({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>管理服务提供商</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* --- 创建新提供商按钮 --- */}
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium">提供商列表</h3>
+            <h3 className="text-lg font-medium">{t('providerList')}</h3>
             <Button
               onClick={startCreating}
               disabled={loading || isCreating || editingProvider !== null}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              添加提供商
+              {t('addProvider')}
             </Button>
           </div>
 
@@ -272,11 +275,11 @@ export function ProviderManagementModal({
           <div className="space-y-3">
             {loading && providers.length === 0 ? (
               <div className="text-muted-foreground py-8 text-center">
-                加载中...
+                {t('loading')}
               </div>
             ) : providers.length === 0 ? (
               <div className="text-muted-foreground py-8 text-center">
-                暂无提供商配置
+                {t('noProviders')}
               </div>
             ) : (
               providers.map(provider => (
@@ -313,8 +316,7 @@ export function ProviderManagementModal({
                             : 'bg-stone-100 text-stone-700'
                         )}
                       >
-                        {PROVIDER_TYPES.find(t => t.value === provider.type)
-                          ?.label || provider.type}
+                        {t(`providerTypes.${provider.type}`)}
                       </span>
                       <span
                         className={cn(
@@ -328,7 +330,9 @@ export function ProviderManagementModal({
                               : 'bg-red-100 text-red-700'
                         )}
                       >
-                        {provider.is_active ? '已启用' : '已禁用'}
+                        {provider.is_active
+                          ? t('status.enabled')
+                          : t('status.disabled')}
                       </span>
                       {provider.is_default && (
                         <span
@@ -339,7 +343,7 @@ export function ProviderManagementModal({
                               : 'bg-stone-200 text-stone-800'
                           )}
                         >
-                          默认提供商
+                          {t('status.default')}
                         </span>
                       )}
                     </div>
@@ -375,9 +379,8 @@ export function ProviderManagementModal({
                       <strong>API URL:</strong> {provider.base_url}
                     </p>
                     <p>
-                      <strong>认证方式:</strong>{' '}
-                      {AUTH_TYPES.find(a => a.value === provider.auth_type)
-                        ?.label || provider.auth_type}
+                      <strong>{t('form.authMethod')}:</strong>{' '}
+                      {t(`authTypes.${provider.auth_type}`)}
                     </p>
                   </div>
                 </div>
@@ -390,7 +393,7 @@ export function ProviderManagementModal({
             <div className="border-t pt-6">
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-medium">
-                  {isCreating ? '添加新提供商' : '编辑提供商'}
+                  {isCreating ? t('addNewProvider') : t('editProvider')}
                 </h3>
                 <Button
                   variant="outline"
@@ -405,14 +408,14 @@ export function ProviderManagementModal({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {/* --- 提供商名称 --- */}
                 <div className="space-y-2">
-                  <Label htmlFor="name">提供商名称 *</Label>
+                  <Label htmlFor="name">{t('form.name.label')} *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={e =>
                       setFormData(prev => ({ ...prev, name: e.target.value }))
                     }
-                    placeholder="例如：Dify、OpenAI、Claude"
+                    placeholder={t('form.name.placeholder')}
                     className={errors.name ? 'border-red-500' : ''}
                   />
                   {errors.name && (
@@ -422,7 +425,7 @@ export function ProviderManagementModal({
 
                 {/* --- 提供商类型 --- */}
                 <div className="space-y-2">
-                  <Label htmlFor="type">提供商类型 *</Label>
+                  <Label htmlFor="type">{t('form.type.label')} *</Label>
                   <Select
                     value={formData.type}
                     onValueChange={value =>
@@ -432,12 +435,12 @@ export function ProviderManagementModal({
                     <SelectTrigger
                       className={errors.type ? 'border-red-500' : ''}
                     >
-                      <SelectValue placeholder="选择提供商类型" />
+                      <SelectValue placeholder={t('form.type.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       {PROVIDER_TYPES.map(type => (
                         <SelectItem key={type.value} value={type.value}>
-                          {type.label}
+                          {t(`providerTypes.${type.value}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -449,7 +452,7 @@ export function ProviderManagementModal({
 
                 {/* --- API URL --- */}
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="base_url">API URL *</Label>
+                  <Label htmlFor="base_url">{t('form.baseUrl.label')} *</Label>
                   <Input
                     id="base_url"
                     value={formData.base_url}
@@ -459,7 +462,7 @@ export function ProviderManagementModal({
                         base_url: e.target.value,
                       }))
                     }
-                    placeholder="例如：https://api.dify.ai/v1"
+                    placeholder={t('form.baseUrl.placeholder')}
                     className={errors.base_url ? 'border-red-500' : ''}
                   />
                   {errors.base_url && (
@@ -469,7 +472,9 @@ export function ProviderManagementModal({
 
                 {/* --- 认证类型 --- */}
                 <div className="space-y-2">
-                  <Label htmlFor="auth_type">认证类型 *</Label>
+                  <Label htmlFor="auth_type">
+                    {t('form.authType.label')} *
+                  </Label>
                   <Select
                     value={formData.auth_type}
                     onValueChange={value =>
@@ -479,12 +484,14 @@ export function ProviderManagementModal({
                     <SelectTrigger
                       className={errors.auth_type ? 'border-red-500' : ''}
                     >
-                      <SelectValue placeholder="选择认证类型" />
+                      <SelectValue
+                        placeholder={t('form.authType.placeholder')}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {AUTH_TYPES.map(auth => (
                         <SelectItem key={auth.value} value={auth.value}>
-                          {auth.label}
+                          {t(`authTypes.${auth.value}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -496,7 +503,7 @@ export function ProviderManagementModal({
 
                 {/* --- 是否启用 --- */}
                 <div className="space-y-2">
-                  <Label htmlFor="is_active">启用状态</Label>
+                  <Label htmlFor="is_active">{t('form.isActive.label')}</Label>
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="is_active"
@@ -506,14 +513,18 @@ export function ProviderManagementModal({
                       }
                     />
                     <span className="text-muted-foreground text-sm">
-                      {formData.is_active ? '已启用' : '已禁用'}
+                      {formData.is_active
+                        ? t('status.enabled')
+                        : t('status.disabled')}
                     </span>
                   </div>
                 </div>
 
                 {/* --- 是否设为默认 --- */}
                 <div className="space-y-2">
-                  <Label htmlFor="is_default">默认提供商</Label>
+                  <Label htmlFor="is_default">
+                    {t('form.isDefault.label')}
+                  </Label>
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="is_default"
@@ -523,11 +534,13 @@ export function ProviderManagementModal({
                       }
                     />
                     <span className="text-muted-foreground text-sm">
-                      {formData.is_default ? '设为默认' : '非默认'}
+                      {formData.is_default
+                        ? t('form.isDefault.setAsDefault')
+                        : t('form.isDefault.notDefault')}
                     </span>
                   </div>
                   <p className="text-muted-foreground text-xs">
-                    系统中只能有一个默认提供商，设置后其他提供商的默认状态将被自动清除
+                    {t('form.isDefault.description')}
                   </p>
                 </div>
               </div>
@@ -539,7 +552,7 @@ export function ProviderManagementModal({
                   onClick={resetForm}
                   disabled={loading}
                 >
-                  取消
+                  {t('buttons.cancel')}
                 </Button>
                 <Button
                   onClick={saveProvider}
@@ -547,7 +560,7 @@ export function ProviderManagementModal({
                   className="flex items-center gap-2"
                 >
                   <Save className="h-4 w-4" />
-                  {loading ? '保存中...' : '保存'}
+                  {loading ? t('buttons.saving') : t('buttons.save')}
                 </Button>
               </div>
             </div>

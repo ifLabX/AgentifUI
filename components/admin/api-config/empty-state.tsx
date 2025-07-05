@@ -4,8 +4,11 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Settings } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 export const EmptyState = () => {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.apiConfig.emptyState');
 
   return (
     <div className="flex flex-1 items-center justify-center p-6">
@@ -17,7 +20,7 @@ export const EmptyState = () => {
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          选择应用实例
+          {t('title')}
         </h3>
         <p
           className={cn(
@@ -25,7 +28,7 @@ export const EmptyState = () => {
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
-          从左侧列表中选择一个应用实例来查看和编辑其配置，或点击添加按钮创建新的应用实例
+          {t('description')}
         </p>
       </div>
     </div>

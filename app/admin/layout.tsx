@@ -28,6 +28,7 @@ import {
 
 import React, { ReactNode, useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -46,6 +47,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const { isDark } = useTheme();
   const { colors } = useThemeColors();
+  const t = useTranslations('pages.admin.layout');
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -56,47 +58,47 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const menuItems: MenuItem[] = [
     {
-      text: '管理主页',
+      text: t('menuItems.main.text'),
       icon: Wrench,
       href: '/admin',
-      description: '管理后台概览',
+      description: t('menuItems.main.description'),
     },
     {
-      text: 'API 密钥',
+      text: t('menuItems.apiConfig.text'),
       icon: Key,
       href: '/admin/api-config',
-      description: '管理应用实例和配置参数',
+      description: t('menuItems.apiConfig.description'),
     },
     {
-      text: '关于与通知',
+      text: t('menuItems.content.text'),
       icon: Bell,
       href: '/admin/content',
-      description: '管理About页面和系统通知推送',
+      description: t('menuItems.content.description'),
     },
     {
-      text: '用户管理',
+      text: t('menuItems.users.text'),
       icon: Users,
       href: '/admin/users',
-      description: '管理用户账户和权限',
+      description: t('menuItems.users.description'),
     },
     {
-      text: '群组管理',
+      text: t('menuItems.groups.text'),
       icon: Building2,
       href: '/admin/groups',
-      description: '管理用户和群组，配置群组应用权限',
+      description: t('menuItems.groups.description'),
     },
     {
-      text: '应用权限管理',
+      text: t('menuItems.permissions.text'),
       icon: ShieldCheck,
       href: '/admin/permissions',
-      description: '管理应用可见性和群组权限',
+      description: t('menuItems.permissions.description'),
     },
   ];
 
   const getBreadcrumbs = () => {
     const currentItem = menuItems.find(item => pathname.startsWith(item.href));
     return [
-      { text: '管理后台', href: '/admin' },
+      { text: t('breadcrumbRoot'), href: '/admin' },
       ...(currentItem && currentItem.href !== '/admin'
         ? [{ text: currentItem.text, href: currentItem.href }]
         : []),
@@ -189,7 +191,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 colors.mainText.tailwind
               )}
             >
-              AgentifUI 管理后台
+              {t('headerTitle')}
             </h1>
             {getBreadcrumbs().length > 1 && (
               <nav className="ml-4">

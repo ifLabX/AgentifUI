@@ -365,54 +365,6 @@
         "tokensUsed": "使用トークン: {count}"
       }
     },
-    "difyAppTypes": {
-      "workflow": {
-        "label": "ワークフロー",
-        "description": "自動化されたワークフロープロセス",
-        "features": {
-          "automation": "自動化",
-          "batchProcessing": "バッチ処理",
-          "processControl": "プロセス制御"
-        }
-      },
-      "text-generation": {
-        "label": "テキスト生成",
-        "description": "単一テキスト生成アプリケーション",
-        "features": {
-          "textGeneration": "テキスト生成",
-          "contentCreation": "コンテンツ作成",
-          "formattedOutput": "フォーマット済み出力"
-        }
-      },
-      "chatbot": {
-        "label": "チャットボット",
-        "description": "基本的な会話チャットボット",
-        "features": {
-          "conversation": "会話",
-          "fileUpload": "ファイルアップロード",
-          "speechToText": "音声をテキストに"
-        }
-      },
-      "agent": {
-        "label": "エージェント",
-        "description": "ツール呼び出し対応インテリジェントエージェント",
-        "features": {
-          "conversation": "会話",
-          "toolCalling": "ツール呼び出し",
-          "reasoningChain": "推論チェーン",
-          "multiTurnTasks": "マルチターンタスク"
-        }
-      },
-      "chatflow": {
-        "label": "チャットフロー",
-        "description": "会話ワークフローアプリケーション",
-        "features": {
-          "processOrchestration": "プロセスオーケストレーション",
-          "conditionalBranching": "条件分岐",
-          "conversationManagement": "会話管理"
-        }
-      }
-    },
     "apps": {
       "startChatWith": "{appName}とのチャットを開始...",
       "continueChatWith": "{appName}とのチャットを続行...",
@@ -902,7 +854,464 @@
     "admin": {
       "title": "管理パネル",
       "users": "ユーザー管理",
-      "analytics": "分析"
+      "analytics": "分析",
+      "main": {
+        "title": "管理パネル概要",
+        "subtitle": "AgentifUI管理パネルへようこそ。ここでシステムの各種設定と構成を管理できます"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI 管理パネル",
+        "breadcrumbRoot": "管理パネル",
+        "menuItems": {
+          "main": {
+            "text": "管理ホーム",
+            "description": "管理パネル概要"
+          },
+          "apiConfig": {
+            "text": "API設定",
+            "description": "アプリケーションインスタンスと設定パラメータを管理"
+          },
+          "content": {
+            "text": "概要と通知",
+            "description": "概要ページとシステム通知プッシュを管理"
+          },
+          "users": {
+            "text": "ユーザー管理",
+            "description": "ユーザーアカウントと権限を管理"
+          },
+          "groups": {
+            "text": "グループ管理",
+            "description": "ユーザーとグループを管理し、グループアプリケーション権限を設定"
+          },
+          "permissions": {
+            "text": "アプリケーション権限管理",
+            "description": "アプリケーションの可視性とグループ権限を管理"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "リビルド",
+            "messages": {
+              "startRebuild": "リビルドとデプロイを開始しています...",
+              "startRebuildDescription": "この処理には数分かかる場合があります。しばらくお待ちください。",
+              "buildInProgress": "ビルド進行中",
+              "buildInProgressDescription": "現在のビルドが完了するまでお待ちください。",
+              "authFailed": "認証に失敗しました",
+              "authFailedDescription": "再度ログインしてお試しください。",
+              "permissionDenied": "権限が不足しています",
+              "permissionDeniedDescription": "この操作を実行する権限がありません。",
+              "unknownError": "不明なエラーが発生しました",
+              "buildComplete": "ビルド完了！",
+              "buildCompleteDescription": "変更を適用するため、アプリケーションが2秒後に自動的に再起動されます。",
+              "appRestarting": "アプリケーション再起動中...",
+              "appRestartingDescription": "再起動完了後、ページが自動的に更新されます。",
+              "deployFailed": "デプロイに失敗しました",
+              "networkError": "ネットワークエラーです。接続を確認して再試行してください。"
+            }
+          },
+          "returnToChatButton": {
+            "text": "チャットに戻る"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "データを更新",
+            "save": "変更を保存",
+            "saving": "保存中...",
+            "reset": "リセット",
+            "create": "作成",
+            "cancel": "キャンセル",
+            "confirm": "確認"
+          },
+          "status": {
+            "hasUnsavedChanges": "未保存の変更があります",
+            "saving": "保存中...",
+            "allChangesSaved": "すべての変更が保存されました"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "アプリケーションインスタンスを選択",
+          "description": "左側のリストからアプリケーションインスタンスを選択して設定を表示・編集するか、追加ボタンをクリックして新しいアプリケーションインスタンスを作成してください"
+        },
+        "formActions": {
+          "save": "保存",
+          "saving": "保存中...",
+          "cancel": "キャンセル"
+        },
+        "providerManagement": {
+          "buttonText": "プロバイダー管理",
+          "modal": {
+            "title": "サービスプロバイダー管理",
+            "providerList": "プロバイダーリスト",
+            "addProvider": "プロバイダー追加",
+            "editProvider": "プロバイダー編集",
+            "addNewProvider": "新しいプロバイダーを追加",
+            "loading": "読み込み中...",
+            "noProviders": "プロバイダーが設定されていません",
+            "deleteConfirm": "プロバイダー「{name}」を削除してもよろしいですか？この操作は元に戻せません。",
+            "messages": {
+              "loadFailed": "プロバイダーリストの読み込みに失敗しました",
+              "createSuccess": "プロバイダーが正常に作成されました",
+              "createFailed": "プロバイダーの作成に失敗しました",
+              "updateSuccess": "プロバイダーが正常に更新されました",
+              "updateFailed": "プロバイダーの更新に失敗しました",
+              "deleteSuccess": "プロバイダーが正常に削除されました",
+              "deleteFailed": "プロバイダーの削除に失敗しました",
+              "saveFailed": "プロバイダーの保存に失敗しました"
+            },
+            "providerTypes": {
+              "llm": "LLM（大規模言語モデル）",
+              "platform": "プラットフォーム（統合プラットフォーム）",
+              "embedding": "エンベディング（ベクトル化）",
+              "tts": "TTS（テキスト読み上げ）",
+              "stt": "STT（音声認識）",
+              "vision": "ビジョン（画像認識）",
+              "multimodal": "マルチモーダル"
+            },
+            "authTypes": {
+              "api_key": "APIキー",
+              "bearer_token": "ベアラートークン",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "ベーシック認証"
+            },
+            "status": {
+              "enabled": "有効",
+              "disabled": "無効",
+              "default": "デフォルトプロバイダー"
+            },
+            "form": {
+              "name": {
+                "label": "プロバイダー名",
+                "placeholder": "例：Dify、OpenAI、Claude",
+                "required": "プロバイダー名は空にできません"
+              },
+              "type": {
+                "label": "プロバイダータイプ",
+                "placeholder": "プロバイダータイプを選択",
+                "required": "プロバイダータイプを選択してください"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "例：https://api.dify.ai/v1",
+                "required": "API URLは空にできません",
+                "invalid": "有効なURL形式を入力してください"
+              },
+              "authType": {
+                "label": "認証タイプ",
+                "placeholder": "認証タイプを選択",
+                "required": "認証タイプを選択してください"
+              },
+              "isActive": {
+                "label": "有効状態"
+              },
+              "isDefault": {
+                "label": "デフォルトプロバイダー",
+                "description": "システム内にはデフォルトプロバイダーを1つだけ設定できます。これを設定すると、他のプロバイダーのデフォルト状態が自動的にクリアされます。",
+                "setAsDefault": "デフォルトに設定",
+                "notDefault": "非デフォルト"
+              },
+              "authMethod": "認証方法"
+            },
+            "buttons": {
+              "cancel": "キャンセル",
+              "save": "保存",
+              "saving": "保存中..."
+            }
+          }
+        },
+        "layout": {
+          "loading": "アプリケーションインスタンス読み込み中...",
+          "noInstances": "アプリケーションインスタンスがありません",
+          "noInstancesForProvider": "このプロバイダーのアプリケーションインスタンスがありません",
+          "addFirstApp": "最初のアプリケーションを追加",
+          "defaultApp": "デフォルト",
+          "deleteConfirm": "このアプリケーションインスタンスを削除してもよろしいですか？この操作は元に戻せません。",
+          "defaultAppCannotDelete": "デフォルトアプリケーションは削除できません。まず他のアプリケーションをデフォルトに設定してください。",
+          "instanceNotFound": "削除するインスタンスが見つかりません",
+          "deleteInstanceFailed": "アプリケーションインスタンスの削除に失敗しました",
+          "setDefaultConfirm": "\"{name}\"をデフォルトアプリケーションに設定してもよろしいですか？",
+          "instanceNotFoundForDefault": "デフォルトに設定するインスタンスが見つかりません",
+          "setDefaultFailed": "デフォルトアプリケーションの設定に失敗しました",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "APIキー (key_value)",
+          "providerBinding": "プロバイダーバインディング",
+          "urlPlaceholder": "URLは選択されたプロバイダーの設定を自動的に使用します",
+          "urlBindingInfo": "URLはサービスプロバイダーにバインドされています。\"プロバイダー管理\"で変更してください",
+          "currentProvider": "現在のプロバイダー: {name}",
+          "unknownProvider": "不明なプロバイダー",
+          "keyConfigured": "設定済み",
+          "keyNotConfigured": "未設定",
+          "keyPlaceholderEdit": "空白のままにすると既存のAPIキーを保持します",
+          "keyPlaceholderNew": "APIキーを入力",
+          "keyEditHint": "入力フィールドを空白のままにすると、既存のキーが変更されずに保持されます",
+          "tagsLabel": "アプリケーションタグ (tags)",
+          "tagCategories": {
+            "modelType": "モデルタイプ",
+            "useCase": "使用事例",
+            "features": "技術的特徴"
+          },
+          "predefinedTags": {
+            "conversationModel": "会話モデル",
+            "reasoningModel": "推論モデル",
+            "documentModel": "ドキュメントモデル",
+            "multimodal": "マルチモーダル",
+            "textGeneration": "テキスト生成",
+            "codeGeneration": "コード生成",
+            "dataAnalysis": "データ分析",
+            "translation": "翻訳",
+            "highAccuracy": "高精度",
+            "fastResponse": "高速応答",
+            "localDeployment": "ローカル展開",
+            "enterpriseGrade": "エンタープライズグレード"
+          },
+          "customTagPlaceholder": "カスタムタグ（Enterで追加）",
+          "tagHelpText": "タグはアプリケーションの分類と検索に使用されます"
+        },
+        "providerSelector": {
+          "placeholder": "プロバイダーを選択してください",
+          "defaultLabel": "デフォルト",
+          "noProviders": "利用可能なサービスプロバイダーがありません"
+        },
+        "customProviderSelector": {
+          "placeholder": "プロバイダーを選択してください",
+          "defaultLabel": "デフォルト",
+          "noProviders": "利用可能なサービスプロバイダーがありません"
+        },
+        "instanceFilter": {
+          "allApps": "すべてのアプリケーション",
+          "providerApps": "{name}アプリケーション",
+          "defaultLabel": "デフォルト",
+          "totalCount": "合計 {count} 個",
+          "noProviders": "利用可能なサービスプロバイダーがありません"
+        },
+        "events": {
+          "defaultSetSuccess": "デフォルトアプリケーションが正常に設定されました"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "サービスプロバイダーを選択してください",
+            "invalidProvider": "選択されたサービスプロバイダーは無効です",
+            "inactiveProvider": "選択されたサービスプロバイダーは有効ではありません",
+            "createFailed": "アプリケーションインスタンスの作成に失敗しました",
+            "updateFailed": "アプリケーションインスタンスの更新に失敗しました",
+            "setDefaultFailed": "デフォルトアプリケーションの設定に失敗しました"
+          },
+          "success": {
+            "instanceCreated": "アプリケーションインスタンスが正常に作成されました",
+            "instanceUpdated": "アプリケーションインスタンスが正常に更新されました",
+            "setAsDefault": "アプリケーションインスタンスがデフォルトアプリケーションに設定されました"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "アプリケーションの作成は成功しましたが、デフォルトアプリケーションの設定に失敗しました"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify パラメータ設定",
+          "defaultInstanceName": "アプリケーションインスタンス",
+          "unsavedChanges": "未保存の変更があります",
+          "sections": {
+            "basic": {
+              "title": "基本設定",
+              "openingStatement": {
+                "label": "オープニングステートメント",
+                "placeholder": "オープニングステートメントを入力..."
+              },
+              "suggestedQuestions": {
+                "label": "推奨質問",
+                "addButton": "推奨質問を追加",
+                "placeholder": "推奨質問を入力..."
+              }
+            },
+            "fileUpload": {
+              "title": "ファイルアップロード機能",
+              "enabled": "有効",
+              "disabled": "無効"
+            },
+            "speechToText": {
+              "title": "音声テキスト変換",
+              "enabled": "有効",
+              "disabled": "無効"
+            },
+            "textToSpeech": {
+              "title": "テキスト音声変換",
+              "enabled": "有効",
+              "disabled": "無効",
+              "enableLabel": "テキスト音声変換を有効にする",
+              "voiceType": {
+                "label": "音声タイプ",
+                "placeholder": "例：alloy, echo, fable"
+              },
+              "language": {
+                "label": "言語",
+                "selectPlaceholder": "言語を選択",
+                "options": {
+                  "zh": "中国語",
+                  "en": "英語",
+                  "ja": "日本語",
+                  "ko": "韓国語"
+                }
+              },
+              "autoPlay": {
+                "label": "自動再生",
+                "enabled": "オン",
+                "disabled": "オフ"
+              }
+            },
+            "retrieverResource": {
+              "title": "引用と帰属"
+            },
+            "annotationReply": {
+              "title": "注釈返信"
+            },
+            "userInputForm": {
+              "title": "ユーザー入力フォーム",
+              "fieldsCount": "{count} フィールド",
+              "description": "ユーザー入力フォーム設定は通常、Dify アプリケーションによって自動生成されます。同期機能を通じて最新の設定を取得することをお勧めします。",
+              "fieldInfo": "変数：{variable} | 必須：{required} | デフォルト：{defaultValue}",
+              "fieldRequired": "はい",
+              "fieldOptional": "いいえ",
+              "fieldNoDefault": "なし",
+              "fieldLabel": "フィールド {index}",
+              "noFields": "ユーザー入力フォーム設定なし"
+            },
+            "systemParameters": {
+              "title": "システムパラメータ",
+              "fileSizeLimit": "ドキュメントサイズ制限 (MB)",
+              "imageSizeLimit": "画像サイズ制限 (MB)",
+              "audioSizeLimit": "オーディオサイズ制限 (MB)",
+              "videoSizeLimit": "ビデオサイズ制限 (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "ファイルアップロード設定",
+            "uploadMethod": {
+              "label": "アップロード方法",
+              "local": "ローカルアップロード",
+              "url": "URL リンク",
+              "both": "両方の方法"
+            },
+            "maxFiles": {
+              "label": "最大ファイル数",
+              "description": "ドキュメント < 15MB, 画像 < 10MB, 音声 < 50MB, 動画 < 100MB"
+            },
+            "fileTypes": {
+              "label": "サポートされるファイルタイプ",
+              "image": "画像",
+              "document": "ドキュメント",
+              "audio": "オーディオ",
+              "video": "ビデオ",
+              "other": "その他のファイルタイプ",
+              "customPlaceholder": "例：zip, rar, 7z, tar",
+              "customDescription": "サポート形式：zip, rar, 7z, tar, gz, bz2, xz など"
+            }
+          },
+          "buttons": {
+            "cancel": "キャンセル",
+            "save": "保存",
+            "confirm": "確認"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "アプリケーションインスタンスを編集",
+            "add": "アプリケーションインスタンスを追加"
+          },
+          "unsavedChanges": "未保存の変更があります",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "スペースを含めることはできません（URLルーティングに影響します）",
+              "invalidChars": "文字、数字、ハイフン(-)、アンダースコア(_)、ピリオド(.)のみ使用できます",
+              "tooLong": "長さは50文字を超えることはできません",
+              "mustStartWithAlphanumeric": "文字または数字で始まる必要があります",
+              "formatError": "アプリケーションIDの形式エラー",
+              "notModifiable": "アプリケーション ID は作成後に変更できません",
+              "formatDescription": "文字、数字、ハイフン(-)、アンダースコア(_)、ピリオド(.)のみ使用できます。スペースは使用できません。設定を同期して自動生成できます。"
+            },
+            "formValidationFailed": "フォーム検証に失敗しました",
+            "fillApiCredentials": "まずAPI URLとAPIキーを入力してください",
+            "fillInstanceId": "まずアプリケーションIDを入力してください"
+          },
+          "sync": {
+            "basicInfo": "基本情報",
+            "paramConfig": "パラメータ設定",
+            "noDataReceived": "Dify APIから設定データを取得できませんでした。アプリケーションIDとAPI設定が正しいかご確認ください",
+            "successMessage": "Dify APIから{items}の同期に成功しました！",
+            "autoGeneratedId": " アプリケーションIDを自動生成しました：{instanceId}",
+            "syncFailed": "設定の同期に失敗しました",
+            "syncFailedTitle": "同期失敗",
+            "syncing": "同期中...",
+            "syncFromDify": "Difyから同期",
+            "syncFromDifyWithAutoId": "Dify APIから同期（アプリケーションIDが空の場合は自動生成されます）",
+            "syncFromDifyDescription": "Dify APIから設定を同期",
+            "syncButtonDisabled": "まずAPI URLとAPIキーを入力してください"
+          },
+          "defaultApp": {
+            "setAsDefault": "デフォルトに設定",
+            "isDefault": "デフォルトアプリ",
+            "willSetAsDefault": "デフォルトに設定されます",
+            "setDefaultConfirm": "\"{name}\"をデフォルトアプリケーションに設定してもよろしいですか？",
+            "setDefaultSuccess": "デフォルトアプリケーションの設定に成功しました",
+            "setDefaultFailed": "デフォルトアプリケーションの設定に失敗しました",
+            "instanceNotFound": "インスタンスIDが存在しません。デフォルトアプリケーションに設定できません"
+          },
+          "provider": {
+            "title": "サービスプロバイダー",
+            "current": "現在のアプリケーションサービスプロバイダー（変更不可）",
+            "select": "サービスプロバイダーを選択",
+            "unknown": "不明なプロバイダー",
+            "selectPlaceholder": "プロバイダーを選択してください",
+            "configUpdated": "プロバイダー設定が更新されました"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "アプリケーション ID (instance_id) *",
+              "placeholder": "アプリケーション IDを入力",
+              "generateButton": "IDを生成",
+              "generateTooltip": "クリックしてランダムUUIDをアプリケーションIDとして生成"
+            },
+            "displayName": {
+              "label": "表示名 (display_name) *",
+              "placeholder": "表示名を入力"
+            },
+            "description": {
+              "label": "アプリケーション説明 (description)",
+              "placeholder": "アプリケーション説明を入力"
+            }
+          },
+          "appType": {
+            "label": "アプリケーションタイプ (app_type) *",
+            "model": {
+              "title": "モデル",
+              "description": "モデル切り替え用"
+            },
+            "marketplace": {
+              "title": "アプリケーションマーケット",
+              "description": "アプリケーションマーケット用"
+            },
+            "note": "「モデル」タイプのアプリケーションはチャットインターフェースのモデルセレクターに表示されます"
+          },
+          "syncConfirm": {
+            "updateDescription": "説明を「{description}」に更新しますか？"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify アプリケーションタイプ (dify_apptype) *",
+            "titleCompact": "Dify アプリケーションタイプ",
+            "description": "ユースケースに適したDifyアプリケーションタイプを選択してください。タイプによって異なる機能と適用シナリオがあります。"
+          },
+          "difyConfig": {
+            "title": "Dify パラメータ設定",
+            "appTypeNote": "「モデル」タイプのアプリケーションはチャットインターフェースのモデルセレクターに表示されます"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "デフォルトアプリケーションが正常に設定されました"
+        }
+      }
     },
     "about": {
       "title": "AgentifUIについて",
@@ -940,6 +1349,29 @@
         "suffix": "。大規模モデルアプリケーションの未来を探求。"
       }
     }
+  },
+  "debug": {
+    "setDefaultApp": "デフォルトアプリを設定 - 渡されたID:",
+    "currentInstances": "現在のすべてのインスタンス:",
+    "instanceNotFound": "インスタンスが見つかりません、渡されたID:",
+    "foundInstance": "インスタンスが見つかりました:",
+    "setDefaultFailed": "デフォルトアプリの設定に失敗:",
+    "syncConfig": "設定を同期",
+    "syncFailed": "同期に失敗:",
+    "syncSuccess": "同期成功"
+  },
+  "buttons": {
+    "syncInProgress": "同期中...",
+    "syncConfig": "設定を同期",
+    "tooltip": {
+      "syncFromDify": "Dify APIから設定を同期",
+      "syncFromDifyEdit": "Dify APIから設定を同期",
+      "syncFromDifyCreate": "Dify APIから設定を同期（アプリIDが空の場合は自動生成）",
+      "fillCredentials": "まずAPI URLとAPIキーを入力してください"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "表示名を \"{name}\" に更新しますか？"
   },
   "errors": {
     "notFound": "ページが見つかりません",
@@ -1157,6 +1589,54 @@
       "batchDeleteSuccess": "{success}個の会話を正常に削除しました。{failed}個の削除に失敗しました",
       "batchDeleteFailed": "削除に失敗しました。後でもう一度お試しください",
       "error": "操作に失敗しました。後でもう一度お試しください"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "ワークフロー",
+      "description": "自動化されたワークフロープロセス",
+      "features": {
+        "automation": "自動化",
+        "batchProcessing": "バッチ処理",
+        "processControl": "プロセス制御"
+      }
+    },
+    "text-generation": {
+      "label": "テキスト生成",
+      "description": "単一テキスト生成アプリケーション",
+      "features": {
+        "textGeneration": "テキスト生成",
+        "contentCreation": "コンテンツ作成",
+        "formattedOutput": "フォーマット済み出力"
+      }
+    },
+    "chatbot": {
+      "label": "チャットボット",
+      "description": "基本的な会話チャットボット",
+      "features": {
+        "conversation": "会話",
+        "fileUpload": "ファイルアップロード",
+        "speechToText": "音声をテキストに"
+      }
+    },
+    "agent": {
+      "label": "エージェント",
+      "description": "ツール呼び出し対応インテリジェントエージェント",
+      "features": {
+        "conversation": "会話",
+        "toolCalling": "ツール呼び出し",
+        "reasoningChain": "推論チェーン",
+        "multiTurnTasks": "マルチターンタスク"
+      }
+    },
+    "chatflow": {
+      "label": "チャットフロー",
+      "description": "会話ワークフローアプリケーション",
+      "features": {
+        "processOrchestration": "プロセスオーケストレーション",
+        "conditionalBranching": "条件分岐",
+        "conversationManagement": "会話管理"
+      }
     }
   }
 }

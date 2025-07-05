@@ -7,6 +7,8 @@ import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
 import React, { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface CustomProviderSelectorProps {
   providers: Provider[];
   selectedProviderId: string;
@@ -20,12 +22,15 @@ export function CustomProviderSelector({
   providers,
   selectedProviderId,
   onProviderChange,
-  placeholder = '请选择提供商',
+  placeholder,
   className,
   error,
 }: CustomProviderSelectorProps) {
   const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations('pages.admin.apiConfig.customProviderSelector');
+
+  const defaultPlaceholder = placeholder || t('placeholder');
 
   // 获取当前选中的提供商信息
   const selectedProvider = selectedProviderId
@@ -75,7 +80,7 @@ export function CustomProviderSelector({
             !selectedProvider && (isDark ? 'text-stone-400' : 'text-stone-500')
           )}
         >
-          {selectedProvider ? selectedProvider.name : placeholder}
+          {selectedProvider ? selectedProvider.name : defaultPlaceholder}
         </span>
 
         <div
@@ -131,7 +136,7 @@ export function CustomProviderSelector({
                     : 'text-stone-500 hover:bg-stone-100/60'
                 )}
               >
-                <span>{placeholder}</span>
+                <span>{defaultPlaceholder}</span>
               </button>
             )}
 
@@ -172,7 +177,7 @@ export function CustomProviderSelector({
                               : 'bg-stone-200 text-stone-800'
                           )}
                         >
-                          默认
+                          {t('defaultLabel')}
                         </span>
                       )}
                     </div>
@@ -199,7 +204,7 @@ export function CustomProviderSelector({
                   isDark ? 'text-stone-400' : 'text-stone-500'
                 )}
               >
-                暂无可用的服务提供商
+                {t('noProviders')}
               </div>
             )}
           </div>

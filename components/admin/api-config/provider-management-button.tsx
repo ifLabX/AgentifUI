@@ -4,6 +4,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Settings } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface ProviderManagementButtonProps {
   onClick: () => void;
 }
@@ -12,6 +14,7 @@ export const ProviderManagementButton = ({
   onClick,
 }: ProviderManagementButtonProps) => {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.apiConfig.providerManagement');
 
   return (
     <div className="flex justify-end px-6 pt-6 pb-3">
@@ -27,7 +30,7 @@ export const ProviderManagementButton = ({
         )}
       >
         <Settings className="h-4 w-4" />
-        <span className="font-serif">管理提供商</span>
+        <span className="font-serif">{t('buttonText')}</span>
       </button>
     </div>
   );

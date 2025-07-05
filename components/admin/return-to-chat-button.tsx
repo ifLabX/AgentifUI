@@ -4,10 +4,12 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Edit } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export function ReturnToChatButton() {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.layout.actions.returnToChatButton');
 
   return (
     <Link
@@ -21,7 +23,7 @@ export function ReturnToChatButton() {
       )}
     >
       <Edit className="h-4 w-4" />
-      <span className="hidden text-sm sm:inline">返回对话</span>
+      <span className="hidden text-sm sm:inline">{t('text')}</span>
     </Link>
   );
 }

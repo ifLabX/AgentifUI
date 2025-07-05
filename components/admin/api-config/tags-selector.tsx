@@ -4,6 +4,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { X } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface TagsSelectorProps {
   tags: string[];
   onTagsChange: (tags: string[]) => void;
@@ -11,6 +13,7 @@ interface TagsSelectorProps {
 
 export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.apiConfig.fields');
 
   const handleTagToggle = (tag: string) => {
     const isSelected = tags.includes(tag);
@@ -39,7 +42,7 @@ export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
           isDark ? 'text-stone-300' : 'text-stone-700'
         )}
       >
-        应用标签 (tags)
+        {t('tagsLabel')}
       </label>
       <div className="space-y-3">
         {/* 预定义标签选择 - 按类别分组 */}
@@ -52,10 +55,15 @@ export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
-              模型类型
+              {t('tagCategories.modelType')}
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {['对话模型', '推理模型', '文档模型', '多模态'].map(tag => (
+              {[
+                t('predefinedTags.conversationModel'),
+                t('predefinedTags.reasoningModel'),
+                t('predefinedTags.documentModel'),
+                t('predefinedTags.multimodal'),
+              ].map(tag => (
                 <button
                   key={tag}
                   type="button"
@@ -85,10 +93,15 @@ export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
-              应用场景
+              {t('tagCategories.useCase')}
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {['文本生成', '代码生成', '数据分析', '翻译'].map(tag => (
+              {[
+                t('predefinedTags.textGeneration'),
+                t('predefinedTags.codeGeneration'),
+                t('predefinedTags.dataAnalysis'),
+                t('predefinedTags.translation'),
+              ].map(tag => (
                 <button
                   key={tag}
                   type="button"
@@ -118,10 +131,15 @@ export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
-              技术特性
+              {t('tagCategories.features')}
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {['高精度', '快速响应', '本地部署', '企业级'].map(tag => (
+              {[
+                t('predefinedTags.highAccuracy'),
+                t('predefinedTags.fastResponse'),
+                t('predefinedTags.localDeployment'),
+                t('predefinedTags.enterpriseGrade'),
+              ].map(tag => (
                 <button
                   key={tag}
                   type="button"
@@ -148,7 +166,7 @@ export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="自定义标签（回车添加）"
+            placeholder={t('customTagPlaceholder')}
             className={cn(
               'flex-1 rounded border px-2 py-1.5 font-serif text-xs',
               isDark
@@ -202,7 +220,7 @@ export const TagsSelector = ({ tags, onTagsChange }: TagsSelectorProps) => {
             isDark ? 'text-stone-400' : 'text-stone-500'
           )}
         >
-          标签用于应用分类和搜索
+          {t('tagHelpText')}
         </p>
       </div>
     </div>

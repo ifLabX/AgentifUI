@@ -365,54 +365,6 @@
         "tokensUsed": "Tokens utilizados: {count}"
       }
     },
-    "difyAppTypes": {
-      "workflow": {
-        "label": "Flujo de Trabajo",
-        "description": "Proceso de flujo de trabajo automatizado",
-        "features": {
-          "automation": "Automatización",
-          "batchProcessing": "Procesamiento por Lotes",
-          "processControl": "Control de Procesos"
-        }
-      },
-      "text-generation": {
-        "label": "Generación de Texto",
-        "description": "Aplicación de generación de texto único",
-        "features": {
-          "textGeneration": "Generación de Texto",
-          "contentCreation": "Creación de Contenido",
-          "formattedOutput": "Salida Formateada"
-        }
-      },
-      "chatbot": {
-        "label": "Chatbot",
-        "description": "Chatbot conversacional básico",
-        "features": {
-          "conversation": "Conversación",
-          "fileUpload": "Subida de Archivos",
-          "speechToText": "Voz a Texto"
-        }
-      },
-      "agent": {
-        "label": "Agente",
-        "description": "Agente inteligente con llamada de herramientas",
-        "features": {
-          "conversation": "Conversación",
-          "toolCalling": "Llamada de Herramientas",
-          "reasoningChain": "Cadena de Razonamiento",
-          "multiTurnTasks": "Tareas Multivuelta"
-        }
-      },
-      "chatflow": {
-        "label": "Flujo de Chat",
-        "description": "Aplicación de flujo de trabajo conversacional",
-        "features": {
-          "processOrchestration": "Orquestación de Procesos",
-          "conditionalBranching": "Ramificación Condicional",
-          "conversationManagement": "Gestión de Conversaciones"
-        }
-      }
-    },
     "apps": {
       "startChatWith": "Comenzar a chatear con {appName}...",
       "continueChatWith": "Continuar chateando con {appName}...",
@@ -902,7 +854,464 @@
     "admin": {
       "title": "Panel de Administración",
       "users": "Gestión de Usuarios",
-      "analytics": "Analíticas"
+      "analytics": "Analíticas",
+      "main": {
+        "title": "Resumen del Panel de Administración",
+        "subtitle": "Bienvenido al Panel de Administración de AgentifUI. Aquí puedes gestionar varias configuraciones y ajustes del sistema"
+      },
+      "layout": {
+        "headerTitle": "Panel de Administración AgentifUI",
+        "breadcrumbRoot": "Panel de Administración",
+        "menuItems": {
+          "main": {
+            "text": "Inicio de Admin",
+            "description": "Resumen del panel de administración"
+          },
+          "apiConfig": {
+            "text": "Configuración de API",
+            "description": "Gestionar instancias de aplicaciones y parámetros de configuración"
+          },
+          "content": {
+            "text": "Acerca de y Notificaciones",
+            "description": "Gestionar página Acerca de y notificaciones push del sistema"
+          },
+          "users": {
+            "text": "Gestión de Usuarios",
+            "description": "Gestionar cuentas de usuario y permisos"
+          },
+          "groups": {
+            "text": "Gestión de Grupos",
+            "description": "Gestionar usuarios y grupos, configurar permisos de aplicaciones de grupo"
+          },
+          "permissions": {
+            "text": "Gestión de Permisos de Aplicaciones",
+            "description": "Gestionar visibilidad de aplicaciones y permisos de grupo"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "Reconstruir",
+            "messages": {
+              "startRebuild": "Iniciando reconstrucción y despliegue...",
+              "startRebuildDescription": "Este proceso puede tomar unos minutos, por favor sea paciente.",
+              "buildInProgress": "Construcción en progreso",
+              "buildInProgressDescription": "Por favor espere a que se complete la construcción actual antes de intentar nuevamente.",
+              "authFailed": "Autenticación fallida",
+              "authFailedDescription": "Por favor inicie sesión nuevamente e intente.",
+              "permissionDenied": "Permiso denegado",
+              "permissionDeniedDescription": "No tiene permisos para realizar esta operación.",
+              "unknownError": "Error desconocido ocurrido",
+              "buildComplete": "¡Construcción completa!",
+              "buildCompleteDescription": "La aplicación se reiniciará automáticamente en 2 segundos para aplicar los cambios.",
+              "appRestarting": "Aplicación reiniciando...",
+              "appRestartingDescription": "La página se actualizará automáticamente después de que se complete el reinicio.",
+              "deployFailed": "Despliegue fallido",
+              "networkError": "Error de red, por favor verifique la conexión e intente nuevamente."
+            }
+          },
+          "returnToChatButton": {
+            "text": "Volver al Chat"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "Actualizar Datos",
+            "save": "Guardar Cambios",
+            "saving": "Guardando...",
+            "reset": "Restablecer",
+            "create": "Crear",
+            "cancel": "Cancelar",
+            "confirm": "Confirmar"
+          },
+          "status": {
+            "hasUnsavedChanges": "Tiene cambios sin guardar",
+            "saving": "Guardando...",
+            "allChangesSaved": "Todos los cambios guardados"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "Seleccionar Instancia de Aplicación",
+          "description": "Selecciona una instancia de aplicación de la lista izquierda para ver y editar su configuración, o haz clic en el botón agregar para crear una nueva instancia de aplicación"
+        },
+        "formActions": {
+          "save": "Guardar",
+          "saving": "Guardando...",
+          "cancel": "Cancelar"
+        },
+        "providerManagement": {
+          "buttonText": "Gestionar Proveedores",
+          "modal": {
+            "title": "Gestionar Proveedores de Servicios",
+            "providerList": "Lista de Proveedores",
+            "addProvider": "Agregar Proveedor",
+            "editProvider": "Editar Proveedor",
+            "addNewProvider": "Agregar Nuevo Proveedor",
+            "loading": "Cargando...",
+            "noProviders": "Sin proveedores configurados",
+            "deleteConfirm": "¿Está seguro de que desea eliminar el proveedor \"{name}\"? Esta acción no se puede deshacer.",
+            "messages": {
+              "loadFailed": "Error al cargar lista de proveedores",
+              "createSuccess": "Proveedor creado exitosamente",
+              "createFailed": "Error al crear proveedor",
+              "updateSuccess": "Proveedor actualizado exitosamente",
+              "updateFailed": "Error al actualizar proveedor",
+              "deleteSuccess": "Proveedor eliminado exitosamente",
+              "deleteFailed": "Error al eliminar proveedor",
+              "saveFailed": "Error al guardar proveedor"
+            },
+            "providerTypes": {
+              "llm": "LLM (Modelo de Lenguaje Grande)",
+              "platform": "Plataforma (Plataforma de Agregación)",
+              "embedding": "Embedding (Vectorización)",
+              "tts": "TTS (Texto a Voz)",
+              "stt": "STT (Voz a Texto)",
+              "vision": "Visión (Reconocimiento de Imágenes)",
+              "multimodal": "Multimodal"
+            },
+            "authTypes": {
+              "api_key": "Clave API",
+              "bearer_token": "Token Bearer",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Autenticación Básica"
+            },
+            "status": {
+              "enabled": "Habilitado",
+              "disabled": "Deshabilitado",
+              "default": "Proveedor Predeterminado"
+            },
+            "form": {
+              "name": {
+                "label": "Nombre del Proveedor",
+                "placeholder": "ej.: Dify, OpenAI, Claude",
+                "required": "El nombre del proveedor no puede estar vacío"
+              },
+              "type": {
+                "label": "Tipo de Proveedor",
+                "placeholder": "Seleccionar tipo de proveedor",
+                "required": "Por favor seleccione el tipo de proveedor"
+              },
+              "baseUrl": {
+                "label": "URL de API",
+                "placeholder": "ej.: https://api.dify.ai/v1",
+                "required": "La URL de API no puede estar vacía",
+                "invalid": "Por favor ingrese un formato de URL válido"
+              },
+              "authType": {
+                "label": "Tipo de Autenticación",
+                "placeholder": "Seleccionar tipo de autenticación",
+                "required": "Por favor seleccione el tipo de autenticación"
+              },
+              "isActive": {
+                "label": "Estado de Habilitación"
+              },
+              "isDefault": {
+                "label": "Proveedor Predeterminado",
+                "description": "Solo puede existir un proveedor predeterminado en el sistema. Configurar esto eliminará automáticamente el estado predeterminado de otros proveedores.",
+                "setAsDefault": "Establecer como Predeterminado",
+                "notDefault": "No Predeterminado"
+              },
+              "authMethod": "Método de Autenticación"
+            },
+            "buttons": {
+              "cancel": "Cancelar",
+              "save": "Guardar",
+              "saving": "Guardando..."
+            }
+          }
+        },
+        "layout": {
+          "loading": "Cargando instancias de aplicación...",
+          "noInstances": "Sin instancias de aplicación",
+          "noInstancesForProvider": "Sin instancias de aplicación para este proveedor",
+          "addFirstApp": "Agregar primera aplicación",
+          "defaultApp": "Predeterminado",
+          "deleteConfirm": "¿Está seguro de que desea eliminar esta instancia de aplicación? Esta acción no se puede deshacer.",
+          "defaultAppCannotDelete": "La aplicación predeterminada no se puede eliminar. Primero configure otra aplicación como predeterminada.",
+          "instanceNotFound": "Instancia a eliminar no encontrada",
+          "deleteInstanceFailed": "Error al eliminar instancia de aplicación",
+          "setDefaultConfirm": "¿Está seguro de que desea establecer \"{name}\" como aplicación predeterminada?",
+          "instanceNotFoundForDefault": "Instancia a establecer como predeterminada no encontrada",
+          "setDefaultFailed": "Error al establecer aplicación predeterminada",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "URL de API (config.api_url)",
+          "apiKey": "Clave de API (key_value)",
+          "providerBinding": "Vinculación de Proveedor",
+          "urlPlaceholder": "La URL utilizará automáticamente la configuración del proveedor seleccionado",
+          "urlBindingInfo": "La URL está vinculada al proveedor de servicios, modifique en \"Gestionar Proveedores\"",
+          "currentProvider": "Proveedor actual: {name}",
+          "unknownProvider": "Proveedor desconocido",
+          "keyConfigured": "Configurado",
+          "keyNotConfigured": "No configurado",
+          "keyPlaceholderEdit": "Deje vacío para mantener la clave API existente",
+          "keyPlaceholderNew": "Ingrese clave API",
+          "keyEditHint": "Dejar el campo de entrada vacío mantendrá la clave existente sin cambios",
+          "tagsLabel": "Etiquetas de Aplicación (tags)",
+          "tagCategories": {
+            "modelType": "Tipo de Modelo",
+            "useCase": "Caso de Uso",
+            "features": "Características Técnicas"
+          },
+          "predefinedTags": {
+            "conversationModel": "Modelo de Conversación",
+            "reasoningModel": "Modelo de Razonamiento",
+            "documentModel": "Modelo de Documento",
+            "multimodal": "Multimodal",
+            "textGeneration": "Generación de Texto",
+            "codeGeneration": "Generación de Código",
+            "dataAnalysis": "Análisis de Datos",
+            "translation": "Traducción",
+            "highAccuracy": "Alta Precisión",
+            "fastResponse": "Respuesta Rápida",
+            "localDeployment": "Despliegue Local",
+            "enterpriseGrade": "Nivel Empresarial"
+          },
+          "customTagPlaceholder": "Etiqueta personalizada (presiona Enter para agregar)",
+          "tagHelpText": "Las etiquetas se utilizan para clasificación y búsqueda de aplicaciones"
+        },
+        "providerSelector": {
+          "placeholder": "Por favor seleccione proveedor",
+          "defaultLabel": "Predeterminado",
+          "noProviders": "No hay proveedores de servicios disponibles"
+        },
+        "customProviderSelector": {
+          "placeholder": "Por favor seleccione proveedor",
+          "defaultLabel": "Predeterminado",
+          "noProviders": "No hay proveedores de servicios disponibles"
+        },
+        "instanceFilter": {
+          "allApps": "Todas las Aplicaciones",
+          "providerApps": "Aplicaciones de {name}",
+          "defaultLabel": "Predeterminado",
+          "totalCount": "Total {count}",
+          "noProviders": "No hay proveedores de servicios disponibles"
+        },
+        "events": {
+          "defaultSetSuccess": "Aplicación predeterminada establecida exitosamente"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "Por favor seleccione un proveedor de servicios",
+            "invalidProvider": "El proveedor de servicios seleccionado no es válido",
+            "inactiveProvider": "El proveedor de servicios seleccionado no está activo",
+            "createFailed": "Error al crear instancia de aplicación",
+            "updateFailed": "Error al actualizar instancia de aplicación",
+            "setDefaultFailed": "Error al establecer aplicación predeterminada"
+          },
+          "success": {
+            "instanceCreated": "Instancia de aplicación creada con éxito",
+            "instanceUpdated": "Instancia de aplicación actualizada con éxito",
+            "setAsDefault": "Instancia de aplicación establecida como predeterminada"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "Aplicación creada con éxito, pero falló al establecer como predeterminada"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Configuración de Parámetros Dify",
+          "defaultInstanceName": "Aplicación",
+          "unsavedChanges": "Tienes cambios sin guardar",
+          "sections": {
+            "basic": {
+              "title": "Configuración Básica",
+              "openingStatement": {
+                "label": "Declaración de Apertura",
+                "placeholder": "Ingresa declaración de apertura..."
+              },
+              "suggestedQuestions": {
+                "label": "Preguntas Sugeridas",
+                "addButton": "Agregar Pregunta Sugerida",
+                "placeholder": "Ingresa pregunta sugerida..."
+              }
+            },
+            "fileUpload": {
+              "title": "Función de Carga de Archivos",
+              "enabled": "Habilitado",
+              "disabled": "Deshabilitado"
+            },
+            "speechToText": {
+              "title": "Voz a Texto",
+              "enabled": "Habilitado",
+              "disabled": "Deshabilitado"
+            },
+            "textToSpeech": {
+              "title": "Texto a Voz",
+              "enabled": "Habilitado",
+              "disabled": "Deshabilitado",
+              "enableLabel": "Habilitar Texto a Voz",
+              "voiceType": {
+                "label": "Tipo de Voz",
+                "placeholder": "ej.: alloy, echo, fable"
+              },
+              "language": {
+                "label": "Idioma",
+                "selectPlaceholder": "Seleccionar Idioma",
+                "options": {
+                  "zh": "Chino",
+                  "en": "Inglés",
+                  "ja": "Japonés",
+                  "ko": "Coreano"
+                }
+              },
+              "autoPlay": {
+                "label": "Reproducción Automática",
+                "enabled": "Activado",
+                "disabled": "Desactivado"
+              }
+            },
+            "retrieverResource": {
+              "title": "Citas y Atribución"
+            },
+            "annotationReply": {
+              "title": "Respuesta de Anotación"
+            },
+            "userInputForm": {
+              "title": "Formulario de Entrada del Usuario",
+              "fieldsCount": "{count} campos",
+              "description": "La configuración del formulario de entrada del usuario generalmente es auto-generada por la aplicación Dify. Se recomienda obtener la configuración más reciente a través de la función de sincronización.",
+              "fieldInfo": "Variable: {variable} | Requerido: {required} | Predeterminado: {defaultValue}",
+              "fieldRequired": "Sí",
+              "fieldOptional": "No",
+              "fieldNoDefault": "Ninguno",
+              "fieldLabel": "Campo {index}",
+              "noFields": "Sin configuración de formulario de entrada del usuario"
+            },
+            "systemParameters": {
+              "title": "Parámetros del Sistema",
+              "fileSizeLimit": "Límite de Tamaño de Documento (MB)",
+              "imageSizeLimit": "Límite de Tamaño de Imagen (MB)",
+              "audioSizeLimit": "Límite de Tamaño de Audio (MB)",
+              "videoSizeLimit": "Límite de Tamaño de Video (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "Configuración de Carga de Archivos",
+            "uploadMethod": {
+              "label": "Método de Carga",
+              "local": "Carga Local",
+              "url": "Enlace URL",
+              "both": "Ambos Métodos"
+            },
+            "maxFiles": {
+              "label": "Número Máximo de Archivos",
+              "description": "Documentos < 15MB, Imágenes < 10MB, Audio < 50MB, Video < 100MB"
+            },
+            "fileTypes": {
+              "label": "Tipos de Archivo Soportados",
+              "image": "Imagen",
+              "document": "Documento",
+              "audio": "Audio",
+              "video": "Video",
+              "other": "Otros Tipos de Archivo",
+              "customPlaceholder": "ej.: zip, rar, 7z, tar",
+              "customDescription": "Formatos soportados: zip, rar, 7z, tar, gz, bz2, xz, etc."
+            }
+          },
+          "buttons": {
+            "cancel": "Cancelar",
+            "save": "Guardar",
+            "confirm": "Confirmar"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "Editar Instancia de Aplicación",
+            "add": "Agregar Instancia de Aplicación"
+          },
+          "unsavedChanges": "Cambios no guardados",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "No puede contener espacios (afecta el enrutamiento de URL)",
+              "invalidChars": "Solo puede contener letras, números, guiones (-), guiones bajos (_) y puntos (.)",
+              "tooLong": "La longitud no puede exceder los 50 caracteres",
+              "mustStartWithAlphanumeric": "Debe comenzar con una letra o número",
+              "formatError": "Error de formato del ID de aplicación",
+              "notModifiable": "El ID de aplicación no se puede modificar después de la creación",
+              "formatDescription": "Solo puede contener letras, números, guiones (-), guiones bajos (_) y puntos (.). No se permiten espacios. Puede sincronizar la configuración para generar automáticamente."
+            },
+            "formValidationFailed": "Falló la validación del formulario",
+            "fillApiCredentials": "Por favor complete primero la URL de API y la Clave de API",
+            "fillInstanceId": "Por favor complete primero el ID de Aplicación"
+          },
+          "sync": {
+            "basicInfo": "Información Básica",
+            "paramConfig": "Configuración de Parámetros",
+            "noDataReceived": "No se pudo obtener ningún dato de configuración de la API de Dify. Por favor verifique si el ID de Aplicación y la configuración de API son correctos",
+            "successMessage": "¡Sincronizado exitosamente {items} desde la API de Dify!",
+            "autoGeneratedId": " ID de Aplicación generado automáticamente: {instanceId}",
+            "syncFailed": "Falló la sincronización de configuración",
+            "syncFailedTitle": "Sincronización Fallida",
+            "syncing": "Sincronizando...",
+            "syncFromDify": "Sincronizar desde Dify",
+            "syncFromDifyWithAutoId": "Sincronizar desde API de Dify (generará automáticamente ID de Aplicación si está vacío)",
+            "syncFromDifyDescription": "Sincronizar configuración desde API de Dify",
+            "syncButtonDisabled": "Por favor complete primero la URL de API y la Clave de API"
+          },
+          "defaultApp": {
+            "setAsDefault": "Establecer como Predeterminado",
+            "isDefault": "Aplicación Predeterminada",
+            "willSetAsDefault": "Se Establecerá como Predeterminado",
+            "setDefaultConfirm": "¿Está seguro de que desea establecer \"{name}\" como la aplicación predeterminada?",
+            "setDefaultSuccess": "Aplicación predeterminada establecida exitosamente",
+            "setDefaultFailed": "Falló al establecer la aplicación predeterminada",
+            "instanceNotFound": "El ID de instancia no existe, no se puede establecer como aplicación predeterminada"
+          },
+          "provider": {
+            "title": "Proveedor de Servicios",
+            "current": "Proveedor de servicios de aplicación actual (no se puede modificar)",
+            "select": "Seleccionar proveedor de servicios",
+            "unknown": "Proveedor Desconocido",
+            "selectPlaceholder": "Por favor seleccione proveedor",
+            "configUpdated": "Configuración del proveedor actualizada"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "ID de Aplicación (instance_id) *",
+              "placeholder": "Ingrese ID de Aplicación",
+              "generateButton": "Generar ID",
+              "generateTooltip": "Haga clic para generar UUID aleatorio como ID de Aplicación"
+            },
+            "displayName": {
+              "label": "Nombre para Mostrar (display_name) *",
+              "placeholder": "Ingrese nombre para mostrar"
+            },
+            "description": {
+              "label": "Descripción de Aplicación (description)",
+              "placeholder": "Ingrese descripción de aplicación"
+            }
+          },
+          "appType": {
+            "label": "Tipo de Aplicación (app_type) *",
+            "model": {
+              "title": "Modelo",
+              "description": "Para cambio de modelo"
+            },
+            "marketplace": {
+              "title": "Mercado de Aplicaciones",
+              "description": "Para mercado de aplicaciones"
+            },
+            "note": "Las aplicaciones con tipo \"Modelo\" aparecerán en el selector de modelos de la interfaz de chat"
+          },
+          "syncConfirm": {
+            "updateDescription": "¿Actualizar descripción a: \"{description}\"?"
+          },
+          "difyAppTypeSelector": {
+            "title": "Tipo de Aplicación Dify (dify_apptype) *",
+            "titleCompact": "Tipo de Aplicación Dify",
+            "description": "Elija el tipo de aplicación Dify que se adapte a su caso de uso. Diferentes tipos tienen diferentes características y escenarios aplicables."
+          },
+          "difyConfig": {
+            "title": "Configuración de Parámetros de Dify",
+            "appTypeNote": "Las aplicaciones con tipo \"Modelo\" aparecerán en el selector de modelos de la interfaz de chat"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "Aplicación predeterminada establecida exitosamente"
+        }
+      }
     },
     "about": {
       "title": "Acerca de AgentifUI",
@@ -940,6 +1349,29 @@
         "suffix": ". Explora el futuro de las aplicaciones de modelos grandes."
       }
     }
+  },
+  "debug": {
+    "setDefaultApp": "Configurando aplicación predeterminada - ID pasado:",
+    "currentInstances": "Todas las instancias actuales:",
+    "instanceNotFound": "Instancia no encontrada, ID pasado:",
+    "foundInstance": "Instancia encontrada:",
+    "setDefaultFailed": "Error al configurar aplicación predeterminada:",
+    "syncConfig": "Sincronizar configuración",
+    "syncFailed": "Error de sincronización:",
+    "syncSuccess": "Sincronización exitosa"
+  },
+  "buttons": {
+    "syncInProgress": "Sincronizando...",
+    "syncConfig": "Sincronizar Configuración",
+    "tooltip": {
+      "syncFromDify": "Sincronizar configuración desde API de Dify",
+      "syncFromDifyEdit": "Sincronizar configuración desde API de Dify",
+      "syncFromDifyCreate": "Sincronizar configuración desde API de Dify (generar ID automáticamente si está vacío)",
+      "fillCredentials": "Por favor, complete primero la URL de API y la clave de API"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "¿Actualizar nombre de visualización a: \"{name}\"?"
   },
   "errors": {
     "notFound": "Página no encontrada",
@@ -1157,6 +1589,54 @@
       "batchDeleteSuccess": "Se eliminaron exitosamente {success} conversaciones, {failed} fallaron",
       "batchDeleteFailed": "Eliminación falló, inténtalo de nuevo más tarde",
       "error": "Operación falló, inténtalo de nuevo más tarde"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "Flujo de Trabajo",
+      "description": "Proceso de flujo de trabajo automatizado",
+      "features": {
+        "automation": "Automatización",
+        "batchProcessing": "Procesamiento por Lotes",
+        "processControl": "Control de Procesos"
+      }
+    },
+    "text-generation": {
+      "label": "Generación de Texto",
+      "description": "Aplicación de generación de texto único",
+      "features": {
+        "textGeneration": "Generación de Texto",
+        "contentCreation": "Creación de Contenido",
+        "formattedOutput": "Salida Formateada"
+      }
+    },
+    "chatbot": {
+      "label": "Chatbot",
+      "description": "Chatbot conversacional básico",
+      "features": {
+        "conversation": "Conversación",
+        "fileUpload": "Subida de Archivos",
+        "speechToText": "Voz a Texto"
+      }
+    },
+    "agent": {
+      "label": "Agente",
+      "description": "Agente inteligente con llamada de herramientas",
+      "features": {
+        "conversation": "Conversación",
+        "toolCalling": "Llamada de Herramientas",
+        "reasoningChain": "Cadena de Razonamiento",
+        "multiTurnTasks": "Tareas Multivuelta"
+      }
+    },
+    "chatflow": {
+      "label": "Flujo de Chat",
+      "description": "Aplicación de flujo de trabajo conversacional",
+      "features": {
+        "processOrchestration": "Orquestación de Procesos",
+        "conditionalBranching": "Ramificación Condicional",
+        "conversationManagement": "Gestión de Conversaciones"
+      }
     }
   }
 }
