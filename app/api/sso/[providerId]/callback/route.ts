@@ -36,9 +36,11 @@ export async function GET(
 
     // --- BEGIN COMMENT ---
     // 获取SSO提供商配置
+    // 使用公开方法绕过RLS，因为API路由没有用户认证上下文
     // --- END COMMENT ---
-    const provider = await SSOProviderService.getProviderById(providerId);
-    if (!provider || !provider.enabled) {
+    const publicProvider =
+      await SSOProviderService.getPublicProviderById(providerId);
+    if (!publicProvider || !publicProvider.enabled) {
       return createErrorResponse(
         request,
         'SSO提供商不存在或已禁用',
@@ -47,9 +49,33 @@ export async function GET(
     }
 
     // --- BEGIN COMMENT ---
+    // 验证必要字段并转换为完整的Provider类型
+    // --- END COMMENT ---
+    if (
+      !publicProvider.id ||
+      !publicProvider.name ||
+      !publicProvider.protocol ||
+      !publicProvider.settings
+    ) {
+      return createErrorResponse(
+        request,
+        'SSO提供商配置不完整',
+        'invalid_provider_config'
+      );
+    }
+
+    const provider = publicProvider as Required<
+      Pick<
+        typeof publicProvider,
+        'id' | 'name' | 'protocol' | 'settings' | 'enabled'
+      >
+    > &
+      typeof publicProvider;
+
+    // --- BEGIN COMMENT ---
     // 创建SSO服务实例
     // --- END COMMENT ---
-    const ssoService = await SSOServiceFactory.createService(provider);
+    const ssoService = await SSOServiceFactory.createService(provider as any);
 
     // --- BEGIN COMMENT ---
     // 提取认证参数（支持不同协议）
@@ -57,6 +83,17 @@ export async function GET(
     // OIDC: code, state
     // --- END COMMENT ---
     const authParams = Object.fromEntries(searchParams.entries());
+
+    // --- BEGIN MODIFICATION ---
+    // 核心修复: 对于CAS协议，必须明确提供原始的service URL用于票据验证
+    // CAS服务器回调时，URL本身就是service，但请求参数中只有ticket
+    // 因此，我们需要从请求URL中提取出不带查询参数的部分作为service参数
+    if (provider.protocol === 'CAS') {
+      const serviceUrl = new URL(request.url);
+      serviceUrl.search = ''; // 移除所有查询参数
+      authParams.service = serviceUrl.toString();
+    }
+    // --- END MODIFICATION ---
 
     console.log(
       `[SSO-CALLBACK] Processing callback for provider: ${provider.name}`,

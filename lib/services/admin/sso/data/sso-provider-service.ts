@@ -29,6 +29,16 @@ export class SSOProviderService {
   }
 
   // --- BEGIN COMMENT ---
+  // 根据ID为公开登录流程获取提供商信息
+  // --- END COMMENT ---
+  static async getPublicProviderById(
+    id: string
+  ): Promise<Partial<SsoProvider> | null> {
+    const dbService = new SSODatabaseService(true);
+    return await dbService.getPublicProviderById(id);
+  }
+
+  // --- BEGIN COMMENT ---
   // 获取启用的提供商
   // --- END COMMENT ---
   static async getEnabledProviders(): Promise<SsoProvider[]> {

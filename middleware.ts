@@ -173,6 +173,8 @@ export async function middleware(request: NextRequest) {
 // Configure the paths matched by the middleware
 export const config = {
   matcher: [
+    // 排除静态文件，但包含所有API路由以便添加CORS头
+    // SSO callback路由在中间件内部特殊处理
     // Exclude static files and server-side APIs
     '/((?!_next/static|_next/image|favicon.ico).*)',
     '/chat', // Ensure /chat is intercepted to redirect

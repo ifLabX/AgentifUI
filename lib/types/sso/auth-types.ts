@@ -164,3 +164,14 @@ export interface URLBuildOptions {
   returnUrl?: string;
   additionalParams?: Record<string, string>;
 }
+
+// --- BEGIN COMMENT ---
+// 公开的SSO提供商信息接口
+// --- END COMMENT ---
+export interface PublicSsoProvider {
+  id: string;
+  name: string;
+  protocol: 'OIDC' | 'SAML' | 'CAS';
+  button_text: string | null;
+  display_order: number;
+}

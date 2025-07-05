@@ -3,8 +3,9 @@
 // 核心功能：为指定提供商生成登录URL并重定向用户
 // 解决CAS service参数构建问题，确保认证流程稳定
 // --- END COMMENT ---
-import { SSOServiceFactory } from '@lib/services/sso/core/service-factory';
-import { SSOProviderService } from '@lib/services/sso/data/sso-provider-service';
+import { SSOServiceFactory } from '@lib/services/admin/sso/core/service-factory';
+import { SSOProviderService } from '@lib/services/admin/sso/data/sso-provider-service';
+import type { SsoProvider } from '@lib/types/sso/admin-types';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -35,7 +36,7 @@ export async function GET(
     // 获取SSO提供商配置
     // 验证提供商是否存在且已启用
     // --- END COMMENT ---
-    const provider = await SSOProviderService.getProviderById(providerId);
+    const provider = await SSOProviderService.getPublicProviderById(providerId);
     if (!provider) {
       return NextResponse.json({ error: 'SSO提供商不存在' }, { status: 404 });
     }
@@ -48,7 +49,9 @@ export async function GET(
     // 创建SSO服务实例
     // 使用服务工厂根据协议类型创建对应的服务
     // --- END COMMENT ---
-    const ssoService = await SSOServiceFactory.createService(provider);
+    const ssoService = await SSOServiceFactory.createService(
+      provider as SsoProvider
+    );
 
     // --- BEGIN COMMENT ---
     // 生成登录URL

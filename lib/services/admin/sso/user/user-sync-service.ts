@@ -3,7 +3,10 @@
 // 负责将SSO认证后的用户信息同步到本地用户系统
 // 支持用户创建、更新、权限分配和组织架构同步
 // --- END COMMENT ---
-import { createClient as createSupabaseServerClient } from '@lib/supabase/server';
+import {
+  createAdminClient,
+  createClient as createSupabaseServerClient,
+} from '@lib/supabase/server';
 import type { Profile } from '@lib/types/database';
 import type { SSOUserInfo } from '@lib/types/sso/admin-types';
 
@@ -27,7 +30,6 @@ export interface UserSyncConfig {
   autoUpdateProfile: boolean;
   defaultRole?: string;
   allowedDomains?: string[];
-  requireEmailVerification: boolean;
 }
 
 // --- BEGIN COMMENT ---
@@ -42,7 +44,6 @@ export class UserSyncService {
       autoCreateUser: true,
       autoUpdateProfile: true,
       defaultRole: 'user',
-      requireEmailVerification: false,
       ...config,
     };
   }
@@ -53,9 +54,10 @@ export class UserSyncService {
   static async syncUser(
     userInfo: SSOUserInfo,
     provider: { id: string; name: string }
-  ): Promise<any> {
+  ): Promise<UserProfile> {
     const service = new UserSyncService();
-    const result = await service.syncUser(userInfo, provider.id);
+    // 核心修正：传入providerId和providerName
+    const result = await service.syncUser(userInfo, provider.id, provider.name);
 
     if (result.errors.length > 0) {
       throw new Error(`用户同步失败: ${result.errors.join(', ')}`);
@@ -65,10 +67,10 @@ export class UserSyncService {
   }
 
   // --- BEGIN COMMENT ---
-  // 获取Supabase客户端实例
+  // 获取Supabase Admin客户端实例，用于所有数据库操作以绕过RLS
   // --- END COMMENT ---
-  private async getSupabaseClient() {
-    return await createSupabaseServerClient();
+  private async getSupabaseAdminClient() {
+    return await createAdminClient();
   }
 
   // --- BEGIN COMMENT ---
@@ -77,7 +79,8 @@ export class UserSyncService {
   // --- END COMMENT ---
   async syncUser(
     ssoUserInfo: SSOUserInfo,
-    providerId: string
+    providerId: string,
+    providerName: string // 增加providerName参数
   ): Promise<UserSyncResult> {
     const result: UserSyncResult = {
       user: {} as UserProfile,
@@ -101,8 +104,7 @@ export class UserSyncService {
         // 更新现有用户
         const updateResult = await this.updateExistingUser(
           existingUser,
-          ssoUserInfo,
-          providerId
+          ssoUserInfo
         );
         result.user = updateResult.user;
         result.updated = updateResult.updated;
@@ -112,7 +114,8 @@ export class UserSyncService {
         if (this.config.autoCreateUser) {
           const createResult = await this.createNewUser(
             ssoUserInfo,
-            providerId
+            providerId,
+            providerName // 传入providerName
           );
           result.user = createResult.user;
           result.created = createResult.created;
@@ -141,7 +144,8 @@ export class UserSyncService {
     }
 
     if (!userInfo.id || userInfo.id.trim().length === 0) {
-      errors.push('User ID is required');
+      // 在CAS中，id通常是employeeNumber
+      errors.push('User ID (employee_number) is required');
     }
 
     // 验证邮箱域名（如果配置了允许的域名）
@@ -157,21 +161,28 @@ export class UserSyncService {
 
   // --- BEGIN COMMENT ---
   // 查找现有用户
-  // 按工号、用户名或邮箱查找
+  // 使用Admin Client以绕过RLS
+  // 按工号(id)、用户名或邮箱查找
   // --- END COMMENT ---
   private async findExistingUser(
     userInfo: SSOUserInfo
   ): Promise<UserProfile | null> {
-    const supabase = await this.getSupabaseClient();
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .or(
-        `employee_number.eq.${userInfo.id},username.eq.${userInfo.username}${userInfo.email ? `,email.eq.${userInfo.email}` : ''}`
-      )
-      .single();
+    const supabase = await this.getSupabaseAdminClient();
+    let queryBuilder = supabase.from('profiles').select('*');
 
-    if (error && error.code !== 'PGRST116') {
+    const conditions = [`employee_number.eq.${userInfo.id}`];
+    if (userInfo.username) {
+      conditions.push(`username.eq.${userInfo.username}`);
+    }
+    if (userInfo.email) {
+      conditions.push(`email.eq.${userInfo.email}`);
+    }
+
+    queryBuilder = queryBuilder.or(conditions.join(','));
+
+    const { data, error } = await queryBuilder.limit(1).maybeSingle();
+
+    if (error) {
       throw new Error(`Failed to find existing user: ${error.message}`);
     }
 
@@ -180,78 +191,60 @@ export class UserSyncService {
 
   // --- BEGIN COMMENT ---
   // 更新现有用户信息
+  // 使用Admin Client以绕过RLS
   // --- END COMMENT ---
   private async updateExistingUser(
     existingUser: UserProfile,
-    ssoUserInfo: SSOUserInfo,
-    providerId: string
+    ssoUserInfo: SSOUserInfo
   ): Promise<{ user: UserProfile; updated: boolean; errors: string[] }> {
     const errors: string[] = [];
     let updated = false;
 
     try {
-      const supabase = await this.getSupabaseClient();
+      const supabase = await this.getSupabaseAdminClient();
 
       if (this.config.autoUpdateProfile) {
-        const updateData: any = {};
+        const updateData: Partial<UserProfile> = {};
 
         // 更新基础信息
         if (ssoUserInfo.name && ssoUserInfo.name !== existingUser.full_name) {
           updateData.full_name = ssoUserInfo.name;
-          updated = true;
         }
 
         if (ssoUserInfo.email && ssoUserInfo.email !== existingUser.email) {
           updateData.email = ssoUserInfo.email;
-          updated = true;
         }
 
         // 确保工号信息同步
         if (ssoUserInfo.id && ssoUserInfo.id !== existingUser.employee_number) {
           updateData.employee_number = ssoUserInfo.id;
-          updated = true;
         }
 
-        // 更新最后登录时间
-        updateData.last_login = new Date().toISOString();
-        updated = true;
-
-        if (updated) {
-          updateData.updated_at = new Date().toISOString();
-
-          const { data, error } = await supabase
-            .from('profiles')
-            .update(updateData)
-            .eq('id', existingUser.id)
-            .select()
-            .single();
-
-          if (error) {
-            errors.push(`Failed to update user profile: ${error.message}`);
-            return { user: existingUser, updated: false, errors };
-          }
-
-          return { user: data, updated: true, errors };
+        if (Object.keys(updateData).length > 0) {
+          updated = true;
         }
       }
 
-      // 即使没有更新，也要更新最后登录时间
+      // 总是更新最后登录时间
+      const finalUpdateData: any = {
+        ...(updated ? { ...existingUser, ...ssoUserInfo } : {}),
+        last_login: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
       const { data, error } = await supabase
         .from('profiles')
-        .update({
-          last_login: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
+        .update(finalUpdateData)
         .eq('id', existingUser.id)
         .select()
         .single();
 
       if (error) {
-        errors.push(`Failed to update last login: ${error.message}`);
+        errors.push(`Failed to update user profile: ${error.message}`);
         return { user: existingUser, updated: false, errors };
       }
 
-      return { user: data, updated: false, errors };
+      return { user: data, updated, errors };
     } catch (error) {
       errors.push(
         `Failed to update existing user: ${error instanceof Error ? error.message : String(error)}`
@@ -262,42 +255,74 @@ export class UserSyncService {
 
   // --- BEGIN COMMENT ---
   // 创建新用户
+  // 修正：使用Admin Client创建auth.users记录，让触发器创建profile
   // --- END COMMENT ---
   private async createNewUser(
     ssoUserInfo: SSOUserInfo,
-    providerId: string
+    providerId: string,
+    providerName: string
   ): Promise<{ user: UserProfile; created: boolean; errors: string[] }> {
     const errors: string[] = [];
 
     try {
-      const supabase = await this.getSupabaseClient();
+      const supabase = await this.getSupabaseAdminClient();
 
-      const insertData: any = {
-        employee_number: ssoUserInfo.id,
-        username: ssoUserInfo.username,
-        full_name: ssoUserInfo.name || ssoUserInfo.username,
-        email: ssoUserInfo.email,
-        role: this.config.defaultRole || 'user',
-        auth_source: 'sso',
-        status: 'active',
-        sso_provider_id: providerId,
-        last_login: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      const { data: authUser, error: authError } =
+        await supabase.auth.admin.createUser({
+          // 如果提供了email就用，否则基于username或id构建
+          email: ssoUserInfo.email || `${ssoUserInfo.username}@sso.local`,
+          user_metadata: {
+            full_name: ssoUserInfo.name || ssoUserInfo.username,
+            username: ssoUserInfo.username,
+            employee_number: ssoUserInfo.id,
+            auth_source: 'sso',
+            sso_provider_id: providerId,
+            sso_provider_name: providerName,
+          },
+          app_metadata: {
+            provider: 'sso',
+            provider_id: providerId,
+            employee_number: ssoUserInfo.id,
+          },
+          email_confirm: true, // SSO用户自动确认邮箱
+        });
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert(insertData)
-        .select()
-        .single();
-
-      if (error) {
-        errors.push(`Failed to create user: ${error.message}`);
+      if (authError) {
+        // 处理邮箱冲突，尝试查找用户
+        if (authError.message.includes('already been registered')) {
+          const existingUser = await this.findExistingUser(ssoUserInfo);
+          if (existingUser) {
+            return { user: existingUser, created: false, errors };
+          }
+        }
+        errors.push(`Failed to create auth user: ${authError.message}`);
         return { user: {} as UserProfile, created: false, errors };
       }
 
-      return { user: data, created: true, errors };
+      if (!authUser.user) {
+        throw new Error('Failed to create auth user: no user returned');
+      }
+
+      // 等待并查找由触发器创建的profile
+      let profile = await this.waitForProfile(authUser.user.id);
+
+      if (!profile) {
+        // 如果触发器失败，手动创建profile作为备用方案
+        profile = await this.manuallyCreateProfile(
+          authUser.user.id,
+          ssoUserInfo,
+          providerId
+        );
+      } else {
+        // 触发器成功，但可能需要补充信息
+        profile = await this.updateProfileWithSSOData(
+          profile.id,
+          ssoUserInfo,
+          providerId
+        );
+      }
+
+      return { user: profile, created: true, errors };
     } catch (error) {
       errors.push(
         `Failed to create new user: ${error instanceof Error ? error.message : String(error)}`
@@ -307,134 +332,94 @@ export class UserSyncService {
   }
 
   // --- BEGIN COMMENT ---
-  // 根据工号查找用户
+  // 辅助函数：等待并重试查找Profile
   // --- END COMMENT ---
-  async findUserByEmployeeNumber(
-    employeeNumber: string
+  private async waitForProfile(
+    userId: string,
+    retries = 5,
+    delay = 500
   ): Promise<UserProfile | null> {
-    const supabase = await this.getSupabaseClient();
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('employee_number', employeeNumber)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw new Error(
-        `Failed to find user by employee number: ${error.message}`
-      );
-    }
-
-    return data || null;
-  }
-
-  // --- BEGIN COMMENT ---
-  // 根据用户名查找用户
-  // --- END COMMENT ---
-  async findUserByUsername(username: string): Promise<UserProfile | null> {
-    const supabase = await this.getSupabaseClient();
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('username', username)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw new Error(`Failed to find user by username: ${error.message}`);
-    }
-
-    return data || null;
-  }
-
-  // --- BEGIN COMMENT ---
-  // 批量同步用户（用于批量导入或数据迁移）
-  // --- END COMMENT ---
-  async batchSyncUsers(
-    userInfoList: SSOUserInfo[],
-    providerId: string
-  ): Promise<UserSyncResult[]> {
-    const results: UserSyncResult[] = [];
-
-    for (const userInfo of userInfoList) {
-      try {
-        const result = await this.syncUser(userInfo, providerId);
-        results.push(result);
-      } catch (error) {
-        results.push({
-          user: {} as UserProfile,
-          created: false,
-          updated: false,
-          errors: [
-            `Batch sync failed for user ${userInfo.username}: ${error instanceof Error ? error.message : String(error)}`,
-          ],
-        });
+    const supabase = await this.getSupabaseAdminClient();
+    for (let i = 0; i < retries; i++) {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (data) {
+        return data;
       }
+      await new Promise(res => setTimeout(res, delay));
     }
-
-    return results;
+    return null;
   }
 
   // --- BEGIN COMMENT ---
-  // 获取SSO用户统计信息
+  // 辅助函数：手动创建Profile（作为备用方案）
   // --- END COMMENT ---
-  async getSSOUserStats(providerId?: string): Promise<{
-    totalSSOUsers: number;
-    activeUsers: number;
-    lastWeekLogins: number;
-  }> {
-    const supabase = await this.getSupabaseClient();
+  private async manuallyCreateProfile(
+    userId: string,
+    ssoUserInfo: SSOUserInfo,
+    providerId: string
+  ): Promise<UserProfile> {
+    const supabase = await this.getSupabaseAdminClient();
+    const insertData: any = this.buildProfileData(ssoUserInfo, providerId);
+    insertData.id = userId;
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('profiles')
-      .select('*', { count: 'exact' })
-      .eq('auth_source', 'sso');
-
-    if (providerId) {
-      query = query.eq('sso_provider_id', providerId);
-    }
-
-    const { count: totalSSOUsers, error } = await query;
+      .insert(insertData)
+      .select()
+      .single();
 
     if (error) {
-      throw new Error(`Failed to get SSO user stats: ${error.message}`);
+      throw new Error(`Manual profile creation failed: ${error.message}`);
     }
+    return data;
+  }
 
-    // 获取活跃用户数（最近30天有登录）
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  // --- BEGIN COMMENT ---
+  // 辅助函数：使用SSO数据更新Profile
+  // --- END COMMENT ---
+  private async updateProfileWithSSOData(
+    userId: string,
+    ssoUserInfo: SSOUserInfo,
+    providerId: string
+  ): Promise<UserProfile> {
+    const supabase = await this.getSupabaseAdminClient();
+    const updateData = this.buildProfileData(ssoUserInfo, providerId);
 
-    let activeQuery = supabase
+    const { data, error } = await supabase
       .from('profiles')
-      .select('*', { count: 'exact' })
-      .eq('auth_source', 'sso')
-      .gte('last_login', thirtyDaysAgo.toISOString());
+      .update(updateData)
+      .eq('id', userId)
+      .select()
+      .single();
 
-    if (providerId) {
-      activeQuery = activeQuery.eq('sso_provider_id', providerId);
+    if (error) {
+      throw new Error(`Profile update with SSO data failed: ${error.message}`);
     }
+    return data;
+  }
 
-    const { count: activeUsers } = await activeQuery;
-
-    // 获取最近一周登录数
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    let weekQuery = supabase
-      .from('profiles')
-      .select('*', { count: 'exact' })
-      .eq('auth_source', 'sso')
-      .gte('last_login', oneWeekAgo.toISOString());
-
-    if (providerId) {
-      weekQuery = weekQuery.eq('sso_provider_id', providerId);
-    }
-
-    const { count: lastWeekLogins } = await weekQuery;
-
+  // --- BEGIN COMMENT ---
+  // 辅助函数：构建Profile数据对象
+  // --- END COMMENT ---
+  private buildProfileData(
+    ssoUserInfo: SSOUserInfo,
+    providerId: string
+  ): Omit<UserProfile, 'id' | 'created_at'> {
     return {
-      totalSSOUsers: totalSSOUsers || 0,
-      activeUsers: activeUsers || 0,
-      lastWeekLogins: lastWeekLogins || 0,
+      employee_number: ssoUserInfo.id,
+      username: ssoUserInfo.username,
+      full_name: ssoUserInfo.name || ssoUserInfo.username,
+      email: ssoUserInfo.email || undefined,
+      role: (this.config.defaultRole as 'user' | 'admin') || 'user',
+      auth_source: 'sso',
+      status: 'active',
+      sso_provider_id: providerId,
+      last_login: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
   }
 }

@@ -14,6 +14,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createClient } from '../../lib/supabase/client';
 import { BistuSSOCard } from './bistu-sso-button';
+import { DynamicSsoButtons } from './dynamic-sso-buttons';
 import { SocialAuthButtons } from './social-auth-buttons';
 
 export function LoginForm() {
@@ -120,6 +121,11 @@ export function LoginForm() {
           <>
             {/* Social login area */}
             <SocialAuthButtons type="login" redirectTo="/chat" />
+
+            {/* --- BEGIN COMMENT --- */}
+            {/* 动态SSO登录区域 */}
+            {/* --- END COMMENT --- */}
+            <DynamicSsoButtons />
           </>
         )}
 

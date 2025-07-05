@@ -7,6 +7,8 @@ import { createClient as createSupabaseClient } from '@lib/supabase/client';
 import { createClient as createSupabaseServerClient } from '@lib/supabase/server';
 import type { SsoProtocol, SsoProvider } from '@lib/types/sso/admin-types';
 
+import { createClient } from '@supabase/supabase-js';
+
 // --- BEGIN COMMENT ---
 // 提供商状态枚举
 // --- END COMMENT ---
@@ -30,6 +32,23 @@ export class SSODatabaseService {
     return this.isServer
       ? await createSupabaseServerClient()
       : createSupabaseClient();
+  }
+
+  // --- BEGIN COMMENT ---
+  // 创建一个能绕过RLS的Supabase管理员客户端
+  // 使用 service_role key，用于需要公开访问但受RLS保护的数据
+  // --- END COMMENT ---
+  private getSupabaseAdminClient() {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
+      throw new Error('Supabase URL or service role key is not configured.');
+    }
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
   }
 
   // --- BEGIN COMMENT ---
@@ -86,6 +105,34 @@ export class SSODatabaseService {
     }
 
     return this.mapRowToProvider(data);
+  }
+
+  // --- BEGIN COMMENT ---
+  // 根据ID为公开登录流程获取提供商信息
+  // 使用Admin客户端绕过RLS，但只选择非敏感字段
+  // 明确排除了 client_secret
+  // --- END COMMENT ---
+  async getPublicProviderById(
+    id: string
+  ): Promise<Partial<SsoProvider> | null> {
+    const supabase = this.getSupabaseAdminClient();
+
+    const { data, error } = await supabase
+      .from('sso_providers')
+      .select(
+        'id, name, protocol, settings, client_id, metadata_url, enabled, button_text'
+      )
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null; // Provider not found
+      }
+      throw new Error(`Failed to fetch public SSO provider: ${error.message}`);
+    }
+
+    return data;
   }
 
   // --- BEGIN COMMENT ---

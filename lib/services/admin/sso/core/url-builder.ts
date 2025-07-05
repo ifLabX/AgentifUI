@@ -81,6 +81,8 @@ export class SSOUrlBuilder {
   // --- END COMMENT ---
   isValidCallbackUrl(url: string): boolean {
     try {
+      console.log('isValidCallbackUrl', url);
+      console.log('this.config.appUrl', this.config.appUrl);
       const parsedUrl = new URL(url);
       const configUrl = new URL(this.config.appUrl);
 
