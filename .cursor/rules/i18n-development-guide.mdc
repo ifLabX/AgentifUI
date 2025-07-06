@@ -1,0 +1,79 @@
+---
+alwaysApply: true
+---
+# i18n Development Guidelines
+
+## Core Rules
+
+### 🚫 NEVER Use Hardcoded Text
+- NO hardcoded strings in any language (Chinese, English, etc.)
+- NO hardcoded text in UI elements, buttons, messages, tooltips, placeholders
+
+### ✅ ALWAYS Use Translation Keys
+- ALWAYS use `useTranslations()` hook for user-facing text
+- ALWAYS define keys in `messages/zh-CN.json` first
+- ALWAYS maintain structure across all 5 languages
+
+## Required Setup
+
+```tsx
+import { useTranslations } from 'next-intl';
+
+// Initialize hook
+const t = useTranslations('pages.admin.moduleName');
+// or for common UI: useTranslations('common.ui')
+
+// Use translation keys
+<button>{t('saveButton')}</button>
+<h1>{t('title')}</h1>
+```
+
+## Translation Key Structure
+
+- Use **camelCase** naming
+- Use hierarchical organization: `pages.admin.moduleName.componentName.key`
+- Check existing keys before creating new ones
+- Reuse common patterns from `common.ui.*`
+
+## Required Languages (5 total)
+1. **zh-CN** (Primary) - Define structure here first
+2. **en-US** 
+3. **es-ES** 
+4. **zh-TW** 
+5. **ja-JP**
+
+## Common Pitfalls to Avoid
+
+```tsx
+// ❌ Wrong
+<button>保存</button>
+<input placeholder="Enter name" />
+{isLoading ? "加载中..." : "Load failed"}
+toast.success("保存成功");
+
+// ✅ Correct  
+<button>{t('save')}</button>
+<input placeholder={t('namePlaceholder')} />
+{isLoading ? t('loading') : t('loadFailed')}
+toast.success(t('saveSuccess'));
+```
+
+## Validation Before Commit
+
+```bash
+# Quick check
+python3 scripts/i18n-refactor-helper.py quick-check
+
+# TypeScript check
+npx tsc --noEmit
+```
+
+## Key Validation Points
+- ✅ All 5 language files have identical structure
+- ✅ No hardcoded text in components
+- ✅ TypeScript compilation passes
+
+Remember: **No hardcoded text, always use translation keys**
+- [i18n-refactor-workflow-optimized.md](docs/i18n-refactor-workflow-optimized.md) - Detailed refactoring workflow
+
+Remember: **Consistency is key**. Always follow these guidelines to maintain a professional, maintainable, and truly international application.
