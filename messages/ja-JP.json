@@ -1311,6 +1311,96 @@
         "useApiConfigEvents": {
           "defaultInstanceSetSuccess": "デフォルトアプリケーションが正常に設定されました"
         }
+      },
+      "permissions": {
+        "header": {
+          "title": "アプリケーション権限管理",
+          "subtitle": "アプリケーションの可視性とグループ権限の統合管理",
+          "refreshButton": "データを更新"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "アプリケーション名または説明を検索...",
+          "filterLabel": "アプリケーションタイプ：",
+          "filterOptions": {
+            "all": "すべてのアプリケーション",
+            "public": "パブリックアプリケーション",
+            "groupOnly": "グループアプリケーション",
+            "private": "プライベートアプリケーション"
+          }
+        },
+        "layout": {
+          "appListTitle": "アプリケーションリスト",
+          "appListSubtitle": "権限を設定するアプリケーションを選択",
+          "permissionPanelTitle": "権限設定",
+          "permissionPanelSubtitle": "アプリケーションの可視性とグループ権限を管理"
+        },
+        "appList": {
+          "noApps": "アプリケーションがありません",
+          "noAppsDescription": "まずアプリケーションインスタンスを作成してください",
+          "loading": "読み込み中...",
+          "unknown": "不明",
+          "visibility": {
+            "public": "パブリック",
+            "groupOnly": "グループ",
+            "private": "プライベート"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "アプリケーションを選択",
+            "description": "左のアプリケーションリストから権限を設定するアプリケーションを選択してください"
+          },
+          "visibilitySettings": {
+            "title": "可視性設定",
+            "currentSetting": "現在の設定",
+            "options": {
+              "public": {
+                "label": "パブリックアプリケーション",
+                "description": "すべてのユーザーがこのアプリケーションにアクセスできます"
+              },
+              "groupOnly": {
+                "label": "グループアプリケーション",
+                "description": "認証されたグループメンバーのみアクセス可能"
+              },
+              "private": {
+                "label": "プライベートアプリケーション",
+                "description": "管理者のみがこのアプリケーションにアクセスできます"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "グループ権限",
+            "description": "このアプリケーションにアクセスできるグループを選択",
+            "noGroups": {
+              "title": "グループがありません",
+              "description": "アプリケーション権限を設定するには、まずグループを作成してください"
+            },
+            "status": {
+              "enabled": "有効",
+              "disabled": "無効"
+            },
+            "actions": {
+              "enable": "アクセスを有効にする",
+              "disable": "アクセスを無効にする"
+            },
+            "memberCount": "{count} メンバー"
+          },
+          "permissionExplanation": {
+            "title": "権限の説明",
+            "public": "パブリックアプリケーション：すべてのユーザーがアクセス可能",
+            "groupOnly": "グループアプリケーション：認証されたグループメンバーのみアクセス可能",
+            "private": "プライベートアプリケーション：管理者のみアクセス可能"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "アプリケーションの可視性が「{visibility}」に更新されました",
+          "groupPermissionEnabled": "{groupName}のこのアプリケーションへのアクセスを有効にしました",
+          "groupPermissionDisabled": "{groupName}のこのアプリケーションへのアクセスを無効にしました",
+          "loadAppsError": "アプリケーションリストの読み込みに失敗しました",
+          "loadGroupsError": "グループリストの読み込みに失敗しました",
+          "updateVisibilityError": "アプリケーションの可視性の更新に失敗しました",
+          "updateGroupPermissionError": "グループ権限の更新に失敗しました"
+        }
       }
     },
     "about": {

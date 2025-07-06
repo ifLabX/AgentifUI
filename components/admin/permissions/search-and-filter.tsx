@@ -6,20 +6,35 @@ import type { AppVisibility } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { Search } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 export function SearchAndFilter() {
   const { isDark } = useTheme();
   const { searchTerm, visibilityFilter, setSearchTerm, setVisibilityFilter } =
     usePermissionManagementStore();
+  const t = useTranslations('pages.admin.permissions.searchAndFilter');
 
   const visibilityOptions: Array<{
     value: AppVisibility | 'all';
     label: string;
     color: string;
   }> = [
-    { value: 'all', label: '全部应用', color: 'text-stone-600' },
-    { value: 'public', label: '公开应用', color: 'text-green-600' },
-    { value: 'group_only', label: '群组应用', color: 'text-blue-600' },
-    { value: 'private', label: '私有应用', color: 'text-purple-600' },
+    { value: 'all', label: t('filterOptions.all'), color: 'text-stone-600' },
+    {
+      value: 'public',
+      label: t('filterOptions.public'),
+      color: 'text-green-600',
+    },
+    {
+      value: 'group_only',
+      label: t('filterOptions.groupOnly'),
+      color: 'text-blue-600',
+    },
+    {
+      value: 'private',
+      label: t('filterOptions.private'),
+      color: 'text-purple-600',
+    },
   ];
 
   return (
@@ -40,7 +55,7 @@ export function SearchAndFilter() {
           />
           <input
             type="text"
-            placeholder="搜索应用名称或描述..."
+            placeholder={t('searchPlaceholder')}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className={cn(
@@ -61,7 +76,7 @@ export function SearchAndFilter() {
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            应用类型：
+            {t('filterLabel')}
           </span>
           <div className="flex items-center gap-1">
             {visibilityOptions.map(option => (

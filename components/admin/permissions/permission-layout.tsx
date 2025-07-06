@@ -3,12 +3,15 @@
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
+import { useTranslations } from 'next-intl';
+
 import { AppList } from './app-list';
 import { PermissionPanel } from './permission-panel';
 import { SearchAndFilter } from './search-and-filter';
 
 export function PermissionLayout() {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.permissions.layout');
 
   return (
     <div className="space-y-6">
@@ -39,7 +42,7 @@ export function PermissionLayout() {
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
-                应用列表
+                {t('appListTitle')}
               </h2>
               <p
                 className={cn(
@@ -47,7 +50,7 @@ export function PermissionLayout() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                选择应用来配置权限
+                {t('appListSubtitle')}
               </p>
             </div>
             <div className="flex-1 overflow-hidden">
@@ -78,7 +81,7 @@ export function PermissionLayout() {
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
-                权限配置
+                {t('permissionPanelTitle')}
               </h2>
               <p
                 className={cn(
@@ -86,7 +89,7 @@ export function PermissionLayout() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                管理应用可见性和群组权限
+                {t('permissionPanelSubtitle')}
               </p>
             </div>
             <div className="flex-1 overflow-hidden">

@@ -1311,6 +1311,96 @@
         "useApiConfigEvents": {
           "defaultInstanceSetSuccess": "預設應用程式設定成功"
         }
+      },
+      "permissions": {
+        "header": {
+          "title": "應用程式權限管理",
+          "subtitle": "統一管理應用程式可見性和群組權限分配",
+          "refreshButton": "重新整理資料"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "搜尋應用程式名稱或描述...",
+          "filterLabel": "應用程式類型：",
+          "filterOptions": {
+            "all": "全部應用程式",
+            "public": "公開應用程式",
+            "groupOnly": "群組應用程式",
+            "private": "私人應用程式"
+          }
+        },
+        "layout": {
+          "appListTitle": "應用程式清單",
+          "appListSubtitle": "選擇應用程式來設定權限",
+          "permissionPanelTitle": "權限設定",
+          "permissionPanelSubtitle": "管理應用程式可見性和群組權限"
+        },
+        "appList": {
+          "noApps": "暫無應用程式",
+          "noAppsDescription": "請先建立應用程式實例",
+          "loading": "載入中...",
+          "unknown": "未知",
+          "visibility": {
+            "public": "公開",
+            "groupOnly": "群組",
+            "private": "私人"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "選擇應用程式",
+            "description": "從左側應用程式清單中選擇一個應用程式來設定權限"
+          },
+          "visibilitySettings": {
+            "title": "可見性設定",
+            "currentSetting": "目前設定",
+            "options": {
+              "public": {
+                "label": "公開應用程式",
+                "description": "所有使用者都可以存取此應用程式"
+              },
+              "groupOnly": {
+                "label": "群組應用程式",
+                "description": "僅授權群組的成員可以存取"
+              },
+              "private": {
+                "label": "私人應用程式",
+                "description": "僅管理員可以存取此應用程式"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "群組權限",
+            "description": "選擇哪些群組可以存取此應用程式",
+            "noGroups": {
+              "title": "暫無群組",
+              "description": "請先建立群組才能設定應用程式權限"
+            },
+            "status": {
+              "enabled": "已啟用",
+              "disabled": "已停用"
+            },
+            "actions": {
+              "enable": "啟用存取",
+              "disable": "停用存取"
+            },
+            "memberCount": "{count} 成員"
+          },
+          "permissionExplanation": {
+            "title": "權限說明",
+            "public": "公開應用程式：所有使用者都可以存取",
+            "groupOnly": "群組應用程式：僅授權群組的成員可以存取",
+            "private": "私人應用程式：僅管理員可以存取"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "應用程式可見性已更新為「{visibility}」",
+          "groupPermissionEnabled": "已啟用{groupName}對此應用程式的存取權限",
+          "groupPermissionDisabled": "已停用{groupName}對此應用程式的存取權限",
+          "loadAppsError": "載入應用程式清單失敗",
+          "loadGroupsError": "載入群組清單失敗",
+          "updateVisibilityError": "更新應用程式可見性失敗",
+          "updateGroupPermissionError": "更新群組權限失敗"
+        }
       }
     },
     "about": {

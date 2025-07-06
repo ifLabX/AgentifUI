@@ -6,12 +6,15 @@ import type { AppVisibility } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { Blocks, Globe, Lock, Users } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { GroupPermissionList } from './group-permission-list';
 import { VisibilitySelector } from './visibility-selector';
 
 export function PermissionPanel() {
   const { isDark } = useTheme();
   const { selectedApp } = usePermissionManagementStore();
+  const t = useTranslations('pages.admin.permissions.permissionPanel');
 
   if (!selectedApp) {
     return (
@@ -29,7 +32,7 @@ export function PermissionPanel() {
               isDark ? 'text-stone-200' : 'text-stone-800'
             )}
           >
-            选择应用
+            {t('selectApp.title')}
           </h3>
           <p
             className={cn(
@@ -37,7 +40,7 @@ export function PermissionPanel() {
               isDark ? 'text-stone-400' : 'text-stone-600'
             )}
           >
-            从左侧应用列表中选择一个应用来配置权限
+            {t('selectApp.description')}
           </p>
         </div>
       </div>
@@ -94,7 +97,7 @@ export function PermissionPanel() {
               isDark ? 'text-stone-200' : 'text-stone-800'
             )}
           >
-            可见性设置
+            {t('visibilitySettings.title')}
           </h4>
           <VisibilitySelector app={selectedApp} />
         </div>
@@ -108,7 +111,7 @@ export function PermissionPanel() {
                 isDark ? 'text-stone-200' : 'text-stone-800'
               )}
             >
-              群组权限
+              {t('groupPermissions.title')}
             </h4>
             <p
               className={cn(
@@ -116,7 +119,7 @@ export function PermissionPanel() {
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
-              选择哪些群组可以访问此应用
+              {t('groupPermissions.description')}
             </p>
             <GroupPermissionList app={selectedApp} />
           </div>
@@ -137,7 +140,7 @@ export function PermissionPanel() {
               isDark ? 'text-stone-200' : 'text-stone-800'
             )}
           >
-            权限说明
+            {t('permissionExplanation.title')}
           </h5>
           <div className="space-y-1 text-xs">
             <div className="flex items-center gap-2">
@@ -148,7 +151,7 @@ export function PermissionPanel() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                <strong>公开应用</strong>：所有用户都可以访问
+                {t('permissionExplanation.public')}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -159,7 +162,7 @@ export function PermissionPanel() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                <strong>群组应用</strong>：仅授权群组的成员可以访问
+                {t('permissionExplanation.groupOnly')}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -170,7 +173,7 @@ export function PermissionPanel() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                <strong>私有应用</strong>：仅管理员可以访问
+                {t('permissionExplanation.private')}
               </span>
             </div>
           </div>

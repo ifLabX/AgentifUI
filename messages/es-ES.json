@@ -1311,6 +1311,96 @@
         "useApiConfigEvents": {
           "defaultInstanceSetSuccess": "Aplicación predeterminada establecida exitosamente"
         }
+      },
+      "permissions": {
+        "header": {
+          "title": "Gestión de Permisos de Aplicaciones",
+          "subtitle": "Gestión unificada de visibilidad de aplicaciones y permisos de grupo",
+          "refreshButton": "Actualizar Datos"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "Buscar nombre o descripción de aplicación...",
+          "filterLabel": "Tipo de Aplicación:",
+          "filterOptions": {
+            "all": "Todas las Aplicaciones",
+            "public": "Aplicaciones Públicas",
+            "groupOnly": "Aplicaciones de Grupo",
+            "private": "Aplicaciones Privadas"
+          }
+        },
+        "layout": {
+          "appListTitle": "Lista de Aplicaciones",
+          "appListSubtitle": "Selecciona una aplicación para configurar permisos",
+          "permissionPanelTitle": "Configuración de Permisos",
+          "permissionPanelSubtitle": "Gestionar visibilidad de aplicaciones y permisos de grupo"
+        },
+        "appList": {
+          "noApps": "Sin Aplicaciones",
+          "noAppsDescription": "Por favor crea instancias de aplicación primero",
+          "loading": "Cargando...",
+          "unknown": "Desconocido",
+          "visibility": {
+            "public": "Pública",
+            "groupOnly": "Grupo",
+            "private": "Privada"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "Seleccionar Aplicación",
+            "description": "Elige una aplicación de la lista izquierda para configurar permisos"
+          },
+          "visibilitySettings": {
+            "title": "Configuraciones de Visibilidad",
+            "currentSetting": "Actual",
+            "options": {
+              "public": {
+                "label": "Aplicación Pública",
+                "description": "Todos los usuarios pueden acceder a esta aplicación"
+              },
+              "groupOnly": {
+                "label": "Aplicación de Grupo",
+                "description": "Solo miembros de grupos autorizados pueden acceder"
+              },
+              "private": {
+                "label": "Aplicación Privada",
+                "description": "Solo administradores pueden acceder a esta aplicación"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "Permisos de Grupo",
+            "description": "Selecciona qué grupos pueden acceder a esta aplicación",
+            "noGroups": {
+              "title": "Sin Grupos",
+              "description": "Por favor crea grupos primero para configurar permisos de aplicación"
+            },
+            "status": {
+              "enabled": "Habilitado",
+              "disabled": "Deshabilitado"
+            },
+            "actions": {
+              "enable": "Habilitar Acceso",
+              "disable": "Deshabilitar Acceso"
+            },
+            "memberCount": "{count} miembros"
+          },
+          "permissionExplanation": {
+            "title": "Explicación de Permisos",
+            "public": "Aplicación Pública: Todos los usuarios pueden acceder",
+            "groupOnly": "Aplicación de Grupo: Solo miembros de grupos autorizados pueden acceder",
+            "private": "Aplicación Privada: Solo administradores pueden acceder"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "Visibilidad de aplicación actualizada a \"{visibility}\"",
+          "groupPermissionEnabled": "Habilitado acceso de {groupName} a esta aplicación",
+          "groupPermissionDisabled": "Deshabilitado acceso de {groupName} a esta aplicación",
+          "loadAppsError": "Error al cargar lista de aplicaciones",
+          "loadGroupsError": "Error al cargar lista de grupos",
+          "updateVisibilityError": "Error al actualizar visibilidad de aplicación",
+          "updateGroupPermissionError": "Error al actualizar permisos de grupo"
+        }
       }
     },
     "about": {

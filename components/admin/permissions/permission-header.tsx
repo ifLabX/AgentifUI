@@ -5,9 +5,12 @@ import { usePermissionManagementStore } from '@lib/stores/permission-management-
 import { cn } from '@lib/utils';
 import { RefreshCw, Shield } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 export function PermissionHeader() {
   const { isDark } = useTheme();
   const { loadApps, loadGroups, loading } = usePermissionManagementStore();
+  const t = useTranslations('pages.admin.permissions.header');
 
   const handleRefresh = () => {
     loadApps();
@@ -25,7 +28,7 @@ export function PermissionHeader() {
               : 'from-stone-800 to-stone-600'
           )}
         >
-          应用权限管理
+          {t('title')}
         </h1>
         <p
           className={cn(
@@ -34,7 +37,7 @@ export function PermissionHeader() {
           )}
         >
           <Shield className="h-4 w-4" />
-          统一管理应用可见性和群组权限分配
+          {t('subtitle')}
         </p>
       </div>
 
@@ -58,7 +61,7 @@ export function PermissionHeader() {
               (loading.apps || loading.groups) && 'animate-spin'
             )}
           />
-          <span className="hidden sm:inline">刷新数据</span>
+          <span className="hidden sm:inline">{t('refreshButton')}</span>
         </button>
       </div>
     </div>

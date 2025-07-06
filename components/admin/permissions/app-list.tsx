@@ -6,10 +6,13 @@ import type { AppVisibility } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { Blocks, Globe, Lock, Users } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 export function AppList() {
   const { isDark } = useTheme();
   const { getFilteredApps, selectedApp, selectApp, loading } =
     usePermissionManagementStore();
+  const t = useTranslations('pages.admin.permissions.appList');
 
   const apps = getFilteredApps();
 
@@ -42,46 +45,34 @@ export function AppList() {
   const getVisibilityLabel = (visibility: AppVisibility) => {
     switch (visibility) {
       case 'public':
-        return '公开';
+        return t('visibility.public');
       case 'group_only':
-        return '群组';
+        return t('visibility.groupOnly');
       case 'private':
-        return '私有';
+        return t('visibility.private');
       default:
-        return '未知';
+        return t('unknown');
     }
   };
 
   if (loading.apps) {
     return (
-      <div className="p-4">
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className={cn(
-                'rounded-lg border p-4',
-                isDark
-                  ? 'border-stone-700 bg-stone-800'
-                  : 'border-stone-200 bg-stone-50'
-              )}
-            >
-              <div className="animate-pulse">
-                <div
-                  className={cn(
-                    'mb-2 h-4 w-3/4 rounded',
-                    isDark ? 'bg-stone-700' : 'bg-stone-200'
-                  )}
-                />
-                <div
-                  className={cn(
-                    'h-3 w-1/2 rounded',
-                    isDark ? 'bg-stone-700' : 'bg-stone-200'
-                  )}
-                />
-              </div>
-            </div>
-          ))}
+      <div className="flex h-full items-center justify-center p-6">
+        <div className="text-center">
+          <div
+            className={cn(
+              'mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent',
+              isDark ? 'border-stone-600' : 'border-stone-300'
+            )}
+          />
+          <p
+            className={cn(
+              'font-serif text-sm',
+              isDark ? 'text-stone-400' : 'text-stone-600'
+            )}
+          >
+            {t('loading')}
+          </p>
         </div>
       </div>
     );
@@ -89,53 +80,55 @@ export function AppList() {
 
   if (apps.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <Blocks
-          className={cn(
-            'mx-auto mb-4 h-12 w-12',
-            isDark ? 'text-stone-400' : 'text-stone-500'
-          )}
-        />
-        <h3
-          className={cn(
-            'mb-2 font-serif text-lg font-semibold',
-            isDark ? 'text-stone-200' : 'text-stone-800'
-          )}
-        >
-          暂无应用
-        </h3>
-        <p
-          className={cn(
-            'font-serif text-sm',
-            isDark ? 'text-stone-400' : 'text-stone-600'
-          )}
-        >
-          没有找到匹配的应用
-        </p>
+      <div className="flex h-full items-center justify-center p-6">
+        <div className="text-center">
+          <Blocks
+            className={cn(
+              'mx-auto mb-3 h-12 w-12',
+              isDark ? 'text-stone-400' : 'text-stone-500'
+            )}
+          />
+          <h3
+            className={cn(
+              'mb-1 font-serif text-base font-semibold',
+              isDark ? 'text-stone-200' : 'text-stone-800'
+            )}
+          >
+            {t('noApps')}
+          </h3>
+          <p
+            className={cn(
+              'font-serif text-xs',
+              isDark ? 'text-stone-400' : 'text-stone-600'
+            )}
+          >
+            {t('noAppsDescription')}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto p-4">
-      <div className="space-y-3">
+    <div className="h-full overflow-y-auto">
+      <div className="space-y-2 p-4">
         {apps.map(app => {
-          const VisibilityIcon = getVisibilityIcon(app.visibility);
           const isSelected = selectedApp?.id === app.id;
+          const VisibilityIcon = getVisibilityIcon(app.visibility);
 
           return (
             <button
               key={app.id}
               onClick={() => selectApp(app)}
               className={cn(
-                'group relative w-full rounded-lg border p-4 text-left transition-all duration-200',
+                'group w-full rounded-lg border p-4 text-left transition-all duration-200',
                 isSelected
                   ? isDark
-                    ? 'border-stone-500 bg-stone-700 shadow-sm ring-1 ring-stone-500/20'
-                    : 'border-stone-400 bg-stone-100 shadow-sm ring-1 ring-stone-400/20'
+                    ? 'border-stone-500 bg-stone-700 shadow-md'
+                    : 'border-stone-300 bg-stone-50 shadow-md'
                   : isDark
-                    ? 'hover:bg-stone-750 border-stone-700 bg-stone-800 hover:border-stone-600 hover:shadow-sm'
-                    : 'border-stone-200 bg-stone-50 hover:border-stone-300 hover:bg-white hover:shadow-sm'
+                    ? 'border-stone-700 bg-stone-800 hover:border-stone-600 hover:bg-stone-700'
+                    : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
               )}
             >
               <div className="flex items-start gap-3">

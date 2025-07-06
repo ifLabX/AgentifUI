@@ -9,6 +9,8 @@ import { cn } from '@lib/utils';
 import { Building2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { useTranslations } from 'next-intl';
+
 interface GroupPermissionListProps {
   app: AppWithPermissions;
 }
@@ -17,14 +19,19 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
   const { isDark } = useTheme();
   const { groups, setGroupPermission, loading } =
     usePermissionManagementStore();
+  const t = useTranslations(
+    'pages.admin.permissions.permissionPanel.groupPermissions'
+  );
+  const tMessages = useTranslations('pages.admin.permissions.messages');
 
   const handleTogglePermission = async (groupId: string, enabled: boolean) => {
     const success = await setGroupPermission(app.id, groupId, enabled, null);
     if (success) {
-      const groupName = groups.find(g => g.id === groupId)?.name || '群组';
-      toast.success(
-        `已${enabled ? '启用' : '禁用'}${groupName}对此应用的访问权限`
-      );
+      const groupName = groups.find(g => g.id === groupId)?.name || 'Group';
+      const messageKey = enabled
+        ? 'groupPermissionEnabled'
+        : 'groupPermissionDisabled';
+      toast.success(tMessages(messageKey, { groupName }));
     }
   };
 
@@ -50,7 +57,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
             isDark ? 'text-stone-200' : 'text-stone-800'
           )}
         >
-          暂无群组
+          {t('noGroups.title')}
         </h3>
         <p
           className={cn(
@@ -58,7 +65,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
-          请先创建群组才能设置应用权限
+          {t('noGroups.description')}
         </p>
       </div>
     );
@@ -113,7 +120,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                       isDark ? 'text-stone-400' : 'text-stone-600'
                     )}
                   >
-                    {group.member_count || 0} 成员
+                    {t('memberCount', { count: group.member_count || 0 })}
                     {group.description && ` • ${group.description}`}
                   </p>
                 </div>
@@ -131,7 +138,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                         : 'text-stone-600'
                   )}
                 >
-                  {isEnabled ? '已启用' : '已禁用'}
+                  {isEnabled ? t('status.enabled') : t('status.disabled')}
                 </span>
 
                 <button
@@ -146,7 +153,7 @@ export function GroupPermissionList({ app }: GroupPermissionListProps) {
                         ? 'bg-stone-700'
                         : 'bg-stone-300'
                   )}
-                  title={isEnabled ? '禁用访问' : '启用访问'}
+                  title={isEnabled ? t('actions.disable') : t('actions.enable')}
                 >
                   <span
                     className={cn(

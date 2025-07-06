@@ -1311,6 +1311,96 @@
         "useApiConfigEvents": {
           "defaultInstanceSetSuccess": "Default application set successfully"
         }
+      },
+      "permissions": {
+        "header": {
+          "title": "Application Permission Management",
+          "subtitle": "Unified management of application visibility and group permissions",
+          "refreshButton": "Refresh Data"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "Search application name or description...",
+          "filterLabel": "Application Type:",
+          "filterOptions": {
+            "all": "All Applications",
+            "public": "Public Applications",
+            "groupOnly": "Group Applications",
+            "private": "Private Applications"
+          }
+        },
+        "layout": {
+          "appListTitle": "Application List",
+          "appListSubtitle": "Select an application to configure permissions",
+          "permissionPanelTitle": "Permission Configuration",
+          "permissionPanelSubtitle": "Manage application visibility and group permissions"
+        },
+        "appList": {
+          "noApps": "No Applications",
+          "noAppsDescription": "Please create application instances first",
+          "loading": "Loading...",
+          "unknown": "Unknown",
+          "visibility": {
+            "public": "Public",
+            "groupOnly": "Group",
+            "private": "Private"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "Select Application",
+            "description": "Choose an application from the left list to configure permissions"
+          },
+          "visibilitySettings": {
+            "title": "Visibility Settings",
+            "currentSetting": "Current",
+            "options": {
+              "public": {
+                "label": "Public Application",
+                "description": "All users can access this application"
+              },
+              "groupOnly": {
+                "label": "Group Application",
+                "description": "Only authorized group members can access"
+              },
+              "private": {
+                "label": "Private Application",
+                "description": "Only administrators can access this application"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "Group Permissions",
+            "description": "Select which groups can access this application",
+            "noGroups": {
+              "title": "No Groups",
+              "description": "Please create groups first to set application permissions"
+            },
+            "status": {
+              "enabled": "Enabled",
+              "disabled": "Disabled"
+            },
+            "actions": {
+              "enable": "Enable Access",
+              "disable": "Disable Access"
+            },
+            "memberCount": "{count} members"
+          },
+          "permissionExplanation": {
+            "title": "Permission Explanation",
+            "public": "Public Application: All users can access",
+            "groupOnly": "Group Application: Only authorized group members can access",
+            "private": "Private Application: Only administrators can access"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "Application visibility updated to \"{visibility}\"",
+          "groupPermissionEnabled": "Enabled {groupName} access to this application",
+          "groupPermissionDisabled": "Disabled {groupName} access to this application",
+          "loadAppsError": "Failed to load application list",
+          "loadGroupsError": "Failed to load group list",
+          "updateVisibilityError": "Failed to update application visibility",
+          "updateGroupPermissionError": "Failed to update group permissions"
+        }
       }
     },
     "about": {

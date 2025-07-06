@@ -1311,6 +1311,96 @@
         "useApiConfigEvents": {
           "defaultInstanceSetSuccess": "默认应用设置成功"
         }
+      },
+      "permissions": {
+        "header": {
+          "title": "应用权限管理",
+          "subtitle": "统一管理应用可见性和群组权限分配",
+          "refreshButton": "刷新数据"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "搜索应用名称或描述...",
+          "filterLabel": "应用类型：",
+          "filterOptions": {
+            "all": "全部应用",
+            "public": "公开应用",
+            "groupOnly": "群组应用",
+            "private": "私有应用"
+          }
+        },
+        "layout": {
+          "appListTitle": "应用列表",
+          "appListSubtitle": "选择应用来配置权限",
+          "permissionPanelTitle": "权限配置",
+          "permissionPanelSubtitle": "管理应用可见性和群组权限"
+        },
+        "appList": {
+          "noApps": "暂无应用",
+          "noAppsDescription": "请先创建应用实例",
+          "loading": "加载中...",
+          "unknown": "未知",
+          "visibility": {
+            "public": "公开",
+            "groupOnly": "群组",
+            "private": "私有"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "选择应用",
+            "description": "从左侧应用列表中选择一个应用来配置权限"
+          },
+          "visibilitySettings": {
+            "title": "可见性设置",
+            "currentSetting": "当前设置",
+            "options": {
+              "public": {
+                "label": "公开应用",
+                "description": "所有用户都可以访问此应用"
+              },
+              "groupOnly": {
+                "label": "群组应用",
+                "description": "仅授权群组的成员可以访问"
+              },
+              "private": {
+                "label": "私有应用",
+                "description": "仅管理员可以访问此应用"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "群组权限",
+            "description": "选择哪些群组可以访问此应用",
+            "noGroups": {
+              "title": "暂无群组",
+              "description": "请先创建群组才能设置应用权限"
+            },
+            "status": {
+              "enabled": "已启用",
+              "disabled": "已禁用"
+            },
+            "actions": {
+              "enable": "启用访问",
+              "disable": "禁用访问"
+            },
+            "memberCount": "{count} 成员"
+          },
+          "permissionExplanation": {
+            "title": "权限说明",
+            "public": "公开应用：所有用户都可以访问",
+            "groupOnly": "群组应用：仅授权群组的成员可以访问",
+            "private": "私有应用：仅管理员可以访问"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "应用可见性已更新为\"{visibility}\"",
+          "groupPermissionEnabled": "已启用{groupName}对此应用的访问权限",
+          "groupPermissionDisabled": "已禁用{groupName}对此应用的访问权限",
+          "loadAppsError": "加载应用列表失败",
+          "loadGroupsError": "加载群组列表失败",
+          "updateVisibilityError": "更新应用可见性失败",
+          "updateGroupPermissionError": "更新群组权限失败"
+        }
       }
     },
     "about": {
