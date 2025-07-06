@@ -853,8 +853,6 @@
     },
     "admin": {
       "title": "Panel de Administración",
-      "users": "Gestión de Usuarios",
-      "analytics": "Analíticas",
       "main": {
         "title": "Resumen del Panel de Administración",
         "subtitle": "Bienvenido al Panel de Administración de AgentifUI. Aquí puedes gestionar varias configuraciones y ajustes del sistema"
@@ -1377,6 +1375,134 @@
             "copyrightPrefix": "Prefijo (prefix)",
             "copyrightLinkText": "Texto Enlace (linkText)",
             "copyrightSuffix": "Sufijo (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "Gestión de Usuarios",
+        "subtitle": "Gestionar cuentas de usuario del sistema, permisos y control de acceso",
+        "stats": {
+          "totalUsers": "Total de Usuarios",
+          "activeUsers": "Usuarios Activos",
+          "suspendedUsers": "Suspendidos",
+          "pendingUsers": "Pendientes",
+          "adminUsers": "Administradores",
+          "managerUsers": "Gerentes",
+          "regularUsers": "Usuarios Regulares",
+          "newUsersToday": "Nuevos Hoy",
+          "activeUsersRatio": "Porcentaje del total de usuarios",
+          "newUsersThisWeek": "Otros días de esta semana"
+        },
+        "filters": {
+          "searchPlaceholder": "Buscar correo, nombre o nombre de usuario...",
+          "advancedFilters": "Filtros Avanzados",
+          "reset": "Restablecer",
+          "rolePermissions": "Permisos de Rol",
+          "accountStatus": "Estado de Cuenta",
+          "authSource": "Fuente de Autenticación",
+          "roleOptions": {
+            "all": "Todos los Roles",
+            "admin": "Administrador",
+            "manager": "Gerente",
+            "user": "Usuario Regular"
+          },
+          "statusOptions": {
+            "all": "Todos los Estados",
+            "active": "Activo",
+            "suspended": "Suspendido",
+            "pending": "Pendiente"
+          },
+          "authSourceOptions": {
+            "all": "Todas las Fuentes",
+            "email": "📧 Correo",
+            "sso": "Autenticación SSO",
+            "phone": "📱 Teléfono"
+          },
+          "sortBy": "Ordenar por",
+          "sortOptions": {
+            "createdAt": "Fecha de registro",
+            "lastSignIn": "Último acceso",
+            "email": "Correo",
+            "fullName": "Nombre"
+          },
+          "sortOrder": {
+            "desc": "Más reciente primero",
+            "asc": "Más antiguo primero"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "Información del Usuario",
+            "contact": "Contacto",
+            "groups": "Grupos",
+            "rolePermissions": "Permisos de Rol",
+            "status": "Estado",
+            "lastLogin": "Último Acceso",
+            "registerTime": "Tiempo de Registro"
+          },
+          "loading": "Cargando datos de usuarios...",
+          "loadingSubtext": "Por favor espere, obteniendo la información más reciente del usuario",
+          "noData": "Sin datos de usuarios",
+          "noDataSubtext": "No se encontraron usuarios que coincidan con los criterios, intente ajustar los filtros",
+          "noDataHint": "Puede restablecer los filtros o contactar al administrador para agregar nuevos usuarios"
+        },
+        "batchOperations": {
+          "selected": "Seleccionados {count} usuarios",
+          "cancelSelection": "Cancelar Selección",
+          "setAsAdmin": "Establecer como Administrador",
+          "setAsManager": "Establecer como Gerente",
+          "setAsUser": "Establecer como Usuario Regular",
+          "activate": "Activar",
+          "suspend": "Suspender"
+        },
+        "actions": {
+          "refreshData": "Actualizar Datos",
+          "addUser": "Agregar Usuario",
+          "addUserInDevelopment": "Función de agregar usuario en desarrollo",
+          "viewUser": "Ver usuario: {name}",
+          "editUser": "Editar usuario: {name}",
+          "viewDetails": "Ver Detalles",
+          "editInfo": "Editar Información",
+          "changeRole": "Cambiar Rol",
+          "changeStatus": "Cambiar Estado",
+          "deleteUser": "Eliminar Usuario",
+          "current": "(Actual)",
+          "self": "(Propio)",
+          "admin": "(Administrador)",
+          "notSet": "No configurado",
+          "notSetEmail": "Correo no configurado",
+          "notSetPhone": "Teléfono no configurado",
+          "moreGroups": "+{count} grupos",
+          "notInGroup": "Sin grupo",
+          "moreGroupsTooltip": "{count} grupos más: {names}"
+        },
+        "pagination": {
+          "showing": "Mostrando {start} - {end} de {total} registros",
+          "previous": "Anterior",
+          "next": "Siguiente"
+        },
+        "messages": {
+          "cannotIncludeSelf": "No puede incluirse a sí mismo en operaciones por lotes",
+          "cannotDowngradeAdmin": "No puede degradar a otros administradores en operaciones por lotes",
+          "cannotChangeOwnRole": "No puede modificar su propio rol",
+          "cannotDowngradeOtherAdmin": "No puede degradar a otros administradores",
+          "cannotDeleteSelf": "No puede eliminarse a sí mismo",
+          "cannotDeleteOtherAdmin": "No puede eliminar a otros administradores",
+          "roleChangeSuccess": "Cambió el rol de {name} a {role}",
+          "statusChangeSuccess": "Cambió el estado de {name} a {status}",
+          "batchRoleChangeSuccess": "Cambió por lotes los roles de {count} usuarios",
+          "batchStatusChangeSuccess": "Cambió por lotes el estado de {count} usuarios",
+          "deleteConfirm": "¿Está seguro de que desea eliminar al usuario {name}? Esta acción no se puede deshacer.",
+          "deleteSuccess": "Usuario {name} eliminado",
+          "roles": {
+            "admin": "Administrador",
+            "manager": "Gerente",
+            "user": "Usuario Regular"
+          },
+          "statuses": {
+            "active": "Activo",
+            "suspended": "Suspendido",
+            "pending": "Pendiente"
           }
         }
       },

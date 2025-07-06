@@ -853,8 +853,6 @@
     },
     "admin": {
       "title": "Admin Panel",
-      "users": "User Management",
-      "analytics": "Analytics",
       "main": {
         "title": "Admin Panel Overview",
         "subtitle": "Welcome to the AgentifUI Admin Panel. Here you can manage various system configurations and settings"
@@ -1377,6 +1375,134 @@
             "copyrightPrefix": "Prefix (prefix)",
             "copyrightLinkText": "Link Text (linkText)",
             "copyrightSuffix": "Suffix (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "User Management",
+        "subtitle": "Manage system user accounts, permissions and access control",
+        "stats": {
+          "totalUsers": "Total Users",
+          "activeUsers": "Active Users",
+          "suspendedUsers": "Suspended",
+          "pendingUsers": "Pending",
+          "adminUsers": "Administrators",
+          "managerUsers": "Managers",
+          "regularUsers": "Regular Users",
+          "newUsersToday": "New Today",
+          "activeUsersRatio": "Percentage of total users",
+          "newUsersThisWeek": "Other days this week"
+        },
+        "filters": {
+          "searchPlaceholder": "Search user email, name or username...",
+          "advancedFilters": "Advanced Filters",
+          "reset": "Reset",
+          "rolePermissions": "Role Permissions",
+          "accountStatus": "Account Status",
+          "authSource": "Authentication Source",
+          "roleOptions": {
+            "all": "All Roles",
+            "admin": "Administrator",
+            "manager": "Manager",
+            "user": "Regular User"
+          },
+          "statusOptions": {
+            "all": "All Status",
+            "active": "Active",
+            "suspended": "Suspended",
+            "pending": "Pending"
+          },
+          "authSourceOptions": {
+            "all": "All Sources",
+            "email": "📧 Email",
+            "sso": "SSO Authentication",
+            "phone": "📱 Phone"
+          },
+          "sortBy": "Sort By",
+          "sortOptions": {
+            "createdAt": "Registration Time",
+            "lastSignIn": "Last Login",
+            "email": "Email",
+            "fullName": "Name"
+          },
+          "sortOrder": {
+            "desc": "Newest First",
+            "asc": "Oldest First"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "User Information",
+            "contact": "Contact",
+            "groups": "Groups",
+            "rolePermissions": "Role Permissions",
+            "status": "Status",
+            "lastLogin": "Last Login",
+            "registerTime": "Registration Time"
+          },
+          "loading": "Loading user data...",
+          "loadingSubtext": "Please wait, fetching latest user information",
+          "noData": "No user data",
+          "noDataSubtext": "No users found matching the criteria, please try adjusting filters",
+          "noDataHint": "You can reset filters or contact administrator to add new users"
+        },
+        "batchOperations": {
+          "selected": "Selected {count} users",
+          "cancelSelection": "Cancel Selection",
+          "setAsAdmin": "Set as Administrator",
+          "setAsManager": "Set as Manager",
+          "setAsUser": "Set as Regular User",
+          "activate": "Activate",
+          "suspend": "Suspend"
+        },
+        "actions": {
+          "refreshData": "Refresh Data",
+          "addUser": "Add User",
+          "addUserInDevelopment": "Add user feature in development",
+          "viewUser": "View user: {name}",
+          "editUser": "Edit user: {name}",
+          "viewDetails": "View Details",
+          "editInfo": "Edit Information",
+          "changeRole": "Change Role",
+          "changeStatus": "Change Status",
+          "deleteUser": "Delete User",
+          "current": "(Current)",
+          "self": "(Self)",
+          "admin": "(Admin)",
+          "notSet": "Not Set",
+          "notSetEmail": "Email not set",
+          "notSetPhone": "Phone not set",
+          "moreGroups": "+{count} groups",
+          "notInGroup": "Not in any group",
+          "moreGroupsTooltip": "{count} more groups: {names}"
+        },
+        "pagination": {
+          "showing": "Showing {start} - {end} of {total} records",
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "messages": {
+          "cannotIncludeSelf": "Cannot include yourself in batch operations",
+          "cannotDowngradeAdmin": "Cannot downgrade other administrators in batch operations",
+          "cannotChangeOwnRole": "Cannot modify your own role",
+          "cannotDowngradeOtherAdmin": "Cannot downgrade other administrators",
+          "cannotDeleteSelf": "Cannot delete yourself",
+          "cannotDeleteOtherAdmin": "Cannot delete other administrators",
+          "roleChangeSuccess": "Changed {name}'s role to {role}",
+          "statusChangeSuccess": "Changed {name}'s status to {status}",
+          "batchRoleChangeSuccess": "Batch changed {count} users' roles",
+          "batchStatusChangeSuccess": "Batch changed {count} users' status",
+          "deleteConfirm": "Are you sure you want to delete user {name}? This action cannot be undone.",
+          "deleteSuccess": "Deleted user {name}",
+          "roles": {
+            "admin": "Administrator",
+            "manager": "Manager",
+            "user": "Regular User"
+          },
+          "statuses": {
+            "active": "Active",
+            "suspended": "Suspended",
+            "pending": "Pending"
           }
         }
       },

@@ -853,8 +853,6 @@
     },
     "admin": {
       "title": "管理後台",
-      "users": "使用者管理",
-      "analytics": "資料分析",
       "main": {
         "title": "管理後台概覽",
         "subtitle": "歡迎使用 AgentifUI 管理後台，在這裡您可以管理系統的各項設定和配置"
@@ -1377,6 +1375,134 @@
             "copyrightPrefix": "前綴 (prefix)",
             "copyrightLinkText": "連結文字 (linkText)",
             "copyrightSuffix": "後綴 (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "使用者管理",
+        "subtitle": "管理系統使用者帳戶、權限和存取控制",
+        "stats": {
+          "totalUsers": "總使用者數",
+          "activeUsers": "活躍使用者",
+          "suspendedUsers": "已暫停",
+          "pendingUsers": "待啟用",
+          "adminUsers": "管理員",
+          "managerUsers": "經理",
+          "regularUsers": "一般使用者",
+          "newUsersToday": "今日新增",
+          "activeUsersRatio": "佔總使用者比例",
+          "newUsersThisWeek": "本週其他天數"
+        },
+        "filters": {
+          "searchPlaceholder": "搜尋使用者信箱、姓名或使用者名稱...",
+          "advancedFilters": "進階篩選",
+          "reset": "重設",
+          "rolePermissions": "角色權限",
+          "accountStatus": "帳戶狀態",
+          "authSource": "認證來源",
+          "roleOptions": {
+            "all": "所有角色",
+            "admin": "管理員",
+            "manager": "經理",
+            "user": "一般使用者"
+          },
+          "statusOptions": {
+            "all": "所有狀態",
+            "active": "活躍",
+            "suspended": "已暫停",
+            "pending": "待啟用"
+          },
+          "authSourceOptions": {
+            "all": "所有來源",
+            "email": "📧 信箱",
+            "sso": "SSO認證",
+            "phone": "📱 手機"
+          },
+          "sortBy": "排序方式",
+          "sortOptions": {
+            "createdAt": "註冊時間",
+            "lastSignIn": "最後登入",
+            "email": "信箱",
+            "fullName": "姓名"
+          },
+          "sortOrder": {
+            "desc": "最新在前",
+            "asc": "最舊在前"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "使用者資訊",
+            "contact": "聯絡方式",
+            "groups": "群組",
+            "rolePermissions": "角色權限",
+            "status": "狀態",
+            "lastLogin": "最後登入",
+            "registerTime": "註冊時間"
+          },
+          "loading": "載入使用者資料中...",
+          "loadingSubtext": "請稍候，正在取得最新的使用者資訊",
+          "noData": "暫無使用者資料",
+          "noDataSubtext": "沒有找到符合條件的使用者，請嘗試調整篩選條件",
+          "noDataHint": "您可以重設篩選條件或聯絡管理員新增使用者"
+        },
+        "batchOperations": {
+          "selected": "已選擇 {count} 個使用者",
+          "cancelSelection": "取消選擇",
+          "setAsAdmin": "設為管理員",
+          "setAsManager": "設為經理",
+          "setAsUser": "設為一般使用者",
+          "activate": "啟用",
+          "suspend": "暫停"
+        },
+        "actions": {
+          "refreshData": "重新整理資料",
+          "addUser": "新增使用者",
+          "addUserInDevelopment": "新增使用者功能開發中",
+          "viewUser": "檢視使用者：{name}",
+          "editUser": "編輯使用者：{name}",
+          "viewDetails": "檢視詳情",
+          "editInfo": "編輯資訊",
+          "changeRole": "更改角色",
+          "changeStatus": "更改狀態",
+          "deleteUser": "刪除使用者",
+          "current": "(目前)",
+          "self": "(自己)",
+          "admin": "(管理員)",
+          "notSet": "未設置",
+          "notSetEmail": "未設置信箱",
+          "notSetPhone": "未設置手機",
+          "moreGroups": "+{count} 個群組",
+          "notInGroup": "未加入群組",
+          "moreGroupsTooltip": "還有 {count} 個群組：{names}"
+        },
+        "pagination": {
+          "showing": "顯示第 {start} - {end} 筆，共 {total} 筆記錄",
+          "previous": "上一頁",
+          "next": "下一頁"
+        },
+        "messages": {
+          "cannotIncludeSelf": "不能在批次操作中包含自己",
+          "cannotDowngradeAdmin": "不能在批次操作中降級其他管理員",
+          "cannotChangeOwnRole": "不能修改自己的角色",
+          "cannotDowngradeOtherAdmin": "不能降級其他管理員",
+          "cannotDeleteSelf": "不能刪除自己",
+          "cannotDeleteOtherAdmin": "不能刪除其他管理員",
+          "roleChangeSuccess": "已將 {name} 的角色更改為{role}",
+          "statusChangeSuccess": "已將 {name} 的狀態更改為{status}",
+          "batchRoleChangeSuccess": "已批次更改 {count} 個使用者的角色",
+          "batchStatusChangeSuccess": "已批次更改 {count} 個使用者的狀態",
+          "deleteConfirm": "確定要刪除使用者 {name} 嗎？此操作無法撤銷。",
+          "deleteSuccess": "已刪除使用者 {name}",
+          "roles": {
+            "admin": "管理員",
+            "manager": "經理",
+            "user": "一般使用者"
+          },
+          "statuses": {
+            "active": "活躍",
+            "suspended": "已暫停",
+            "pending": "待啟用"
           }
         }
       },

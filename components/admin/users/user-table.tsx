@@ -27,6 +27,8 @@ import {
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface UserTableProps {
   users: EnhancedUser[];
   selectedUserIds: string[];
@@ -61,6 +63,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   const { isDark } = useTheme();
   const { profile: currentUserProfile } = useProfile(); // Get current user information
   const { formatDate } = useDateFormatter();
+  const t = useTranslations('pages.admin.users');
 
   // Check if the user can change the user role (prevent admin from demoting other admins)
   const canChangeUserRole = (
@@ -121,19 +124,19 @@ export const UserTable: React.FC<UserTableProps> = ({
     switch (role) {
       case 'admin':
         return {
-          label: '管理员',
+          label: t('messages.roles.admin'),
           icon: <Shield className="h-4 w-4" />,
           variant: 'danger' as const,
         };
       case 'manager':
         return {
-          label: '经理',
+          label: t('messages.roles.manager'),
           icon: <Crown className="h-4 w-4" />,
           variant: 'warning' as const,
         };
       default:
         return {
-          label: '普通用户',
+          label: t('messages.roles.user'),
           icon: <UserIcon className="h-4 w-4" />,
           variant: 'neutral' as const,
         };
@@ -145,25 +148,25 @@ export const UserTable: React.FC<UserTableProps> = ({
     switch (status) {
       case 'active':
         return {
-          label: '活跃',
+          label: t('messages.statuses.active'),
           icon: <UserCheck className="h-4 w-4" />,
           variant: 'success' as const,
         };
       case 'suspended':
         return {
-          label: '已暂停',
+          label: t('messages.statuses.suspended'),
           icon: <UserX className="h-4 w-4" />,
           variant: 'danger' as const,
         };
       case 'pending':
         return {
-          label: '待激活',
+          label: t('messages.statuses.pending'),
           icon: <Clock className="h-4 w-4" />,
           variant: 'warning' as const,
         };
       default:
         return {
-          label: '未知',
+          label: t('messages.statuses.pending'), // 使用pending作为默认值
           icon: <Clock className="h-4 w-4" />,
           variant: 'neutral' as const,
         };
@@ -214,7 +217,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               isDark ? 'text-stone-400' : 'text-stone-600'
             )}
           >
-            加载用户数据中...
+            {t('table.loading')}
           </p>
           <p
             className={cn(
@@ -222,7 +225,7 @@ export const UserTable: React.FC<UserTableProps> = ({
               isDark ? 'text-stone-500' : 'text-stone-500'
             )}
           >
-            请稍候，正在获取最新的用户信息
+            {t('table.loadingSubtext')}
           </p>
         </div>
       </div>
@@ -258,7 +261,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          暂无用户数据
+          {t('table.noData')}
         </h3>
         <p
           className={cn(
@@ -266,7 +269,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             isDark ? 'text-stone-500' : 'text-stone-500'
           )}
         >
-          没有找到符合条件的用户，请尝试调整筛选条件
+          {t('table.noDataSubtext')}
         </p>
         <p
           className={cn(
@@ -274,7 +277,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             isDark ? 'text-stone-600' : 'text-stone-400'
           )}
         >
-          您可以重置筛选条件或联系管理员添加新用户
+          {t('table.noDataHint')}
         </p>
       </div>
     );
@@ -325,7 +328,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                用户信息
+                {t('table.headers.userInfo')}
               </th>
               <th
                 className={cn(
@@ -333,7 +336,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                联系方式
+                {t('table.headers.contact')}
               </th>
               <th
                 className={cn(
@@ -341,7 +344,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                群组
+                {t('table.headers.groups')}
               </th>
               <th
                 className={cn(
@@ -349,7 +352,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                角色权限
+                {t('table.headers.rolePermissions')}
               </th>
               <th
                 className={cn(
@@ -357,7 +360,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                状态
+                {t('table.headers.status')}
               </th>
               <th
                 className={cn(
@@ -365,7 +368,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                最后登录
+                {t('table.headers.lastLogin')}
               </th>
               <th
                 className={cn(
@@ -373,7 +376,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   isDark ? 'text-stone-300' : 'text-stone-700'
                 )}
               >
-                注册时间
+                {t('table.headers.registerTime')}
               </th>
               <th className="w-16 px-4 py-4"></th>
             </tr>
@@ -449,7 +452,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             isDark ? 'text-stone-500' : 'text-stone-500'
                           )}
                         >
-                          @{user.username || '未设置'}
+                          @{user.username || t('actions.notSet')}
                         </span>
                       </div>
                     </div>
@@ -462,11 +465,11 @@ export const UserTable: React.FC<UserTableProps> = ({
                           'flex items-center gap-1 truncate font-serif text-sm',
                           isDark ? 'text-stone-300' : 'text-stone-700'
                         )}
-                        title={user.email || '未设置邮箱'}
+                        title={user.email || t('actions.notSetEmail')}
                       >
                         <span className="text-xs">📧</span>
                         <span className="truncate">
-                          {user.email || '未设置'}
+                          {user.email || t('actions.notSet')}
                         </span>
                       </p>
                       <p
@@ -474,7 +477,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                           'flex items-center gap-1 truncate font-serif text-sm',
                           isDark ? 'text-stone-400' : 'text-stone-600'
                         )}
-                        title={user.phone || '未设置手机'}
+                        title={user.phone || t('actions.notSetPhone')}
                       >
                         <span className="text-xs">📱</span>
                         <span className="truncate">
@@ -482,7 +485,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             ? user.phone.startsWith('86')
                               ? user.phone.slice(2)
                               : user.phone
-                            : '未设置'}
+                            : t('actions.notSet')}
                         </span>
                       </p>
                     </div>
@@ -510,12 +513,17 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 'truncate font-serif text-xs',
                                 isDark ? 'text-stone-400' : 'text-stone-500'
                               )}
-                              title={`还有 ${user.groups.length - 2} 个群组：${user.groups
-                                .slice(2)
-                                .map(g => g.name)
-                                .join(', ')}`}
+                              title={t('actions.moreGroupsTooltip', {
+                                count: user.groups.length - 2,
+                                names: user.groups
+                                  .slice(2)
+                                  .map(g => g.name)
+                                  .join(', '),
+                              })}
                             >
-                              +{user.groups.length - 2} 个群组
+                              {t('actions.moreGroups', {
+                                count: user.groups.length - 2,
+                              })}
                             </p>
                           )}
                         </>
@@ -526,7 +534,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             isDark ? 'text-stone-500' : 'text-stone-500'
                           )}
                         >
-                          未加入群组
+                          {t('actions.notInGroup')}
                         </p>
                       )}
                     </div>
@@ -615,7 +623,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                           )}
                         >
                           <Eye className="h-4 w-4" />
-                          查看详情
+                          {t('actions.viewDetails')}
                         </button>
 
                         <button
@@ -633,7 +641,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                           )}
                         >
                           <Edit2 className="h-4 w-4" />
-                          编辑信息
+                          {t('actions.editInfo')}
                         </button>
 
                         <div
@@ -649,7 +657,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             isDark ? 'text-stone-500' : 'text-stone-500'
                           )}
                         >
-                          更改角色
+                          {t('actions.changeRole')}
                         </div>
 
                         {(['admin', 'manager', 'user'] as const).map(role => {
@@ -676,13 +684,15 @@ export const UserTable: React.FC<UserTableProps> = ({
                               {roleInfo.icon}
                               {roleInfo.label}
                               {isCurrent && (
-                                <span className="ml-auto text-xs">(当前)</span>
+                                <span className="ml-auto text-xs">
+                                  {t('actions.current')}
+                                </span>
                               )}
                               {!canChange &&
                                 !isCurrent &&
                                 user.id === currentUserProfile?.id && (
                                   <span className="ml-auto text-xs">
-                                    (自己)
+                                    {t('actions.self')}
                                   </span>
                                 )}
                               {!canChange &&
@@ -690,7 +700,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 user.role === 'admin' &&
                                 user.id !== currentUserProfile?.id && (
                                   <span className="ml-auto text-xs">
-                                    (管理员)
+                                    {t('actions.admin')}
                                   </span>
                                 )}
                             </button>
@@ -710,7 +720,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             isDark ? 'text-stone-500' : 'text-stone-500'
                           )}
                         >
-                          更改状态
+                          {t('actions.changeStatus')}
                         </div>
 
                         {(['active', 'suspended', 'pending'] as const).map(
@@ -738,7 +748,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 {statusInfo.label}
                                 {isCurrent && (
                                   <span className="ml-auto text-xs">
-                                    (当前)
+                                    {t('actions.current')}
                                   </span>
                                 )}
                               </button>
@@ -768,15 +778,19 @@ export const UserTable: React.FC<UserTableProps> = ({
                           )}
                         >
                           <Trash2 className="h-4 w-4" />
-                          删除用户
+                          {t('actions.deleteUser')}
                           {!canDeleteUser(user) &&
                             user.id === currentUserProfile?.id && (
-                              <span className="ml-auto text-xs">(自己)</span>
+                              <span className="ml-auto text-xs">
+                                {t('actions.self')}
+                              </span>
                             )}
                           {!canDeleteUser(user) &&
                             user.role === 'admin' &&
                             user.id !== currentUserProfile?.id && (
-                              <span className="ml-auto text-xs">(管理员)</span>
+                              <span className="ml-auto text-xs">
+                                {t('actions.admin')}
+                              </span>
                             )}
                         </button>
                       </div>

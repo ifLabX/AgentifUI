@@ -24,9 +24,12 @@ import { toast } from 'sonner';
 
 import React, { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 export default function UsersManagementPage() {
   const { isDark } = useTheme();
   const { profile: currentUserProfile } = useProfile(); // 获取当前用户信息
+  const t = useTranslations('pages.admin.users');
 
   // 从用户管理store获取状态和操作
   const {
@@ -67,13 +70,13 @@ export default function UsersManagementPage() {
 
     // 防止管理员修改自己的角色
     if (targetUser.id === currentUserProfile?.id) {
-      toast.error('不能修改自己的角色');
+      toast.error(t('messages.cannotChangeOwnRole'));
       return false;
     }
 
     // 防止非超级管理员降级其他管理员
     if (targetUser.role === 'admin' && newRole !== 'admin') {
-      toast.error('不能降级其他管理员的权限');
+      toast.error(t('messages.cannotDowngradeOtherAdmin'));
       return false;
     }
 
@@ -89,13 +92,13 @@ export default function UsersManagementPage() {
 
     // 防止删除自己
     if (targetUser.id === currentUserProfile?.id) {
-      toast.error('不能删除自己的账号');
+      toast.error(t('messages.cannotDeleteSelf'));
       return false;
     }
 
     // 防止删除其他管理员
     if (targetUser.role === 'admin') {
-      toast.error('不能删除其他管理员账号');
+      toast.error(t('messages.cannotDeleteOtherAdmin'));
       return false;
     }
 
@@ -117,7 +120,7 @@ export default function UsersManagementPage() {
       user => user.id === currentUserProfile?.id
     );
     if (includesSelf) {
-      toast.error('不能在批量操作中包含自己');
+      toast.error(t('messages.cannotIncludeSelf'));
       return false;
     }
 
@@ -126,7 +129,7 @@ export default function UsersManagementPage() {
       user => user.role === 'admin' && newRole !== 'admin'
     );
     if (hasAdminBeingDowngraded) {
-      toast.error('不能在批量操作中降级其他管理员');
+      toast.error(t('messages.cannotDowngradeAdmin'));
       return false;
     }
 
@@ -183,10 +186,12 @@ export default function UsersManagementPage() {
 
     const success = await changeUserRole(user.id, role);
     if (success) {
+      const roleText = t(`messages.roles.${role}`);
       toast.success(
-        `已将 ${user.full_name || user.email} 的角色更改为${
-          role === 'admin' ? '管理员' : role === 'manager' ? '经理' : '普通用户'
-        }`
+        t('messages.roleChangeSuccess', {
+          name: user.full_name || user.email,
+          role: roleText,
+        })
       );
     }
   };
@@ -198,14 +203,12 @@ export default function UsersManagementPage() {
   ) => {
     const success = await changeUserStatus(user.id, status);
     if (success) {
+      const statusText = t(`messages.statuses.${status}`);
       toast.success(
-        `已将 ${user.full_name || user.email} 的状态更改为${
-          status === 'active'
-            ? '活跃'
-            : status === 'suspended'
-              ? '已暂停'
-              : '待激活'
-        }`
+        t('messages.statusChangeSuccess', {
+          name: user.full_name || user.email,
+          status: statusText,
+        })
       );
     }
   };
@@ -218,12 +221,14 @@ export default function UsersManagementPage() {
 
     if (
       window.confirm(
-        `确定要删除用户 ${user.full_name || user.email} 吗？此操作不可撤销。`
+        t('messages.deleteConfirm', { name: user.full_name || user.email })
       )
     ) {
       const success = await removeUser(user.id);
       if (success) {
-        toast.success(`已删除用户 ${user.full_name || user.email}`);
+        toast.success(
+          t('messages.deleteSuccess', { name: user.full_name || user.email })
+        );
       }
     }
   };
@@ -236,7 +241,9 @@ export default function UsersManagementPage() {
 
     const success = await batchChangeRole(role);
     if (success) {
-      toast.success(`已批量更改 ${selectedUserIds.length} 个用户的角色`);
+      toast.success(
+        t('messages.batchRoleChangeSuccess', { count: selectedUserIds.length })
+      );
     }
   };
 
@@ -246,18 +253,26 @@ export default function UsersManagementPage() {
   ) => {
     const success = await batchChangeStatus(status);
     if (success) {
-      toast.success(`已批量更改 ${selectedUserIds.length} 个用户的状态`);
+      toast.success(
+        t('messages.batchStatusChangeSuccess', {
+          count: selectedUserIds.length,
+        })
+      );
     }
   };
 
   // 处理查看用户（暂时用toast代替）
   const handleViewUser = (user: any) => {
-    toast.success(`查看用户：${user.full_name || user.email}`);
+    toast.success(
+      t('actions.viewUser', { name: user.full_name || user.email })
+    );
   };
 
   // 处理编辑用户（暂时用toast代替）
   const handleEditUser = (user: any) => {
-    toast.success(`编辑用户：${user.full_name || user.email}`);
+    toast.success(
+      t('actions.editUser', { name: user.full_name || user.email })
+    );
   };
 
   // 分页控制
@@ -272,9 +287,14 @@ export default function UsersManagementPage() {
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
-          显示第 {(pagination.page - 1) * pagination.pageSize + 1} -{' '}
-          {Math.min(pagination.page * pagination.pageSize, pagination.total)}{' '}
-          条， 共 {pagination.total} 条记录
+          {t('pagination.showing', {
+            start: (pagination.page - 1) * pagination.pageSize + 1,
+            end: Math.min(
+              pagination.page * pagination.pageSize,
+              pagination.total
+            ),
+            total: pagination.total,
+          })}
         </div>
 
         <div className="flex items-center gap-2">
@@ -290,7 +310,7 @@ export default function UsersManagementPage() {
                   : 'border-stone-300 text-stone-700 hover:bg-stone-50'
             )}
           >
-            上一页
+            {t('pagination.previous')}
           </button>
 
           <span
@@ -314,7 +334,7 @@ export default function UsersManagementPage() {
                   : 'border-stone-300 text-stone-700 hover:bg-stone-50'
             )}
           >
-            下一页
+            {t('pagination.next')}
           </button>
         </div>
       </div>
@@ -342,7 +362,7 @@ export default function UsersManagementPage() {
                   : 'from-stone-800 to-stone-600'
               )}
             >
-              用户管理
+              {t('title')}
             </h1>
             <p
               className={cn(
@@ -351,7 +371,7 @@ export default function UsersManagementPage() {
               )}
             >
               <Users className="h-4 w-4" />
-              管理系统用户账户、权限和访问控制
+              {t('subtitle')}
             </p>
           </div>
 
@@ -378,12 +398,14 @@ export default function UsersManagementPage() {
                   (loading.users || loading.stats) && 'animate-spin'
                 )}
               />
-              <span className="hidden sm:inline">刷新数据</span>
+              <span className="hidden sm:inline">
+                {t('actions.refreshData')}
+              </span>
             </button>
 
             {/* Add user button */}
             <button
-              onClick={() => toast.success('添加用户功能开发中')}
+              onClick={() => toast.success(t('actions.addUserInDevelopment'))}
               className={cn(
                 'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md',
                 isDark
@@ -392,7 +414,7 @@ export default function UsersManagementPage() {
               )}
             >
               <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">添加用户</span>
+              <span className="hidden sm:inline">{t('actions.addUser')}</span>
             </button>
           </div>
         </div>
@@ -436,7 +458,9 @@ export default function UsersManagementPage() {
                       isDark ? 'text-stone-200' : 'text-stone-800'
                     )}
                   >
-                    已选择 {selectedUserIds.length} 个用户
+                    {t('batchOperations.selected', {
+                      count: selectedUserIds.length,
+                    })}
                   </span>
                   <button
                     onClick={clearSelection}
@@ -447,7 +471,7 @@ export default function UsersManagementPage() {
                         : 'text-stone-600 hover:bg-stone-100 hover:text-stone-700'
                     )}
                   >
-                    取消选择
+                    {t('batchOperations.cancelSelection')}
                   </button>
                 </div>
               </div>
@@ -465,7 +489,7 @@ export default function UsersManagementPage() {
                   )}
                 >
                   <Shield className="h-3 w-3" />
-                  设为管理员
+                  {t('batchOperations.setAsAdmin')}
                 </button>
 
                 <button
@@ -479,7 +503,7 @@ export default function UsersManagementPage() {
                   )}
                 >
                   <Crown className="h-3 w-3" />
-                  设为经理
+                  {t('batchOperations.setAsManager')}
                 </button>
 
                 <button
@@ -493,7 +517,7 @@ export default function UsersManagementPage() {
                   )}
                 >
                   <UserIcon className="h-3 w-3" />
-                  设为普通用户
+                  {t('batchOperations.setAsUser')}
                 </button>
 
                 {/* Batch status operations */}
@@ -508,7 +532,7 @@ export default function UsersManagementPage() {
                   )}
                 >
                   <UserCheck className="h-3 w-3" />
-                  激活
+                  {t('batchOperations.activate')}
                 </button>
 
                 <button
@@ -522,7 +546,7 @@ export default function UsersManagementPage() {
                   )}
                 >
                   <UserX className="h-3 w-3" />
-                  暂停
+                  {t('batchOperations.suspend')}
                 </button>
               </div>
             </div>

@@ -853,8 +853,6 @@
     },
     "admin": {
       "title": "管理后台",
-      "users": "用户管理",
-      "analytics": "数据分析",
       "main": {
         "title": "管理后台概览",
         "subtitle": "欢迎使用 AgentifUI 管理后台，在这里您可以管理系统的各项配置和设置"
@@ -1377,6 +1375,134 @@
             "copyrightPrefix": "前缀 (prefix)",
             "copyrightLinkText": "链接文字 (linkText)",
             "copyrightSuffix": "后缀 (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "用户管理",
+        "subtitle": "管理系统用户账户、权限和访问控制",
+        "stats": {
+          "totalUsers": "总用户数",
+          "activeUsers": "活跃用户",
+          "suspendedUsers": "已暂停",
+          "pendingUsers": "待激活",
+          "adminUsers": "管理员",
+          "managerUsers": "经理",
+          "regularUsers": "普通用户",
+          "newUsersToday": "今日新增",
+          "activeUsersRatio": "占总用户比例",
+          "newUsersThisWeek": "本周其他天数"
+        },
+        "filters": {
+          "searchPlaceholder": "搜索用户邮箱、姓名或用户名...",
+          "advancedFilters": "高级筛选",
+          "reset": "重置",
+          "rolePermissions": "角色权限",
+          "accountStatus": "账户状态",
+          "authSource": "认证来源",
+          "sortBy": "排序方式",
+          "roleOptions": {
+            "all": "全部角色",
+            "admin": "管理员",
+            "manager": "经理",
+            "user": "普通用户"
+          },
+          "statusOptions": {
+            "all": "全部状态",
+            "active": "活跃",
+            "suspended": "已暂停",
+            "pending": "待激活"
+          },
+          "authSourceOptions": {
+            "all": "全部来源",
+            "email": "📧 邮箱",
+            "sso": "SSO认证",
+            "phone": "📱 手机号"
+          },
+          "sortOptions": {
+            "createdAt": "注册时间",
+            "lastSignIn": "最后登录",
+            "email": "邮箱",
+            "fullName": "姓名"
+          },
+          "sortOrder": {
+            "desc": "最新在前",
+            "asc": "最旧在前"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "用户信息",
+            "contact": "联系方式",
+            "groups": "群组",
+            "rolePermissions": "角色权限",
+            "status": "状态",
+            "lastLogin": "最后登录",
+            "registerTime": "注册时间"
+          },
+          "loading": "加载用户数据中...",
+          "loadingSubtext": "请稍候，正在获取最新的用户信息",
+          "noData": "暂无用户数据",
+          "noDataSubtext": "没有找到符合条件的用户，请尝试调整筛选条件",
+          "noDataHint": "您可以重置筛选条件或联系管理员添加新用户"
+        },
+        "batchOperations": {
+          "selected": "已选择 {count} 个用户",
+          "cancelSelection": "取消选择",
+          "setAsAdmin": "设为管理员",
+          "setAsManager": "设为经理",
+          "setAsUser": "设为普通用户",
+          "activate": "激活",
+          "suspend": "暂停"
+        },
+        "actions": {
+          "refreshData": "刷新数据",
+          "addUser": "添加用户",
+          "addUserInDevelopment": "添加用户功能开发中",
+          "viewUser": "查看用户：{name}",
+          "editUser": "编辑用户：{name}",
+          "viewDetails": "查看详情",
+          "editInfo": "编辑信息",
+          "changeRole": "更改角色",
+          "changeStatus": "更改状态",
+          "deleteUser": "删除用户",
+          "current": "(当前)",
+          "self": "(自己)",
+          "admin": "(管理员)",
+          "notSet": "未设置",
+          "notSetEmail": "未设置邮箱",
+          "notSetPhone": "未设置手机",
+          "moreGroups": "+{count} 个群组",
+          "notInGroup": "未加入群组",
+          "moreGroupsTooltip": "还有 {count} 个群组：{names}"
+        },
+        "pagination": {
+          "showing": "显示第 {start} - {end} 条， 共 {total} 条记录",
+          "previous": "上一页",
+          "next": "下一页"
+        },
+        "messages": {
+          "cannotIncludeSelf": "不能在批量操作中包含自己",
+          "cannotDowngradeAdmin": "不能在批量操作中降级其他管理员",
+          "cannotChangeOwnRole": "不能修改自己的角色",
+          "cannotDowngradeOtherAdmin": "不能降级其他管理员",
+          "cannotDeleteSelf": "不能删除自己",
+          "cannotDeleteOtherAdmin": "不能删除其他管理员",
+          "roleChangeSuccess": "已将 {name} 的角色更改为{role}",
+          "statusChangeSuccess": "已将 {name} 的状态更改为{status}",
+          "batchRoleChangeSuccess": "已批量更改 {count} 个用户的角色",
+          "batchStatusChangeSuccess": "已批量更改 {count} 个用户的状态",
+          "deleteConfirm": "确定要删除用户 {name} 吗？此操作不可撤销。",
+          "deleteSuccess": "已删除用户 {name}",
+          "roles": {
+            "admin": "管理员",
+            "manager": "经理",
+            "user": "普通用户"
+          },
+          "statuses": {
+            "active": "活跃",
+            "suspended": "已暂停",
+            "pending": "待激活"
           }
         }
       },

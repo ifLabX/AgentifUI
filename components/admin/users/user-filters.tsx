@@ -23,6 +23,8 @@ import {
 
 import React, { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface FilterOption {
   value: string;
   label: string;
@@ -41,46 +43,71 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
+  const t = useTranslations('pages.admin.users.filters');
 
   // 角色选项
   const roleOptions = [
-    { value: '', label: '所有角色', icon: <Users className="h-4 w-4" /> },
-    { value: 'admin', label: '管理员', icon: <Shield className="h-4 w-4" /> },
-    { value: 'manager', label: '经理', icon: <Crown className="h-4 w-4" /> },
+    {
+      value: '',
+      label: t('roleOptions.all'),
+      icon: <Users className="h-4 w-4" />,
+    },
+    {
+      value: 'admin',
+      label: t('roleOptions.admin'),
+      icon: <Shield className="h-4 w-4" />,
+    },
+    {
+      value: 'manager',
+      label: t('roleOptions.manager'),
+      icon: <Crown className="h-4 w-4" />,
+    },
     {
       value: 'user',
-      label: '普通用户',
+      label: t('roleOptions.user'),
       icon: <UserIcon className="h-4 w-4" />,
     },
   ];
 
   // 状态选项
   const statusOptions = [
-    { value: '', label: '所有状态', icon: <Users className="h-4 w-4" /> },
-    { value: 'active', label: '活跃', icon: <UserCheck className="h-4 w-4" /> },
+    {
+      value: '',
+      label: t('statusOptions.all'),
+      icon: <Users className="h-4 w-4" />,
+    },
+    {
+      value: 'active',
+      label: t('statusOptions.active'),
+      icon: <UserCheck className="h-4 w-4" />,
+    },
     {
       value: 'suspended',
-      label: '已暂停',
+      label: t('statusOptions.suspended'),
       icon: <UserX className="h-4 w-4" />,
     },
-    { value: 'pending', label: '待激活', icon: <Clock className="h-4 w-4" /> },
+    {
+      value: 'pending',
+      label: t('statusOptions.pending'),
+      icon: <Clock className="h-4 w-4" />,
+    },
   ];
 
   // 认证来源选项（直接对应Supabase的provider值）
   const authSourceOptions = [
-    { value: '', label: '全部认证来源' },
-    { value: 'email', label: '📧 邮箱' },
+    { value: '', label: t('authSourceOptions.all') },
+    { value: 'email', label: t('authSourceOptions.email') },
     { value: 'github', label: '🐙 GitHub' },
-    { value: 'phone', label: '📱 手机号' },
+    { value: 'phone', label: t('authSourceOptions.phone') },
     { value: 'google', label: '🔍 Google' },
   ];
 
   // 排序选项
   const sortOptions = [
-    { value: 'created_at', label: '注册时间' },
-    { value: 'last_sign_in_at', label: '最后登录' },
-    { value: 'email', label: '邮箱' },
-    { value: 'full_name', label: '姓名' },
+    { value: 'created_at', label: t('sortOptions.createdAt') },
+    { value: 'last_sign_in_at', label: t('sortOptions.lastSignIn') },
+    { value: 'email', label: t('sortOptions.email') },
+    { value: 'full_name', label: t('sortOptions.fullName') },
   ];
 
   // 处理搜索输入
@@ -115,7 +142,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
             />
             <input
               type="text"
-              placeholder="搜索用户邮箱、姓名或用户名..."
+              placeholder={t('searchPlaceholder')}
               value={filters.search || ''}
               onChange={handleSearchChange}
               className={cn(
@@ -140,7 +167,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
             )}
           >
             <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">高级筛选</span>
+            <span className="hidden sm:inline">{t('advancedFilters')}</span>
             {isExpanded ? (
               <ChevronUp className="h-4 w-4" />
             ) : (
@@ -168,7 +195,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
               )}
             >
               <RotateCcw className="h-4 w-4" />
-              <span className="hidden sm:inline">重置</span>
+              <span className="hidden sm:inline">{t('reset')}</span>
             </button>
           )}
         </div>
@@ -191,7 +218,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                角色权限
+                {t('rolePermissions')}
               </label>
               <div className="relative">
                 <select
@@ -233,7 +260,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                账户状态
+                {t('accountStatus')}
               </label>
               <div className="relative">
                 <select
@@ -275,7 +302,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                认证来源
+                {t('authSource')}
               </label>
               <div className="relative">
                 <select
@@ -317,7 +344,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                排序方式
+                {t('sortBy')}
               </label>
               <div className="space-y-2">
                 <div className="relative">
@@ -363,8 +390,8 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
                       'transition-all duration-200'
                     )}
                   >
-                    <option value="desc">最新在前</option>
-                    <option value="asc">最旧在前</option>
+                    <option value="desc">{t('sortOrder.desc')}</option>
+                    <option value="asc">{t('sortOrder.asc')}</option>
                   </select>
                   <ChevronDown
                     className={cn(

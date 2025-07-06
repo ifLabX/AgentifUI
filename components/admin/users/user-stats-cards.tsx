@@ -18,6 +18,8 @@ import {
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface UserStatsCardsProps {
   stats: UserStats | null;
   isLoading: boolean;
@@ -41,6 +43,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
   isLoading,
 }) => {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.users.stats');
 
   // 生成统计卡片数据
   const statCards: StatCard[] = React.useMemo(() => {
@@ -48,70 +51,70 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
 
     return [
       {
-        title: '总用户数',
+        title: t('totalUsers'),
         value: stats.totalUsers.toLocaleString(),
         icon: <Users className="h-5 w-5" />,
         color: 'blue',
       },
       {
-        title: '活跃用户',
+        title: t('activeUsers'),
         value: stats.activeUsers.toLocaleString(),
         icon: <UserCheck className="h-5 w-5" />,
         color: 'green',
         trend: {
           value: Math.round((stats.activeUsers / stats.totalUsers) * 100),
-          label: '占总用户比例',
+          label: t('activeUsersRatio'),
           isPositive: true,
         },
       },
       {
-        title: '已暂停',
+        title: t('suspendedUsers'),
         value: stats.suspendedUsers.toLocaleString(),
         icon: <UserX className="h-5 w-5" />,
         color: 'red',
         trend: {
           value: Math.round((stats.suspendedUsers / stats.totalUsers) * 100),
-          label: '占总用户比例',
+          label: t('activeUsersRatio'),
           isPositive: false,
         },
       },
       {
-        title: '待激活',
+        title: t('pendingUsers'),
         value: stats.pendingUsers.toLocaleString(),
         icon: <Clock className="h-5 w-5" />,
         color: 'yellow',
       },
       {
-        title: '管理员',
+        title: t('adminUsers'),
         value: stats.adminUsers.toLocaleString(),
         icon: <Shield className="h-5 w-5" />,
         color: 'purple',
       },
       {
-        title: '经理',
+        title: t('managerUsers'),
         value: stats.managerUsers.toLocaleString(),
         icon: <Crown className="h-5 w-5" />,
         color: 'indigo',
       },
       {
-        title: '普通用户',
+        title: t('regularUsers'),
         value: stats.regularUsers.toLocaleString(),
         icon: <UserIcon className="h-5 w-5" />,
         color: 'gray',
       },
       {
-        title: '今日新增',
+        title: t('newUsersToday'),
         value: stats.newUsersToday.toLocaleString(),
         icon: <Calendar className="h-5 w-5" />,
         color: 'green',
         trend: {
           value: stats.newUsersThisWeek - stats.newUsersToday,
-          label: '本周其他天数',
+          label: t('newUsersThisWeek'),
           isPositive: stats.newUsersToday > 0,
         },
       },
     ];
-  }, [stats]);
+  }, [stats, t]);
 
   // 获取颜色样式
   const getColorClasses = (color: StatCard['color']) => {
