@@ -872,8 +872,8 @@
             "description": "管理应用实例和配置参数"
           },
           "content": {
-            "text": "关于与通知",
-            "description": "管理About页面和系统通知推送"
+            "text": "页面内容管理",
+            "description": "管理主页和关于页面的内容"
           },
           "users": {
             "text": "用户管理",
@@ -1602,7 +1602,7 @@
       "apiConfig": "API配置",
       "security": "安全设置",
       "analytics": "数据分析",
-      "content": "关于与通知"
+      "content": "页面内容管理"
     },
     "auth": {
       "login": "登录",

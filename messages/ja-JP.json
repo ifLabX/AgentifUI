@@ -872,8 +872,8 @@
             "description": "アプリケーションインスタンスと設定パラメータを管理"
           },
           "content": {
-            "text": "概要と通知",
-            "description": "概要ページとシステム通知プッシュを管理"
+            "text": "コンテンツ管理",
+            "description": "ホームページと概要ページのコンテンツを管理"
           },
           "users": {
             "text": "ユーザー管理",
@@ -1602,7 +1602,7 @@
       "apiConfig": "API設定",
       "security": "セキュリティ設定",
       "analytics": "データ分析",
-      "content": "概要と通知"
+      "content": "コンテンツ管理"
     },
     "auth": {
       "login": "ログイン",

@@ -872,8 +872,8 @@
             "description": "管理應用程式實例和設定參數"
           },
           "content": {
-            "text": "關於與通知",
-            "description": "管理關於頁面和系統通知推送"
+            "text": "頁面內容管理",
+            "description": "管理首頁和關於頁面的內容"
           },
           "users": {
             "text": "使用者管理",
@@ -1602,7 +1602,7 @@
       "apiConfig": "API設定",
       "security": "安全設定",
       "analytics": "資料分析",
-      "content": "關於與通知"
+      "content": "頁面內容管理"
     },
     "auth": {
       "login": "登入",

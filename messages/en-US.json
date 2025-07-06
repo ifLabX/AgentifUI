@@ -872,8 +872,8 @@
             "description": "Manage application instances and configuration parameters"
           },
           "content": {
-            "text": "About & Notifications",
-            "description": "Manage About page and system notification push"
+            "text": "Content Management",
+            "description": "Manage home and about page content"
           },
           "users": {
             "text": "User Management",
@@ -1602,7 +1602,7 @@
       "apiConfig": "API Configuration",
       "security": "Security Settings",
       "analytics": "Data Analytics",
-      "content": "About & Notifications"
+      "content": "Content Management"
     },
     "auth": {
       "login": "Login",

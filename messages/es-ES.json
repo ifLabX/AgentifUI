@@ -872,8 +872,8 @@
             "description": "Gestionar instancias de aplicaciones y parámetros de configuración"
           },
           "content": {
-            "text": "Acerca de y Notificaciones",
-            "description": "Gestionar página Acerca de y notificaciones push del sistema"
+            "text": "Gestión de Contenido",
+            "description": "Gestionar contenido de páginas de inicio y acerca de"
           },
           "users": {
             "text": "Gestión de Usuarios",
@@ -1602,7 +1602,7 @@
       "apiConfig": "Configuración de API",
       "security": "Configuración de Seguridad",
       "analytics": "Análisis de Datos",
-      "content": "Acerca de y Notificaciones"
+      "content": "Gestión de Contenido"
     },
     "auth": {
       "login": "Iniciar Sesión",
