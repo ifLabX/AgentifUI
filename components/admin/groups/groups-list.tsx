@@ -21,6 +21,8 @@ import { toast } from 'sonner';
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { EditGroupModal } from './edit-group-modal';
 import { GroupMembersModal } from './group-members-modal';
 
@@ -32,6 +34,7 @@ interface GroupsListProps {
 export function GroupsList({ groups, isLoading }: GroupsListProps) {
   const { isDark } = useTheme();
   const { deleteGroup } = useGroupManagementStore();
+  const t = useTranslations('pages.admin.groups');
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [viewingMembersGroup, setViewingMembersGroup] = useState<Group | null>(
@@ -40,10 +43,10 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
   const { formatDate } = useDateFormatter();
 
   const handleDeleteGroup = async (group: Group) => {
-    if (window.confirm(`确定要删除群组"${group.name}"吗？此操作不可撤销。`)) {
+    if (window.confirm(t('messages.deleteConfirm', { name: group.name }))) {
       const success = await deleteGroup(group.id);
       if (success) {
-        toast.success(`已删除群组"${group.name}"`);
+        toast.success(t('messages.deleteSuccess', { name: group.name }));
       }
     }
   };
@@ -113,7 +116,7 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
             isDark ? 'text-stone-200' : 'text-stone-800'
           )}
         >
-          暂无群组
+          {t('list.noGroups')}
         </h3>
         <p
           className={cn(
@@ -121,7 +124,7 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
             isDark ? 'text-stone-400' : 'text-stone-600'
           )}
         >
-          点击"创建群组"按钮来创建第一个群组
+          {t('list.noGroupsHint')}
         </p>
       </div>
     );
@@ -213,7 +216,7 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
                             )}
                           >
                             <Eye className="h-4 w-4" />
-                            成员管理
+                            {t('list.actions.manageMembers')}
                           </button>
                           <button
                             onClick={() => {
@@ -228,7 +231,7 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
                             )}
                           >
                             <Edit className="h-4 w-4" />
-                            编辑群组
+                            {t('list.actions.editGroup')}
                           </button>
                           <button
                             onClick={() => {
@@ -243,7 +246,7 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
                             )}
                           >
                             <Trash2 className="h-4 w-4" />
-                            删除群组
+                            {t('list.actions.deleteGroup')}
                           </button>
                         </div>
                       </>
@@ -276,7 +279,9 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
                         isDark ? 'text-stone-400' : 'text-stone-500'
                       )}
                     >
-                      {group.member_count || 0} 成员
+                      {t('list.memberCount', {
+                        count: group.member_count || 0,
+                      })}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">

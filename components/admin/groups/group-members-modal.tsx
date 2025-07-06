@@ -29,6 +29,8 @@ import { toast } from 'sonner';
 
 import React, { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface GroupMembersModalProps {
   group: Group;
   isOpen: boolean;
@@ -44,6 +46,7 @@ export function GroupMembersModal({
   const { groupMembers, loading, loadGroupMembers, addMember, removeMember } =
     useGroupManagementStore();
   const { formatDate } = useDateFormatter();
+  const t = useTranslations('pages.admin.groups.membersModal');
 
   const [showAddMember, setShowAddMember] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,13 +81,16 @@ export function GroupMembersModal({
   const handleRemoveMember = async (member: GroupMember) => {
     if (!member.user) return;
 
-    const confirmMessage = `确定要将"${member.user.full_name || member.user.username}"从群组"${group.name}"中移除吗？`;
-    if (window.confirm(confirmMessage)) {
+    const memberName =
+      member.user.full_name || member.user.username || t('unknownUser');
+    if (
+      window.confirm(
+        t('removeMemberConfirm', { memberName, groupName: group.name })
+      )
+    ) {
       const success = await removeMember(group.id, member.user_id);
       if (success) {
-        toast.success(
-          `已移除成员"${member.user.full_name || member.user.username}"`
-        );
+        toast.success(t('removeMemberSuccess', { memberName }));
       }
     }
   };
@@ -129,7 +135,7 @@ export function GroupMembersModal({
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
-                群组成员管理
+                {t('title')}
               </h2>
               <p
                 className={cn(
@@ -137,7 +143,10 @@ export function GroupMembersModal({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                {group.name} · 共 {members.length} 个成员
+                {t('subtitle', {
+                  groupName: group.name,
+                  count: members.length,
+                })}
               </p>
             </div>
           </div>
@@ -153,7 +162,7 @@ export function GroupMembersModal({
               )}
             >
               <Plus className="h-4 w-4" />
-              添加成员
+              {t('addMember')}
             </button>
 
             <button
@@ -181,7 +190,7 @@ export function GroupMembersModal({
             />
             <input
               type="text"
-              placeholder="搜索成员..."
+              placeholder={t('searchPlaceholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className={cn(
@@ -207,7 +216,7 @@ export function GroupMembersModal({
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
-                  加载成员列表...
+                  {t('loading')}
                 </span>
               </div>
             </div>
@@ -232,7 +241,7 @@ export function GroupMembersModal({
                   isDark ? 'text-stone-200' : 'text-stone-800'
                 )}
               >
-                {searchTerm ? '未找到匹配的成员' : '暂无群组成员'}
+                {searchTerm ? t('noSearchResults') : t('noMembers')}
               </h3>
               <p
                 className={cn(
@@ -240,9 +249,7 @@ export function GroupMembersModal({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                {searchTerm
-                  ? '尝试使用其他关键词搜索'
-                  : '点击"添加成员"按钮来邀请用户加入群组'}
+                {searchTerm ? t('noSearchResultsHint') : t('noMembersHint')}
               </p>
             </div>
           ) : (
@@ -285,7 +292,9 @@ export function GroupMembersModal({
                               isDark ? 'text-stone-200' : 'text-stone-800'
                             )}
                           >
-                            {user.full_name || user.username || '未知用户'}
+                            {user.full_name ||
+                              user.username ||
+                              t('unknownUser')}
                           </h4>
                           {user.username && user.full_name && (
                             <span
@@ -320,7 +329,7 @@ export function GroupMembersModal({
                               isDark ? 'text-stone-500' : 'text-stone-500'
                             )}
                           >
-                            加入于{' '}
+                            {t('joinedAt')}{' '}
                             {formatDate(
                               member.created_at,
                               DateFormatPresets.dateTime
@@ -341,7 +350,7 @@ export function GroupMembersModal({
                           ? 'text-red-400 hover:bg-red-500/20 hover:text-red-300 disabled:hover:bg-transparent'
                           : 'text-red-600 hover:bg-red-50 hover:text-red-700 disabled:hover:bg-transparent'
                       )}
-                      title="移除成员"
+                      title={t('removeMember')}
                     >
                       {loading.members ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -381,6 +390,7 @@ function AddMemberModal({
 }) {
   const { isDark } = useTheme();
   const { addMember, groupMembers } = useGroupManagementStore();
+  const t = useTranslations('pages.admin.groups.addMembersModal');
 
   // 分页用户列表状态管理
   const [users, setUsers] = useState<SearchableUser[]>([]);
@@ -445,11 +455,11 @@ function AddMemberModal({
           totalPages: data.totalPages || 0,
         });
       } else {
-        console.error('加载用户列表失败');
+        console.error('Load user list failed');
         setUsers([]);
       }
     } catch (error) {
-      console.error('加载用户列表异常:', error);
+      console.error('Load user list error:', error);
       setUsers([]);
     } finally {
       setIsLoading(false);
@@ -516,14 +526,14 @@ function AddMemberModal({
       }
 
       if (successCount > 0) {
-        toast.success(`成功添加 ${successCount} 个成员到群组`);
+        toast.success(t('addSuccess', { count: successCount }));
         setSelectedUserIds([]);
         // 重新加载用户列表，排除新添加的成员
         loadUsers(pagination.page, searchTerm);
       }
 
       if (errorCount > 0) {
-        toast.error(`${errorCount} 个成员添加失败`);
+        toast.error(t('addPartialSuccess', { errorCount }));
       }
     } finally {
       setIsAdding(false);
@@ -564,7 +574,7 @@ function AddMemberModal({
                 isDark ? 'text-stone-100' : 'text-stone-900'
               )}
             >
-              添加成员
+              {t('title')}
             </h3>
             <p
               className={cn(
@@ -572,7 +582,7 @@ function AddMemberModal({
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
-              选择用户并将其添加到群组"{group.name}"
+              {t('subtitle', { groupName: group.name })}
             </p>
           </div>
 
@@ -602,7 +612,7 @@ function AddMemberModal({
               />
               <input
                 type="text"
-                placeholder="搜索用户名、姓名或邮箱..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className={cn(
@@ -633,7 +643,7 @@ function AddMemberModal({
                 ) : (
                   <Plus className="h-4 w-4" />
                 )}
-                添加 {selectedUserIds.length} 个成员
+                {t('addSelected', { count: selectedUserIds.length })}
               </button>
             )}
           </div>
@@ -651,7 +661,7 @@ function AddMemberModal({
                     isDark ? 'text-stone-400' : 'text-stone-600'
                   )}
                 >
-                  加载用户列表...
+                  {t('loading')}
                 </span>
               </div>
             </div>
@@ -665,7 +675,7 @@ function AddMemberModal({
               <div className="text-center">
                 <Users className="mx-auto mb-3 h-8 w-8" />
                 <p className="font-serif text-sm">
-                  {searchTerm ? '未找到匹配的用户' : '没有可添加的用户'}
+                  {searchTerm ? t('noSearchResults') : t('noUsers')}
                 </p>
               </div>
             </div>
@@ -705,7 +715,7 @@ function AddMemberModal({
                         isDark ? 'text-stone-300' : 'text-stone-700'
                       )}
                     >
-                      用户信息
+                      {t('tableHeaders.userInfo')}
                     </span>
                   </div>
                   <div className="w-24">
@@ -715,7 +725,7 @@ function AddMemberModal({
                         isDark ? 'text-stone-300' : 'text-stone-700'
                       )}
                     >
-                      角色
+                      {t('tableHeaders.role')}
                     </span>
                   </div>
                 </div>
@@ -783,7 +793,9 @@ function AddMemberModal({
                                 isDark ? 'text-stone-200' : 'text-stone-800'
                               )}
                             >
-                              {user.full_name || user.username || '未知用户'}
+                              {user.full_name ||
+                                user.username ||
+                                t('unknownUser')}
                             </h4>
                             {user.username && user.full_name && (
                               <span
@@ -832,10 +844,10 @@ function AddMemberModal({
                           )}
                         >
                           {user.role === 'admin'
-                            ? '管理员'
+                            ? t('userRoles.admin')
                             : user.role === 'manager'
-                              ? '经理'
-                              : '普通用户'}
+                              ? t('userRoles.manager')
+                              : t('userRoles.user')}
                         </span>
                       </div>
                     </div>
@@ -856,12 +868,14 @@ function AddMemberModal({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                显示第 {(pagination.page - 1) * pagination.pageSize + 1} -{' '}
-                {Math.min(
-                  pagination.page * pagination.pageSize,
-                  pagination.total
-                )}{' '}
-                条，共 {pagination.total} 条记录
+                {t('pagination.showing', {
+                  start: (pagination.page - 1) * pagination.pageSize + 1,
+                  end: Math.min(
+                    pagination.page * pagination.pageSize,
+                    pagination.total
+                  ),
+                  total: pagination.total,
+                })}
               </div>
 
               <div className="flex items-center gap-2">
@@ -877,7 +891,7 @@ function AddMemberModal({
                         : 'border-stone-300 text-stone-700 hover:bg-stone-50'
                   )}
                 >
-                  上一页
+                  {t('pagination.previous')}
                 </button>
 
                 <span
@@ -903,7 +917,7 @@ function AddMemberModal({
                         : 'border-stone-300 text-stone-700 hover:bg-stone-50'
                   )}
                 >
-                  下一页
+                  {t('pagination.next')}
                 </button>
               </div>
             </div>

@@ -200,13 +200,16 @@ export async function getUserList(filters: UserFilters = {}): Promise<
             }));
           }
         } catch (error) {
-          console.warn(`获取用户 ${profile.id} 群组信息失败:`, error);
+          console.warn(
+            `Failed to get group information for user ${profile.id}:`,
+            error
+          );
         }
 
         return {
           id: profile.id,
-          email: authUser?.email || '未设置',
-          phone: authUser?.phone || '未设置',
+          email: authUser?.email || null,
+          phone: authUser?.phone || null,
           email_confirmed_at: authUser?.email_confirmed_at,
           phone_confirmed_at: authUser?.phone_confirmed_at,
           created_at: authUser?.created_at || profile.created_at,
@@ -219,7 +222,7 @@ export async function getUserList(filters: UserFilters = {}): Promise<
           status: profile.status,
           auth_source: profile.auth_source,
           sso_provider_id: profile.sso_provider_id,
-          employee_number: profile.employee_number, // 新增：包含学工号数据
+          employee_number: profile.employee_number,
           profile_created_at: profile.created_at,
           profile_updated_at: profile.updated_at,
           last_login: profile.last_login,
@@ -292,8 +295,8 @@ export async function getUserById(
       profile_created_at: userDetail.created_at,
       profile_updated_at: userDetail.updated_at,
       // 对于敏感信息，使用安全的替代字段
-      email: userDetail.has_email ? '[已设置]' : null,
-      phone: userDetail.has_phone ? '[已设置]' : null,
+      email: userDetail.has_email ? userDetail.email : null,
+      phone: userDetail.has_phone ? userDetail.phone : null,
       email_confirmed_at: userDetail.email_confirmed
         ? new Date().toISOString()
         : null,

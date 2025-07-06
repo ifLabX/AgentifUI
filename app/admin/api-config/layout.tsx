@@ -576,7 +576,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                               'cursor-not-allowed opacity-50'
                           )}
                           title={
-                            instance.is_default ? '默认应用不可删除' : '删除'
+                            instance.is_default
+                              ? t('defaultAppCannotDelete')
+                              : t('delete')
                           }
                         >
                           <Trash2 className="h-3.5 w-3.5" />

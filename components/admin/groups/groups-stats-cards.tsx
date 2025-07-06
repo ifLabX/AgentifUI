@@ -4,6 +4,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Activity, Building2, Users } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface GroupStats {
   totalGroups: number;
   totalMembers: number;
@@ -17,22 +19,23 @@ interface GroupsStatsCardsProps {
 
 export function GroupsStatsCards({ stats, isLoading }: GroupsStatsCardsProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.groups.stats');
 
   const statsData = [
     {
-      title: '群组总数',
+      title: t('totalGroups'),
       value: stats.totalGroups,
       icon: Building2,
       color: 'blue',
     },
     {
-      title: '成员总数',
+      title: t('totalMembers'),
       value: stats.totalMembers,
       icon: Users,
       color: 'green',
     },
     {
-      title: '平均成员数',
+      title: t('averageMembers'),
       value:
         stats.totalGroups > 0
           ? Math.round(stats.totalMembers / stats.totalGroups)

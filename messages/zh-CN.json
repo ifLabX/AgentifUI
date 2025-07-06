@@ -1025,6 +1025,7 @@
           "noInstancesForProvider": "该提供商暂无应用实例",
           "addFirstApp": "添加第一个应用",
           "defaultApp": "默认",
+          "delete": "删除",
           "deleteConfirm": "确定要删除此应用实例吗？此操作不可撤销。",
           "defaultAppCannotDelete": "默认应用不可删除，请先设置其他应用为默认应用",
           "instanceNotFound": "未找到要删除的实例",
@@ -1472,6 +1473,9 @@
           "notSet": "未设置",
           "notSetEmail": "未设置邮箱",
           "notSetPhone": "未设置手机",
+          "defaultUser": "用户",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
           "moreGroups": "+{count} 个群组",
           "notInGroup": "未加入群组",
           "moreGroupsTooltip": "还有 {count} 个群组：{names}"
@@ -1504,6 +1508,126 @@
             "suspended": "已暂停",
             "pending": "待激活"
           }
+        }
+      },
+      "groups": {
+        "title": "群组管理",
+        "subtitle": "管理用户群组和应用权限分配",
+        "stats": {
+          "totalGroups": "群组总数",
+          "totalMembers": "成员总数",
+          "averageMembers": "平均成员数",
+          "activeGroups": "活跃群组"
+        },
+        "header": {
+          "title": "群组管理",
+          "subtitle": "管理用户群组和应用权限分配",
+          "refreshData": "刷新数据",
+          "createGroup": "创建群组"
+        },
+        "search": {
+          "placeholder": "搜索群组名称或描述...",
+          "searchResults": "搜索结果",
+          "keyword": "关键词",
+          "noResults": "未找到匹配的群组",
+          "noResultsHint": "尝试使用其他关键词搜索"
+        },
+        "list": {
+          "noGroups": "暂无群组",
+          "noGroupsHint": "点击\"创建群组\"按钮来创建第一个群组",
+          "loading": "加载群组列表...",
+          "memberCount": "{count} 成员",
+          "createdAt": "创建时间",
+          "actions": {
+            "manageMembers": "成员管理",
+            "editGroup": "编辑群组",
+            "deleteGroup": "删除群组"
+          }
+        },
+        "createModal": {
+          "title": "创建群组",
+          "nameLabel": "群组名称",
+          "nameRequired": "群组名称不能为空",
+          "nameTooShort": "群组名称至少需要2个字符",
+          "nameTooLong": "群组名称不能超过50个字符",
+          "namePlaceholder": "请输入群组名称",
+          "descriptionLabel": "群组描述",
+          "descriptionTooLong": "描述不能超过200个字符",
+          "descriptionPlaceholder": "请输入群组描述（可选）",
+          "creating": "创建中...",
+          "createButton": "创建群组",
+          "cancel": "取消",
+          "createSuccess": "群组\"{name}\"创建成功"
+        },
+        "editModal": {
+          "title": "编辑群组",
+          "nameLabel": "群组名称",
+          "nameRequired": "群组名称不能为空",
+          "nameTooShort": "群组名称至少需要2个字符",
+          "nameTooLong": "群组名称不能超过50个字符",
+          "namePlaceholder": "请输入群组名称",
+          "descriptionLabel": "群组描述",
+          "descriptionTooLong": "描述不能超过200个字符",
+          "descriptionPlaceholder": "请输入群组描述（可选）",
+          "updating": "更新中...",
+          "updateButton": "保存更改",
+          "cancel": "取消",
+          "noChanges": "没有检测到任何更改",
+          "updateSuccess": "群组\"{name}\"更新成功"
+        },
+        "membersModal": {
+          "title": "群组成员管理",
+          "subtitle": "{groupName} · 共 {count} 个成员",
+          "addMember": "添加成员",
+          "searchPlaceholder": "搜索成员...",
+          "loading": "加载成员列表...",
+          "noMembers": "暂无群组成员",
+          "noMembersHint": "点击\"添加成员\"按钮来邀请用户加入群组",
+          "noSearchResults": "未找到匹配的成员",
+          "noSearchResultsHint": "尝试使用其他关键词搜索",
+          "unknownUser": "未知用户",
+          "joinedAt": "加入于",
+          "removeMember": "移除成员",
+          "removeMemberConfirm": "确定要将\"{memberName}\"从群组\"{groupName}\"中移除吗？",
+          "removeMemberSuccess": "已移除成员\"{memberName}\""
+        },
+        "addMembersModal": {
+          "title": "添加成员",
+          "subtitle": "选择用户并将其添加到群组\"{groupName}\"",
+          "searchPlaceholder": "搜索用户名、姓名或邮箱...",
+          "loading": "加载用户列表...",
+          "noUsers": "没有可添加的用户",
+          "noSearchResults": "未找到匹配的用户",
+          "selectAll": "全选",
+          "deselectAll": "取消全选",
+          "addSelected": "添加 {count} 个成员",
+          "tableHeaders": {
+            "userInfo": "用户信息",
+            "role": "角色"
+          },
+          "userRoles": {
+            "admin": "管理员",
+            "manager": "经理",
+            "user": "普通用户"
+          },
+          "unknownUser": "未知用户",
+          "pagination": {
+            "showing": "显示第 {start} - {end} 条，共 {total} 条记录",
+            "previous": "上一页",
+            "next": "下一页"
+          },
+          "addSuccess": "成功添加 {count} 个成员到群组",
+          "addPartialSuccess": "{errorCount} 个成员添加失败"
+        },
+        "messages": {
+          "deleteConfirm": "确定要删除群组\"{name}\"吗？此操作不可撤销。",
+          "deleteSuccess": "已删除群组\"{name}\"",
+          "loadError": "加载群组数据失败",
+          "createError": "创建群组失败",
+          "updateError": "更新群组失败",
+          "deleteError": "删除群组失败",
+          "addMemberError": "添加成员失败",
+          "removeMemberError": "移除成员失败"
         }
       },
       "permissions": {

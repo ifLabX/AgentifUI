@@ -1025,6 +1025,7 @@
           "noInstancesForProvider": "このプロバイダーのアプリケーションインスタンスがありません",
           "addFirstApp": "最初のアプリケーションを追加",
           "defaultApp": "デフォルト",
+          "delete": "削除",
           "deleteConfirm": "このアプリケーションインスタンスを削除してもよろしいですか？この操作は元に戻せません。",
           "defaultAppCannotDelete": "デフォルトアプリケーションは削除できません。まず他のアプリケーションをデフォルトに設定してください。",
           "instanceNotFound": "削除するインスタンスが見つかりません",
@@ -1472,6 +1473,9 @@
           "notSet": "未設定",
           "notSetEmail": "メール未設定",
           "notSetPhone": "電話未設定",
+          "defaultUser": "ユーザー",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
           "moreGroups": "+{count} グループ",
           "notInGroup": "グループ未参加",
           "moreGroupsTooltip": "他 {count} グループ：{names}"
@@ -1504,6 +1508,126 @@
             "suspended": "停止中",
             "pending": "承認待ち"
           }
+        }
+      },
+      "groups": {
+        "title": "グループ管理",
+        "subtitle": "ユーザーグループとアプリケーション権限の割り当てを管理",
+        "stats": {
+          "totalGroups": "総グループ数",
+          "totalMembers": "総メンバー数",
+          "averageMembers": "平均メンバー数",
+          "activeGroups": "アクティブグループ"
+        },
+        "header": {
+          "title": "グループ管理",
+          "subtitle": "ユーザーグループとアプリケーション権限の割り当てを管理",
+          "refreshData": "データを更新",
+          "createGroup": "グループを作成"
+        },
+        "search": {
+          "placeholder": "グループ名または説明を検索...",
+          "searchResults": "検索結果",
+          "keyword": "キーワード",
+          "noResults": "一致するグループが見つかりません",
+          "noResultsHint": "異なるキーワードを試してください"
+        },
+        "list": {
+          "noGroups": "グループがありません",
+          "noGroupsHint": "「グループを作成」ボタンをクリックして最初のグループを作成してください",
+          "loading": "グループリストを読み込み中...",
+          "memberCount": "{count}名のメンバー",
+          "createdAt": "作成日時",
+          "actions": {
+            "manageMembers": "メンバー管理",
+            "editGroup": "グループを編集",
+            "deleteGroup": "グループを削除"
+          }
+        },
+        "createModal": {
+          "title": "グループを作成",
+          "nameLabel": "グループ名",
+          "nameRequired": "グループ名は必須です",
+          "nameTooShort": "グループ名は2文字以上である必要があります",
+          "nameTooLong": "グループ名は50文字以下である必要があります",
+          "namePlaceholder": "グループ名を入力してください",
+          "descriptionLabel": "グループの説明",
+          "descriptionTooLong": "説明は200文字以下である必要があります",
+          "descriptionPlaceholder": "グループの説明を入力してください（任意）",
+          "creating": "作成中...",
+          "createButton": "グループを作成",
+          "cancel": "キャンセル",
+          "createSuccess": "グループ「{name}」が正常に作成されました"
+        },
+        "editModal": {
+          "title": "グループを編集",
+          "nameLabel": "グループ名",
+          "nameRequired": "グループ名は必須です",
+          "nameTooShort": "グループ名は2文字以上である必要があります",
+          "nameTooLong": "グループ名は50文字以下である必要があります",
+          "namePlaceholder": "グループ名を入力してください",
+          "descriptionLabel": "グループの説明",
+          "descriptionTooLong": "説明は200文字以下である必要があります",
+          "descriptionPlaceholder": "グループの説明を入力してください（任意）",
+          "updating": "更新中...",
+          "updateButton": "変更を保存",
+          "cancel": "キャンセル",
+          "noChanges": "変更は検出されませんでした",
+          "updateSuccess": "グループ「{name}」が正常に更新されました"
+        },
+        "membersModal": {
+          "title": "グループメンバー管理",
+          "subtitle": "{groupName} · 合計{count}名のメンバー",
+          "addMember": "メンバーを追加",
+          "searchPlaceholder": "メンバーを検索...",
+          "loading": "メンバーリストを読み込み中...",
+          "noMembers": "グループメンバーがいません",
+          "noMembersHint": "「メンバーを追加」ボタンをクリックしてユーザーをグループに招待してください",
+          "noSearchResults": "一致するメンバーが見つかりません",
+          "noSearchResultsHint": "異なるキーワードを試してください",
+          "unknownUser": "不明なユーザー",
+          "joinedAt": "参加日",
+          "removeMember": "メンバーを削除",
+          "removeMemberConfirm": "「{memberName}」をグループ「{groupName}」から削除してもよろしいですか？",
+          "removeMemberSuccess": "メンバー「{memberName}」を削除しました"
+        },
+        "addMembersModal": {
+          "title": "メンバーを追加",
+          "subtitle": "グループ「{groupName}」に追加するユーザーを選択してください",
+          "searchPlaceholder": "ユーザー名、名前、またはメールアドレスを検索...",
+          "loading": "ユーザーリストを読み込み中...",
+          "noUsers": "追加できるユーザーがいません",
+          "noSearchResults": "一致するユーザーが見つかりません",
+          "selectAll": "すべて選択",
+          "deselectAll": "すべて選択解除",
+          "addSelected": "{count}名のメンバーを追加",
+          "tableHeaders": {
+            "userInfo": "ユーザー情報",
+            "role": "役割"
+          },
+          "userRoles": {
+            "admin": "管理者",
+            "manager": "マネージャー",
+            "user": "一般ユーザー"
+          },
+          "unknownUser": "不明なユーザー",
+          "pagination": {
+            "showing": "{total}件中{start} - {end}件を表示",
+            "previous": "前へ",
+            "next": "次へ"
+          },
+          "addSuccess": "{count}名のメンバーをグループに正常に追加しました",
+          "addPartialSuccess": "{errorCount}名のメンバーの追加に失敗しました"
+        },
+        "messages": {
+          "deleteConfirm": "グループ「{name}」を削除してもよろしいですか？この操作は元に戻せません。",
+          "deleteSuccess": "グループ「{name}」を削除しました",
+          "loadError": "グループデータの読み込みに失敗しました",
+          "createError": "グループの作成に失敗しました",
+          "updateError": "グループの更新に失敗しました",
+          "deleteError": "グループの削除に失敗しました",
+          "addMemberError": "メンバーの追加に失敗しました",
+          "removeMemberError": "メンバーの削除に失敗しました"
         }
       },
       "permissions": {

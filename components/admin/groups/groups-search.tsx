@@ -4,6 +4,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Search, X } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface GroupsSearchProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
@@ -14,6 +16,7 @@ export function GroupsSearch({
   onSearchChange,
 }: GroupsSearchProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.groups.search');
 
   const handleClear = () => {
     onSearchChange('');
@@ -42,7 +45,7 @@ export function GroupsSearch({
             type="text"
             value={searchTerm}
             onChange={e => onSearchChange(e.target.value)}
-            placeholder="搜索群组名称或描述..."
+            placeholder={t('placeholder')}
             className={cn(
               'w-full rounded-lg border py-3 pr-10 pl-10 font-serif text-sm transition-all duration-200',
               'focus:ring-2 focus:ring-offset-2 focus:outline-none',
@@ -74,7 +77,7 @@ export function GroupsSearch({
                 isDark ? 'text-stone-400' : 'text-stone-600'
               )}
             >
-              搜索结果
+              {t('searchResults')}
             </span>
             <div
               className={cn(
@@ -84,7 +87,7 @@ export function GroupsSearch({
                   : 'bg-stone-100 text-stone-700'
               )}
             >
-              关键词: {searchTerm}
+              {t('keyword')}: {searchTerm}
             </div>
           </div>
         )}

@@ -1025,6 +1025,7 @@
           "noInstancesForProvider": "No application instances for this provider",
           "addFirstApp": "Add first application",
           "defaultApp": "Default",
+          "delete": "Delete",
           "deleteConfirm": "Are you sure you want to delete this application instance? This action cannot be undone.",
           "defaultAppCannotDelete": "Default application cannot be deleted. Please set another application as default first.",
           "instanceNotFound": "Instance to delete not found",
@@ -1472,6 +1473,9 @@
           "notSet": "Not Set",
           "notSetEmail": "Email not set",
           "notSetPhone": "Phone not set",
+          "defaultUser": "User",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
           "moreGroups": "+{count} groups",
           "notInGroup": "Not in any group",
           "moreGroupsTooltip": "{count} more groups: {names}"
@@ -1504,6 +1508,126 @@
             "suspended": "Suspended",
             "pending": "Pending"
           }
+        }
+      },
+      "groups": {
+        "title": "Group Management",
+        "subtitle": "Manage user groups and application permission assignments",
+        "stats": {
+          "totalGroups": "Total Groups",
+          "totalMembers": "Total Members",
+          "averageMembers": "Average Members",
+          "activeGroups": "Active Groups"
+        },
+        "header": {
+          "title": "Group Management",
+          "subtitle": "Manage user groups and application permission assignments",
+          "refreshData": "Refresh Data",
+          "createGroup": "Create Group"
+        },
+        "search": {
+          "placeholder": "Search group name or description...",
+          "searchResults": "Search Results",
+          "keyword": "Keyword",
+          "noResults": "No matching groups found",
+          "noResultsHint": "Try using different keywords"
+        },
+        "list": {
+          "noGroups": "No Groups",
+          "noGroupsHint": "Click \"Create Group\" button to create your first group",
+          "loading": "Loading group list...",
+          "memberCount": "{count} members",
+          "createdAt": "Created",
+          "actions": {
+            "manageMembers": "Manage Members",
+            "editGroup": "Edit Group",
+            "deleteGroup": "Delete Group"
+          }
+        },
+        "createModal": {
+          "title": "Create Group",
+          "nameLabel": "Group Name",
+          "nameRequired": "Group name cannot be empty",
+          "nameTooShort": "Group name must be at least 2 characters",
+          "nameTooLong": "Group name cannot exceed 50 characters",
+          "namePlaceholder": "Enter group name",
+          "descriptionLabel": "Group Description",
+          "descriptionTooLong": "Description cannot exceed 200 characters",
+          "descriptionPlaceholder": "Enter group description (optional)",
+          "creating": "Creating...",
+          "createButton": "Create Group",
+          "cancel": "Cancel",
+          "createSuccess": "Group \"{name}\" created successfully"
+        },
+        "editModal": {
+          "title": "Edit Group",
+          "nameLabel": "Group Name",
+          "nameRequired": "Group name cannot be empty",
+          "nameTooShort": "Group name must be at least 2 characters",
+          "nameTooLong": "Group name cannot exceed 50 characters",
+          "namePlaceholder": "Enter group name",
+          "descriptionLabel": "Group Description",
+          "descriptionTooLong": "Description cannot exceed 200 characters",
+          "descriptionPlaceholder": "Enter group description (optional)",
+          "updating": "Updating...",
+          "updateButton": "Save Changes",
+          "cancel": "Cancel",
+          "noChanges": "No changes detected",
+          "updateSuccess": "Group \"{name}\" updated successfully"
+        },
+        "membersModal": {
+          "title": "Group Member Management",
+          "subtitle": "{groupName} · {count} members total",
+          "addMember": "Add Member",
+          "searchPlaceholder": "Search members...",
+          "loading": "Loading member list...",
+          "noMembers": "No group members",
+          "noMembersHint": "Click \"Add Member\" button to invite users to join the group",
+          "noSearchResults": "No matching members found",
+          "noSearchResultsHint": "Try using different keywords",
+          "unknownUser": "Unknown User",
+          "joinedAt": "Joined",
+          "removeMember": "Remove Member",
+          "removeMemberConfirm": "Are you sure you want to remove \"{memberName}\" from group \"{groupName}\"?",
+          "removeMemberSuccess": "Removed member \"{memberName}\""
+        },
+        "addMembersModal": {
+          "title": "Add Members",
+          "subtitle": "Select users to add to group \"{groupName}\"",
+          "searchPlaceholder": "Search username, name or email...",
+          "loading": "Loading user list...",
+          "noUsers": "No users available to add",
+          "noSearchResults": "No matching users found",
+          "selectAll": "Select All",
+          "deselectAll": "Deselect All",
+          "addSelected": "Add {count} members",
+          "tableHeaders": {
+            "userInfo": "User Info",
+            "role": "Role"
+          },
+          "userRoles": {
+            "admin": "Administrator",
+            "manager": "Manager",
+            "user": "Regular User"
+          },
+          "unknownUser": "Unknown User",
+          "pagination": {
+            "showing": "Showing {start} - {end} of {total} records",
+            "previous": "Previous",
+            "next": "Next"
+          },
+          "addSuccess": "Successfully added {count} members to group",
+          "addPartialSuccess": "{errorCount} members failed to add"
+        },
+        "messages": {
+          "deleteConfirm": "Are you sure you want to delete group \"{name}\"? This action cannot be undone.",
+          "deleteSuccess": "Deleted group \"{name}\"",
+          "loadError": "Failed to load group data",
+          "createError": "Failed to create group",
+          "updateError": "Failed to update group",
+          "deleteError": "Failed to delete group",
+          "addMemberError": "Failed to add member",
+          "removeMemberError": "Failed to remove member"
         }
       },
       "permissions": {

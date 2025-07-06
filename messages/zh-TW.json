@@ -1025,6 +1025,7 @@
           "noInstancesForProvider": "該提供商暫無應用程式實例",
           "addFirstApp": "新增第一個應用程式",
           "defaultApp": "預設",
+          "delete": "刪除",
           "deleteConfirm": "確定要刪除此應用程式實例嗎？此操作不可復原。",
           "defaultAppCannotDelete": "預設應用程式不可刪除，請先設定其他應用程式為預設應用程式",
           "instanceNotFound": "未找到要刪除的實例",
@@ -1472,6 +1473,9 @@
           "notSet": "未設置",
           "notSetEmail": "未設置信箱",
           "notSetPhone": "未設置手機",
+          "defaultUser": "使用者",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
           "moreGroups": "+{count} 個群組",
           "notInGroup": "未加入群組",
           "moreGroupsTooltip": "還有 {count} 個群組：{names}"
@@ -1504,6 +1508,126 @@
             "suspended": "已暫停",
             "pending": "待啟用"
           }
+        }
+      },
+      "groups": {
+        "title": "群組管理",
+        "subtitle": "管理使用者群組和應用程式權限分配",
+        "stats": {
+          "totalGroups": "群組總數",
+          "totalMembers": "成員總數",
+          "averageMembers": "平均成員數",
+          "activeGroups": "活躍群組"
+        },
+        "header": {
+          "title": "群組管理",
+          "subtitle": "管理使用者群組和應用程式權限分配",
+          "refreshData": "重新整理資料",
+          "createGroup": "建立群組"
+        },
+        "search": {
+          "placeholder": "搜尋群組名稱或描述...",
+          "searchResults": "搜尋結果",
+          "keyword": "關鍵字",
+          "noResults": "未找到匹配的群組",
+          "noResultsHint": "嘗試使用其他關鍵字搜尋"
+        },
+        "list": {
+          "noGroups": "暫無群組",
+          "noGroupsHint": "點擊「建立群組」按鈕來建立第一個群組",
+          "loading": "載入群組清單中...",
+          "memberCount": "{count} 名成員",
+          "createdAt": "建立時間",
+          "actions": {
+            "manageMembers": "成員管理",
+            "editGroup": "編輯群組",
+            "deleteGroup": "刪除群組"
+          }
+        },
+        "createModal": {
+          "title": "建立群組",
+          "nameLabel": "群組名稱",
+          "nameRequired": "群組名稱不能為空",
+          "nameTooShort": "群組名稱至少需要2個字元",
+          "nameTooLong": "群組名稱不能超過50個字元",
+          "namePlaceholder": "請輸入群組名稱",
+          "descriptionLabel": "群組描述",
+          "descriptionTooLong": "描述不能超過200個字元",
+          "descriptionPlaceholder": "請輸入群組描述（可選）",
+          "creating": "建立中...",
+          "createButton": "建立群組",
+          "cancel": "取消",
+          "createSuccess": "群組「{name}」建立成功"
+        },
+        "editModal": {
+          "title": "編輯群組",
+          "nameLabel": "群組名稱",
+          "nameRequired": "群組名稱不能為空",
+          "nameTooShort": "群組名稱至少需要2個字元",
+          "nameTooLong": "群組名稱不能超過50個字元",
+          "namePlaceholder": "請輸入群組名稱",
+          "descriptionLabel": "群組描述",
+          "descriptionTooLong": "描述不能超過200個字元",
+          "descriptionPlaceholder": "請輸入群組描述（可選）",
+          "updating": "更新中...",
+          "updateButton": "儲存變更",
+          "cancel": "取消",
+          "noChanges": "沒有檢測到任何變更",
+          "updateSuccess": "群組「{name}」更新成功"
+        },
+        "membersModal": {
+          "title": "群組成員管理",
+          "subtitle": "{groupName} · 共 {count} 名成員",
+          "addMember": "新增成員",
+          "searchPlaceholder": "搜尋成員...",
+          "loading": "載入成員清單中...",
+          "noMembers": "暫無群組成員",
+          "noMembersHint": "點擊「新增成員」按鈕來邀請使用者加入群組",
+          "noSearchResults": "未找到匹配的成員",
+          "noSearchResultsHint": "嘗試使用其他關鍵字搜尋",
+          "unknownUser": "未知使用者",
+          "joinedAt": "加入於",
+          "removeMember": "移除成員",
+          "removeMemberConfirm": "確定要將「{memberName}」從群組「{groupName}」中移除嗎？",
+          "removeMemberSuccess": "已移除成員「{memberName}」"
+        },
+        "addMembersModal": {
+          "title": "新增成員",
+          "subtitle": "選擇使用者並將其新增到群組「{groupName}」",
+          "searchPlaceholder": "搜尋使用者名稱、姓名或電子郵件...",
+          "loading": "載入使用者清單中...",
+          "noUsers": "沒有可新增的使用者",
+          "noSearchResults": "未找到匹配的使用者",
+          "selectAll": "全選",
+          "deselectAll": "取消全選",
+          "addSelected": "新增 {count} 名成員",
+          "tableHeaders": {
+            "userInfo": "使用者資訊",
+            "role": "角色"
+          },
+          "userRoles": {
+            "admin": "管理員",
+            "manager": "經理",
+            "user": "一般使用者"
+          },
+          "unknownUser": "未知使用者",
+          "pagination": {
+            "showing": "顯示第 {start} - {end} 條，共 {total} 條記錄",
+            "previous": "上一頁",
+            "next": "下一頁"
+          },
+          "addSuccess": "成功新增 {count} 名成員到群組",
+          "addPartialSuccess": "{errorCount} 名成員新增失敗"
+        },
+        "messages": {
+          "deleteConfirm": "確定要刪除群組「{name}」嗎？此操作無法撤銷。",
+          "deleteSuccess": "已刪除群組「{name}」",
+          "loadError": "載入群組資料失敗",
+          "createError": "建立群組失敗",
+          "updateError": "更新群組失敗",
+          "deleteError": "刪除群組失敗",
+          "addMemberError": "新增成員失敗",
+          "removeMemberError": "移除成員失敗"
         }
       },
       "permissions": {

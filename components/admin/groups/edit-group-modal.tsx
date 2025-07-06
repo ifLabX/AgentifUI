@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 
 import { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface EditGroupModalProps {
   group: Group;
   isOpen: boolean;
@@ -22,6 +24,7 @@ export function EditGroupModal({
 }: EditGroupModalProps) {
   const { isDark } = useTheme();
   const { updateGroup, loading } = useGroupManagementStore();
+  const t = useTranslations('pages.admin.groups.editModal');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -42,15 +45,15 @@ export function EditGroupModal({
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = '群组名称不能为空';
+      newErrors.name = t('nameRequired');
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = '群组名称至少需要2个字符';
+      newErrors.name = t('nameTooShort');
     } else if (formData.name.trim().length > 50) {
-      newErrors.name = '群组名称不能超过50个字符';
+      newErrors.name = t('nameTooLong');
     }
 
     if (formData.description && formData.description.length > 200) {
-      newErrors.description = '描述不能超过200个字符';
+      newErrors.description = t('descriptionTooLong');
     }
 
     setErrors(newErrors);
@@ -70,7 +73,7 @@ export function EditGroupModal({
       formData.description.trim() !== (group.description || '');
 
     if (!hasChanges) {
-      toast.success('没有检测到任何更改');
+      toast.success(t('noChanges'));
       onClose();
       return;
     }
@@ -81,7 +84,7 @@ export function EditGroupModal({
     });
 
     if (success) {
-      toast.success(`群组"${formData.name}"更新成功`);
+      toast.success(t('updateSuccess', { name: formData.name }));
       setErrors({});
       onClose();
     }
@@ -136,7 +139,7 @@ export function EditGroupModal({
                 isDark ? 'text-stone-100' : 'text-stone-900'
               )}
             >
-              编辑群组
+              {t('title')}
             </h2>
           </div>
           <button
@@ -165,7 +168,7 @@ export function EditGroupModal({
                   isDark ? 'text-stone-200' : 'text-stone-700'
                 )}
               >
-                群组名称 <span className="text-red-500">*</span>
+                {t('nameLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -173,7 +176,7 @@ export function EditGroupModal({
                 onChange={e =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="请输入群组名称"
+                placeholder={t('namePlaceholder')}
                 className={cn(
                   'w-full rounded-lg border px-3 py-2 font-serif text-sm transition-all duration-200',
                   'focus:ring-2 focus:ring-offset-2 focus:outline-none',
@@ -199,14 +202,14 @@ export function EditGroupModal({
                   isDark ? 'text-stone-200' : 'text-stone-700'
                 )}
               >
-                群组描述
+                {t('descriptionLabel')}
               </label>
               <textarea
                 value={formData.description}
                 onChange={e =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                placeholder="请输入群组描述（可选）"
+                placeholder={t('descriptionPlaceholder')}
                 rows={3}
                 className={cn(
                   'w-full rounded-lg border px-3 py-2 font-serif text-sm transition-all duration-200',
@@ -248,7 +251,7 @@ export function EditGroupModal({
                 loading.updating && 'cursor-not-allowed opacity-50'
               )}
             >
-              取消
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -264,10 +267,10 @@ export function EditGroupModal({
               {loading.updating ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  更新中...
+                  {t('updating')}
                 </>
               ) : (
-                '保存更改'
+                t('updateButton')
               )}
             </button>
           </div>

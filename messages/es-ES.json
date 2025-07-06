@@ -1025,6 +1025,7 @@
           "noInstancesForProvider": "Sin instancias de aplicación para este proveedor",
           "addFirstApp": "Agregar primera aplicación",
           "defaultApp": "Predeterminado",
+          "delete": "Eliminar",
           "deleteConfirm": "¿Está seguro de que desea eliminar esta instancia de aplicación? Esta acción no se puede deshacer.",
           "defaultAppCannotDelete": "La aplicación predeterminada no se puede eliminar. Primero configure otra aplicación como predeterminada.",
           "instanceNotFound": "Instancia a eliminar no encontrada",
@@ -1472,6 +1473,9 @@
           "notSet": "No configurado",
           "notSetEmail": "Correo no configurado",
           "notSetPhone": "Teléfono no configurado",
+          "defaultUser": "Usuario",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
           "moreGroups": "+{count} grupos",
           "notInGroup": "Sin grupo",
           "moreGroupsTooltip": "{count} grupos más: {names}"
@@ -1504,6 +1508,126 @@
             "suspended": "Suspendido",
             "pending": "Pendiente"
           }
+        }
+      },
+      "groups": {
+        "title": "Gestión de Grupos",
+        "subtitle": "Gestionar grupos de usuarios y asignaciones de permisos de aplicaciones",
+        "stats": {
+          "totalGroups": "Total de Grupos",
+          "totalMembers": "Total de Miembros",
+          "averageMembers": "Promedio de Miembros",
+          "activeGroups": "Grupos Activos"
+        },
+        "header": {
+          "title": "Gestión de Grupos",
+          "subtitle": "Gestionar grupos de usuarios y asignaciones de permisos de aplicaciones",
+          "refreshData": "Actualizar Datos",
+          "createGroup": "Crear Grupo"
+        },
+        "search": {
+          "placeholder": "Buscar nombre o descripción del grupo...",
+          "searchResults": "Resultados de Búsqueda",
+          "keyword": "Palabra Clave",
+          "noResults": "No se encontraron grupos coincidentes",
+          "noResultsHint": "Intenta usar diferentes palabras clave"
+        },
+        "list": {
+          "noGroups": "Sin Grupos",
+          "noGroupsHint": "Haz clic en \"Crear Grupo\" para crear tu primer grupo",
+          "loading": "Cargando lista de grupos...",
+          "memberCount": "{count} miembros",
+          "createdAt": "Creado",
+          "actions": {
+            "manageMembers": "Gestionar Miembros",
+            "editGroup": "Editar Grupo",
+            "deleteGroup": "Eliminar Grupo"
+          }
+        },
+        "createModal": {
+          "title": "Crear Grupo",
+          "nameLabel": "Nombre del Grupo",
+          "nameRequired": "El nombre del grupo no puede estar vacío",
+          "nameTooShort": "El nombre del grupo debe tener al menos 2 caracteres",
+          "nameTooLong": "El nombre del grupo no puede exceder 50 caracteres",
+          "namePlaceholder": "Ingresa el nombre del grupo",
+          "descriptionLabel": "Descripción del Grupo",
+          "descriptionTooLong": "La descripción no puede exceder 200 caracteres",
+          "descriptionPlaceholder": "Ingresa la descripción del grupo (opcional)",
+          "creating": "Creando...",
+          "createButton": "Crear Grupo",
+          "cancel": "Cancelar",
+          "createSuccess": "Grupo \"{name}\" creado exitosamente"
+        },
+        "editModal": {
+          "title": "Editar Grupo",
+          "nameLabel": "Nombre del Grupo",
+          "nameRequired": "El nombre del grupo no puede estar vacío",
+          "nameTooShort": "El nombre del grupo debe tener al menos 2 caracteres",
+          "nameTooLong": "El nombre del grupo no puede exceder 50 caracteres",
+          "namePlaceholder": "Ingresa el nombre del grupo",
+          "descriptionLabel": "Descripción del Grupo",
+          "descriptionTooLong": "La descripción no puede exceder 200 caracteres",
+          "descriptionPlaceholder": "Ingresa la descripción del grupo (opcional)",
+          "updating": "Actualizando...",
+          "updateButton": "Guardar Cambios",
+          "cancel": "Cancelar",
+          "noChanges": "No se detectaron cambios",
+          "updateSuccess": "Grupo \"{name}\" actualizado exitosamente"
+        },
+        "membersModal": {
+          "title": "Gestión de Miembros del Grupo",
+          "subtitle": "{groupName} · {count} miembros en total",
+          "addMember": "Agregar Miembro",
+          "searchPlaceholder": "Buscar miembros...",
+          "loading": "Cargando lista de miembros...",
+          "noMembers": "Sin miembros del grupo",
+          "noMembersHint": "Haz clic en \"Agregar Miembro\" para invitar usuarios al grupo",
+          "noSearchResults": "No se encontraron miembros coincidentes",
+          "noSearchResultsHint": "Intenta usar diferentes palabras clave",
+          "unknownUser": "Usuario Desconocido",
+          "joinedAt": "Se unió",
+          "removeMember": "Remover Miembro",
+          "removeMemberConfirm": "¿Estás seguro de que quieres remover a \"{memberName}\" del grupo \"{groupName}\"?",
+          "removeMemberSuccess": "Miembro \"{memberName}\" removido"
+        },
+        "addMembersModal": {
+          "title": "Agregar Miembros",
+          "subtitle": "Selecciona usuarios para agregar al grupo \"{groupName}\"",
+          "searchPlaceholder": "Buscar nombre de usuario, nombre o email...",
+          "loading": "Cargando lista de usuarios...",
+          "noUsers": "No hay usuarios disponibles para agregar",
+          "noSearchResults": "No se encontraron usuarios coincidentes",
+          "selectAll": "Seleccionar Todo",
+          "deselectAll": "Deseleccionar Todo",
+          "addSelected": "Agregar {count} miembros",
+          "tableHeaders": {
+            "userInfo": "Info del Usuario",
+            "role": "Rol"
+          },
+          "userRoles": {
+            "admin": "Administrador",
+            "manager": "Gerente",
+            "user": "Usuario Regular"
+          },
+          "unknownUser": "Usuario Desconocido",
+          "pagination": {
+            "showing": "Mostrando {start} - {end} de {total} registros",
+            "previous": "Anterior",
+            "next": "Siguiente"
+          },
+          "addSuccess": "Se agregaron exitosamente {count} miembros al grupo",
+          "addPartialSuccess": "{errorCount} miembros fallaron al agregarse"
+        },
+        "messages": {
+          "deleteConfirm": "¿Estás seguro de que quieres eliminar el grupo \"{name}\"? Esta acción no se puede deshacer.",
+          "deleteSuccess": "Grupo \"{name}\" eliminado",
+          "loadError": "Error al cargar datos del grupo",
+          "createError": "Error al crear grupo",
+          "updateError": "Error al actualizar grupo",
+          "deleteError": "Error al eliminar grupo",
+          "addMemberError": "Error al agregar miembro",
+          "removeMemberError": "Error al remover miembro"
         }
       },
       "permissions": {

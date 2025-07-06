@@ -5,6 +5,8 @@ import { useGroupManagementStore } from '@lib/stores/group-management-store';
 import { cn } from '@lib/utils';
 import { Building2, Plus, RefreshCw } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface GroupsHeaderProps {
   onCreateGroup: () => void;
 }
@@ -12,6 +14,7 @@ interface GroupsHeaderProps {
 export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
   const { isDark } = useTheme();
   const { loading, loadGroups, loadStats } = useGroupManagementStore();
+  const t = useTranslations('pages.admin.groups.header');
 
   const handleRefresh = () => {
     loadGroups();
@@ -29,7 +32,7 @@ export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
               : 'from-stone-800 to-stone-600'
           )}
         >
-          群组管理
+          {t('title')}
         </h1>
         <p
           className={cn(
@@ -38,7 +41,7 @@ export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
           )}
         >
           <Building2 className="h-4 w-4" />
-          管理用户群组和应用权限分配
+          {t('subtitle')}
         </p>
       </div>
 
@@ -62,7 +65,7 @@ export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
               (loading.groups || loading.stats) && 'animate-spin'
             )}
           />
-          <span className="hidden sm:inline">刷新数据</span>
+          <span className="hidden sm:inline">{t('refreshData')}</span>
         </button>
 
         {/* 创建群组按钮 */}
@@ -76,7 +79,7 @@ export function GroupsHeader({ onCreateGroup }: GroupsHeaderProps) {
           )}
         >
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">创建群组</span>
+          <span className="hidden sm:inline">{t('createGroup')}</span>
         </button>
       </div>
     </div>

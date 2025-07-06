@@ -427,7 +427,11 @@ export const UserTable: React.FC<UserTableProps> = ({
                       <div className="flex-shrink-0">
                         <UserAvatar
                           avatarUrl={user.avatar_url}
-                          userName={user.full_name || user.username || '用户'}
+                          userName={
+                            user.full_name ||
+                            user.username ||
+                            t('actions.defaultUser')
+                          }
                           size="md"
                         />
                       </div>
@@ -440,7 +444,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                               isDark ? 'text-stone-200' : 'text-stone-800'
                             )}
                           >
-                            {user.full_name || user.username || '未设置'}
+                            {user.full_name ||
+                              user.username ||
+                              t('actions.notSet')}
                           </span>
                           {user.role === 'admin' && (
                             <span className="text-xs text-red-500">👑</span>
@@ -467,7 +473,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                         )}
                         title={user.email || t('actions.notSetEmail')}
                       >
-                        <span className="text-xs">📧</span>
+                        <span className="text-xs">
+                          {t('actions.emailIcon')}
+                        </span>
                         <span className="truncate">
                           {user.email || t('actions.notSet')}
                         </span>
@@ -479,7 +487,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                         )}
                         title={user.phone || t('actions.notSetPhone')}
                       >
-                        <span className="text-xs">📱</span>
+                        <span className="text-xs">
+                          {t('actions.phoneIcon')}
+                        </span>
                         <span className="truncate">
                           {user.phone
                             ? user.phone.startsWith('86')

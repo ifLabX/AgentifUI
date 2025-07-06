@@ -212,11 +212,6 @@ export function AboutPreview({ config, previewDevice }: AboutPreviewProps) {
 
                 {/* Mission section - fully consistent with About page */}
                 <section className={responsive.spacing.section}>
-                  <h2
-                    className={cn(responsive.missionTitle, colors.headingColor)}
-                  >
-                    我们的使命
-                  </h2>
                   <p
                     className={cn(
                       responsive.missionContent,
@@ -229,11 +224,6 @@ export function AboutPreview({ config, previewDevice }: AboutPreviewProps) {
 
                 {/* Values section - fully consistent with About page, uses correct grid layout based on device type */}
                 <section className={responsive.spacing.section}>
-                  <h2
-                    className={cn(responsive.valuesTitle, colors.headingColor)}
-                  >
-                    我们的价值观
-                  </h2>
                   <div
                     className={cn(
                       'grid',
