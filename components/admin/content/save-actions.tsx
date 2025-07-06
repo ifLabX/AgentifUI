@@ -6,6 +6,8 @@ import { Loader2, RotateCcw, Save } from 'lucide-react';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface SaveActionsProps {
   hasChanges: boolean;
   isSaving: boolean;
@@ -20,6 +22,7 @@ export function SaveActions({
   onReset,
 }: SaveActionsProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.content.saveActions');
 
   return (
     <div
@@ -41,7 +44,7 @@ export function SaveActions({
                 isDark ? 'text-stone-300' : 'text-stone-600'
               )}
             >
-              有未保存的更改
+              {t('hasChanges')}
             </span>
           </>
         )}
@@ -54,7 +57,7 @@ export function SaveActions({
                 isDark ? 'text-stone-300' : 'text-stone-600'
               )}
             >
-              正在保存...
+              {t('saving')}
             </span>
           </>
         )}
@@ -65,7 +68,7 @@ export function SaveActions({
               isDark ? 'text-stone-400' : 'text-stone-500'
             )}
           >
-            所有更改已保存
+            {t('allSaved')}
           </span>
         )}
       </div>
@@ -86,7 +89,7 @@ export function SaveActions({
           )}
         >
           <RotateCcw className="h-4 w-4" />
-          重置
+          {t('reset')}
         </button>
 
         <button
@@ -112,7 +115,7 @@ export function SaveActions({
           ) : (
             <Save className="h-4 w-4" />
           )}
-          {isSaving ? '保存中...' : '保存更改'}
+          {isSaving ? t('saving_') : t('save')}
         </button>
       </div>
     </div>

@@ -1312,6 +1312,74 @@
           "defaultInstanceSetSuccess": "Default application set successfully"
         }
       },
+      "content": {
+        "page": {
+          "title": "Content Management",
+          "subtitle": "Manage multilingual content for home and about pages",
+          "showPreview": "Show Preview",
+          "fullscreenPreview": "Fullscreen Preview",
+          "closePreview": "Close Preview",
+          "loadingEditor": {
+            "about": "Unable to load about page editor.",
+            "home": "Unable to load home page editor."
+          },
+          "loadingPreview": "Loading preview...",
+          "messages": {
+            "loadFailed": "Failed to load translation data",
+            "saveSuccess": "Configuration saved successfully",
+            "saveFailed": "Failed to save configuration, please try again"
+          },
+          "saveActions": {
+            "hasChanges": "Unsaved changes",
+            "saving": "Saving...",
+            "allSaved": "All changes saved",
+            "reset": "Reset",
+            "save": "Save Changes",
+            "saving_": "Saving..."
+          }
+        },
+        "tabs": {
+          "about": "About Page",
+          "home": "Home Configuration"
+        },
+        "previewToolbar": {
+          "aboutPreview": "About Page Preview",
+          "homePreview": "Home Page Preview"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "Edit Language",
+            "selectLanguage": "Select Language",
+            "cardNumber": "Card #{number}"
+          },
+          "home": {
+            "pageTitle": "Page Title (title)",
+            "subtitle": "Subtitle (subtitle)",
+            "features": "Feature Cards (features)",
+            "featureTitle": "Title (title)",
+            "featureDescription": "Description (description)",
+            "getStarted": "Primary Button (getStarted)",
+            "learnMore": "Secondary Button (learnMore)",
+            "copyright": "Copyright Info (copyright)",
+            "copyrightPrefix": "Prefix (prefix)",
+            "copyrightLinkText": "Link Text (linkText)",
+            "copyrightSuffix": "Suffix (suffix)"
+          },
+          "about": {
+            "pageTitle": "Page Title (title)",
+            "subtitle": "Subtitle (subtitle)",
+            "mission": "Mission Description (mission.description)",
+            "values": "Value Cards (values.items)",
+            "valueTitle": "Title (title)",
+            "valueDescription": "Description (description)",
+            "buttonText": "Button Text (buttonText)",
+            "copyright": "Copyright Info (copyright)",
+            "copyrightPrefix": "Prefix (prefix)",
+            "copyrightLinkText": "Link Text (linkText)",
+            "copyrightSuffix": "Suffix (suffix)"
+          }
+        }
+      },
       "permissions": {
         "header": {
           "title": "Application Permission Management",

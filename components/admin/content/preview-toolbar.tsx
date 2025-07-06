@@ -4,6 +4,8 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Fullscreen, Monitor, Smartphone, Tablet, X } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface PreviewToolbarProps {
   activeTab: 'about' | 'home';
   previewDevice: 'desktop' | 'tablet' | 'mobile';
@@ -22,6 +24,7 @@ export function PreviewToolbar({
   onFullscreenPreview,
 }: PreviewToolbarProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.content.previewToolbar');
 
   const deviceIcons = [
     { name: 'desktop' as const, icon: Monitor },
@@ -43,7 +46,7 @@ export function PreviewToolbar({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          {activeTab === 'about' ? '关于页面预览' : '主页预览'}
+          {activeTab === 'about' ? t('aboutPreview') : t('homePreview')}
         </span>
       </div>
 

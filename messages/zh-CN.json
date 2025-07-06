@@ -1312,6 +1312,74 @@
           "defaultInstanceSetSuccess": "默认应用设置成功"
         }
       },
+      "content": {
+        "page": {
+          "title": "内容管理",
+          "subtitle": "管理主页和关于页面的多语言内容",
+          "showPreview": "显示预览",
+          "fullscreenPreview": "全屏预览",
+          "closePreview": "关闭预览",
+          "loadingEditor": {
+            "about": "无法加载关于页面编辑器。",
+            "home": "无法加载主页编辑器。"
+          },
+          "loadingPreview": "加载预览...",
+          "messages": {
+            "loadFailed": "加载翻译数据失败",
+            "saveSuccess": "配置保存成功",
+            "saveFailed": "保存配置失败，请重试"
+          },
+          "saveActions": {
+            "hasChanges": "有未保存的更改",
+            "saving": "正在保存...",
+            "allSaved": "所有更改已保存",
+            "reset": "重置",
+            "save": "保存更改",
+            "saving_": "保存中..."
+          }
+        },
+        "tabs": {
+          "about": "关于页面",
+          "home": "主页配置"
+        },
+        "previewToolbar": {
+          "aboutPreview": "关于页面预览",
+          "homePreview": "主页预览"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "编辑语言",
+            "selectLanguage": "选择语言",
+            "cardNumber": "卡片 #{number}"
+          },
+          "home": {
+            "pageTitle": "页面标题 (title)",
+            "subtitle": "副标题 (subtitle)",
+            "features": "特性卡片 (features)",
+            "featureTitle": "标题 (title)",
+            "featureDescription": "描述 (description)",
+            "getStarted": "主按钮 (getStarted)",
+            "learnMore": "次按钮 (learnMore)",
+            "copyright": "版权信息 (copyright)",
+            "copyrightPrefix": "前缀 (prefix)",
+            "copyrightLinkText": "链接文字 (linkText)",
+            "copyrightSuffix": "后缀 (suffix)"
+          },
+          "about": {
+            "pageTitle": "页面标题 (title)",
+            "subtitle": "副标题 (subtitle)",
+            "mission": "使命描述 (mission.description)",
+            "values": "价值观卡片 (values.items)",
+            "valueTitle": "标题 (title)",
+            "valueDescription": "描述 (description)",
+            "buttonText": "按钮文字 (buttonText)",
+            "copyright": "版权信息 (copyright)",
+            "copyrightPrefix": "前缀 (prefix)",
+            "copyrightLinkText": "链接文字 (linkText)",
+            "copyrightSuffix": "后缀 (suffix)"
+          }
+        }
+      },
       "permissions": {
         "header": {
           "title": "应用权限管理",

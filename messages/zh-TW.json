@@ -1312,6 +1312,74 @@
           "defaultInstanceSetSuccess": "預設應用程式設定成功"
         }
       },
+      "content": {
+        "page": {
+          "title": "內容管理",
+          "subtitle": "管理首頁和關於頁面的多語言內容",
+          "showPreview": "顯示預覽",
+          "fullscreenPreview": "全螢幕預覽",
+          "closePreview": "關閉預覽",
+          "loadingEditor": {
+            "about": "無法載入關於頁面編輯器。",
+            "home": "無法載入首頁編輯器。"
+          },
+          "loadingPreview": "載入預覽中...",
+          "messages": {
+            "loadFailed": "載入翻譯資料失敗",
+            "saveSuccess": "設定儲存成功",
+            "saveFailed": "儲存設定失敗，請重試"
+          },
+          "saveActions": {
+            "hasChanges": "有未儲存的變更",
+            "saving": "正在儲存...",
+            "allSaved": "所有變更已儲存",
+            "reset": "重設",
+            "save": "儲存變更",
+            "saving_": "儲存中..."
+          }
+        },
+        "tabs": {
+          "about": "關於頁面",
+          "home": "首頁設定"
+        },
+        "previewToolbar": {
+          "aboutPreview": "關於頁面預覽",
+          "homePreview": "首頁預覽"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "編輯語言",
+            "selectLanguage": "選擇語言",
+            "cardNumber": "卡片 #{number}"
+          },
+          "home": {
+            "pageTitle": "頁面標題 (title)",
+            "subtitle": "副標題 (subtitle)",
+            "features": "特色卡片 (features)",
+            "featureTitle": "標題 (title)",
+            "featureDescription": "描述 (description)",
+            "getStarted": "主要按鈕 (getStarted)",
+            "learnMore": "次要按鈕 (learnMore)",
+            "copyright": "版權資訊 (copyright)",
+            "copyrightPrefix": "前綴 (prefix)",
+            "copyrightLinkText": "連結文字 (linkText)",
+            "copyrightSuffix": "後綴 (suffix)"
+          },
+          "about": {
+            "pageTitle": "頁面標題 (title)",
+            "subtitle": "副標題 (subtitle)",
+            "mission": "使命描述 (mission.description)",
+            "values": "價值觀卡片 (values.items)",
+            "valueTitle": "標題 (title)",
+            "valueDescription": "描述 (description)",
+            "buttonText": "按鈕文字 (buttonText)",
+            "copyright": "版權資訊 (copyright)",
+            "copyrightPrefix": "前綴 (prefix)",
+            "copyrightLinkText": "連結文字 (linkText)",
+            "copyrightSuffix": "後綴 (suffix)"
+          }
+        }
+      },
       "permissions": {
         "header": {
           "title": "應用程式權限管理",

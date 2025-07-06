@@ -14,6 +14,8 @@ import { Plus, Trash2 } from 'lucide-react';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface HomeEditorProps {
   translations: Record<SupportedLocale, any>;
   currentLocale: SupportedLocale;
@@ -30,6 +32,7 @@ export function HomeEditor({
   onLocaleChange,
 }: HomeEditorProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.content.editor');
   const currentTranslation = translations[currentLocale] || {};
 
   const handleFieldChange = (field: string, value: any) => {
@@ -82,7 +85,7 @@ export function HomeEditor({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          编辑语言
+          {t('common.editLanguage')}
         </label>
         <Select
           value={currentLocale}
@@ -96,7 +99,7 @@ export function HomeEditor({
                 : 'border-stone-300 bg-white text-stone-900'
             )}
           >
-            <SelectValue placeholder="选择语言" />
+            <SelectValue placeholder={t('common.selectLanguage')} />
           </SelectTrigger>
           <SelectContent>
             {supportedLocales.map(locale => (
@@ -115,7 +118,7 @@ export function HomeEditor({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          页面标题 (title)
+          {t('home.pageTitle')}
         </label>
         <input
           type="text"
@@ -137,7 +140,7 @@ export function HomeEditor({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          副标题 (subtitle)
+          {t('home.subtitle')}
         </label>
         <textarea
           value={currentTranslation.subtitle || ''}
@@ -160,7 +163,7 @@ export function HomeEditor({
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            特性卡片 (features)
+            {t('home.features')}
           </label>
           <button
             onClick={addFeatureCard}
@@ -192,7 +195,7 @@ export function HomeEditor({
                       isDark ? 'text-stone-300' : 'text-stone-700'
                     )}
                   >
-                    卡片 #{index + 1}
+                    {t('common.cardNumber', { number: index + 1 })}
                   </p>
                   <button
                     onClick={() => removeFeatureCard(index)}
@@ -208,7 +211,7 @@ export function HomeEditor({
                 <div className="mt-4 space-y-3">
                   <input
                     type="text"
-                    placeholder="标题 (title)"
+                    placeholder={t('home.featureTitle')}
                     value={card.title}
                     onChange={e =>
                       handleFeatureCardChange(index, 'title', e.target.value)
@@ -221,7 +224,7 @@ export function HomeEditor({
                     )}
                   />
                   <textarea
-                    placeholder="描述 (description)"
+                    placeholder={t('home.featureDescription')}
                     value={card.description}
                     onChange={e =>
                       handleFeatureCardChange(
@@ -253,7 +256,7 @@ export function HomeEditor({
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            主按钮 (getStarted)
+            {t('home.getStarted')}
           </label>
           <input
             type="text"
@@ -274,7 +277,7 @@ export function HomeEditor({
               isDark ? 'text-stone-300' : 'text-stone-700'
             )}
           >
-            次按钮 (learnMore)
+            {t('home.learnMore')}
           </label>
           <input
             type="text"
@@ -297,12 +300,12 @@ export function HomeEditor({
             isDark ? 'text-stone-300' : 'text-stone-700'
           )}
         >
-          版权信息 (copyright)
+          {t('home.copyright')}
         </label>
         <div className="space-y-3">
           <input
             type="text"
-            placeholder="前缀 (prefix)"
+            placeholder={t('home.copyrightPrefix')}
             value={currentTranslation.copyright?.prefix || ''}
             onChange={e =>
               handleFieldChange('copyright.prefix', e.target.value)
@@ -316,7 +319,7 @@ export function HomeEditor({
           />
           <input
             type="text"
-            placeholder="链接文字 (linkText)"
+            placeholder={t('home.copyrightLinkText')}
             value={currentTranslation.copyright?.linkText || ''}
             onChange={e =>
               handleFieldChange('copyright.linkText', e.target.value)
@@ -330,7 +333,7 @@ export function HomeEditor({
           />
           <input
             type="text"
-            placeholder="后缀 (suffix)"
+            placeholder={t('home.copyrightSuffix')}
             value={currentTranslation.copyright?.suffix || ''}
             onChange={e =>
               handleFieldChange('copyright.suffix', e.target.value)

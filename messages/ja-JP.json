@@ -1312,6 +1312,74 @@
           "defaultInstanceSetSuccess": "デフォルトアプリケーションが正常に設定されました"
         }
       },
+      "content": {
+        "page": {
+          "title": "コンテンツ管理",
+          "subtitle": "ホームページとアバウトページの多言語コンテンツを管理",
+          "showPreview": "プレビュー表示",
+          "fullscreenPreview": "フルスクリーンプレビュー",
+          "closePreview": "プレビューを閉じる",
+          "loadingEditor": {
+            "about": "アバウトページエディターを読み込めません。",
+            "home": "ホームページエディターを読み込めません。"
+          },
+          "loadingPreview": "プレビュー読み込み中...",
+          "messages": {
+            "loadFailed": "翻訳データの読み込みに失敗しました",
+            "saveSuccess": "設定が正常に保存されました",
+            "saveFailed": "設定の保存に失敗しました。もう一度お試しください"
+          },
+          "saveActions": {
+            "hasChanges": "未保存の変更",
+            "saving": "保存中...",
+            "allSaved": "すべての変更が保存されました",
+            "reset": "リセット",
+            "save": "変更を保存",
+            "saving_": "保存中..."
+          }
+        },
+        "tabs": {
+          "about": "アバウトページ",
+          "home": "ホーム設定"
+        },
+        "previewToolbar": {
+          "aboutPreview": "アバウトページプレビュー",
+          "homePreview": "ホームページプレビュー"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "編集言語",
+            "selectLanguage": "言語を選択",
+            "cardNumber": "カード #{number}"
+          },
+          "home": {
+            "pageTitle": "ページタイトル (title)",
+            "subtitle": "サブタイトル (subtitle)",
+            "features": "機能カード (features)",
+            "featureTitle": "タイトル (title)",
+            "featureDescription": "説明 (description)",
+            "getStarted": "メインボタン (getStarted)",
+            "learnMore": "サブボタン (learnMore)",
+            "copyright": "著作権情報 (copyright)",
+            "copyrightPrefix": "プレフィックス (prefix)",
+            "copyrightLinkText": "リンクテキスト (linkText)",
+            "copyrightSuffix": "サフィックス (suffix)"
+          },
+          "about": {
+            "pageTitle": "ページタイトル (title)",
+            "subtitle": "サブタイトル (subtitle)",
+            "mission": "ミッション説明 (mission.description)",
+            "values": "価値観カード (values.items)",
+            "valueTitle": "タイトル (title)",
+            "valueDescription": "説明 (description)",
+            "buttonText": "ボタンテキスト (buttonText)",
+            "copyright": "著作権情報 (copyright)",
+            "copyrightPrefix": "プレフィックス (prefix)",
+            "copyrightLinkText": "リンクテキスト (linkText)",
+            "copyrightSuffix": "サフィックス (suffix)"
+          }
+        }
+      },
       "permissions": {
         "header": {
           "title": "アプリケーション権限管理",

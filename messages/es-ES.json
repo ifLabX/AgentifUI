@@ -1312,6 +1312,74 @@
           "defaultInstanceSetSuccess": "Aplicación predeterminada establecida exitosamente"
         }
       },
+      "content": {
+        "page": {
+          "title": "Gestión de Contenido",
+          "subtitle": "Gestionar contenido multiidioma para páginas de inicio y acerca de",
+          "showPreview": "Mostrar Vista Previa",
+          "fullscreenPreview": "Vista Previa Pantalla Completa",
+          "closePreview": "Cerrar Vista Previa",
+          "loadingEditor": {
+            "about": "No se puede cargar el editor de la página acerca de.",
+            "home": "No se puede cargar el editor de la página de inicio."
+          },
+          "loadingPreview": "Cargando vista previa...",
+          "messages": {
+            "loadFailed": "Error al cargar datos de traducción",
+            "saveSuccess": "Configuración guardada exitosamente",
+            "saveFailed": "Error al guardar configuración, inténtelo de nuevo"
+          },
+          "saveActions": {
+            "hasChanges": "Cambios sin guardar",
+            "saving": "Guardando...",
+            "allSaved": "Todos los cambios guardados",
+            "reset": "Restablecer",
+            "save": "Guardar Cambios",
+            "saving_": "Guardando..."
+          }
+        },
+        "tabs": {
+          "about": "Página Acerca de",
+          "home": "Configuración de Inicio"
+        },
+        "previewToolbar": {
+          "aboutPreview": "Vista Previa Página Acerca de",
+          "homePreview": "Vista Previa Página de Inicio"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "Editar Idioma",
+            "selectLanguage": "Seleccionar Idioma",
+            "cardNumber": "Tarjeta #{number}"
+          },
+          "home": {
+            "pageTitle": "Título de Página (title)",
+            "subtitle": "Subtítulo (subtitle)",
+            "features": "Tarjetas de Características (features)",
+            "featureTitle": "Título (title)",
+            "featureDescription": "Descripción (description)",
+            "getStarted": "Botón Primario (getStarted)",
+            "learnMore": "Botón Secundario (learnMore)",
+            "copyright": "Info Copyright (copyright)",
+            "copyrightPrefix": "Prefijo (prefix)",
+            "copyrightLinkText": "Texto Enlace (linkText)",
+            "copyrightSuffix": "Sufijo (suffix)"
+          },
+          "about": {
+            "pageTitle": "Título de Página (title)",
+            "subtitle": "Subtítulo (subtitle)",
+            "mission": "Descripción Misión (mission.description)",
+            "values": "Tarjetas de Valores (values.items)",
+            "valueTitle": "Título (title)",
+            "valueDescription": "Descripción (description)",
+            "buttonText": "Texto Botón (buttonText)",
+            "copyright": "Info Copyright (copyright)",
+            "copyrightPrefix": "Prefijo (prefix)",
+            "copyrightLinkText": "Texto Enlace (linkText)",
+            "copyrightSuffix": "Sufijo (suffix)"
+          }
+        }
+      },
       "permissions": {
         "header": {
           "title": "Gestión de Permisos de Aplicaciones",

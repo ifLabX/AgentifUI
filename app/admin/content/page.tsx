@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 
 import React, { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // 临时类型定义，因为about-config.ts已被删除
@@ -58,6 +59,7 @@ export default function ContentManagementPage() {
   const { isDark } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const t = useTranslations('pages.admin.content.page');
 
   const [activeTab, setActiveTab] = useState<'about' | 'home'>('about');
   const [showPreview, setShowPreview] = useState(true);
@@ -111,7 +113,7 @@ export default function ContentManagementPage() {
         }
       } catch (error) {
         console.error(`Failed to load ${activeTab} translations:`, error);
-        toast.error('加载翻译数据失败');
+        toast.error(t('messages.loadFailed'));
       } finally {
         setIsLoading(false);
       }
@@ -159,10 +161,10 @@ export default function ContentManagementPage() {
         await TranslationService.updateHomePageTranslations(homeTranslations);
         setOriginalHomeTranslations({ ...homeTranslations });
       }
-      toast.success('配置保存成功');
+      toast.success(t('messages.saveSuccess'));
     } catch (error) {
-      console.error('保存配置失败:', error);
-      toast.error('保存配置失败，请重试');
+      console.error('Save configuration failed:', error);
+      toast.error(t('messages.saveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -258,7 +260,7 @@ export default function ContentManagementPage() {
           onLocaleChange={setCurrentLocale}
         />
       ) : (
-        <div>无法加载关于页面编辑器。</div>
+        <div>{t('loadingEditor.about')}</div>
       );
     }
 
@@ -272,7 +274,7 @@ export default function ContentManagementPage() {
           onLocaleChange={setCurrentLocale}
         />
       ) : (
-        <div>无法加载主页编辑器。</div>
+        <div>{t('loadingEditor.home')}</div>
       );
     }
     return null;
@@ -286,14 +288,14 @@ export default function ContentManagementPage() {
           previewDevice={previewDevice}
         />
       ) : (
-        <div>加载预览...</div>
+        <div>{t('loadingPreview')}</div>
       );
     }
     if (activeTab === 'home') {
       return homePreviewConfig ? (
         <HomePreview config={homePreviewConfig} previewDevice={previewDevice} />
       ) : (
-        <div>加载预览...</div>
+        <div>{t('loadingPreview')}</div>
       );
     }
     return null;
@@ -318,7 +320,7 @@ export default function ContentManagementPage() {
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
-                内容管理
+                {t('title')}
               </h1>
               <p
                 className={cn(
@@ -326,7 +328,7 @@ export default function ContentManagementPage() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                管理主页和关于页面的多语言内容
+                {t('subtitle')}
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -341,7 +343,7 @@ export default function ContentManagementPage() {
                   )}
                 >
                   <Eye className="h-4 w-4" />
-                  <span className="hidden sm:inline">显示预览</span>
+                  <span className="hidden sm:inline">{t('showPreview')}</span>
                 </button>
               )}
               <ContentTabs
@@ -384,7 +386,7 @@ export default function ContentManagementPage() {
                           )}
                         >
                           <div className="h-2 w-2 rounded-full bg-orange-500" />
-                          <span>有未保存的更改</span>
+                          <span>{t('saveActions.hasChanges')}</span>
                         </div>
                       )}
                     </div>
@@ -401,7 +403,7 @@ export default function ContentManagementPage() {
                             : 'cursor-not-allowed text-stone-500'
                         )}
                       >
-                        重置
+                        {t('saveActions.reset')}
                       </button>
                       <button
                         onClick={handleSave}
@@ -415,7 +417,9 @@ export default function ContentManagementPage() {
                             : 'cursor-not-allowed bg-stone-300 text-stone-500 dark:bg-stone-700 dark:text-stone-400'
                         )}
                       >
-                        {isSaving ? '保存中...' : '保存'}
+                        {isSaving
+                          ? t('saveActions.saving_')
+                          : t('saveActions.save')}
                       </button>
                     </div>
                   </div>
@@ -463,7 +467,7 @@ export default function ContentManagementPage() {
                       )}
                     >
                       <div className="h-2 w-2 rounded-full bg-orange-500" />
-                      <span>有未保存的更改</span>
+                      <span>{t('saveActions.hasChanges')}</span>
                     </div>
                   )}
                 </div>
@@ -480,7 +484,7 @@ export default function ContentManagementPage() {
                           : 'text-stone-600 hover:bg-stone-100'
                     )}
                   >
-                    重置
+                    {t('saveActions.reset')}
                   </button>
                   <button
                     onClick={handleSave}
@@ -494,7 +498,9 @@ export default function ContentManagementPage() {
                           : 'bg-stone-900 text-white hover:bg-stone-800'
                     )}
                   >
-                    {isSaving ? '保存中...' : '保存'}
+                    {isSaving
+                      ? t('saveActions.saving_')
+                      : t('saveActions.save')}
                   </button>
                 </div>
               </div>
@@ -525,7 +531,7 @@ export default function ContentManagementPage() {
                     isDark ? 'text-stone-300' : 'text-stone-700'
                   )}
                 >
-                  全屏预览 -
+                  {t('fullscreenPreview')} -
                   {activeTab === 'about'
                     ? aboutPreviewConfig?.title
                     : homePreviewConfig?.title}
@@ -540,7 +546,7 @@ export default function ContentManagementPage() {
                     : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                 )}
               >
-                关闭预览
+                {t('closePreview')}
               </button>
             </div>
             <div className="flex-1 overflow-auto">{renderPreview()}</div>

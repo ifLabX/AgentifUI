@@ -3,6 +3,8 @@
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
+import { useTranslations } from 'next-intl';
+
 interface ContentTabsProps {
   activeTab: 'about' | 'home';
   onTabChange: (tab: 'about' | 'home') => void;
@@ -10,9 +12,11 @@ interface ContentTabsProps {
 
 export function ContentTabs({ activeTab, onTabChange }: ContentTabsProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('pages.admin.content.tabs');
+
   const tabs = [
-    { id: 'about', label: '关于页面' },
-    { id: 'home', label: '主页配置' },
+    { id: 'about', label: t('about') },
+    { id: 'home', label: t('home') },
   ];
 
   return (
