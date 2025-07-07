@@ -640,7 +640,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
     return (
       <div
         className={cn(
-          'assistant-message-container group mb-4 w-full',
+          'assistant-message-container group mb-6 w-full',
           className
         )}
         data-message-id={id}
@@ -680,7 +680,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <div
             className={cn(
               'markdown-body main-content-area assistant-message-content w-full text-base',
-              isDark ? 'text-gray-200' : 'text-gray-800', // Switch text color based on theme
+              isDark ? 'text-stone-200' : 'text-stone-800', // Switch text color based on theme for consistency
               !hasThinkBlock ? 'py-2' : 'pt-1 pb-2' // Adjust vertical spacing based on think block presence
             )}
           >

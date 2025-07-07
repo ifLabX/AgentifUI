@@ -68,7 +68,6 @@ export function SidebarButton({
         isDark
           ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
           : 'focus-visible:ring-primary focus-visible:ring-offset-background',
-        'border border-transparent',
         'h-10',
         // 恢复cursor-pointer，现在父容器使用cursor-e-resize不会冲突
         // disabled时使用cursor-not-allowed
@@ -79,7 +78,7 @@ export function SidebarButton({
             variant === 'transparent'
               ? 'hover:bg-stone-300/80'
               : 'hover:bg-stone-300/80',
-            active && 'border-stone-400/80 bg-stone-300 shadow-sm',
+            active && 'bg-stone-300/90',
           ],
         !isDark && isDisabled && ['text-stone-400'],
         isDark &&
@@ -88,7 +87,7 @@ export function SidebarButton({
             variant === 'transparent'
               ? 'hover:bg-stone-600/60'
               : 'hover:bg-stone-600/60',
-            active && 'border-stone-600 bg-stone-700 shadow-sm',
+            active && 'bg-stone-600/80',
           ],
         isDark && isDisabled && ['text-gray-500'],
         isExpanded ? 'w-full' : 'w-10 justify-center',

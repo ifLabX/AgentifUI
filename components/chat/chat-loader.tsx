@@ -144,7 +144,7 @@ export const ChatLoader = ({
 
   return (
     <div className={cn('mx-auto w-full', widthClass, paddingClass, className)}>
-      <div className="space-y-4 pt-4" style={paddingBottomStyle}>
+      <div className="space-y-2 pt-4" style={paddingBottomStyle}>
         {isLoadingInitial ? (
           // 显示骨架屏
           <MessageSkeleton />

@@ -28,7 +28,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
     <div
       className={cn(
         'flex h-full min-h-screen',
-        isDark ? 'bg-stone-800' : 'bg-stone-100'
+        isDark ? 'bg-stone-900' : 'bg-stone-50'
       )}
     >
       {/* 🎯 Sidebar 已移至根布局，无需重复渲染 */}

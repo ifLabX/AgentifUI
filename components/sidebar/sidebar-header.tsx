@@ -30,7 +30,7 @@ import {
 import React from 'react';
 
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { SidebarButton } from './sidebar-button';
 
@@ -42,7 +42,13 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   const { isExpanded, toggleSidebar } = useSidebarStore();
   const { isDark } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations('sidebar');
+
+  // 🎯 路由激活状态检测
+  const isNewChatActive = pathname === '/chat/new';
+  const isHistoryActive = pathname === '/chat/history';
+  const isAppsActive = pathname === '/apps';
 
   // 🎯 使用正确的快捷键映射
   const newChatShortcut = useFormattedShortcut('NEW_CHAT');
@@ -337,6 +343,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               )}
             />
           }
+          active={isNewChatActive}
           disableLockBehavior={true}
           onClick={handleNewChat}
           aria-label={t('newChat')}
@@ -385,6 +392,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                 )}
               />
             }
+            active={isNewChatActive}
             disableLockBehavior={true}
             onClick={handleNewChat}
             aria-label={t('newChat')}
@@ -411,6 +419,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               )}
             />
           }
+          active={isHistoryActive}
           disableLockBehavior={true}
           onClick={() => {
             router.push('/chat/history');
@@ -461,6 +470,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                 )}
               />
             }
+            active={isHistoryActive}
             disableLockBehavior={true}
             onClick={() => {
               router.push('/chat/history');
@@ -489,6 +499,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               )}
             />
           }
+          active={isAppsActive}
           disableLockBehavior={true}
           onClick={() => {
             router.push('/apps');
@@ -539,6 +550,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                 )}
               />
             }
+            active={isAppsActive}
             disableLockBehavior={true}
             onClick={() => {
               router.push('/apps');

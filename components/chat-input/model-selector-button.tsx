@@ -249,11 +249,9 @@ export function AppSelectorButton({ className }: AppSelectorButtonProps) {
   // 获取当前选中的app名称
   const currentAppName = displayState.name;
 
-  // 🎯 骨架屏：固定长度的响应式骨架屏
-  // 移动端较短，桌面端较长
-  // 🎯 修复：暗黑模式下使用更亮的颜色，确保与输入框背景有对比度
-  // 🎯 修改：把原来显示"验证中..."的时机改成显示骨架屏
-  if ((isLoading && modelApps.length === 0) || isValidating) {
+  // 🎯 骨架屏：只在真正需要时显示，避免频繁闪烁
+  // 仅在首次加载且没有模型数据时显示骨架屏
+  if (isLoading && modelApps.length === 0) {
     return (
       <div className={cn('flex items-center', className)}>
         <div

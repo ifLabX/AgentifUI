@@ -15,6 +15,7 @@ import { INITIAL_INPUT_HEIGHT } from '@lib/stores/chat-layout-store';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 import { useNotificationStore } from '@lib/stores/ui/notification-store';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
+import { cn } from '@lib/utils';
 import { ArrowUpIcon, Loader2, PlusIcon, Square } from 'lucide-react';
 import { create } from 'zustand';
 
@@ -118,6 +119,10 @@ export const ChatInput = ({
 
   // 🎯 新增：本地提交状态，防止重复点击
   const [isLocalSubmitting, setIsLocalSubmitting] = useState(false);
+
+  // 🎯 新增：按钮区域淡入动画状态
+  const [showButtons, setShowButtons] = useState(false);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
   // 附件状态
   const {
@@ -552,6 +557,31 @@ export const ChatInput = ({
   // 这样可以确保在页面组件中控制欢迎屏幕的显示状态
   const effectiveIsWelcomeScreen = externalIsWelcomeScreen || isWelcomeScreen;
 
+  // 🎯 按钮淡入动画控制逻辑 - 更快的动画速度
+  useEffect(() => {
+    // 首次挂载时，快速显示按钮
+    if (isInitialMount) {
+      const mountTimer = setTimeout(() => {
+        setShowButtons(true);
+        setIsInitialMount(false);
+      }, 50);
+      return () => clearTimeout(mountTimer);
+    }
+
+    // 处理状态变化的动画
+    if (effectiveIsWelcomeScreen || isTransitioningToWelcome) {
+      // 转换到欢迎界面时：先隐藏再快速显示
+      setShowButtons(false);
+      const welcomeTimer = setTimeout(() => {
+        setShowButtons(true);
+      }, 80);
+      return () => clearTimeout(welcomeTimer);
+    } else {
+      // 其他状态变化时立即显示
+      setShowButtons(true);
+    }
+  }, [effectiveIsWelcomeScreen, isTransitioningToWelcome, isInitialMount]);
+
   return (
     <ChatContainer
       isWelcomeScreen={effectiveIsWelcomeScreen}
@@ -583,10 +613,17 @@ export const ChatInput = ({
         />
       </ChatTextArea>
 
-      {/* 按钮区域 */}
+      {/* 按钮区域 - 🎯 添加淡入动画 */}
       <div className="px-4">
         <ChatButtonArea>
-          <div className="flex-none">
+          {/* 🎯 文件附件按钮 - 从中心缩放淡入 */}
+          <div
+            className={cn(
+              'flex-none transition-all duration-250 ease-out',
+              showButtons ? 'scale-100 opacity-100' : 'scale-80 opacity-0'
+            )}
+            style={{ transitionDelay: showButtons ? '0ms' : '0ms' }}
+          >
             <FileTypeSelector
               onFileSelect={handleFileSelect}
               disabled={isUploading || isProcessing}
@@ -594,60 +631,81 @@ export const ChatInput = ({
             />
           </div>
 
-          {/* Middle area: App selector button, can extend left */}
+          {/* Middle area: App selector button, can extend left - 🎯 带分层缩放淡入动画 */}
           <div className="flex flex-1 items-center justify-end space-x-2">
-            {showModelSelector && <AppSelectorButton />}
-            <ChatButton
-              icon={
-                isLocalSubmitting || isWaiting || isValidatingConfig ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : isProcessing ? (
-                  <Square className="h-5 w-5" />
-                ) : (
-                  <ArrowUpIcon className="h-5 w-5" />
-                )
-              }
-              variant="submit"
-              onClick={
-                isLocalSubmitting || isWaiting || isValidatingConfig
-                  ? undefined
-                  : isProcessing
-                    ? onStop
-                    : handleLocalSubmit
-              }
-              disabled={
-                isLocalSubmitting || // 🎯 新增：本地提交期间禁用按钮
-                isWaiting ||
-                isValidatingConfig || // 🎯 新增：验证期间禁用按钮
-                isUploading ||
-                hasError ||
-                (!isProcessing && !message.trim()) ||
-                !canSubmitWithModel
-              }
-              isDark={isDark}
-              ariaLabel={
-                isLocalSubmitting
-                  ? t('input.sending')
-                  : isValidatingConfig
-                    ? t('input.validatingConfig')
+            {/* 🎯 模型选择器按钮 - 从中心缩放淡入 */}
+            {showModelSelector && (
+              <div
+                className={cn(
+                  'transition-all duration-250 ease-out',
+                  showButtons ? 'scale-100 opacity-100' : 'scale-80 opacity-0'
+                )}
+                style={{ transitionDelay: showButtons ? '60ms' : '0ms' }}
+              >
+                <AppSelectorButton />
+              </div>
+            )}
+
+            {/* 🎯 发送按钮 - 从中心缩放淡入 */}
+            <div
+              className={cn(
+                'transition-all duration-250 ease-out',
+                showButtons ? 'scale-100 opacity-100' : 'scale-80 opacity-0'
+              )}
+              style={{ transitionDelay: showButtons ? '120ms' : '0ms' }}
+            >
+              <ChatButton
+                icon={
+                  isLocalSubmitting || isWaiting || isValidatingConfig ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : isProcessing ? (
+                    <Square className="h-5 w-5" />
+                  ) : (
+                    <ArrowUpIcon className="h-5 w-5" />
+                  )
+                }
+                variant="submit"
+                onClick={
+                  isLocalSubmitting || isWaiting || isValidatingConfig
+                    ? undefined
                     : isProcessing
-                      ? t('input.stopGeneration')
-                      : isUploading
-                        ? t('input.uploading')
-                        : hasError
-                          ? t('input.uploadFailed')
-                          : !canSubmitWithModel
-                            ? requireModelValidation
-                              ? !hasAvailableModels
-                                ? t('input.noModelAvailable')
-                                : t('input.pleaseSelectModel')
-                              : t('input.cannotSubmit')
-                            : t('input.sendMessage')
-              }
-              forceActiveStyle={
-                isLocalSubmitting || isWaiting || isValidatingConfig
-              }
-            />
+                      ? onStop
+                      : handleLocalSubmit
+                }
+                disabled={
+                  isLocalSubmitting || // 🎯 新增：本地提交期间禁用按钮
+                  isWaiting ||
+                  isValidatingConfig || // 🎯 新增：验证期间禁用按钮
+                  isUploading ||
+                  hasError ||
+                  (!isProcessing && !message.trim()) ||
+                  !canSubmitWithModel
+                }
+                isDark={isDark}
+                ariaLabel={
+                  isLocalSubmitting
+                    ? t('input.sending')
+                    : isValidatingConfig
+                      ? t('input.validatingConfig')
+                      : isProcessing
+                        ? t('input.stopGeneration')
+                        : isUploading
+                          ? t('input.uploading')
+                          : hasError
+                            ? t('input.uploadFailed')
+                            : !canSubmitWithModel
+                              ? requireModelValidation
+                                ? !hasAvailableModels
+                                  ? t('input.noModelAvailable')
+                                  : t('input.pleaseSelectModel')
+                                : t('input.cannotSubmit')
+                              : t('input.sendMessage')
+                }
+                forceActiveStyle={
+                  isLocalSubmitting || isWaiting || isValidatingConfig
+                }
+              />
+            </div>
           </div>
         </ChatButtonArea>
       </div>

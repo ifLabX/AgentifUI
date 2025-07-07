@@ -36,7 +36,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   }
 
   return (
-    <div className="group flex w-full justify-end" data-message-id={id}>
+    <div className="group mb-6 flex w-full justify-end" data-message-id={id}>
       <div className="flex w-full max-w-3xl flex-col items-end">
         {/* 附件显示区域 - 直接右对齐 */}
         {hasAttachments && (
@@ -56,12 +56,13 @@ export const UserMessage: React.FC<UserMessageProps> = ({
         <div
           className={cn(
             'max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed',
-            'markdown-body assistant-message-content',
+            'markdown-body assistant-message-content shadow-sm',
             isDark
-              ? 'bg-stone-700/90 text-stone-100'
-              : 'bg-stone-200 text-stone-800',
+              ? 'bg-stone-700/70 text-stone-100'
+              : 'bg-stone-200/80 text-stone-800',
             'border',
             isDark ? 'border-stone-600/30' : 'border-stone-300/80',
+            isMobile ? 'max-w-[85%]' : 'max-w-[75%]',
             className
           )}
         >

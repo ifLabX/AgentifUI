@@ -8,15 +8,19 @@ import { cn } from '@lib/utils';
 import { Settings, Sliders } from 'lucide-react';
 
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { SidebarButton } from './sidebar-button';
 
 export function SidebarFooter() {
   const isMobile = useMobile();
   const router = useRouter();
+  const pathname = usePathname();
   const { isExpanded } = useSidebarStore();
   const t = useTranslations('sidebar');
+
+  // 🎯 设置页面激活状态检测
+  const isSettingsActive = pathname === '/settings';
 
   return (
     <div className={cn('mt-auto flex flex-col gap-1.5 p-3')}>
@@ -29,6 +33,7 @@ export function SidebarFooter() {
                 className={cn('h-5 w-5 transition-transform duration-300')}
               />
             }
+            active={isSettingsActive}
             onClick={() => {
               router.push('/settings');
             }}
@@ -52,6 +57,7 @@ export function SidebarFooter() {
                   className={cn('h-5 w-5 transition-transform duration-300')}
                 />
               }
+              active={isSettingsActive}
               onClick={() => {
                 router.push('/settings');
               }}
