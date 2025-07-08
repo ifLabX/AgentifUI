@@ -71,7 +71,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3",
-    "@stagewise/toolbar-next": "^0.4.9",
+    "@stagewise/toolbar-next": "^0.5.0",
     "@tailwindcss/postcss": "^4",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/lodash": "^4.17.16",
