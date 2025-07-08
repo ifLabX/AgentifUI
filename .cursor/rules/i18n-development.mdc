@@ -10,7 +10,7 @@ alwaysApply: false
 AgentifUI 使用 next-intl 进行国际化，采用统一的JSON配置架构：
 
 - **默认语言**: 中文简体（zh-CN），作为源语言
-- **支持语言**: 5种语言（zh-CN, en-US, es-ES, zh-TW, ja-JP）
+- **支持语言**: 10种语言（zh-CN, en-US, es-ES, zh-TW, ja-JP, de-DE, fr-FR, ru-RU, it-IT, pt-PT）
 - **框架**: next-intl 配合 Next.js 15 App Router
 - **验证工具**: pnpm scripts封装的Python脚本进行结构一致性验证
 
@@ -22,7 +22,12 @@ messages/
 ├── en-US.json        # 英文
 ├── es-ES.json        # 西班牙文  
 ├── zh-TW.json        # 繁体中文
-└── ja-JP.json        # 日文
+├── ja-JP.json        # 日文
+├── de-DE.json        # 德文
+├── fr-FR.json        # 法文
+├── ru-RU.json        # 俄文
+├── it-IT.json        # 意大利文
+└── pt-PT.json        # 葡萄牙文
 
 i18n/
 └── request.ts        # next-intl配置
@@ -65,7 +70,7 @@ pnpm run i18n:detect
 }
 ```
 
-**第二步**: 在其他4个语言文件中手动添加相同结构的键
+**第二步**: 在其他9个语言文件中手动添加相同结构的键
 ```json
 // en-US.json
 {

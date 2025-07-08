@@ -34,6 +34,31 @@ export const SUPPORTED_LANGUAGES = {
     nativeName: 'Español',
     code: 'es-ES',
   },
+  'de-DE': {
+    name: 'German',
+    nativeName: 'Deutsch',
+    code: 'de-DE',
+  },
+  'fr-FR': {
+    name: 'French',
+    nativeName: 'Français',
+    code: 'fr-FR',
+  },
+  'ru-RU': {
+    name: 'Russian',
+    nativeName: 'Русский',
+    code: 'ru-RU',
+  },
+  'it-IT': {
+    name: 'Italian',
+    nativeName: 'Italiano',
+    code: 'it-IT',
+  },
+  'pt-PT': {
+    name: 'Portuguese',
+    nativeName: 'Português',
+    code: 'pt-PT',
+  },
 } as const;
 
 export type SupportedLocale = keyof typeof SUPPORTED_LANGUAGES;
