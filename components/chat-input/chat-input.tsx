@@ -28,7 +28,7 @@ import { ChatButton } from './button';
 import { ChatContainer } from './container';
 import { FileTypeSelector } from './file-type-selector';
 import { ChatButtonArea, ChatTextArea } from './layout';
-import { AppSelectorButton } from './model-selector-button';
+import { ModelSelectorButton } from './model-selector-button';
 import { ChatTextInput } from './text-input';
 
 // 创建一个全局焦点管理器
@@ -654,7 +654,7 @@ export const ChatInput = ({
                 )}
                 style={{ transitionDelay: showButtons ? '60ms' : '0ms' }}
               >
-                <AppSelectorButton />
+                <ModelSelectorButton />
               </div>
             )}
 

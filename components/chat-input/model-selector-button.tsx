@@ -10,7 +10,6 @@ import { ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 
 // 🎯 多提供商支持：模型选择器现在支持来自不同提供商的模型
 // 过滤逻辑基于 app_type === 'model'，不再限制特定提供商
@@ -18,12 +17,11 @@ import { useRouter } from 'next/navigation';
 // 从chat-input.tsx导入全局焦点管理器
 import { useFocusManager } from './chat-input';
 
-interface AppSelectorButtonProps {
+interface ModelSelectorButtonProps {
   className?: string;
 }
 
-export function AppSelectorButton({ className }: AppSelectorButtonProps) {
-  const router = useRouter();
+export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
   const { currentAppId, switchToSpecificApp, isValidating } = useCurrentApp();
   const { apps, fetchApps, isLoading } = useAppListStore();
   const { clearMessages } = useChatStore();

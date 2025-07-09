@@ -62,7 +62,7 @@ interface AppListState {
   fetchAllApps: () => Promise<void>;
 }
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5分钟
+const CACHE_DURATION = 30 * 60 * 1000; // 30分钟 - 延长缓存时间，减少模型选择器按钮闪烁
 
 export const useAppListStore = create<AppListState>((set, get) => ({
   apps: [],

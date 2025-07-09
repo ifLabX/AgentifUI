@@ -20,7 +20,7 @@ interface AppParametersCache {
   };
 }
 
-const CACHE_DURATION = 10 * 60 * 1000; // 10分钟缓存
+const CACHE_DURATION = 30 * 60 * 1000; // 30分钟缓存 - 延长应用参数缓存时间
 const parametersCache: AppParametersCache = {};
 
 /**
