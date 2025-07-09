@@ -1,6 +1,7 @@
 'use client';
 
 import { ReturnToChatButton } from '@components/admin/return-to-chat-button';
+import { LanguageSwitcher } from '@components/ui/language-switcher';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
@@ -228,6 +229,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <ReturnToChatButton />
           </div>
         </div>
@@ -236,7 +238,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         className={cn(
           'fixed top-0 bottom-0 left-0 flex flex-col border-r',
           'transition-[width] duration-150 ease-out',
-          isExpanded ? 'w-64' : 'w-16',
+          isExpanded ? 'w-72' : 'w-16',
           !isMounted && 'opacity-0',
           'z-45',
           colors.sidebarBackground.tailwind,

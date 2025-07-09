@@ -34,6 +34,12 @@ import { useTranslations } from 'next-intl';
  * @module app/admin/sso-providers/page
  */
 
+/**
+ * SSO Providers Management Page
+ * @description Modern, elegant SSO provider management interface with comprehensive CRUD operations
+ * @module app/admin/sso-providers/page
+ */
+
 export default function SsoProvidersPage() {
   const { isDark } = useTheme();
   const t = useTranslations('pages.admin.ssoProviders');
@@ -109,7 +115,7 @@ export default function SsoProvidersPage() {
           <div>
             <h1
               className={cn(
-                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl font-bold text-transparent',
+                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent',
                 isDark
                   ? 'from-stone-100 to-stone-300'
                   : 'from-stone-800 to-stone-600'

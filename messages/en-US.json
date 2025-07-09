@@ -876,6 +876,10 @@
             "text": "User Management",
             "description": "Manage user accounts and permissions"
           },
+          "ssoProviders": {
+            "text": "SSO Providers Management",
+            "description": "Manage SSO provider configurations"
+          },
           "groups": {
             "text": "Group Management",
             "description": "Manage users and groups, configure group application permissions"
@@ -1507,6 +1511,156 @@
             "suspended": "Suspended",
             "pending": "Pending"
           }
+        }
+      },
+      "ssoProviders": {
+        "title": "SSO Provider Management",
+        "subtitle": "Manage single sign-on providers and their configurations",
+        "addProvider": "Add Provider",
+        "refresh": "Refresh Data",
+        "error": "Error",
+        "filters": {
+          "searchPlaceholder": "Search provider name or protocol...",
+          "reset": "Reset"
+        },
+        "table": {
+          "headers": {
+            "name": "Name",
+            "protocol": "Protocol",
+            "status": "Status",
+            "order": "Order",
+            "created": "Created At"
+          },
+          "enabled": "Enabled",
+          "disabled": "Disabled",
+          "button": "Button",
+          "noProviders": "No SSO providers found",
+          "createFirst": "Create your first SSO provider to get started",
+          "loadingProviders": "Loading SSO providers...",
+          "actions": {
+            "viewDetails": "View Details",
+            "edit": "Edit",
+            "enable": "Enable",
+            "disable": "Disable",
+            "delete": "Delete"
+          }
+        },
+        "form": {
+          "createTitle": "Create SSO Provider",
+          "editTitle": "Edit SSO Provider",
+          "createDescription": "Configure a new single sign-on provider",
+          "editDescription": "Modify the configuration of an existing SSO provider",
+          "tabs": {
+            "basicInfo": "Basic Info",
+            "protocolConfig": "Protocol Config",
+            "security": "Security",
+            "uiSettings": "UI Settings"
+          },
+          "fields": {
+            "providerName": "Provider Name",
+            "providerNamePlaceholder": "Example University SSO",
+            "protocol": "Protocol",
+            "selectProtocol": "Select Protocol",
+            "displayOrder": "Display Order",
+            "buttonText": "Button Text",
+            "buttonTextPlaceholder": "Leave blank to use provider name",
+            "enableProvider": "Enable this provider",
+            "baseUrl": "Base URL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "Login Endpoint",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "Logout Endpoint",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "Validate Endpoint",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3 Validate Endpoint",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "Attribute Mapping",
+            "employeeId": "Employee ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "Username",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "Require HTTPS",
+            "validateCertificates": "Validate SSL Certificates",
+            "allowedRedirectHosts": "Allowed Redirect Hosts",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "Enter one host per line",
+            "icon": "Icon",
+            "iconPlaceholder": "🏛️",
+            "theme": "Theme",
+            "logoUrl": "Logo URL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "Description",
+            "descriptionPlaceholder": "University SSO System"
+          },
+          "themes": {
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "default": "Default",
+            "outline": "Outline"
+          },
+          "advancedSettings": "Advanced Settings",
+          "showRawJson": "Show Raw JSON",
+          "hideRawJson": "Hide Raw JSON",
+          "rawJsonConfig": "Raw JSON Configuration",
+          "actions": {
+            "cancel": "Cancel",
+            "save": "Save",
+            "saving": "Saving..."
+          },
+          "messages": {
+            "fixJsonErrors": "Please fix JSON errors before saving",
+            "createSuccess": "SSO provider created successfully",
+            "updateSuccess": "SSO provider updated successfully",
+            "unexpectedError": "An unexpected error occurred"
+          }
+        },
+        "deleteDialog": {
+          "title": "Confirm Deletion",
+          "message": "Are you sure you want to delete the SSO provider \"{name}\"? This action cannot be undone and will disable SSO login for users of this provider.",
+          "cancel": "Cancel",
+          "delete": "Delete",
+          "deleting": "Deleting...",
+          "success": "\"{name}\" has been successfully deleted"
+        },
+        "detailsModal": {
+          "title": "Provider Details and Configuration Overview",
+          "basicInfo": "Basic Information",
+          "protocol": "Protocol",
+          "status": "Status",
+          "displayOrder": "Display Order",
+          "buttonText": "Button Text",
+          "protocolConfig": "Protocol Configuration",
+          "baseUrl": "Base URL",
+          "login": "Login",
+          "logout": "Logout",
+          "securitySettings": "Security Settings",
+          "requireHttps": "Require HTTPS",
+          "validateCertificates": "Validate Certificates",
+          "yes": "Yes",
+          "no": "No",
+          "uiConfig": "UI Configuration",
+          "theme": "Theme",
+          "icon": "Icon",
+          "description": "Description",
+          "timestamps": "Timestamps",
+          "created": "Created At",
+          "updated": "Updated At",
+          "actions": {
+            "close": "Close",
+            "editProvider": "Edit Provider"
+          }
+        },
+        "stats": {
+          "totalProviders": "Total Providers",
+          "allSsoProviders": "All SSO providers are configured",
+          "enabled": "Enabled",
+          "percentOfTotal": "of total",
+          "noProviders": "No providers configured",
+          "disabled": "Disabled",
+          "activeProtocols": "Active Protocols",
+          "differentProtocolTypes": "different protocol types",
+          "protocolBreakdown": "Protocol Breakdown"
         }
       },
       "groups": {

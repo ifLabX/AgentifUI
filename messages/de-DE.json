@@ -876,6 +876,10 @@
             "text": "Benutzerverwaltung",
             "description": "Benutzerkonten und Berechtigungen verwalten"
           },
+          "ssoProviders": {
+            "text": "SSO-Anbieter-Verwaltung",
+            "description": "SSO-Anbieterkonfiguration verwalten"
+          },
           "groups": {
             "text": "Gruppenverwaltung",
             "description": "Benutzer und Gruppen verwalten, Gruppenanwendungsberechtigungen konfigurieren"
@@ -1507,6 +1511,156 @@
             "suspended": "Gesperrt",
             "pending": "Ausstehend"
           }
+        }
+      },
+      "ssoProviders": {
+        "title": "SSO-Anbieter-Verwaltung",
+        "subtitle": "Verwalten Sie Single Sign-On-Anbieter und deren Konfigurationen",
+        "addProvider": "Anbieter hinzufügen",
+        "refresh": "Daten aktualisieren",
+        "error": "Fehler",
+        "filters": {
+          "searchPlaceholder": "Anbietername oder Protokoll suchen...",
+          "reset": "Zurücksetzen"
+        },
+        "table": {
+          "headers": {
+            "name": "Name",
+            "protocol": "Protokoll",
+            "status": "Status",
+            "order": "Reihenfolge",
+            "created": "Erstellungszeit"
+          },
+          "enabled": "Aktiviert",
+          "disabled": "Deaktiviert",
+          "button": "Schaltfläche",
+          "noProviders": "Keine SSO-Anbieter gefunden",
+          "createFirst": "Erstellen Sie Ihren ersten SSO-Anbieter, um zu beginnen",
+          "loadingProviders": "SSO-Anbieter werden geladen...",
+          "actions": {
+            "viewDetails": "Details anzeigen",
+            "edit": "Bearbeiten",
+            "enable": "Aktivieren",
+            "disable": "Deaktivieren",
+            "delete": "Löschen"
+          }
+        },
+        "form": {
+          "createTitle": "SSO-Anbieter erstellen",
+          "editTitle": "SSO-Anbieter bearbeiten",
+          "createDescription": "Konfigurieren Sie einen neuen Single Sign-On-Anbieter",
+          "editDescription": "Bearbeiten Sie die Konfiguration eines bestehenden SSO-Anbieters",
+          "tabs": {
+            "basicInfo": "Basisinformationen",
+            "protocolConfig": "Protokollkonfiguration",
+            "security": "Sicherheitseinstellungen",
+            "uiSettings": "Benutzeroberflächen-Einstellungen"
+          },
+          "fields": {
+            "providerName": "Anbietername",
+            "providerNamePlaceholder": "Beispieluniversität SSO",
+            "protocol": "Protokoll",
+            "selectProtocol": "Protokoll auswählen",
+            "displayOrder": "Anzeigereihenfolge",
+            "buttonText": "Schaltflächentext",
+            "buttonTextPlaceholder": "Leer lassen, um den Anbieternamen zu verwenden",
+            "enableProvider": "Diesen Anbieter aktivieren",
+            "baseUrl": "Basis-URL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "Login-Endpunkt",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "Logout-Endpunkt",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "Validierungs-Endpunkt",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3 Validierungs-Endpunkt",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "Attributzuordnung",
+            "employeeId": "Mitarbeiter-ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "Benutzername",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "HTTPS erforderlich",
+            "validateCertificates": "SSL-Zertifikate validieren",
+            "allowedRedirectHosts": "Erlaubte Weiterleitungs-Hosts",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "Geben Sie einen Host pro Zeile ein",
+            "icon": "Symbol",
+            "iconPlaceholder": "🏛️",
+            "theme": "Design",
+            "logoUrl": "Logo-URL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "Beschreibung",
+            "descriptionPlaceholder": "SSO-System der Universität"
+          },
+          "themes": {
+            "primary": "Primär",
+            "secondary": "Sekundär",
+            "default": "Standard",
+            "outline": "Kontur"
+          },
+          "advancedSettings": "Erweiterte Einstellungen",
+          "showRawJson": "Rohes JSON anzeigen",
+          "hideRawJson": "Rohes JSON ausblenden",
+          "rawJsonConfig": "Rohe JSON-Konfiguration",
+          "actions": {
+            "cancel": "Abbrechen",
+            "save": "Speichern",
+            "saving": "Speichern..."
+          },
+          "messages": {
+            "fixJsonErrors": "Bitte beheben Sie JSON-Fehler vor dem Speichern",
+            "createSuccess": "SSO-Anbieter erfolgreich erstellt",
+            "updateSuccess": "SSO-Anbieter erfolgreich aktualisiert",
+            "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+          }
+        },
+        "deleteDialog": {
+          "title": "Löschen bestätigen",
+          "message": "Möchten Sie den SSO-Anbieter \"{name}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden und deaktiviert die SSO-Anmeldefunktion für Benutzer, die diesen Anbieter verwenden.",
+          "cancel": "Abbrechen",
+          "delete": "Löschen",
+          "deleting": "Löschen...",
+          "success": "\"{name}\" wurde erfolgreich gelöscht"
+        },
+        "detailsModal": {
+          "title": "Anbieterdetails und Konfigurationsübersicht",
+          "basicInfo": "Basisinformationen",
+          "protocol": "Protokoll",
+          "status": "Status",
+          "displayOrder": "Anzeigereihenfolge",
+          "buttonText": "Schaltflächentext",
+          "protocolConfig": "Protokollkonfiguration",
+          "baseUrl": "Basis-URL",
+          "login": "Anmeldung",
+          "logout": "Abmeldung",
+          "securitySettings": "Sicherheitseinstellungen",
+          "requireHttps": "HTTPS erforderlich",
+          "validateCertificates": "Zertifikate validieren",
+          "yes": "Ja",
+          "no": "Nein",
+          "uiConfig": "Benutzeroberflächen-Konfiguration",
+          "theme": "Design",
+          "icon": "Symbol",
+          "description": "Beschreibung",
+          "timestamps": "Zeitstempel",
+          "created": "Erstellt am",
+          "updated": "Aktualisiert am",
+          "actions": {
+            "close": "Schließen",
+            "editProvider": "Anbieter bearbeiten"
+          }
+        },
+        "stats": {
+          "totalProviders": "Anbieter gesamt",
+          "allSsoProviders": "Alle SSO-Anbieter konfiguriert",
+          "enabled": "Aktiviert",
+          "percentOfTotal": "Prozent des Gesamtbestands",
+          "noProviders": "Derzeit keine konfigurierten Anbieter",
+          "disabled": "Deaktiviert",
+          "activeProtocols": "Aktive Protokolle",
+          "differentProtocolTypes": "Verschiedene Protokolltypen",
+          "protocolBreakdown": "Protokollaufschlüsselung"
         }
       },
       "groups": {
