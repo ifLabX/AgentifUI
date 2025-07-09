@@ -12,9 +12,8 @@ import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { Conversation } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import {
+  Archive,
   Clock,
-  Edit,
-  MessageSquare,
   MoreHorizontal,
   Pen,
   Search,
@@ -363,20 +362,7 @@ export function HistoryList({
   return (
     <>
       {/* Render content directly without internal scroll container */}
-      {isLoading && conversations.length === 0 ? (
-        // Loading state
-        <div className="flex flex-col space-y-4 pt-2">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className={cn(
-                'h-24 animate-pulse rounded-lg',
-                isDark ? 'bg-stone-800' : 'bg-stone-200'
-              )}
-            />
-          ))}
-        </div>
-      ) : conversations.length === 0 ? (
+      {conversations.length === 0 ? (
         // Empty state
         <div
           className={cn(
@@ -392,7 +378,7 @@ export function HistoryList({
             </>
           ) : (
             <>
-              <MessageSquare className="mb-4 h-12 w-12 opacity-50" />
+              <Archive className="mb-4 h-12 w-12 opacity-50" />
               <p className="text-lg font-medium">{t('noHistoryTitle')}</p>
               <p className="mt-2 text-sm">{t('noHistoryDesc')}</p>
             </>

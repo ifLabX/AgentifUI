@@ -12,7 +12,7 @@ import { useChatStore } from '@lib/stores/chat-store';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
-import { Edit, Loader2, Search, Trash2 } from 'lucide-react';
+import { Edit, Search, Trash2 } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -41,6 +41,9 @@ export function History() {
     React.useState(false);
   const [isBatchDeleting, setIsBatchDeleting] = React.useState(false);
 
+  // 搜索框引用，用于自动聚焦
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
   // 获取所有历史对话列表，不限制数量
   const {
     conversations,
@@ -62,6 +65,13 @@ export function History() {
       unsubscribe();
     };
   }, [refresh]);
+
+  // 组件挂载时自动聚焦搜索框
+  React.useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, []);
 
   // 当对话列表发生变化时，清理无效的选中项
   React.useEffect(() => {
@@ -259,21 +269,7 @@ export function History() {
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                {isLoading ? (
-                  <span className="flex items-center">
-                    <span
-                      className={cn(
-                        'mr-2 inline-block h-3 w-3 animate-pulse rounded-full font-serif',
-                        isDark ? 'bg-stone-600' : 'bg-stone-400'
-                      )}
-                    />
-                    {t('loading')}
-                  </span>
-                ) : total > 0 ? (
-                  t('totalCount', { total })
-                ) : (
-                  t('noRecords')
-                )}
+                {total > 0 ? t('totalCount', { total }) : t('noRecords')}
               </div>
             </div>
 
@@ -331,6 +327,7 @@ export function History() {
               <Search className="h-4 w-4" />
             </div>
             <input
+              ref={searchInputRef}
               type="text"
               placeholder={t('searchPlaceholder')}
               value={searchQuery}

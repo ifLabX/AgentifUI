@@ -179,7 +179,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               {/* 🎨 内部背景 - 收起状态仅悬停显示 */}
               <div
                 className={cn(
-                  'absolute inset-1 rounded-md transition-all duration-150 ease-in-out',
+                  'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
                   isDark
                     ? 'group-hover:bg-stone-600/60'
                     : 'group-hover:bg-stone-300/80'
@@ -264,7 +264,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             {/* 🎨 内部背景 - 展开状态默认显示，悬停时增强 */}
             <div
               className={cn(
-                'absolute inset-1 rounded-md transition-all duration-150 ease-in-out',
+                'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
                 // 展开状态：默认有背景色，悬停时增强
                 isDark
                   ? 'bg-stone-600/50 group-hover:bg-stone-600/70'
@@ -312,7 +312,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'min-w-0 flex-1 truncate',
               'flex items-center leading-none',
               'font-display text-base font-bold tracking-wide',
-              '-mt-0.5 -ml-2', // 微调：稍微往上移一点，进一步左移与下方按钮对齐
+              '-mt-0.5 -ml-1', // 微调：稍微往上移一点，向右移动与按钮对齐
               isDark ? 'text-gray-100' : 'text-stone-700'
             )}
           >
