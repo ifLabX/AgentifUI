@@ -64,9 +64,20 @@ export default function SSOProcessingPage() {
           throw new Error(t('errors.userDataNotFound'));
         }
 
-        const ssoUserData = JSON.parse(
-          decodeURIComponent(ssoUserCookie.split('=')[1])
-        );
+        // 提取cookie值（去掉cookie名称部分）
+        let cookieValue = ssoUserCookie.split('=')[1];
+
+        // 调试：输出cookie原始值
+        console.log('Raw cookie value:', cookieValue);
+        console.log('Cookie value starts with %:', cookieValue.startsWith('%'));
+
+        // 尝试URL解码（如果需要的话）
+        if (cookieValue.startsWith('%')) {
+          cookieValue = decodeURIComponent(cookieValue);
+          console.log('After decodeURIComponent:', cookieValue);
+        }
+
+        const ssoUserData = JSON.parse(cookieValue);
 
         // --- 检查数据是否过期 ---
         if (Date.now() > ssoUserData.expiresAt) {

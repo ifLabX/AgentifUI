@@ -626,6 +626,7 @@
         "helpText": "首次登入將自動建立帳戶",
         "contactText": "如有問題請聯繫系統管理員",
         "startError": "啟動SSO登入失敗，請稍後重試",
+        "noProvider": "暫無可用的SSO登入方式",
         "processing": {
           "title": "SSO 登入",
           "processing": "正在處理SSO登入...",

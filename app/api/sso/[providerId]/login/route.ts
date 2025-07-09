@@ -1,16 +1,24 @@
-// 北京信息科技大学SSO登录入口
-// 处理用户发起的SSO登录请求，重定向到CAS服务器
-import { createBistuCASService } from '@lib/services/admin/sso/bistu-cas-service';
+/**
+ * 通用SSO登录入口
+ * 处理任何CAS提供商的SSO登录请求，重定向到相应的CAS服务器
+ */
+import { CASConfigService } from '@lib/services/sso/generic-cas-service';
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { providerId: string } }
+) {
   try {
     // 获取查询参数
     const searchParams = request.nextUrl.searchParams;
     const returnUrl = searchParams.get('returnUrl') || '/chat';
+    const { providerId } = params;
 
-    console.log(`SSO login initiated, return URL: ${returnUrl}`);
+    console.log(
+      `SSO login initiated for provider: ${providerId}, return URL: ${returnUrl}`
+    );
 
     // 验证returnUrl的安全性，防止开放重定向攻击
     const allowedReturnUrls = [
@@ -34,8 +42,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 创建CAS服务实例
-    const casService = createBistuCASService();
+    // 创建通用CAS服务实例
+    const casService = await CASConfigService.createCASService(providerId);
 
     // 生成登录URL并重定向
     const loginUrl = casService.generateLoginURL(safeReturnUrl);
@@ -51,13 +59,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(loginUrl);
   } catch (error) {
-    console.error('SSO login redirect failed:', error);
+    console.error(`SSO login failed for provider ${params.providerId}:`, error);
 
-    // 登录失败，重定向到登录页面并显示错误
-    const errorUrl = new URL('/login', request.url);
-    errorUrl.searchParams.set('error', 'sso_redirect_failed');
-    errorUrl.searchParams.set('message', '启动SSO登录失败，请重试');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const errorMessage = error instanceof Error ? error.message : '未知错误';
 
-    return NextResponse.redirect(errorUrl);
+    return NextResponse.redirect(
+      new URL(
+        `/login?error=sso_config_error&message=${encodeURIComponent(`SSO配置错误: ${errorMessage}`)}`,
+        appUrl
+      )
+    );
   }
 }

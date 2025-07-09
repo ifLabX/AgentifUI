@@ -626,6 +626,7 @@
         "helpText": "Account will be created automatically on first login",
         "contactText": "Please contact system administrator if you have any questions",
         "startError": "Failed to start SSO login, please try again later",
+        "noProvider": "No SSO login methods available at the moment",
         "processing": {
           "title": "SSO Login",
           "processing": "Processing SSO login...",

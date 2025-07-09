@@ -626,6 +626,7 @@
         "helpText": "初回ログイン時にアカウントが自動作成されます",
         "contactText": "ご質問がございましたらシステム管理者にお問い合わせください",
         "startError": "SSOログインの開始に失敗しました。後でもう一度お試しください",
+        "noProvider": "現在、SSOログイン方式は利用できません",
         "processing": {
           "title": "SSO ログイン",
           "processing": "SSOログインを処理中...",

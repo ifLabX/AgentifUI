@@ -8,6 +8,8 @@ export interface CreateSSOUserData {
   employeeNumber: string; // 学工号
   username: string; // 用户名
   ssoProviderId: string; // SSO提供商ID
+  ssoProviderName: string; // SSO提供商名称
+  emailDomain: string; // 邮箱域名
   fullName?: string; // 全名（可选）
 }
 
@@ -35,9 +37,10 @@ export class SSOUserService {
     try {
       const supabase = await createClient();
 
-      // 构建SSO用户的邮箱地址（学工号@bistu.edu.cn）
+      // 构建SSO用户的邮箱地址（学工号@域名）
       // 通过邮箱查找用户，因为email字段在触发器中会被正确设置
-      const email = `${employeeNumber.trim()}@bistu.edu.cn`;
+      // 注意：此方法仅用于查找，实际邮箱应该从具体SSO提供商配置中获取
+      const email = `${employeeNumber.trim()}@edu.cn`;
       console.log(
         `Looking up user by email: ${email} (for employee: ${employeeNumber})`
       );
@@ -201,7 +204,7 @@ export class SSOUserService {
 
       // 使用Supabase Admin API创建auth.users记录
       // 这样会同时创建auth.users记录和通过触发器自动创建profiles记录
-      const email = `${userData.employeeNumber}@bistu.edu.cn`; // 使用学工号生成邮箱
+      const email = `${userData.employeeNumber}@${userData.emailDomain}`; // 使用学工号和提供商域名生成邮箱
 
       console.log(
         `Creating auth user with email: ${email}, employee_number: ${userData.employeeNumber}`
@@ -214,11 +217,11 @@ export class SSOUserService {
             full_name: userData.fullName || userData.username,
             username: userData.username,
             employee_number: userData.employeeNumber,
-            auth_source: 'bistu_sso',
+            auth_source: `${userData.ssoProviderName.toLowerCase().replace(/\s+/g, '_')}_sso`,
             sso_provider_id: userData.ssoProviderId,
           },
           app_metadata: {
-            provider: 'bistu_sso',
+            provider: `${userData.ssoProviderName.toLowerCase().replace(/\s+/g, '_')}_sso`,
             employee_number: userData.employeeNumber,
           },
           email_confirm: true, // SSO用户自动确认邮箱
@@ -275,7 +278,7 @@ export class SSOUserService {
                       employee_number: userData.employeeNumber,
                       username: userData.username,
                       full_name: userData.fullName || userData.username,
-                      auth_source: 'bistu_sso',
+                      auth_source: `${userData.ssoProviderName.toLowerCase().replace(/\s+/g, '_')}_sso`,
                       sso_provider_id: userData.ssoProviderId,
                       email: email,
                       status: 'active',
@@ -356,7 +359,7 @@ export class SSOUserService {
               .from('profiles')
               .update({
                 employee_number: userData.employeeNumber,
-                auth_source: 'bistu_sso',
+                auth_source: `${userData.ssoProviderName.toLowerCase().replace(/\s+/g, '_')}_sso`,
                 sso_provider_id: userData.ssoProviderId,
                 full_name: userData.fullName || userData.username,
                 username: userData.username,
@@ -425,7 +428,7 @@ export class SSOUserService {
                 .from('profiles')
                 .update({
                   employee_number: userData.employeeNumber,
-                  auth_source: 'bistu_sso',
+                  auth_source: `${userData.ssoProviderName.toLowerCase().replace(/\s+/g, '_')}_sso`,
                   sso_provider_id: userData.ssoProviderId,
                   full_name: userData.fullName || userData.username,
                   username: userData.username,
@@ -460,7 +463,7 @@ export class SSOUserService {
                   employee_number: userData.employeeNumber,
                   username: userData.username,
                   full_name: userData.fullName || userData.username,
-                  auth_source: 'bistu_sso',
+                  auth_source: `${userData.ssoProviderName.toLowerCase().replace(/\s+/g, '_')}_sso`,
                   sso_provider_id: userData.ssoProviderId,
                   email: email,
                   status: 'active',
@@ -578,28 +581,30 @@ export class SSOUserService {
   }
 
   /**
-   * 获取北信科SSO提供商信息
+   * 根据名称获取SSO提供商信息
+   * @param providerName 提供商名称
    * @returns SSO提供商信息
    */
-  static async getBistuSSOProvider(): Promise<{
+  static async getSSOProviderByName(providerName: string): Promise<{
     id: string;
     name: string;
+    protocol: string;
   } | null> {
     try {
       const supabase = await createClient();
 
-      // 查找北京信息科技大学SSO提供商配置
+      // 查找指定SSO提供商配置
       const { data, error } = await supabase
         .from('sso_providers')
-        .select('id, name')
-        .eq('name', '北京信息科技大学')
+        .select('id, name, protocol')
+        .eq('name', providerName)
         .eq('enabled', true)
         .single();
 
       if (error) {
         if (error.code === 'PGRST116') {
           // 未找到记录
-          console.warn('BISTU SSO provider not found in database');
+          console.warn(`SSO provider '${providerName}' not found in database`);
           return null;
         }
         throw error;
@@ -607,7 +612,7 @@ export class SSOUserService {
 
       return data;
     } catch (error) {
-      console.error('Failed to get BISTU SSO provider:', error);
+      console.error(`Failed to get SSO provider '${providerName}':`, error);
       return null;
     }
   }
@@ -666,31 +671,5 @@ export class SSOUserService {
       `Batch update completed: ${result.success} successful, ${result.failed} failed`
     );
     return result;
-  }
-
-  /**
-   * 验证学工号格式
-   * @param employeeNumber 学工号
-   * @returns 是否有效
-   */
-  static validateEmployeeNumber(employeeNumber: any): boolean {
-    // 先检查是否存在值
-    if (employeeNumber === null || employeeNumber === undefined) {
-      return false;
-    }
-
-    // 转换为字符串类型，处理可能的数字类型输入
-    const employeeStr = String(employeeNumber);
-
-    if (!employeeStr) {
-      return false;
-    }
-
-    // 根据北信科实际情况：
-    // - 8位数字为工号（老师使用，如：12345678）
-    // - 10位数字为学号（学生使用，如：2021011221）
-    const trimmed = employeeStr.trim();
-    const pattern = /^\d{8}$|^\d{10}$/;
-    return pattern.test(trimmed);
   }
 }
