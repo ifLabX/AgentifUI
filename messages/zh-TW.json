@@ -876,6 +876,10 @@
             "text": "使用者管理",
             "description": "管理使用者帳戶和權限"
           },
+          "ssoProviders": {
+            "text": "SSO供應商管理",
+            "description": "管理SSO供應商設定"
+          },
           "groups": {
             "text": "群組管理",
             "description": "管理使用者和群組，設定群組應用程式權限"
@@ -1507,6 +1511,156 @@
             "suspended": "已暫停",
             "pending": "待啟用"
           }
+        }
+      },
+      "ssoProviders": {
+        "title": "單一登入服務商管理",
+        "subtitle": "管理單一登入服務商及其設定",
+        "addProvider": "新增服務商",
+        "refresh": "重新整理資料",
+        "error": "錯誤",
+        "filters": {
+          "searchPlaceholder": "搜尋服務商名稱或協定...",
+          "reset": "重設"
+        },
+        "table": {
+          "headers": {
+            "name": "名稱",
+            "protocol": "協定",
+            "status": "狀態",
+            "order": "順序",
+            "created": "建立時間"
+          },
+          "enabled": "已啟用",
+          "disabled": "已停用",
+          "button": "按鈕",
+          "noProviders": "未找到單一登入服務商",
+          "createFirst": "建立您的第一個單一登入服務商以開始使用",
+          "loadingProviders": "正在載入SSO供應商...",
+          "actions": {
+            "viewDetails": "檢視詳細資訊",
+            "edit": "編輯",
+            "enable": "啟用",
+            "disable": "停用",
+            "delete": "刪除"
+          }
+        },
+        "form": {
+          "createTitle": "建立單一登入服務商",
+          "editTitle": "編輯單一登入服務商",
+          "createDescription": "設定新的單一登入服務商",
+          "editDescription": "修改現有單一登入服務商的設定",
+          "tabs": {
+            "basicInfo": "基本資訊",
+            "protocolConfig": "協定設定",
+            "security": "安全性設定",
+            "uiSettings": "介面設定"
+          },
+          "fields": {
+            "providerName": "服務商名稱",
+            "providerNamePlaceholder": "範例大學單一登入",
+            "protocol": "協定",
+            "selectProtocol": "選擇協定",
+            "displayOrder": "顯示順序",
+            "buttonText": "按鈕文字",
+            "buttonTextPlaceholder": "留空則使用服務商名稱",
+            "enableProvider": "啟用此服務商",
+            "baseUrl": "基礎 URL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "登入端點",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "登出端點",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "驗證端點",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3 驗證端點",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "屬性對應",
+            "employeeId": "員工 ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "使用者名稱",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "要求 HTTPS",
+            "validateCertificates": "驗證 SSL 憑證",
+            "allowedRedirectHosts": "允許的重新導向主機",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "每行輸入一個主機",
+            "icon": "圖示",
+            "iconPlaceholder": "🏛️",
+            "theme": "主題",
+            "logoUrl": "Logo URL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "描述",
+            "descriptionPlaceholder": "大學單一登入系統"
+          },
+          "themes": {
+            "primary": "主要",
+            "secondary": "次要",
+            "default": "預設",
+            "outline": "外框"
+          },
+          "advancedSettings": "進階設定",
+          "showRawJson": "顯示原始 JSON",
+          "hideRawJson": "隱藏原始 JSON",
+          "rawJsonConfig": "原始 JSON 設定",
+          "actions": {
+            "cancel": "取消",
+            "save": "儲存",
+            "saving": "儲存中..."
+          },
+          "messages": {
+            "fixJsonErrors": "請先修正 JSON 錯誤再儲存",
+            "createSuccess": "單一登入服務商建立成功",
+            "updateSuccess": "單一登入服務商更新成功",
+            "unexpectedError": "發生意外錯誤"
+          }
+        },
+        "deleteDialog": {
+          "title": "確認刪除",
+          "message": "確定要刪除單一登入服務商「{name}」嗎？此操作不可撤銷，將停用使用此服務商的使用者單一登入功能。",
+          "cancel": "取消",
+          "delete": "刪除",
+          "deleting": "刪除中...",
+          "success": "「{name}」已成功刪除"
+        },
+        "detailsModal": {
+          "title": "服務商詳細資訊與設定概覽",
+          "basicInfo": "基本資訊",
+          "protocol": "協定",
+          "status": "狀態",
+          "displayOrder": "顯示順序",
+          "buttonText": "按鈕文字",
+          "protocolConfig": "協定設定",
+          "baseUrl": "基礎 URL",
+          "login": "登入",
+          "logout": "登出",
+          "securitySettings": "安全性設定",
+          "requireHttps": "要求 HTTPS",
+          "validateCertificates": "驗證憑證",
+          "yes": "是",
+          "no": "否",
+          "uiConfig": "介面設定",
+          "theme": "主題",
+          "icon": "圖示",
+          "description": "描述",
+          "timestamps": "時間戳",
+          "created": "建立於",
+          "updated": "更新於",
+          "actions": {
+            "close": "關閉",
+            "editProvider": "編輯服務商"
+          }
+        },
+        "stats": {
+          "totalProviders": "服務商總數",
+          "allSsoProviders": "所有單一登入服務商已設定",
+          "enabled": "已啟用",
+          "percentOfTotal": "佔總數",
+          "noProviders": "暫無設定的服務商",
+          "disabled": "已停用",
+          "activeProtocols": "啟用協定",
+          "differentProtocolTypes": "不同協定類型",
+          "protocolBreakdown": "協定分佈"
         }
       },
       "groups": {

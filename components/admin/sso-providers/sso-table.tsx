@@ -38,6 +38,12 @@ import { TableDropdown } from './table-dropdown';
  * @module components/admin/sso-providers/sso-table
  */
 
+/**
+ * SSO Providers Table Component
+ * @description Modern, elegant table for SSO providers with advanced interactions and responsive design
+ * @module components/admin/sso-providers/sso-table
+ */
+
 interface SsoTableProps {
   onEdit: (provider: SsoProvider) => void;
   onDelete: (provider: SsoProvider) => void;
@@ -277,9 +283,7 @@ export function SsoTable({
             </span>
           </div>
           <div className="col-span-1">
-            <span className={cn(isDark ? 'text-stone-300' : 'text-stone-700')}>
-              {t('headers.actions')}
-            </span>
+            {/* Actions column - no header text */}
           </div>
         </div>
       </div>

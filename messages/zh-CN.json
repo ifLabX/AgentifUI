@@ -876,6 +876,10 @@
             "text": "用户管理",
             "description": "管理用户账户和权限"
           },
+          "ssoProviders": {
+            "text": "SSO提供商管理",
+            "description": "管理SSO提供商配置"
+          },
           "groups": {
             "text": "群组管理",
             "description": "管理用户和群组，配置群组应用权限"
@@ -1507,6 +1511,156 @@
             "suspended": "已暂停",
             "pending": "待激活"
           }
+        }
+      },
+      "ssoProviders": {
+        "title": "SSO提供商管理",
+        "subtitle": "管理单点登录提供商及其配置",
+        "addProvider": "添加提供商",
+        "refresh": "刷新数据",
+        "error": "错误",
+        "filters": {
+          "searchPlaceholder": "搜索提供商名称或协议...",
+          "reset": "重置"
+        },
+        "table": {
+          "headers": {
+            "name": "名称",
+            "protocol": "协议",
+            "status": "状态",
+            "order": "顺序",
+            "created": "创建时间"
+          },
+          "enabled": "已启用",
+          "disabled": "已禁用",
+          "button": "按钮",
+          "noProviders": "未找到SSO提供商",
+          "createFirst": "创建您的第一个SSO提供商开始使用",
+          "loadingProviders": "正在加载SSO提供商...",
+          "actions": {
+            "viewDetails": "查看详情",
+            "edit": "编辑",
+            "enable": "启用",
+            "disable": "禁用",
+            "delete": "删除"
+          }
+        },
+        "form": {
+          "createTitle": "创建SSO提供商",
+          "editTitle": "编辑SSO提供商",
+          "createDescription": "配置新的单点登录提供商",
+          "editDescription": "修改现有SSO提供商的配置",
+          "tabs": {
+            "basicInfo": "基本信息",
+            "protocolConfig": "协议配置",
+            "security": "安全设置",
+            "uiSettings": "界面设置"
+          },
+          "fields": {
+            "providerName": "提供商名称",
+            "providerNamePlaceholder": "示例大学SSO",
+            "protocol": "协议",
+            "selectProtocol": "选择协议",
+            "displayOrder": "显示顺序",
+            "buttonText": "按钮文本",
+            "buttonTextPlaceholder": "留空则使用提供商名称",
+            "enableProvider": "启用此提供商",
+            "baseUrl": "基础URL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "登录端点",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "注销端点",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "验证端点",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3验证端点",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "属性映射",
+            "employeeId": "员工ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "用户名",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "要求HTTPS",
+            "validateCertificates": "验证SSL证书",
+            "allowedRedirectHosts": "允许的重定向主机",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "每行输入一个主机",
+            "icon": "图标",
+            "iconPlaceholder": "🏛️",
+            "theme": "主题",
+            "logoUrl": "Logo URL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "描述",
+            "descriptionPlaceholder": "大学SSO系统"
+          },
+          "themes": {
+            "primary": "主要",
+            "secondary": "次要",
+            "default": "默认",
+            "outline": "轮廓"
+          },
+          "advancedSettings": "高级设置",
+          "showRawJson": "显示原始JSON",
+          "hideRawJson": "隐藏原始JSON",
+          "rawJsonConfig": "原始JSON配置",
+          "actions": {
+            "cancel": "取消",
+            "save": "保存",
+            "saving": "保存中..."
+          },
+          "messages": {
+            "fixJsonErrors": "请先修复JSON错误再保存",
+            "createSuccess": "SSO提供商创建成功",
+            "updateSuccess": "SSO提供商更新成功",
+            "unexpectedError": "发生意外错误"
+          }
+        },
+        "deleteDialog": {
+          "title": "确认删除",
+          "message": "确定要删除SSO提供商\"{name}\"吗？此操作不可撤销，将禁用使用此提供商的用户的SSO登录功能。",
+          "cancel": "取消",
+          "delete": "删除",
+          "deleting": "删除中...",
+          "success": "\"{name}\"已成功删除"
+        },
+        "detailsModal": {
+          "title": "提供商详情和配置概览",
+          "basicInfo": "基本信息",
+          "protocol": "协议",
+          "status": "状态",
+          "displayOrder": "显示顺序",
+          "buttonText": "按钮文本",
+          "protocolConfig": "协议配置",
+          "baseUrl": "基础URL",
+          "login": "登录",
+          "logout": "注销",
+          "securitySettings": "安全设置",
+          "requireHttps": "要求HTTPS",
+          "validateCertificates": "验证证书",
+          "yes": "是",
+          "no": "否",
+          "uiConfig": "界面配置",
+          "theme": "主题",
+          "icon": "图标",
+          "description": "描述",
+          "timestamps": "时间戳",
+          "created": "创建于",
+          "updated": "更新于",
+          "actions": {
+            "close": "关闭",
+            "editProvider": "编辑提供商"
+          }
+        },
+        "stats": {
+          "totalProviders": "提供商总数",
+          "allSsoProviders": "所有SSO提供商已配置",
+          "enabled": "已启用",
+          "percentOfTotal": "占总数",
+          "noProviders": "暂无配置的提供商",
+          "disabled": "已禁用",
+          "activeProtocols": "活跃协议",
+          "differentProtocolTypes": "不同协议类型",
+          "protocolBreakdown": "协议分布"
         }
       },
       "groups": {

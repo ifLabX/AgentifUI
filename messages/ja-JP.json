@@ -876,6 +876,10 @@
             "text": "ユーザー管理",
             "description": "ユーザーアカウントと権限を管理"
           },
+          "ssoProviders": {
+            "text": "SSOプロバイダー管理",
+            "description": "SSOプロバイダー構成の管理"
+          },
           "groups": {
             "text": "グループ管理",
             "description": "ユーザーとグループを管理し、グループアプリケーション権限を設定"
@@ -1507,6 +1511,156 @@
             "suspended": "停止中",
             "pending": "承認待ち"
           }
+        }
+      },
+      "ssoProviders": {
+        "title": "SSOプロバイダー管理",
+        "subtitle": "シングルサインオンプロバイダーとその設定を管理",
+        "addProvider": "プロバイダーを追加",
+        "refresh": "データを更新",
+        "error": "エラー",
+        "filters": {
+          "searchPlaceholder": "プロバイダー名またはプロトコルを検索...",
+          "reset": "リセット"
+        },
+        "table": {
+          "headers": {
+            "name": "名前",
+            "protocol": "プロトコル",
+            "status": "ステータス",
+            "order": "順序",
+            "created": "作成日時"
+          },
+          "enabled": "有効",
+          "disabled": "無効",
+          "button": "ボタン",
+          "noProviders": "SSOプロバイダーが見つかりません",
+          "createFirst": "最初のSSOプロバイダーを作成して使い始める",
+          "loadingProviders": "SSOプロバイダーを読み込んでいます...",
+          "actions": {
+            "viewDetails": "詳細を表示",
+            "edit": "編集",
+            "enable": "有効にする",
+            "disable": "無効にする",
+            "delete": "削除"
+          }
+        },
+        "form": {
+          "createTitle": "SSOプロバイダーを作成",
+          "editTitle": "SSOプロバイダーを編集",
+          "createDescription": "新しいシングルサインオンプロバイダーを設定する",
+          "editDescription": "既存のSSOプロバイダーの設定を変更する",
+          "tabs": {
+            "basicInfo": "基本情報",
+            "protocolConfig": "プロトコル設定",
+            "security": "セキュリティ設定",
+            "uiSettings": "UI設定"
+          },
+          "fields": {
+            "providerName": "プロバイダー名",
+            "providerNamePlaceholder": "例: 大学SSO",
+            "protocol": "プロトコル",
+            "selectProtocol": "プロトコルを選択",
+            "displayOrder": "表示順序",
+            "buttonText": "ボタンテキスト",
+            "buttonTextPlaceholder": "空白のままにするとプロバイダー名が使用されます",
+            "enableProvider": "このプロバイダーを有効にする",
+            "baseUrl": "ベースURL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "ログインエンドポイント",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "ログアウトエンドポイント",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "検証エンドポイント",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3検証エンドポイント",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "属性マッピング",
+            "employeeId": "従業員ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "ユーザー名",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "HTTPSを要求",
+            "validateCertificates": "SSL証明書を検証",
+            "allowedRedirectHosts": "許可されたリダイレクトホスト",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "各行に1つのホストを入力してください",
+            "icon": "アイコン",
+            "iconPlaceholder": "🏛️",
+            "theme": "テーマ",
+            "logoUrl": "ロゴURL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "説明",
+            "descriptionPlaceholder": "大学SSOシステム"
+          },
+          "themes": {
+            "primary": "プライマリ",
+            "secondary": "セカンダリ",
+            "default": "デフォルト",
+            "outline": "アウトライン"
+          },
+          "advancedSettings": "詳細設定",
+          "showRawJson": "生のJSONを表示",
+          "hideRawJson": "生のJSONを非表示",
+          "rawJsonConfig": "生のJSON設定",
+          "actions": {
+            "cancel": "キャンセル",
+            "save": "保存",
+            "saving": "保存中..."
+          },
+          "messages": {
+            "fixJsonErrors": "保存する前にJSONエラーを修正してください",
+            "createSuccess": "SSOプロバイダーが正常に作成されました",
+            "updateSuccess": "SSOプロバイダーが正常に更新されました",
+            "unexpectedError": "予期せぬエラーが発生しました"
+          }
+        },
+        "deleteDialog": {
+          "title": "削除の確認",
+          "message": "SSOプロバイダー「{name}」を削除してもよろしいですか？この操作は元に戻すことはできず、このプロバイダーを使用しているユーザーのSSOログイン機能が無効になります。",
+          "cancel": "キャンセル",
+          "delete": "削除",
+          "deleting": "削除中...",
+          "success": "「{name}」は正常に削除されました"
+        },
+        "detailsModal": {
+          "title": "プロバイダーの詳細と設定の概要",
+          "basicInfo": "基本情報",
+          "protocol": "プロトコル",
+          "status": "ステータス",
+          "displayOrder": "表示順序",
+          "buttonText": "ボタンテキスト",
+          "protocolConfig": "プロトコル設定",
+          "baseUrl": "ベースURL",
+          "login": "ログイン",
+          "logout": "ログアウト",
+          "securitySettings": "セキュリティ設定",
+          "requireHttps": "HTTPSを要求",
+          "validateCertificates": "証明書を検証",
+          "yes": "はい",
+          "no": "いいえ",
+          "uiConfig": "UI設定",
+          "theme": "テーマ",
+          "icon": "アイコン",
+          "description": "説明",
+          "timestamps": "タイムスタンプ",
+          "created": "作成済み",
+          "updated": "更新済み",
+          "actions": {
+            "close": "閉じる",
+            "editProvider": "プロバイダーを編集"
+          }
+        },
+        "stats": {
+          "totalProviders": "プロバイダー合計",
+          "allSsoProviders": "すべてのSSOプロバイダーが設定済み",
+          "enabled": "有効",
+          "percentOfTotal": "合計の割合",
+          "noProviders": "現在設定されているプロバイダーはありません",
+          "disabled": "無効",
+          "activeProtocols": "アクティブなプロトコル",
+          "differentProtocolTypes": "異なるプロトコルタイプ",
+          "protocolBreakdown": "プロトコル内訳"
         }
       },
       "groups": {

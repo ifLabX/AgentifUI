@@ -876,6 +876,10 @@
             "text": "Gestione Utenti",
             "description": "Gestisci account utente e permessi"
           },
+          "ssoProviders": {
+            "text": "Gestione Fornitori SSO",
+            "description": "Gestisci la configurazione del fornitore SSO"
+          },
           "groups": {
             "text": "Gestione Gruppi",
             "description": "Gestisci utenti e gruppi, configura i permessi delle applicazioni di gruppo"
@@ -1507,6 +1511,156 @@
             "suspended": "Sospeso",
             "pending": "In attesa"
           }
+        }
+      },
+      "ssoProviders": {
+        "title": "Gestione fornitori SSO",
+        "subtitle": "Gestisci i fornitori di Single Sign-On e le loro configurazioni",
+        "addProvider": "Aggiungi fornitore",
+        "refresh": "Aggiorna dati",
+        "error": "Errore",
+        "filters": {
+          "searchPlaceholder": "Cerca nome fornitore o protocollo...",
+          "reset": "Reimposta"
+        },
+        "table": {
+          "headers": {
+            "name": "Nome",
+            "protocol": "Protocollo",
+            "status": "Stato",
+            "order": "Ordine",
+            "created": "Data creazione"
+          },
+          "enabled": "Abilitato",
+          "disabled": "Disabilitato",
+          "button": "Pulsante",
+          "noProviders": "Nessun fornitore SSO trovato",
+          "createFirst": "Crea il tuo primo fornitore SSO per iniziare",
+          "loadingProviders": "Caricamento fornitori SSO...",
+          "actions": {
+            "viewDetails": "Visualizza dettagli",
+            "edit": "Modifica",
+            "enable": "Abilita",
+            "disable": "Disabilita",
+            "delete": "Elimina"
+          }
+        },
+        "form": {
+          "createTitle": "Crea fornitore SSO",
+          "editTitle": "Modifica fornitore SSO",
+          "createDescription": "Configura un nuovo fornitore di Single Sign-On",
+          "editDescription": "Modifica la configurazione di un fornitore SSO esistente",
+          "tabs": {
+            "basicInfo": "Informazioni di base",
+            "protocolConfig": "Configurazione protocollo",
+            "security": "Impostazioni di sicurezza",
+            "uiSettings": "Impostazioni UI"
+          },
+          "fields": {
+            "providerName": "Nome fornitore",
+            "providerNamePlaceholder": "Esempio SSO Università",
+            "protocol": "Protocollo",
+            "selectProtocol": "Seleziona protocollo",
+            "displayOrder": "Ordine di visualizzazione",
+            "buttonText": "Testo pulsante",
+            "buttonTextPlaceholder": "Lascia vuoto per usare il nome del fornitore",
+            "enableProvider": "Abilita questo fornitore",
+            "baseUrl": "URL di base",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "Endpoint di accesso",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "Endpoint di disconnessione",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "Endpoint di validazione",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "Endpoint di validazione V3",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "Mappatura attributi",
+            "employeeId": "ID dipendente",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "Nome utente",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "Richiedi HTTPS",
+            "validateCertificates": "Valida certificati SSL",
+            "allowedRedirectHosts": "Host di reindirizzamento consentiti",
+            "allowedRedirectHostsPlaceholder": "example.com\nsottodominio.example.com",
+            "allowedRedirectHostsHint": "Inserisci un host per riga",
+            "icon": "Icona",
+            "iconPlaceholder": "🏛️",
+            "theme": "Tema",
+            "logoUrl": "URL Logo",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "Descrizione",
+            "descriptionPlaceholder": "Sistema SSO universitario"
+          },
+          "themes": {
+            "primary": "Primario",
+            "secondary": "Secondario",
+            "default": "Predefinito",
+            "outline": "Contorno"
+          },
+          "advancedSettings": "Impostazioni avanzate",
+          "showRawJson": "Mostra JSON grezzo",
+          "hideRawJson": "Nascondi JSON grezzo",
+          "rawJsonConfig": "Configurazione JSON grezza",
+          "actions": {
+            "cancel": "Annulla",
+            "save": "Salva",
+            "saving": "Salvataggio in corso..."
+          },
+          "messages": {
+            "fixJsonErrors": "Si prega di correggere gli errori JSON prima di salvare",
+            "createSuccess": "Fornitore SSO creato con successo",
+            "updateSuccess": "Fornitore SSO aggiornato con successo",
+            "unexpectedError": "Si è verificato un errore inaspettato"
+          }
+        },
+        "deleteDialog": {
+          "title": "Conferma eliminazione",
+          "message": "Sei sicuro di voler eliminare il fornitore SSO \"{name}\"? Questa azione è irreversibile e disabiliterà l'accesso SSO per gli utenti che lo utilizzano.",
+          "cancel": "Annulla",
+          "delete": "Elimina",
+          "deleting": "Eliminazione in corso...",
+          "success": "\"{name}\" eliminato con successo"
+        },
+        "detailsModal": {
+          "title": "Panoramica dettagli e configurazione fornitore",
+          "basicInfo": "Informazioni di base",
+          "protocol": "Protocollo",
+          "status": "Stato",
+          "displayOrder": "Ordine di visualizzazione",
+          "buttonText": "Testo pulsante",
+          "protocolConfig": "Configurazione protocollo",
+          "baseUrl": "URL di base",
+          "login": "Accesso",
+          "logout": "Disconnessione",
+          "securitySettings": "Impostazioni di sicurezza",
+          "requireHttps": "Richiedi HTTPS",
+          "validateCertificates": "Valida certificati",
+          "yes": "Sì",
+          "no": "No",
+          "uiConfig": "Configurazione UI",
+          "theme": "Tema",
+          "icon": "Icona",
+          "description": "Descrizione",
+          "timestamps": "Timestamp",
+          "created": "Creato il",
+          "updated": "Aggiornato il",
+          "actions": {
+            "close": "Chiudi",
+            "editProvider": "Modifica fornitore"
+          }
+        },
+        "stats": {
+          "totalProviders": "Totale fornitori",
+          "allSsoProviders": "Tutti i fornitori SSO configurati",
+          "enabled": "Abilitati",
+          "percentOfTotal": "% del totale",
+          "noProviders": "Nessun fornitore configurato per ora",
+          "disabled": "Disabilitati",
+          "activeProtocols": "Protocolli attivi",
+          "differentProtocolTypes": "Tipi di protocollo diversi",
+          "protocolBreakdown": "Ripartizione per protocollo"
         }
       },
       "groups": {
