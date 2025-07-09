@@ -2,8 +2,8 @@
 
 本文档详细描述了 AgentifUI 平台的数据库设计，包括表结构、关系、安全机制和特性。本文档与当前数据库状态完全同步，包含所有已应用的迁移文件。
 
-**文档更新日期**: 2025-06-30
-**数据库版本**: 包含至 20250630034523_fix_group_members_foreign_key.sql 的所有迁移
+**文档更新日期**: 2025-07-09
+**数据库版本**: 包含至 20250709101517_fix_sso_login_secure_complete.sql 的所有迁移
 
 ## 目录
 
@@ -247,6 +247,41 @@
 
 - `sso_protocol`: ENUM ('OIDC', 'SAML', 'CAS')
 
+#### SSO安全访问函数 (2025-07-09)
+
+为了解决SSO登录页面访问权限问题，系统增加了多个安全访问函数：
+
+**1. `filter_sensitive_sso_settings(settings_input JSONB)`**
+
+- 过滤SSO配置中的敏感信息
+- 移除OAuth2/OIDC客户端密钥、客户端ID和重定向主机等敏感配置
+- 确保公开访问时不暴露敏感信息
+
+**2. `get_public_sso_providers()`**
+
+- 为登录页面提供SSO提供商列表
+- 自动过滤敏感信息
+- 支持按display_order排序
+- 只返回已启用的提供商
+
+**3. `get_sso_provider_config(provider_id UUID)`**
+
+- 为服务端API提供完整的SSO配置
+- 包含敏感信息，仅供服务端使用
+- 支持提供商启用状态检查
+
+**4. `get_enabled_sso_providers(protocol_filter TEXT)`**
+
+- 获取启用的SSO提供商列表
+- 支持按协议类型过滤
+- 过滤敏感信息，适用于前端展示
+
+**权限设置：**
+
+- `anon` 用户可以访问公开函数和视图
+- `authenticated` 用户可以访问所有函数
+- `service_role` 可以访问所有函数，包括完整配置
+
 #### domain_sso_mappings
 
 存储域名到SSO提供商的映射。
@@ -355,8 +390,8 @@ AgentifUI 使用 Supabase Storage 进行文件存储管理，主要用于用户�
 
 5. **SSO配置**
    - 只有管理员可以访问和管理SSO提供商配置
-   - 只有管理员可以访问和管理域名映射
-   - 只有管理员可以访问和管理认证设置
+   - 匿名用户可以通过安全函数访问过滤后的SSO提供商列表
+   - 服务端可以获取完整的SSO配置信息
 
 6. **群组应用权限**
    - 用户只能查看自己所属群组的应用权限
@@ -487,45 +522,11 @@ API密钥使用AES-256-GCM加密算法存储，格式为"iv:authTag:encryptedDat
 
 ## 初始数据
 
-系统预设了以下初始数据：
+由于架构简化，系统不再预设初始数据。用户注册后可以：
 
-### 默认AI配置(Dify)
-
-```sql
-INSERT INTO ai_configs (id, provider, app_id, api_key, api_url, settings)
-VALUES (
-  '00000000-0000-0000-0000-000000000001',
-  'dify',
-  'default',
-  'your_dify_api_key_here',
-  'https://api.dify.ai',
-  '{"model": "gpt-3.5-turbo", "temperature": 0.7}'
-);
-```
-
-### SSO示例配置
-
-```sql
-INSERT INTO sso_providers (id, name, protocol, settings, client_id, client_secret, metadata_url, enabled)
-VALUES
-  (
-    '00000000-0000-0000-0000-000000000002',
-    'Azure AD 示例',
-    'OIDC',
-    '{"tenant_id": "common", "authorization_endpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"}',
-    'azure-client-id-example',
-    'azure-client-secret-example',
-    'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
-    true
-  );
-```
-
-### 默认认证设置
-
-```sql
-INSERT INTO auth_settings (id)
-VALUES ('00000000-0000-0000-0000-000000000001');
-```
+1. 自主创建群组
+2. 管理员配置SSO提供商
+3. 管理员配置应用实例和API密钥
 
 ## 设计特点
 
@@ -564,6 +565,7 @@ SSO认证系统支持多种认证方式：
 - 基于域名的自动路由
 - 可配置的认证策略
 - 与用户资料无缝集成
+- 安全的配置信息过滤机制
 
 ### 可扩展性
 
@@ -673,3 +675,10 @@ SSO认证系统支持多种认证方式：
 ```
 
 这个数据库设计为 AgentifUI 平台提供了简化但功能完整的基础，支持用户管理、群组协作、AI对话、SSO认证和API集成等核心功能。设计注重简洁性、安全性和可扩展性，便于未来功能扩展和维护。
+
+**最新更新 (2025-07-09)：**
+
+- 增加了SSO安全访问函数，解决登录页面权限问题
+- 完善了敏感信息过滤机制
+- 提供了完整的权限控制和安全保护
+- 清理了过时的初始数据配置

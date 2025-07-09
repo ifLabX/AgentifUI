@@ -2,8 +2,8 @@
 
 本文档记录了AgentifUI项目中的数据库结构、功能和使用方法。本文档与当前数据库状态完全同步。
 
-**文档更新日期**: 2025-06-30  
-**数据库版本**: 包含至 20250630034523_fix_group_members_foreign_key.sql 的所有迁移
+**文档更新日期**: 2025-07-09  
+**数据库版本**: 包含至 20250709101517_fix_sso_login_secure_complete.sql 的所有迁移
 
 ## 当前系统状态
 
@@ -24,6 +24,8 @@
 - ✅ **头像存储系统**: 完整的Supabase Storage头像上传功能，支持公共访问和安全的权限控制
 - ✅ **架构简化**: 从复杂的组织+部门架构迁移到简单的群组权限系统
 - ✅ **外键关系修复**: 修复群组成员表外键关系，确保关联查询正确工作
+- ✅ **SSO安全访问**: 新增安全函数支持SSO登录页面权限访问，过滤敏感信息
+- ✅ **数据清理**: 移除过时的初始数据配置，支持动态配置管理
 
 ## 数据库概述
 
@@ -296,6 +298,7 @@ CREATE POLICY "管理员可以管理群组应用权限" ON group_app_permissions
    - `display_order` 字段：控制登录页面按钮显示顺序（数字越小越靠前）
    - `button_text` 字段：登录按钮显示文本，为空时使用name字段值
    - `settings` 字段：统一的JSONB配置结构，包含protocol_config、security、ui三个主要部分
+   - **SSO安全访问函数**: 新增多个安全函数支持登录页面权限访问和敏感信息过滤
 
 2. **SSO协议模板配置** (TypeScript管理)：
    - 协议模板现通过TypeScript配置文件管理：`@lib/config/sso-protocol-definitions.ts`
@@ -326,6 +329,38 @@ CREATE POLICY "管理员可以管理群组应用权限" ON group_app_permissions
   - 直接使用UUID类型值而非错误的TEXT转换
   - 解决了"column sso_provider_id is of type uuid but expression is of type text"错误
   - 确保所有字段的数据类型正确匹配数据库表结构
+
+#### SSO安全访问函数 (2025-07-09)
+
+为了解决SSO登录页面访问权限问题，系统增加了多个安全访问函数：
+
+**`filter_sensitive_sso_settings(settings_input JSONB)`**
+
+- 过滤SSO配置中的敏感信息
+- 移除OAuth2/OIDC客户端密钥、客户端ID和重定向主机等敏感配置
+- 使用SECURITY DEFINER确保安全执行
+
+**`get_public_sso_providers()`**
+
+- 为登录页面提供SSO提供商列表
+- 自动过滤敏感信息
+- 支持按display_order排序
+- 只返回已启用的提供商
+- 支持匿名用户访问
+
+**`get_sso_provider_config(provider_id UUID)`**
+
+- 为服务端API提供完整的SSO配置
+- 包含敏感信息，仅供服务端使用
+- 支持提供商启用状态检查
+- 参数验证和错误处理
+
+**`get_enabled_sso_providers(protocol_filter TEXT)`**
+
+- 获取启用的SSO提供商列表
+- 支持按协议类型过滤
+- 过滤敏感信息，适用于前端展示
+- 支持匿名访问
 
 ### 存储和文件管理
 
@@ -804,6 +839,19 @@ if (!isAdmin) return <AccessDenied />;
   - **开发体验优化**：配置修改无需数据库迁移，支持版本控制和代码审查
   - **安全迁移**：包含完整的存在性检查和清理验证，确保迁移过程安全可靠
 
+### 2025-07-09 SSO安全访问修复 - 登录页面权限问题
+
+- `/supabase/migrations/20250709101517_fix_sso_login_secure_complete.sql`: 修复SSO登录页面访问问题，提供完整settings但过滤敏感信息
+
+  **修复特性：**
+  - **安全函数增强**: 新增`filter_sensitive_sso_settings()`函数过滤敏感配置信息
+  - **公开SSO提供商**: 创建`get_public_sso_providers()`函数支持匿名用户获取SSO列表
+  - **服务端配置**: 新增`get_sso_provider_config()`函数为服务端API提供完整配置
+  - **协议过滤**: 实现`get_enabled_sso_providers()`函数支持按协议过滤
+  - **权限设置**: 完整的权限配置支持anon、authenticated和service_role角色
+  - **兼容视图**: 创建`public_sso_providers`视图确保前端兼容性
+  - **敏感信息保护**: 自动移除客户端密钥、客户端ID等敏感配置项
+
 ### 2025-06-30 架构简化 - 群组权限系统迁移
 
 - `/supabase/migrations/20250630021741_migrate_to_groups_system.sql`: 从复杂的组织+部门架构迁移到简化的群组权限系统
@@ -856,6 +904,16 @@ if (!isAdmin) return <AccessDenied />;
 4. **视图重建** (20250601000500): 重新创建安全视图，使用 security_invoker 模式
 5. **权限修复** (20250601000600): 发现权限问题，改回 SECURITY DEFINER 模式
 
+### SSO系统演进
+
+SSO系统从基础实现到完善的安全访问机制：
+
+1. **基础SSO实现** (20250617185202): 添加CAS SSO支持和用户管理函数
+2. **类型修复** (20250618160000): 修复UUID类型转换问题
+3. **动态配置** (20250620131421): 扩展SSO提供商表，支持UI配置
+4. **架构简化** (20250627000001): 移除数据库协议模板，改用TypeScript配置
+5. **安全访问** (20250709101517): 增加安全函数，解决登录页面权限问题
+
 ### 最终安全方案
 
 用户管理系统采用以下安全机制：
@@ -865,6 +923,13 @@ if (!isAdmin) return <AccessDenied />;
 - **中间件验证**：前端路由级别的管理员身份验证
 - **完整功能保留**：管理员可以安全访问用户数据和敏感信息
 
+SSO安全访问机制：
+
+- **敏感信息过滤**：自动过滤客户端密钥等敏感配置
+- **权限分层**：区分匿名、认证用户和服务端权限
+- **安全函数**：使用SECURITY DEFINER确保安全执行
+- **兼容性保证**：提供视图和函数双重访问方式
+
 ### 权限保护机制
 
 系统通过多层保护确保安全：
@@ -873,3 +938,4 @@ if (!isAdmin) return <AccessDenied />;
 2. **函数级验证**：所有管理函数都包含权限检查
 3. **视图级隔离**：非管理员查询返回空结果
 4. **批量操作安全**：包含自我保护和管理员保护机制
+5. **SSO敏感信息保护**：自动过滤敏感配置，确保登录页面安全访问
