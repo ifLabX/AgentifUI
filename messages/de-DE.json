@@ -626,6 +626,7 @@
         "helpText": "Konto wird bei der ersten Anmeldung automatisch erstellt",
         "contactText": "Bitte kontaktieren Sie den Systemadministrator, wenn Sie Fragen haben",
         "startError": "SSO-Anmeldung konnte nicht gestartet werden, bitte versuchen Sie es später erneut",
+        "noProvider": "Keine SSO-Anmeldemethoden verfügbar",
         "processing": {
           "title": "SSO-Anmeldung",
           "processing": "SSO-Anmeldung wird verarbeitet...",

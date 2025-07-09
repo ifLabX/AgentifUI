@@ -626,6 +626,7 @@
         "helpText": "La cuenta se creará automáticamente en el primer inicio de sesión",
         "contactText": "Por favor contacta al administrador del sistema si tienes alguna pregunta",
         "startError": "Error al iniciar el inicio de sesión SSO, por favor inténtalo más tarde",
+        "noProvider": "No hay métodos de inicio de sesión SSO disponibles en este momento",
         "processing": {
           "title": "Inicio de Sesión SSO",
           "processing": "Procesando inicio de sesión SSO...",

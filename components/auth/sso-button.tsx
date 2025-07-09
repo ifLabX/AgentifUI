@@ -2,10 +2,12 @@
 
 import { Button } from '@components/ui/button';
 import { useTheme } from '@lib/hooks/use-theme';
+import { createClient } from '@lib/supabase/client';
+import type { PublicSsoProvider, SsoProvider } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { clearCacheOnLogin } from '@lib/utils/cache-cleanup';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -18,6 +20,7 @@ interface SSOButtonProps {
   size?: 'default' | 'sm' | 'lg';
   disabled?: boolean;
   children?: React.ReactNode;
+  providerId?: string; // 特定提供商ID
 }
 
 export function SSOButton({
@@ -27,6 +30,7 @@ export function SSOButton({
   size = 'default',
   disabled = false,
   children,
+  providerId,
 }: SSOButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations('pages.auth.sso');
@@ -44,7 +48,10 @@ export function SSOButton({
         params.set('returnUrl', returnUrl);
       }
 
-      const ssoLoginUrl = `/api/sso/bistu/login${params.toString() ? '?' + params.toString() : ''}`;
+      // 动态构建SSO登录URL
+      const ssoLoginUrl = providerId
+        ? `/api/sso/${providerId}/login${params.toString() ? '?' + params.toString() : ''}`
+        : `/api/sso/cas/login${params.toString() ? '?' + params.toString() : ''}`;
 
       // 重定向到SSO登录接口
       window.location.href = ssoLoginUrl;
@@ -69,7 +76,7 @@ export function SSOButton({
       disabled={disabled || isLoading}
       onClick={handleSSOLogin}
     >
-      {isLoading ? (
+      {isLoading && (
         <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
           <circle
             className="opacity-25"
@@ -86,15 +93,6 @@ export function SSOButton({
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-      ) : (
-        <svg
-          className="h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-        </svg>
       )}
 
       {isLoading ? t('jumpingButton') : children || t('button')}
@@ -102,24 +100,7 @@ export function SSOButton({
   );
 }
 
-// 简化版的SSO登录按钮，用于快速集成
-export function SimpleSSOButton({
-  returnUrl,
-  className,
-}: {
-  returnUrl?: string;
-  className?: string;
-}) {
-  const t = useTranslations('pages.auth.sso');
-
-  return (
-    <SSOButton returnUrl={returnUrl} className={className} variant="gradient">
-      <span className="font-serif text-sm">{t('simpleButton')}</span>
-    </SSOButton>
-  );
-}
-
-// 带有详细说明的SSO登录卡片
+// 带有详细说明的SSO登录卡片 - 动态获取所有启用的SSO提供商
 export function SSOCard({
   returnUrl,
   className,
@@ -127,8 +108,137 @@ export function SSOCard({
   returnUrl?: string;
   className?: string;
 }) {
+  const [providers, setProviders] = useState<PublicSsoProvider[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { isDark } = useTheme();
   const t = useTranslations('pages.auth.sso');
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const supabase = createClient();
+
+        // 使用安全的公开视图获取所有启用的SSO提供商
+        // 按display_order排序，支持多个提供商
+        const { data: providers, error } = await supabase
+          .from('public_sso_providers')
+          .select('*');
+
+        console.log('=== SSO安全查询 ===');
+        console.log('启用的SSO提供商:', providers);
+        console.log('查询错误:', error);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // 确保数据按display_order排序（数据库已排序，但防止意外）
+        const sortedProviders = (providers || []).sort((a, b) => {
+          // display_order为null的排在最后
+          if (a.display_order === null && b.display_order === null)
+            return a.name.localeCompare(b.name);
+          if (a.display_order === null) return 1;
+          if (b.display_order === null) return -1;
+          return a.display_order - b.display_order;
+        });
+
+        setProviders(sortedProviders);
+      } catch (err) {
+        console.error('Error fetching SSO providers:', err);
+        setError(err instanceof Error ? err.message : t('startError'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProviders();
+  }, [t]);
+
+  if (loading) {
+    return (
+      <div
+        className={cn(
+          'rounded-lg border p-6 shadow-sm',
+          'font-serif transition-shadow hover:shadow-md',
+          isDark
+            ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
+            : 'border-gray-200 bg-white',
+          className
+        )}
+      >
+        <div className="space-y-4 text-center">
+          <Button variant="outline" disabled className="w-full">
+            <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            {t('processing.processing')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className={cn(
+          'rounded-lg border p-6 shadow-sm',
+          'font-serif transition-shadow hover:shadow-md',
+          isDark
+            ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
+            : 'border-gray-200 bg-white',
+          className
+        )}
+      >
+        <div className="space-y-4 text-center">
+          <div className="text-sm text-red-600">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (providers.length === 0) {
+    return (
+      <div
+        className={cn(
+          'rounded-lg border p-6 shadow-sm',
+          'font-serif transition-shadow hover:shadow-md',
+          isDark
+            ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
+            : 'border-gray-200 bg-white',
+          className
+        )}
+      >
+        <div className="space-y-4 text-center">
+          <div
+            className={cn(
+              'text-sm',
+              isDark ? 'text-stone-400' : 'text-gray-500'
+            )}
+          >
+            {t('noProvider')}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -162,8 +272,30 @@ export function SSOCard({
           </p>
         </div>
 
-        {/* Login button */}
-        <SSOButton returnUrl={returnUrl} className="w-full font-serif" />
+        {/* SSO登录按钮列表 - 按display_order排序显示 */}
+        <div className="space-y-3">
+          {providers.map(provider => {
+            // 使用新的settings字段，包含过滤后的完整配置
+            const settings = provider.settings as any;
+            const uiSettings = settings?.ui || {};
+            const displayName =
+              uiSettings?.displayName || provider.button_text || provider.name;
+            const icon = uiSettings?.icon || '🏛️';
+
+            return (
+              <SSOButton
+                key={provider.id}
+                returnUrl={returnUrl}
+                providerId={provider.id}
+                variant="gradient"
+                className="w-full font-serif"
+              >
+                <span className="mr-2">{icon}</span>
+                {displayName}
+              </SSOButton>
+            );
+          })}
+        </div>
 
         {/* Help information */}
         <div

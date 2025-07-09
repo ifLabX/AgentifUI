@@ -313,6 +313,19 @@ export interface SsoProvider {
   updated_at: string;
 }
 
+// 🎯 新增：公开SSO提供商视图接口
+// 用于登录页面安全访问，包含过滤敏感信息后的完整settings
+export interface PublicSsoProvider {
+  id: string;
+  name: string;
+  protocol: SsoProtocol;
+  enabled: boolean;
+  display_order: number;
+  button_text: string | null;
+  settings: any; // 过滤敏感信息后的完整settings
+  created_at: string;
+}
+
 // 🎯 新增：创建SSO提供商时的数据类型
 export interface CreateSsoProviderData {
   name: string;

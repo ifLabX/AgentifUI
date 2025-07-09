@@ -626,6 +626,7 @@
         "helpText": "Le compte sera créé automatiquement lors de la première connexion",
         "contactText": "Veuillez contacter l'administrateur système si vous avez des questions",
         "startError": "Échec du démarrage de la connexion SSO, veuillez réessayer plus tard",
+        "noProvider": "Aucune méthode de connexion SSO disponible pour le moment",
         "processing": {
           "title": "Connexion SSO",
           "processing": "Traitement de la connexion SSO en cours...",
