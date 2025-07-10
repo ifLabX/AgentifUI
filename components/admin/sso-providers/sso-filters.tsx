@@ -1,26 +1,13 @@
-/**
- * SSO Providers Filters Component
- * @description Modern, elegant filter interface for SSO providers with advanced search and filtering options
- * @module components/admin/sso-providers/sso-filters
- */
-
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
 import { useSsoProvidersStore } from '@lib/stores/sso-providers-store';
 import { cn } from '@lib/utils';
-// SsoProtocol import removed - simplified interface
 import { RotateCcw, Search, X } from 'lucide-react';
 
 import { useCallback, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
-
-/**
- * SSO Providers Filters Component
- * @description Modern, elegant filter interface for SSO providers with advanced search and filtering options
- * @module components/admin/sso-providers/sso-filters
- */
 
 export function SsoFilters() {
   const { isDark } = useTheme();

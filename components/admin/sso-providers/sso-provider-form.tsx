@@ -1,9 +1,3 @@
-/**
- * SSO Provider Form Component
- * @description Modern, elegant form for creating and editing SSO providers with visual JSONB editing
- * @module components/admin/sso-providers/sso-provider-form
- */
-
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
@@ -17,48 +11,22 @@ import {
 import { cn } from '@lib/utils';
 import {
   AlertCircle,
-  CheckCircle,
   Code,
-  ExternalLink,
-  Eye,
-  EyeOff,
   Globe,
   Key,
-  Layers,
   Loader2,
   Lock,
   Palette,
   Save,
   Settings,
   Shield,
-  Sparkles,
-  Users,
   X,
-  Zap,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
-
-/**
- * SSO Provider Form Component
- * @description Modern, elegant form for creating and editing SSO providers with visual JSONB editing
- * @module components/admin/sso-providers/sso-provider-form
- */
-
-/**
- * SSO Provider Form Component
- * @description Modern, elegant form for creating and editing SSO providers with visual JSONB editing
- * @module components/admin/sso-providers/sso-provider-form
- */
-
-/**
- * SSO Provider Form Component
- * @description Modern, elegant form for creating and editing SSO providers with visual JSONB editing
- * @module components/admin/sso-providers/sso-provider-form
- */
 
 interface SsoProviderFormProps {
   isOpen: boolean;
@@ -67,9 +35,6 @@ interface SsoProviderFormProps {
   onClose: () => void;
 }
 
-/**
- * Default settings template for new providers
- */
 const getDefaultSettings = (protocol: SsoProtocol): SsoProviderSettings => {
   const baseSettings: SsoProviderSettings = {
     protocol_config: {

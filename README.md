@@ -99,9 +99,6 @@ pnpm run format
 # Check code formatting
 pnpm run format:check
 
-# Fix linting issues and format code
-pnpm run code:fix
-
 # Run type checking
 pnpm run type-check
 

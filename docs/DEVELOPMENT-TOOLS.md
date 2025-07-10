@@ -21,20 +21,11 @@ pnpm run format
 
 # 检查是否需要格式化
 pnpm run format:check
-
-# 格式化并修复 lint 问题
-pnpm run code:fix
 ```
 
 ### 代码质量
 
 ```bash
-# 运行 ESLint 检查
-pnpm run lint
-
-# 修复可自动修复的问题
-pnpm run lint:fix
-
 # TypeScript 类型检查
 pnpm run type-check
 
@@ -74,7 +65,7 @@ pnpm run build        # 构建项目
    - Tailwind CSS IntelliSense
 
 2. **使用项目命令**:
-   - 提交前运行 `pnpm run code:fix`
+   - 提交前运行 `pnpm run type-check`
    - 让 VSCode 自动格式化
    - 信任自动化工具
 
@@ -98,9 +89,6 @@ pnpm run build        # 构建项目
 # 检查问题
 pnpm run format:check
 pnpm run lint
-
-# 修复问题
-pnpm run code:fix
 
 # 重新提交
 git commit -m "your message"

@@ -1,9 +1,3 @@
-/**
- * SSO Providers Statistics Cards Component
- * @description Modern, elegant statistics cards for SSO providers with animations and responsive design
- * @module components/admin/sso-providers/sso-stats-cards
- */
-
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
@@ -14,12 +8,6 @@ import { TrendingDown, TrendingUp } from 'lucide-react';
 import React from 'react';
 
 import { useTranslations } from 'next-intl';
-
-/**
- * SSO Providers Statistics Cards Component
- * @description Modern, elegant statistics cards for SSO providers with animations and responsive design
- * @module components/admin/sso-providers/sso-stats-cards
- */
 
 interface StatCard {
   title: string;

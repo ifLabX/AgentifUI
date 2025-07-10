@@ -1,9 +1,3 @@
-/**
- * SSO Providers Table Component
- * @description Modern, elegant table for SSO providers with advanced interactions and responsive design
- * @module components/admin/sso-providers/sso-table
- */
-
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
@@ -31,18 +25,6 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { TableDropdown } from './table-dropdown';
-
-/**
- * SSO Providers Table Component
- * @description Modern, elegant table for SSO providers with advanced interactions and responsive design
- * @module components/admin/sso-providers/sso-table
- */
-
-/**
- * SSO Providers Table Component
- * @description Modern, elegant table for SSO providers with advanced interactions and responsive design
- * @module components/admin/sso-providers/sso-table
- */
 
 interface SsoTableProps {
   onEdit: (provider: SsoProvider) => void;
