@@ -56,8 +56,16 @@ export async function GET(
     const casService = await CASConfigService.createCASService(providerId);
     const casConfig = casService.getConfig();
 
-    // 验证ticket
-    const serviceUrl = `${appUrl}/api/sso/${providerId}/callback`;
+    // Validate ticket - ensure service URL matches exactly with login time
+    // Fix: Use the same logic as login time to build service URL
+    let serviceUrl = `${appUrl}/api/sso/${providerId}/callback`;
+    if (returnUrl) {
+      // If returnUrl parameter exists, add it to service URL
+      // This maintains consistency with login time service URL
+      serviceUrl = `${serviceUrl}?returnUrl=${encodeURIComponent(returnUrl)}`;
+    }
+    console.log(`Using service URL for ticket validation: ${serviceUrl}`);
+
     const validationResult = await casService.validateTicket(
       ticket,
       serviceUrl
