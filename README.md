@@ -144,7 +144,3 @@ docker run -p 8080:8080 ghcr.io/agentifui/community:latest
 - All Chinese sections have been fully translated and slotted into “Key Features,” “Tech Stack,” “Architecture,” etc.
 - File paths, environment steps and doc links mirror the Chinese original.
 - References to **ifLabX community** and **Example Corp** remain for consistency with the legal documents.
-
-```
-
-```
