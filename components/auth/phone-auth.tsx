@@ -19,7 +19,6 @@ export default function PhoneAuth() {
   const supabase = createClient();
   const t = useTranslations('pages.auth.phoneLogin');
 
-  // send OTP
   const sendOTP = async () => {
     if (!phone.trim()) {
       toast.error(t('errors.phoneRequired'));
@@ -44,15 +43,16 @@ export default function PhoneAuth() {
 
       toast.success(t('success.otpSent'));
       setStep('otp');
-    } catch (error: any) {
+    } catch (error) {
       console.error('send OTP failed:', error);
-      toast.error(error.message || t('errors.sendFailed'));
+      const errorMessage =
+        error instanceof Error ? error.message : t('errors.sendFailed');
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // verify OTP
   const verifyOTP = async () => {
     if (!otp.trim()) {
       toast.error(t('errors.otpRequired'));
@@ -76,18 +76,17 @@ export default function PhoneAuth() {
       if (error) throw error;
 
       toast.success(t('success.verifySuccess'));
-
-      // redirect after login success
       window.location.href = '/chat';
-    } catch (error: any) {
+    } catch (error) {
       console.error('verify failed:', error);
-      toast.error(error.message || t('errors.verifyFailed'));
+      const errorMessage =
+        error instanceof Error ? error.message : t('errors.verifyFailed');
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // resend OTP
   const resendOTP = async () => {
     setStep('phone');
     setOtp('');
@@ -121,7 +120,6 @@ export default function PhoneAuth() {
       <div className="space-y-6">
         {step === 'phone' ? (
           <>
-            {/* phone number input */}
             <div>
               <label
                 htmlFor="phone"
@@ -162,7 +160,6 @@ export default function PhoneAuth() {
               </div>
             </div>
 
-            {/* send OTP button */}
             <button
               onClick={sendOTP}
               disabled={loading || !phone.trim()}
@@ -186,7 +183,6 @@ export default function PhoneAuth() {
           </>
         ) : (
           <>
-            {/* OTP input */}
             <div>
               <label
                 htmlFor="otp"
@@ -224,7 +220,6 @@ export default function PhoneAuth() {
               </p>
             </div>
 
-            {/* verify button */}
             <button
               onClick={verifyOTP}
               disabled={loading || otp.length !== 6}
@@ -243,7 +238,6 @@ export default function PhoneAuth() {
               )}
             </button>
 
-            {/* resend OTP button */}
             <button
               onClick={resendOTP}
               disabled={loading}
@@ -257,7 +251,6 @@ export default function PhoneAuth() {
               {t('resendButton')}
             </button>
 
-            {/* change phone button */}
             <button
               onClick={() => setStep('phone')}
               disabled={loading}

@@ -33,7 +33,6 @@ export function AppFilters({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // 🎯 监听滚动状态，控制左右滚动按钮的显示
   const updateScrollButtons = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } =
@@ -52,7 +51,6 @@ export function AppFilters({
     }
   }, [categories]);
 
-  // 🎯 滚动控制函数
   const scrollCategories = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = 200;
@@ -69,8 +67,6 @@ export function AppFilters({
     }
   };
 
-  // 🎯 重构：基于用户友好的tag分类，而非技术性的Dify应用类型
-  // 预定义常见标签的图标映射，提供更好的视觉体验
   const getCategoryDisplay = (category: string) => {
     if (category === t('categoryKeys.all')) {
       return { icon: '🏪', label: t('categories.all') };
@@ -79,10 +75,7 @@ export function AppFilters({
       return { icon: '⭐', label: t('categories.favorite') };
     }
 
-    // 🎯 创建分类映射函数 - 避免使用中文作为对象键
-    // 通过翻译键来匹配分类，确保代码的国际化友好性
     const getCategoryMapping = (cat: string) => {
-      // 功能分类（核心应用场景）
       if (cat === t('categories.writing'))
         return { icon: '✍️', label: t('categories.writing') };
       if (cat === t('categories.translation'))
@@ -100,7 +93,6 @@ export function AppFilters({
       if (cat === t('categories.assistant'))
         return { icon: '🤖', label: t('categories.assistant') };
 
-      // 应用场景（admin配置中的应用场景分类）
       if (cat === t('categories.textGeneration'))
         return { icon: '📄', label: t('categories.textGeneration') };
       if (cat === t('categories.document'))
@@ -112,7 +104,6 @@ export function AppFilters({
       if (cat === t('categories.generation'))
         return { icon: '✨', label: t('categories.generation') };
 
-      // 模型类型（admin配置中的模型类型分类）
       if (cat === t('categories.conversationModel'))
         return { icon: '💭', label: t('categories.conversationModel') };
       if (cat === t('categories.reasoningModel'))
@@ -122,7 +113,6 @@ export function AppFilters({
       if (cat === t('categories.multimodal'))
         return { icon: '🎨', label: t('categories.multimodal') };
 
-      // 技术特性（admin配置中的技术特性分类）
       if (cat === t('categories.highPrecision'))
         return { icon: '🎯', label: t('categories.highPrecision') };
       if (cat === t('categories.fastResponse'))
@@ -134,7 +124,6 @@ export function AppFilters({
       if (cat === t('categories.private'))
         return { icon: '🔒', label: t('categories.private') };
 
-      // 通用标签
       if (cat === t('categories.tools'))
         return { icon: '🛠️', label: t('categories.tools') };
       if (cat === t('categories.general'))
@@ -142,7 +131,6 @@ export function AppFilters({
       if (cat === t('categories.professional'))
         return { icon: '⭐', label: t('categories.professional') };
 
-      // 默认情况
       return { icon: '🏷️', label: category };
     };
 
@@ -151,7 +139,6 @@ export function AppFilters({
 
   return (
     <div className="mb-6 space-y-4">
-      {/* 搜索框 */}
       <div className="relative">
         <Search
           className={cn(
@@ -181,10 +168,7 @@ export function AppFilters({
         />
       </div>
 
-      {/* Single-line category tags with horizontal scrolling and fixed view toggle */}
-      {/* Ensures single line layout regardless of tag count, view toggle always visible */}
       <div className="flex items-center gap-3">
-        {/* 左滚动按钮 */}
         {canScrollLeft && (
           <button
             onClick={() => scrollCategories('left')}
@@ -205,14 +189,12 @@ export function AppFilters({
           </button>
         )}
 
-        {/* 分类标签容器 - 横向滚动 */}
         <div
           ref={scrollContainerRef}
           className="no-scrollbar flex-1 overflow-x-auto"
         >
           <div className="flex gap-2 pb-1">
             {' '}
-            {/* pb-1 留出滚动条空间 */}
             {categories.map(category => {
               const { icon, label } = getCategoryDisplay(category);
               const isSelected = selectedCategory === category;
@@ -278,7 +260,6 @@ export function AppFilters({
           </button>
         )}
 
-        {/* 视图切换 - 固定在右侧 */}
         <div
           className={cn(
             'flex flex-shrink-0 rounded-lg border p-1',

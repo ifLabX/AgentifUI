@@ -22,7 +22,6 @@ export function AppHeader({
 
   return (
     <div className="mb-6">
-      {/* 主标题区域 */}
       <div className="mb-2 flex items-center gap-3">
         <div
           className={cn(
@@ -45,7 +44,6 @@ export function AppHeader({
         </div>
       </div>
 
-      {/* 简洁的统计信息 */}
       <div
         className={cn(
           'flex items-center gap-4 font-serif text-sm',

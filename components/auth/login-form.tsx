@@ -21,7 +21,6 @@ export function LoginForm() {
   const { isDark } = useTheme();
   const t = useTranslations('pages.auth.login');
 
-  // check if SSO mode is enabled
   const ssoOnlyMode = process.env.NEXT_PUBLIC_SSO_ONLY_MODE === 'true';
 
   const [formData, setFormData] = useState({
@@ -48,10 +47,8 @@ export function LoginForm() {
     try {
       console.log('[login] start email password login process');
 
-      // clear cache of previous user before login to prevent data pollution
       clearCacheOnLogin();
 
-      // use Supabase Auth to login
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -64,12 +61,13 @@ export function LoginForm() {
 
       console.log('[login] email password login success');
 
-      // login success, redirect to chat page
       router.push('/chat');
-      router.refresh(); // refresh page to update user state
-    } catch (err: any) {
+      router.refresh();
+    } catch (err: unknown) {
       console.error('[login] email password login failed:', err);
-      setError(err.message || t('errors.loginFailed'));
+      const errorMessage =
+        err instanceof Error ? err.message : t('errors.loginFailed');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -111,18 +109,14 @@ export function LoginForm() {
 
       {/* Login options area */}
       <div className="space-y-6">
-        {/* Conditional rendering: only show SSO login in SSO-only mode */}
         {ssoOnlyMode && <SSOCard returnUrl="/chat" />}
 
-        {/* Conditional rendering: only show social login in non-SSO-only mode */}
         {!ssoOnlyMode && (
           <>
-            {/* Social login area */}
             <SocialAuthButtons type="login" redirectTo="/chat" />
           </>
         )}
 
-        {/* Divider line: adjust display text based on mode */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div
@@ -146,7 +140,6 @@ export function LoginForm() {
           </div>
         </div>
 
-        {/* Email password login - always shown */}
         <>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-5">
@@ -228,7 +221,6 @@ export function LoginForm() {
               </div>
             </div>
 
-            {/* Conditional rendering: only show forgot password link in non-SSO-only mode */}
             {!ssoOnlyMode && (
               <div className="flex items-center justify-end">
                 <div className="text-sm">
@@ -259,10 +251,8 @@ export function LoginForm() {
             </div>
           </form>
 
-          {/* Conditional rendering: only show phone login and register links in non-SSO-only mode */}
           {!ssoOnlyMode && (
             <div className="mt-6 space-y-3 text-center">
-              {/* Phone login link */}
               <div>
                 <Link
                   href="/phone-login"

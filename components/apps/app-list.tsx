@@ -22,9 +22,9 @@ interface AppInstance {
   config?: {
     app_metadata?: {
       dify_apptype?: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

@@ -42,8 +42,6 @@ export function RegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // form validation
     if (!formData.name.trim()) {
       setError(t('errors.nameRequired'));
       return;
@@ -64,7 +62,6 @@ export function RegisterForm() {
       return;
     }
 
-    // validate username format (if provided)
     if (
       formData.username.trim() &&
       !/^[a-zA-Z0-9_-]{2,20}$/.test(formData.username.trim())
@@ -77,20 +74,18 @@ export function RegisterForm() {
     setError('');
 
     try {
-      // use Supabase Auth to register
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
-            full_name: formData.name.trim(), // remove leading and trailing spaces
-            username: formData.username.trim() || undefined, // remove spaces, if empty, do not pass
+            full_name: formData.name.trim(),
+            username: formData.username.trim() || undefined,
           },
         },
       });
 
       if (signUpError) {
-        // handle common registration errors
         if (signUpError.message.includes('already registered')) {
           throw new Error(t('errors.emailExists'));
         } else if (signUpError.message.includes('Password should be')) {
@@ -102,16 +97,15 @@ export function RegisterForm() {
         }
       }
 
-      // check if email verification is required
       if (data.user && !data.user.email_confirmed_at) {
-        // email verification is required
         router.push('/login?registered=true&verify=true');
       } else {
-        // direct registration success (if email verification is disabled)
         router.push('/login?registered=true');
       }
-    } catch (err: any) {
-      setError(err.message || t('errors.registerFailed'));
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : t('errors.registerFailed');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -153,10 +147,8 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* Social login area */}
       <SocialAuthButtons type="register" redirectTo="/chat" />
 
-      {/* Divider line */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div

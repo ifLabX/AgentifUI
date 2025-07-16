@@ -29,95 +29,61 @@ export function ResetPasswordForm() {
   const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
   const { isDark } = useTheme();
 
-  // verify user authentication status
   useEffect(() => {
     const checkUserSession = async () => {
       try {
         const supabase = createClient();
 
-        // debug: show all URL parameters
-        console.log('=== reset password debug info ===');
-        console.log('full URL:', window.location.href);
-        console.log('URL parameters:', window.location.search);
-
-        // check URL parameters
         const access_token = searchParams.get('access_token');
         const refresh_token = searchParams.get('refresh_token');
         const type = searchParams.get('type');
         const token_hash = searchParams.get('token_hash');
 
-        console.log('URL parameters parsed:');
-        console.log('- access_token:', access_token);
-        console.log('- refresh_token:', refresh_token);
-        console.log('- type:', type);
-        console.log('- token_hash:', token_hash);
-
-        // handle Supabase's reset password redirect
         if (type === 'recovery' && token_hash) {
-          console.log(
-            'detected Supabase reset password link, trying to verify token'
-          );
-
-          // use the correct method to handle reset password token
-          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+          const { error: verifyError } = await supabase.auth.verifyOtp({
             type: 'recovery',
             token_hash: token_hash,
           });
 
           if (verifyError) {
-            console.error(
-              'reset password token verification failed:',
-              verifyError
-            );
             setError(t('errors.linkInvalid'));
             setIsTokenValid(false);
           } else {
-            console.log('reset password token verification success:', data);
             setIsTokenValid(true);
           }
           return;
         }
 
-        // handle direct access_token (compatible with old version)
         if (access_token) {
-          console.log('detected access_token, trying to set session');
-
           const { error: sessionError } = await supabase.auth.setSession({
             access_token,
             refresh_token: refresh_token || '',
           });
 
           if (sessionError) {
-            console.error('session set failed:', sessionError);
             setError(t('errors.linkInvalid'));
             setIsTokenValid(false);
           } else {
-            console.log('session set success');
             setIsTokenValid(true);
           }
           return;
         }
 
-        // check if there is a valid session
         const {
           data: { user },
           error: userError,
         } = await supabase.auth.getUser();
 
         if (userError) {
-          console.error('get user info failed:', userError);
           setError(t('errors.verifyFailed'));
           setIsTokenValid(false);
         } else if (user) {
-          console.log('user authenticated:', user.email);
           setIsTokenValid(true);
         } else {
-          console.log('user not authenticated, and no valid reset token');
           setError(t('errors.linkExpired'));
           setIsTokenValid(false);
         }
-      } catch (err) {
-        console.error('session verification exception:', err);
+      } catch {
         setError(t('errors.verifyFailed'));
         setIsTokenValid(false);
       }
@@ -133,7 +99,6 @@ export function ResetPasswordForm() {
       [name]: value,
     }));
 
-    // clear error message
     if (error) setError('');
   };
 
@@ -166,14 +131,11 @@ export function ResetPasswordForm() {
 
     try {
       const supabase = createClient();
-
-      // update password
       const { error } = await supabase.auth.updateUser({
         password: formData.password,
       });
 
       if (error) {
-        // handle common errors
         if (error.message.includes('Password should be')) {
           throw new Error(t('errors.passwordWeak'));
         } else if (error.message.includes('session')) {
@@ -183,21 +145,19 @@ export function ResetPasswordForm() {
         }
       }
 
-      // reset success
       setIsSuccess(true);
-
-      // redirect to login page after 3 seconds
       setTimeout(() => {
         router.push('/login?reset=success');
       }, 3000);
-    } catch (err: any) {
-      setError(err.message || t('errors.resetFailed'));
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : t('errors.resetFailed');
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // loading state during token verification
   if (isTokenValid === null) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 px-4 sm:px-6 lg:px-8">
@@ -240,7 +200,6 @@ export function ResetPasswordForm() {
     );
   }
 
-  // invalid token state
   if (isTokenValid === false) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 px-4 sm:px-6 lg:px-8">
@@ -311,7 +270,6 @@ export function ResetPasswordForm() {
     );
   }
 
-  // reset success state
   if (isSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 px-4 sm:px-6 lg:px-8">
@@ -380,7 +338,6 @@ export function ResetPasswordForm() {
     );
   }
 
-  // main reset password form
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 px-4 sm:px-6 lg:px-8">
       <div

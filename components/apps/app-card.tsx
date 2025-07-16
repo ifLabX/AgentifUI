@@ -24,9 +24,9 @@ interface AppInstance {
   config?: {
     app_metadata?: {
       dify_apptype?: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -43,16 +43,13 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
   const t = useTranslations('pages.apps.market');
   const tDifyTypes = useTranslations('difyAppTypes');
 
-  // 获取Dify应用类型信息
   const difyAppType = app.config?.app_metadata?.dify_apptype || app.difyAppType;
   const difyTypeInfo = difyAppType
     ? getDifyAppTypeInfo(difyAppType, tDifyTypes)
     : null;
 
-  // 检查是否为收藏应用
   const isAppFavorite = isFavorite(app.instanceId);
 
-  // 处理收藏切换
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
@@ -76,7 +73,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
     }
   };
 
-  // 获取应用图标 - 更小尺寸
   const getAppIcon = (app: AppInstance) => {
     if (app.iconUrl) {
       return (
@@ -87,8 +83,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
         />
       );
     }
-
-    // 使用彩色渐变背景 - 更小尺寸
     const getIconColors = () => {
       if (difyTypeInfo) {
         switch (difyAppType) {
@@ -167,7 +161,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
     >
       {viewMode === 'grid' ? (
         <div className="flex h-full flex-col p-4">
-          {/* 右上角收藏按钮 */}
           <button
             onClick={handleToggleFavorite}
             className={cn(
@@ -193,7 +186,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
             />
           </button>
 
-          {/* 应用图标和标题 */}
           <div className="mb-2 flex items-center gap-3">
             {getAppIcon(app)}
             <h3
@@ -206,7 +198,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
             </h3>
           </div>
 
-          {/* 应用描述 - 固定高度 */}
           <div className="mb-3 flex-1">
             <p
               className={cn(
@@ -218,7 +209,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
             </p>
           </div>
 
-          {/* 底部信息 - 固定在底部 */}
           <div className="mt-auto flex items-center justify-between text-xs">
             <span
               className={cn(
@@ -238,12 +228,9 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
           </div>
         </div>
       ) : (
-        // 列表视图
         <>
-          {/* 应用图标 */}
           <div className="flex-shrink-0">{getAppIcon(app)}</div>
 
-          {/* 应用信息 */}
           <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-center gap-2">
               <h3
@@ -279,7 +266,6 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
             </p>
           </div>
 
-          {/* 操作按钮 */}
           <div className="flex items-center gap-2">
             <button
               onClick={handleToggleFavorite}

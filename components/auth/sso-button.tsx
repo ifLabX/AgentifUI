@@ -11,8 +11,6 @@ import { useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// SSO login button component
-// provide unified SSO login entry interface
 interface SSOButtonProps {
   returnUrl?: string;
   className?: string;
@@ -39,27 +37,21 @@ export function SSOButton({
     try {
       setIsLoading(true);
 
-      // clear cache of previous user before SSO login to prevent data pollution
       clearCacheOnLogin();
 
-      // build SSO login URL
       const params = new URLSearchParams();
       if (returnUrl) {
         params.set('returnUrl', returnUrl);
       }
 
-      // dynamically build SSO login URL
       const ssoLoginUrl = providerId
         ? `/api/sso/${providerId}/login${params.toString() ? '?' + params.toString() : ''}`
         : `/api/sso/cas/login${params.toString() ? '?' + params.toString() : ''}`;
-
-      // redirect to SSO login interface
       window.location.href = ssoLoginUrl;
     } catch (error) {
       console.error('[SSO login] failed to start SSO login:', error);
       setIsLoading(false);
 
-      // show error message
       alert(t('startError'));
     }
   };
@@ -100,7 +92,6 @@ export function SSOButton({
   );
 }
 
-// SSO login card with detailed description - dynamically fetch all enabled SSO providers
 export function SSOCard({
   returnUrl,
   className,
@@ -122,23 +113,15 @@ export function SSOCard({
 
         const supabase = createClient();
 
-        // use safe public view to get all enabled SSO providers
-        // sort by display_order, support multiple providers
         const { data: providers, error } = await supabase
           .from('public_sso_providers')
           .select('*');
-
-        console.log('=== SSO safe query ===');
-        console.log('Enabled SSO providers:', providers);
-        console.log('Query error:', error);
 
         if (error) {
           throw new Error(error.message);
         }
 
-        // ensure data is sorted by display_order (database is sorted, but prevent unexpected)
         const sortedProviders = (providers || []).sort((a, b) => {
-          // display_order is null at the end
           if (a.display_order === null && b.display_order === null)
             return a.name.localeCompare(b.name);
           if (a.display_order === null) return 1;
@@ -252,7 +235,6 @@ export function SSOCard({
       )}
     >
       <div className="space-y-4 text-center">
-        {/* Title and description */}
         <div>
           <h3
             className={cn(
@@ -272,11 +254,12 @@ export function SSOCard({
           </p>
         </div>
 
-        {/* SSO login button list - sorted by display_order */}
         <div className="space-y-3">
           {providers.map(provider => {
             // use new settings field, include filtered full config
-            const settings = provider.settings as any;
+            const settings = provider.settings as {
+              ui?: { displayName?: string; icon?: string };
+            };
             const uiSettings = settings?.ui || {};
             const displayName =
               uiSettings?.displayName || provider.button_text || provider.name;
