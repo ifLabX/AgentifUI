@@ -1,10 +1,10 @@
 /**
- * API密钥管理相关的数据库查询函数
+ * Database query functions for API key management.
  *
- * 本文件包含与API密钥表(api_keys)相关的所有数据库操作
- * 更新为使用统一的数据服务和Result类型
+ * This file contains all database operations related to the api_keys table.
+ * Updated to use unified data service and Result type.
  */
-import { CacheKeys, cacheService } from '@lib/services/db/cache-service';
+import { cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
 import { Result, failure, success } from '@lib/types/result';
 
@@ -12,13 +12,13 @@ import { createClient } from '../supabase/client';
 import { ApiKey } from '../types/database';
 import { decryptApiKey, encryptApiKey } from '../utils/encryption';
 
-// 保持与现有代码的兼容性，同时使用新的数据服务
+// Maintain compatibility with existing code while using the new data service.
 const supabase = createClient();
 
 /**
- * 获取指定服务实例的API密钥（优化版本）
- * @param serviceInstanceId 服务实例ID
- * @returns API密钥对象的Result，如果未找到则返回null
+ * Get the API key for a specific service instance (optimized version).
+ * @param serviceInstanceId Service instance ID
+ * @returns Result containing the API key object, or null if not found
  */
 export async function getApiKeyByServiceInstance(
   serviceInstanceId: string
@@ -31,16 +31,16 @@ export async function getApiKeyByServiceInstance(
     },
     {
       cache: true,
-      cacheTTL: 10 * 60 * 1000, // 10分钟缓存
+      cacheTTL: 10 * 60 * 1000, // 10 minutes cache
     }
   );
 }
 
 /**
- * 创建新的API密钥（优化版本）
- * @param apiKey API密钥对象
- * @param isEncrypted 密钥值是否已经加密，默认为false
- * @returns 创建的API密钥对象Result，如果创建失败则返回错误
+ * Create a new API key (optimized version).
+ * @param apiKey API key object
+ * @param isEncrypted Whether the key value is already encrypted, default is false
+ * @returns Result containing the created API key object, or error if creation fails
  */
 export async function createApiKey(
   apiKey: Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>,
@@ -49,12 +49,14 @@ export async function createApiKey(
   try {
     let keyValue = apiKey.key_value;
 
-    // 如果密钥未加密，则进行加密
+    // Encrypt the key if it is not already encrypted
     if (!isEncrypted) {
       const masterKey = process.env.API_ENCRYPTION_KEY;
       if (!masterKey) {
         return failure(
-          new Error('API_ENCRYPTION_KEY 环境变量未设置，无法加密 API 密钥')
+          new Error(
+            'API_ENCRYPTION_KEY environment variable is not set, cannot encrypt API key'
+          )
         );
       }
       keyValue = encryptApiKey(apiKey.key_value, masterKey);
@@ -65,7 +67,7 @@ export async function createApiKey(
       key_value: keyValue,
     });
 
-    // 清除相关缓存
+    // Clear related cache
     if (result.success) {
       cacheService.deletePattern('api_keys:*');
     }
@@ -77,11 +79,11 @@ export async function createApiKey(
 }
 
 /**
- * 更新API密钥（优化版本）
- * @param id API密钥ID
- * @param updates 需要更新的字段
- * @param isEncrypted 密钥值是否已经加密，默认为false
- * @returns 更新后的API密钥对象Result，如果更新失败则返回错误
+ * Update an API key (optimized version).
+ * @param id API key ID
+ * @param updates Fields to update
+ * @param isEncrypted Whether the key value is already encrypted, default is false
+ * @returns Result containing the updated API key object, or error if update fails
  */
 export async function updateApiKey(
   id: string,
@@ -91,12 +93,14 @@ export async function updateApiKey(
   try {
     const processedUpdates = { ...updates };
 
-    // 如果包含密钥值且未加密，需要加密
+    // If key_value is present and not encrypted, encrypt it
     if (updates.key_value && !isEncrypted) {
       const masterKey = process.env.API_ENCRYPTION_KEY;
       if (!masterKey) {
         return failure(
-          new Error('API_ENCRYPTION_KEY 环境变量未设置，无法加密 API 密钥')
+          new Error(
+            'API_ENCRYPTION_KEY environment variable is not set, cannot encrypt API key'
+          )
         );
       }
       processedUpdates.key_value = encryptApiKey(updates.key_value, masterKey);
@@ -108,7 +112,7 @@ export async function updateApiKey(
       processedUpdates
     );
 
-    // 清除相关缓存
+    // Clear related cache
     if (result.success) {
       cacheService.deletePattern('api_keys:*');
     }
@@ -120,15 +124,15 @@ export async function updateApiKey(
 }
 
 /**
- * 删除API密钥（优化版本）
- * @param id API密钥ID
- * @returns 是否删除成功的Result
+ * Delete an API key (optimized version).
+ * @param id API key ID
+ * @returns Result indicating whether deletion was successful
  */
 export async function deleteApiKey(id: string): Promise<Result<boolean>> {
   const result = await dataService.delete('api_keys', id);
 
   if (result.success) {
-    // 清除相关缓存
+    // Clear related cache
     cacheService.deletePattern('api_keys:*');
     return success(true);
   } else {
@@ -137,9 +141,9 @@ export async function deleteApiKey(id: string): Promise<Result<boolean>> {
 }
 
 /**
- * 获取解密后的API密钥值（优化版本）
- * @param apiKeyId API密钥ID
- * @returns 解密后的API密钥值Result，如果获取失败则返回错误
+ * Get the decrypted API key value (optimized version).
+ * @param apiKeyId API key ID
+ * @returns Result containing the decrypted API key value, or error if failed
  */
 export async function getDecryptedApiKey(
   apiKeyId: string
@@ -150,7 +154,7 @@ export async function getDecryptedApiKey(
       { id: apiKeyId },
       {
         cache: true,
-        cacheTTL: 5 * 60 * 1000, // 5分钟缓存
+        cacheTTL: 5 * 60 * 1000, // 5 minutes cache
       }
     );
 
@@ -165,7 +169,9 @@ export async function getDecryptedApiKey(
     const masterKey = process.env.API_ENCRYPTION_KEY;
     if (!masterKey) {
       return failure(
-        new Error('API_ENCRYPTION_KEY 环境变量未设置，无法解密 API 密钥')
+        new Error(
+          'API_ENCRYPTION_KEY environment variable is not set, cannot decrypt API key'
+        )
       );
     }
 
@@ -175,15 +181,15 @@ export async function getDecryptedApiKey(
     return failure(
       error instanceof Error
         ? error
-        : new Error(`解密API密钥失败: ${String(error)}`)
+        : new Error(`Failed to decrypt API key: ${String(error)}`)
     );
   }
 }
 
 /**
- * 更新API密钥使用计数（优化版本）
- * @param id API密钥ID
- * @returns 是否更新成功的Result
+ * Increment API key usage count (optimized version).
+ * @param id API key ID
+ * @returns Result indicating whether the update was successful
  */
 export async function incrementApiKeyUsage(
   id: string
@@ -197,18 +203,18 @@ export async function incrementApiKeyUsage(
       throw error;
     }
 
-    // 清除相关缓存
+    // Clear related cache
     cacheService.deletePattern('api_keys:*');
 
     return true;
   });
 }
 
-// 兼容性函数，保持与现有代码的兼容性
-// 这些函数将逐步迁移到使用Result类型
+// Compatibility functions to maintain compatibility with existing code.
+// These functions will gradually migrate to using the Result type.
 /**
- * 获取指定服务实例的API密钥（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Get the API key for a specific service instance (legacy version).
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function getApiKeyByServiceInstanceLegacy(
   serviceInstanceId: string
@@ -218,8 +224,8 @@ export async function getApiKeyByServiceInstanceLegacy(
 }
 
 /**
- * 创建新的API密钥（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Create a new API key (legacy version).
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function createApiKeyLegacy(
   apiKey: Omit<ApiKey, 'id' | 'created_at' | 'updated_at'>,
@@ -230,8 +236,8 @@ export async function createApiKeyLegacy(
 }
 
 /**
- * 更新API密钥（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Update an API key (legacy version).
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function updateApiKeyLegacy(
   id: string,
@@ -243,8 +249,8 @@ export async function updateApiKeyLegacy(
 }
 
 /**
- * 删除API密钥（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Delete an API key (legacy version).
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function deleteApiKeyLegacy(id: string): Promise<boolean> {
   const result = await deleteApiKey(id);
@@ -252,8 +258,8 @@ export async function deleteApiKeyLegacy(id: string): Promise<boolean> {
 }
 
 /**
- * 获取解密后的API密钥值（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Get the decrypted API key value (legacy version).
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function getDecryptedApiKeyLegacy(
   apiKeyId: string
@@ -263,8 +269,8 @@ export async function getDecryptedApiKeyLegacy(
 }
 
 /**
- * 更新API密钥使用计数（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Increment API key usage count (legacy version).
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function incrementApiKeyUsageLegacy(id: string): Promise<boolean> {
   const result = await incrementApiKeyUsage(id);

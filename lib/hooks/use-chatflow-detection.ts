@@ -5,29 +5,29 @@ import { useAppListStore } from '@lib/stores/app-list-store';
 import React from 'react';
 
 /**
- * Chatflow应用检测Hook
+ * Chatflow detection hook
  *
- * 功能：
- * - 自动加载应用列表
- * - 根据对话历史检测应用类型
- * - 判断是否为chatflow应用
+ * Features:
+ * - Automatically loads the app list if not loaded
+ * - Detects the app type based on conversation history
+ * - Determines if the current app is a chatflow app
  */
 export function useChatflowDetection() {
   const { apps, fetchApps } = useAppListStore();
   const { currentAppInstance } = useCurrentApp();
   const { conversationAppId } = useChatInterface();
 
-  // 🎯 确保应用列表已加载
+  // Ensure the app list is loaded
   React.useEffect(() => {
     if (apps.length === 0) {
       fetchApps();
     }
   }, [apps.length, fetchApps]);
 
-  // 🎯 获取当前对话关联的应用
+  // Get the app associated with the current conversation
   const currentConversationApp = React.useMemo(() => {
     if (conversationAppId) {
-      // 尝试多种匹配方式查找应用
+      // Try to find the app by matching instance_id or id
       return apps.find(
         app =>
           app.instance_id === conversationAppId || app.id === conversationAppId
@@ -36,7 +36,7 @@ export function useChatflowDetection() {
     return currentAppInstance;
   }, [conversationAppId, apps, currentAppInstance]);
 
-  // 🎯 判断是否为chatflow应用
+  // Determine if the current app is a chatflow app
   const isChatflowApp = React.useMemo(() => {
     if (!currentConversationApp) return false;
 

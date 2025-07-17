@@ -1,17 +1,12 @@
 /**
- * 应用执行记录相关的数据库查询函数
+ * Database query functions related to app execution records.
  *
- * 本文件包含与应用执行记录表(app_executions)相关的所有数据库操作
- * 用于管理工作流和文本生成应用的执行历史
- * 更新为使用统一的数据服务和Result类型
+ * This file contains all database operations related to the app_executions table,
+ * used to manage workflow and text generation app execution history.
+ * Updated to use unified data service and Result type.
  */
-import { CacheKeys, cacheService } from '@lib/services/db/cache-service';
+import { cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
-import {
-  SubscriptionConfigs,
-  SubscriptionKeys,
-  realtimeService,
-} from '@lib/services/db/realtime-service';
 import { Result, failure, success } from '@lib/types/result';
 
 import { createClient } from '../supabase/client';
@@ -21,17 +16,17 @@ import {
   ExecutionType,
 } from '../types/database';
 
-// 保持与现有代码的兼容性，同时使用新的数据服务
+// For compatibility with existing code, while using the new data service
 const supabase = createClient();
 
 /**
- * 获取用户的执行记录列表（优化版本）
- * @param userId 用户ID
- * @param limit 每页数量，默认20
- * @param offset 偏移量，默认0
- * @param executionType 可选的执行类型筛选
- * @param status 可选的状态筛选
- * @returns 执行记录列表和总数的Result
+ * Get a list of user execution records (optimized version)
+ * @param userId User ID
+ * @param limit Number per page, default 20
+ * @param offset Offset, default 0
+ * @param executionType Optional execution type filter
+ * @param status Optional status filter
+ * @returns Result containing execution records and total count
  */
 export async function getUserExecutions(
   userId: string,
@@ -47,7 +42,7 @@ export async function getUserExecutions(
   };
 
   try {
-    // 获取执行记录列表
+    // Get execution records
     const executionsResult = await dataService.findMany<AppExecution>(
       'app_executions',
       filters,
@@ -55,7 +50,7 @@ export async function getUserExecutions(
       { offset, limit },
       {
         cache: true,
-        cacheTTL: 2 * 60 * 1000, // 2分钟缓存
+        cacheTTL: 2 * 60 * 1000, // 2 minutes cache
       }
     );
 
@@ -63,7 +58,7 @@ export async function getUserExecutions(
       return failure(executionsResult.error);
     }
 
-    // 获取总数
+    // Get total count
     const countResult = await dataService.count('app_executions', filters);
 
     if (!countResult.success) {
@@ -80,10 +75,10 @@ export async function getUserExecutions(
 }
 
 /**
- * 根据ID获取执行记录详情（优化版本，包含用户权限检查）
- * @param executionId 执行记录ID
- * @param userId 用户ID - 必需参数，确保只返回该用户的执行记录
- * @returns 执行记录对象的Result，如果未找到或无权访问则返回null
+ * Get execution record details by ID (optimized version, includes user permission check)
+ * @param executionId Execution record ID
+ * @param userId User ID - required, ensures only the user's record is returned
+ * @returns Result of execution record object, or null if not found or unauthorized
  */
 export async function getExecutionById(
   executionId: string,
@@ -93,20 +88,20 @@ export async function getExecutionById(
     'app_executions',
     {
       id: executionId,
-      user_id: userId, // 🔒 关键安全过滤：只返回当前用户的记录
+      user_id: userId, // Security filter: only return records for the current user
     },
     {
       cache: true,
-      cacheTTL: 5 * 60 * 1000, // 5分钟缓存
+      cacheTTL: 5 * 60 * 1000, // 5 minutes cache
     }
   );
 }
 
 /**
- * 根据外部执行ID获取执行记录（优化版本，包含用户权限检查）
- * @param externalExecutionId Dify返回的执行ID
- * @param userId 用户ID - 必需参数，确保只返回该用户的执行记录
- * @returns 执行记录对象的Result，如果未找到或无权访问则返回null
+ * Get execution record by external execution ID (optimized version, includes user permission check)
+ * @param externalExecutionId External execution ID (e.g., from Dify)
+ * @param userId User ID - required, ensures only the user's record is returned
+ * @returns Result of execution record object, or null if not found or unauthorized
  */
 export async function getExecutionByExternalId(
   externalExecutionId: string,
@@ -116,19 +111,19 @@ export async function getExecutionByExternalId(
     'app_executions',
     {
       external_execution_id: externalExecutionId,
-      user_id: userId, // 🔒 关键安全过滤：只返回当前用户的记录
+      user_id: userId, // Security filter: only return records for the current user
     },
     {
       cache: true,
-      cacheTTL: 5 * 60 * 1000, // 5分钟缓存
+      cacheTTL: 5 * 60 * 1000, // 5 minutes cache
     }
   );
 }
 
 /**
- * 创建新的执行记录（优化版本）
- * @param execution 执行记录对象
- * @returns 创建的执行记录对象Result，如果创建失败则返回错误
+ * Create a new execution record (optimized version)
+ * @param execution Execution record object
+ * @returns Result of created execution record object, or error if creation fails
  */
 export async function createExecution(
   execution: Omit<AppExecution, 'id' | 'created_at' | 'updated_at'>
@@ -151,10 +146,10 @@ export async function createExecution(
 }
 
 /**
- * 更新执行记录（优化版本）
- * @param id 执行记录ID
- * @param updates 需要更新的字段
- * @returns 更新后的执行记录对象Result，如果更新失败则返回错误
+ * Update an execution record (optimized version)
+ * @param id Execution record ID
+ * @param updates Fields to update
+ * @returns Result of updated execution record object, or error if update fails
  */
 export async function updateExecution(
   id: string,
@@ -169,11 +164,11 @@ export async function updateExecution(
 }
 
 /**
- * 万无一失的完整执行数据更新函数
- * 专门用于工作流执行完成时的完整数据保存
- * @param id 执行记录ID
- * @param completeData 完整的执行数据
- * @returns 更新后的执行记录对象Result
+ * Robust function for updating complete execution data.
+ * Specifically used for saving complete data when workflow execution finishes.
+ * @param id Execution record ID
+ * @param completeData Complete execution data
+ * @returns Result of updated execution record object
  */
 export async function updateCompleteExecutionData(
   id: string,
@@ -190,16 +185,16 @@ export async function updateCompleteExecutionData(
     metadata?: Record<string, any>;
   }
 ): Promise<Result<AppExecution>> {
-  console.log('[数据库] 开始完整执行数据更新，ID:', id);
-  console.log('[数据库] 更新数据:', JSON.stringify(completeData, null, 2));
+  console.log('[DB] Start updating complete execution data, ID:', id);
+  console.log('[DB] Update data:', JSON.stringify(completeData, null, 2));
 
   try {
-    // 构建安全的更新数据对象，确保所有字段都有明确的值
+    // Build a safe update data object, ensuring all fields have explicit values
     const safeUpdateData: Partial<AppExecution> = {
       status: completeData.status,
       updated_at: new Date().toISOString(),
 
-      // Dify标识符 - 明确处理null值
+      // Dify identifier - handle null values explicitly
       ...(completeData.external_execution_id !== undefined && {
         external_execution_id: completeData.external_execution_id,
       }),
@@ -207,7 +202,7 @@ export async function updateCompleteExecutionData(
         task_id: completeData.task_id,
       }),
 
-      // 执行结果 - 明确处理null值
+      // Execution results - handle null values explicitly
       ...(completeData.outputs !== undefined && {
         outputs: completeData.outputs,
       }),
@@ -221,7 +216,7 @@ export async function updateCompleteExecutionData(
         elapsed_time: completeData.elapsed_time,
       }),
 
-      // 错误和完成信息
+      // Error and completion info
       ...(completeData.error_message !== undefined && {
         error_message: completeData.error_message,
       }),
@@ -229,18 +224,18 @@ export async function updateCompleteExecutionData(
         completed_at: completeData.completed_at,
       }),
 
-      // metadata - 确保是有效的JSON对象
+      // metadata - ensure it's a valid JSON object
       ...(completeData.metadata !== undefined && {
         metadata: completeData.metadata || {},
       }),
     };
 
     console.log(
-      '[数据库] 安全更新数据对象:',
+      '[DB] Safe update data object:',
       JSON.stringify(safeUpdateData, null, 2)
     );
 
-    // 使用原生Supabase客户端进行更新，确保所有字段都能正确保存
+    // Use native Supabase client for update to ensure all fields are saved correctly
     const { data, error } = await supabase
       .from('app_executions')
       .update(safeUpdateData)
@@ -249,40 +244,43 @@ export async function updateCompleteExecutionData(
       .single();
 
     if (error) {
-      console.error('[数据库] 完整数据更新失败:', error);
+      console.error('[DB] Complete data update failed:', error);
       return failure(error);
     }
 
     if (!data) {
-      console.error('[数据库] 更新成功但未返回数据');
-      return failure(new Error('更新成功但未返回数据'));
+      console.error('[DB] Update succeeded but no data returned');
+      return failure(new Error('Update succeeded but no data returned'));
     }
 
-    console.log('[数据库] ✅ 完整数据更新成功');
-    console.log('[数据库] 更新后的数据:', JSON.stringify(data, null, 2));
+    console.log('[DB] ✅ Complete data update succeeded');
+    console.log('[DB] Updated data:', JSON.stringify(data, null, 2));
 
-    // 清除相关缓存
+    // Clear related cache
     try {
       await cacheService.delete(`execution:${id}`);
       await cacheService.delete(`executions:user:${data.user_id}`);
     } catch (cacheError) {
-      console.warn('[数据库] 清除缓存时出错:', cacheError);
+      console.warn('[DB] Error clearing cache:', cacheError);
     }
 
     return success(data as AppExecution);
   } catch (error) {
-    console.error('[数据库] 完整数据更新时发生异常:', error);
+    console.error(
+      '[DB] Exception occurred during complete data update:',
+      error
+    );
     return failure(error instanceof Error ? error : new Error(String(error)));
   }
 }
 
 /**
- * 更新执行状态（优化版本）
- * @param id 执行记录ID
- * @param status 新状态
- * @param errorMessage 可选的错误信息
- * @param completedAt 可选的完成时间
- * @returns 是否更新成功的Result
+ * Update execution status (optimized version)
+ * @param id Execution record ID
+ * @param status New status
+ * @param errorMessage Optional error message
+ * @param completedAt Optional completion time
+ * @returns Result indicating whether the update was successful
  */
 export async function updateExecutionStatus(
   id: string,
@@ -323,45 +321,49 @@ export async function updateExecutionStatus(
 }
 
 /**
- * 删除执行记录（软删除版本，包含用户权限检查）
- * @param id 执行记录ID
- * @param userId 用户ID - 必需参数，确保只能删除该用户的执行记录
- * @returns 是否删除成功的Result
+ * Delete execution record (soft delete version, includes user permission check)
+ * @param id Execution record ID
+ * @param userId User ID - required, ensures only the user's record can be deleted
+ * @returns Result indicating whether the deletion was successful
  */
 export async function deleteExecution(
   id: string,
   userId: string
 ): Promise<Result<boolean>> {
   console.log(
-    `[软删除执行记录] 开始软删除执行记录，ID: ${id}, 用户ID: ${userId}`
+    `[Soft Delete Execution] Start soft deleting execution record, ID: ${id}, User ID: ${userId}`
   );
 
-  // 🔒 安全检查：先验证记录是否属于当前用户
+  // Security check: verify the record belongs to the current user
   const existingResult = await getExecutionById(id, userId);
   if (!existingResult.success || !existingResult.data) {
     console.warn(
-      `[软删除执行记录] 记录不存在或无权访问，ID: ${id}, 用户ID: ${userId}`
+      `[Soft Delete Execution] Record does not exist or unauthorized, ID: ${id}, User ID: ${userId}`
     );
-    return failure(new Error('执行记录不存在或您无权删除该记录'));
+    return failure(
+      new Error(
+        'Execution record does not exist or you are not authorized to delete it'
+      )
+    );
   }
 
   const result = await dataService.softDelete('app_executions', id);
 
   if (result.success) {
-    console.log(`[软删除执行记录] 软删除操作完成，ID: ${id}`);
+    console.log(`[Soft Delete Execution] Soft delete completed, ID: ${id}`);
     return success(true);
   } else {
-    console.error(`[软删除执行记录] 软删除执行记录失败:`, result.error);
+    console.error(`[Soft Delete Execution] Soft delete failed:`, result.error);
     return success(false);
   }
 }
 
 /**
- * 获取用户在指定服务实例的执行记录（优化版本，过滤软删除记录）
- * @param serviceInstanceId 服务实例ID
- * @param userId 用户ID - 必需参数，确保只返回该用户的执行记录
- * @param limit 限制数量
- * @returns 执行记录列表的Result
+ * Get user execution records for a specific service instance (optimized version, filters out soft deleted records)
+ * @param serviceInstanceId Service instance ID
+ * @param userId User ID - required, ensures only the user's records are returned
+ * @param limit Limit number of records
+ * @returns Result containing list of execution records
  */
 export async function getExecutionsByServiceInstance(
   serviceInstanceId: string,
@@ -370,56 +372,59 @@ export async function getExecutionsByServiceInstance(
 ): Promise<Result<AppExecution[]>> {
   try {
     console.log(
-      '[获取执行记录] 开始查询，服务实例ID:',
+      '[Get Executions] Start query, Service Instance ID:',
       serviceInstanceId,
-      '用户ID:',
+      'User ID:',
       userId
     );
 
-    // 同时过滤服务实例ID和用户ID，确保安全性
+    // Filter by service instance ID and user ID for security
     const result = await dataService.findMany<AppExecution>(
       'app_executions',
       {
         service_instance_id: serviceInstanceId,
-        user_id: userId, // 🔒 关键安全过滤：只返回当前用户的记录
+        user_id: userId, // Security filter: only return records for the current user
       },
       { column: 'created_at', ascending: false },
-      { offset: 0, limit: limit * 2 }, // 获取更多记录以确保有足够的非删除记录
+      { offset: 0, limit: limit * 2 }, // Fetch more to ensure enough non-deleted records
       {
         cache: true,
-        cacheTTL: 2 * 60 * 1000, // 2分钟缓存
+        cacheTTL: 2 * 60 * 1000, // 2 minutes cache
       }
     );
 
     if (!result.success) {
-      console.error('[获取执行记录] 数据服务查询失败:', result.error);
+      console.error(
+        '[Get Executions] Data service query failed:',
+        result.error
+      );
       return failure(result.error);
     }
 
-    // 在应用层过滤软删除的记录
+    // Filter out soft deleted records at the application layer
     const filteredData = result.data
       .filter(execution => execution.status !== 'deleted')
-      .slice(0, limit); // 限制最终返回的数量
+      .slice(0, limit); // Limit the final returned count
 
     console.log(
-      '[获取执行记录] 查询成功，总数:',
+      '[Get Executions] Query succeeded, total:',
       result.data.length,
-      '过滤后:',
+      'after filter:',
       filteredData.length
     );
 
     return success(filteredData);
   } catch (error) {
-    console.error('[获取执行记录] 查询时发生异常:', error);
+    console.error('[Get Executions] Exception occurred during query:', error);
     return failure(error instanceof Error ? error : new Error(String(error)));
   }
 }
 
 /**
- * 获取用户的执行统计信息
- * @param userId 用户ID
- * @param executionType 可选的执行类型筛选
- * @returns 统计信息的Result
+ * Get user execution statistics
+ * @param userId User ID
+ * @param executionType Optional execution type filter
+ * @returns Result containing statistics
  */
 export async function getExecutionStats(
   userId: string,
@@ -440,7 +445,7 @@ export async function getExecutionStats(
       ...(executionType && { execution_type: executionType }),
     };
 
-    // 获取基础统计
+    // Get basic statistics
     const { data, error } = await supabase
       .from('app_executions')
       .select('status, total_tokens, elapsed_time')
@@ -474,10 +479,10 @@ export async function getExecutionStats(
   }
 }
 
-// 兼容性函数，保持与现有代码的兼容性
-// 这些函数将逐步迁移到使用Result类型
+// Compatibility functions to maintain compatibility with existing code
+// These functions will gradually migrate to using the Result type
 /**
- * 获取用户的执行记录列表（兼容版本）
+ * Get a list of user execution records (legacy version)
  */
 export async function getUserExecutionsLegacy(
   userId: string,
@@ -496,13 +501,13 @@ export async function getUserExecutionsLegacy(
   if (result.success) {
     return result.data;
   } else {
-    console.error('获取用户执行记录失败:', result.error);
+    console.error('Failed to get user execution records:', result.error);
     return { executions: [], total: 0 };
   }
 }
 
 /**
- * 根据ID获取执行记录详情（兼容版本）
+ * Get execution record details by ID (legacy version)
  */
 export async function getExecutionByIdLegacy(
   executionId: string,
@@ -512,7 +517,7 @@ export async function getExecutionByIdLegacy(
   if (result.success) {
     return result.data;
   } else {
-    console.error('获取执行记录详情失败:', result.error);
+    console.error('Failed to get execution record details:', result.error);
     return null;
   }
 }

@@ -1,13 +1,13 @@
-// 语言配置文件
-// 统一管理支持的语言列表，避免多处硬编码
+// Language configuration file
+// Centralized management of supported language list to avoid hardcoding in multiple places
 export interface LanguageInfo {
   name: string;
   nativeName: string;
   code: string;
 }
 
-// 支持的语言配置
-// 与 i18n/request.ts 中的 supportedLocales 保持一致
+// Supported language configuration
+// Keep consistent with supportedLocales in i18n/request.ts
 export const SUPPORTED_LANGUAGES = {
   'en-US': {
     name: 'English (US)',
@@ -63,30 +63,30 @@ export const SUPPORTED_LANGUAGES = {
 
 export type SupportedLocale = keyof typeof SUPPORTED_LANGUAGES;
 
-// 默认语言
+// Default language
 export const DEFAULT_LOCALE: SupportedLocale = 'en-US';
 
-// 获取所有支持的语言代码数组
+// Get all supported locale codes as an array
 export const getSupportedLocales = (): SupportedLocale[] => {
   return Object.keys(SUPPORTED_LANGUAGES) as SupportedLocale[];
 };
 
-// 验证语言代码是否支持
+// Check if a locale code is supported
 export const isValidLocale = (locale: string): locale is SupportedLocale => {
   return locale in SUPPORTED_LANGUAGES;
 };
 
-// 获取语言信息
+// Get language information by locale code
 export const getLanguageInfo = (locale: SupportedLocale): LanguageInfo => {
   return SUPPORTED_LANGUAGES[locale];
 };
 
-// 设置语言Cookie
+// Set language cookie
 export const setLanguageCookie = (locale: SupportedLocale): void => {
   document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${365 * 24 * 60 * 60}`;
 };
 
-// 从Cookie获取当前语言
+// Get current locale from cookie
 export const getCurrentLocaleFromCookie = (): SupportedLocale => {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
 

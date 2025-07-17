@@ -10,72 +10,75 @@ export interface DifyAppConfig {
   appType?: string;
 }
 
-// 缓存配置，避免重复请求
-// 新增缓存管理功能，支持手动清除和验证
+// Cache for configuration to avoid repeated requests
+// Added cache management functions for manual clearing and validation
 const configCache: Record<
   string,
   { config: DifyAppConfig; timestamp: number }
 > = {};
-const CACHE_TTL = 2 * 60 * 1000; // 缩短为2分钟缓存，提高配置变更响应速度
+const CACHE_TTL = 2 * 60 * 1000; // Cache for 2 minutes to improve config update responsiveness
 
 /**
- * 清除指定appId的配置缓存
- * @param appId 应用ID，如果不提供则清除所有缓存
+ * Clear the configuration cache for a specific appId.
+ * If appId is not provided, clear all cache.
+ * @param appId Application ID (optional)
  */
 export const clearDifyConfigCache = (appId?: string): void => {
   if (appId) {
     delete configCache[appId];
-    console.log(`[Dify配置缓存] 已清除 ${appId} 的缓存`);
+    console.log(`[Dify Config Cache] Cleared cache for ${appId}`);
   } else {
     Object.keys(configCache).forEach(key => delete configCache[key]);
-    console.log('[Dify配置缓存] 已清除所有缓存');
+    console.log('[Dify Config Cache] Cleared all cache');
   }
 };
 
 /**
- * 强制刷新指定appId的配置缓存
- * @param appId 应用ID
- * @returns 刷新后的配置
+ * Force refresh the configuration cache for a specific appId.
+ * @param appId Application ID
+ * @returns Refreshed configuration
  */
 export const refreshDifyConfigCache = async (
   appId: string
 ): Promise<DifyAppConfig | null> => {
-  console.log(`[Dify配置缓存] 强制刷新 ${appId} 的配置`);
+  console.log(`[Dify Config Cache] Force refresh config for ${appId}`);
   clearDifyConfigCache(appId);
   return await getDifyAppConfig(appId);
 };
 
 /**
- * 获取 Dify 应用配置
- * 从数据库获取配置，支持缓存和强制刷新
- * @param appId Dify 应用 ID
- * @param forceRefresh 是否强制刷新，跳过缓存
- * @returns Dify 应用配置，包含 apiKey 和 apiUrl
+ * Get Dify application configuration.
+ * Fetch from database, support cache and force refresh.
+ * @param appId Dify application ID
+ * @param forceRefresh Whether to force refresh and skip cache
+ * @returns Dify application config, including apiKey and apiUrl
  */
 export const getDifyAppConfig = async (
   appId: string,
   forceRefresh: boolean = false
 ): Promise<DifyAppConfig | null> => {
-  // 如果强制刷新，清除缓存
+  // If force refresh, clear cache
   if (forceRefresh) {
     clearDifyConfigCache(appId);
   }
 
-  // 检查缓存
+  // Check cache
   const cached = configCache[appId];
   if (cached && Date.now() - cached.timestamp < CACHE_TTL && !forceRefresh) {
-    console.log(`[获取Dify配置] 使用缓存配置: ${appId}`);
+    console.log(`[Get Dify Config] Using cached config: ${appId}`);
     return cached.config;
   }
 
   try {
-    // 从数据库获取配置
+    // Fetch config from database
     const config = await getDifyConfigFromDatabase(appId);
 
     if (config) {
-      console.log(`[获取Dify配置] 成功从数据库获取配置`);
+      console.log(
+        `[Get Dify Config] Successfully fetched config from database`
+      );
 
-      // 更新缓存
+      // Update cache
       configCache[appId] = {
         config,
         timestamp: Date.now(),
@@ -83,41 +86,46 @@ export const getDifyAppConfig = async (
 
       return config;
     } else {
-      console.error(`[获取Dify配置] 数据库中未找到 ${appId} 的配置`);
+      console.error(
+        `[Get Dify Config] No config found in database for ${appId}`
+      );
 
       return null;
     }
   } catch (error) {
-    console.error(`[获取Dify配置] 从数据库获取 ${appId} 配置时出错:`, error);
+    console.error(
+      `[Get Dify Config] Error fetching config for ${appId}:`,
+      error
+    );
     return null;
   }
 };
 
 /**
- * 从数据库获取应用配置（支持多提供商）
- * @param appId 应用 ID
- * @returns 应用配置
+ * Fetch application configuration from database (supports multiple providers)
+ * @param appId Application ID
+ * @returns Application configuration
  */
 async function getDifyConfigFromDatabase(
   appId: string
 ): Promise<DifyAppConfig | null> {
-  // 初始化 Supabase 客户端
+  // Initialize Supabase client
   const supabase = createClient();
 
-  // 从环境变量获取主密钥
+  // Get master key from environment variable
   const masterKey = process.env.API_ENCRYPTION_KEY;
 
   if (!masterKey) {
     console.error(
-      '[获取Dify配置] 错误: API_ENCRYPTION_KEY 环境变量未设置。无法解密 API 密钥。'
+      '[Get Dify Config] ERROR: API_ENCRYPTION_KEY environment variable is not set. Cannot decrypt API key.'
     );
-    // 返回 null，因为没有主密钥无法进行解密
+    // Return null because decryption is not possible without master key
     return null;
   }
 
-  // 🎯 重构：支持多提供商，在所有活跃提供商中查找应用实例
-  // 不再硬编码只查找 Dify 提供商
-  // 1. 直接查找对应的服务实例（包含提供商信息）
+  // Refactor: support multiple providers, search for app instance among all active providers
+  // No longer hardcode to only search Dify provider
+  // 1. Directly search for the corresponding service instance (including provider info)
   const { data: instance, error: instanceError } = await supabase
     .from('service_instances')
     .select(
@@ -138,13 +146,13 @@ async function getDifyConfigFromDatabase(
   let serviceInstance = instance;
   let provider = instance?.providers;
 
-  // 如果没有找到指定的实例，尝试使用默认提供商的默认实例作为fallback
+  // If the specified instance is not found, try to use the default provider's default instance as fallback
   if (instanceError || !serviceInstance) {
     console.log(
-      `[获取应用配置] 未找到实例ID为 "${appId}" 的服务实例，尝试使用默认提供商的默认实例`
+      `[Get App Config] No service instance found for instance_id "${appId}", trying default provider's default instance`
     );
 
-    // 获取默认提供商
+    // Get default provider
     const { data: defaultProvider, error: defaultProviderError } =
       await supabase
         .from('providers')
@@ -154,11 +162,13 @@ async function getDifyConfigFromDatabase(
         .single();
 
     if (defaultProviderError || !defaultProvider) {
-      console.error(`[获取应用配置] 未找到默认提供商，appId: ${appId}`);
+      console.error(
+        `[Get App Config] No default provider found, appId: ${appId}`
+      );
       return null;
     }
 
-    // 获取默认提供商的默认实例
+    // Get default instance for default provider
     const { data: defaultInstance, error: defaultInstanceError } =
       await supabase
         .from('service_instances')
@@ -169,7 +179,7 @@ async function getDifyConfigFromDatabase(
 
     if (defaultInstanceError || !defaultInstance) {
       console.error(
-        `[获取应用配置] 未找到默认提供商的默认服务实例，appId: ${appId}`
+        `[Get App Config] No default service instance found for default provider, appId: ${appId}`
       );
       return null;
     }
@@ -177,11 +187,11 @@ async function getDifyConfigFromDatabase(
     serviceInstance = defaultInstance;
     provider = defaultProvider;
     console.log(
-      `[获取应用配置] 使用默认提供商 "${provider.name}" 的默认实例: ${defaultInstance.instance_id} (原请求: ${appId})`
+      `[Get App Config] Using default provider "${provider.name}" default instance: ${defaultInstance.instance_id} (original request: ${appId})`
     );
   } else {
     console.log(
-      `[获取应用配置] 找到应用实例: ${appId}，提供商: ${provider.name}`
+      `[Get App Config] Found app instance: ${appId}, provider: ${provider.name}`
     );
   }
 
@@ -197,7 +207,7 @@ async function getDifyConfigFromDatabase(
     return null;
   }
 
-  // 4. 获取 API 密钥
+  // 4. Get API key
   const { data: apiKey, error: apiKeyError } = await supabase
     .from('api_keys')
     .select('*')
@@ -210,7 +220,7 @@ async function getDifyConfigFromDatabase(
     return null;
   }
 
-  // 检查 API 密钥是否为空
+  // Check if API key is empty
   if (!apiKey.key_value) {
     console.error('API key value is empty');
     return null;
@@ -219,27 +229,27 @@ async function getDifyConfigFromDatabase(
   try {
     let decryptedKey: string;
 
-    // 如果密钥不是加密格式，直接使用
+    // If the key is not in encrypted format, use it directly
     if (!apiKey.key_value.includes(':')) {
       decryptedKey = apiKey.key_value;
     } else {
       try {
-        // 使用从环境变量获取的 masterKey 进行解密
+        // Use masterKey from environment variable to decrypt
         decryptedKey = decryptApiKey(apiKey.key_value, masterKey);
       } catch (decryptError) {
-        // 当解密失败时，不再使用测试密钥，而是记录错误并返回 null
+        // If decryption fails, do not use test key, just log error and return null
         console.error(
-          `[获取Dify配置] 解密 appID '${appId}' 的 API Key 失败:`,
+          `[Get Dify Config] Failed to decrypt API Key for appID '${appId}':`,
           decryptError
         );
         console.error(
-          '[获取Dify配置] 使用的主密钥可能与加密时不一致（请检查环境变量 API_ENCRYPTION_KEY），或者加密数据已损坏。'
+          '[Get Dify Config] The master key used may be inconsistent with the one used for encryption (check API_ENCRYPTION_KEY env), or the encrypted data is corrupted.'
         );
         return null;
       }
     }
 
-    // 5. 构建配置
+    // 5. Build config
     const config = {
       apiKey: decryptedKey,
       apiUrl: provider.base_url,
@@ -256,5 +266,5 @@ async function getDifyConfigFromDatabase(
   }
 }
 
-// 环境变量相关的配置请求函数已移除
-// 现在我们只从数据库获取配置，不再使用环境变量
+// Functions related to environment variable config fetching have been removed.
+// Now we only fetch config from database, no longer use environment variables.

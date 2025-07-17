@@ -13,14 +13,14 @@ import { useChatInterface } from './use-chat-interface';
 import { usePlatformKeys } from './use-platform-keys';
 
 /**
- * 快捷键分类定义
+ * Shortcut categories definition
  */
 export const SHORTCUT_CATEGORIES = {
-  /** 导航类快捷键 - 即使在输入框中也应该可用 */
+  /** Navigation shortcuts - should be available even in input fields */
   NAVIGATION: 'navigation',
-  /** 编辑类快捷键 - 输入框中应该禁用，避免冲突 */
+  /** Editing shortcuts - should be disabled in input fields to avoid conflicts */
   EDITING: 'editing',
-  /** 系统类快捷键 - 始终可用 */
+  /** System shortcuts - always available */
   SYSTEM: 'system',
 } as const;
 
@@ -28,10 +28,10 @@ type ShortcutCategory =
   (typeof SHORTCUT_CATEGORIES)[keyof typeof SHORTCUT_CATEGORIES];
 
 /**
- * 快捷键定义接口
+ * SmartShortcut interface
  */
 export interface SmartShortcut {
-  /** 快捷键组合 */
+  /** Key combination */
   keys: {
     key: string;
     metaKey?: boolean;
@@ -39,31 +39,31 @@ export interface SmartShortcut {
     shiftKey?: boolean;
     altKey?: boolean;
   };
-  /** 快捷键分类 */
+  /** Shortcut category */
   category: ShortcutCategory;
-  /** 回调函数 */
+  /** Callback function */
   handler: (event: KeyboardEvent) => void;
-  /** 描述 */
+  /** Description */
   description: string;
-  /** 是否阻止默认行为 */
+  /** Whether to prevent default behavior */
   preventDefault?: boolean;
 }
 
 /**
- * 智能快捷键Hook
+ * Smart shortcut hook
  *
- * 特点：
- * 1. 导航类快捷键（如新对话、切换应用）即使在输入框中也可用
- * 2. 编辑类快捷键（如复制粘贴）在输入框中禁用，避免冲突
- * 3. 系统类快捷键始终可用
+ * Features:
+ * 1. Navigation shortcuts (e.g. new chat, switch app) are available even in input fields
+ * 2. Editing shortcuts (e.g. copy/paste) are disabled in input fields to avoid conflicts
+ * 3. System shortcuts are always available
  *
- * @param options 配置选项
+ * @param options Configuration options
  */
 export function useSmartShortcuts(
   options: {
-    /** 是否启用快捷键 */
+    /** Whether to enable shortcuts */
     enabled?: boolean;
-    /** 自定义快捷键列表 */
+    /** Custom shortcut list */
     customShortcuts?: SmartShortcut[];
   } = {}
 ) {
@@ -76,10 +76,9 @@ export function useSmartShortcuts(
   useEffect(() => {
     if (!enabled) return;
 
-    // 🎯 默认快捷键定义
-    // 按分类组织，便于在不同场景下选择性启用
+    // Default shortcut definitions, organized by category for selective enabling in different scenarios
     const defaultShortcuts: SmartShortcut[] = [
-      // 导航类快捷键 - 即使在输入框中也可用
+      // Navigation shortcuts - available even in input fields
       {
         keys: {
           key: 'k',
@@ -88,7 +87,7 @@ export function useSmartShortcuts(
         },
         category: SHORTCUT_CATEGORIES.NAVIGATION,
         handler: handleNewChat,
-        description: '新对话',
+        description: 'New Chat',
         preventDefault: true,
       },
       {
@@ -99,7 +98,7 @@ export function useSmartShortcuts(
         },
         category: SHORTCUT_CATEGORIES.NAVIGATION,
         handler: () => router.push('/chat/history'),
-        description: '历史对话',
+        description: 'Chat History',
         preventDefault: true,
       },
       {
@@ -111,7 +110,7 @@ export function useSmartShortcuts(
         },
         category: SHORTCUT_CATEGORIES.NAVIGATION,
         handler: () => router.push('/apps'),
-        description: '应用市场',
+        description: 'App Market',
         preventDefault: true,
       },
       {
@@ -122,10 +121,10 @@ export function useSmartShortcuts(
         },
         category: SHORTCUT_CATEGORIES.NAVIGATION,
         handler: () => router.push('/settings'),
-        description: '设置',
+        description: 'Settings',
         preventDefault: true,
       },
-      // 系统类快捷键 - 始终可用
+      // System shortcuts - always available
       {
         keys: {
           key: '\\',
@@ -137,12 +136,12 @@ export function useSmartShortcuts(
           const { toggleSidebar } = useSidebarStore.getState();
           toggleSidebar();
         },
-        description: '切换侧栏',
+        description: 'Toggle Sidebar',
         preventDefault: true,
       },
     ];
 
-    // 合并默认快捷键和自定义快捷键
+    // Merge default shortcuts and custom shortcuts
     const allShortcuts = [...defaultShortcuts, ...customShortcuts];
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -153,42 +152,44 @@ export function useSmartShortcuts(
         target.isContentEditable ||
         target.closest('[contenteditable="true"]');
 
-      // 🎯 智能快捷键过滤逻辑
-      // 根据当前焦点状态和快捷键分类决定是否执行
+      // Smart shortcut filtering logic
+      // Decide whether to execute based on current focus state and shortcut category
       for (const shortcut of allShortcuts) {
-        // 检查是否应该在当前上下文中执行此快捷键
+        // Skip editing shortcuts in input fields
         if (isInInput && shortcut.category === SHORTCUT_CATEGORIES.EDITING) {
-          continue; // 在输入框中时跳过编辑类快捷键
+          continue;
         }
 
-        // 检查按键匹配
+        // Check if key combination matches
         if (matchesShortcut(event, shortcut.keys)) {
           if (shortcut.preventDefault !== false) {
             event.preventDefault();
           }
 
-          console.log(`[SmartShortcuts] 执行快捷键: ${shortcut.description}`);
+          console.log(
+            `[SmartShortcuts] Executing shortcut: ${shortcut.description}`
+          );
           shortcut.handler(event);
-          return; // 只执行第一个匹配的快捷键
+          return; // Only execute the first matched shortcut
         }
       }
     };
 
-    // 新对话处理函数
+    // Handler for new chat shortcut
     function handleNewChat() {
       const isAlreadyOnNewChat = window.location.pathname === '/chat/new';
       if (isAlreadyOnNewChat) {
         return;
       }
 
-      console.log('[SmartShortcuts] Cmd+K: 开始新对话');
+      console.log('[SmartShortcuts] Cmd+K: Start new chat');
 
-      // 立即路由到新对话页面
+      // Immediately route to new chat page
       router.push('/chat/new');
 
-      // 延迟清理状态，确保路由完成
+      // Delay state cleanup to ensure routing is complete
       setTimeout(() => {
-        // 清理chatStore状态
+        // Clear chatStore state
         const { clearMessages, setCurrentConversationId } =
           useChatStore.getState();
         const { setIsWelcomeScreen } = useChatInputStore.getState();
@@ -199,26 +200,26 @@ export function useSmartShortcuts(
         clearMessages();
         setCurrentConversationId(null);
 
-        // 清理use-chat-interface中的对话状态
+        // Clear conversation state in use-chat-interface
         clearConversationState();
 
-        // 清理其他UI状态
+        // Clear other UI states
         setIsWelcomeScreen(true);
         setIsTransitioningToWelcome(true);
         useChatStore.getState().setIsWaitingForResponse(false);
 
         selectItem('chat', null, true);
 
-        console.log('[SmartShortcuts] 状态清理完成');
+        console.log('[SmartShortcuts] State cleanup complete');
       }, 100);
     }
 
-    // 快捷键匹配函数
+    // Shortcut matching function
     function matchesShortcut(
       event: KeyboardEvent,
       shortcutKeys: SmartShortcut['keys']
     ): boolean {
-      // 防止密码管理器等特殊事件触发toLowerCase错误
+      // Prevent errors from password managers or special events
       if (!event.key || typeof event.key !== 'string') return false;
 
       const keyMatch =
@@ -233,10 +234,10 @@ export function useSmartShortcuts(
       return keyMatch && metaMatch && ctrlMatch && shiftMatch && altMatch;
     }
 
-    // 添加事件监听器
+    // Add event listener
     document.addEventListener('keydown', handleKeyDown);
 
-    // 清理函数
+    // Cleanup function
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
@@ -248,10 +249,10 @@ export function useSmartShortcuts(
     clearConversationState,
   ]);
 
-  // 🎯 返回快捷键管理工具函数
-  // 便于组件获取当前可用的快捷键信息
+  // Return shortcut management utility functions
+  // Allows components to get the current available shortcut info
   return {
-    /** 获取当前上下文可用的快捷键列表 */
+    /** Get the list of shortcuts available in the current context */
     getAvailableShortcuts: (
       context: 'input' | 'normal' = 'normal'
     ): SmartShortcut[] => {
@@ -264,7 +265,7 @@ export function useSmartShortcuts(
           },
           category: SHORTCUT_CATEGORIES.NAVIGATION,
           handler: () => {},
-          description: '新对话',
+          description: 'New Chat',
         },
         {
           keys: {
@@ -274,7 +275,7 @@ export function useSmartShortcuts(
           },
           category: SHORTCUT_CATEGORIES.NAVIGATION,
           handler: () => {},
-          description: '历史对话',
+          description: 'Chat History',
         },
         {
           keys: {
@@ -285,7 +286,7 @@ export function useSmartShortcuts(
           },
           category: SHORTCUT_CATEGORIES.NAVIGATION,
           handler: () => {},
-          description: '应用市场',
+          description: 'App Market',
         },
         {
           keys: {
@@ -295,7 +296,7 @@ export function useSmartShortcuts(
           },
           category: SHORTCUT_CATEGORIES.NAVIGATION,
           handler: () => {},
-          description: '设置',
+          description: 'Settings',
         },
         {
           keys: {
@@ -305,14 +306,14 @@ export function useSmartShortcuts(
           },
           category: SHORTCUT_CATEGORIES.SYSTEM,
           handler: () => {},
-          description: '切换侧栏',
+          description: 'Toggle Sidebar',
         },
       ];
 
       const allShortcuts = [...defaultShortcuts, ...customShortcuts];
 
       if (context === 'input') {
-        // 在输入框中时，只返回导航和系统类快捷键
+        // In input fields, only return navigation and system shortcuts
         return allShortcuts.filter(
           s =>
             s.category === SHORTCUT_CATEGORIES.NAVIGATION ||
@@ -326,7 +327,7 @@ export function useSmartShortcuts(
 }
 
 /**
- * 创建自定义快捷键的辅助函数
+ * Helper function to create a custom shortcut
  */
 export function createShortcut(
   keys: SmartShortcut['keys'],

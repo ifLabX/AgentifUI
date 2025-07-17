@@ -1,7 +1,7 @@
 /**
- * 当前应用相关的 Hook
+ * Hook for current app context.
  *
- * 提供便捷的方式来访问和管理当前选中的应用实例
+ * Provides convenient access and management for the currently selected app instance.
  */
 import { useCurrentAppStore } from '@lib/stores/current-app-store';
 import type { ServiceInstance } from '@lib/types/database';
@@ -9,8 +9,8 @@ import type { ServiceInstance } from '@lib/types/database';
 import { useCallback } from 'react';
 
 /**
- * 使用当前应用的 Hook
- * @returns 当前应用的状态和操作方法
+ * Hook to use the current app.
+ * @returns State and actions for the current app.
  */
 export function useCurrentApp() {
   const {
@@ -18,21 +18,21 @@ export function useCurrentApp() {
     currentAppInstance,
     isLoadingAppId,
     errorLoadingAppId,
-    isValidating, // 新增：验证状态
-    isValidatingForMessage, // 🎯 新增：消息发送时的验证状态
+    isValidating, // validation state
+    isValidatingForMessage, // validation state when sending message
     setCurrentAppId,
     clearCurrentApp,
     initializeDefaultAppId,
     refreshCurrentApp,
-    validateAndRefreshConfig, // 新增：验证并刷新配置
-    switchToApp, // 新增：切换app
+    validateAndRefreshConfig, // validate and refresh config
+    switchToApp, // switch app
   } = useCurrentAppStore();
 
-  // 包装操作方法，提供更好的类型安全和错误处理
+  // Wrap switch app action for better type safety and error handling
   const switchApp = useCallback(
     (appId: string, instance: ServiceInstance) => {
       if (!appId || !instance) {
-        console.error('切换应用失败：appId 和 instance 不能为空');
+        console.error('Switch app failed: appId and instance are required');
         return;
       }
       setCurrentAppId(appId, instance);
@@ -46,7 +46,7 @@ export function useCurrentApp() {
 
   const initializeApp = useCallback(async () => {
     try {
-      // 🔒 安全检查：确保用户已登录才初始化应用
+      // Security check: only initialize app if user is logged in
       const { createClient } = await import('@lib/supabase/client');
       const supabase = createClient();
       const {
@@ -55,13 +55,15 @@ export function useCurrentApp() {
       } = await supabase.auth.getUser();
 
       if (!user || error) {
-        console.log('[useCurrentApp] 用户未登录，跳过应用初始化');
+        console.log(
+          '[useCurrentApp] User not logged in, skip app initialization'
+        );
         return;
       }
 
       await initializeDefaultAppId();
     } catch (error) {
-      console.error('初始化应用失败:', error);
+      console.error('Failed to initialize app:', error);
     }
   }, [initializeDefaultAppId]);
 
@@ -69,13 +71,15 @@ export function useCurrentApp() {
     try {
       await refreshCurrentApp();
     } catch (error) {
-      console.error('刷新应用失败:', error);
+      console.error('Failed to refresh app:', error);
     }
   }, [refreshCurrentApp]);
 
-  // 新增：强制等待App配置就绪的方法
-  // 解决时序问题：确保在使用appId前，配置已完全加载
-  // 支持切换到指定app
+  /**
+   * Force wait for app config to be ready.
+   * Solves timing issues: ensures config is fully loaded before using appId.
+   * Supports switching to a specific app.
+   */
   const ensureAppReady = useCallback(
     async (
       targetAppId?: string
@@ -84,25 +88,25 @@ export function useCurrentApp() {
       instance: ServiceInstance;
     }> => {
       console.log(
-        `[ensureAppReady] 开始确保App配置就绪${targetAppId ? `, 目标app: ${targetAppId}` : ''}`
+        `[ensureAppReady] Start ensuring app config is ready${targetAppId ? `, target app: ${targetAppId}` : ''}`
       );
 
-      // 🎯 新增：先验证配置有效性，确保与数据库同步
+      // First, validate config to ensure sync with database
       if (
         currentAppId &&
         currentAppInstance &&
         !isLoadingAppId &&
         !targetAppId
       ) {
-        console.log('[ensureAppReady] 验证配置有效性...');
+        console.log('[ensureAppReady] Validating config...');
         try {
-          await validateAndRefreshConfig(undefined, 'general'); // 🎯 指定为一般验证，不触发消息spinner
+          await validateAndRefreshConfig(undefined, 'general'); // general validation, do not trigger message spinner
 
-          // 验证后重新获取状态
+          // After validation, get updated state
           const updatedState = useCurrentAppStore.getState();
           if (updatedState.currentAppId && updatedState.currentAppInstance) {
             console.log(
-              `[ensureAppReady] 配置验证完成，返回: ${updatedState.currentAppId}`
+              `[ensureAppReady] Config validated, returning: ${updatedState.currentAppId}`
             );
             return {
               appId: updatedState.currentAppId,
@@ -111,10 +115,10 @@ export function useCurrentApp() {
           }
         } catch (error) {
           console.warn(
-            '[ensureAppReady] 配置验证失败，继续使用当前配置:',
+            '[ensureAppReady] Config validation failed, using current config:',
             error
           );
-          // 验证失败时仍然使用当前配置，避免阻塞用户操作
+          // If validation fails, still use current config to avoid blocking user
           return {
             appId: currentAppId,
             instance: currentAppInstance,
@@ -122,56 +126,57 @@ export function useCurrentApp() {
         }
       }
 
-      // 如果指定了targetAppId且与当前不同，切换到目标app
+      // If targetAppId is specified and different from current, switch to target app
       if (targetAppId && targetAppId !== currentAppId) {
-        console.log(`[ensureAppReady] 切换到目标app: ${targetAppId}`);
+        console.log(`[ensureAppReady] Switching to target app: ${targetAppId}`);
         try {
-          await validateAndRefreshConfig(targetAppId, 'switch'); // 🎯 指定为切换上下文
+          await validateAndRefreshConfig(targetAppId, 'switch'); // context: switch
 
-          // 切换后重新获取状态
+          // After switch, get updated state
           const updatedState = useCurrentAppStore.getState();
           if (updatedState.currentAppId && updatedState.currentAppInstance) {
             console.log(
-              `[ensureAppReady] app切换完成，返回: ${updatedState.currentAppId}`
+              `[ensureAppReady] App switched, returning: ${updatedState.currentAppId}`
             );
             return {
               appId: updatedState.currentAppId,
               instance: updatedState.currentAppInstance,
             };
           } else {
-            throw new Error(`切换到app ${targetAppId} 后状态异常`);
+            throw new Error(
+              `State error after switching to app ${targetAppId}`
+            );
           }
         } catch (error) {
           console.error(
-            `[ensureAppReady] 切换到app ${targetAppId} 失败:`,
+            `[ensureAppReady] Failed to switch to app ${targetAppId}:`,
             error
           );
           throw new Error(
-            `切换到app ${targetAppId} 失败: ${error instanceof Error ? error.message : String(error)}`
+            `Failed to switch to app ${targetAppId}: ${error instanceof Error ? error.message : String(error)}`
           );
         }
       }
 
-      // 如果正在加载，等待加载完成
+      // If loading, wait for loading to complete (max 10 seconds)
       if (isLoadingAppId) {
-        console.log('[ensureAppReady] 正在加载中，等待完成...');
+        console.log('[ensureAppReady] Loading in progress, waiting...');
 
-        // 轮询等待加载完成，最多等待10秒
-        const maxWaitTime = 10000; // 10秒
+        const maxWaitTime = 10000; // 10 seconds
         const pollInterval = 100; // 100ms
         let waitedTime = 0;
 
         while (waitedTime < maxWaitTime) {
           const currentState = useCurrentAppStore.getState();
 
-          // 加载完成且有有效配置
+          // Loading complete and valid config
           if (
             !currentState.isLoadingAppId &&
             currentState.currentAppId &&
             currentState.currentAppInstance
           ) {
             console.log(
-              `[ensureAppReady] 等待完成，获得配置: ${currentState.currentAppId}`
+              `[ensureAppReady] Wait complete, got config: ${currentState.currentAppId}`
             );
             return {
               appId: currentState.currentAppId,
@@ -179,36 +184,36 @@ export function useCurrentApp() {
             };
           }
 
-          // 加载完成但失败
+          // Loading complete but failed
           if (!currentState.isLoadingAppId && currentState.errorLoadingAppId) {
             console.error(
-              `[ensureAppReady] 加载失败: ${currentState.errorLoadingAppId}`
+              `[ensureAppReady] Loading failed: ${currentState.errorLoadingAppId}`
             );
             throw new Error(
-              `App配置加载失败: ${currentState.errorLoadingAppId}`
+              `App config loading failed: ${currentState.errorLoadingAppId}`
             );
           }
 
-          // 继续等待
+          // Continue waiting
           await new Promise(resolve => setTimeout(resolve, pollInterval));
           waitedTime += pollInterval;
         }
 
-        throw new Error('App配置加载超时');
+        throw new Error('App config loading timeout');
       }
 
-      // 如果没有配置且没有在加载，主动初始化
+      // If no config and not loading, initialize
       if (!currentAppId) {
-        console.log('[ensureAppReady] 没有配置，开始初始化...');
+        console.log('[ensureAppReady] No config, start initializing...');
 
         try {
           await initializeDefaultAppId();
 
-          // 初始化后再次检查
+          // After initialization, check again
           const finalState = useCurrentAppStore.getState();
           if (finalState.currentAppId && finalState.currentAppInstance) {
             console.log(
-              `[ensureAppReady] 初始化成功: ${finalState.currentAppId}`
+              `[ensureAppReady] Initialization success: ${finalState.currentAppId}`
             );
             return {
               appId: finalState.currentAppId,
@@ -216,25 +221,25 @@ export function useCurrentApp() {
             };
           } else {
             throw new Error(
-              `初始化后仍无有效配置: ${finalState.errorLoadingAppId || '未知错误'}`
+              `No valid config after initialization: ${finalState.errorLoadingAppId || 'Unknown error'}`
             );
           }
         } catch (error) {
-          console.error('[ensureAppReady] 初始化失败:', error);
+          console.error('[ensureAppReady] Initialization failed:', error);
           throw new Error(
-            `App配置初始化失败: ${error instanceof Error ? error.message : String(error)}`
+            `App config initialization failed: ${error instanceof Error ? error.message : String(error)}`
           );
         }
       }
 
-      // 如果有错误，抛出异常
+      // If there is an error, throw
       if (errorLoadingAppId) {
-        throw new Error(`App配置错误: ${errorLoadingAppId}`);
+        throw new Error(`App config error: ${errorLoadingAppId}`);
       }
 
-      // 理论上不应该到达这里
+      // Should not reach here
       throw new Error(
-        'App配置状态异常：无法获取有效的应用配置，请检查数据库中是否存在默认的Dify应用实例'
+        'App config state error: failed to get valid app config, please check if a default Dify app instance exists in the database'
       );
     },
     [
@@ -247,13 +252,15 @@ export function useCurrentApp() {
     ]
   );
 
-  // 新增：切换到指定app的便捷方法
+  /**
+   * Convenient method to switch to a specific app.
+   */
   const switchToSpecificApp = useCallback(
     async (appId: string) => {
       try {
         await switchToApp(appId);
       } catch (error) {
-        console.error('切换app失败:', error);
+        console.error('Failed to switch app:', error);
         throw error;
       }
     },
@@ -261,56 +268,56 @@ export function useCurrentApp() {
   );
 
   return {
-    // 状态
+    // State
     currentAppId,
     currentAppInstance,
     isLoading: isLoadingAppId,
-    isValidating, // 新增：验证状态
-    isValidatingForMessage, // 🎯 新增：消息发送时的验证状态
+    isValidating, // validation state
+    isValidatingForMessage, // validation state for message sending
     error: errorLoadingAppId,
 
-    // 计算属性
+    // Computed properties
     hasCurrentApp: !!currentAppId && !!currentAppInstance,
     isReady: !isLoadingAppId && !!currentAppId,
 
-    // 操作方法
+    // Actions
     switchApp,
     resetApp,
     initializeApp,
     refreshApp,
-    ensureAppReady, // 新增方法
-    switchToSpecificApp, // 新增：切换到指定app
-    validateConfig: validateAndRefreshConfig, // 暴露验证方法
+    ensureAppReady, // ensure app config is ready
+    switchToSpecificApp, // switch to a specific app
+    validateConfig: validateAndRefreshConfig, // expose validation method
   };
 }
 
 /**
- * 仅获取当前应用ID的 Hook（性能优化）
- * @returns 当前应用ID
+ * Hook to get only the current app ID (performance optimization).
+ * @returns Current app ID.
  */
 export function useCurrentAppId() {
   return useCurrentAppStore(state => state.currentAppId);
 }
 
 /**
- * 仅获取当前应用实例的 Hook（性能优化）
- * @returns 当前应用实例
+ * Hook to get only the current app instance (performance optimization).
+ * @returns Current app instance.
  */
 export function useCurrentAppInstance() {
   return useCurrentAppStore(state => state.currentAppInstance);
 }
 
 /**
- * 仅获取加载状态的 Hook（性能优化）
- * @returns 是否正在加载
+ * Hook to get only the loading state (performance optimization).
+ * @returns Whether the app is loading.
  */
 export function useCurrentAppLoading() {
   return useCurrentAppStore(state => state.isLoadingAppId);
 }
 
 /**
- * 仅获取错误状态的 Hook（性能优化）
- * @returns 错误信息
+ * Hook to get only the error state (performance optimization).
+ * @returns Error message.
  */
 export function useCurrentAppError() {
   return useCurrentAppStore(state => state.errorLoadingAppId);

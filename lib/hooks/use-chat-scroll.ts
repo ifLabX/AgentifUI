@@ -6,9 +6,7 @@ import {
 } from '@lib/stores/chat-store';
 import debounce from 'lodash/debounce';
 
-import { useCallback, useEffect, useRef } from 'react';
-
-// Removed unused throttle import
+import { useEffect, useRef } from 'react';
 
 // Scroll threshold in pixels - distance from bottom considered "at bottom"
 const SCROLL_THRESHOLD = 50;

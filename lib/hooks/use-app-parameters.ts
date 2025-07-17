@@ -12,15 +12,15 @@ interface UseAppParametersState {
 }
 
 /**
- * 应用参数Hook - 纯数据库策略
+ * App parameters hook - database only strategy
  *
- * 🎯 核心策略：
- * 1. 仅使用数据库中的本地配置（instant loading）
- * 2. 无数据时返回null，由组件层面处理fallback逻辑
- * 3. 通过管理界面的同步调度器管理数据
+ * Core strategy:
+ * 1. Only use local config from database (instant loading)
+ * 2. Return null if no data, let component handle fallback logic
+ * 3. Data is managed by the admin panel's sync scheduler
  *
- * @param instanceId 应用实例ID
- * @returns 应用参数状态
+ * @param instanceId Application instance ID
+ * @returns App parameters state
  */
 export function useAppParameters(
   instanceId: string | null
@@ -59,7 +59,7 @@ export function useAppParameters(
 
         if (result.success) {
           setState({
-            parameters: result.data, // 可能为null
+            parameters: result.data, // may be null
             isLoading: false,
             error: null,
             lastUpdated: new Date(),
@@ -79,7 +79,10 @@ export function useAppParameters(
         setState({
           parameters: null,
           isLoading: false,
-          error: error instanceof Error ? error.message : '获取应用参数失败',
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to get app parameters',
           lastUpdated: new Date(),
         });
       }

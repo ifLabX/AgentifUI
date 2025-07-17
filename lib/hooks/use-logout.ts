@@ -6,25 +6,24 @@ import { clearCacheOnLogout } from '@lib/utils/cache-cleanup';
 import { useRouter } from 'next/navigation';
 
 /**
- * 退出登录 Hook
+ * Logout Hook
  *
- * 提供退出登录功能，处理所有相关逻辑，包括：
- * - 调用 Supabase Auth 的登出方法
- * - 清除本地状态和敏感缓存
- * - 重定向到登录页面
+ * Provides logout functionality and handles all related logic, including:
+ * - Calling Supabase Auth sign out method
+ * - Clearing local state and sensitive cache
+ * - Redirecting to the login page
  *
- * @returns 包含退出登录方法和加载状态的对象
+ * @returns An object containing the logout method
  *
  * @example
  * ```tsx
- * const { logout, isLoggingOut } = useLogout();
+ * const { logout } = useLogout();
  *
  * return (
  *   <button
  *     onClick={logout}
- *     disabled={isLoggingOut}
  *   >
- *     {isLoggingOut ? '退出中...' : '退出登录'}
+ *     Logout
  *   </button>
  * );
  * ```
@@ -34,40 +33,40 @@ export function useLogout() {
   const supabase = createClient();
 
   /**
-   * 执行退出登录操作
-   * - 调用 Supabase Auth 的登出方法
-   * - 清除所有敏感缓存和用户数据
-   * - 重定向到登录页面
-   * - 刷新路由以更新认证状态
+   * Executes the logout process:
+   * - Calls Supabase Auth sign out method
+   * - Clears all sensitive cache and user data
+   * - Redirects to the login page
+   * - Refreshes the router to update authentication state
    */
   const logout = async () => {
     try {
-      console.log('[登出] 开始执行退出登录流程');
+      console.log('[Logout] Starting logout process');
 
-      // 首先清理所有敏感缓存，确保用户数据安全
+      // First, clear all sensitive cache to ensure user data safety
       clearCacheOnLogout();
 
-      // 调用 Supabase Auth 的登出方法
+      // Call Supabase Auth sign out method
       await supabase.auth.signOut();
 
-      console.log('[登出] Supabase Auth 登出成功');
+      console.log('[Logout] Supabase Auth sign out successful');
 
-      // 重定向到登录页面
+      // Redirect to login page
       router.push('/login');
 
-      // 刷新路由以更新认证状态
+      // Refresh the router to update authentication state
       router.refresh();
 
-      console.log('[登出] 退出登录流程完成');
+      console.log('[Logout] Logout process completed');
     } catch (error) {
-      console.error('[登出] 退出登录失败:', error);
+      console.error('[Logout] Logout failed:', error);
 
-      // 即使登出失败，也要清理本地缓存以确保安全
+      // Even if logout fails, clear local cache to ensure safety
       try {
         clearCacheOnLogout();
-        console.log('[登出] 失败情况下仍成功清理缓存');
+        console.log('[Logout] Cache cleared successfully even after failure');
       } catch (cacheError) {
-        console.error('[登出] 缓存清理也失败:', cacheError);
+        console.error('[Logout] Cache clearing also failed:', cacheError);
       }
     }
   };

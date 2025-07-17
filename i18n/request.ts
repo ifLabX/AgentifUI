@@ -1,8 +1,4 @@
-import {
-  DEFAULT_LOCALE,
-  getSupportedLocales,
-  isValidLocale,
-} from '@lib/config/language-config';
+import { DEFAULT_LOCALE, isValidLocale } from '@lib/config/language-config';
 
 import { getRequestConfig } from 'next-intl/server';
 import { cookies } from 'next/headers';
@@ -12,8 +8,6 @@ export default getRequestConfig(async () => {
   const cookieStore = await cookies();
   const locale = cookieStore.get('NEXT_LOCALE')?.value || DEFAULT_LOCALE;
 
-  // Validate if language code is supported
-  const supportedLocales = getSupportedLocales();
   const finalLocale = isValidLocale(locale) ? locale : DEFAULT_LOCALE;
 
   return {

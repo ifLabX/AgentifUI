@@ -7,94 +7,98 @@ import { useCallback, useEffect } from 'react';
 import { useChatInterface } from './use-chat-interface';
 
 /**
- * Chatflow 接口 Hook
+ * Chatflow interface hook
  *
- * 功能特点：
- * - 扩展 useChatInterface 的功能
- * - 处理表单数据转换为聊天消息
- * - 保持与现有聊天逻辑的兼容性
- * - 支持表单数据的结构化处理
- * - 集成节点执行跟踪功能
+ * Features:
+ * - Extends useChatInterface functionality
+ * - Handles conversion of form data to chat messages
+ * - Maintains compatibility with existing chat logic
+ * - Supports structured processing of form data
+ * - Integrates node execution tracking
  */
 export function useChatflowInterface() {
-  // 获取节点跟踪相关的方法
+  // Get node tracking related methods
   const { startExecution, handleNodeEvent, resetExecution } =
     useChatflowExecutionStore();
 
-  // 使用基础的聊天接口，传递节点事件处理器
+  // Use the base chat interface, passing the node event handler
   const chatInterface = useChatInterface(handleNodeEvent);
 
   /**
-   * 处理 Chatflow 提交
-   * 将查询和表单数据构建为正确的 chat-messages API payload
+   * Handle Chatflow submission
+   * Build the correct chat-messages API payload from query and form data
    */
   const handleChatflowSubmit = useCallback(
     async (query: string, inputs: Record<string, any>, files?: any[]) => {
-      console.log('[useChatflowInterface] 处理 Chatflow 提交', {
+      console.log('[useChatflowInterface] Handling Chatflow submit', {
         query,
         inputs,
         files,
       });
 
       try {
-        // --- 步骤1: 启动节点跟踪 ---
+        // Step 1: Start node execution tracking
         startExecution();
 
-        // --- 步骤2: 构建用户消息内容 ---
-        // 显示给用户看的消息内容，包含查询和表单数据摘要
+        // Step 2: Build user message content (shown to user, includes query and form data summary)
         const userMessage = formatChatflowMessage(query, inputs);
 
-        // --- 步骤3: 准备文件数据 ---
+        // Step 3: Prepare file data
         const difyFiles = files ? formatFilesForDify(files) : undefined;
 
-        // --- 步骤4: 使用修改后的handleSubmit传递inputs ---
-        // 现在handleSubmit支持第三个参数inputs
+        // Step 4: Use the modified handleSubmit to pass inputs as the third argument
         await chatInterface.handleSubmit(userMessage, difyFiles, inputs);
 
-        console.log('[useChatflowInterface] Chatflow 数据已成功发送');
+        console.log('[useChatflowInterface] Chatflow data sent successfully');
       } catch (error) {
-        console.error('[useChatflowInterface] Chatflow 提交失败:', error);
-        // 发生错误时停止执行跟踪
+        console.error('[useChatflowInterface] Chatflow submit failed:', error);
+        // Stop execution tracking on error
         useChatflowExecutionStore
           .getState()
-          .setError(error instanceof Error ? error.message : '提交失败');
+          .setError(error instanceof Error ? error.message : 'Submit failed');
         throw error;
       }
     },
     [chatInterface, startExecution]
   );
 
-  // --- 监听 SSE 事件并更新节点状态 ---
+  // Listen to SSE events and update node status
   useEffect(() => {
     const { isWaitingForResponse } = chatInterface;
 
     if (isWaitingForResponse) {
-      // 开始执行时启动跟踪
-      console.log('[ChatflowInterface] 开始等待响应，启动执行跟踪');
+      // Start execution tracking when waiting for response
+      console.log(
+        '[ChatflowInterface] Waiting for response, start execution tracking'
+      );
       startExecution();
     } else {
-      // 修复：流式响应结束不等于节点执行完成
-      // 不应该强制停止执行，让节点自然完成
-      // 只在真正需要时（如用户手动停止）才调用stopExecution
-      console.log('[ChatflowInterface] 流式响应完成，但节点可能仍在执行');
+      // Fix: End of streaming response does not mean node execution is complete
+      // Should not force stop execution, let nodes finish naturally
+      // Only call stopExecution when truly needed (e.g. user manually stops)
+      console.log(
+        '[ChatflowInterface] Streaming response finished, but nodes may still be running'
+      );
 
-      // 不再自动调用stopExecution，让节点通过node_finished事件自然完成
-      // 这样避免了将running节点错误标记为failed的问题
+      // No longer automatically call stopExecution, let nodes finish via node_finished event
+      // This avoids marking running nodes as failed incorrectly
     }
   }, [chatInterface.isWaitingForResponse, startExecution]);
 
   /**
-   * 重写停止处理方法，同时处理聊天停止和细粒度节点状态
+   * Override stop processing method, handle both chat stop and fine-grained node status
    */
   const handleStopProcessing = useCallback(async () => {
-    console.log('[useChatflowInterface] 开始停止处理：聊天 + 细粒度节点');
+    console.log(
+      '[useChatflowInterface] Start stopping processing: chat + fine-grained nodes'
+    );
 
     try {
-      // 1. 先调用原始的聊天停止方法
+      // 1. Call the original chat stop method first
       await chatInterface.handleStopProcessing();
-      console.log('[useChatflowInterface] 聊天停止完成');
+      console.log('[useChatflowInterface] Chat stop completed');
 
-      // 2. 处理细粒度节点状态停止
+      // 2. Handle fine-grained node status stop
       const {
         stopExecution,
         nodes,
@@ -103,23 +107,23 @@ export function useChatflowInterface() {
         updateParallelBranch,
       } = useChatflowExecutionStore.getState();
 
-      // 停止所有运行中的节点
+      // Stop all running nodes
       nodes.forEach(node => {
         if (node.status === 'running') {
-          console.log('[useChatflowInterface] 停止运行中的节点:', node.id);
+          console.log('[useChatflowInterface] Stopping running node:', node.id);
           updateNode(node.id, {
             status: 'failed',
             endTime: Date.now(),
-            description: node.title + ' (已停止)',
+            description: node.title + ' (stopped)',
           });
         }
 
-        // 处理迭代中的运行节点
+        // Handle running nodes in iterations
         if (node.iterations) {
           node.iterations.forEach(iteration => {
             if (iteration.status === 'running') {
               console.log(
-                '[useChatflowInterface] 停止迭代中的节点:',
+                '[useChatflowInterface] Stopping running node in iteration:',
                 node.id,
                 iteration.id
               );
@@ -131,12 +135,12 @@ export function useChatflowInterface() {
           });
         }
 
-        // 处理并行分支中的运行节点
+        // Handle running nodes in parallel branches
         if (node.parallelBranches) {
           node.parallelBranches.forEach(branch => {
             if (branch.status === 'running') {
               console.log(
-                '[useChatflowInterface] 停止并行分支中的节点:',
+                '[useChatflowInterface] Stopping running node in parallel branch:',
                 node.id,
                 branch.id
               );
@@ -149,23 +153,25 @@ export function useChatflowInterface() {
         }
       });
 
-      // 3. 停止执行状态
+      // 3. Stop execution status
       stopExecution();
-      console.log('[useChatflowInterface] 细粒度节点状态停止完成');
+      console.log(
+        '[useChatflowInterface] Fine-grained node status stop completed'
+      );
     } catch (error) {
-      console.error('[useChatflowInterface] 停止处理失败:', error);
-      // 即使出错也要尝试停止执行状态
+      console.error('[useChatflowInterface] Stop processing failed:', error);
+      // Try to stop execution status even if error occurs
       useChatflowExecutionStore.getState().stopExecution();
       throw error;
     }
   }, [chatInterface]);
 
-  // 返回扩展的接口
+  // Return the extended interface
   return {
     ...chatInterface,
-    handleStopProcessing, // 使用重写的停止方法
+    handleStopProcessing, // Use the overridden stop method
     handleChatflowSubmit,
-    // 暴露节点跟踪相关的状态和方法
+    // Expose node tracking related state and methods
     nodeTracker: {
       nodes: useChatflowExecutionStore(state => state.nodes),
       isExecuting: useChatflowExecutionStore(state => state.isExecuting),
@@ -179,19 +185,19 @@ export function useChatflowInterface() {
 }
 
 /**
- * 格式化 Chatflow 消息内容
+ * Format Chatflow message content
  */
 function formatChatflowMessage(
   query: string,
   inputs: Record<string, any>
 ): string {
-  // 🎯 修复：只返回用户的原始问题，不添加表单摘要
-  // 表单数据通过 inputs 字段传递给 Dify API，不应该污染 query 字段
+  // Only return the user's original question, do not add form summary
+  // Form data is passed via the inputs field to Dify API, should not pollute the query field
   return query;
 }
 
 /**
- * 格式化文件为 Dify 格式
+ * Format files to Dify format
  */
 function formatFilesForDify(files: any[]): any[] {
   return files.map(file => {
@@ -210,22 +216,22 @@ function formatFilesForDify(files: any[]): any[] {
 }
 
 /**
- * 将表单数据格式化为用户友好的消息内容（保留用于兼容性）
+ * Format form data to user-friendly message content (kept for compatibility)
  */
 function formatFormDataToMessage(formData: Record<string, any>): string {
   const messageParts: string[] = [];
 
-  // 遍历表单数据，构建结构化消息
+  // Iterate form data and build structured message
   Object.entries(formData).forEach(([key, value]) => {
     if (value === null || value === undefined || value === '') {
-      return; // 跳过空值
+      return; // Skip empty values
     }
 
-    // 处理不同类型的值
+    // Handle different value types
     if (Array.isArray(value)) {
-      // 文件数组或其他数组类型
+      // File array or other array types
       if (value.length > 0) {
-        // 对于文件，我们只显示文件名，实际文件通过 files 参数传递
+        // For files, only show file names, actual files are passed via files param
         if (value[0] && typeof value[0] === 'object' && value[0].name) {
           const fileNames = value.map(file => file.name).join(', ');
           messageParts.push(`**${key}**: ${fileNames}`);
@@ -234,44 +240,44 @@ function formatFormDataToMessage(formData: Record<string, any>): string {
         }
       }
     } else if (typeof value === 'object') {
-      // 对象类型（如文件对象）
+      // Object type (e.g. file object)
       if (value.name) {
         messageParts.push(`**${key}**: ${value.name}`);
       } else {
         messageParts.push(`**${key}**: ${JSON.stringify(value)}`);
       }
     } else {
-      // 基本类型
+      // Primitive type
       messageParts.push(`**${key}**: ${value}`);
     }
   });
 
-  // 如果没有有效数据，返回默认消息
+  // If no valid data, return default message
   if (messageParts.length === 0) {
-    return '开始对话';
+    return 'Start conversation';
   }
 
-  // 构建最终消息
+  // Build final message
   const formattedMessage = [
-    '我已填写了以下信息：',
+    'I have filled in the following information:',
     '',
     ...messageParts,
     '',
-    '请基于这些信息为我提供帮助。',
+    'Please help me based on this information.',
   ].join('\n');
 
   return formattedMessage;
 }
 
 /**
- * 从表单数据中提取文件
+ * Extract files from form data
  */
 function extractFilesFromFormData(formData: Record<string, any>): any[] {
   const files: any[] = [];
 
   Object.values(formData).forEach(value => {
     if (Array.isArray(value)) {
-      // 检查是否是文件数组
+      // Check if it's a file array
       value.forEach(item => {
         if (item && typeof item === 'object' && (item.file || item.name)) {
           files.push(item);
@@ -282,7 +288,7 @@ function extractFilesFromFormData(formData: Record<string, any>): any[] {
       typeof value === 'object' &&
       (value.file || value.name)
     ) {
-      // 单个文件对象
+      // Single file object
       files.push(value);
     }
   });
@@ -291,14 +297,14 @@ function extractFilesFromFormData(formData: Record<string, any>): any[] {
 }
 
 /**
- * 检查表单数据是否包含文件
+ * Check if form data contains files
  */
 export function hasFilesInFormData(formData: Record<string, any>): boolean {
   return extractFilesFromFormData(formData).length > 0;
 }
 
 /**
- * 获取表单数据的摘要信息
+ * Get summary information of form data
  */
 export function getFormDataSummary(formData: Record<string, any>): {
   fieldCount: number;
@@ -312,7 +318,7 @@ export function getFormDataSummary(formData: Record<string, any>): {
     if (value !== null && value !== undefined && value !== '') {
       nonEmptyFields.push(key);
 
-      // 检查是否包含文件
+      // Check if contains files
       if (Array.isArray(value)) {
         if (
           value.some(

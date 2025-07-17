@@ -1,23 +1,18 @@
 /**
- * 消息相关的数据库操作函数
+ * Database operation functions related to messages.
  *
- * 本文件包含与消息表(messages)相关的所有数据库操作
- * 更新为使用新的messageService和统一数据服务，同时保留兼容版本
+ * This file contains all database operations related to the messages table.
+ * Updated to use the new messageService and unified data service, while retaining compatibility versions.
  */
-import { dataService } from '@lib/services/db/data-service';
 import { messageService } from '@lib/services/db/message-service';
 import { ChatMessage } from '@lib/stores/chat-store';
-import { createClient } from '@lib/supabase/client';
 import { Message, MessageStatus } from '@lib/types/database';
 import { Result, failure, success } from '@lib/types/result';
 
-// 保持与现有代码的兼容性
-const supabase = createClient();
-
 /**
- * 保存消息到数据库（优化版本）
- * @param message 消息对象
- * @returns 保存后的消息对象Result，如果保存失败则返回错误
+ * Save a message to the database (optimized version)
+ * @param message Message object
+ * @returns Result with the saved message object, or error if failed
  */
 export async function saveMessage(message: {
   conversation_id: string;
@@ -31,22 +26,24 @@ export async function saveMessage(message: {
   sequence_index?: number;
 }): Promise<Result<Message>> {
   console.log(
-    `[saveMessage] 开始保存消息，对话ID=${message.conversation_id}，角色=${message.role}`
+    `[saveMessage] Start saving message, conversationId=${message.conversation_id}, role=${message.role}`
   );
-  // 直接传递sequence_index
+  // Directly pass sequence_index
   const result = await messageService.saveMessage(message);
   if (result.success) {
-    console.log(`[saveMessage] 保存消息成功，消息ID=${result.data.id}`);
+    console.log(
+      `[saveMessage] Message saved successfully, messageId=${result.data.id}`
+    );
   } else {
-    console.error(`[saveMessage] 保存消息失败:`, result.error);
+    console.error(`[saveMessage] Failed to save message:`, result.error);
   }
   return result;
 }
 
 /**
- * 批量保存多条消息（优化版本）
- * @param messages 消息对象数组
- * @returns 保存成功的消息ID数组Result
+ * Batch save multiple messages (optimized version)
+ * @param messages Array of message objects
+ * @returns Result with array of saved message IDs
  */
 export async function saveMessages(
   messages: {
@@ -64,84 +61,90 @@ export async function saveMessages(
   if (!messages.length) {
     return success([]);
   }
-  console.log(`[saveMessages] 开始批量保存${messages.length}条消息`);
-  // 直接传递sequence_index
+  console.log(`[saveMessages] Start batch saving ${messages.length} messages`);
+  // Directly pass sequence_index
   const result = await messageService.saveMessages(messages);
   if (result.success) {
     console.log(
-      `[saveMessages] 批量保存消息成功，保存了${result.data.length}条消息`
+      `[saveMessages] Batch save successful, saved ${result.data.length} messages`
     );
   } else {
-    console.error(`[saveMessages] 批量保存消息失败:`, result.error);
+    console.error(`[saveMessages] Batch save failed:`, result.error);
   }
   return result;
 }
 
 /**
- * 更新消息状态（优化版本）
- * @param messageId 消息ID
- * @param status 新状态
- * @returns 是否更新成功的Result
+ * Update message status (optimized version)
+ * @param messageId Message ID
+ * @param status New status
+ * @returns Result indicating whether update was successful
  */
 export async function updateMessageStatus(
   messageId: string,
   status: MessageStatus
 ): Promise<Result<boolean>> {
   console.log(
-    `[updateMessageStatus] 更新消息状态，消息ID=${messageId}，新状态=${status}`
+    `[updateMessageStatus] Update message status, messageId=${messageId}, new status=${status}`
   );
 
   const result = await messageService.updateMessageStatus(messageId, status);
 
   if (result.success) {
-    console.log(`[updateMessageStatus] 更新消息状态成功`);
+    console.log(`[updateMessageStatus] Message status updated successfully`);
     return success(true);
   } else {
-    console.error(`[updateMessageStatus] 更新消息状态失败:`, result.error);
+    console.error(
+      `[updateMessageStatus] Failed to update message status:`,
+      result.error
+    );
     return success(false);
   }
 }
 
 /**
- * 根据对话ID获取所有消息（优化版本）
- * @param conversationId 对话ID
- * @returns 消息数组Result
+ * Get all messages by conversation ID (optimized version)
+ * @param conversationId Conversation ID
+ * @returns Result with array of messages
  */
 export async function getMessagesByConversationId(
   conversationId: string
 ): Promise<Result<Message[]>> {
   console.log(
-    `[getMessagesByConversationId] 获取对话消息，对话ID=${conversationId}`
+    `[getMessagesByConversationId] Get messages for conversation, conversationId=${conversationId}`
   );
 
   const result = await messageService.getLatestMessages(conversationId, 1000, {
     cache: true,
-  }); // 获取大量消息
+  }); // Get a large number of messages
 
   if (result.success) {
     console.log(
-      `[getMessagesByConversationId] 获取消息成功，共${result.data.length}条消息`
+      `[getMessagesByConversationId] Successfully got messages, total=${result.data.length}`
     );
   } else {
-    console.error(`[getMessagesByConversationId] 获取消息失败:`, result.error);
+    console.error(
+      `[getMessagesByConversationId] Failed to get messages:`,
+      result.error
+    );
   }
 
   return result;
 }
 
 /**
- * 将前端ChatMessage对象转换为数据库Message对象（使用messageService）
- * @param chatMessage 前端消息对象
- * @param conversationId 对话ID
- * @param userId 用户ID (可选，用户消息需要)
- * @returns 数据库消息对象
+ * Convert frontend ChatMessage object to database Message object (using messageService)
+ * @param chatMessage Frontend message object
+ * @param conversationId Conversation ID
+ * @param userId User ID (optional, required for user messages)
+ * @returns Database message object
  */
 export function chatMessageToDbMessage(
   chatMessage: ChatMessage,
   conversationId: string,
   userId?: string | null
 ): Omit<Message, 'id' | 'created_at' | 'is_synced'> {
-  // 直接传递sequence_index
+  // Directly pass sequence_index
   return messageService.chatMessageToDbMessage(
     chatMessage,
     conversationId,
@@ -150,11 +153,11 @@ export function chatMessageToDbMessage(
 }
 
 /**
- * 创建错误占位助手消息（优化版本）
- * @param conversationId 对话ID
- * @param status 消息状态
- * @param errorMessage 错误信息
- * @returns 保存后的消息对象Result
+ * Create a placeholder assistant message for error (optimized version)
+ * @param conversationId Conversation ID
+ * @param status Message status
+ * @param errorMessage Error message
+ * @returns Result with the saved message object
  */
 export async function createPlaceholderAssistantMessage(
   conversationId: string,
@@ -162,14 +165,14 @@ export async function createPlaceholderAssistantMessage(
   errorMessage: string | null = null
 ): Promise<Result<Message>> {
   console.log(
-    `[createPlaceholderAssistantMessage] 创建占位助手消息，对话ID=${conversationId}`
+    `[createPlaceholderAssistantMessage] Create placeholder assistant message, conversationId=${conversationId}`
   );
-  // 直接传递sequence_index: 1
+  // Directly pass sequence_index: 1
   return saveMessage({
     conversation_id: conversationId,
     user_id: null,
     role: 'assistant',
-    content: errorMessage || '助手消息生成失败',
+    content: errorMessage || 'Failed to generate assistant message',
     metadata: { error: true, errorMessage },
     status,
     sequence_index: 1,
@@ -177,7 +180,7 @@ export async function createPlaceholderAssistantMessage(
 }
 
 /**
- * 根据内容和角色查询消息，用于检查重复（优化版本）
+ * Query message by content and role, used for duplicate check (optimized version)
  */
 export async function getMessageByContentAndRole(
   content: string,
@@ -185,7 +188,7 @@ export async function getMessageByContentAndRole(
   conversationId: string
 ): Promise<Result<Message | null>> {
   try {
-    // 使用messageService中的查找重复消息功能
+    // Use messageService to find duplicate message
     const result = await messageService.findDuplicateMessage(
       content,
       role,
@@ -195,20 +198,26 @@ export async function getMessageByContentAndRole(
     if (result.success) {
       return result;
     } else {
-      console.error('[getMessageByContentAndRole] 查询消息失败:', result.error);
+      console.error(
+        '[getMessageByContentAndRole] Failed to query message:',
+        result.error
+      );
       return result;
     }
   } catch (e) {
-    console.error('[getMessageByContentAndRole] 查询消息异常:', e);
+    console.error(
+      '[getMessageByContentAndRole] Exception when querying message:',
+      e
+    );
     return failure(e instanceof Error ? e : new Error(String(e)));
   }
 }
 
-// 兼容性函数，保持与现有代码的兼容性
-// 这些函数将逐步迁移到使用Result类型
+// Compatibility functions, keep compatibility with existing code
+// These functions will gradually migrate to use Result type
 /**
- * 保存消息到数据库（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Save message to database (legacy version)
+ * @deprecated Please use the new version and handle Result type
  */
 export async function saveMessageLegacy(message: {
   conversation_id: string;
@@ -225,8 +234,8 @@ export async function saveMessageLegacy(message: {
 }
 
 /**
- * 批量保存多条消息（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Batch save multiple messages (legacy version)
+ * @deprecated Please use the new version and handle Result type
  */
 export async function saveMessagesLegacy(
   messages: {
@@ -245,8 +254,8 @@ export async function saveMessagesLegacy(
 }
 
 /**
- * 更新消息状态（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Update message status (legacy version)
+ * @deprecated Please use the new version and handle Result type
  */
 export async function updateMessageStatusLegacy(
   messageId: string,
@@ -257,8 +266,8 @@ export async function updateMessageStatusLegacy(
 }
 
 /**
- * 根据对话ID获取所有消息（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Get all messages by conversation ID (legacy version)
+ * @deprecated Please use the new version and handle Result type
  */
 export async function getMessagesByConversationIdLegacy(
   conversationId: string
@@ -268,8 +277,8 @@ export async function getMessagesByConversationIdLegacy(
 }
 
 /**
- * 创建错误占位助手消息（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Create placeholder assistant message for error (legacy version)
+ * @deprecated Please use the new version and handle Result type
  */
 export async function createPlaceholderAssistantMessageLegacy(
   conversationId: string,
@@ -285,8 +294,8 @@ export async function createPlaceholderAssistantMessageLegacy(
 }
 
 /**
- * 根据内容和角色查询消息，用于检查重复（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Query message by content and role, used for duplicate check (legacy version)
+ * @deprecated Please use the new version and handle Result type
  */
 export async function getMessageByContentAndRoleLegacy(
   content: string,

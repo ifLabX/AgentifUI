@@ -7,85 +7,85 @@ import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useChatStateSync } from './use-chat-state-sync';
 
 /**
- * 聊天页面状态管理钩子
+ * Chat page state management hook.
  *
- * 集中管理聊天页面的状态，减少页面组件中的状态管理逻辑
+ * Centralizes chat page state management to reduce state logic in page components.
  */
 export function useChatPageState(conversationIdFromUrl: string | undefined) {
-  // 从 useChatStore 中获取必要的状态和方法
+  // Get necessary state and methods from useChatStore
   const setCurrentConversationId = useChatStore(
     state => state.setCurrentConversationId
   );
   const clearMessages = useChatStore(state => state.clearMessages);
 
-  // 从 useChatStateSync 中获取欢迎屏幕状态和设置方法
+  // Get welcome screen state and setter from useChatStateSync
   const { isWelcomeScreen, setIsWelcomeScreen } = useChatStateSync();
 
-  // 本地状态
+  // Local state for submit status
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 从全局状态获取过渡状态
+  // Get transition state from global store
   const { isTransitioningToWelcome, setIsTransitioningToWelcome } =
     useChatTransitionStore();
 
-  // 从侧边栏 store 获取选中状态和方法
-  // 用于确保路由变化时侧边栏选中状态同步更新
+  // Get sidebar selection method from sidebar store
+  // Used to ensure sidebar selection state syncs with route changes
   const selectItem = useSidebarStore(state => state.selectItem);
 
-  // 使用 useLayoutEffect 处理 URL 参数变化，减少闪烁
-  // 相比 useEffect，useLayoutEffect 会在浏览器绘制前同步执行
-  // 这有助于减少欢迎页面的闪烁问题
+  // Use useLayoutEffect to handle URL param changes and reduce flicker
+  // Compared to useEffect, useLayoutEffect runs synchronously before browser paint
+  // This helps reduce flicker of the welcome page
   useLayoutEffect(() => {
-    // 如果 URL 中的 conversationId 是 'new'，则设置为 null、清除消息历史并显示欢迎页面
+    // If the conversationId in the URL is 'new', set to null, clear messages, and show welcome screen
     if (conversationIdFromUrl === 'new') {
       console.log(
-        '[ChatPageState] 检测到 new 路由，清除消息历史并显示欢迎页面'
+        '[ChatPageState] Detected new route, clearing messages and showing welcome screen'
       );
 
-      // 强制清除所有消息
+      // Force clear all messages
       useChatStore.getState().clearMessages();
       clearMessages();
 
-      // 设置当前对话 ID 为 null
+      // Set current conversation ID to null
       setCurrentConversationId(null);
 
-      // 同步设置侧边栏选中状态为 null
+      // Sync sidebar selection state to null
       selectItem('chat', null, true);
 
-      // 强制设置欢迎屏幕状态为 true
+      // Force set welcome screen state to true
       setIsWelcomeScreen(true);
 
-      // 重置提交状态
+      // Reset submit state
       setIsSubmitting(false);
 
-      // 设置为从对话界面到欢迎界面的过渡
+      // Set transition state to indicate transition from chat to welcome screen
       setIsTransitioningToWelcome(true);
     } else if (conversationIdFromUrl) {
-      // 判断是否为临时ID
+      // Check if this is a temporary ID
       const isTempId = conversationIdFromUrl.startsWith('temp-');
 
       console.log(
-        `[ChatPageState] 设置对话 ID: ${conversationIdFromUrl}${isTempId ? ' (临时ID)' : ''}`
+        `[ChatPageState] Set conversation ID: ${conversationIdFromUrl}${isTempId ? ' (temp ID)' : ''}`
       );
 
-      // 设置当前对话 ID
+      // Set current conversation ID
       setCurrentConversationId(conversationIdFromUrl);
 
-      // 同步设置侧边栏选中状态
+      // Sync sidebar selection state
       selectItem('chat', conversationIdFromUrl, true);
 
-      // 关闭欢迎屏幕 - 强制设置为 false，确保刷新页面后不会显示欢迎界面
+      // Close welcome screen - force set to false to ensure it doesn't show after refresh
       setIsWelcomeScreen(false);
 
-      // 不是从对话界面到欢迎界面的过渡
+      // Not a transition from chat to welcome screen
       setIsTransitioningToWelcome(false);
 
-      // 强制刷新消息状态，确保刷新页面后能正确显示对话内容
+      // Force refresh message state to ensure correct display after refresh
       setTimeout(() => {
-        // 再次确认欢迎屏幕关闭，避免刷新后显示欢迎界面
+        // Ensure welcome screen is closed again to avoid showing after refresh
         setIsWelcomeScreen(false);
 
-        // 确保当前对话 ID 和侧边栏选中状态一致
+        // Ensure current conversation ID and sidebar selection state are consistent
         if (
           useChatStore.getState().currentConversationId !==
           conversationIdFromUrl
@@ -93,7 +93,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
           setCurrentConversationId(conversationIdFromUrl);
         }
 
-        // 确保侧边栏选中状态正确
+        // Ensure sidebar selection state is correct
         const sidebarState = useSidebarStore.getState();
         if (
           sidebarState.selectedId !== conversationIdFromUrl ||
@@ -103,10 +103,10 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
         }
       }, 50);
     } else {
-      // 如果没有 conversationId，则设置为 null
+      // If there is no conversationId, set to null
       setCurrentConversationId(null);
 
-      // 同步设置侧边栏选中状态为 null
+      // Sync sidebar selection state to null
       selectItem('chat', null, true);
     }
   }, [
@@ -118,22 +118,22 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
     selectItem,
   ]);
 
-  // 包装 handleSubmit 函数
-  // 确保在提交消息时正确同步侧边栏选中状态
+  // Wrap handleSubmit function
+  // Ensure sidebar selection state is correctly synced when submitting a message
   const wrapHandleSubmit = useCallback(
     (
       originalHandleSubmit: (message: string, files?: any[]) => Promise<any>
     ) => {
       return async (message: string, files?: any[]) => {
-        // 立即设置提交状态为 true
+        // Immediately set submitting state to true
         setIsSubmitting(true);
-        // 立即关闭欢迎界面
+        // Immediately close welcome screen
         setIsWelcomeScreen(false);
-        // 不是从对话界面到欢迎界面的过渡，使用滑动效果
+        // Not a transition from chat to welcome screen, use slide effect
         setIsTransitioningToWelcome(false);
 
-        // 判断是否为新对话流程
-        // 如果是新对话或临时ID，需要清除消息历史
+        // Determine if this is a new conversation flow
+        // If it's a new conversation or temp ID, need to clear message history
         const urlIndicatesNew =
           window.location.pathname === '/chat/new' ||
           window.location.pathname.includes('/chat/temp-');
@@ -142,25 +142,29 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
 
         if (isNewConversationFlow) {
           console.log(
-            '[ChatPageState] 检测到新对话路由且没有当前对话ID，清除消息历史'
+            '[ChatPageState] Detected new chat route and no current conversation ID, clearing messages'
           );
           clearMessages();
         } else if (currentConvId) {
-          console.log(`[ChatPageState] 使用现有对话: ${currentConvId}`);
+          console.log(
+            `[ChatPageState] Using existing conversation: ${currentConvId}`
+          );
 
-          // 确保侧边栏选中状态与当前对话ID同步
-          // 保持当前展开状态
+          // Ensure sidebar selection state is synced with current conversation ID
+          // Keep current expansion state
           selectItem('chat', currentConvId, true);
         }
 
-        // 调用原始的 handleSubmit 函数
+        // Call the original handleSubmit function
         const result = await originalHandleSubmit(message, files);
 
-        // 如果是新对话，提交后可能会创建临时ID
-        // 需要再次确保侧边栏选中状态与当前对话ID同步
+        // If it's a new conversation, a temp ID may be created after submit
+        // Need to ensure sidebar selection state is synced with current conversation ID again
         const newConvId = useChatStore.getState().currentConversationId;
         if (newConvId && newConvId !== currentConvId) {
-          console.log(`[ChatPageState] 提交后更新对话ID: ${newConvId}`);
+          console.log(
+            `[ChatPageState] Updated conversation ID after submit: ${newConvId}`
+          );
           selectItem('chat', newConvId, true);
         }
 

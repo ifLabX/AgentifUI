@@ -4,22 +4,22 @@ import { useChatflowInterface } from '@lib/hooks/use-chatflow-interface';
 import React from 'react';
 
 /**
- * Chatflow状态管理Hook
+ * Chatflow state management hook
  *
- * 功能：
- * - 根据应用类型选择正确的接口
- * - 管理节点跟踪器显示状态
- * - 自动响应节点执行状态
- * - 支持用户主动关闭后不再自动打开
+ * Features:
+ * - Selects the correct interface based on app type
+ * - Manages node tracker display state
+ * - Automatically responds to node execution state
+ * - Supports not auto-opening tracker if user manually closed it
  */
 export function useChatflowState(isChatflowApp: boolean) {
   const chatflowInterface = useChatflowInterface();
   const regularInterface = useChatInterface();
 
-  // 🎯 根据应用类型选择正确的接口
+  // Select the correct chat interface based on app type
   const chatInterface = isChatflowApp ? chatflowInterface : regularInterface;
 
-  // 🎯 nodeTracker只在chatflow应用中有效
+  // nodeTracker is only valid in chatflow apps
   const nodeTracker = isChatflowApp
     ? chatflowInterface.nodeTracker
     : {
@@ -29,40 +29,40 @@ export function useChatflowState(isChatflowApp: boolean) {
         error: null,
       };
 
-  // 🎯 节点跟踪器显示状态
+  // State for node tracker visibility
   const [showNodeTracker, setShowNodeTracker] = React.useState(false);
 
-  // 🎯 新增：跟踪用户是否主动关闭了弹窗
-  // 当用户主动关闭后，新的bar不再自动触发弹窗打开
+  // Track if user has manually closed the tracker popup
+  // If user closes, new executions will not auto-open the tracker
   const [userHasClosed, setUserHasClosed] = React.useState(false);
 
-  // 🎯 悬浮球显示逻辑：在chatflow应用中始终显示
+  // Floating controller is always shown in chatflow apps
   const showFloatingController = isChatflowApp;
 
-  // 🎯 关键修复：只在真正开始执行时才自动显示跟踪器
-  // 不基于历史节点数据，避免chatflow应用间切换时自动弹出
+  // Only auto-show tracker when execution actually starts and user hasn't closed it
+  // Avoids auto-popup when switching between chatflow apps
   React.useEffect(() => {
     if (!isChatflowApp) return;
 
     const isExecuting = nodeTracker?.isExecuting;
 
-    // 只有在真正开始执行时，且用户没有主动关闭的情况下才自动显示跟踪器
+    // Only auto-show tracker if execution starts and user hasn't closed it
     if (isExecuting && !userHasClosed) {
       setShowNodeTracker(true);
     }
   }, [isChatflowApp, nodeTracker?.isExecuting, userHasClosed]);
 
-  // 🎯 包装setShowNodeTracker，跟踪用户的主动操作
+  // Wrap setShowNodeTracker to track user's manual actions
   const handleToggleNodeTracker = React.useCallback(
     (show: boolean) => {
       setShowNodeTracker(show);
 
-      // 如果用户主动关闭（从true变为false），记录这个状态
+      // If user manually closes (from true to false), record this state
       if (!show && showNodeTracker) {
         setUserHasClosed(true);
       }
 
-      // 如果用户主动打开（从false变为true），重置关闭状态
+      // If user manually opens (from false to true), reset closed state
       if (show && !showNodeTracker) {
         setUserHasClosed(false);
       }
@@ -70,31 +70,31 @@ export function useChatflowState(isChatflowApp: boolean) {
     [showNodeTracker]
   );
 
-  // 🎯 当开始新的执行时，重置用户关闭状态
-  // 这样每次新的对话开始时，都可以重新自动显示
+  // Reset user closed state when a new execution starts
+  // This allows tracker to auto-show for each new conversation
   React.useEffect(() => {
     if (!isChatflowApp) return;
 
     const isExecuting = nodeTracker?.isExecuting;
 
-    // 当开始新的执行时，重置用户关闭状态
+    // Reset user closed state when execution starts
     if (isExecuting) {
       setUserHasClosed(false);
     }
   }, [isChatflowApp, nodeTracker?.isExecuting]);
 
   return {
-    // 聊天接口
+    // Chat interface
     messages: chatInterface.messages,
     handleSubmit: chatInterface.handleSubmit,
     isProcessing: chatInterface.isProcessing,
     handleStopProcessing: chatInterface.handleStopProcessing,
     sendDirectMessage: chatInterface.sendDirectMessage,
 
-    // Chatflow相关
+    // Chatflow related
     nodeTracker,
     showNodeTracker,
-    setShowNodeTracker: handleToggleNodeTracker, // 使用包装后的函数
+    setShowNodeTracker: handleToggleNodeTracker, // Use wrapped function
     showFloatingController,
   };
 }

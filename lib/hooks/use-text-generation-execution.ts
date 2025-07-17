@@ -9,23 +9,23 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDateFormatter } from './use-date-formatter';
 
 /**
- * 文本生成执行Hook - 复用workflow架构
+ * Text generation execution hook - reuses workflow architecture
  *
- * 核心职责：
- * - 实现完整的文本生成执行流程
- * - 复用workflow的状态管理和数据保存机制
- * - 适配completion API的特点
- * - 提供流式文本生成支持
+ * Core responsibilities:
+ * - Implements the complete text generation execution process
+ * - Reuses workflow state management and data persistence
+ * - Adapts to the completion API characteristics
+ * - Provides streaming text generation support
  */
 export function useTextGenerationExecution(instanceId: string) {
   const { profile } = useProfile();
   const userId = profile?.id;
   const { formatDate } = useDateFormatter();
 
-  // --- 添加常用应用管理hook ---
+  // --- Favorite app management hook ---
   const { addToFavorites } = useAutoAddFavoriteApp();
 
-  // --- 复用workflow的状态管理 ---
+  // --- Reuse workflow state management ---
   const isExecuting = useWorkflowExecutionStore(state => state.isExecuting);
   const progress = useWorkflowExecutionStore(state => state.executionProgress);
   const error = useWorkflowExecutionStore(state => state.error);
@@ -39,21 +39,21 @@ export function useTextGenerationExecution(instanceId: string) {
   const formData = useWorkflowExecutionStore(state => state.formData);
   const formLocked = useWorkflowExecutionStore(state => state.formLocked);
 
-  // --- 文本生成特有状态 ---
+  // --- Text generation specific state ---
   const [generatedText, setGeneratedText] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
 
-  // --- 使用ref获取store actions ---
+  // --- Get store actions via ref ---
   const getActions = useCallback(
     () => useWorkflowExecutionStore.getState(),
     []
   );
 
-  // --- 流式响应引用 ---
+  // --- Streaming response ref ---
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
-   * 保存文本生成完整数据
+   * Save complete text generation data
    */
   const saveCompleteGenerationData = useCallback(
     async (
@@ -63,42 +63,52 @@ export function useTextGenerationExecution(instanceId: string) {
       messageId: string | null,
       generatedText: string
     ) => {
-      console.log('[文本生成] 开始保存完整数据，executionId:', executionId);
+      console.log(
+        '[Text Generation] Start saving complete data, executionId:',
+        executionId
+      );
 
       try {
         const { updateCompleteExecutionData } = await import(
           '@lib/db/app-executions'
         );
 
-        // --- 更严格的状态判断 ---
+        // --- More strict status determination ---
         let finalStatus: ExecutionStatus;
 
         if (generatedText && generatedText.length > 0) {
-          // 有生成内容，视为成功完成
+          // If there is generated content, consider as completed
           finalStatus = 'completed';
-          console.log('[文本生成] 检测到生成内容，状态设为completed');
+          console.log(
+            '[Text Generation] Detected generated content, status set to completed'
+          );
         } else if (finalResult?.error) {
-          // 有错误信息，视为失败
+          // If there is error info, consider as failed
           finalStatus = 'failed';
-          console.log('[文本生成] 检测到错误信息，状态设为failed');
+          console.log(
+            '[Text Generation] Detected error info, status set to failed'
+          );
         } else {
-          // 其他情况，根据是否有messageId判断
+          // Otherwise, determine by messageId
           finalStatus = messageId ? 'completed' : 'failed';
-          console.log('[文本生成] 根据messageId判断状态:', finalStatus);
+          console.log(
+            '[Text Generation] Status determined by messageId:',
+            finalStatus
+          );
         }
 
         const completedAt = new Date().toISOString();
 
-        // --- 构建文本生成的metadata ---
+        // --- Build metadata for text generation ---
         const completeMetadata = {
-          // Dify原始响应数据
+          // Dify original response data
           dify_response: {
             message_id: messageId,
             created_at: finalResult?.created_at || null,
             conversation_id: finalResult?.conversation_id || null,
           },
 
-          // 生成内容
+          // Generation content
           generation_data: {
             generated_text: generatedText,
             text_length: generatedText.length,
@@ -108,7 +118,7 @@ export function useTextGenerationExecution(instanceId: string) {
             has_content: generatedText.length > 0,
           },
 
-          // 执行环境信息
+          // Execution environment info
           execution_context: {
             user_agent:
               typeof window !== 'undefined' ? window.navigator.userAgent : null,
@@ -119,7 +129,7 @@ export function useTextGenerationExecution(instanceId: string) {
             final_status: finalStatus,
           },
 
-          // 错误信息（如果有）
+          // Error info (if any)
           ...(finalResult?.error && {
             error_details: {
               message: finalResult.error,
@@ -128,38 +138,47 @@ export function useTextGenerationExecution(instanceId: string) {
           }),
         };
 
-        // --- 执行数据库更新 ---
+        // --- Update database ---
         const updateResult = await updateCompleteExecutionData(executionId, {
           status: finalStatus,
           external_execution_id: messageId,
           task_id: taskId,
           outputs: { generated_text: generatedText },
-          total_steps: 1, // 文本生成通常是单步
+          total_steps: 1, // Text generation is usually single step
           total_tokens: finalResult?.usage?.total_tokens || 0,
           elapsed_time: finalResult?.elapsed_time || null,
           error_message:
             finalStatus === 'failed'
-              ? finalResult?.error || '文本生成失败'
+              ? finalResult?.error || 'Text generation failed'
               : null,
           completed_at: completedAt,
           metadata: completeMetadata,
         });
 
         if (updateResult.success) {
-          console.log('[文本生成] ✅ 数据库更新成功，最终状态:', finalStatus);
+          console.log(
+            '[Text Generation] ✅ Database update successful, final status:',
+            finalStatus
+          );
 
-          // 更新Store状态
+          // Update store state
           const completeExecution = updateResult.data;
           getActions().updateCurrentExecution(completeExecution);
           getActions().addExecutionToHistory(completeExecution);
 
           return { success: true, data: completeExecution };
         } else {
-          console.error('[文本生成] ❌ 数据库更新失败:', updateResult.error);
+          console.error(
+            '[Text Generation] ❌ Database update failed:',
+            updateResult.error
+          );
           return { success: false, error: updateResult.error };
         }
       } catch (error) {
-        console.error('[文本生成] ❌ 保存完整数据时发生错误:', error);
+        console.error(
+          '[Text Generation] ❌ Error occurred while saving complete data:',
+          error
+        );
         return {
           success: false,
           error: error instanceof Error ? error : new Error(String(error)),
@@ -170,27 +189,30 @@ export function useTextGenerationExecution(instanceId: string) {
   );
 
   /**
-   * 核心执行流程：文本生成
+   * Core execution process: text generation
    */
   const executeTextGeneration = useCallback(
     async (formData: Record<string, any>) => {
       if (!userId) {
-        getActions().setError('用户未登录，请先登录');
+        getActions().setError('User not logged in, please log in first');
         return;
       }
 
-      console.log('[文本生成] 开始执行流程，instanceId:', instanceId);
+      console.log(
+        '[Text Generation] Start execution process, instanceId:',
+        instanceId
+      );
 
       let streamResponse: any = null;
 
       try {
-        // --- 步骤1: 设置初始执行状态 ---
+        // --- Step 1: Set initial execution state ---
         getActions().startExecution(formData);
         getActions().clearError();
         setGeneratedText('');
         setIsStreaming(true);
 
-        // --- 步骤2: 获取应用信息 ---
+        // --- Step 2: Get app info ---
         const { useAppListStore } = await import('@lib/stores/app-list-store');
         const appListState = useAppListStore.getState();
 
@@ -204,10 +226,10 @@ export function useTextGenerationExecution(instanceId: string) {
         );
 
         if (!targetApp) {
-          throw new Error(`未找到应用记录: ${instanceId}`);
+          throw new Error(`App record not found: ${instanceId}`);
         }
 
-        // --- 步骤3: 创建数据库记录 ---
+        // --- Step 3: Create database record ---
         const { createExecution } = await import('@lib/db/app-executions');
 
         const executionData: Omit<
@@ -236,27 +258,29 @@ export function useTextGenerationExecution(instanceId: string) {
 
         const createResult = await createExecution(executionData);
         if (!createResult.success) {
-          throw new Error(`数据库记录创建失败: ${createResult.error.message}`);
+          throw new Error(
+            `Failed to create database record: ${createResult.error.message}`
+          );
         }
 
         const dbExecution = createResult.data;
         getActions().setCurrentExecution(dbExecution);
 
-        // --- 步骤4: 更新状态为running ---
+        // --- Step 4: Update status to running ---
         const { updateExecutionStatus } = await import(
           '@lib/db/app-executions'
         );
         await updateExecutionStatus(dbExecution.id, 'running');
         getActions().updateCurrentExecution({ status: 'running' });
 
-        // --- 步骤5: 准备Dify API调用 ---
+        // --- Step 5: Prepare Dify API payload ---
         const difyPayload: DifyCompletionRequestPayload = {
           inputs: formData,
           response_mode: 'streaming' as const,
           user: userId,
         };
 
-        // --- 步骤6: 调用Dify流式API ---
+        // --- Step 6: Call Dify streaming API ---
         const { streamDifyCompletion } = await import(
           '@lib/services/dify/completion-service'
         );
@@ -273,55 +297,65 @@ export function useTextGenerationExecution(instanceId: string) {
         let taskId: string | null = null;
         let completionResult: any = null;
 
-        // --- 步骤7: 处理流式响应 ---
+        // --- Step 7: Handle streaming response ---
         for await (const textChunk of streamResponse.answerStream) {
           if (abortControllerRef.current?.signal.aborted) {
-            console.log('[文本生成] 检测到中断信号，停止处理');
+            console.log(
+              '[Text Generation] Abort signal detected, stopping processing'
+            );
             break;
           }
 
           accumulatedText += textChunk;
           setGeneratedText(accumulatedText);
 
-          // 更新进度（基于文本长度估算）
+          // Update progress (estimate based on text length)
           const estimatedProgress = Math.min(
             (accumulatedText.length / 1000) * 100,
             90
           );
           getActions().setExecutionProgress(estimatedProgress);
 
-          // --- 设置taskId以便停止时使用 ---
+          // --- Set taskId for stop usage ---
           const currentTaskId = streamResponse.getTaskId();
           if (currentTaskId && !getActions().difyTaskId) {
             getActions().setDifyTaskId(currentTaskId);
-            console.log('[文本生成] 设置difyTaskId:', currentTaskId);
+            console.log('[Text Generation] Set difyTaskId:', currentTaskId);
           }
         }
 
-        // --- 步骤8: 等待完成并获取最终结果 ---
+        // --- Step 8: Wait for completion and get final result ---
         try {
           completionResult = await streamResponse.completionPromise;
           messageId = streamResponse.getMessageId();
           taskId = streamResponse.getTaskId();
 
-          console.log('[文本生成] 流式响应完成，获得最终结果:', {
-            messageId,
-            taskId,
-            textLength: accumulatedText.length,
-            usage: completionResult?.usage,
-          });
+          console.log(
+            '[Text Generation] Streaming response finished, got final result:',
+            {
+              messageId,
+              taskId,
+              textLength: accumulatedText.length,
+              usage: completionResult?.usage,
+            }
+          );
         } catch (completionError) {
-          console.error('[文本生成] 等待完成时出错:', completionError);
-          // 即使completionPromise失败，如果已有文本内容，仍然尝试保存
+          console.error(
+            '[Text Generation] Error while waiting for completion:',
+            completionError
+          );
+          // Even if completionPromise fails, if there is generated text, still try to save
           if (accumulatedText.length > 0) {
-            console.log('[文本生成] 尽管完成时出错，但仍有生成内容，继续保存');
+            console.log(
+              '[Text Generation] Error on completion, but generated content exists, continue saving'
+            );
             completionResult = { usage: null, metadata: {} };
           } else {
             throw completionError;
           }
         }
 
-        // --- 步骤9: 保存完整数据 ---
+        // --- Step 9: Save complete data ---
         const saveResult = await saveCompleteGenerationData(
           dbExecution.id,
           completionResult,
@@ -331,44 +365,49 @@ export function useTextGenerationExecution(instanceId: string) {
         );
 
         if (!saveResult.success) {
-          console.error('[文本生成] 保存完整数据失败:', saveResult.error);
-          throw new Error(`保存数据失败: ${saveResult.error}`);
+          console.error(
+            '[Text Generation] Failed to save complete data:',
+            saveResult.error
+          );
+          throw new Error(`Failed to save data: ${saveResult.error}`);
         }
 
-        // --- 步骤10: 更新最终状态 ---
-        console.log('[文本生成] 开始更新最终状态');
+        // --- Step 10: Update final status ---
+        console.log('[Text Generation] Start updating final status');
 
-        // 更新进度到100%
+        // Update progress to 100%
         getActions().setExecutionProgress(100);
 
-        // 停止流式状态
+        // Stop streaming state
         setIsStreaming(false);
 
-        // 确保执行状态正确停止
+        // Ensure execution state is properly stopped
         getActions().stopExecution();
 
-        // 更新当前执行记录为最新的完整数据
+        // Update current execution record to latest complete data
         if (saveResult.data) {
           getActions().updateCurrentExecution(saveResult.data);
         }
 
-        // --- 自动添加到常用应用 ---
+        // --- Auto add to favorite apps ---
         addToFavorites(targetApp.instance_id);
 
-        console.log('[文本生成] ✅ 执行完成，状态已正确转换');
+        console.log(
+          '[Text Generation] ✅ Execution completed, status transitioned correctly'
+        );
       } catch (error) {
-        console.error('[文本生成] ❌ 执行失败:', error);
+        console.error('[Text Generation] ❌ Execution failed:', error);
 
-        // 清理流式状态
+        // Clean up streaming state
         setIsStreaming(false);
 
-        // 设置错误状态
+        // Set error state
         getActions().setError(
-          error instanceof Error ? error.message : '文本生成失败',
-          true // 允许重试
+          error instanceof Error ? error.message : 'Text generation failed',
+          true // allow retry
         );
 
-        // 更新数据库状态为失败
+        // Update database status to failed
         if (currentExecution?.id) {
           try {
             const { updateExecutionStatus } = await import(
@@ -377,21 +416,26 @@ export function useTextGenerationExecution(instanceId: string) {
             await updateExecutionStatus(
               currentExecution.id,
               'failed',
-              error instanceof Error ? error.message : '文本生成失败'
+              error instanceof Error ? error.message : 'Text generation failed'
             );
 
-            // 更新store中的执行状态
+            // Update execution status in store
             getActions().updateCurrentExecution({
               status: 'failed',
               error_message:
-                error instanceof Error ? error.message : '文本生成失败',
+                error instanceof Error
+                  ? error.message
+                  : 'Text generation failed',
             });
           } catch (updateError) {
-            console.error('[文本生成] 更新失败状态时出错:', updateError);
+            console.error(
+              '[Text Generation] Error updating failed status:',
+              updateError
+            );
           }
         }
       } finally {
-        // 清理资源
+        // Clean up resources
         abortControllerRef.current = null;
       }
     },
@@ -407,23 +451,23 @@ export function useTextGenerationExecution(instanceId: string) {
   );
 
   /**
-   * 停止文本生成
+   * Stop text generation
    */
   const stopTextGeneration = useCallback(async () => {
-    console.log('[文本生成] 停止执行');
+    console.log('[Text Generation] Stop execution');
 
     try {
-      // 获取当前状态
+      // Get current state
       const state = useWorkflowExecutionStore.getState();
-      const currentText = generatedText; // 获取当前已生成的文本
+      const currentText = generatedText; // Get current generated text
 
-      // 1. 中断流式响应
+      // 1. Abort streaming response
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
-        console.log('[文本生成] 已中断流式响应');
+        console.log('[Text Generation] Streaming response aborted');
       }
 
-      // 2. 如果有taskId，调用Dify停止API
+      // 2. If taskId exists, call Dify stop API
       if (state.difyTaskId && userId) {
         try {
           const { useAppListStore } = await import(
@@ -441,36 +485,39 @@ export function useTextGenerationExecution(instanceId: string) {
               state.difyTaskId,
               userId
             );
-            console.log('[文本生成] Dify任务已停止');
+            console.log('[Text Generation] Dify task stopped');
           }
         } catch (stopError) {
-          console.warn('[文本生成] 停止Dify任务失败:', stopError);
-          // 即使停止API失败，也继续保存数据
+          console.warn(
+            '[Text Generation] Failed to stop Dify task:',
+            stopError
+          );
+          // Even if stop API fails, continue to save data
         }
       }
 
-      // 3. 更新Store状态
+      // 3. Update store state
       getActions().stopExecution();
       setIsStreaming(false);
 
-      // 4. 保存残缺文本到数据库（如果有内容）
+      // 4. Save partial text to database (if any)
       if (currentExecution?.id && currentText && currentText.length > 0) {
         try {
           console.log(
-            '[文本生成] 保存停止时的残缺文本，长度:',
+            '[Text Generation] Saving partial text on stop, length:',
             currentText.length
           );
 
-          // 构建停止时的完整数据
+          // Build complete data for stop
           const stopMetadata = {
-            // Dify原始响应数据
+            // Dify original response data
             dify_response: {
-              message_id: null, // 停止时可能没有messageId
+              message_id: null, // May not have messageId on stop
               task_id: state.difyTaskId,
               stopped_by_user: true,
             },
 
-            // 生成内容
+            // Generation content
             generation_data: {
               generated_text: currentText,
               text_length: currentText.length,
@@ -478,10 +525,10 @@ export function useTextGenerationExecution(instanceId: string) {
                 .split(/\s+/)
                 .filter(word => word.length > 0).length,
               has_content: true,
-              is_partial: true, // 标记为部分内容
+              is_partial: true, // Mark as partial content
             },
 
-            // 执行环境信息
+            // Execution environment info
             execution_context: {
               user_agent:
                 typeof window !== 'undefined'
@@ -496,7 +543,7 @@ export function useTextGenerationExecution(instanceId: string) {
             },
           };
 
-          // 更新数据库记录
+          // Update database record
           const { updateCompleteExecutionData } = await import(
             '@lib/db/app-executions'
           );
@@ -508,31 +555,34 @@ export function useTextGenerationExecution(instanceId: string) {
               task_id: state.difyTaskId,
               outputs: { generated_text: currentText },
               total_steps: 1,
-              total_tokens: 0, // 停止时可能没有token统计
+              total_tokens: 0, // May not have token count on stop
               elapsed_time: null,
-              error_message: '用户手动停止',
+              error_message: 'Stopped by user',
               completed_at: new Date().toISOString(),
               metadata: stopMetadata,
             }
           );
 
           if (updateResult.success) {
-            console.log('[文本生成] ✅ 残缺文本已保存到数据库');
+            console.log('[Text Generation] ✅ Partial text saved to database');
 
-            // 更新Store中的执行记录
+            // Update execution record in store
             getActions().updateCurrentExecution(updateResult.data);
             getActions().addExecutionToHistory(updateResult.data);
           } else {
             console.error(
-              '[文本生成] ❌ 保存残缺文本失败:',
+              '[Text Generation] ❌ Failed to save partial text:',
               updateResult.error
             );
           }
         } catch (saveError) {
-          console.error('[文本生成] 保存停止状态时出错:', saveError);
+          console.error(
+            '[Text Generation] Error saving stop state:',
+            saveError
+          );
         }
       } else {
-        // 没有生成内容，只更新状态
+        // No generated content, just update status
         if (currentExecution?.id) {
           try {
             const { updateExecutionStatus } = await import(
@@ -541,36 +591,41 @@ export function useTextGenerationExecution(instanceId: string) {
             await updateExecutionStatus(
               currentExecution.id,
               'stopped',
-              '用户手动停止',
+              'Stopped by user',
               new Date().toISOString()
             );
 
             getActions().updateCurrentExecution({
               status: 'stopped',
-              error_message: '用户手动停止',
+              error_message: 'Stopped by user',
               completed_at: new Date().toISOString(),
             });
 
-            console.log('[文本生成] ✅ 执行状态已更新为stopped');
+            console.log(
+              '[Text Generation] ✅ Execution status updated to stopped'
+            );
           } catch (updateError) {
-            console.error('[文本生成] 更新停止状态时出错:', updateError);
+            console.error(
+              '[Text Generation] Error updating stop status:',
+              updateError
+            );
           }
         }
       }
     } catch (error) {
-      console.error('[文本生成] 停止执行失败:', error);
-      getActions().setError('停止执行失败');
+      console.error('[Text Generation] Failed to stop execution:', error);
+      getActions().setError('Failed to stop execution');
     } finally {
-      // 清理资源
+      // Clean up resources
       abortControllerRef.current = null;
     }
   }, [instanceId, userId, currentExecution, getActions, generatedText]);
 
   /**
-   * 重试文本生成
+   * Retry text generation
    */
   const retryTextGeneration = useCallback(async () => {
-    console.log('[文本生成] 重试执行');
+    console.log('[Text Generation] Retry execution');
 
     if (formData) {
       getActions().clearError();
@@ -579,48 +634,50 @@ export function useTextGenerationExecution(instanceId: string) {
   }, [formData, executeTextGeneration, getActions]);
 
   /**
-   * 重置状态
+   * Reset state
    */
   const resetTextGeneration = useCallback(() => {
-    console.log('[文本生成] 重置状态');
+    console.log('[Text Generation] Reset state');
     getActions().reset();
     setGeneratedText('');
     setIsStreaming(false);
   }, [getActions]);
 
   /**
-   * 加载历史记录 - 与工作流保持一致的逻辑
+   * Load history - consistent with workflow logic
    */
   const loadTextGenerationHistory = useCallback(async () => {
     if (!userId) return;
 
-    console.log('[文本生成] 加载历史记录，instanceId:', instanceId);
+    console.log('[Text Generation] Load history, instanceId:', instanceId);
 
     try {
-      // --- 获取正确的应用UUID ---
+      // --- Get correct app UUID ---
       const { useAppListStore } = await import('@lib/stores/app-list-store');
       const appListState = useAppListStore.getState();
 
-      // 如果应用列表为空，先获取应用列表
+      // If app list is empty, fetch app list first
       if (appListState.apps.length === 0) {
-        console.log('[文本生成] 历史记录加载：应用列表为空，先获取应用列表');
+        console.log(
+          '[Text Generation] History load: app list empty, fetching app list'
+        );
         await appListState.fetchApps();
       }
 
-      // 查找对应的应用记录
+      // Find corresponding app record
       const currentApps = useAppListStore.getState().apps;
       const targetApp = currentApps.find(app => app.instance_id === instanceId);
 
       if (!targetApp) {
         console.warn(
-          '[文本生成] 未找到对应的应用记录，instanceId:',
+          '[Text Generation] App record not found, instanceId:',
           instanceId
         );
         getActions().setExecutionHistory([]);
         return;
       }
 
-      console.log('[文本生成] 历史记录查询使用UUID:', targetApp.id);
+      console.log('[Text Generation] History query using UUID:', targetApp.id);
 
       const { getExecutionsByServiceInstance } = await import(
         '@lib/db/app-executions'
@@ -629,29 +686,35 @@ export function useTextGenerationExecution(instanceId: string) {
         targetApp.id,
         userId,
         20
-      ); // 使用UUID主键，添加用户ID过滤
+      ); // Use UUID as primary key, add userId filter
 
       if (result.success) {
-        console.log('[文本生成] 历史记录加载成功，数量:', result.data.length);
+        console.log(
+          '[Text Generation] History loaded successfully, count:',
+          result.data.length
+        );
         getActions().setExecutionHistory(result.data);
       } else {
-        console.error('[文本生成] 历史记录加载失败:', result.error);
+        console.error(
+          '[Text Generation] Failed to load history:',
+          result.error
+        );
       }
     } catch (error) {
-      console.error('[文本生成] 加载历史记录时出错:', error);
+      console.error('[Text Generation] Error loading history:', error);
     }
   }, [instanceId, userId, getActions]);
 
-  // --- 初始化时加载历史记录 ---
+  // --- Load history on mount ---
   useEffect(() => {
     loadTextGenerationHistory();
   }, [loadTextGenerationHistory]);
 
   const createTitle = () =>
-    `文本生成 - ${formatDate(new Date(), { includeTime: true, style: 'medium' })}`;
+    `Text Generation - ${formatDate(new Date(), { includeTime: true, style: 'medium' })}`;
 
   return {
-    // 状态
+    // State
     isExecuting,
     isStreaming,
     progress,
@@ -663,7 +726,7 @@ export function useTextGenerationExecution(instanceId: string) {
     formLocked,
     generatedText,
 
-    // 操作
+    // Actions
     executeTextGeneration,
     stopTextGeneration,
     retryTextGeneration,

@@ -3,21 +3,21 @@ import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useEffect } from 'react';
 
 /**
- * 聊天输入框高度重置钩子
+ * Hook to reset chat input height.
  *
- * 处理聊天输入框在不同场景（欢迎页/聊天页）下的高度重置
+ * Handles resetting the chat input height in different scenarios (welcome screen/chat screen).
  *
- * @param isWelcomeScreen 是否处于欢迎屏幕
+ * @param isWelcomeScreen Whether the current screen is the welcome screen.
  */
 export function useInputHeightReset(isWelcomeScreen: boolean) {
   const { resetInputHeight } = useChatLayoutStore();
 
-  // 屏幕状态变化时重置高度
+  // Reset input height when the screen state changes
   useEffect(() => {
     resetInputHeight();
   }, [isWelcomeScreen, resetInputHeight]);
 
-  // 组件卸载时重置高度
+  // Reset input height when the component unmounts
   useEffect(() => {
     return () => {
       resetInputHeight();

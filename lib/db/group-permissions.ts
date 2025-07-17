@@ -1,8 +1,8 @@
 import { createClient } from '@lib/supabase/client';
 import { Result, failure, success } from '@lib/types/result';
 
-// 群组权限管理服务
-// 只有管理员可以管理群组和权限
+// Group permission management service
+// Only administrators can manage groups and permissions
 export interface Group {
   id: string;
   name: string;
@@ -61,26 +61,26 @@ export interface AppPermissionCheck {
   error_message: string | null;
 }
 
-// 🔧 群组管理函数（仅管理员）
+// Group management functions (admin only)
 /**
- * 获取所有群组列表（仅管理员）
+ * Get all group list (admin only)
  */
 export async function getGroups(): Promise<Result<Group[]>> {
   try {
     const supabase = createClient();
 
-    // 首先获取群组基本信息
+    // First, get basic group info
     const { data: groupsData, error: groupsError } = await supabase
       .from('groups')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (groupsError) {
-      console.error('获取群组列表失败:', groupsError);
+      console.error('Failed to get group list:', groupsError);
       return failure(new Error(groupsError.message));
     }
 
-    // 然后获取每个群组的成员数量
+    // Then, get member count for each group
     const groups = await Promise.all(
       (groupsData || []).map(async group => {
         const { count, error: countError } = await supabase
@@ -89,7 +89,10 @@ export async function getGroups(): Promise<Result<Group[]>> {
           .eq('group_id', group.id);
 
         if (countError) {
-          console.warn(`获取群组 ${group.id} 成员数量失败:`, countError);
+          console.warn(
+            `Failed to get member count for group ${group.id}:`,
+            countError
+          );
           return { ...group, member_count: 0 };
         }
 
@@ -99,13 +102,13 @@ export async function getGroups(): Promise<Result<Group[]>> {
 
     return success(groups);
   } catch (error) {
-    console.error('获取群组列表异常:', error);
-    return failure(new Error('获取群组列表失败'));
+    console.error('Exception while getting group list:', error);
+    return failure(new Error('Failed to get group list'));
   }
 }
 
 /**
- * 创建群组（仅管理员）
+ * Create group (admin only)
  */
 export async function createGroup(data: {
   name: string;
@@ -126,19 +129,19 @@ export async function createGroup(data: {
       .single();
 
     if (error) {
-      console.error('创建群组失败:', error);
+      console.error('Failed to create group:', error);
       return failure(new Error(error.message));
     }
 
     return success(group);
   } catch (error) {
-    console.error('创建群组异常:', error);
-    return failure(new Error('创建群组失败'));
+    console.error('Exception while creating group:', error);
+    return failure(new Error('Failed to create group'));
   }
 }
 
 /**
- * 更新群组（仅管理员）
+ * Update group (admin only)
  */
 export async function updateGroup(
   groupId: string,
@@ -155,19 +158,19 @@ export async function updateGroup(
       .single();
 
     if (error) {
-      console.error('更新群组失败:', error);
+      console.error('Failed to update group:', error);
       return failure(new Error(error.message));
     }
 
     return success(group);
   } catch (error) {
-    console.error('更新群组异常:', error);
-    return failure(new Error('更新群组失败'));
+    console.error('Exception while updating group:', error);
+    return failure(new Error('Failed to update group'));
   }
 }
 
 /**
- * 删除群组（仅管理员）
+ * Delete group (admin only)
  */
 export async function deleteGroup(groupId: string): Promise<Result<void>> {
   try {
@@ -176,20 +179,20 @@ export async function deleteGroup(groupId: string): Promise<Result<void>> {
     const { error } = await supabase.from('groups').delete().eq('id', groupId);
 
     if (error) {
-      console.error('删除群组失败:', error);
+      console.error('Failed to delete group:', error);
       return failure(new Error(error.message));
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('删除群组异常:', error);
-    return failure(new Error('删除群组失败'));
+    console.error('Exception while deleting group:', error);
+    return failure(new Error('Failed to delete group'));
   }
 }
 
-// 👥 群组成员管理函数（仅管理员）
+// Group member management functions (admin only)
 /**
- * 获取群组成员列表
+ * Get group member list
  */
 export async function getGroupMembers(
   groupId: string
@@ -209,19 +212,19 @@ export async function getGroupMembers(
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('获取群组成员失败:', error);
+      console.error('Failed to get group members:', error);
       return failure(new Error(error.message));
     }
 
     return success(data || []);
   } catch (error) {
-    console.error('获取群组成员异常:', error);
-    return failure(new Error('获取群组成员失败'));
+    console.error('Exception while getting group members:', error);
+    return failure(new Error('Failed to get group members'));
   }
 }
 
 /**
- * 添加群组成员（仅管理员）
+ * Add group member (admin only)
  */
 export async function addGroupMember(
   groupId: string,
@@ -247,19 +250,19 @@ export async function addGroupMember(
       .single();
 
     if (error) {
-      console.error('添加群组成员失败:', error);
+      console.error('Failed to add group member:', error);
       return failure(new Error(error.message));
     }
 
     return success(member);
   } catch (error) {
-    console.error('添加群组成员异常:', error);
-    return failure(new Error('添加群组成员失败'));
+    console.error('Exception while adding group member:', error);
+    return failure(new Error('Failed to add group member'));
   }
 }
 
 /**
- * 移除群组成员（仅管理员）
+ * Remove group member (admin only)
  */
 export async function removeGroupMember(
   groupId: string,
@@ -275,20 +278,20 @@ export async function removeGroupMember(
       .eq('user_id', userId);
 
     if (error) {
-      console.error('移除群组成员失败:', error);
+      console.error('Failed to remove group member:', error);
       return failure(new Error(error.message));
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('移除群组成员异常:', error);
-    return failure(new Error('移除群组成员失败'));
+    console.error('Exception while removing group member:', error);
+    return failure(new Error('Failed to remove group member'));
   }
 }
 
-// 🎯 群组应用权限管理函数（仅管理员）
+// Group app permission management functions (admin only)
 /**
- * 获取群组应用权限列表
+ * Get group app permission list
  */
 export async function getGroupAppPermissions(
   groupId: string
@@ -308,19 +311,19 @@ export async function getGroupAppPermissions(
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('获取群组应用权限失败:', error);
+      console.error('Failed to get group app permissions:', error);
       return failure(new Error(error.message));
     }
 
     return success(data || []);
   } catch (error) {
-    console.error('获取群组应用权限异常:', error);
-    return failure(new Error('获取群组应用权限失败'));
+    console.error('Exception while getting group app permissions:', error);
+    return failure(new Error('Failed to get group app permissions'));
   }
 }
 
 /**
- * 设置群组应用权限（仅管理员）
+ * Set group app permission (admin only)
  */
 export async function setGroupAppPermission(
   groupId: string,
@@ -333,11 +336,11 @@ export async function setGroupAppPermission(
   try {
     const supabase = createClient();
 
-    // 🎯 权限设置逻辑优化
-    // enabled=true: 插入/更新记录
-    // enabled=false: 删除记录（避免唯一约束冲突）
+    // Permission logic:
+    // enabled=true: insert/update record
+    // enabled=false: delete record (to avoid unique constraint conflict)
     if (data.is_enabled) {
-      // 启用权限：插入或更新记录
+      // Enable permission: insert or update record
       const { data: permission, error } = await supabase
         .from('group_app_permissions')
         .upsert([
@@ -357,13 +360,13 @@ export async function setGroupAppPermission(
         .single();
 
       if (error) {
-        console.error('设置群组应用权限失败:', error);
+        console.error('Failed to set group app permission:', error);
         return failure(new Error(error.message));
       }
 
       return success(permission);
     } else {
-      // 禁用权限：删除记录
+      // Disable permission: delete record
       const { error } = await supabase
         .from('group_app_permissions')
         .delete()
@@ -371,11 +374,11 @@ export async function setGroupAppPermission(
         .eq('service_instance_id', serviceInstanceId);
 
       if (error) {
-        console.error('删除群组应用权限失败:', error);
+        console.error('Failed to delete group app permission:', error);
         return failure(new Error(error.message));
       }
 
-      // 返回一个虚拟的禁用状态记录，用于保持接口一致性
+      // Return a virtual disabled state record to keep API consistent
       return success({
         id: '',
         group_id: groupId,
@@ -388,13 +391,13 @@ export async function setGroupAppPermission(
       } as GroupAppPermission);
     }
   } catch (error) {
-    console.error('设置群组应用权限异常:', error);
-    return failure(new Error('设置群组应用权限失败'));
+    console.error('Exception while setting group app permission:', error);
+    return failure(new Error('Failed to set group app permission'));
   }
 }
 
 /**
- * 删除群组应用权限（仅管理员）
+ * Remove group app permission (admin only)
  */
 export async function removeGroupAppPermission(
   groupId: string,
@@ -410,20 +413,20 @@ export async function removeGroupAppPermission(
       .eq('service_instance_id', serviceInstanceId);
 
     if (error) {
-      console.error('删除群组应用权限失败:', error);
+      console.error('Failed to delete group app permission:', error);
       return failure(new Error(error.message));
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('删除群组应用权限异常:', error);
-    return failure(new Error('删除群组应用权限失败'));
+    console.error('Exception while deleting group app permission:', error);
+    return failure(new Error('Failed to delete group app permission'));
   }
 }
 
 /**
- * 删除指定应用的所有组权限记录（仅管理员）
- * 用于权限切换时清理孤儿记录
+ * Remove all group app permissions for a specific app (admin only)
+ * Used to clean up orphan records when switching permissions
  */
 export async function removeAllGroupAppPermissions(
   serviceInstanceId: string
@@ -437,20 +440,28 @@ export async function removeAllGroupAppPermissions(
       .eq('service_instance_id', serviceInstanceId);
 
     if (error) {
-      console.error('删除应用的所有组权限失败:', error);
+      console.error(
+        'Failed to delete all group app permissions for app:',
+        error
+      );
       return failure(new Error(error.message));
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('删除应用的所有组权限异常:', error);
-    return failure(new Error('删除应用的所有组权限失败'));
+    console.error(
+      'Exception while deleting all group app permissions for app:',
+      error
+    );
+    return failure(
+      new Error('Failed to delete all group app permissions for app')
+    );
   }
 }
 
-// 🔍 用户权限查询函数（所有用户可用）
+// User permission query functions (available to all users)
 /**
- * 获取用户可访问的应用列表
+ * Get list of apps accessible to user
  */
 export async function getUserAccessibleApps(
   userId: string
@@ -463,19 +474,19 @@ export async function getUserAccessibleApps(
     });
 
     if (error) {
-      console.error('获取用户可访问应用失败:', error);
+      console.error('Failed to get user accessible apps:', error);
       return failure(new Error(error.message));
     }
 
     return success(data || []);
   } catch (error) {
-    console.error('获取用户可访问应用异常:', error);
-    return failure(new Error('获取应用列表失败'));
+    console.error('Exception while getting user accessible apps:', error);
+    return failure(new Error('Failed to get accessible apps'));
   }
 }
 
 /**
- * 检查用户对特定应用的访问权限
+ * Check if user has access to a specific app
  */
 export async function checkUserAppPermission(
   userId: string,
@@ -490,7 +501,7 @@ export async function checkUserAppPermission(
     });
 
     if (error) {
-      console.error('检查用户应用权限失败:', error);
+      console.error('Failed to check user app permission:', error);
       return failure(new Error(error.message));
     }
 
@@ -500,19 +511,19 @@ export async function checkUserAppPermission(
       return success({
         has_access: false,
         quota_remaining: null,
-        error_message: '权限检查失败',
+        error_message: 'Permission check failed',
       });
     }
 
     return success(result);
   } catch (error) {
-    console.error('检查用户应用权限异常:', error);
-    return failure(new Error('权限检查失败'));
+    console.error('Exception while checking user app permission:', error);
+    return failure(new Error('Permission check failed'));
   }
 }
 
 /**
- * 增加应用使用计数
+ * Increment app usage count
  */
 export async function incrementAppUsage(
   userId: string,
@@ -536,19 +547,19 @@ export async function incrementAppUsage(
     });
 
     if (error) {
-      console.error('增加应用使用计数失败:', error);
+      console.error('Failed to increment app usage:', error);
       return failure(new Error(error.message));
     }
 
     const result = Array.isArray(data) ? data[0] : data;
     return success(result);
   } catch (error) {
-    console.error('增加应用使用计数异常:', error);
-    return failure(new Error('使用计数更新失败'));
+    console.error('Exception while incrementing app usage:', error);
+    return failure(new Error('Failed to update usage count'));
   }
 }
 
-// 🔍 用户搜索功能（用于群组成员管理）
+// User search functionality (for group member management)
 export interface SearchableUser {
   id: string;
   username: string | null;
@@ -560,7 +571,7 @@ export interface SearchableUser {
 }
 
 /**
- * 搜索用户（用于添加到群组）
+ * Search users (for adding to group)
  */
 export async function searchUsersForGroup(
   searchTerm: string,
@@ -575,12 +586,12 @@ export async function searchUsersForGroup(
       .eq('status', 'active')
       .limit(20);
 
-    // 排除指定的用户ID（如已在群组中的用户）
+    // Exclude specified user IDs (e.g., users already in the group)
     if (excludeUserIds.length > 0) {
       query = query.not('id', 'in', `(${excludeUserIds.join(',')})`);
     }
 
-    // 搜索条件：用户名、全名或邮箱包含搜索词
+    // Search condition: username, full name, or email contains search term
     if (searchTerm.trim()) {
       query = query.or(
         `username.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`
@@ -592,13 +603,13 @@ export async function searchUsersForGroup(
     });
 
     if (error) {
-      console.error('搜索用户失败:', error);
+      console.error('Failed to search users:', error);
       return failure(new Error(error.message));
     }
 
     return success(data || []);
   } catch (error) {
-    console.error('搜索用户异常:', error);
-    return failure(new Error('搜索用户失败'));
+    console.error('Exception while searching users:', error);
+    return failure(new Error('Failed to search users'));
   }
 }

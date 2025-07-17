@@ -1,31 +1,31 @@
 import { useRef } from 'react';
 
 /**
- * 管理输入框焦点的自定义Hook
+ * Custom hook to manage input focus for a textarea element.
  *
- * 提供方法来获取、设置和管理文本输入框的焦点
+ * Provides methods to get, set, and control the focus state of a text input.
  */
 export function useInputFocus() {
-  // 创建对输入框的引用
+  // Reference to the textarea input element
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // 设置引用
+  // Set the input reference
   const setInputRef = (ref: HTMLTextAreaElement | null) => {
     inputRef.current = ref;
   };
 
-  // 聚焦到输入框
+  // Focus the input and move the cursor to the end
   const focusInput = () => {
     if (inputRef.current) {
       inputRef.current.focus();
 
-      // 将光标移到文本末尾
+      // Move the cursor to the end of the text
       const length = inputRef.current.value.length;
       inputRef.current.setSelectionRange(length, length);
     }
   };
 
-  // 清除焦点
+  // Remove focus from the input
   const blurInput = () => {
     if (inputRef.current) {
       inputRef.current.blur();

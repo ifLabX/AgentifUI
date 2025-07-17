@@ -1,5 +1,4 @@
 import { getCurrentUserProfile } from '@lib/db';
-// 使用新的优化数据库接口
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 
 import { useEffect, useState } from 'react';
@@ -13,10 +12,10 @@ export interface AdminAuthResult {
 }
 
 /**
- * 用于检查用户是否为管理员的 Hook
- * 更新为使用新的数据服务和Result类型
+ * Hook to check if the current user is an admin.
+ * Uses the new data service and Result type.
  *
- * @returns 管理员权限检查结果
+ * @returns Admin permission check result
  *
  * @example
  * ```tsx
@@ -25,7 +24,7 @@ export interface AdminAuthResult {
  * if (isLoading) return <LoadingSpinner />;
  * if (!isAdmin) return <AccessDenied />;
  *
- * // 管理员界面内容
+ * // Admin page content
  * ```
  */
 export function useAdminAuth(
@@ -45,17 +44,17 @@ export function useAdminAuth(
         setIsLoading(true);
         setError(null);
 
-        // 等待session加载完成
+        // Wait for session to finish loading
         if (sessionLoading) {
           return;
         }
 
-        // 检查是否有有效的用户会话
+        // Check if there is a valid user session
         if (!session?.user) {
-          // 如果用户未登录，设置为非管理员
+          // If user is not logged in, set as not admin
           setIsAdmin(false);
 
-          // 如果需要重定向且还没有重定向过，立即跳转到登录页面
+          // If redirect is needed and not already redirected, go to login page
           if (redirectOnFailure && !hasRedirected) {
             setHasRedirected(true);
             router.push(
@@ -65,34 +64,36 @@ export function useAdminAuth(
           return;
         }
 
-        // 使用新的数据服务获取当前用户资料
-        // getCurrentUserProfile 已经包含了缓存和错误处理
+        // Use the new data service to get current user profile
+        // getCurrentUserProfile already includes cache and error handling
         const result = await getCurrentUserProfile();
 
         if (result.success && result.data) {
-          // 检查角色是否为 admin
+          // Check if the role is admin
           const isUserAdmin = result.data.role === 'admin';
 
           setIsAdmin(isUserAdmin);
 
-          // 如果不是管理员且需要重定向
+          // If not admin and redirect is needed
           if (!isUserAdmin && redirectOnFailure && !hasRedirected) {
             setHasRedirected(true);
-            // 已登录但不是管理员，立即跳转到首页
+            // Logged in but not admin, redirect to home page
             router.push('/');
           }
         } else if (result.success && !result.data) {
-          // 用户资料不存在
+          // User profile does not exist
           setIsAdmin(false);
-          throw new Error('用户资料不存在');
+          throw new Error('User profile does not exist');
         } else {
-          // 查询失败
-          throw new Error(result.error?.message || '检查管理员状态时出错');
+          // Query failed
+          throw new Error(
+            result.error?.message || 'Error checking admin status'
+          );
         }
       } catch (err) {
-        console.error('检查管理员状态时出错:', err);
+        console.error('Error checking admin status:', err);
         setError(
-          err instanceof Error ? err : new Error('检查管理员状态时出错')
+          err instanceof Error ? err : new Error('Error checking admin status')
         );
         setIsAdmin(false);
       } finally {

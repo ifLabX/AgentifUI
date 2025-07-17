@@ -3,7 +3,6 @@
  * @description Handles all database operations for SSO providers management
  * @module lib/db/sso-providers
  */
-import { dataService } from '@lib/services/db/data-service';
 import { createClient } from '@lib/supabase/client';
 import {
   CreateSsoProviderData,

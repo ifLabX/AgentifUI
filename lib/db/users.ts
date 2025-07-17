@@ -1,21 +1,20 @@
 /**
- * 用户管理相关的数据库查询函数
+ * Database query functions related to user management.
  *
- * 本文件包含用户管理界面所需的所有数据库操作
- * 包括用户列表查询、用户详情、角色管理、状态管理等
+ * This file contains all database operations required for the user management interface,
+ * including user list queries, user details, role management, status management, etc.
  */
-import { dataService } from '@lib/services/db/data-service';
 import { createClient } from '@lib/supabase/client';
 import type { Database } from '@lib/supabase/types';
 import { Result, failure, success } from '@lib/types/result';
 
-// 类型定义
+// Type definitions
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 type UserRole = Database['public']['Enums']['user_role'];
 type AccountStatus = Database['public']['Enums']['account_status'];
 
-// 扩展的用户信息，包含 auth.users 表的信息
+// Extended user information, including data from auth.users table
 export interface EnhancedUser {
   id: string;
   email?: string;
@@ -25,7 +24,7 @@ export interface EnhancedUser {
   created_at: string;
   updated_at: string;
   last_sign_in_at?: string;
-  // profiles 表信息
+  // profiles table info
   full_name?: string;
   username?: string;
   avatar_url?: string;
@@ -33,21 +32,21 @@ export interface EnhancedUser {
   status: AccountStatus;
   auth_source?: string;
   sso_provider_id?: string;
-  employee_number?: string | null; // 新增：学工号字段（可选，仅SSO用户有值）
+  employee_number?: string | null; // Optional: employee/student number (only for SSO users)
   profile_created_at: string;
   profile_updated_at: string;
   last_login?: string;
-  // 群组信息
+  // Group info
   groups?: Array<{
     id: string;
     name: string;
     description?: string | null;
     joined_at: string;
   }>;
-  // 注意：组织相关字段已移除，改用群组系统
+  // Note: Organization-related fields have been removed, replaced by group system
 }
 
-// 用户统计信息
+// User statistics information
 export interface UserStats {
   totalUsers: number;
   activeUsers: number;
@@ -61,12 +60,12 @@ export interface UserStats {
   newUsersThisMonth: number;
 }
 
-// 用户筛选参数
+// User filter parameters
 export interface UserFilters {
   role?: UserRole;
   status?: AccountStatus;
   auth_source?: string;
-  search?: string; // 搜索邮箱、用户名、全名
+  search?: string; // Search email, username, full name
   sortBy?: 'created_at' | 'last_sign_in_at' | 'email' | 'full_name';
   sortOrder?: 'asc' | 'desc';
   page?: number;
@@ -76,7 +75,7 @@ export interface UserFilters {
 const supabase = createClient();
 
 /**
- * 获取用户列表（使用安全的管理员函数）
+ * Get user list (using secure admin function)
  */
 export async function getUserList(filters: UserFilters = {}): Promise<
   Result<{
@@ -99,10 +98,10 @@ export async function getUserList(filters: UserFilters = {}): Promise<
       pageSize = 20,
     } = filters;
 
-    // 获取用户信息，包含auth.users表的邮箱和手机号信息
+    // Get user info, including email and phone from auth.users table
     let query = supabase.from('profiles').select('*', { count: 'exact' });
 
-    // 应用筛选条件
+    // Apply filter conditions
     if (role) {
       query = query.eq('role', role);
     }
@@ -118,12 +117,12 @@ export async function getUserList(filters: UserFilters = {}): Promise<
       );
     }
 
-    // 注意：组织和部门筛选已移除，改用群组系统
+    // Note: Organization and department filters have been removed, replaced by group system
 
-    // 应用排序
+    // Apply sorting
     query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
-    // 应用分页
+    // Apply pagination
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
     query = query.range(from, to);
@@ -131,48 +130,50 @@ export async function getUserList(filters: UserFilters = {}): Promise<
     const { data: profiles, error: profilesError, count } = await query;
 
     if (profilesError) {
-      console.error('获取用户列表失败:', profilesError);
-      return failure(new Error(`获取用户列表失败: ${profilesError.message}`));
+      console.error('Failed to get user list:', profilesError);
+      return failure(
+        new Error(`Failed to get user list: ${profilesError.message}`)
+      );
     }
 
-    // 获取auth.users表中的邮箱和手机号信息
-    // 对于管理员，显示完整的联系信息
+    // Get email and phone info from auth.users table
+    // For admin, show full contact info
     const userIds = (profiles || []).map(p => p.id);
     let authUsers: any[] = [];
 
     if (userIds.length > 0) {
-      // 通过RPC函数获取auth.users信息（需要管理员权限）
+      // Get auth.users info via RPC function (requires admin privileges)
       const { data: authData, error: authError } = await supabase.rpc(
         'get_admin_users',
         { user_ids: userIds }
       );
 
       if (authError) {
-        console.error('获取auth.users信息失败:', {
+        console.error('Failed to get auth.users info:', {
           error: authError,
           userIdsCount: userIds.length,
           errorCode: authError.code,
           errorMessage: authError.message,
           errorDetails: authError.details,
         });
-        // 如果RPC调用失败，仍然继续处理，但记录错误
+        // If RPC call fails, continue processing but log the error
       } else if (authData) {
-        console.log('成功获取auth数据，用户数量:', authData.length);
+        console.log('Successfully got auth data, user count:', authData.length);
         authUsers = authData;
       } else {
-        console.warn('RPC调用成功但返回空数据');
+        console.warn('RPC call succeeded but returned empty data');
       }
     }
 
     const total = count || 0;
     const totalPages = Math.ceil(total / pageSize);
 
-    // 合并profiles和auth.users数据，并获取群组信息
+    // Merge profiles and auth.users data, and get group info
     const enhancedUsers: EnhancedUser[] = await Promise.all(
       (profiles || []).map(async (profile: any) => {
         const authUser = authUsers.find(au => au.id === profile.id);
 
-        // 获取用户的群组信息
+        // Get user's group info
         let userGroups: Array<{
           id: string;
           name: string;
@@ -239,36 +240,40 @@ export async function getUserList(filters: UserFilters = {}): Promise<
       totalPages,
     });
   } catch (error) {
-    console.error('获取用户列表异常:', error);
+    console.error('Exception while getting user list:', error);
     return failure(
-      error instanceof Error ? error : new Error('获取用户列表失败')
+      error instanceof Error ? error : new Error('Failed to get user list')
     );
   }
 }
 
 /**
- * 获取用户统计信息（使用数据库函数）
+ * Get user statistics (using database function)
  */
 export async function getUserStats(): Promise<Result<UserStats>> {
   try {
     const { data, error } = await supabase.rpc('get_user_stats');
 
     if (error) {
-      console.error('获取用户统计失败:', error);
-      return failure(new Error(`获取用户统计失败: ${error.message}`));
+      console.error('Failed to get user statistics:', error);
+      return failure(
+        new Error(`Failed to get user statistics: ${error.message}`)
+      );
     }
 
     return success(data as UserStats);
   } catch (error) {
-    console.error('获取用户统计异常:', error);
+    console.error('Exception while getting user statistics:', error);
     return failure(
-      error instanceof Error ? error : new Error('获取用户统计失败')
+      error instanceof Error
+        ? error
+        : new Error('Failed to get user statistics')
     );
   }
 }
 
 /**
- * 获取单个用户详细信息（使用安全的数据库函数，不暴露敏感的auth.users数据）
+ * Get detailed information of a single user (using secure database function, does not expose sensitive auth.users data)
  */
 export async function getUserById(
   userId: string
@@ -279,22 +284,22 @@ export async function getUserById(
     });
 
     if (error) {
-      console.error('获取用户信息失败:', error);
-      return failure(new Error(`获取用户信息失败: ${error.message}`));
+      console.error('Failed to get user info:', error);
+      return failure(new Error(`Failed to get user info: ${error.message}`));
     }
 
     if (!data || data.length === 0) {
       return success(null);
     }
 
-    // 转换数据格式，兼容现有接口
+    // Transform data format to be compatible with existing interface
     const userDetail = data[0];
     const enhancedUser: EnhancedUser = {
       ...userDetail,
-      // 从安全函数返回的字段重新映射
+      // Remap fields returned from secure function
       profile_created_at: userDetail.created_at,
       profile_updated_at: userDetail.updated_at,
-      // 对于敏感信息，使用安全的替代字段
+      // For sensitive info, use safe alternative fields
       email: userDetail.has_email ? userDetail.email : null,
       phone: userDetail.has_phone ? userDetail.phone : null,
       email_confirmed_at: userDetail.email_confirmed
@@ -308,15 +313,15 @@ export async function getUserById(
 
     return success(enhancedUser);
   } catch (error) {
-    console.error('获取用户信息异常:', error);
+    console.error('Exception while getting user info:', error);
     return failure(
-      error instanceof Error ? error : new Error('获取用户信息失败')
+      error instanceof Error ? error : new Error('Failed to get user info')
     );
   }
 }
 
 /**
- * 更新用户资料
+ * Update user profile
  */
 export async function updateUserProfile(
   userId: string,
@@ -334,20 +339,24 @@ export async function updateUserProfile(
       .single();
 
     if (error) {
-      return failure(new Error(`更新用户资料失败: ${error.message}`));
+      return failure(
+        new Error(`Failed to update user profile: ${error.message}`)
+      );
     }
 
     return success(data);
   } catch (error) {
-    console.error('更新用户资料异常:', error);
+    console.error('Exception while updating user profile:', error);
     return failure(
-      error instanceof Error ? error : new Error('更新用户资料失败')
+      error instanceof Error
+        ? error
+        : new Error('Failed to update user profile')
     );
   }
 }
 
 /**
- * 更新用户角色
+ * Update user role
  */
 export async function updateUserRole(
   userId: string,
@@ -357,7 +366,7 @@ export async function updateUserRole(
 }
 
 /**
- * 更新用户状态
+ * Update user status
  */
 export async function updateUserStatus(
   userId: string,
@@ -367,7 +376,7 @@ export async function updateUserStatus(
 }
 
 /**
- * 删除用户（使用安全的RPC函数删除auth.users记录，触发级联删除）
+ * Delete user (use secure RPC function to delete auth.users record, triggers cascade delete)
  */
 export async function deleteUser(userId: string): Promise<Result<void>> {
   try {
@@ -376,22 +385,26 @@ export async function deleteUser(userId: string): Promise<Result<void>> {
     });
 
     if (error) {
-      return failure(new Error(`删除用户失败: ${error.message}`));
+      return failure(new Error(`Failed to delete user: ${error.message}`));
     }
 
     if (!data) {
-      return failure(new Error('删除用户失败：操作未成功'));
+      return failure(
+        new Error('Failed to delete user: operation not successful')
+      );
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('删除用户异常:', error);
-    return failure(error instanceof Error ? error : new Error('删除用户失败'));
+    console.error('Exception while deleting user:', error);
+    return failure(
+      error instanceof Error ? error : new Error('Failed to delete user')
+    );
   }
 }
 
 /**
- * 创建新用户（仅创建profile，需要先有auth.users记录）
+ * Create new user profile (only creates profile, requires existing auth.users record)
  */
 export async function createUserProfile(
   userId: string,
@@ -417,20 +430,24 @@ export async function createUserProfile(
       .single();
 
     if (error) {
-      return failure(new Error(`创建用户资料失败: ${error.message}`));
+      return failure(
+        new Error(`Failed to create user profile: ${error.message}`)
+      );
     }
 
     return success(data);
   } catch (error) {
-    console.error('创建用户资料异常:', error);
+    console.error('Exception while creating user profile:', error);
     return failure(
-      error instanceof Error ? error : new Error('创建用户资料失败')
+      error instanceof Error
+        ? error
+        : new Error('Failed to create user profile')
     );
   }
 }
 
 /**
- * 批量更新用户状态
+ * Batch update user status
  */
 export async function batchUpdateUserStatus(
   userIds: string[],
@@ -446,20 +463,24 @@ export async function batchUpdateUserStatus(
       .in('id', userIds);
 
     if (error) {
-      return failure(new Error(`批量更新用户状态失败: ${error.message}`));
+      return failure(
+        new Error(`Failed to batch update user status: ${error.message}`)
+      );
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('批量更新用户状态异常:', error);
+    console.error('Exception while batch updating user status:', error);
     return failure(
-      error instanceof Error ? error : new Error('批量更新用户状态失败')
+      error instanceof Error
+        ? error
+        : new Error('Failed to batch update user status')
     );
   }
 }
 
 /**
- * 批量更新用户角色
+ * Batch update user role
  */
 export async function batchUpdateUserRole(
   userIds: string[],
@@ -475,16 +496,20 @@ export async function batchUpdateUserRole(
       .in('id', userIds);
 
     if (error) {
-      return failure(new Error(`批量更新用户角色失败: ${error.message}`));
+      return failure(
+        new Error(`Failed to batch update user role: ${error.message}`)
+      );
     }
 
     return success(undefined);
   } catch (error) {
-    console.error('批量更新用户角色异常:', error);
+    console.error('Exception while batch updating user role:', error);
     return failure(
-      error instanceof Error ? error : new Error('批量更新用户角色失败')
+      error instanceof Error
+        ? error
+        : new Error('Failed to batch update user role')
     );
   }
 }
 
-// 注意：组织和部门选项函数已移除，改用群组系统
+// Note: Organization and department option functions have been removed, replaced by group system

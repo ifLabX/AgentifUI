@@ -1,8 +1,8 @@
 /**
- * 获取所有历史对话的 Hook
+ * Hook to get all historical conversations.
  *
- * 与 useSidebarConversations 不同，此 Hook 获取用户的所有历史对话
- * 主要用于历史对话页面显示完整的对话列表
+ * Unlike useSidebarConversations, this hook fetches all user conversations.
+ * Mainly used for the full conversation list in the history page.
  */
 import { cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
@@ -15,23 +15,23 @@ import { Conversation } from '@lib/types/database';
 
 import { useCallback, useEffect, useState } from 'react';
 
-// 使用单例模式的Supabase客户端
+// Use singleton Supabase client
 const supabase = createClient();
 
 /**
- * 获取所有历史对话的 Hook
+ * Hook to get all historical conversations.
  *
- * @returns 所有对话列表、加载状态、错误信息和操作函数
+ * @returns All conversations, loading state, error, and operation functions
  */
 export function useAllConversations() {
-  // 状态定义
+  // State definitions
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [total, setTotal] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // 获取当前用户ID
+  // Get current user ID
   useEffect(() => {
     const fetchUserId = async () => {
       const {
@@ -46,7 +46,7 @@ export function useAllConversations() {
 
     fetchUserId();
 
-    // 订阅认证状态变化
+    // Subscribe to auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -54,7 +54,7 @@ export function useAllConversations() {
         setUserId(session.user.id);
       } else {
         setUserId(null);
-        // 用户登出时清理状态
+        // Clear state on logout
         setConversations([]);
         setTotal(0);
       }
@@ -65,8 +65,8 @@ export function useAllConversations() {
     };
   }, []);
 
-  // 加载所有对话的函数
-  // 不限制数量，获取用户的所有历史对话
+  // Function to load all conversations
+  // No limit, fetch all user conversations
   const loadAllConversations = useCallback(
     async (reset: boolean = false) => {
       if (!userId) {
@@ -80,8 +80,8 @@ export function useAllConversations() {
       setError(null);
 
       try {
-        // 使用统一数据服务获取所有对话
-        // 不设置 limit，获取所有对话
+        // Use unified data service to get all conversations
+        // Set a large limit to fetch all
         const result = await dataService.findMany<Conversation>(
           'conversations',
           {
@@ -89,20 +89,23 @@ export function useAllConversations() {
             status: 'active',
           },
           { column: 'updated_at', ascending: false },
-          { offset: 0, limit: 1000 }, // 设置一个较大的限制，实际上获取所有对话
+          { offset: 0, limit: 1000 }, // Large limit to fetch all
           {
             cache: true,
-            cacheTTL: 2 * 60 * 1000, // 2分钟缓存，与侧边栏保持一致
+            cacheTTL: 2 * 60 * 1000, // 2 minutes cache, same as sidebar
             subscribe: true,
             subscriptionKey: SubscriptionKeys.allConversations(userId),
             onUpdate: payload => {
-              // 实时更新处理
-              console.log('[实时更新] 所有对话变化:', payload);
+              // Handle realtime updates
+              console.log(
+                '[Realtime update] All conversations changed:',
+                payload
+              );
 
-              // 清除缓存并重新加载
+              // Clear cache and reload
               cacheService.deletePattern(`conversations:*`);
 
-              // 延迟重新加载，避免频繁更新
+              // Delay reload to avoid frequent updates
               setTimeout(() => {
                 loadAllConversations(true);
               }, 500);
@@ -117,13 +120,13 @@ export function useAllConversations() {
           setTotal(conversations.length);
           setError(null);
         } else {
-          console.error('加载所有对话失败:', result.error);
+          console.error('Failed to load all conversations:', result.error);
           setError(result.error);
           setConversations([]);
           setTotal(0);
         }
       } catch (err) {
-        console.error('加载所有对话异常:', err);
+        console.error('Exception while loading all conversations:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         setConversations([]);
@@ -135,23 +138,23 @@ export function useAllConversations() {
     [userId]
   );
 
-  // 刷新对话列表
+  // Refresh conversation list
   const refresh = useCallback(() => {
     if (userId) {
-      // 清除缓存
+      // Clear cache
       cacheService.deletePattern(`conversations:*`);
       loadAllConversations(true);
     }
   }, [userId, loadAllConversations]);
 
-  // 初始加载和用户变化时重新加载
+  // Initial load and reload on user change
   useEffect(() => {
     if (userId) {
       loadAllConversations(true);
     }
   }, [userId, loadAllConversations]);
 
-  // 清理函数：组件卸载时清理订阅
+  // Cleanup: unsubscribe on component unmount
   useEffect(() => {
     return () => {
       if (userId) {
@@ -160,7 +163,7 @@ export function useAllConversations() {
     };
   }, [userId]);
 
-  // 删除对话的辅助函数
+  // Helper to delete a conversation
   const deleteConversation = useCallback(
     async (conversationId: string): Promise<boolean> => {
       if (!userId) return false;
@@ -172,23 +175,23 @@ export function useAllConversations() {
         );
 
         if (result.success) {
-          // 立即从本地状态中移除
+          // Remove from local state immediately
           setConversations(prev =>
             prev.filter(conv => conv.id !== conversationId)
           );
           setTotal(prev => prev - 1);
 
-          // 清除相关缓存
+          // Clear related cache
           cacheService.deletePattern(`conversations:*`);
 
           return true;
         } else {
-          console.error('删除对话失败:', result.error);
+          console.error('Failed to delete conversation:', result.error);
           setError(result.error);
           return false;
         }
       } catch (err) {
-        console.error('删除对话异常:', err);
+        console.error('Exception while deleting conversation:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         return false;
@@ -197,7 +200,7 @@ export function useAllConversations() {
     [userId]
   );
 
-  // 重命名对话的辅助函数
+  // Helper to rename a conversation
   const renameConversation = useCallback(
     async (conversationId: string, newTitle: string): Promise<boolean> => {
       if (!userId) return false;
@@ -210,7 +213,7 @@ export function useAllConversations() {
         );
 
         if (result.success) {
-          // 更新本地状态
+          // Update local state
           setConversations(prev =>
             prev.map(conv =>
               conv.id === conversationId
@@ -223,17 +226,17 @@ export function useAllConversations() {
             )
           );
 
-          // 清除相关缓存
+          // Clear related cache
           cacheService.deletePattern(`conversations:*`);
 
           return true;
         } else {
-          console.error('重命名对话失败:', result.error);
+          console.error('Failed to rename conversation:', result.error);
           setError(result.error);
           return false;
         }
       } catch (err) {
-        console.error('重命名对话异常:', err);
+        console.error('Exception while renaming conversation:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         return false;

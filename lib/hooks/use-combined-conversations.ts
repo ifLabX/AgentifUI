@@ -1,11 +1,9 @@
 /**
- * 整合数据库对话和临时对话的 Hook
+ * Hook to combine database conversations and temporary (pending) conversations.
  *
- * 将数据库中的对话和 pending-conversation-store 中的临时对话整合在一起
- *
- * 此 Hook 将从两个数据源获取对话：
- * 1. 数据库中的正式对话（通过 useSidebarConversations 获取）
- * 2. 前端存储中的临时对话（通过 usePendingConversationStore 获取）
+ * This hook merges conversations from two sources:
+ * 1. Official conversations from the database (via useSidebarConversations)
+ * 2. Temporary conversations from the frontend store (via usePendingConversationStore)
  *
  */
 import {
@@ -13,42 +11,41 @@ import {
   usePendingConversationStore,
 } from '@lib/stores/pending-conversation-store';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
-// 引入 Supabase Auth Hook
 import { Conversation } from '@lib/types/database';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useSidebarConversations } from './use-sidebar-conversations';
 
-// 扩展 Conversation 类型，添加临时状态标志
-// user_id 可以为 undefined，以适应匿名用户的临时对话，并与 Partial<Conversation> 兼容
+// Extend Conversation type to add temporary state flags
+// user_id can be undefined to support anonymous users' temporary conversations and be compatible with Partial<Conversation>
 export interface CombinedConversation extends Partial<Conversation> {
-  id: string; // 必需字段
-  title: string; // 必需字段
-  user_id?: string; // 改为可选 string，即 string | undefined
-  created_at: string; // 必需字段
-  updated_at: string; // 必需字段
-  isPending?: boolean; // 是否为临时对话
-  pendingStatus?: PendingConversation['status']; // 临时对话状态
-  tempId?: string; // 临时 ID
-  supabase_pk?: string; // 数据库主键 (Supabase ID)
+  id: string; // required field
+  title: string; // required field
+  user_id?: string; // optional string, i.e., string | undefined
+  created_at: string; // required field
+  updated_at: string; // required field
+  isPending?: boolean; // whether this is a temporary conversation
+  pendingStatus?: PendingConversation['status']; // status of the temporary conversation
+  tempId?: string; // temporary ID
+  supabase_pk?: string; // database primary key (Supabase ID)
 
-  // 🎯 新增：打字机效果相关状态
+  // Typewriter effect state for the title
   titleTypewriterState?: {
-    isTyping: boolean; // 是否正在打字
-    targetTitle: string; // 目标标题（完整标题）
-    displayTitle: string; // 当前显示的标题（可能是部分标题）
-    shouldStartTyping: boolean; // 是否应该开始打字效果
+    isTyping: boolean; // whether the typewriter effect is active
+    targetTitle: string; // the full target title
+    displayTitle: string; // the currently displayed (possibly partial) title
+    shouldStartTyping: boolean; // whether the typewriter effect should start
   };
 }
 
 /**
- * 整合数据库对话和临时对话的 Hook
+ * Hook to combine database and temporary conversations.
  *
- * @returns 整合后的对话列表、加载状态、错误信息和刷新函数
+ * @returns The combined conversation list, loading state, error, and refresh function.
  */
 export function useCombinedConversations() {
-  // 🎯 挤出机制：获取20个数据库对话，这样当有新对话创建时，总数会超过20个，触发挤出逻辑
+  // Fetch 20 database conversations to allow for overflow when new conversations are created, triggering the "eviction" logic
   const {
     conversations: dbConversations,
     isLoading: isDbLoading,
@@ -56,55 +53,53 @@ export function useCombinedConversations() {
     refresh: refreshDbConversations,
   } = useSidebarConversations(20);
 
-  // 获取当前登录用户ID
+  // Get the current logged-in user ID
   const { session } = useSupabaseAuth();
   const currentUserId = session?.user?.id;
 
-  // 获取临时对话列表
-  // 使用 useRef 和 useEffect 确保能够监听到 pendingConversationStore 的变化
+  // Get the temporary conversation list
+  // Use useEffect to listen for changes in the pendingConversationStore
   const pendingConversations = usePendingConversationStore(
     state => state.pendingConversations
   );
   const [pendingArray, setPendingArray] = useState<PendingConversation[]>([]);
 
-  // 监听 pendingConversations 的变化
-  // 当 pendingConversations Map 实例从 store 更新时，直接用其内容更新 pendingArray
+  // Listen for changes in pendingConversations and update pendingArray accordingly
   useEffect(() => {
     setPendingArray(Array.from(pendingConversations.values()));
   }, [pendingConversations]);
 
-  // 保存上一次的合并对话列表，避免路由切换时闪烁
+  // Store the previous combined conversation list to avoid flicker when switching routes
   const [prevCombinedConversations, setPrevCombinedConversations] = useState<
     CombinedConversation[]
   >([]);
 
-  // 整合数据库对话和临时对话
+  // Combine database and temporary conversations
   const combinedConversations = useMemo(() => {
     const finalConversations: CombinedConversation[] = [];
     const dbConvsRealIds = new Set<string>();
 
-    // 如果数据库对话和临时对话都为空，但有上一次的合并对话列表，则直接返回上一次的列表
-    // 这样可以避免在路由切换时侧边栏对话列表闪烁消失
+    // If both database and temporary conversations are empty, but there is a previous combined list, return the previous list to avoid sidebar flicker
     if (
       dbConversations.length === 0 &&
       pendingArray.length === 0 &&
       prevCombinedConversations.length > 0
     ) {
       console.log(
-        '[useCombinedConversations] 数据库和临时对话都为空，使用上一次的合并对话列表'
+        '[useCombinedConversations] Both database and temporary conversations are empty, using previous combined conversation list'
       );
       return prevCombinedConversations;
     }
 
-    // 1. 处理数据库中的对话
+    // 1. Process database conversations
     dbConversations.forEach(dbConv => {
-      const realId = dbConv.external_id || dbConv.id; // Prefer external_id as Dify realId
+      const realId = dbConv.external_id || dbConv.id; // Prefer external_id as the realId
       if (realId) {
         dbConvsRealIds.add(realId);
       }
       finalConversations.push({
         ...dbConv,
-        id: realId, // Use Dify realId as the primary ID for CombinedConversation
+        id: realId, // Use realId as the primary ID for CombinedConversation
         supabase_pk: dbConv.id, // Store Supabase PK
         isPending: false,
         pendingStatus: undefined,
@@ -112,14 +107,13 @@ export function useCombinedConversations() {
       });
     });
 
-    // 2. 处理并添加尚未被数据库版本覆盖的临时对话
+    // 2. Process and add temporary conversations not already covered by the database version
     pendingArray.forEach(pending => {
-      // If temporary conversation has a realId and it's already covered by dbConversations, skip it.
+      // If the temporary conversation has a realId and it's already covered by dbConversations, skip it.
       if (pending.realId && dbConvsRealIds.has(pending.realId)) {
         return;
       }
 
-      const now = new Date().toISOString();
       finalConversations.push({
         // Inherited from Partial<Conversation> - provide defaults or map from pending
         ai_config_id: null,
@@ -127,9 +121,9 @@ export function useCombinedConversations() {
         settings: {},
         status: 'active', // Or map from pending.status if needed for display
         external_id: pending.realId || null, // This is the Dify ID
-        app_id: null, // @future 考虑临时项目是否需要app_id上下文
+        app_id: null, // @future: consider if temporary conversations need app_id context
         last_message_preview: pending.title.substring(0, 50), // Example preview
-        metadata: {}, // @future 考虑临时项目是否可以拥有元数据
+        metadata: {}, // @future: consider if temporary conversations can have metadata
 
         // Required CombinedConversation fields
         id: pending.realId || pending.tempId, // Primary ID: Dify realId if available, else tempId
@@ -144,12 +138,12 @@ export function useCombinedConversations() {
         tempId: pending.tempId,
         supabase_pk: pending.supabase_pk, // Use supabase_pk from pending store if available
 
-        // 🎯 映射打字机效果状态
+        // Map typewriter effect state
         titleTypewriterState: pending.titleTypewriterState,
       });
     });
 
-    // 3. 排序
+    // 3. Sort conversations
     finalConversations.sort((a, b) => {
       // Example: active pending items first, then by updated_at
       if (
@@ -190,20 +184,20 @@ export function useCombinedConversations() {
       return dateB - dateA;
     });
 
-    // 🎯 新增：限制总对话数量为20个，实现"挤出"效果
-    // 当有新的临时对话时，自动移除超出限制的最老对话
+    // Limit the total number of conversations to 20 to implement the "eviction" effect.
+    // When new temporary conversations are added, automatically remove the oldest ones exceeding the limit.
     const MAX_CONVERSATIONS = 20;
     if (finalConversations.length > MAX_CONVERSATIONS) {
-      // 保留前20个对话（包括活跃的临时对话）
+      // Keep the first 20 conversations (including active temporary ones)
       const keptConversations = finalConversations.slice(0, MAX_CONVERSATIONS);
       const evictedConversations = finalConversations.slice(MAX_CONVERSATIONS);
 
       console.log(
-        `[useCombinedConversations] 🎯 挤出效果触发，保留${keptConversations.length}个对话，移除${evictedConversations.length}个对话`
+        `[useCombinedConversations] Eviction triggered, keeping ${keptConversations.length} conversations, removing ${evictedConversations.length} conversations`
       );
       evictedConversations.forEach(conv => {
         console.log(
-          `[useCombinedConversations] 挤出对话: ${conv.title} (${conv.id})`
+          `[useCombinedConversations] Evicted conversation: ${conv.title} (${conv.id})`
         );
       });
 
@@ -213,16 +207,16 @@ export function useCombinedConversations() {
     return finalConversations;
   }, [dbConversations, pendingArray, currentUserId]);
 
-  // 刷新函数
+  // Refresh function
   const refresh = () => {
     refreshDbConversations();
-    // 强制刷新 pendingArray
+    // Force refresh pendingArray
     setPendingArray(Array.from(pendingConversations.values()));
-    // 触发全局刷新事件，通知其他组件数据已更新
+    // Emit global refresh event to notify other components that data has been updated
     conversationEvents.emit();
   };
 
-  // 监听全局刷新事件
+  // Listen for global refresh events
   useEffect(() => {
     const unsubscribe = conversationEvents.subscribe(() => {
       refreshDbConversations();
@@ -234,14 +228,14 @@ export function useCombinedConversations() {
     };
   }, [refreshDbConversations, pendingConversations]);
 
-  // 🎯 增强：安全的临时对话清理机制
-  // 增加时间缓冲和更严格的清理条件，确保pending对话不会意外消失
-  // 只清理满足以下所有条件的临时对话：
-  // 1. 已存在超过15分钟（增加缓冲时间，确保所有操作完成）
-  // 2. 已有对应的数据库记录
-  // 3. 状态为已完成（persisted_optimistic 或 title_resolved）
-  // 4. 必须有数据库主键（确保真正保存到数据库）
-  // 5. 标题必须是最终确定的
+  // Enhanced: Safe cleanup mechanism for temporary conversations.
+  // Add a time buffer and stricter cleanup conditions to ensure pending conversations are not accidentally removed.
+  // Only clean up temporary conversations that meet ALL of the following:
+  // 1. Existed for more than 15 minutes (buffer to ensure all operations are complete)
+  // 2. Have a corresponding database record
+  // 3. Status is completed (persisted_optimistic or title_resolved)
+  // 4. Must have a database primary key (ensure truly saved to DB)
+  // 5. Title must be finalized
   useEffect(() => {
     const dbRealIds = new Set(dbConversations.map(c => c.external_id || c.id));
     const { removePending } = usePendingConversationStore.getState();
@@ -250,71 +244,71 @@ export function useCombinedConversations() {
       const now = Date.now();
 
       pendingArray.forEach(p => {
-        // 检查对话年龄
+        // Check conversation age
         const createdTime = new Date(p.createdAt).getTime();
         const ageInMinutes = (now - createdTime) / (1000 * 60);
 
-        // 🎯 增强：更严格的清理条件，避免竞态条件
+        // Stricter cleanup conditions to avoid race conditions
         const shouldCleanup =
-          // 基本条件：超过15分钟（增加缓冲时间）
+          // Basic condition: more than 15 minutes old (buffer)
           ageInMinutes > 15 &&
-          // 必须有真实ID
+          // Must have a realId
           p.realId &&
-          // 数据库中存在对应记录
+          // Database contains corresponding record
           dbRealIds.has(p.realId) &&
-          // 状态必须是最终完成状态
+          // Status must be completed
           (p.status === 'persisted_optimistic' ||
             p.status === 'title_resolved') &&
-          // 🎯 新增：必须有数据库主键，确保真正保存到数据库
+          // Must have database primary key
           p.supabase_pk &&
-          // 🎯 新增：标题必须是最终确定的
+          // Title must be finalized
           p.isTitleFinal;
 
         if (shouldCleanup) {
           console.log(
-            `[useCombinedConversations] 清理已确认保存的临时对话: ${p.tempId} (realId: ${p.realId}, 年龄: ${ageInMinutes.toFixed(1)}分钟)`
+            `[useCombinedConversations] Cleaning up confirmed saved temporary conversation: ${p.tempId} (realId: ${p.realId}, age: ${ageInMinutes.toFixed(1)} min)`
           );
           removePending(p.tempId);
         } else if (p.realId && dbRealIds.has(p.realId)) {
-          // 详细记录保留原因，便于调试
+          // Log reasons for keeping, for debugging
           const reasons = [];
           if (ageInMinutes <= 15)
-            reasons.push(`年龄不足(${ageInMinutes.toFixed(1)}分钟)`);
+            reasons.push(`Not old enough (${ageInMinutes.toFixed(1)} min)`);
           if (
             p.status !== 'persisted_optimistic' &&
             p.status !== 'title_resolved'
           )
-            reasons.push(`状态未完成(${p.status})`);
-          if (!p.supabase_pk) reasons.push('无数据库主键');
-          if (!p.isTitleFinal) reasons.push('标题未确定');
+            reasons.push(`Status not completed (${p.status})`);
+          if (!p.supabase_pk) reasons.push('No database primary key');
+          if (!p.isTitleFinal) reasons.push('Title not finalized');
 
           if (reasons.length > 0 && ageInMinutes > 5) {
-            // 只记录超过5分钟的情况
+            // Only log for conversations older than 5 minutes
             console.log(
-              `[useCombinedConversations] 保留临时对话 ${p.tempId}: ${reasons.join(', ')}`
+              `[useCombinedConversations] Keeping temporary conversation ${p.tempId}: ${reasons.join(', ')}`
             );
           }
         }
       });
     };
 
-    // 🎯 增强：延迟首次执行，避免初始化时误删
-    const initialDelay = setTimeout(cleanupExpiredPendingConversations, 30000); // 30秒后首次执行
+    // Delay first execution to avoid accidental deletion on initialization
+    const initialDelay = setTimeout(cleanupExpiredPendingConversations, 30000); // 30 seconds
 
-    // 每3分钟检查一次（降低频率，减少竞态风险）
+    // Check every 3 minutes (lower frequency to reduce race risk)
     const intervalId = setInterval(
       cleanupExpiredPendingConversations,
       3 * 60 * 1000
     );
 
-    // 清理定时器
+    // Cleanup timers on unmount
     return () => {
       clearTimeout(initialDelay);
       clearInterval(intervalId);
     };
   }, [dbConversations, pendingArray]);
 
-  // 当合并对话列表更新时，保存当前状态，用于路由切换时保持侧边栏稳定
+  // When the combined conversation list updates, save the current state for sidebar stability during route changes
   useEffect(() => {
     if (combinedConversations.length > 0) {
       setPrevCombinedConversations(combinedConversations);
@@ -329,7 +323,7 @@ export function useCombinedConversations() {
   };
 }
 
-// 全局事件系统，用于同步对话数据更新
+// Global event system for synchronizing conversation data updates
 class ConversationEventEmitter {
   private listeners: Set<() => void> = new Set();
 

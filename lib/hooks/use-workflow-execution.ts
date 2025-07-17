@@ -9,23 +9,23 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useDateFormatter } from './use-date-formatter';
 
 /**
- * 工作流执行Hook - 万无一失的数据保存版本
+ * Workflow execution hook - robust data saving version
  *
- * 核心职责：
- * - 实现完整的工作流执行流程
- * - 确保所有Dify返回的数据都完整保存到数据库
- * - 提供错误处理和恢复机制
- * - 管理数据一致性
+ * Core responsibilities:
+ * - Implements the complete workflow execution process
+ * - Ensures all data returned from Dify is fully saved to the database
+ * - Provides error handling and recovery mechanisms
+ * - Manages data consistency
  */
 export function useWorkflowExecution(instanceId: string) {
   const { profile } = useProfile();
   const userId = profile?.id;
   const { formatDate } = useDateFormatter();
 
-  // 添加常用应用管理hook
+  // Add favorite app management hook
   const { addToFavorites } = useAutoAddFavoriteApp();
 
-  // --- 安全地获取Store状态，避免频繁重渲染 ---
+  // --- Safely get store state to avoid frequent re-renders ---
   const isExecuting = useWorkflowExecutionStore(state => state.isExecuting);
   const progress = useWorkflowExecutionStore(state => state.executionProgress);
   const error = useWorkflowExecutionStore(state => state.error);
@@ -41,19 +41,19 @@ export function useWorkflowExecution(instanceId: string) {
   const formData = useWorkflowExecutionStore(state => state.formData);
   const formLocked = useWorkflowExecutionStore(state => state.formLocked);
 
-  // --- 使用ref获取store actions，避免依赖问题 ---
+  // --- Use ref to get store actions to avoid dependency issues ---
   const getActions = useCallback(
     () => useWorkflowExecutionStore.getState(),
     []
   );
 
-  // --- SSE连接引用 ---
+  // --- SSE connection reference ---
   const sseConnectionRef = useRef<EventSource | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
-   * 万无一失的数据保存函数
-   * 确保所有Dify返回的字段都完整保存到数据库
+   * Robust data saving function
+   * Ensures all fields returned from Dify are fully saved to the database
    */
   const saveCompleteExecutionData = useCallback(
     async (
@@ -64,30 +64,30 @@ export function useWorkflowExecution(instanceId: string) {
       nodeExecutionData: any[] = []
     ) => {
       console.log(
-        '[工作流执行] 开始万无一失的数据保存，executionId:',
+        '[Workflow Execution] Start robust data saving, executionId:',
         executionId
       );
       console.log(
-        '[工作流执行] finalResult:',
+        '[Workflow Execution] finalResult:',
         JSON.stringify(finalResult, null, 2)
       );
-      console.log('[工作流执行] taskId:', taskId);
-      console.log('[工作流执行] workflowRunId:', workflowRunId);
-      console.log('[工作流执行] nodeExecutionData:', nodeExecutionData);
+      console.log('[Workflow Execution] taskId:', taskId);
+      console.log('[Workflow Execution] workflowRunId:', workflowRunId);
+      console.log('[Workflow Execution] nodeExecutionData:', nodeExecutionData);
 
       try {
         const { updateCompleteExecutionData } = await import(
           '@lib/db/app-executions'
         );
 
-        // 确定最终状态
+        // Determine final status
         const finalStatus: ExecutionStatus =
           finalResult.status === 'succeeded' ? 'completed' : 'failed';
         const completedAt = new Date().toISOString();
 
-        // --- 构建完整的metadata对象，包含所有可能的Dify数据 ---
+        // --- Build complete metadata object, including all possible Dify data ---
         const completeMetadata = {
-          // Dify原始响应数据
+          // Dify original response data
           dify_response: {
             workflow_id: finalResult.workflow_id || null,
             created_at: finalResult.created_at || null,
@@ -95,7 +95,7 @@ export function useWorkflowExecution(instanceId: string) {
             sequence_number: finalResult.sequence_number || null,
           },
 
-          // 节点执行详情
+          // Node execution details
           node_executions: nodeExecutionData.map(node => ({
             node_id: node.node_id,
             node_type: node.node_type || null,
@@ -115,7 +115,7 @@ export function useWorkflowExecution(instanceId: string) {
             predecessor_node_id: node.predecessor_node_id || null,
           })),
 
-          // 执行环境信息
+          // Execution context information
           execution_context: {
             user_agent:
               typeof window !== 'undefined' ? window.navigator.userAgent : null,
@@ -124,7 +124,7 @@ export function useWorkflowExecution(instanceId: string) {
             execution_mode: 'streaming',
           },
 
-          // 统计汇总
+          // Statistics summary
           statistics: {
             total_node_count: nodeExecutionData.length,
             successful_nodes: nodeExecutionData.filter(
@@ -143,9 +143,11 @@ export function useWorkflowExecution(instanceId: string) {
           },
         };
 
-        console.log('[工作流执行] 准备保存的完整数据到数据库');
+        console.log(
+          '[Workflow Execution] Ready to save complete data to database'
+        );
 
-        // --- 执行数据库更新 ---
+        // --- Perform database update ---
         const updateResult = await updateCompleteExecutionData(executionId, {
           status: finalStatus,
           external_execution_id: workflowRunId,
@@ -160,22 +162,28 @@ export function useWorkflowExecution(instanceId: string) {
         });
 
         if (updateResult.success) {
-          console.log('[工作流执行] ✅ 数据库更新成功');
+          console.log('[Workflow Execution] ✅ Database update successful');
 
-          // 使用数据库返回的完整数据更新Store
+          // Use the complete data returned from the database to update the store
           const completeExecution = updateResult.data;
 
-          // 更新Store状态
+          // Update store state
           getActions().updateCurrentExecution(completeExecution);
           getActions().addExecutionToHistory(completeExecution);
 
           return { success: true, data: completeExecution };
         } else {
-          console.error('[工作流执行] ❌ 数据库更新失败:', updateResult.error);
+          console.error(
+            '[Workflow Execution] ❌ Database update failed:',
+            updateResult.error
+          );
           return { success: false, error: updateResult.error };
         }
       } catch (error) {
-        console.error('[工作流执行] ❌ 保存完整数据时发生错误:', error);
+        console.error(
+          '[Workflow Execution] ❌ Error occurred while saving complete data:',
+          error
+        );
         return {
           success: false,
           error: error instanceof Error ? error : new Error(String(error)),
@@ -186,56 +194,61 @@ export function useWorkflowExecution(instanceId: string) {
   );
 
   /**
-   * 核心执行流程：完整的工作流执行
+   * Core execution process: complete workflow execution
    */
   const executeWorkflow = useCallback(
     async (formData: Record<string, any>) => {
       if (!userId) {
-        getActions().setError('用户未登录，请先登录');
+        getActions().setError('User not logged in, please log in first');
         return;
       }
 
-      console.log('[工作流执行] 开始执行流程，instanceId:', instanceId);
+      console.log(
+        '[Workflow Execution] Start execution process, instanceId:',
+        instanceId
+      );
 
-      // 用于收集节点执行数据
+      // Used to collect node execution data
       const nodeExecutionData: any[] = [];
 
-      // 声明streamResponse变量以便在catch块中使用
+      // Declare streamResponse variable for use in catch block
       let streamResponse: any = null;
 
       try {
-        // --- 步骤1: 设置初始执行状态 ---
+        // --- Step 1: Set initial execution state ---
         getActions().startExecution(formData);
         getActions().clearError();
 
-        // --- 步骤1.5: 获取正确的应用UUID ---
+        // --- Step 1.5: Get correct app UUID ---
         const { useAppListStore } = await import('@lib/stores/app-list-store');
         const appListState = useAppListStore.getState();
 
-        // 如果应用列表为空，先获取应用列表
+        // If app list is empty, fetch app list first
         if (appListState.apps.length === 0) {
-          console.log('[工作流执行] 应用列表为空，先获取应用列表');
+          console.log(
+            '[Workflow Execution] App list is empty, fetching app list'
+          );
           await appListState.fetchApps();
         }
 
-        // 查找对应的应用记录
+        // Find the corresponding app record
         const currentApps = useAppListStore.getState().apps;
         const targetApp = currentApps.find(
           app => app.instance_id === instanceId
         );
 
         if (!targetApp) {
-          throw new Error(`未找到应用记录: ${instanceId}`);
+          throw new Error(`App record not found: ${instanceId}`);
         }
 
         console.log(
-          '[工作流执行] 找到应用记录，UUID:',
+          '[Workflow Execution] Found app record, UUID:',
           targetApp.id,
           'instance_id:',
           targetApp.instance_id
         );
 
-        // --- 步骤2: 创建pending状态的数据库记录 ---
+        // --- Step 2: Create a pending status database record ---
         const { createExecution } = await import('@lib/db/app-executions');
 
         const executionData: Omit<
@@ -243,7 +256,7 @@ export function useWorkflowExecution(instanceId: string) {
           'id' | 'created_at' | 'updated_at'
         > = {
           user_id: userId,
-          service_instance_id: targetApp.id, // 使用UUID主键
+          service_instance_id: targetApp.id, // Use UUID as primary key
           execution_type: 'workflow',
           external_execution_id: null,
           task_id: null,
@@ -264,14 +277,19 @@ export function useWorkflowExecution(instanceId: string) {
 
         const createResult = await createExecution(executionData);
         if (!createResult.success) {
-          throw new Error(`数据库记录创建失败: ${createResult.error.message}`);
+          throw new Error(
+            `Failed to create database record: ${createResult.error.message}`
+          );
         }
 
         const dbExecution = createResult.data;
-        console.log('[工作流执行] 数据库记录创建成功，ID:', dbExecution.id);
+        console.log(
+          '[Workflow Execution] Database record created successfully, ID:',
+          dbExecution.id
+        );
         getActions().setCurrentExecution(dbExecution);
 
-        // --- 步骤3: 更新状态为running ---
+        // --- Step 3: Update status to running ---
         const { updateExecutionStatus } = await import(
           '@lib/db/app-executions'
         );
@@ -284,7 +302,7 @@ export function useWorkflowExecution(instanceId: string) {
           getActions().updateCurrentExecution({ status: 'running' });
         }
 
-        // --- 步骤4: 准备Dify API调用payload ---
+        // --- Step 4: Prepare Dify API call payload ---
         const difyPayload: DifyWorkflowRequestPayload = {
           inputs: formData,
           response_mode: 'streaming' as const,
@@ -292,48 +310,50 @@ export function useWorkflowExecution(instanceId: string) {
         };
 
         console.log(
-          '[工作流执行] 准备调用Dify API，payload:',
+          '[Workflow Execution] Preparing to call Dify API, payload:',
           JSON.stringify(difyPayload, null, 2)
         );
 
-        // --- 步骤5: 调用Dify流式API ---
+        // --- Step 5: Call Dify streaming API ---
         const { streamDifyWorkflow } = await import(
           '@lib/services/dify/workflow-service'
         );
 
-        // 创建中断控制器
+        // Create abort controller
         abortControllerRef.current = new AbortController();
 
         streamResponse = await streamDifyWorkflow(difyPayload, instanceId);
 
-        console.log('[工作流执行] Dify流式响应启动成功');
+        console.log(
+          '[Workflow Execution] Dify streaming response started successfully'
+        );
 
-        // --- 步骤6: 处理SSE事件流并收集所有数据 ---
-        console.log('[工作流执行] 开始处理SSE事件流');
+        // --- Step 6: Handle SSE event stream and collect all data ---
+        console.log('[Workflow Execution] Start handling SSE event stream');
 
-        // 🎯 处理进度事件并收集所有数据 - 使用增强的事件处理器
+        // Handle progress events and collect all data - using enhanced event handler
         for await (const event of streamResponse.progressStream) {
           if (abortControllerRef.current?.signal.aborted) {
-            console.log('[工作流执行] 执行被中断');
+            console.log('[Workflow Execution] Execution aborted');
             break;
           }
 
-          // 🎯 使用新的统一事件处理器，支持迭代和并行分支
+          // Use new unified event handler, supports iteration and parallel branches
           getActions().handleNodeEvent(event);
 
-          // 收集节点数据用于数据库保存
+          // Collect node data for database saving
           const existingNodeIndex = nodeExecutionData.findIndex(
             n => n.node_id === event.data.node_id
           );
           if (existingNodeIndex >= 0) {
-            // 更新现有节点数据
+            // Update existing node data
             nodeExecutionData[existingNodeIndex] = {
               ...nodeExecutionData[existingNodeIndex],
               ...event.data,
               event_type: event.event,
             };
           } else {
-            // 添加新节点数据
+            // Add new node data
             nodeExecutionData.push({
               ...event.data,
               event_type: event.event,
@@ -341,26 +361,26 @@ export function useWorkflowExecution(instanceId: string) {
           }
         }
 
-        // --- 步骤7: 等待最终完成结果 ---
+        // --- Step 7: Wait for final completion result ---
         const finalResult = await streamResponse.completionPromise;
 
         console.log(
-          '[工作流执行] 工作流执行完成，最终结果:',
+          '[Workflow Execution] Workflow execution completed, final result:',
           JSON.stringify(finalResult, null, 2)
         );
 
-        // --- 步骤8: 获取最终的Dify标识符 ---
+        // --- Step 8: Get final Dify identifiers ---
         const taskId = streamResponse.getTaskId();
         const workflowRunId = streamResponse.getWorkflowRunId();
 
         console.log(
-          '[工作流执行] 最终获取的标识符 - taskId:',
+          '[Workflow Execution] Final identifiers - taskId:',
           taskId,
           'workflowRunId:',
           workflowRunId
         );
 
-        // --- 步骤9: 万无一失的完整数据保存 ---
+        // --- Step 9: Robust complete data saving ---
         const saveResult = await saveCompleteExecutionData(
           dbExecution.id,
           finalResult,
@@ -371,52 +391,56 @@ export function useWorkflowExecution(instanceId: string) {
 
         if (!saveResult.success) {
           throw new Error(
-            `完整数据保存失败: ${saveResult.error?.message || '未知错误'}`
+            `Failed to save complete data: ${saveResult.error?.message || 'Unknown error'}`
           );
         }
 
-        // 🎯 在工作流执行成功后添加应用到常用列表
-        // 这是最佳时机：确保工作流真正执行成功，且只在首次执行时添加一次
-        console.log(`[工作流执行] 添加应用到常用列表: ${instanceId}`);
+        // Add app to favorites after successful workflow execution
+        // This is the best timing: ensure the workflow is truly successful and only add once on first execution
+        console.log(`[Workflow Execution] Add app to favorites: ${instanceId}`);
         addToFavorites(instanceId);
 
-        // 完成执行
+        // Finish execution
         getActions().stopExecution();
         getActions().unlockForm();
 
-        console.log('[工作流执行] ✅ 执行流程完成，所有数据已完整保存');
+        console.log(
+          '[Workflow Execution] ✅ Execution process completed, all data fully saved'
+        );
       } catch (error) {
-        console.error('[工作流执行] ❌ 执行失败:', error);
+        console.error('[Workflow Execution] ❌ Execution failed:', error);
 
-        // 错误处理：尝试保存错误状态和已收集的数据
+        // Error handling: try to save error status and collected data
         const errorMessage =
-          error instanceof Error ? error.message : '未知错误';
+          error instanceof Error ? error.message : 'Unknown error';
         getActions().setError(errorMessage, true);
 
-        // 如果有当前执行记录，尝试保存错误状态和已收集的数据
+        // If there is a current execution record, try to save error status and collected data
         const current = useWorkflowExecutionStore.getState().currentExecution;
         if (current?.id) {
           try {
-            console.log('[工作流执行] 尝试保存错误状态和已收集的数据');
+            console.log(
+              '[Workflow Execution] Try to save error status and collected data'
+            );
 
-            // 获取可能的标识符（如果streamResponse存在的话）
+            // Get possible identifiers (if streamResponse exists)
             let taskId: string | null = null;
             let workflowRunId: string | null = null;
 
             try {
-              // 尝试从可能存在的streamResponse获取标识符
+              // Try to get identifiers from streamResponse if it exists
               if (typeof streamResponse !== 'undefined' && streamResponse) {
                 taskId = streamResponse.getTaskId() || null;
                 workflowRunId = streamResponse.getWorkflowRunId() || null;
               }
             } catch (streamError) {
               console.warn(
-                '[工作流执行] 无法获取streamResponse标识符:',
+                '[Workflow Execution] Unable to get streamResponse identifiers:',
                 streamError
               );
             }
 
-            // 构建错误状态的完整数据
+            // Build complete error status data
             const errorMetadata = {
               error_details: {
                 message: errorMessage,
@@ -454,13 +478,16 @@ export function useWorkflowExecution(instanceId: string) {
               metadata: errorMetadata,
             });
 
-            console.log('[工作流执行] ✅ 错误状态和数据已保存');
+            console.log('[Workflow Execution] ✅ Error status and data saved');
           } catch (updateError) {
-            console.error('[工作流执行] ❌ 更新失败状态时出错:', updateError);
+            console.error(
+              '[Workflow Execution] ❌ Error while updating failed status:',
+              updateError
+            );
           }
         }
       } finally {
-        // 清理资源
+        // Clean up resources
         if (sseConnectionRef.current) {
           sseConnectionRef.current.close();
           sseConnectionRef.current = null;
@@ -481,43 +508,46 @@ export function useWorkflowExecution(instanceId: string) {
   );
 
   /**
-   * 停止工作流执行
+   * Stop workflow execution
    */
   const stopWorkflowExecution = useCallback(async () => {
-    console.log('[工作流执行] 停止工作流执行');
+    console.log('[Workflow Execution] Stop workflow execution');
 
     try {
-      // 中断网络请求
+      // Abort network request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
 
-      // 关闭SSE连接
+      // Close SSE connection
       if (sseConnectionRef.current) {
         sseConnectionRef.current.close();
         sseConnectionRef.current = null;
       }
 
-      // 获取当前状态
+      // Get current state
       const state = useWorkflowExecutionStore.getState();
 
-      // 如果有Dify任务ID，尝试停止Dify工作流
+      // If there is a Dify task ID, try to stop Dify workflow
       if (state.difyTaskId && userId) {
         try {
           const { stopDifyWorkflow } = await import(
             '@lib/services/dify/workflow-service'
           );
           await stopDifyWorkflow(instanceId, state.difyTaskId, userId);
-          console.log('[工作流执行] Dify工作流已停止');
+          console.log('[Workflow Execution] Dify workflow stopped');
         } catch (stopError) {
-          console.warn('[工作流执行] 停止Dify工作流失败:', stopError);
+          console.warn(
+            '[Workflow Execution] Failed to stop Dify workflow:',
+            stopError
+          );
         }
       }
 
-      // 更新Store状态
+      // Update store state
       getActions().stopExecution();
 
-      // 更新数据库记录状态
+      // Update database record status
       if (state.currentExecution?.id) {
         try {
           const { updateExecutionStatus } = await import(
@@ -526,58 +556,69 @@ export function useWorkflowExecution(instanceId: string) {
           await updateExecutionStatus(
             state.currentExecution.id,
             'stopped',
-            '用户手动停止',
+            'Stopped by user',
             new Date().toISOString()
           );
 
           getActions().updateCurrentExecution({
             status: 'stopped',
-            error_message: '用户手动停止',
+            error_message: 'Stopped by user',
             completed_at: new Date().toISOString(),
           });
         } catch (updateError) {
-          console.error('[工作流执行] 更新停止状态时出错:', updateError);
+          console.error(
+            '[Workflow Execution] Error while updating stopped status:',
+            updateError
+          );
         }
       }
     } catch (error) {
-      console.error('[工作流执行] 停止执行时出错:', error);
-      getActions().setError('停止执行失败');
+      console.error(
+        '[Workflow Execution] Error while stopping execution:',
+        error
+      );
+      getActions().setError('Failed to stop execution');
     }
   }, [instanceId, userId, getActions]);
 
   /**
-   * 加载工作流历史记录
+   * Load workflow execution history
    */
   const loadWorkflowHistory = useCallback(async () => {
     if (!userId) return;
 
-    console.log('[工作流执行] 加载历史记录，instanceId:', instanceId);
+    console.log('[Workflow Execution] Load history, instanceId:', instanceId);
 
     try {
-      // --- 获取正确的应用UUID ---
+      // --- Get correct app UUID ---
       const { useAppListStore } = await import('@lib/stores/app-list-store');
       const appListState = useAppListStore.getState();
 
-      // 如果应用列表为空，先获取应用列表
+      // If app list is empty, fetch app list first
       if (appListState.apps.length === 0) {
-        console.log('[工作流执行] 历史记录加载：应用列表为空，先获取应用列表');
+        console.log(
+          '[Workflow Execution] History load: app list is empty, fetching app list'
+        );
         await appListState.fetchApps();
       }
 
-      // 查找对应的应用记录
+      // Find the corresponding app record
       const currentApps = useAppListStore.getState().apps;
       const targetApp = currentApps.find(app => app.instance_id === instanceId);
 
       if (!targetApp) {
         console.warn(
-          '[工作流执行] 未找到对应的应用记录，instanceId:',
+          '[Workflow Execution] App record not found for history, instanceId:',
           instanceId
         );
         getActions().setExecutionHistory([]);
         return;
       }
 
-      console.log('[工作流执行] 历史记录查询使用UUID:', targetApp.id);
+      console.log(
+        '[Workflow Execution] History query using UUID:',
+        targetApp.id
+      );
 
       const { getExecutionsByServiceInstance } = await import(
         '@lib/db/app-executions'
@@ -586,41 +627,47 @@ export function useWorkflowExecution(instanceId: string) {
         targetApp.id,
         userId,
         20
-      ); // 使用UUID主键，添加用户ID过滤
+      ); // Use UUID as primary key, add user ID filter
 
       if (result.success) {
-        console.log('[工作流执行] 历史记录加载成功，数量:', result.data.length);
+        console.log(
+          '[Workflow Execution] History loaded successfully, count:',
+          result.data.length
+        );
         getActions().setExecutionHistory(result.data);
       } else {
-        console.error('[工作流执行] 历史记录加载失败:', result.error);
+        console.error(
+          '[Workflow Execution] Failed to load history:',
+          result.error
+        );
       }
     } catch (error) {
-      console.error('[工作流执行] 加载历史记录时出错:', error);
+      console.error('[Workflow Execution] Error while loading history:', error);
     }
   }, [instanceId, userId, getActions]);
 
   /**
-   * 重试执行
+   * Retry execution
    */
   const retryExecution = useCallback(async () => {
     const state = useWorkflowExecutionStore.getState();
     if (state.formData && Object.keys(state.formData).length > 0) {
-      console.log('[工作流执行] 重试执行');
+      console.log('[Workflow Execution] Retry execution');
       getActions().clearError();
       await executeWorkflow(state.formData);
     } else {
-      console.warn('[工作流执行] 无法重试：没有表单数据');
-      getActions().setError('无法重试：没有表单数据');
+      console.warn('[Workflow Execution] Cannot retry: no form data');
+      getActions().setError('Cannot retry: no form data');
     }
   }, [executeWorkflow, getActions]);
 
   /**
-   * 重置执行状态
+   * Reset execution state
    */
   const resetExecution = useCallback(() => {
-    console.log('[工作流执行] 重置执行状态');
+    console.log('[Workflow Execution] Reset execution state');
 
-    // 清理连接
+    // Clean up connections
     if (sseConnectionRef.current) {
       sseConnectionRef.current.close();
       sseConnectionRef.current = null;
@@ -630,17 +677,17 @@ export function useWorkflowExecution(instanceId: string) {
       abortControllerRef.current = null;
     }
 
-    // 重置Store状态
+    // Reset store state
     getActions().reset();
   }, [getActions]);
 
   /**
-   * 完全重置（包括表单数据）
+   * Fully reset (including form data)
    */
   const resetAll = useCallback(() => {
-    console.log('[工作流执行] 完全重置所有状态');
+    console.log('[Workflow Execution] Fully reset all state');
 
-    // 清理连接
+    // Clean up connections
     if (sseConnectionRef.current) {
       sseConnectionRef.current.close();
       sseConnectionRef.current = null;
@@ -650,17 +697,17 @@ export function useWorkflowExecution(instanceId: string) {
       abortControllerRef.current = null;
     }
 
-    // 完全清空Store状态
+    // Completely clear store state
     getActions().clearAll();
   }, [getActions]);
 
   /**
-   * 仅清空执行状态（保留表单数据和历史记录）
+   * Clear only execution state (keep form data and history)
    */
   const clearExecutionState = useCallback(() => {
-    console.log('[工作流执行] 清空执行状态');
+    console.log('[Workflow Execution] Clear execution state');
 
-    // 清理连接
+    // Clean up connections
     if (sseConnectionRef.current) {
       sseConnectionRef.current.close();
       sseConnectionRef.current = null;
@@ -670,11 +717,11 @@ export function useWorkflowExecution(instanceId: string) {
       abortControllerRef.current = null;
     }
 
-    // 仅清空执行相关状态
+    // Only clear execution-related state
     getActions().clearExecutionState();
   }, [getActions]);
 
-  // --- 组件卸载时清理资源 ---
+  // --- Clean up resources on component unmount ---
   useEffect(() => {
     return () => {
       if (sseConnectionRef.current) {
@@ -686,14 +733,17 @@ export function useWorkflowExecution(instanceId: string) {
     };
   }, []);
 
-  // --- 路由切换时清空执行状态 ---
+  // --- Clear execution state on route change ---
   useEffect(() => {
-    // 当instanceId变化时，清空之前的执行状态
-    console.log('[工作流执行] instanceId变化，清空执行状态:', instanceId);
+    // When instanceId changes, clear previous execution state
+    console.log(
+      '[Workflow Execution] instanceId changed, clear execution state:',
+      instanceId
+    );
     clearExecutionState();
   }, [instanceId, clearExecutionState]);
 
-  // --- 初始化时加载历史记录 ---
+  // --- Load history on initialization ---
   useEffect(() => {
     if (userId && instanceId) {
       loadWorkflowHistory();
@@ -701,10 +751,10 @@ export function useWorkflowExecution(instanceId: string) {
   }, [userId, instanceId, loadWorkflowHistory]);
 
   const createTitle = () =>
-    `工作流执行 - ${formatDate(new Date(), { includeTime: true, style: 'medium' })}`;
+    `Workflow Execution - ${formatDate(new Date(), { includeTime: true, style: 'medium' })}`;
 
   return {
-    // --- 状态 ---
+    // --- State ---
     isExecuting,
     progress,
     error,
@@ -716,7 +766,7 @@ export function useWorkflowExecution(instanceId: string) {
     formData,
     formLocked,
 
-    // --- 方法 ---
+    // --- Methods ---
     executeWorkflow,
     stopWorkflowExecution,
     retryExecution,

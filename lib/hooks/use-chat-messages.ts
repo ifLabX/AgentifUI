@@ -1,9 +1,9 @@
 /**
- * 消息持久化相关的钩子函数（重构版本）
+ * Chat message persistence hook (refactored version)
  *
- * 本文件实现消息的保存、更新和重试逻辑，
- * 以及消息持久化状态的管理
- * 适配新的Result类型系统和统一数据服务
+ * This file implements logic for saving, updating, and retrying messages,
+ * as well as managing message persistence state.
+ * Adapts to the new Result type system and unified data service.
  */
 import {
   createPlaceholderAssistantMessage,
@@ -14,38 +14,38 @@ import { ChatMessage, useChatStore } from '@lib/stores/chat-store';
 
 import { useCallback, useRef, useState } from 'react';
 
-// 定义消息保存状态类型
-// pending: 等待保存
-// saving: 保存中
-// saved: 保存成功
-// error: 保存失败
+// Message persistence status type
+// pending: waiting to be saved
+// saving: currently saving
+// saved: saved successfully
+// error: failed to save
 export type MessagePersistenceStatus = 'pending' | 'saving' | 'saved' | 'error';
 
-// 定义重试配置
-// maxRetries: 最大重试次数
-// baseDelayMs: 基础延迟时间（毫秒）
+// Retry configuration
+// maxRetries: maximum retry attempts
+// baseDelayMs: base delay in milliseconds
 const RETRY_CONFIG = {
   maxRetries: 3,
-  baseDelayMs: 1000, // 1秒，用于指数退避计算
+  baseDelayMs: 1000, // 1 second, used for exponential backoff
 };
 
 /**
- * 消息持久化钩子函数（重构版本）
- * 提供消息保存、状态更新和错误处理能力
- * 使用新的Result类型系统确保正确性
+ * Chat message persistence hook (refactored version)
+ * Provides message saving, status updating, and error handling capabilities.
+ * Uses the new Result type system for correctness.
  *
- * @param userId 当前用户ID，用于保存用户消息
- * @returns 消息保存相关的函数和状态
+ * @param userId Current user ID, used for saving user messages
+ * @returns Functions and state related to message persistence
  */
 export function useChatMessages(userId?: string) {
-  // 使用状态跟踪当前正在保存的消息，便于并发控制和状态管理
+  // State to track currently saving messages for concurrency and state management
   const [savingMessages, setSavingMessages] = useState<Set<string>>(new Set());
   const { updateMessage } = useChatStore();
 
-  // 使用ref跟踪保存状态，避免闭包问题
+  // Ref to track saving state, avoiding closure issues
   const savingMessagesRef = useRef<Set<string>>(new Set());
 
-  // 添加消息到正在保存集合
+  // Add a message to the saving set
   const addSavingMessage = useCallback((messageId: string) => {
     setSavingMessages(prev => {
       const newSet = new Set(prev);
@@ -55,7 +55,7 @@ export function useChatMessages(userId?: string) {
     });
   }, []);
 
-  // 从正在保存集合中移除消息
+  // Remove a message from the saving set
   const removeSavingMessage = useCallback((messageId: string) => {
     setSavingMessages(prev => {
       const newSet = new Set(prev);
@@ -65,19 +65,19 @@ export function useChatMessages(userId?: string) {
     });
   }, []);
 
-  // 检查消息是否正在保存中
+  // Check if a message is currently being saved
   const isMessageSaving = useCallback((messageId: string): boolean => {
     return savingMessagesRef.current.has(messageId);
   }, []);
 
   /**
-   * 保存消息到数据库（重构版本）
-   * 使用新的Result类型系统，确保错误处理正确
+   * Save a message to the database (refactored version)
+   * Uses the new Result type system for proper error handling
    *
-   * @param message 前端消息对象
-   * @param conversationId 数据库对话ID
-   * @param retryCount 重试次数（当前尝试为第几次，从0开始）
-   * @returns 保存是否成功
+   * @param message Frontend message object
+   * @param conversationId Database conversation ID
+   * @param retryCount Number of retry attempts (starts from 0)
+   * @returns Whether the save was successful
    */
   const saveMessage = useCallback(
     async (
@@ -85,50 +85,51 @@ export function useChatMessages(userId?: string) {
       conversationId: string,
       retryCount: number = 0
     ): Promise<boolean> => {
-      // 保存消息的核心逻辑（重构版本）：
-      // 1. 严格参数校验，确保必要参数存在
-      // 2. 检查消息是否已在保存中，避免重复保存
-      // 3. 检查数据库中是否已存在相同消息（去重）
-      // 4. 更新UI状态为保存中
-      // 5. 将前端消息对象转换为数据库格式
-      // 6. 调用新的数据库API保存（使用Result类型）
-      // 7. 根据结果更新UI状态
-      // 8. 如果失败，进行重试（指数退避）
-      // 严格参数校验
+      // Core logic for saving a message (refactored):
+      // 1. Strict parameter validation
+      // 2. Check if message is already being saved to avoid duplicates
+      // 3. Check if a duplicate exists in the database (deduplication)
+      // 4. Update UI state to saving
+      // 5. Convert frontend message to database format
+      // 6. Call new database API to save (using Result type)
+      // 7. Update UI state based on result
+      // 8. Retry with exponential backoff if failed
+
+      // Strict parameter validation
       if (!message || !message.id || !conversationId) {
         console.error(
-          `[saveMessage] 参数无效: message=${!!message}, messageId=${message?.id}, conversationId=${conversationId}`
+          `[saveMessage] Invalid parameters: message=${!!message}, messageId=${message?.id}, conversationId=${conversationId}`
         );
         return false;
       }
 
-      // 检查消息内容是否为空或过短（避免保存残缺消息）
+      // Check if message content is empty or too short (avoid saving incomplete messages)
       if (!message.text || message.text.trim().length === 0) {
         console.warn(
-          `[saveMessage] 消息内容为空，跳过保存: messageId=${message.id}`
+          `[saveMessage] Message content is empty, skipping save: messageId=${message.id}`
         );
         return false;
       }
 
-      // 检查消息是否已在保存中，避免重复保存
+      // Check if message is already being saved to avoid duplicate saves
       if (isMessageSaving(message.id)) {
         console.log(
-          `[saveMessage] 消息 ${message.id} 已在保存中，跳过重复请求`
+          `[saveMessage] Message ${message.id} is already being saved, skipping duplicate request`
         );
         return false;
       }
 
-      // 检查消息是否已经保存成功
+      // Check if message has already been saved successfully
       if (message.persistenceStatus === 'saved' && message.db_id) {
         console.log(
-          `[saveMessage] 消息 ${message.id} 已保存成功，数据库ID: ${message.db_id}`
+          `[saveMessage] Message ${message.id} already saved, db ID: ${message.db_id}`
         );
         return true;
       }
 
       try {
-        // 检查数据库中是否已存在相同消息，避免重复保存
-        // 使用新的Result类型接口
+        // Check if a duplicate message exists in the database to avoid duplicate saves
+        // Uses the new Result type interface
         const duplicateResult = await getMessageByContentAndRole(
           message.text,
           message.isUser ? 'user' : 'assistant',
@@ -137,7 +138,7 @@ export function useChatMessages(userId?: string) {
 
         if (duplicateResult.success && duplicateResult.data) {
           console.log(
-            `[saveMessage] 消息内容已存在于数据库中，更新UI状态避免重复保存`
+            `[saveMessage] Message content already exists in database, updating UI state to avoid duplicate save`
           );
           updateMessage(message.id, {
             persistenceStatus: 'saved',
@@ -147,18 +148,18 @@ export function useChatMessages(userId?: string) {
           return true;
         }
 
-        // 标记消息正在保存中
+        // Mark message as being saved
         addSavingMessage(message.id);
 
-        // 更新UI状态为保存中
+        // Update UI state to saving
         updateMessage(message.id, { persistenceStatus: 'saving' });
 
         console.log(
-          `[saveMessage] 开始保存消息，对话ID=${conversationId}, 消息ID=${message.id}, 内容长度=${message.text.length}, 重试次数=${retryCount}`
+          `[saveMessage] Start saving message, conversationId=${conversationId}, messageId=${message.id}, contentLength=${message.text.length}, retryCount=${retryCount}`
         );
 
-        // 转换为数据库格式并保存
-        // 使用新的messageService和Result类型
+        // Convert to database format and save
+        // Uses new messageService and Result type
         const dbMessageData = messageService.chatMessageToDbMessage(
           message,
           conversationId,
@@ -168,13 +169,13 @@ export function useChatMessages(userId?: string) {
 
         if (!saveResult.success) {
           throw new Error(
-            `保存消息失败: ${saveResult.error?.message || '未知错误'}，对话ID=${conversationId}`
+            `Failed to save message: ${saveResult.error?.message || 'Unknown error'}, conversationId=${conversationId}`
           );
         }
 
         const savedMessage = saveResult.data;
 
-        // 保存成功，更新UI状态
+        // Save successful, update UI state
         updateMessage(message.id, {
           persistenceStatus: 'saved',
           db_id: savedMessage.id,
@@ -182,25 +183,25 @@ export function useChatMessages(userId?: string) {
         });
 
         console.log(
-          `[saveMessage] 消息保存成功，数据库消息ID=${savedMessage.id}, 内容长度=${savedMessage.content.length}`
+          `[saveMessage] Message saved successfully, db message ID=${savedMessage.id}, contentLength=${savedMessage.content.length}`
         );
 
-        // 从正在保存集合中移除
+        // Remove from saving set
         removeSavingMessage(message.id);
         return true;
       } catch (error) {
-        console.error(`[saveMessage] 保存消息出错:`, error);
+        console.error(`[saveMessage] Error saving message:`, error);
 
-        // 如果还有重试次数，进行指数退避重试
+        // If retries remain, retry with exponential backoff
         if (retryCount < RETRY_CONFIG.maxRetries) {
-          const delayMs = Math.pow(2, retryCount) * RETRY_CONFIG.baseDelayMs; // 指数退避: 1s, 2s, 4s...
+          const delayMs = Math.pow(2, retryCount) * RETRY_CONFIG.baseDelayMs; // Exponential backoff: 1s, 2s, 4s...
           console.log(
-            `[saveMessage] ${delayMs}毫秒后进行第${retryCount + 1}次重试`
+            `[saveMessage] Retrying in ${delayMs}ms, attempt #${retryCount + 1}`
           );
 
-          // 延迟后重试，使用当前状态
+          // Retry after delay, using current state
           setTimeout(() => {
-            // 获取最新的消息状态，确保内容完整
+            // Get latest message state to ensure content is up to date
             const currentMessage = useChatStore
               .getState()
               .messages.find(m => m.id === message.id);
@@ -208,7 +209,7 @@ export function useChatMessages(userId?: string) {
               saveMessage(currentMessage, conversationId, retryCount + 1).catch(
                 err => {
                   console.error(
-                    `[saveMessage] 第${retryCount + 1}次重试失败:`,
+                    `[saveMessage] Retry #${retryCount + 1} failed:`,
                     err
                   );
                 }
@@ -216,17 +217,17 @@ export function useChatMessages(userId?: string) {
             }
           }, delayMs);
 
-          // 不立即将状态改为错误，等待重试结果
+          // Do not immediately set status to error, wait for retry result
           return false;
         }
 
-        // 已达最大重试次数，更新UI状态为错误
+        // Max retries reached, update UI state to error
         updateMessage(message.id, { persistenceStatus: 'error' });
         console.error(
-          `[saveMessage] 已达最大重试次数(${RETRY_CONFIG.maxRetries})，消息保存失败`
+          `[saveMessage] Max retries reached (${RETRY_CONFIG.maxRetries}), message save failed`
         );
 
-        // 从正在保存集合中移除
+        // Remove from saving set
         removeSavingMessage(message.id);
         return false;
       }
@@ -241,32 +242,32 @@ export function useChatMessages(userId?: string) {
   );
 
   /**
-   * 保存停止的助手消息（特殊处理）
-   * 确保用户点击停止时，当前的助手消息块被正确保存
+   * Save a stopped assistant message (special handling)
+   * Ensures that when the user clicks stop, the current assistant message block is saved correctly
    *
-   * @param message 助手消息对象
-   * @param conversationId 数据库对话ID
-   * @returns 保存是否成功
+   * @param message Assistant message object
+   * @param conversationId Database conversation ID
+   * @returns Whether the save was successful
    */
   const saveStoppedAssistantMessage = useCallback(
     async (message: ChatMessage, conversationId: string): Promise<boolean> => {
-      // 保存停止的助手消息的特殊逻辑：
-      // 1. 确保消息内容不为空（即使被停止）
-      // 2. 添加停止标记到元数据
-      // 3. 立即保存，不等待延迟
+      // Special logic for saving a stopped assistant message:
+      // 1. Ensure message content is not empty (even if stopped)
+      // 2. Add stop marker to metadata
+      // 3. Save immediately, no delay
       if (!message || !message.id || !conversationId) {
-        console.error(`[saveStoppedAssistantMessage] 参数无效`);
+        console.error(`[saveStoppedAssistantMessage] Invalid parameters`);
         return false;
       }
 
-      // 确保消息有内容，即使很短
+      // Ensure message has content, even if very short
       if (!message.text || message.text.trim().length === 0) {
         console.warn(
-          `[saveStoppedAssistantMessage] 停止的消息内容为空，使用默认内容`
+          `[saveStoppedAssistantMessage] Stopped message content is empty, using default content`
         );
-        // 为空的停止消息添加默认内容
+        // Add default content for empty stopped message
         updateMessage(message.id, {
-          text: '[助手消息被中断]',
+          text: '[Assistant message interrupted]',
           wasManuallyStopped: true,
           metadata: {
             ...message.metadata,
@@ -275,7 +276,7 @@ export function useChatMessages(userId?: string) {
           },
         });
 
-        // 重新获取更新后的消息
+        // Get updated message
         const updatedMessage = useChatStore
           .getState()
           .messages.find(m => m.id === message.id);
@@ -286,10 +287,10 @@ export function useChatMessages(userId?: string) {
       }
 
       console.log(
-        `[saveStoppedAssistantMessage] 保存停止的助手消息，ID=${message.id}, 内容长度=${message.text.length}`
+        `[saveStoppedAssistantMessage] Saving stopped assistant message, ID=${message.id}, contentLength=${message.text.length}`
       );
 
-      // 更新消息状态，添加停止标记
+      // Update message state, add stop marker
       const updatedMetadata = {
         ...(message.metadata || {}),
         stopped_manually: true,
@@ -299,24 +300,24 @@ export function useChatMessages(userId?: string) {
       updateMessage(message.id, {
         metadata: updatedMetadata,
         wasManuallyStopped: true,
-        persistenceStatus: 'pending', // 标记为待保存状态
+        persistenceStatus: 'pending', // Mark as pending save
       });
 
-      // 立即保存停止的消息
+      // Save the stopped message immediately
       return saveMessage(message, conversationId);
     },
     [saveMessage, updateMessage]
   );
 
   /**
-   * 保存错误占位助手消息（重构版本）
-   * 用于确保即使助手回复出错，也能在数据库中保存一条记录
-   * 使用新的Result类型系统
+   * Save an error placeholder assistant message (refactored version)
+   * Ensures that even if the assistant reply fails, a record is saved in the database
+   * Uses the new Result type system
    *
-   * @param conversationId 数据库对话ID
-   * @param status 消息状态
-   * @param errorMessage 错误信息
-   * @returns 是否保存成功
+   * @param conversationId Database conversation ID
+   * @param status Message status
+   * @param errorMessage Error message
+   * @returns Whether the save was successful
    */
   const saveErrorPlaceholder = useCallback(
     async (
@@ -324,45 +325,46 @@ export function useChatMessages(userId?: string) {
       status: 'sent' | 'delivered' | 'error' = 'error',
       errorMessage: string = ''
     ): Promise<boolean> => {
-      // 创建并保存一条错误占位的助手消息
-      // 确保即使助手回复失败，消息也是成对的
-      // 使用新的Result类型接口
-      // 参数校验
+      // Create and save an error placeholder assistant message
+      // Ensures message pairs even if assistant reply fails
+      // Uses new Result type interface
+      // Parameter validation
       if (!conversationId) {
-        console.error('[saveErrorPlaceholder] 对话ID不能为空');
+        console.error('[saveErrorPlaceholder] conversationId cannot be empty');
         return false;
       }
 
-      // 生成占位消息的唯一ID，用于跟踪和日志
+      // Generate a unique placeholder ID for tracking and logging
       const placeholderId = `error-placeholder-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       try {
         console.log(
-          `[saveErrorPlaceholder] 创建错误占位助手消息，对话ID=${conversationId}, 占位ID=${placeholderId}`
+          `[saveErrorPlaceholder] Creating error placeholder assistant message, conversationId=${conversationId}, placeholderId=${placeholderId}`
         );
 
-        // 使用新的Result类型接口创建占位消息
+        // Use new Result type interface to create placeholder message
         const result = await createPlaceholderAssistantMessage(
           conversationId,
           status,
-          errorMessage || `助手回复失败 (占位ID: ${placeholderId})`
+          errorMessage ||
+            `Assistant reply failed (placeholderId: ${placeholderId})`
         );
 
         if (result.success) {
           console.log(
-            `[saveErrorPlaceholder] 创建占位助手消息成功，ID=${result.data.id}, 占位ID=${placeholderId}`
+            `[saveErrorPlaceholder] Successfully created placeholder assistant message, ID=${result.data.id}, placeholderId=${placeholderId}`
           );
           return true;
         } else {
           console.error(
-            `[saveErrorPlaceholder] 创建占位助手消息失败:`,
+            `[saveErrorPlaceholder] Failed to create placeholder assistant message:`,
             result.error
           );
           return false;
         }
       } catch (error) {
         console.error(
-          `[saveErrorPlaceholder] 创建占位助手消息异常 (占位ID=${placeholderId}):`,
+          `[saveErrorPlaceholder] Exception creating placeholder assistant message (placeholderId=${placeholderId}):`,
           error
         );
         return false;
@@ -372,49 +374,48 @@ export function useChatMessages(userId?: string) {
   );
 
   /**
-   * 批量保存多条消息（重构版本）
-   * 用于一次性保存用户消息和助手回复对
-   * 确保消息内容完整性
+   * Batch save multiple messages (refactored version)
+   * Used to save user and assistant message pairs at once
+   * Ensures message content integrity
    *
-   * @param messages 要保存的消息数组
-   * @param conversationId 数据库对话ID
-   * @returns 成功保存的消息数量
+   * @param messages Array of messages to save
+   * @param conversationId Database conversation ID
+   * @returns Number of messages saved successfully
    */
   const saveMessages = useCallback(
     async (
       messages: ChatMessage[],
       conversationId: string
     ): Promise<number> => {
-      // 批量保存多条消息的逻辑（重构版本）：
-      // 1. 参数校验
-      // 2. 过滤空消息，确保消息完整性
-      // 3. 对每条消息调用saveMessage
-      // 4. 返回成功保存的数量
-      // 参数校验
+      // Batch save logic (refactored):
+      // 1. Parameter validation
+      // 2. Filter out empty messages to ensure integrity
+      // 3. Call saveMessage for each message
+      // 4. Return number of successful saves
       if (!messages || !messages.length || !conversationId) {
         console.error(
-          `[saveMessages] 参数无效: messages=${!!messages}, messagesLength=${messages?.length}, conversationId=${conversationId}`
+          `[saveMessages] Invalid parameters: messages=${!!messages}, messagesLength=${messages?.length}, conversationId=${conversationId}`
         );
         return 0;
       }
 
-      // 过滤空消息或过短的消息，确保消息完整性
+      // Filter out empty or too short messages to ensure integrity
       const validMessages = messages.filter(
         msg => msg && msg.text && msg.text.trim().length > 0
       );
 
       if (validMessages.length === 0) {
-        console.warn(`[saveMessages] 没有有效的消息需要保存`);
+        console.warn(`[saveMessages] No valid messages to save`);
         return 0;
       }
 
       console.log(
-        `[saveMessages] 开始批量保存${validMessages.length}条有效消息（总共${messages.length}条），对话ID=${conversationId}`
+        `[saveMessages] Start batch saving ${validMessages.length} valid messages (total ${messages.length}), conversationId=${conversationId}`
       );
 
       let successCount = 0;
 
-      // 依次保存每条消息，确保顺序
+      // Save each message in order to ensure sequence
       for (const message of validMessages) {
         const success = await saveMessage(message, conversationId);
         if (success) {
@@ -423,7 +424,7 @@ export function useChatMessages(userId?: string) {
       }
 
       console.log(
-        `[saveMessages] 批量保存完成，成功保存${successCount}/${validMessages.length}条消息`
+        `[saveMessages] Batch save complete, successfully saved ${successCount}/${validMessages.length} messages`
       );
       return successCount;
     },
@@ -431,9 +432,9 @@ export function useChatMessages(userId?: string) {
   );
 
   /**
-   * 检查是否有消息需要保存（重构版本）
-   * @param messages 消息数组
-   * @returns 是否有需要保存的消息
+   * Check if there are messages that need to be persisted (refactored version)
+   * @param messages Array of messages
+   * @returns Whether there are messages to persist
    */
   const hasMessagesToPersist = useCallback(
     (messages: ChatMessage[]): boolean => {
@@ -450,20 +451,20 @@ export function useChatMessages(userId?: string) {
   );
 
   /**
-   * 验证消息是否完整（新增功能）
-   * 确保不保存残缺的消息
+   * Validate if a message is complete (new feature)
+   * Ensures incomplete messages are not saved
    *
-   * @param message 消息对象
-   * @returns 消息是否完整
+   * @param message Message object
+   * @returns Whether the message is complete
    */
   const isMessageComplete = useCallback((message: ChatMessage): boolean => {
     if (!message || !message.id) return false;
     if (!message.text || message.text.trim().length === 0) return false;
 
-    // 对于流式消息，检查是否仍在流式传输中
+    // For streaming messages, check if still streaming
     if (message.isStreaming === true) {
       console.log(
-        `[isMessageComplete] 消息 ${message.id} 仍在流式传输中，暂不保存`
+        `[isMessageComplete] Message ${message.id} is still streaming, not saving yet`
       );
       return false;
     }
@@ -474,11 +475,11 @@ export function useChatMessages(userId?: string) {
   return {
     saveMessage,
     saveMessages,
-    saveStoppedAssistantMessage, // 新增：保存停止的助手消息
+    saveStoppedAssistantMessage, // New: save stopped assistant message
     saveErrorPlaceholder,
     hasMessagesToPersist,
     isMessageSaving,
-    isMessageComplete, // 新增：验证消息完整性
+    isMessageComplete, // New: validate message completeness
     savingMessagesCount: savingMessages.size,
   };
 }

@@ -2,19 +2,19 @@ import { getThemeColors } from '../theme/main-colors';
 import { useTheme } from './use-theme';
 
 /**
- * 主题颜色Hook
- * 提供统一的主题颜色访问方式，确保整个应用的视觉一致性
+ * Theme color hook.
+ * Provides a unified way to access theme colors, ensuring visual consistency across the application.
  *
- * @returns 当前主题的颜色对象
+ * @returns The color object for the current theme.
  *
  * @example
- * // 在组件中使用
+ * // Usage in a component
  * const { colors } = useThemeColors();
  *
- * // 使用Tailwind类
+ * // Using Tailwind classes
  * <div className={colors.mainBackground.tailwind}>...</div>
  *
- * // 使用内联样式
+ * // Using inline styles
  * <div style={{ background: colors.mainBackground.rgb }}>...</div>
  */
 export function useThemeColors() {

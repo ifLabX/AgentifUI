@@ -1,6 +1,6 @@
 /**
  * Dynamic Translation Hook
- * @description Provides real-time translation loading with intelligent caching for admin-managed content
+ * Provides real-time translation loading with intelligent caching for admin-managed content
  * @module lib/hooks/use-dynamic-translations
  */
 import { useCallback, useEffect, useState } from 'react';
@@ -9,53 +9,47 @@ import { useTranslations } from 'next-intl';
 
 /**
  * Cache entry for translation data
- * @description Contains translation data with timestamp for TTL validation
+ * Contains translation data and timestamp for TTL validation
  */
 interface CacheEntry {
-  /** Translation data object */
-  data: any;
-  /** Cache creation timestamp in milliseconds */
-  timestamp: number;
+  data: any; // Translation data object
+  timestamp: number; // Cache creation timestamp in milliseconds
 }
 
 /**
- * Dynamic translation hook configuration
- * @description Defines which sections to load dynamically and cache settings
+ * Configuration for the dynamic translation hook
+ * Specifies which sections to load and cache settings
  */
 interface UseDynamicTranslationsConfig {
-  /** Translation sections to load (e.g., ['pages.about', 'pages.home']) */
-  sections: string[];
-  /** Cache TTL in milliseconds (default: 5 minutes) */
-  cacheTTL?: number;
+  sections: string[]; // Translation sections to load (e.g., ['pages.about', 'pages.home'])
+  cacheTTL?: number; // Cache TTL in milliseconds (default: 5 minutes)
 }
 
 // In-memory cache for translation data to avoid redundant API calls
 const translationCache = new Map<string, CacheEntry>();
 
 /**
- * Clear translation cache for specific locale or all locales
- * @description Used by admin interface to force refresh after translation updates
- *
+ * Clear translation cache for a specific locale or all locales
+ * Used by admin interface to force refresh after translation updates
  * @param locale - Specific locale to clear, or undefined to clear all
  */
 export function clearTranslationCache(locale?: string): void {
   if (locale) {
-    // Clear specific locale entries
+    // Remove cache entries for the specified locale
     for (const key of translationCache.keys()) {
       if (key.startsWith(`${locale}_`)) {
         translationCache.delete(key);
       }
     }
   } else {
-    // Clear all cache entries
+    // Remove all cache entries
     translationCache.clear();
   }
 }
 
 /**
  * Hook for loading dynamic translations with caching
- * @description Loads real-time translations from API with fallback to static translations
- *
+ * Loads real-time translations from API with fallback to static translations
  * @param config - Configuration object specifying sections and cache settings
  * @returns Object containing translation function and loading state
  */
@@ -65,7 +59,6 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
   const [isLoading, setIsLoading] = useState(true);
   const staticT = useTranslations(); // Fallback to static translations
 
-  // Load dynamic translations with caching
   useEffect(() => {
     let isCurrent = true;
 
@@ -74,7 +67,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
         const locale = document.documentElement.lang || 'en-US';
         const cacheKey = `${locale}_${sections.join(',')}`;
 
-        // Check memory cache first for fastest response
+        // Check in-memory cache first
         const cached = translationCache.get(cacheKey);
         if (cached && Date.now() - cached.timestamp < cacheTTL) {
           if (isCurrent) {
@@ -84,7 +77,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
           return;
         }
 
-        // Fetch fresh data from API
+        // Fetch from API if not cached or cache expired
         const response = await fetch(
           `/api/translations/${locale}?sections=${sections.join(',')}`
         );
@@ -92,7 +85,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
         if (response.ok) {
           const data = await response.json();
 
-          // Update cache with fresh data
+          // Update cache with new data
           translationCache.set(cacheKey, {
             data,
             timestamp: Date.now(),
@@ -103,7 +96,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
             setIsLoading(false);
           }
         } else {
-          // API failed, use static translations as fallback
+          // API failed, fallback to static translations
           console.warn('Dynamic translation API failed, using static fallback');
           if (isCurrent) {
             setDynamicData(null);
@@ -121,7 +114,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
 
     loadDynamicTranslations();
 
-    // Cleanup flag to prevent state updates on unmounted component
+    // Cleanup to prevent state updates on unmounted component
     return () => {
       isCurrent = false;
     };
@@ -129,8 +122,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
 
   /**
    * Translation function with dynamic/static fallback
-   * @description Returns dynamic translation if available, otherwise falls back to static
-   *
+   * Returns dynamic translation if available, otherwise falls back to static
    * @param key - Translation key (e.g., 'title', 'subtitle')
    * @param section - Section prefix (e.g., 'pages.about')
    * @param params - Optional parameters for translation interpolation
@@ -142,15 +134,14 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
       if (dynamicData) {
         const dynamicValue = getNestedValue(dynamicData, `${section}.${key}`);
         if (dynamicValue) {
-          // Handle parameter substitution for dynamic translations
+          // Substitute parameters if needed
           if (params && typeof dynamicValue === 'string') {
             return interpolateString(dynamicValue, params);
           }
           return dynamicValue;
         }
       }
-
-      // Fallback to static translation with parameters
+      // Fallback to static translation
       return staticT(`${section}.${key}`, params);
     },
     [dynamicData, staticT]
@@ -160,9 +151,7 @@ export function useDynamicTranslations(config: UseDynamicTranslationsConfig) {
 }
 
 /**
- * Extract nested value from object using dot notation
- * @description Safely navigates object structure to retrieve nested values
- *
+ * Get nested value from object using dot notation
  * @param obj - Source object
  * @param path - Dot-separated path (e.g., 'pages.about.title')
  * @returns Value at path or undefined if not found
@@ -173,8 +162,7 @@ function getNestedValue(obj: any, path: string): any {
 
 /**
  * Interpolate parameters into a string template
- * @description Replaces {param} placeholders with actual values
- *
+ * Replaces {param} placeholders with actual values
  * @param template - String template with {param} placeholders
  * @param params - Object containing parameter values
  * @returns Interpolated string

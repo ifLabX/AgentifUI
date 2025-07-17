@@ -24,7 +24,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 // Number of messages to load per page
 const MESSAGES_PER_PAGE = 20;
 
-// Define unified loading state type
+// Unified loading state type
 // Contains state, type and lock flag
 export type LoadingState =
   | 'idle'
@@ -71,7 +71,7 @@ export function useConversationMessages() {
   const { session } = useSupabaseAuth();
   const userId = session?.user?.id;
 
-  // Simplify state management using unified loading state object
+  // Use unified loading state object for state management
   // Merge multiple state variables into one structured state object
   const [dbConversationId, setDbConversationId] = useState<string | null>(null);
   const [difyConversationId, setDifyConversationId] = useState<string | null>(
@@ -86,7 +86,7 @@ export function useConversationMessages() {
   const [error, setError] = useState<Error | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // 合并多个ref到单一对象，提高可维护性
+  // Combine multiple refs into a single object for better maintainability
   const loaderState = useRef<{
     page: number;
     currentId: string | null;
@@ -103,16 +103,15 @@ export function useConversationMessages() {
     previousPath: null,
   });
 
-  // 从chatStore获取当前消息状态和操作方法
+  // Get current message state and actions from chatStore
   const { messages, addMessage, clearMessages, updateMessage } = useChatStore();
 
-  // 添加辅助函数，简化状态管理
-  // 开始加载
+  // Helper function to start loading
   const startLoading = useCallback((type: 'initial' | 'more') => {
     setLoading(prev => ({ ...prev, state: 'loading', type, isLocked: true }));
   }, []);
 
-  // 完成加载
+  // Helper function to finish loading
   const finishLoading = useCallback(
     (state: 'success' | 'error' | 'complete' | 'idle') => {
       setLoading(prev => ({ ...prev, state, type: 'none', isLocked: false }));
@@ -120,7 +119,7 @@ export function useConversationMessages() {
     []
   );
 
-  // 取消当前请求
+  // Cancel current request
   const cancelCurrentRequest = useCallback(() => {
     if (loaderState.current.abortController) {
       loaderState.current.abortController.abort();
@@ -128,7 +127,7 @@ export function useConversationMessages() {
     }
   }, []);
 
-  // 重置加载状态
+  // Reset loader state
   const resetLoader = useCallback(() => {
     cancelCurrentRequest();
     loaderState.current.page = 1;
@@ -139,7 +138,7 @@ export function useConversationMessages() {
   }, [cancelCurrentRequest]);
 
   /**
-   * 获取当前路由中的对话ID
+   * Get conversation ID from current route
    */
   const getConversationIdFromPath = useCallback(() => {
     if (!pathname) return null;
@@ -154,7 +153,7 @@ export function useConversationMessages() {
   }, [pathname]);
 
   /**
-   * 移除前端排序逻辑，直接依赖数据库顺序
+   * Remove frontend sorting logic, rely directly on database order
    */
   const sortMessagesByTime = useCallback((messages: Message[]): Message[] => {
     return [...messages].sort((a, b) => {
@@ -162,8 +161,8 @@ export function useConversationMessages() {
       const timeA = new Date(a.created_at).getTime();
       const timeB = new Date(b.created_at).getTime();
 
-      // If the time difference is within one second, it is considered to be the same message in the same conversation
-      // At this time, use sequence_index to sort first
+      // If the time difference is within one second, consider as same message in the same conversation
+      // Use sequence_index to sort first in this case
       if (timeA !== timeB) {
         return timeA - timeB;
       }
@@ -174,15 +173,15 @@ export function useConversationMessages() {
   }, []);
 
   /**
-   * Ensure messages are organized in the correct order and the user-assistant message pairs maintain a reasonable order
+   * Ensure messages are organized in the correct order and user-assistant message pairs maintain a reasonable order
    */
   const organizeMessages = useCallback(
     (messages: Message[]): Message[] => {
       // First sort by creation time
       const sortedMessages = sortMessagesByTime(messages);
 
-      // stableMessages has already considered the sequence_index for messages that are close in time
-      // So here we can directly return the sorted result
+      // sortedMessages already considers sequence_index for messages close in time
+      // So we can directly return the sorted result
       return sortedMessages;
     },
     [sortMessagesByTime]
@@ -194,34 +193,39 @@ export function useConversationMessages() {
   const fetchDbConversationId = useCallback(async (externalId: string) => {
     try {
       console.log(
-        `[useConversationMessages] 查询外部ID为 ${externalId} 的对话记录`
+        `[useConversationMessages] Querying conversation record for external ID ${externalId}`
       );
 
       const result = await getConversationByExternalId(externalId);
 
       if (result.success && result.data) {
         console.log(
-          `[useConversationMessages] 找到对话记录，数据库ID=${result.data.id}`
+          `[useConversationMessages] Found conversation record, db ID=${result.data.id}`
         );
         setDbConversationId(result.data.id);
         return result.data.id;
       } else if (result.success && !result.data) {
         console.log(
-          `[useConversationMessages] 未找到外部ID为 ${externalId} 的对话记录`
+          `[useConversationMessages] No conversation record found for external ID ${externalId}`
         );
         setDbConversationId(null);
         return null;
       } else {
         console.error(
-          `[useConversationMessages] 查询对话记录失败:`,
+          `[useConversationMessages] Failed to query conversation record:`,
           result.error
         );
-        setError(result.error || new Error('查询对话记录失败'));
+        setError(
+          result.error || new Error('Failed to query conversation record')
+        );
         setDbConversationId(null);
         return null;
       }
     } catch (error) {
-      console.error(`[useConversationMessages] 查询对话记录异常:`, error);
+      console.error(
+        `[useConversationMessages] Exception when querying conversation record:`,
+        error
+      );
       setError(error instanceof Error ? error : new Error(String(error)));
       setDbConversationId(null);
       return null;
@@ -251,13 +255,13 @@ export function useConversationMessages() {
       const signal = controller.signal;
 
       try {
-        // Use the unified state management method to set the loading state
+        // Set loading state
         startLoading('initial');
         loaderState.current.page = 1;
         loaderState.current.currentId = dbConvId;
 
         console.log(
-          `[useConversationMessages] 开始加载初始消息，数据库对话ID=${dbConvId}`
+          `[useConversationMessages] Start loading initial messages, db conversation ID=${dbConvId}`
         );
 
         // Before getting messages, clear the current messages to avoid old messages flickering
@@ -277,7 +281,7 @@ export function useConversationMessages() {
         // If the request has been cancelled or the conversation ID has changed, discard the result
         if (signal.aborted || loaderState.current.currentId !== dbConvId) {
           console.log(
-            `[useConversationMessages] 请求已取消或对话ID已变更，放弃加载结果`
+            `[useConversationMessages] Request cancelled or conversation ID changed, discard loading result`
           );
           finishLoading('idle'); // Reset the loading state
           return;
@@ -285,7 +289,7 @@ export function useConversationMessages() {
 
         if (!result.success) {
           console.error(
-            `[useConversationMessages] 加载初始消息失败:`,
+            `[useConversationMessages] Failed to load initial messages:`,
             result.error
           );
           setError(result.error);
@@ -298,7 +302,7 @@ export function useConversationMessages() {
         // Record the total number of messages
         loaderState.current.totalMessages = dbMessages.length;
 
-        // If the total number of messages is less than one page, there is no need to display the "Load more" button
+        // If the total number of messages is less than one page, no need to show "Load more" button
         if (dbMessages.length <= MESSAGES_PER_PAGE) {
           setHasMoreMessages(false);
         } else {
@@ -306,7 +310,9 @@ export function useConversationMessages() {
         }
 
         if (dbMessages.length === 0) {
-          console.log(`[useConversationMessages] 对话无历史消息`);
+          console.log(
+            `[useConversationMessages] No historical messages in conversation`
+          );
           finishLoading('complete');
           return;
         }
@@ -321,22 +327,21 @@ export function useConversationMessages() {
         const chatMessages = latestMessages.map(dbMessageToChatMessage);
 
         console.log(
-          `[useConversationMessages] 加载了${latestMessages.length}条最新消息`
+          `[useConversationMessages] Loaded ${latestMessages.length} latest messages`
         );
 
-        // Optimize the state update logic to ensure that the skeleton screen disappears and the new messages are displayed directly, avoiding flickering issues
+        // Optimize state update logic to ensure the skeleton screen disappears and new messages are displayed directly, avoiding flickering
         // 1. First batch add messages to the store
-        // 2. Use requestAnimationFrame to ensure that the DOM is updated
+        // 2. Use requestAnimationFrame to ensure the DOM is updated
         // 3. Then set the loading state to success and close the skeleton screen
-        // Batch add messages to reduce rendering times
         useChatStore.setState({ messages: chatMessages });
 
-        // Use requestAnimationFrame to ensure that the DOM is updated before
+        // Use requestAnimationFrame to ensure the DOM is updated before
         requestAnimationFrame(() => {
-          // Ensure that the scroll is at the bottom, using a reliable method
+          // Ensure the scroll is at the bottom, using a reliable method
           resetScrollState();
 
-          // Use requestAnimationFrame again to ensure that the above operation is completed
+          // Use requestAnimationFrame again to ensure the above operation is completed
           requestAnimationFrame(() => {
             // Set the loading success state
             finishLoading('success');
@@ -361,7 +366,10 @@ export function useConversationMessages() {
         // If the error is caused by cancellation of the request, do not process it
         if (signal.aborted) return;
 
-        console.error(`[useConversationMessages] 加载初始消息失败:`, error);
+        console.error(
+          `[useConversationMessages] Failed to load initial messages:`,
+          error
+        );
         setError(error instanceof Error ? error : new Error(String(error)));
         finishLoading('error');
       }
@@ -402,7 +410,7 @@ export function useConversationMessages() {
     const signal = controller.signal;
 
     try {
-      // Use the unified state management method to set the loading state
+      // Set loading state
       // Only set the state type to 'more' when loading more messages
       startLoading('more');
 
@@ -411,7 +419,7 @@ export function useConversationMessages() {
       const skip = currentPage * MESSAGES_PER_PAGE;
 
       console.log(
-        `[useConversationMessages] 加载更多历史消息，页码=${currentPage + 1}，跳过=${skip}`
+        `[useConversationMessages] Loading more historical messages, page=${currentPage + 1}, skip=${skip}`
       );
 
       // Use the new messageService to get all messages, then manually paginate
@@ -428,14 +436,14 @@ export function useConversationMessages() {
         loaderState.current.currentId !== dbConversationId
       ) {
         console.log(
-          `[useConversationMessages] 请求已取消或对话ID已变更，放弃加载更多结果`
+          `[useConversationMessages] Request cancelled or conversation ID changed, discard loading more result`
         );
         return;
       }
 
       if (!result.success) {
         console.error(
-          `[useConversationMessages] 加载更多消息失败:`,
+          `[useConversationMessages] Failed to load more messages:`,
           result.error
         );
         setError(result.error);
@@ -452,7 +460,7 @@ export function useConversationMessages() {
       if (skip >= allMessages.length) {
         setHasMoreMessages(false);
         finishLoading('complete');
-        console.log(`[useConversationMessages] 没有更多历史消息`);
+        console.log(`[useConversationMessages] No more historical messages`);
         return;
       }
 
@@ -490,7 +498,7 @@ export function useConversationMessages() {
       loaderState.current.page = currentPage + 1;
 
       console.log(
-        `[useConversationMessages] 加载了${pageMessages.length}条历史消息`
+        `[useConversationMessages] Loaded ${pageMessages.length} historical messages`
       );
 
       // After loading, reset the loading state
@@ -509,7 +517,7 @@ export function useConversationMessages() {
             if (heightDiff > 0) {
               scrollContainer.scrollTop = oldScrollTop + heightDiff;
               console.log(
-                `[useConversationMessages] 调整滚动位置: ${oldScrollTop} -> ${oldScrollTop + heightDiff}`
+                `[useConversationMessages] Adjust scroll position: ${oldScrollTop} -> ${oldScrollTop + heightDiff}`
               );
             }
           }
@@ -521,7 +529,10 @@ export function useConversationMessages() {
         return;
       }
 
-      console.error(`[useConversationMessages] 加载更多历史消息失败:`, error);
+      console.error(
+        `[useConversationMessages] Failed to load more historical messages:`,
+        error
+      );
       setError(error instanceof Error ? error : new Error(String(error)));
       finishLoading('error');
     } finally {
@@ -560,9 +571,10 @@ export function useConversationMessages() {
   }, [hasMoreMessages, loading, loadMoreMessages]);
 
   // The function to reset the loading state is provided by the resetLoader function
-  // No longer need to use the resetLoadingState function separately
+  // No need to use the resetLoadingState function separately
+
   /**
-   * 路由更改时加载消息
+   * Load messages when route changes
    */
   useEffect(() => {
     const externalId = getConversationIdFromPath();
@@ -603,7 +615,7 @@ export function useConversationMessages() {
     loaderState.current.previousPath = pathname;
 
     console.log(
-      `[useConversationMessages] 路由变化检测: 是否首次发送=${isFirstMessageTransition}, 从=${isFromNewChat}, 到=${isToExistingChat}, 消息数=${hasExistingMessages}`
+      `[useConversationMessages] Route change detection: isFirstSend=${isFirstMessageTransition}, from=${isFromNewChat}, to=${isToExistingChat}, messageCount=${hasExistingMessages}`
     );
 
     // Get the scroll control function
@@ -612,12 +624,12 @@ export function useConversationMessages() {
     // Cancel any ongoing requests
     cancelCurrentRequest();
 
-    // If the route change is caused by the first message sent, skip the steps of clearing and loading messages
+    // If the route change is caused by the first message sent, skip clearing and loading messages
     if (isFirstMessageTransition) {
       console.log(
-        `[useConversationMessages] 首次发送消息导致的路由变化，保留现有消息`
+        `[useConversationMessages] Route change caused by first message sent, keep existing messages`
       );
-      // Skip the steps of resetting the state and clearing messages, and directly set the loading to complete
+      // Skip resetting state and clearing messages, directly set loading to complete
       finishLoading('success');
 
       // Record that this conversation has been loaded successfully to avoid duplicate loading
@@ -625,7 +637,7 @@ export function useConversationMessages() {
         loaderState.current.loadedConversations.add(externalId);
       }
 
-      // Ensure that the scroll is at the bottom
+      // Ensure the scroll is at the bottom
       resetScrollState();
       return;
     }
@@ -633,31 +645,29 @@ export function useConversationMessages() {
     // Check if this conversation has already been loaded
     if (externalId && loaderState.current.loadedConversations.has(externalId)) {
       console.log(
-        `[useConversationMessages] 已经加载过对话 ${externalId}，跳过重复加载`
+        `[useConversationMessages] Conversation ${externalId} already loaded, skip duplicate loading`
       );
       return;
     }
 
-    // For non-first message sent route changes, execute the normal loading logic
-    // Optimize the state update order to avoid old messages flickering
+    // For non-first message route changes, execute normal loading logic
+    // Optimize state update order to avoid old messages flickering
     // 1. First reset the state and clear the messages
     // 2. Then set the loading state and initial loading state
-    // 3. Ensure that the skeleton screen is displayed until the new messages are fully loaded
-    // Use the unified state management method to reset the loading state
-    // and clear the messages, avoiding displaying old messages
+    // 3. Ensure the skeleton screen is displayed until the new messages are fully loaded
     resetLoader();
     clearMessages();
 
     // Immediately set the loading state, ensuring that the UI displays the skeleton screen
     startLoading('initial');
 
-    // Ensure that the scroll is at the top, avoiding the scroll button from being displayed when loading a new conversation
+    // Ensure the scroll is at the top, avoiding the scroll button from being displayed when loading a new conversation
     resetScrollState();
 
     if (externalId) {
       setDifyConversationId(externalId);
 
-      // Use the unified state object to set the current loaded conversation ID
+      // Set the current loaded conversation ID in the unified state object
       loaderState.current.currentId = externalId;
 
       // Get the database conversation ID and load messages
@@ -677,17 +687,17 @@ export function useConversationMessages() {
         }
       })();
     } else {
-      // Use the unified state management method to clean up the state
+      // Clean up state if not a conversation page
       setDifyConversationId(null);
       setDbConversationId(null);
-      setHasMoreMessages(true); // If it is not a conversation page, reset to idle state
+      setHasMoreMessages(true);
       resetLoader();
     }
 
     // Clean up function
     return () => {
-      // Use the unified state management method to clean up the loading state
-      // If the component is unloaded or the route changes, mark the current loaded ID as null
+      // Clean up loading state
+      // If the component is unmounted or the route changes, mark the current loaded ID as null
       // This can be used to know that the context has changed after the asynchronous operation is completed
       if (loaderState.current.currentId === externalId) {
         loaderState.current.currentId = null;

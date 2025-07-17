@@ -1,31 +1,27 @@
 /**
- * 用户资料相关的数据库查询函数
+ * Database query functions related to user profiles.
  *
- * 本文件包含与用户资料表(profiles)相关的所有数据库操作
- * 更新为使用统一的数据服务和Result类型
+ * This file contains all database operations related to the profiles table.
+ * Updated to use the unified data service and Result type.
  */
 import { CacheKeys, cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
-import {
-  SubscriptionConfigs,
-  SubscriptionKeys,
-  realtimeService,
-} from '@lib/services/db/realtime-service';
+import { SubscriptionKeys } from '@lib/services/db/realtime-service';
 import { Profile } from '@lib/types/database';
 import { Result, failure, success } from '@lib/types/result';
 
 import { createClient } from '../supabase/client';
 
-// 保持与现有代码的兼容性，同时使用新的数据服务
+// For compatibility with existing code, while using the new data service.
 const supabase = createClient();
 
 /**
- * 获取当前用户的资料（优化版本）
- * @returns 用户资料对象的Result，如果未找到则返回null
+ * Get the current user's profile (optimized version).
+ * @returns Result of the user profile object, or null if not found.
  */
 export async function getCurrentUserProfile(): Promise<Result<Profile | null>> {
-  // 首先获取当前用户ID，然后查询用户资料
-  // 使用新的数据服务和缓存机制
+  // First get the current user ID, then query the user profile.
+  // Uses the new data service and cache mechanism.
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -38,9 +34,9 @@ export async function getCurrentUserProfile(): Promise<Result<Profile | null>> {
 }
 
 /**
- * 根据ID获取用户资料（优化版本）
- * @param userId 用户ID
- * @returns 用户资料对象的Result，如果未找到则返回null
+ * Get user profile by ID (optimized version).
+ * @param userId User ID
+ * @returns Result of the user profile object, or null if not found.
  */
 export async function getUserProfileById(
   userId: string
@@ -50,11 +46,11 @@ export async function getUserProfileById(
     { id: userId },
     {
       cache: true,
-      cacheTTL: 10 * 60 * 1000, // 10分钟缓存
+      cacheTTL: 10 * 60 * 1000, // 10 minutes cache
       subscribe: true,
       subscriptionKey: SubscriptionKeys.userProfile(userId),
       onUpdate: () => {
-        // 用户资料更新时清除缓存
+        // Clear cache when user profile is updated
         cacheService.delete(CacheKeys.userProfile(userId));
       },
     }
@@ -62,9 +58,9 @@ export async function getUserProfileById(
 }
 
 /**
- * 根据用户名获取用户资料（优化版本）
- * @param username 用户名
- * @returns 用户资料对象的Result，如果未找到则返回null
+ * Get user profile by username (optimized version).
+ * @param username Username
+ * @returns Result of the user profile object, or null if not found.
  */
 export async function getUserProfileByUsername(
   username: string
@@ -74,14 +70,14 @@ export async function getUserProfileByUsername(
     { username },
     {
       cache: true,
-      cacheTTL: 5 * 60 * 1000, // 5分钟缓存
+      cacheTTL: 5 * 60 * 1000, // 5 minutes cache
     }
   );
 }
 
 /**
- * 获取所有管理员用户（优化版本）
- * @returns 管理员用户列表的Result
+ * Get all admin users (optimized version).
+ * @returns Result of the admin user list.
  */
 export async function getAdminUsers(): Promise<Result<Profile[]>> {
   return dataService.findMany<Profile>(
@@ -91,22 +87,22 @@ export async function getAdminUsers(): Promise<Result<Profile[]>> {
     undefined,
     {
       cache: true,
-      cacheTTL: 15 * 60 * 1000, // 15分钟缓存
+      cacheTTL: 15 * 60 * 1000, // 15 minutes cache
     }
   );
 }
 
 /**
- * 更新用户资料（优化版本）
- * @param userId 用户ID
- * @param updates 需要更新的字段
- * @returns 更新后的用户资料对象Result，如果更新失败则返回错误
+ * Update user profile (optimized version).
+ * @param userId User ID
+ * @param updates Fields to update
+ * @returns Result of the updated user profile object, or error if update fails.
  */
 export async function updateUserProfile(
   userId: string,
   updates: Partial<Omit<Profile, 'id' | 'created_at'>>
 ): Promise<Result<Profile>> {
-  // 添加自动更新时间戳
+  // Add automatic update timestamp
   const updateData = {
     ...updates,
     updated_at: new Date().toISOString(),
@@ -118,10 +114,10 @@ export async function updateUserProfile(
     updateData
   );
 
-  // 清除相关缓存
+  // Clear related cache
   if (result.success) {
     cacheService.delete(CacheKeys.userProfile(userId));
-    // 如果更新了username，也清除username相关的缓存
+    // If username is updated, also clear username-related cache
     if (updates.username) {
       cacheService.deletePattern(`profiles:*username*`);
     }
@@ -131,9 +127,9 @@ export async function updateUserProfile(
 }
 
 /**
- * 设置用户为管理员（优化版本）
- * @param userId 用户ID
- * @returns 是否设置成功的Result
+ * Set user as admin (optimized version).
+ * @param userId User ID
+ * @returns Result indicating whether the operation was successful.
  */
 export async function setUserAsAdmin(userId: string): Promise<Result<boolean>> {
   const result = await dataService.update<Profile>('profiles', userId, {
@@ -142,7 +138,7 @@ export async function setUserAsAdmin(userId: string): Promise<Result<boolean>> {
   });
 
   if (result.success) {
-    // 清除相关缓存
+    // Clear related cache
     cacheService.delete(CacheKeys.userProfile(userId));
     cacheService.deletePattern('profiles:*role*admin*');
     return success(true);
@@ -152,9 +148,9 @@ export async function setUserAsAdmin(userId: string): Promise<Result<boolean>> {
 }
 
 /**
- * 检查用户是否为管理员（优化版本）
- * @param userId 用户ID
- * @returns 是否为管理员的Result
+ * Check if user is admin (optimized version).
+ * @param userId User ID
+ * @returns Result indicating whether the user is admin.
  */
 export async function isUserAdmin(userId: string): Promise<Result<boolean>> {
   const result = await dataService.findOne<Profile>(
@@ -162,7 +158,7 @@ export async function isUserAdmin(userId: string): Promise<Result<boolean>> {
     { id: userId },
     {
       cache: true,
-      cacheTTL: 5 * 60 * 1000, // 5分钟缓存，权限检查需要较新的数据
+      cacheTTL: 5 * 60 * 1000, // 5 minutes cache, permission check needs fresh data
     }
   );
 
@@ -171,17 +167,17 @@ export async function isUserAdmin(userId: string): Promise<Result<boolean>> {
   }
 
   if (result.success && !result.data) {
-    return success(false); // 用户不存在，不是管理员
+    return success(false); // User does not exist, not admin
   }
 
-  return failure(result.error || new Error('检查用户角色失败'));
+  return failure(result.error || new Error('Failed to check user role'));
 }
 
-// 兼容性函数，保持与现有代码的兼容性
-// 这些函数将逐步迁移到使用Result类型
+// Compatibility functions, keep compatibility with existing code.
+// These functions will gradually migrate to use the Result type.
 /**
- * 获取当前用户的资料（兼容版本）
- * @deprecated 请使用 getCurrentUserProfile() 并处理Result类型
+ * Get the current user's profile (legacy version).
+ * @deprecated Please use getCurrentUserProfile() and handle the Result type.
  */
 export async function getCurrentUserProfileLegacy(): Promise<Profile | null> {
   const result = await getCurrentUserProfile();
@@ -189,8 +185,8 @@ export async function getCurrentUserProfileLegacy(): Promise<Profile | null> {
 }
 
 /**
- * 根据ID获取用户资料（兼容版本）
- * @deprecated 请使用 getUserProfileById() 并处理Result类型
+ * Get user profile by ID (legacy version).
+ * @deprecated Please use getUserProfileById() and handle the Result type.
  */
 export async function getUserProfileByIdLegacy(
   userId: string
@@ -200,8 +196,8 @@ export async function getUserProfileByIdLegacy(
 }
 
 /**
- * 根据用户名获取用户资料（兼容版本）
- * @deprecated 请使用 getUserProfileByUsername() 并处理Result类型
+ * Get user profile by username (legacy version).
+ * @deprecated Please use getUserProfileByUsername() and handle the Result type.
  */
 export async function getUserProfileByUsernameLegacy(
   username: string
@@ -211,8 +207,8 @@ export async function getUserProfileByUsernameLegacy(
 }
 
 /**
- * 获取所有管理员用户（兼容版本）
- * @deprecated 请使用 getAdminUsers() 并处理Result类型
+ * Get all admin users (legacy version).
+ * @deprecated Please use getAdminUsers() and handle the Result type.
  */
 export async function getAdminUsersLegacy(): Promise<Profile[]> {
   const result = await getAdminUsers();
@@ -220,8 +216,8 @@ export async function getAdminUsersLegacy(): Promise<Profile[]> {
 }
 
 /**
- * 更新用户资料（兼容版本）
- * @deprecated 请使用 updateUserProfile() 并处理Result类型
+ * Update user profile (legacy version).
+ * @deprecated Please use updateUserProfile() and handle the Result type.
  */
 export async function updateUserProfileLegacy(
   userId: string,
@@ -232,8 +228,8 @@ export async function updateUserProfileLegacy(
 }
 
 /**
- * 设置用户为管理员（兼容版本）
- * @deprecated 请使用 setUserAsAdmin() 并处理Result类型
+ * Set user as admin (legacy version).
+ * @deprecated Please use setUserAsAdmin() and handle the Result type.
  */
 export async function setUserAsAdminLegacy(userId: string): Promise<boolean> {
   const result = await setUserAsAdmin(userId);
@@ -241,12 +237,12 @@ export async function setUserAsAdminLegacy(userId: string): Promise<boolean> {
 }
 
 /**
- * 检查用户是否为管理员（兼容版本）
- * @deprecated 请使用 isUserAdmin() 并处理Result类型
+ * Check if user is admin (legacy version).
+ * @deprecated Please use isUserAdmin() and handle the Result type.
  */
 export async function isUserAdminLegacy(userId: string): Promise<boolean> {
   const result = await isUserAdmin(userId);
   return result.success ? result.data : false;
 }
 
-// 注意：用户组织信息相关函数已移除，改用群组系统
+// Note: User organization-related functions have been removed, use the group system instead.

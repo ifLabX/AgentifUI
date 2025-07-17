@@ -1,5 +1,5 @@
-// 统一的CORS配置系统
-// 整个项目只有一个CORS配置，通过环境变量控制允许的域名
+// Unified CORS configuration system
+// There is only one CORS config for the entire project, controlled by environment variables for allowed domains
 export interface CorsConfig {
   allowedOrigins: string[];
   allowedMethods: string[];
@@ -9,7 +9,7 @@ export interface CorsConfig {
   maxAge: number;
 }
 
-// 默认的CORS配置
+// Default CORS configuration
 const DEFAULT_CORS_CONFIG: Omit<CorsConfig, 'allowedOrigins'> = {
   allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [
@@ -21,19 +21,19 @@ const DEFAULT_CORS_CONFIG: Omit<CorsConfig, 'allowedOrigins'> = {
   ],
   exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
   credentials: true,
-  maxAge: 86400, // 24小时
+  maxAge: 86400, // 24 hours
 };
 
-// 获取允许的域名列表
+// Get the list of allowed origins
 function getAllowedOrigins(): string[] {
   const origins: string[] = [];
 
-  // 添加应用主域名
+  // Add main application domain
   if (process.env.NEXT_PUBLIC_APP_URL) {
     origins.push(process.env.NEXT_PUBLIC_APP_URL);
   }
 
-  // 添加额外允许的域名
+  // Add additional allowed domains
   if (process.env.CORS_ALLOWED_ORIGINS) {
     const additionalOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',')
       .map(origin => origin.trim())
@@ -41,16 +41,16 @@ function getAllowedOrigins(): string[] {
     origins.push(...additionalOrigins);
   }
 
-  // 去重并过滤空值
+  // Remove duplicates and filter out empty values
   return [...new Set(origins)].filter(Boolean);
 }
 
-// 获取开发环境默认域名
-// 完全基于环境变量，无硬编码
+// Get default dev environment origins
+// Fully based on environment variables, no hardcoding
 function getDevOrigins(): string[] {
   const origins: string[] = [];
 
-  // 开发环境允许的域名可以通过环境变量配置
+  // Dev environment allowed domains can be configured via env variable
   if (process.env.DEV_ALLOWED_ORIGINS) {
     const devOrigins = process.env.DEV_ALLOWED_ORIGINS.split(',')
       .map(origin => origin.trim())
@@ -58,16 +58,16 @@ function getDevOrigins(): string[] {
     origins.push(...devOrigins);
   }
 
-  // 如果有NEXT_PUBLIC_APP_URL，也添加到允许列表
+  // If NEXT_PUBLIC_APP_URL exists, add it to the allowed list
   if (process.env.NEXT_PUBLIC_APP_URL) {
     origins.push(process.env.NEXT_PUBLIC_APP_URL);
   }
 
-  // 去重
+  // Remove duplicates
   return [...new Set(origins)];
 }
 
-// 检查域名是否被允许
+// Check if the origin is allowed
 function isOriginAllowed(
   requestOrigin: string | null,
   allowedOrigins: string[]
@@ -76,12 +76,12 @@ function isOriginAllowed(
     return null;
   }
 
-  // 精确匹配
+  // Exact match
   if (allowedOrigins.includes(requestOrigin)) {
     return requestOrigin;
   }
 
-  // 通配符匹配 (*.example.com)
+  // Wildcard match (*.example.com)
   for (const allowedOrigin of allowedOrigins) {
     if (allowedOrigin.startsWith('*.')) {
       const domain = allowedOrigin.slice(2);
@@ -94,19 +94,21 @@ function isOriginAllowed(
   return null;
 }
 
-// 获取CORS配置
+// Get the CORS configuration
 export function getCorsConfig(): CorsConfig {
   const isDevelopment = process.env.NODE_ENV === 'development';
   let allowedOrigins = getAllowedOrigins();
 
-  // 开发环境：如果没有配置域名，使用默认的本地域名
+  // In development: if no domains are configured, use default local domains
   if (isDevelopment && allowedOrigins.length === 0) {
     allowedOrigins = getDevOrigins();
   }
 
-  // 生产环境：如果没有配置域名，记录警告
+  // In production: if no domains are configured, log a warning
   if (!isDevelopment && allowedOrigins.length === 0) {
-    console.warn('[CORS] ⚠️ 生产环境未配置允许的域名，将拒绝所有跨域请求');
+    console.warn(
+      '[CORS] ⚠️ No allowed origins configured in production, all cross-origin requests will be denied'
+    );
   }
 
   return {
@@ -115,12 +117,12 @@ export function getCorsConfig(): CorsConfig {
   };
 }
 
-// 创建CORS响应头
+// Create CORS response headers
 export function createCorsHeaders(requestOrigin: string | null): Headers {
   const config = getCorsConfig();
   const headers = new Headers();
 
-  // 检查请求来源是否被允许
+  // Check if the request origin is allowed
   const allowedOrigin = isOriginAllowed(requestOrigin, config.allowedOrigins);
 
   if (allowedOrigin) {
@@ -146,7 +148,7 @@ export function createCorsHeaders(requestOrigin: string | null): Headers {
   return headers;
 }
 
-// 处理CORS预检请求
+// Handle CORS preflight request
 export function handleCorsPreflightRequest(request: Request): Response {
   const origin = request.headers.get('origin');
   const corsHeaders = createCorsHeaders(origin);
@@ -157,7 +159,7 @@ export function handleCorsPreflightRequest(request: Request): Response {
   });
 }
 
-// 为API响应添加CORS头的统一函数
+// Unified function to add CORS headers to API responses
 export function withCorsHeaders(
   response: Response,
   request: Request
@@ -165,7 +167,7 @@ export function withCorsHeaders(
   const origin = request.headers.get('origin');
   const corsHeaders = createCorsHeaders(origin);
 
-  // 复制现有响应头并添加CORS头
+  // Copy existing response headers and add CORS headers
   const newHeaders = new Headers(response.headers);
   corsHeaders.forEach((value, key) => {
     newHeaders.set(key, value);

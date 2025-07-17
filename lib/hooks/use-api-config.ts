@@ -10,10 +10,10 @@ export interface ApiConfigResult {
 }
 
 /**
- * 用于获取 Dify API 配置的 Hook
+ * Hook to fetch Dify API configuration.
  *
- * @param appId Dify 应用 ID (必需)
- * @returns API 配置结果，包含配置、加载状态和错误信息
+ * @param appId Dify application ID (required)
+ * @returns API config result, including config, loading state, and error info
  *
  * @example
  * ```tsx
@@ -23,7 +23,7 @@ export interface ApiConfigResult {
  * if (error) return <ErrorMessage message={error.message} />;
  * if (!config) return <ConfigMissing />;
  *
- * // 使用 config.apiKey 和 config.apiUrl
+ * // Use config.apiKey and config.apiUrl
  * ```
  */
 export function useDifyConfig(appId: string): ApiConfigResult {
@@ -69,7 +69,7 @@ export function useDifyConfig(appId: string): ApiConfigResult {
 }
 
 /**
- * 通用 API 提供商配置
+ * Generic API provider configuration interface.
  */
 export interface ProviderConfig {
   id: string;
@@ -80,7 +80,7 @@ export interface ProviderConfig {
 }
 
 /**
- * 通用 API 配置 Hook 结果
+ * Generic API provider config hook result.
  */
 export interface ProviderConfigResult {
   provider: ProviderConfig | null;
@@ -90,12 +90,12 @@ export interface ProviderConfigResult {
 }
 
 /**
- * 用于获取任意 API 提供商配置的 Hook
+ * Hook to fetch any API provider configuration.
  *
- * 注意：这是一个占位实现，将在后续开发中完善
+ * Note: This is a placeholder implementation and will be improved in future development.
  *
- * @param providerId 提供商 ID
- * @returns 提供商配置结果
+ * @param providerId Provider ID
+ * @returns Provider config result
  */
 export function useProviderConfig(providerId: string): ProviderConfigResult {
   const [provider, setProvider] = useState<ProviderConfig | null>(null);
@@ -103,13 +103,13 @@ export function useProviderConfig(providerId: string): ProviderConfigResult {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // 占位实现，将在后续开发中完善
+    // Placeholder implementation, will be improved in the future
     setIsLoading(false);
     setError(new Error('Not implemented yet'));
   }, [providerId]);
 
   const reload = async () => {
-    // 占位实现
+    // Placeholder implementation
   };
 
   return {

@@ -1,6 +1,6 @@
 'use client';
 
-// 文件类型hook的兼容性包装器
-// 重新导出新的配置驱动的文件类型hook，保持向后兼容
+// Compatibility wrapper for file type hook
+// Re-export the new config-driven file type hook for backward compatibility
 export { useFileTypesFromConfig as useFileTypes } from './use-file-types-from-config';
 export type { FileType, FileUploadConfig } from './use-file-types-from-config';

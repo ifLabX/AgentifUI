@@ -1,7 +1,9 @@
 import { File, FileText, Image, Music, Video } from 'lucide-react';
 
-// 文件类型配置常量
-// 从管理界面提取，用于聊天界面的文件上传功能
+/**
+ * File type configuration constants.
+ * Extracted from the admin panel, used for file upload functionality in the chat interface.
+ */
 export const FILE_TYPE_CONFIG = {
   document: {
     icon: FileText,
@@ -48,5 +50,7 @@ export const FILE_TYPE_CONFIG = {
   },
 } as const;
 
-// 文件类型键的类型定义
+/**
+ * Type definition for file type keys.
+ */
 export type FileTypeKey = keyof typeof FILE_TYPE_CONFIG;

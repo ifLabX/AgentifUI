@@ -1,7 +1,7 @@
 /**
- * 侧边栏会话列表 Hook（优化版本）
+ * Sidebar conversations list hook (optimized version)
  *
- * 使用统一数据服务和实时订阅管理，提供更好的性能和错误处理
+ * Uses unified data service and real-time subscription management for better performance and error handling
  */
 import { CacheKeys, cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
@@ -15,17 +15,17 @@ import { Conversation } from '@lib/types/database';
 
 import { useCallback, useEffect, useState } from 'react';
 
-// 使用单例模式的Supabase客户端
+// Singleton Supabase client
 const supabase = createClient();
 
 /**
- * 侧边栏会话列表 Hook
+ * Sidebar conversations list hook
  *
- * @param limit 每页数量，默认20
- * @returns 会话列表、加载状态、错误信息和操作函数
+ * @param limit Number of items per page, default is 20
+ * @returns Conversation list, loading state, error info, and operation functions
  */
 export function useSidebarConversations(limit: number = 20) {
-  // 状态定义，使用更简化的状态管理
+  // State definitions, using simplified state management
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -33,7 +33,7 @@ export function useSidebarConversations(limit: number = 20) {
   const [hasMore, setHasMore] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // 获取当前用户ID
+  // Get current user ID
   useEffect(() => {
     const fetchUserId = async () => {
       const {
@@ -48,7 +48,7 @@ export function useSidebarConversations(limit: number = 20) {
 
     fetchUserId();
 
-    // 订阅认证状态变化
+    // Subscribe to auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -56,7 +56,7 @@ export function useSidebarConversations(limit: number = 20) {
         setUserId(session.user.id);
       } else {
         setUserId(null);
-        // 用户登出时清理状态
+        // Clear state when user logs out
         setConversations([]);
         setTotal(0);
         setHasMore(false);
@@ -68,8 +68,8 @@ export function useSidebarConversations(limit: number = 20) {
     };
   }, []);
 
-  // 加载会话列表的优化版本
-  // 使用统一数据服务，支持缓存和错误处理
+  // Optimized version of loading conversation list
+  // Uses unified data service, supports cache and error handling
   const loadConversations = useCallback(
     async (reset: boolean = false) => {
       if (!userId) {
@@ -84,8 +84,8 @@ export function useSidebarConversations(limit: number = 20) {
       setError(null);
 
       try {
-        // 使用统一数据服务获取对话列表
-        // 支持缓存、排序和分页
+        // Use unified data service to get conversation list
+        // Supports cache, sorting, and pagination
         const result = await dataService.findMany<Conversation>(
           'conversations',
           {
@@ -96,17 +96,17 @@ export function useSidebarConversations(limit: number = 20) {
           { offset: 0, limit },
           {
             cache: true,
-            cacheTTL: 2 * 60 * 1000, // 2分钟缓存
+            cacheTTL: 2 * 60 * 1000, // 2 minutes cache
             subscribe: true,
             subscriptionKey: SubscriptionKeys.sidebarConversations(userId),
             onUpdate: payload => {
-              // 实时更新处理
-              console.log('[实时更新] 对话变化:', payload);
+              // Handle real-time updates
+              console.log('[Realtime update] Conversation changed:', payload);
 
-              // 清除缓存并重新加载
+              // Clear cache and reload
               cacheService.deletePattern(`conversations:*`);
 
-              // 延迟重新加载，避免频繁更新
+              // Delay reload to avoid frequent updates
               setTimeout(() => {
                 loadConversations(true);
               }, 500);
@@ -119,17 +119,17 @@ export function useSidebarConversations(limit: number = 20) {
 
           setConversations(conversations);
           setTotal(conversations.length);
-          setHasMore(conversations.length === limit); // 简化的hasMore判断
+          setHasMore(conversations.length === limit); // Simplified hasMore check
           setError(null);
         } else {
-          console.error('加载会话列表失败:', result.error);
+          console.error('Failed to load conversation list:', result.error);
           setError(result.error);
           setConversations([]);
           setTotal(0);
           setHasMore(false);
         }
       } catch (err) {
-        console.error('加载会话列表异常:', err);
+        console.error('Exception while loading conversation list:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         setConversations([]);
@@ -142,33 +142,35 @@ export function useSidebarConversations(limit: number = 20) {
     [userId, limit]
   );
 
-  // 加载更多会话（可扩展功能）
+  // Load more conversations (extendable feature)
   const loadMore = useCallback(async () => {
     if (!userId || isLoading || !hasMore) {
       return;
     }
 
-    // 目前使用简单的实现，后续可以扩展为真正的分页
-    console.log('[加载更多] 当前实现暂不支持分页加载');
+    // Currently a simple implementation, can be extended to real pagination
+    console.log(
+      '[Load more] Pagination is not supported in current implementation'
+    );
   }, [userId, isLoading, hasMore]);
 
-  // 刷新会话列表
+  // Refresh conversation list
   const refresh = useCallback(() => {
     if (userId) {
-      // 清除缓存
+      // Clear cache
       cacheService.deletePattern(`conversations:*`);
       loadConversations(true);
     }
   }, [userId, loadConversations]);
 
-  // 初始加载和用户变化时重新加载
+  // Initial load and reload when user changes
   useEffect(() => {
     if (userId) {
       loadConversations(true);
     }
   }, [userId, loadConversations]);
 
-  // 清理函数：组件卸载时清理订阅
+  // Cleanup: unsubscribe on component unmount
   useEffect(() => {
     return () => {
       if (userId) {
@@ -179,7 +181,7 @@ export function useSidebarConversations(limit: number = 20) {
     };
   }, [userId]);
 
-  // 删除对话的辅助函数
+  // Helper function to delete a conversation
   const deleteConversation = useCallback(
     async (conversationId: string): Promise<boolean> => {
       if (!userId) return false;
@@ -191,24 +193,24 @@ export function useSidebarConversations(limit: number = 20) {
         );
 
         if (result.success) {
-          // 立即从本地状态中移除
+          // Remove from local state immediately
           setConversations(prev =>
             prev.filter(conv => conv.id !== conversationId)
           );
           setTotal(prev => prev - 1);
 
-          // 清除相关缓存
+          // Clear related cache
           cacheService.deletePattern(`conversations:*`);
           cacheService.delete(CacheKeys.conversation(conversationId));
 
           return true;
         } else {
-          console.error('删除对话失败:', result.error);
+          console.error('Failed to delete conversation:', result.error);
           setError(result.error);
           return false;
         }
       } catch (err) {
-        console.error('删除对话异常:', err);
+        console.error('Exception while deleting conversation:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         return false;
@@ -217,7 +219,7 @@ export function useSidebarConversations(limit: number = 20) {
     [userId]
   );
 
-  // 重命名对话的辅助函数
+  // Helper function to rename a conversation
   const renameConversation = useCallback(
     async (conversationId: string, newTitle: string): Promise<boolean> => {
       if (!userId) return false;
@@ -230,7 +232,7 @@ export function useSidebarConversations(limit: number = 20) {
         );
 
         if (result.success) {
-          // 更新本地状态
+          // Update local state
           setConversations(prev =>
             prev.map(conv =>
               conv.id === conversationId
@@ -243,18 +245,18 @@ export function useSidebarConversations(limit: number = 20) {
             )
           );
 
-          // 清除相关缓存
+          // Clear related cache
           cacheService.deletePattern(`conversations:*`);
           cacheService.delete(CacheKeys.conversation(conversationId));
 
           return true;
         } else {
-          console.error('重命名对话失败:', result.error);
+          console.error('Failed to rename conversation:', result.error);
           setError(result.error);
           return false;
         }
       } catch (err) {
-        console.error('重命名对话异常:', err);
+        console.error('Exception while renaming conversation:', err);
         const error = err instanceof Error ? err : new Error(String(err));
         setError(error);
         return false;
@@ -271,10 +273,10 @@ export function useSidebarConversations(limit: number = 20) {
     hasMore,
     loadMore,
     refresh,
-    // 新增的辅助函数
+    // Helper functions
     deleteConversation,
     renameConversation,
-    // 缓存控制
+    // Cache control
     clearCache: () => {
       if (userId) {
         cacheService.deletePattern(`conversations:*`);

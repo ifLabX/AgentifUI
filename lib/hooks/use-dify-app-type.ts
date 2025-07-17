@@ -8,28 +8,28 @@ import {
 } from '@lib/types/dify-app-types';
 
 /**
- * Dify应用类型Hook
- * 用于获取当前应用的Dify类型信息和相关判断
+ * Dify app type hook
+ * Provides access to the current app's Dify type info and related checks
  */
 export function useDifyAppType() {
   const { currentAppInstance } = useCurrentAppStore();
 
-  // --- 获取当前应用的Dify类型，默认为chatbot ---
+  // Get the current app's Dify type, default to 'chatbot'
   const difyAppType: DifyAppType =
     currentAppInstance?.config?.app_metadata?.dify_apptype || 'chatbot';
   const appTypeInfo = DIFY_APP_TYPES[difyAppType];
 
   return {
-    // --- 基础信息 ---
+    // Basic info
     difyAppType,
     appTypeInfo,
 
-    // --- 类型判断 ---
+    // Type checks
     isChatBased: isChatBasedApp(difyAppType),
     isWorkflow: isWorkflowApp(difyAppType),
     isTextGeneration: isTextGenerationApp(difyAppType),
 
-    // --- 功能判断 ---
+    // Feature support checks
     supportsFileUpload: ['chatbot', 'agent', 'chatflow'].includes(difyAppType),
     supportsSpeechToText: ['chatbot', 'agent', 'chatflow'].includes(
       difyAppType
@@ -37,17 +37,17 @@ export function useDifyAppType() {
     supportsToolCalling: difyAppType === 'agent',
     supportsWorkflowExecution: difyAppType === 'workflow',
 
-    // --- API相关 ---
+    // API related
     getApiEndpoint: () => appTypeInfo.apiEndpoint,
 
-    // --- UI相关 ---
+    // UI related
     getDisplayIcon: () => appTypeInfo.icon,
     getDisplayLabel: () => appTypeInfo.label,
     getDisplayDescription: () => appTypeInfo.description,
     getFeatures: () => appTypeInfo.features,
     getColorScheme: () => appTypeInfo.color,
 
-    // --- 验证方法 ---
+    // Validation method
     isValidType: (type: string): type is DifyAppType => {
       return Object.keys(DIFY_APP_TYPES).includes(type);
     },
@@ -55,9 +55,9 @@ export function useDifyAppType() {
 }
 
 /**
- * 用于表单中选择Dify应用类型的Hook
- * @param currentType 当前选中的类型
- * @param onChange 类型变更回调
+ * Hook for selecting Dify app type in forms
+ * @param currentType The currently selected type
+ * @param onChange Callback for type change
  */
 export function useDifyAppTypeSelector(
   currentType: DifyAppType | undefined,
@@ -70,16 +70,16 @@ export function useDifyAppTypeSelector(
     currentType: currentType || 'chatbot',
     onChange,
 
-    // --- 获取特定类型的信息 ---
+    // Get info for a specific type
     getTypeInfo: (type: DifyAppType) => DIFY_APP_TYPES[type],
 
-    // --- 检查是否为当前选中类型 ---
+    // Check if a type is currently selected
     isSelected: (type: DifyAppType) => currentType === type,
 
-    // --- 获取推荐的标签 ---
+    // Get recommended tags for a type (first two features)
     getRecommendedTags: (type: DifyAppType): string[] => {
       const typeInfo = DIFY_APP_TYPES[type];
-      return typeInfo.features.slice(0, 2); // --- 返回前两个特性作为推荐标签 ---
+      return typeInfo.features.slice(0, 2);
     },
   };
 }

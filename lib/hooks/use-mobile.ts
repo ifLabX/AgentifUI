@@ -1,30 +1,30 @@
 import { useEffect, useState } from 'react';
 
-// 定义移动设备断点（与Tailwind md断点一致）
+// Define mobile device breakpoint (matches Tailwind md breakpoint)
 const MOBILE_BREAKPOINT = 768;
 
 export function useMobile() {
-  // 初始状态设为undefined，避免服务端渲染不匹配问题
+  // Initial state is undefined to avoid SSR hydration mismatch
   const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
-    // 使用MediaQueryList来监听屏幕尺寸变化
+    // Use MediaQueryList to listen for screen size changes
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
 
     const onChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
 
-    // 添加变化监听
+    // Add change event listener
     mql.addEventListener('change', onChange);
 
-    // 立即检测当前状态
+    // Immediately check current state
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
 
-    // 清理监听器
+    // Cleanup event listener on unmount
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
-  // 确保返回布尔值（即使初始状态是undefined）
+  // Always return a boolean (even if initial state is undefined)
   return !!isMobile;
 }

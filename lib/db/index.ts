@@ -1,40 +1,40 @@
-// 导入服务实例，用于内部函数使用
+// Import service instances for internal use
 import { cacheService as cacheServiceInstance } from '@lib/services/db/cache-service';
 import { realtimeService as realtimeServiceInstance } from '@lib/services/db/realtime-service';
 
 /**
- * 数据库查询函数索引
+ * Database query function index
  *
- * 本文件导出所有数据库查询相关的函数
- * 使用时可以从这个文件统一导入所需的函数
+ * This file exports all database query related functions.
+ * You can import the required functions from this file in a unified way.
  *
- * 新增：统一数据服务、缓存服务、实时订阅服务
- * 兼容：保留原有函数的导出，同时提供新的优化版本
+ * New: Unified data service, cache service, and realtime subscription service
+ * Compatibility: Retain the export of original functions, while also providing new optimized versions
  */
 
-// 新的统一服务导出
+// Unified service exports
 
-// 统一数据服务
+// Unified data service
 export { dataService } from '@lib/services/db/data-service';
 
-// 缓存服务
+// Cache service
 export { cacheService, CacheKeys } from '@lib/services/db/cache-service';
 
-// 实时订阅服务
+// Realtime subscription service
 export {
   realtimeService,
   SubscriptionKeys,
   SubscriptionConfigs,
 } from '@lib/services/db/realtime-service';
 
-// 消息服务
+// Message service
 export { messageService } from '@lib/services/db/message-service';
 export type {
   MessagePage,
   PaginationCursor,
 } from '@lib/services/db/message-service';
 
-// Result类型和错误处理
+// Result type and error handling
 export type { Result } from '@lib/types/result';
 export {
   success,
@@ -45,9 +45,9 @@ export {
   ValidationError,
 } from '@lib/types/result';
 
-// 兼容性导出：保留原有函数接口
-// 这些函数已经内部升级为使用新的数据服务，但保持相同的API
-// API密钥相关函数
+// Compatibility exports: retain original function interfaces
+// These functions have been internally upgraded to use the new data service, but keep the same API
+// API key related functions
 export {
   getApiKeyByServiceInstance,
   createApiKey,
@@ -57,7 +57,7 @@ export {
   incrementApiKeyUsage,
 } from './api-keys';
 
-// 服务提供商相关函数
+// Provider related functions
 export {
   getAllProviders,
   getActiveProviders,
@@ -69,7 +69,7 @@ export {
   deleteProvider,
 } from './providers';
 
-// 服务实例相关函数
+// Service instance related functions
 export {
   getServiceInstancesByProvider,
   getDefaultServiceInstance,
@@ -83,8 +83,8 @@ export {
   updateAppParametersInDb,
 } from './service-instances';
 
-// 应用执行记录相关函数：新版本和兼容版本
-// 新的优化版本（返回Result类型）
+// App execution record related functions: new and legacy versions
+// New optimized version (returns Result type)
 export {
   getUserExecutions,
   getExecutionById,
@@ -97,14 +97,14 @@ export {
   getExecutionStats,
 } from './app-executions';
 
-// 兼容版本（保持原有API）
+// Legacy version (keep original API)
 export {
   getUserExecutionsLegacy,
   getExecutionByIdLegacy,
 } from './app-executions';
 
-// 用户资料相关函数：新版本和兼容版本
-// 新的优化版本（返回Result类型）
+// User profile related functions: new and legacy versions
+// New optimized version (returns Result type)
 export {
   getCurrentUserProfile,
   getUserProfileById,
@@ -115,9 +115,9 @@ export {
   isUserAdmin,
 } from './profiles';
 
-// 群组管理相关函数（计划添加）
-// 暂时通过群组权限获取基本群组信息
-// 兼容版本（保持原有API）
+// Group management related functions (planned to add)
+// Temporarily get basic group info via group permissions
+// Legacy version (keep original API)
 export {
   getCurrentUserProfileLegacy,
   getUserProfileByIdLegacy,
@@ -128,7 +128,7 @@ export {
   isUserAdminLegacy,
 } from './profiles';
 
-// 对话相关函数
+// Conversation related functions
 export {
   getUserConversations,
   getConversationById,
@@ -145,8 +145,8 @@ export {
   updateConversationMetadata,
 } from './conversations';
 
-// 消息相关函数：新版本通过messageService提供
-// 保留原有函数的导出以确保兼容性
+// Message related functions: new version provided by messageService
+// Retain export of original functions for compatibility
 export {
   saveMessage,
   saveMessages,
@@ -157,61 +157,66 @@ export {
   getMessageByContentAndRole,
 } from './messages';
 
-// 新的高级功能函数
+// New advanced utility functions
 /**
- * 清除所有缓存
+ * Clear all cache
  */
 export function clearAllCache(): void {
   cacheServiceInstance.clear();
 }
 
 /**
- * 清除指定表的缓存
+ * Clear cache for a specific table
  */
 export function clearTableCache(table: string): number {
   return cacheServiceInstance.deletePattern(`${table}:*`);
 }
 
 /**
- * 获取缓存统计信息
+ * Get cache statistics
  */
 export function getCacheStats() {
   return cacheServiceInstance.getStats();
 }
 
 /**
- * 获取实时订阅统计信息
+ * Get realtime subscription statistics
  */
 export function getRealtimeStats() {
   return realtimeServiceInstance.getStats();
 }
 
 /**
- * 清理所有实时订阅
+ * Clean up all realtime subscriptions
  */
 export function cleanupRealtimeSubscriptions(): void {
   realtimeServiceInstance.unsubscribeAll();
 }
 
 /**
- * 批量清理资源（缓存 + 订阅）
+ * Batch cleanup resources (cache + subscriptions)
  */
 export function cleanupAllResources(): void {
   cacheServiceInstance.clear();
   realtimeServiceInstance.unsubscribeAll();
-  console.log('[数据库服务] 已清理所有缓存和实时订阅');
+  console.log(
+    '[Database Service] All cache and realtime subscriptions have been cleared'
+  );
 }
 
-// 开发调试用函数
+// Development/debug functions
 /**
- * 开发模式：打印服务状态
+ * Development mode: print service status
  */
 export function debugServiceStatus(): void {
   if (process.env.NODE_ENV === 'development') {
-    console.group('[数据库服务状态]');
-    console.log('缓存统计:', getCacheStats());
-    console.log('实时订阅统计:', getRealtimeStats());
-    console.log('订阅列表:', realtimeServiceInstance.listSubscriptions());
+    console.group('[Database Service Status]');
+    console.log('Cache stats:', getCacheStats());
+    console.log('Realtime subscription stats:', getRealtimeStats());
+    console.log(
+      'Subscription list:',
+      realtimeServiceInstance.listSubscriptions()
+    );
     console.groupEnd();
   }
 }

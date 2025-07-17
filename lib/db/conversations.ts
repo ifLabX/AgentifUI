@@ -1,31 +1,21 @@
 /**
- * 对话相关的数据库查询函数
+ * Database query functions related to conversations.
  *
- * 本文件包含与对话表(conversations)和消息表(messages)相关的所有数据库操作
- * 更新为使用统一的数据服务和Result类型
+ * This file contains all database operations related to the conversations table and messages table.
+ * Updated to use unified data service and Result type.
  */
-import { CacheKeys, cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
-import {
-  SubscriptionConfigs,
-  SubscriptionKeys,
-  realtimeService,
-} from '@lib/services/db/realtime-service';
 import { Result, failure, success } from '@lib/types/result';
 
-import { createClient } from '../supabase/client';
 import { Conversation, Message } from '../types/database';
 
-// 保持与现有代码的兼容性，同时使用新的数据服务
-const supabase = createClient();
-
 /**
- * 获取用户的所有对话，支持分页和按应用筛选（优化版本）
- * @param userId 用户ID
- * @param limit 每页数量，默认20
- * @param offset 偏移量，默认0
- * @param appId 可选的应用ID筛选
- * @returns 对话列表和总数的Result
+ * Get all conversations for a user, supports pagination and filtering by app (optimized version)
+ * @param userId User ID
+ * @param limit Number of items per page, default is 20
+ * @param offset Offset, default is 0
+ * @param appId Optional app ID filter
+ * @returns Result containing conversation list and total count
  */
 export async function getUserConversations(
   userId: string,
@@ -40,7 +30,7 @@ export async function getUserConversations(
   };
 
   try {
-    // 获取对话列表
+    // Get conversation list
     const conversationsResult = await dataService.findMany<Conversation>(
       'conversations',
       filters,
@@ -48,7 +38,7 @@ export async function getUserConversations(
       { offset, limit },
       {
         cache: true,
-        cacheTTL: 2 * 60 * 1000, // 2分钟缓存
+        cacheTTL: 2 * 60 * 1000, // 2 minutes cache
       }
     );
 
@@ -56,7 +46,7 @@ export async function getUserConversations(
       return failure(conversationsResult.error);
     }
 
-    // 获取总数
+    // Get total count
     const countResult = await dataService.count('conversations', filters);
 
     if (!countResult.success) {
@@ -73,9 +63,9 @@ export async function getUserConversations(
 }
 
 /**
- * 获取对话详情（优化版本）
- * @param conversationId 对话ID
- * @returns 对话对象的Result，如果未找到则返回null
+ * Get conversation details (optimized version)
+ * @param conversationId Conversation ID
+ * @returns Result with conversation object, or null if not found
  */
 export async function getConversationById(
   conversationId: string
@@ -85,15 +75,15 @@ export async function getConversationById(
     { id: conversationId },
     {
       cache: true,
-      cacheTTL: 5 * 60 * 1000, // 5分钟缓存
+      cacheTTL: 5 * 60 * 1000, // 5 minutes cache
     }
   );
 }
 
 /**
- * 创建新的对话（优化版本）
- * @param conversation 对话对象
- * @returns 创建的对话对象Result，如果创建失败则返回错误
+ * Create a new conversation (optimized version)
+ * @param conversation Conversation object
+ * @returns Result with created conversation object, or error if creation failed
  */
 export async function createConversation(
   conversation: Omit<Conversation, 'id' | 'created_at' | 'updated_at'>
@@ -112,10 +102,10 @@ export async function createConversation(
 }
 
 /**
- * 更新对话（优化版本）
- * @param id 对话ID
- * @param updates 需要更新的字段
- * @returns 更新后的对话对象Result，如果更新失败则返回错误
+ * Update conversation (optimized version)
+ * @param id Conversation ID
+ * @param updates Fields to update
+ * @returns Result with updated conversation object, or error if update failed
  */
 export async function updateConversation(
   id: string,
@@ -130,12 +120,12 @@ export async function updateConversation(
 }
 
 /**
- * 删除对话（软删除，将状态设置为deleted）（优化版本）
- * @param id 对话ID
- * @returns 是否删除成功的Result
+ * Delete conversation (soft delete, set status to deleted) (optimized version)
+ * @param id Conversation ID
+ * @returns Result indicating whether deletion was successful
  */
 export async function deleteConversation(id: string): Promise<Result<boolean>> {
-  console.log(`[删除对话] 开始删除对话，ID: ${id}`);
+  console.log(`[deleteConversation] Start deleting conversation, ID: ${id}`);
 
   const result = await dataService.softDelete<Conversation>(
     'conversations',
@@ -143,18 +133,21 @@ export async function deleteConversation(id: string): Promise<Result<boolean>> {
   );
 
   if (result.success) {
-    console.log(`[删除对话] 删除操作完成，ID: ${id}`);
+    console.log(`[deleteConversation] Delete operation completed, ID: ${id}`);
     return success(true);
   } else {
-    console.error(`[删除对话] 删除对话失败:`, result.error);
+    console.error(
+      `[deleteConversation] Failed to delete conversation:`,
+      result.error
+    );
     return success(false);
   }
 }
 
 /**
- * 获取对话的所有消息（优化版本）
- * @param conversationId 对话ID
- * @returns 消息列表的Result
+ * Get all messages of a conversation (optimized version)
+ * @param conversationId Conversation ID
+ * @returns Result with message list
  */
 export async function getConversationMessages(
   conversationId: string
@@ -166,15 +159,15 @@ export async function getConversationMessages(
     undefined,
     {
       cache: true,
-      cacheTTL: 1 * 60 * 1000, // 1分钟缓存
+      cacheTTL: 1 * 60 * 1000, // 1 minute cache
     }
   );
 }
 
 /**
- * 添加消息到对话（优化版本）
- * @param message 消息对象
- * @returns 创建的消息对象Result，如果创建失败则返回错误
+ * Add a message to a conversation (optimized version)
+ * @param message Message object
+ * @returns Result with created message object, or error if creation failed
  */
 export async function addMessageToConversation(
   message: Omit<Message, 'id' | 'created_at'>
@@ -192,7 +185,7 @@ export async function addMessageToConversation(
   );
 
   if (result.success) {
-    // 更新对话的最后更新时间和最后消息预览
+    // Update conversation's last updated time and last message preview
     const previewText = message.content.substring(0, 100);
     await dataService.update<Conversation>(
       'conversations',
@@ -208,10 +201,10 @@ export async function addMessageToConversation(
 }
 
 /**
- * 更新消息状态（优化版本）
- * @param id 消息ID
- * @param status 新状态
- * @returns 是否更新成功的Result
+ * Update message status (optimized version)
+ * @param id Message ID
+ * @param status New status
+ * @returns Result indicating whether update was successful
  */
 export async function updateMessageStatus(
   id: string,
@@ -222,9 +215,9 @@ export async function updateMessageStatus(
 }
 
 /**
- * 根据外部ID（Dify对话ID）查询对话（优化版本）
- * @param externalId 外部ID（Dify对话ID）
- * @returns 对话对象的Result，如果未找到则返回null
+ * Query conversation by external ID (Dify conversation ID) (optimized version)
+ * @param externalId External ID (Dify conversation ID)
+ * @returns Result with conversation object, or null if not found
  */
 export async function getConversationByExternalId(
   externalId: string
@@ -234,12 +227,14 @@ export async function getConversationByExternalId(
     typeof externalId !== 'string' ||
     externalId.trim() === ''
   ) {
-    console.log('[getConversationByExternalId] 外部ID无效，跳过查询');
+    console.log(
+      '[getConversationByExternalId] Invalid external ID, skip query'
+    );
     return success(null);
   }
 
   console.log(
-    `[getConversationByExternalId] 开始查询外部ID为 ${externalId} 的对话`
+    `[getConversationByExternalId] Start querying conversation with external ID ${externalId}`
   );
 
   const result = await dataService.findOne<Conversation>(
@@ -247,30 +242,33 @@ export async function getConversationByExternalId(
     { external_id: externalId },
     {
       cache: true,
-      cacheTTL: 30 * 1000, // 30秒缓存
+      cacheTTL: 30 * 1000, // 30 seconds cache
     }
   );
 
   if (result.success && result.data) {
     console.log(
-      `[getConversationByExternalId] 找到对话，ID=${result.data.id}，外部ID=${externalId}`
+      `[getConversationByExternalId] Found conversation, ID=${result.data.id}, external ID=${externalId}`
     );
   } else if (result.success && !result.data) {
     console.log(
-      `[getConversationByExternalId] 未找到外部ID为 ${externalId} 的对话`
+      `[getConversationByExternalId] No conversation found with external ID ${externalId}`
     );
   } else {
-    console.error(`[getConversationByExternalId] 查询对话失败:`, result.error);
+    console.error(
+      `[getConversationByExternalId] Failed to query conversation:`,
+      result.error
+    );
   }
 
   return result;
 }
 
 /**
- * 重命名会话（优化版本）
- * @param conversationId 会话ID
- * @param newTitle 新标题
- * @returns 是否更新成功的Result
+ * Rename conversation (optimized version)
+ * @param conversationId Conversation ID
+ * @param newTitle New title
+ * @returns Result indicating whether update was successful
  */
 export async function renameConversation(
   conversationId: string,
@@ -285,15 +283,15 @@ export async function renameConversation(
 }
 
 /**
- * 物理删除会话及其消息（优化版本）
- * @param conversationId 会话ID
- * @returns 是否删除成功的Result
+ * Physically delete conversation and its messages (optimized version)
+ * @param conversationId Conversation ID
+ * @returns Result indicating whether deletion was successful
  */
 export async function permanentlyDeleteConversation(
   conversationId: string
 ): Promise<Result<boolean>> {
   try {
-    // 先删除所有相关消息
+    // First delete all related messages
     const messagesResult = await dataService.query(async () => {
       const { error } = await dataService['supabase']
         .from('messages')
@@ -308,7 +306,7 @@ export async function permanentlyDeleteConversation(
       return failure(messagesResult.error);
     }
 
-    // 删除会话
+    // Delete conversation
     const conversationResult = await dataService.delete(
       'conversations',
       conversationId
@@ -316,17 +314,17 @@ export async function permanentlyDeleteConversation(
 
     return success(conversationResult.success);
   } catch (error) {
-    console.error('物理删除会话失败:', error);
+    console.error('Failed to physically delete conversation:', error);
     return failure(error instanceof Error ? error : new Error(String(error)));
   }
 }
 
 /**
- * 创建新的空对话（优化版本）
- * @param userId 用户ID
- * @param appId 应用ID
- * @param initialTitle 初始标题（可选）
- * @returns 创建的对话对象Result
+ * Create a new empty conversation (optimized version)
+ * @param userId User ID
+ * @param appId App ID
+ * @param initialTitle Initial title (optional)
+ * @returns Result with created conversation object
  */
 export async function createEmptyConversation(
   userId: string,
@@ -335,7 +333,7 @@ export async function createEmptyConversation(
 ): Promise<Result<Conversation>> {
   return createConversation({
     user_id: userId,
-    title: initialTitle || '新对话',
+    title: initialTitle || 'New Conversation',
     summary: null,
     ai_config_id: null,
     app_id: appId,
@@ -347,10 +345,10 @@ export async function createEmptyConversation(
 }
 
 /**
- * 更新会话元数据（优化版本）
- * @param conversationId 会话ID
- * @param metadata 元数据对象
- * @returns 是否更新成功的Result
+ * Update conversation metadata (optimized version)
+ * @param conversationId Conversation ID
+ * @param metadata Metadata object
+ * @returns Result indicating whether update was successful
  */
 export async function updateConversationMetadata(
   conversationId: string,
@@ -364,11 +362,11 @@ export async function updateConversationMetadata(
   return success(result.success);
 }
 
-// 兼容性函数，保持与现有代码的兼容性
-// 这些函数将逐步迁移到使用Result类型
+// Compatibility functions to maintain compatibility with existing code
+// These functions will gradually migrate to use the Result type
 /**
- * 获取用户的所有对话（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Get all conversations for a user (legacy version)
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function getUserConversationsLegacy(
   userId: string,
@@ -381,8 +379,8 @@ export async function getUserConversationsLegacy(
 }
 
 /**
- * 获取对话详情（兼容版本）
- * @deprecated 请使用新版本并处理Result类型
+ * Get conversation details (legacy version)
+ * @deprecated Please use the new version and handle the Result type
  */
 export async function getConversationByIdLegacy(
   conversationId: string

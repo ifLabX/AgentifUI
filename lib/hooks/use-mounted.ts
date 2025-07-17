@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
 /**
- * 返回组件是否已经完成挂载的Hook
- * 用于防止组件在挂载过程中出现闪烁
+ * Hook to determine if the component has been mounted.
+ * Useful for preventing flickering during the mounting process.
  */
 export function useMounted() {
   const [isMounted, setIsMounted] = useState(false);

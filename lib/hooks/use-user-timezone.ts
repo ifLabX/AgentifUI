@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-// 用户时区偏好管理Hook
-// 使用localStorage存储用户的时区设置，支持系统时区回退
+// User timezone preference hook
+// Uses localStorage to store user's timezone setting, supports fallback to system timezone
 const TIMEZONE_STORAGE_KEY = 'user-timezone';
 
-// 验证时区是否有效
-// 使用Intl.DateTimeFormat来检查时区的有效性
+// Validate if a timezone string is valid
+// Uses Intl.DateTimeFormat to check validity
 const isValidTimezone = (timezone: string): boolean => {
   try {
     Intl.DateTimeFormat(undefined, { timeZone: timezone });
@@ -17,8 +17,8 @@ const isValidTimezone = (timezone: string): boolean => {
   }
 };
 
-// 获取系统默认时区
-// 作为用户未设置时区时的回退选项
+// Get the system default timezone
+// Used as a fallback when user has not set a timezone
 const getSystemTimezone = (): string => {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -29,10 +29,10 @@ const getSystemTimezone = (): string => {
 
 export function useUserTimezone() {
   const [timezone, setTimezone] = useState<string>(() => {
-    // 初始化时区：优先使用用户设置，回退到系统时区
-    // 确保在服务器端渲染时返回合理的默认值
+    // Initialize timezone: prefer user setting, fallback to system timezone
+    // Ensure a reasonable default value during server-side rendering
     if (typeof window === 'undefined') {
-      return 'UTC'; // 服务器端渲染时的默认值
+      return 'UTC'; // Default value for SSR
     }
 
     const savedTimezone = localStorage.getItem(TIMEZONE_STORAGE_KEY);
@@ -44,8 +44,8 @@ export function useUserTimezone() {
     return getSystemTimezone();
   });
 
-  // 在客户端水合时更新时区
-  // 确保服务器端和客户端的一致性
+  // Update timezone on client hydration
+  // Ensures consistency between server and client
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedTimezone = localStorage.getItem(TIMEZONE_STORAGE_KEY);
@@ -55,14 +55,14 @@ export function useUserTimezone() {
       } else {
         const systemTimezone = getSystemTimezone();
         setTimezone(systemTimezone);
-        // 将系统时区保存到localStorage作为默认值
+        // Save system timezone to localStorage as default
         localStorage.setItem(TIMEZONE_STORAGE_KEY, systemTimezone);
       }
     }
   }, []);
 
-  // 更新用户时区设置
-  // 同时更新状态和localStorage
+  // Update user timezone setting
+  // Updates both state and localStorage
   const updateTimezone = useCallback((newTimezone: string) => {
     if (!isValidTimezone(newTimezone)) {
       console.warn(`[useUserTimezone] Invalid timezone: ${newTimezone}`);
@@ -78,8 +78,8 @@ export function useUserTimezone() {
     return true;
   }, []);
 
-  // 重置为系统时区
-  // 清除用户自定义设置，回到系统默认
+  // Reset to system timezone
+  // Clears user custom setting and reverts to system default
   const resetToSystemTimezone = useCallback(() => {
     const systemTimezone = getSystemTimezone();
     setTimezone(systemTimezone);
@@ -91,7 +91,7 @@ export function useUserTimezone() {
     return systemTimezone;
   }, []);
 
-  // 检查当前时区是否为系统时区
+  // Check if current timezone is the system timezone
   const isSystemTimezone = timezone === getSystemTimezone();
 
   return {

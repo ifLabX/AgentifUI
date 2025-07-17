@@ -7,7 +7,9 @@ import { useCallback, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 头像上传状态类型定义
+/**
+ * State type for avatar upload.
+ */
 export interface AvatarUploadState {
   isUploading: boolean;
   isDeleting: boolean;
@@ -16,19 +18,22 @@ export interface AvatarUploadState {
   status: 'idle' | 'uploading' | 'success' | 'error' | 'deleting';
 }
 
-// 头像上传结果类型
+/**
+ * Result type for avatar upload.
+ */
 export interface AvatarUploadResult {
   url: string;
   path: string;
 }
 
-// 从头像URL中提取文件路径的辅助函数
+/**
+ * Helper function to extract file path from avatar URL.
+ */
 const extractFilePathFromUrl = (url: string): string | null => {
   try {
     const urlObj = new URL(url);
     const pathParts = urlObj.pathname.split('/');
     const bucketIndex = pathParts.indexOf('avatars');
-
     if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
       return pathParts.slice(bucketIndex + 1).join('/');
     }
@@ -38,8 +43,9 @@ const extractFilePathFromUrl = (url: string): string | null => {
   }
 };
 
-// 头像上传Hook
-// 提供完整的头像上传、删除、URL生成功能
+/**
+ * Hook for avatar upload, delete, and URL generation.
+ */
 export function useAvatarUpload() {
   const [state, setState] = useState<AvatarUploadState>({
     isUploading: false,
@@ -52,7 +58,9 @@ export function useAvatarUpload() {
   const supabase = createClient();
   const t = useTranslations('pages.settings.avatarUpload');
 
-  // 文件验证函数
+  /**
+   * Validate file type and size.
+   */
   const validateFile = useCallback(
     (file: File): { valid: boolean; error?: string } => {
       const allowedTypes = [
@@ -86,8 +94,10 @@ export function useAvatarUpload() {
     [t]
   );
 
-  // 生成安全的文件路径
-  // 使用 user-{userId}/{uuid}-{filename} 格式
+  /**
+   * Generate a safe file path for the avatar.
+   * Format: user-{userId}/{timestamp}-{uuid}.{ext}
+   */
   const generateFilePath = useCallback(
     (userId: string, fileName: string): string => {
       const uuid = uuidv4();
@@ -99,10 +109,12 @@ export function useAvatarUpload() {
     []
   );
 
-  // 上传头像函数（包含自动清理旧文件）
+  /**
+   * Upload avatar file and update user profile.
+   * Also deletes the old avatar file if present.
+   */
   const uploadAvatar = useCallback(
     async (file: File, userId: string): Promise<AvatarUploadResult> => {
-      // 验证文件
       const validation = validateFile(file);
       if (!validation.valid) {
         throw new Error(validation.error);
@@ -117,22 +129,22 @@ export function useAvatarUpload() {
       }));
 
       try {
-        // 1. 获取当前头像URL（用于后续删除旧文件）
+        // 1. Get current avatar URL for cleanup
         const { data: currentProfile } = await supabase
           .from('profiles')
           .select('avatar_url')
           .eq('id', userId)
           .single();
 
-        // 2. 生成新文件路径
+        // 2. Generate new file path
         const filePath = generateFilePath(userId, file.name);
 
-        // 3. 上传新头像到 Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        // 3. Upload new avatar to Supabase Storage
+        const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(filePath, file, {
             cacheControl: '3600',
-            upsert: false, // 不覆盖，确保唯一性
+            upsert: false,
           });
 
         if (uploadError) {
@@ -141,7 +153,7 @@ export function useAvatarUpload() {
           );
         }
 
-        // 4. 获取公共 URL
+        // 4. Get public URL
         const { data: urlData } = supabase.storage
           .from('avatars')
           .getPublicUrl(filePath);
@@ -150,7 +162,7 @@ export function useAvatarUpload() {
           throw new Error(t('errors.getUrlFailed'));
         }
 
-        // 5. 更新数据库中的头像URL
+        // 5. Update avatar_url in database
         const { error: updateError } = await supabase
           .from('profiles')
           .update({
@@ -165,17 +177,18 @@ export function useAvatarUpload() {
           );
         }
 
-        // 6. 删除旧头像文件（如果存在）
-        // 使用静默删除，不影响主流程
+        // 6. Delete old avatar file if exists (silent)
         if (currentProfile?.avatar_url) {
           const oldFilePath = extractFilePathFromUrl(currentProfile.avatar_url);
           if (oldFilePath) {
-            // 静默删除，即使失败也不影响新头像上传成功
             supabase.storage
               .from('avatars')
               .remove([oldFilePath])
               .catch(error => {
-                console.warn('删除旧头像文件失败（不影响主流程）:', error);
+                console.warn(
+                  'Failed to delete old avatar file (ignored):',
+                  error
+                );
               });
           }
         }
@@ -207,7 +220,9 @@ export function useAvatarUpload() {
     [validateFile, generateFilePath, supabase, t]
   );
 
-  // 删除头像函数
+  /**
+   * Delete avatar file and clear avatar_url in database.
+   */
   const deleteAvatar = useCallback(
     async (filePath: string, userId: string): Promise<void> => {
       setState(prev => ({
@@ -218,7 +233,7 @@ export function useAvatarUpload() {
       }));
 
       try {
-        // 从存储中删除文件
+        // Delete file from storage
         const { error } = await supabase.storage
           .from('avatars')
           .remove([filePath]);
@@ -227,7 +242,7 @@ export function useAvatarUpload() {
           throw new Error(t('errors.deleteFailed', { message: error.message }));
         }
 
-        // 更新数据库，将头像URL设为null
+        // Update database, set avatar_url to null
         const { error: updateError } = await supabase
           .from('profiles')
           .update({
@@ -263,7 +278,9 @@ export function useAvatarUpload() {
     [supabase, t]
   );
 
-  // 重置状态函数
+  /**
+   * Reset upload/delete state.
+   */
   const resetState = useCallback(() => {
     setState({
       isUploading: false,

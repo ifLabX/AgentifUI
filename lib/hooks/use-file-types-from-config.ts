@@ -6,25 +6,25 @@ import { useCurrentAppStore } from '@lib/stores/current-app-store';
 import React from 'react';
 import { useMemo } from 'react';
 
-// 定义文件类型接口
+// File type interface definition
 export interface FileType {
   title: string;
   extensions: string[];
   icon: React.ReactNode;
   acceptString: string;
-  maxSize: string; // 添加文件大小限制
+  maxSize: string; // File size limit
 }
 
-// 定义文件上传配置接口
+// File upload config interface definition
 export interface FileUploadConfig {
-  enabled: boolean; // 是否启用文件上传
-  maxFiles: number; // 最大文件数量
-  supportedMethods: ('local_file' | 'remote_url')[]; // 支持的上传方式
-  hasFileTypes: boolean; // 是否有启用的文件类型
-  allowedExtensions: string[]; // 🎯 新增：数据库中实际支持的文件扩展名
+  enabled: boolean; // Whether file upload is enabled
+  maxFiles: number; // Maximum number of files
+  supportedMethods: ('local_file' | 'remote_url')[]; // Supported upload methods
+  hasFileTypes: boolean; // Whether there are enabled file types
+  allowedExtensions: string[]; // Supported file extensions from database
 }
 
-// 生成文件选择器接受的格式字符串
+// Generate accept string for file picker
 const generateAcceptString = (extensions: string[]): string => {
   return extensions.map(ext => `.${ext}`).join(',');
 };
@@ -38,22 +38,27 @@ const FILE_TYPE_MAPPING: Record<string, FileTypeKey> = {
   custom: 'other',
 };
 
-// 从配置获取文件类型的钩子 - 修复字段解析逻辑
-// 适配实际的数据库配置结构：file_upload.enabled + allowed_file_types数组
+// Hook to get file types from config - fixes field parsing logic
+// Adapts to actual database config structure: file_upload.enabled + allowed_file_types array
 export function useFileTypesFromConfig() {
   const { currentAppInstance } = useCurrentAppStore();
 
   const { fileTypes, uploadConfig } = useMemo(() => {
-    // 🎯 新增：调试日志，帮助排查配置传递问题
-    console.log('[useFileTypesFromConfig] 当前应用实例:', currentAppInstance);
+    // Debug log: help trace config passing issues
     console.log(
-      '[useFileTypesFromConfig] 文件上传配置:',
+      '[useFileTypesFromConfig] current app instance:',
+      currentAppInstance
+    );
+    console.log(
+      '[useFileTypesFromConfig] file upload config:',
       currentAppInstance?.config?.dify_parameters?.file_upload
     );
 
-    // 如果没有当前应用实例，返回默认禁用状态
+    // If no current app instance, return default disabled state
     if (!currentAppInstance?.config?.dify_parameters?.file_upload) {
-      console.log('[useFileTypesFromConfig] 未找到文件上传配置，返回禁用状态');
+      console.log(
+        '[useFileTypesFromConfig] file upload config not found, returning disabled state'
+      );
       return {
         fileTypes: [],
         uploadConfig: {
@@ -69,13 +74,13 @@ export function useFileTypesFromConfig() {
     const fileUploadConfig =
       currentAppInstance.config.dify_parameters.file_upload;
 
-    // 🎯 关键修复：检查新的配置结构
-    // file_upload.enabled + allowed_file_types数组，而不是分别的image/document/audio/video对象
-    // 使用类型断言来访问实际的数据库结构字段
-    const actualConfig = fileUploadConfig as any; // 类型断言，因为实际结构与类型定义不匹配
+    // Key fix: check new config structure
+    // file_upload.enabled + allowed_file_types array, not separate image/document/audio/video objects
+    // Use type assertion to access actual database structure fields
+    const actualConfig = fileUploadConfig as any; // Type assertion since actual structure may not match type
 
     if (!actualConfig.enabled) {
-      console.log('[useFileTypesFromConfig] 文件上传未启用');
+      console.log('[useFileTypesFromConfig] file upload not enabled');
       return {
         fileTypes: [],
         uploadConfig: {
@@ -96,7 +101,7 @@ export function useFileTypesFromConfig() {
     const allowedFileTypes = actualConfig.allowed_file_types || [];
     const allowedExtensions = actualConfig.allowed_file_extensions || [];
 
-    console.log('[useFileTypesFromConfig] 解析配置:', {
+    console.log('[useFileTypesFromConfig] parsed config:', {
       enabled: actualConfig.enabled,
       maxFiles,
       supportedMethods,
@@ -126,16 +131,16 @@ export function useFileTypesFromConfig() {
       }
     });
 
-    // 生成上传配置对象
+    // Generate upload config object
     const uploadConfig: FileUploadConfig = {
-      enabled: enabledTypes.length > 0 && maxFiles > 0, // 有启用的类型且数量大于0才算启用
+      enabled: enabledTypes.length > 0 && maxFiles > 0, // Only enabled if there are types and maxFiles > 0
       maxFiles,
       supportedMethods,
       hasFileTypes: enabledTypes.length > 0,
       allowedExtensions,
     };
 
-    console.log('[useFileTypesFromConfig] 最终配置:', {
+    console.log('[useFileTypesFromConfig] final config:', {
       fileTypesCount: enabledTypes.length,
       uploadConfig,
     });
@@ -146,7 +151,7 @@ export function useFileTypesFromConfig() {
   return {
     fileTypes,
     uploadConfig,
-    isLoading: false, // 不需要异步加载，直接从store获取
+    isLoading: false, // No async loading needed, get directly from store
     error: null,
   };
 }

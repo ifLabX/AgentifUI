@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { useUserTimezone } from './use-user-timezone';
 
-// 时间格式化选项接口
+// Date formatting options interface
 export interface DateFormatOptions {
   includeTime?: boolean;
   style?: 'short' | 'medium' | 'long' | 'full';
@@ -13,28 +13,28 @@ export interface DateFormatOptions {
   timezone?: string;
 }
 
-// 时间问候语选项
+// Time greeting options interface
 export interface TimeGreetingOptions {
   timezone?: string;
   includeUsername?: boolean;
   username?: string | null;
 }
 
-// 统一的时间格式化 Hook
-// 提供标准化的时间显示功能，支持时区和国际化
-// 使用 common.time 翻译路径，作为全局通用组件
+// Unified date formatter hook
+// Provides standardized date/time display, supports timezone and i18n
+// Uses the 'common.time' translation path as a global utility
 export function useDateFormatter(defaultTimezone?: string) {
   const format = useFormatter();
   const t = useTranslations('common.time');
   const { timezone: userTimezone } = useUserTimezone();
 
-  // 核心日期格式化函数
+  // Core date formatting function
   const formatDate = useMemo(() => {
     return (
       dateInput: string | Date | null | undefined,
       options: DateFormatOptions = {}
     ): string => {
-      // 处理空值情况
+      // Handle null/undefined/empty input
       if (!dateInput) {
         return t('notRecorded');
       }
@@ -43,7 +43,7 @@ export function useDateFormatter(defaultTimezone?: string) {
         const date =
           typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
 
-        // 检查日期有效性
+        // Check for invalid date
         if (isNaN(date.getTime())) {
           console.warn('[useDateFormatter] Invalid date:', dateInput);
           return t('invalidDate');
@@ -51,12 +51,12 @@ export function useDateFormatter(defaultTimezone?: string) {
 
         const timezone = options.timezone || defaultTimezone || userTimezone;
 
-        // 构建格式化选项 - 使用next-intl兼容的类型
+        // Build formatting options compatible with next-intl
         const formatOptions: any = {
           timeZone: timezone,
         };
 
-        // 根据样式设置日期格式
+        // Set date style
         switch (options.style) {
           case 'short':
             formatOptions.year = 'numeric';
@@ -78,13 +78,13 @@ export function useDateFormatter(defaultTimezone?: string) {
             formatOptions.dateStyle = 'full';
             break;
           default:
-            // 默认中等样式
+            // Default to medium style
             formatOptions.year = 'numeric';
             formatOptions.month = 'long';
             formatOptions.day = 'numeric';
         }
 
-        // 添加时间格式
+        // Add time formatting if requested
         if (options.includeTime) {
           switch (options.timeStyle) {
             case 'short':
@@ -100,7 +100,7 @@ export function useDateFormatter(defaultTimezone?: string) {
               formatOptions.hour = '2-digit';
               formatOptions.minute = '2-digit';
               formatOptions.second = '2-digit';
-              formatOptions.timeZoneName = 'short'; // 仅使用next-intl支持的值
+              formatOptions.timeZoneName = 'short'; // Only use next-intl supported values
               break;
             default:
               formatOptions.hour = '2-digit';
@@ -110,13 +110,13 @@ export function useDateFormatter(defaultTimezone?: string) {
 
         return format.dateTime(date, formatOptions);
       } catch (error) {
-        console.error('[useDateFormatter] 格式化失败:', error);
+        console.error('[useDateFormatter] Format failed:', error);
         return typeof dateInput === 'string' ? dateInput : t('formatError');
       }
     };
   }, [format, t, defaultTimezone, userTimezone]);
 
-  // 相对时间格式化（如：2小时前）
+  // Relative time formatting (e.g., "2 hours ago")
   const formatRelativeTime = useMemo(() => {
     return (
       dateInput: string | Date | null | undefined,
@@ -129,28 +129,28 @@ export function useDateFormatter(defaultTimezone?: string) {
           typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
         const now = new Date();
 
-        // 如果指定了时区，需要调整当前时间
+        // If timezone is specified, adjust current time if needed
         if (options.timezone) {
-          // 这里可以根据需要实现时区调整逻辑
+          // Implement timezone adjustment logic here if needed
         }
 
         return format.relativeTime(date, now);
       } catch (error) {
-        console.error('[useDateFormatter] 相对时间格式化失败:', error);
+        console.error('[useDateFormatter] Relative time format failed:', error);
         return formatDate(dateInput, { style: 'short' });
       }
     };
   }, [format, formatDate, t]);
 
-  // 基于时间的问候语生成
-  // 🎯 这是核心的时间问候功能，使用 common.time.greeting 翻译路径
-  // 🚨 修复：使用用户时区设置生成问候语
+  // Time-based greeting generator
+  // This is the core greeting feature, uses 'common.time.greeting' translation path
+  // Uses user timezone for greeting calculation
   const getTimeBasedGreeting = useMemo(() => {
     return (options: TimeGreetingOptions = {}): string => {
       try {
         const now = new Date();
 
-        // 获取指定时区的小时数 - 优先使用用户时区设置
+        // Get hour in specified timezone, prefer user timezone
         let hour: number;
         const timezone = options.timezone || userTimezone;
 
@@ -165,7 +165,7 @@ export function useDateFormatter(defaultTimezone?: string) {
           hour = now.getHours();
         }
 
-        // 确定问候语类型
+        // Determine greeting type
         let greetingKey: string;
         if (hour >= 6 && hour < 12) {
           greetingKey = 'morning';
@@ -179,20 +179,20 @@ export function useDateFormatter(defaultTimezone?: string) {
 
         const greeting = t(`greeting.${greetingKey}`);
 
-        // 添加用户名（如果提供）
+        // Add username if provided
         if (options.includeUsername && options.username) {
           return `${greeting}，${options.username}`;
         }
 
         return greeting;
       } catch (error) {
-        console.error('[useDateFormatter] 问候语生成失败:', error);
+        console.error('[useDateFormatter] Greeting generation failed:', error);
         return t('greeting.default');
       }
     };
   }, [t, userTimezone]);
 
-  // 格式化执行时间（毫秒转可读格式）
+  // Format duration (milliseconds to readable string)
   const formatDuration = useMemo(() => {
     return (milliseconds: number): string => {
       if (milliseconds < 1000) {
@@ -204,7 +204,7 @@ export function useDateFormatter(defaultTimezone?: string) {
     };
   }, []);
 
-  // 获取当前用户时区
+  // Get current user timezone
   const getCurrentTimezone = useMemo(() => {
     return (): string => {
       try {
@@ -218,7 +218,7 @@ export function useDateFormatter(defaultTimezone?: string) {
     };
   }, []);
 
-  // 验证时区是否有效
+  // Validate if a timezone string is valid
   const isValidTimezone = useMemo(() => {
     return (timezone: string): boolean => {
       try {
@@ -240,31 +240,31 @@ export function useDateFormatter(defaultTimezone?: string) {
   };
 }
 
-// 预设的常用格式化选项
+// Preset commonly used date formatting options
 export const DateFormatPresets = {
-  // 短日期：2024年1月15日
+  // Short date: Jan 15, 2024
   shortDate: { style: 'short' as const },
 
-  // 中等日期：2024年1月15日
+  // Medium date: January 15, 2024
   mediumDate: { style: 'medium' as const },
 
-  // 长日期：2024年1月15日 星期一
+  // Long date: Monday, January 15, 2024
   longDate: { style: 'long' as const },
 
-  // 完整日期：2024年1月15日星期一
+  // Full date: Monday, January 15, 2024
   fullDate: { style: 'full' as const },
 
-  // 日期时间：2024年1月15日 14:30
+  // Date and time: January 15, 2024 14:30
   dateTime: { style: 'medium' as const, includeTime: true },
 
-  // 详细时间：2024年1月15日 14:30:25
+  // Detailed date and time: January 15, 2024 14:30:25
   detailedDateTime: {
     style: 'medium' as const,
     includeTime: true,
     timeStyle: 'medium' as const,
   },
 
-  // 完整时间：2024年1月15日 14:30:25 CST
+  // Full date and time with timezone: January 15, 2024 14:30:25 CST
   fullDateTime: {
     style: 'medium' as const,
     includeTime: true,
