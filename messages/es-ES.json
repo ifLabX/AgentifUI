@@ -7,6 +7,10 @@
       "retry": "Reintentar",
       "remove": "Eliminar",
       "error": "Error",
+      "exportButton": {
+        "tooltip": "Exportar archivo",
+        "ariaLabel": "Exportar archivo"
+      },
       "logoutDialog": {
         "title": "Cerrar Sesión",
         "message": "¿Estás seguro de que quieres cerrar sesión? Necesitarás iniciar sesión nuevamente para acceder a tu cuenta.",
@@ -131,7 +135,11 @@
         "copyFailed": "Error al copiar",
         "imageLink": "Enlace de imagen",
         "viewImage": "Ver imagen",
-        "clickToView": "Haz clic para ver"
+        "clickToView": "Haz clic para ver",
+        "clickToViewWithAlt": "Haz clic para ver: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} preguntas más..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". Explora el futuro de las aplicaciones de modelos grandes."
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "edit": "Editar",
+        "regenerate": "Regenerar",
+        "useful": "Útil",
+        "notUseful": "No útil",
+        "rated": "Valorado"
+      },
+      "referenceSources": {
+        "title": "Se referenció {count} recursos de base de conocimiento",
+        "knowledgeBase": "Base de Conocimiento",
+        "expand": "Expandir texto completo",
+        "collapse": "Contraer",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "copyFailed": "Error al copiar",
+        "relevanceScore": "Relevancia",
+        "wordCount": "{count} palabras",
+        "page": "Página {page}"
       }
     }
   },

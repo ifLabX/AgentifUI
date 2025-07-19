@@ -1,12 +1,12 @@
-// 导出按钮组件
+// Export button components
 export * from './buttons/copy-button';
 export * from './buttons/edit-button';
 export * from './buttons/regenerate-button';
 export * from './buttons/feedback-button';
 
-// 导出消息操作组件
+// Export message action components
 export * from './user-message-actions';
 export * from './assistant-message-actions';
 
-// 注意：hooks不导出，因为它们是组件内部实现细节
-// 如果其他组件需要直接使用这些hooks，可以单独导入
+// Note: Hooks are not exported because they are internal implementation details.
+// If other components need to use these hooks directly, they can import them individually.

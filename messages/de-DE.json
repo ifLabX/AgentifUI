@@ -7,6 +7,10 @@
       "retry": "Wiederholen",
       "remove": "Entfernen",
       "error": "Fehler",
+      "exportButton": {
+        "tooltip": "Datei exportieren",
+        "ariaLabel": "Datei exportieren"
+      },
       "logoutDialog": {
         "title": "Abmelden",
         "message": "Sind Sie sicher, dass Sie sich abmelden möchten? Sie müssen sich erneut anmelden, um auf Ihr Konto zuzugreifen.",
@@ -131,7 +135,11 @@
         "copyFailed": "Kopieren fehlgeschlagen",
         "imageLink": "Bildlink",
         "viewImage": "Bild anzeigen",
-        "clickToView": "Zum Anzeigen klicken"
+        "clickToView": "Zum Anzeigen klicken",
+        "clickToViewWithAlt": "Zum Anzeigen klicken: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} weitere Fragen..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". Die Zukunft großer Modellanwendungen erkunden."
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "edit": "Bearbeiten",
+        "regenerate": "Regenerieren",
+        "useful": "Nützlich",
+        "notUseful": "Nicht nützlich",
+        "rated": "Bewertet"
+      },
+      "referenceSources": {
+        "title": "{count} Wissensbasis-Ressourcen referenziert",
+        "knowledgeBase": "Wissensbasis",
+        "expand": "Volltext erweitern",
+        "collapse": "Einklappen",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "copyFailed": "Kopieren fehlgeschlagen",
+        "relevanceScore": "Relevanz",
+        "wordCount": "{count} Wörter",
+        "page": "Seite {page}"
       }
     }
   },

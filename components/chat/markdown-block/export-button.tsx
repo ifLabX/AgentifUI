@@ -7,21 +7,23 @@ import { FiCheck, FiDownload } from 'react-icons/fi';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface ExportButtonProps {
   content?: string;
   language?: string;
   className?: string;
   tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right';
-  tooltipSize?: 'sm' | 'md'; // tooltip尺寸
-  showTooltipArrow?: boolean; // 是否显示tooltip箭头
+  tooltipSize?: 'sm' | 'md'; // tooltip size
+  showTooltipArrow?: boolean; // whether to show tooltip arrow
   onExport?: () => void;
 }
 
-// 使用随机ID生成器确保每个导出按钮的tooltip是唯一的
+// Use a random ID generator to ensure each export button's tooltip is unique
 const generateUniqueId = () =>
   `export-btn-${Math.random().toString(36).substring(2, 11)}`;
 
-// 🎯 根据编程语言获取合适的文件扩展名
+// Get the appropriate file extension based on programming language
 const getFileExtension = (language: string): string => {
   const extensionMap: Record<string, string> = {
     javascript: 'js',
@@ -58,7 +60,7 @@ const getFileExtension = (language: string): string => {
   return extensionMap[language.toLowerCase()] || 'txt';
 };
 
-// 🎯 生成合适的文件名
+// Generate a suitable file name
 const generateFileName = (language: string): string => {
   const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
   const extension = getFileExtension(language);
@@ -66,10 +68,10 @@ const generateFileName = (language: string): string => {
 };
 
 /**
- * 通用导出按钮组件
- * 适用于代码块等需要导出功能的地方
- * 符合应用的石色主题，在亮色和暗色模式下都有良好的视觉效果
- * 样式和交互逻辑参考CopyButton组件
+ * Generic export button component
+ * Suitable for code blocks and other export scenarios
+ * Follows the stone color theme for both light and dark modes
+ * Styles and interaction logic are similar to CopyButton
  */
 export const ExportButton: React.FC<ExportButtonProps> = React.memo(
   ({
@@ -82,50 +84,45 @@ export const ExportButton: React.FC<ExportButtonProps> = React.memo(
     onExport,
   }) => {
     const { isDark } = useTheme();
+    const t = useTranslations('common.ui.exportButton');
 
-    // 导出功能状态
+    // Export state
     const [isExported, setIsExported] = React.useState(false);
 
-    // 为每个导出按钮生成唯一的tooltip ID
+    // Generate a unique tooltip ID for each export button
     const tooltipId = React.useRef(generateUniqueId()).current;
 
-    // 处理导出操作
+    // Handle export action
     const handleExport = React.useCallback(async () => {
       if (!content) return;
 
       try {
-        // 🎯 创建Blob对象并触发下载
+        // Create a Blob object and trigger download
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
 
-        // 创建临时下载链接
+        // Create a temporary download link
         const link = document.createElement('a');
         link.href = url;
         link.download = generateFileName(language);
 
-        // 触发下载
+        // Trigger download
         document.body.appendChild(link);
         link.click();
 
-        // 清理
+        // Cleanup
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
 
-        // 设置成功状态
+        // Set success state
         setIsExported(true);
 
-        // 调用外部传入的onExport回调（如果有）
+        // Call external onExport callback if provided
         if (onExport) {
           onExport();
         }
 
-        console.log('[ExportButton] 代码导出成功:', {
-          language,
-          fileName: generateFileName(language),
-          contentLength: content.length,
-        });
-
-        // 2秒后重置状态
+        // Reset state after 2 seconds
         setTimeout(() => {
           setIsExported(false);
         }, 2000);
@@ -138,7 +135,7 @@ export const ExportButton: React.FC<ExportButtonProps> = React.memo(
 
     return (
       <TooltipWrapper
-        content="导出文件"
+        content={t('tooltip')}
         id={tooltipId}
         placement={tooltipPlacement}
         size={tooltipSize}
@@ -149,17 +146,17 @@ export const ExportButton: React.FC<ExportButtonProps> = React.memo(
           onClick={handleExport}
           className={cn(
             'flex items-center justify-center rounded-md p-1.5',
-            // 🎯 基础文本颜色 - 符合石色主题，与CopyButton保持一致
+            // Base text color - matches stone theme, consistent with CopyButton
             isDark ? 'text-stone-400' : 'text-stone-500',
-            // 🎯 悬停文本颜色 - 亮色模式变深，暗色模式变亮
+            // Hover text color - darker in light mode, lighter in dark mode
             isDark ? 'hover:text-stone-300' : 'hover:text-stone-700',
-            // 🎯 悬停背景色 - 使用半透明的中间色调，适合亮暗两种模式
+            // Hover background color - uses semi-transparent mid-tone, suitable for both modes
             isDark ? 'hover:bg-stone-600/40' : 'hover:bg-stone-300/40',
             'focus:outline-none',
             className
           )}
-          style={{ transform: 'translateZ(0)' }} // 添加硬件加速，减少闪烁
-          aria-label="导出文件"
+          style={{ transform: 'translateZ(0)' }} // Enable hardware acceleration to reduce flicker
+          aria-label={t('ariaLabel')}
         >
           {isExported ? (
             <FiCheck className="h-4 w-4" />
@@ -172,5 +169,5 @@ export const ExportButton: React.FC<ExportButtonProps> = React.memo(
   }
 );
 
-// 显示名称，方便调试
+// Set display name for easier debugging
 ExportButton.displayName = 'ExportButton';

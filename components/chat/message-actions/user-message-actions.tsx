@@ -12,15 +12,15 @@ interface UserMessageActionsProps {
   content: string;
   onEdit: () => void;
   className?: string;
-  // tooltip配置
+  // Tooltip configuration
   tooltipSize?: 'sm' | 'md';
   showTooltipArrow?: boolean;
 }
 
 /**
- * 用户消息操作按钮组件
+ * User message action buttons component
  *
- * 组合了复制和编辑按钮，用于用户消息下方的操作区域
+ * Combines copy and edit buttons for the user message action area.
  */
 export const UserMessageActions: React.FC<UserMessageActionsProps> = ({
   content,

@@ -7,6 +7,10 @@
       "retry": "Riprova",
       "remove": "Rimuovi",
       "error": "Errore",
+      "exportButton": {
+        "tooltip": "Esporta file",
+        "ariaLabel": "Esporta file"
+      },
       "logoutDialog": {
         "title": "Logout",
         "message": "Sei sicuro di voler effettuare il logout? Dovrai accedere nuovamente per visualizzare il tuo account.",
@@ -131,7 +135,11 @@
         "copyFailed": "Copia fallita",
         "imageLink": "Link immagine",
         "viewImage": "Visualizza immagine",
-        "clickToView": "Clicca per visualizzare"
+        "clickToView": "Clicca per visualizzare",
+        "clickToViewWithAlt": "Clicca per visualizzare: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "Altre {count} domande..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". Esplora il futuro delle applicazioni di grandi modelli."
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "Copia",
+        "copied": "Copiato",
+        "edit": "Modifica",
+        "regenerate": "Rigenera",
+        "useful": "Utile",
+        "notUseful": "Non utile",
+        "rated": "Valutato"
+      },
+      "referenceSources": {
+        "title": "{count} risorse della base di conoscenza referenziate",
+        "knowledgeBase": "Base di Conoscenza",
+        "expand": "Espandi testo completo",
+        "collapse": "Comprimi",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "copyFailed": "Copia fallita",
+        "relevanceScore": "Rilevanza",
+        "wordCount": "{count} parole",
+        "page": "Pagina {page}"
       }
     }
   },

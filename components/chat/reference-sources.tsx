@@ -2,6 +2,8 @@ import { cn } from '@lib/utils';
 
 import React, { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -15,7 +17,7 @@ interface RetrieverResource {
   content: string;
   score: number;
   position: number;
-  word_count?: number; // 改为可选字段，兼容不同Dify应用
+  word_count?: number; // Make this field optional for compatibility with different Dify apps
   page?: number | null;
   dataset_id?: string;
   segment_id?: string;
@@ -38,37 +40,40 @@ export function ReferenceSources({
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const t = useTranslations('components.chat.referenceSources');
 
-  // 如果没有引用资源，不渲染组件
+  // If there are no reference resources, do not render the component
   if (!retrieverResources || retrieverResources.length === 0) {
     return null;
   }
 
+  // Toggle the expansion of the reference list
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
+  // Toggle the expansion of a single item
   const toggleItemExpanded = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  // 复制内容到剪贴板
+  // Copy content to clipboard
   const handleCopy = async (content: string, index: number) => {
     try {
       await navigator.clipboard.writeText(content);
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
     } catch (err) {
-      console.error('复制失败:', err);
+      console.error(t('copyFailed'), err);
     }
   };
 
-  // 格式化相关度分数
+  // Format the relevance score as a percentage
   const formatScore = (score: number) => {
     return (score * 100).toFixed(1) + '%';
   };
 
-  // 截取内容用于概览
+  // Get a preview of the content for summary
   const getContentPreview = (content: string, maxLength = 100) => {
     if (content.length <= maxLength) return content;
     return content.slice(0, maxLength) + '...';
@@ -76,7 +81,7 @@ export function ReferenceSources({
 
   return (
     <div className={cn('w-full', className)}>
-      {/* --- 更细的头部bar - 微调优化 --- */}
+      {/* Header bar */}
       <button
         onClick={toggleExpanded}
         className={cn(
@@ -110,7 +115,7 @@ export function ReferenceSources({
             />
           )}
           <span className="font-serif text-sm font-medium">
-            📚 引用了 {retrieverResources.length} 个知识库资源
+            📚 {t('title', { count: retrieverResources.length })}
           </span>
         </div>
 
@@ -122,11 +127,11 @@ export function ReferenceSources({
               : 'bg-stone-300/80 text-stone-700'
           )}
         >
-          {retrieverResources[0]?.dataset_name || '知识库'}
+          {retrieverResources[0]?.dataset_name || t('knowledgeBase')}
         </span>
       </button>
 
-      {/* --- 优化后的展开引用列表 --- */}
+      {/* Reference list */}
       {isExpanded && (
         <div
           className={cn(
@@ -151,10 +156,10 @@ export function ReferenceSources({
                   isDark ? 'hover:bg-stone-800/60' : 'hover:bg-stone-200/70'
                 )}
               >
-                {/* --- 优化的头部信息行 --- */}
+                {/* Header row */}
                 <div className="mb-3 flex items-start justify-between">
                   <div className="flex min-w-0 flex-1 items-center space-x-3">
-                    {/* 序号圆圈 - 增强light模式对比度 */}
+                    {/* Index circle */}
                     <div
                       className={cn(
                         'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-medium',
@@ -166,7 +171,7 @@ export function ReferenceSources({
                       {index + 1}
                     </div>
 
-                    {/* 文档标题 - 更突出 */}
+                    {/* Document title */}
                     <div className="min-w-0 flex-1">
                       <h4
                         className={cn(
@@ -194,14 +199,16 @@ export function ReferenceSources({
                               isDark ? 'text-stone-400' : 'text-stone-600'
                             )}
                           >
-                            {resource.word_count.toLocaleString()} 字
+                            {t('wordCount', {
+                              count: resource.word_count.toLocaleString(),
+                            })}
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {/* 相关度分数 - 增强light模式对比度 */}
+                  {/* Relevance score */}
                   <div
                     className={cn(
                       'flex-shrink-0 rounded-full px-2 py-1 font-serif text-xs font-bold',
@@ -214,7 +221,7 @@ export function ReferenceSources({
                   </div>
                 </div>
 
-                {/* --- 优化的内容区域 --- */}
+                {/* Content area */}
                 <div
                   className={cn(
                     'mb-3 rounded-lg p-3',
@@ -241,10 +248,10 @@ export function ReferenceSources({
                   </div>
                 </div>
 
-                {/* --- 优化的操作按钮区域 --- */}
+                {/* Action buttons area */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    {/* 展开/收起按钮 */}
+                    {/* Expand/Collapse button */}
                     {resource.content.length > 100 && (
                       <button
                         onClick={() => toggleItemExpanded(index)}
@@ -258,12 +265,14 @@ export function ReferenceSources({
                       >
                         <DocumentTextIcon className="h-3 w-3" />
                         <span>
-                          {expandedIndex === index ? '收起' : '展开全文'}
+                          {expandedIndex === index
+                            ? t('collapse')
+                            : t('expand')}
                         </span>
                       </button>
                     )}
 
-                    {/* 复制按钮 */}
+                    {/* Copy button */}
                     <button
                       onClick={() => handleCopy(resource.content, index)}
                       className={cn(
@@ -274,11 +283,13 @@ export function ReferenceSources({
                       )}
                     >
                       <ClipboardDocumentIcon className="h-3 w-3" />
-                      <span>{copiedIndex === index ? '已复制' : '复制'}</span>
+                      <span>
+                        {copiedIndex === index ? t('copied') : t('copy')}
+                      </span>
                     </button>
                   </div>
 
-                  {/* 页码信息（如果有） */}
+                  {/* Page info (if available) */}
                   {resource.page && (
                     <span
                       className={cn(
@@ -286,7 +297,7 @@ export function ReferenceSources({
                         isDark ? 'text-stone-500' : 'text-stone-400'
                       )}
                     >
-                      第 {resource.page} 页
+                      {t('page', { page: resource.page })}
                     </span>
                   )}
                 </div>

@@ -14,6 +14,8 @@ import {
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface AssistantMessageActionsProps {
   messageId: string;
   onCopy: () => void;
@@ -23,6 +25,11 @@ interface AssistantMessageActionsProps {
   isRegenerating?: boolean;
 }
 
+/**
+ * Assistant message action buttons component
+ *
+ * Combines copy, regenerate, and feedback buttons for the assistant message action area.
+ */
 export const AssistantMessageActions: React.FC<
   AssistantMessageActionsProps
 > = ({
@@ -33,6 +40,7 @@ export const AssistantMessageActions: React.FC<
   isRegenerating = false,
 }) => {
   const { isDark } = useTheme();
+  const t = useTranslations('components.chat.messageActions');
 
   return (
     <MessageActionsContainer
@@ -40,39 +48,44 @@ export const AssistantMessageActions: React.FC<
       isAssistantMessage={true}
       className={className}
     >
+      {/* Copy button, shows check icon and label when active */}
       <MessageActionButton
         icon={FiCopy}
         activeIcon={FiCheck}
-        label="复制"
-        activeLabel="已复制"
+        label={t('copy')}
+        activeLabel={t('copied')}
         onClick={onCopy}
         tooltipPosition="bottom"
       />
+      {/* Regenerate button, shows spinning animation when regenerating */}
       <MessageActionButton
         icon={FiRefreshCw}
-        label="重新生成"
+        label={t('regenerate')}
         onClick={onRegenerate}
         disabled={isRegenerating}
         className={isRegenerating ? 'animate-spin' : ''}
         tooltipPosition="bottom"
       />
+      {/* Divider between main actions and feedback */}
       <div
         className={cn(
           'mx-1 self-stretch border-r',
           isDark ? 'border-gray-700' : 'border-gray-300'
         )}
       />
+      {/* Thumbs up feedback button */}
       <MessageActionButton
         icon={FiThumbsUp}
-        label="有用"
-        activeLabel="已评价"
+        label={t('useful')}
+        activeLabel={t('rated')}
         onClick={() => onFeedback(true)}
         tooltipPosition="bottom"
       />
+      {/* Thumbs down feedback button */}
       <MessageActionButton
         icon={FiThumbsDown}
-        label="无用"
-        activeLabel="已评价"
+        label={t('notUseful')}
+        activeLabel={t('rated')}
         onClick={() => onFeedback(false)}
         tooltipPosition="bottom"
       />

@@ -7,6 +7,10 @@
       "retry": "再試行",
       "remove": "削除",
       "error": "エラー",
+      "exportButton": {
+        "tooltip": "ファイルをエクスポート",
+        "ariaLabel": "ファイルをエクスポート"
+      },
       "logoutDialog": {
         "title": "ログアウト",
         "message": "本当にログアウトしますか？アカウントにアクセスするには再度ログインする必要があります。",
@@ -131,7 +135,11 @@
         "copyFailed": "コピー失敗",
         "imageLink": "画像リンク",
         "viewImage": "画像を表示",
-        "clickToView": "クリックして表示"
+        "clickToView": "クリックして表示",
+        "clickToViewWithAlt": "クリックして表示: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "他に {count} つの質問があります..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": "。大規模モデルアプリケーションの未来を探求。"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "コピー",
+        "copied": "コピー済み",
+        "edit": "編集",
+        "regenerate": "再生成",
+        "useful": "役に立つ",
+        "notUseful": "役に立たない",
+        "rated": "評価済み"
+      },
+      "referenceSources": {
+        "title": "{count}つのナレッジベースリソースを参照",
+        "knowledgeBase": "ナレッジベース",
+        "expand": "全文を展開",
+        "collapse": "折りたたむ",
+        "copy": "コピー",
+        "copied": "コピー済み",
+        "copyFailed": "コピー失敗",
+        "relevanceScore": "関連度",
+        "wordCount": "{count}文字",
+        "page": "{page}ページ"
       }
     }
   },

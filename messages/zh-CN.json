@@ -7,6 +7,10 @@
       "retry": "重试",
       "remove": "移除",
       "error": "错误",
+      "exportButton": {
+        "tooltip": "导出文件",
+        "ariaLabel": "导出文件"
+      },
       "logoutDialog": {
         "title": "退出登录",
         "message": "确定要退出登录吗？退出后需要重新登录才能访问您的账户。",
@@ -131,7 +135,11 @@
         "copyFailed": "复制失败",
         "imageLink": "图片链接",
         "viewImage": "查看图片",
-        "clickToView": "点击查看"
+        "clickToView": "点击查看",
+        "clickToViewWithAlt": "点击查看: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "还有 {count} 个问题..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". 探索大模型应用的未来。"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "复制",
+        "copied": "已复制",
+        "edit": "编辑",
+        "regenerate": "重新生成",
+        "useful": "有用",
+        "notUseful": "无用",
+        "rated": "已评价"
+      },
+      "referenceSources": {
+        "title": "引用了 {count} 个知识库资源",
+        "knowledgeBase": "知识库",
+        "expand": "展开全文",
+        "collapse": "收起",
+        "copy": "复制",
+        "copied": "已复制",
+        "copyFailed": "复制失败",
+        "relevanceScore": "相关度",
+        "wordCount": "{count} 字",
+        "page": "第 {page} 页"
       }
     }
   },

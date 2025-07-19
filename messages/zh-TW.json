@@ -7,6 +7,10 @@
       "retry": "重試",
       "remove": "移除",
       "error": "錯誤",
+      "exportButton": {
+        "tooltip": "匯出檔案",
+        "ariaLabel": "匯出檔案"
+      },
       "logoutDialog": {
         "title": "登出",
         "message": "確定要登出嗎？登出後需要重新登入才能存取您的帳戶。",
@@ -131,7 +135,11 @@
         "copyFailed": "複製失敗",
         "imageLink": "圖片連結",
         "viewImage": "檢視圖片",
-        "clickToView": "點擊檢視"
+        "clickToView": "點擊檢視",
+        "clickToViewWithAlt": "點擊檢視: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "還有 {count} 個問題..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". 探索大模型應用的未來。"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "複製",
+        "copied": "已複製",
+        "edit": "編輯",
+        "regenerate": "重新生成",
+        "useful": "有用",
+        "notUseful": "無用",
+        "rated": "已評價"
+      },
+      "referenceSources": {
+        "title": "引用了 {count} 個知識庫資源",
+        "knowledgeBase": "知識庫",
+        "expand": "展開全文",
+        "collapse": "收起",
+        "copy": "複製",
+        "copied": "已複製",
+        "copyFailed": "複製失敗",
+        "relevanceScore": "相關度",
+        "wordCount": "{count} 字",
+        "page": "第 {page} 頁"
       }
     }
   },

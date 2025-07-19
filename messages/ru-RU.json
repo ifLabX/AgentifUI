@@ -7,6 +7,10 @@
       "retry": "Попробовать снова",
       "remove": "Удалить",
       "error": "Ошибка",
+      "exportButton": {
+        "tooltip": "Экспорт файла",
+        "ariaLabel": "Экспорт файла"
+      },
       "logoutDialog": {
         "title": "Выход",
         "message": "Вы уверены, что хотите выйти? Вам потребуется снова войти в систему, чтобы получить доступ к своей учетной записи.",
@@ -131,7 +135,11 @@
         "copyFailed": "Ошибка копирования",
         "imageLink": "Ссылка на изображение",
         "viewImage": "Просмотреть изображение",
-        "clickToView": "Нажмите, чтобы просмотреть"
+        "clickToView": "Нажмите, чтобы просмотреть",
+        "clickToViewWithAlt": "Нажмите, чтобы просмотреть: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "Еще {count} вопросов..."
       }
     },
     "chatflow": {
@@ -1908,6 +1916,31 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". Исследуйте будущее приложений больших моделей."
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "Копировать",
+        "copied": "Скопировано",
+        "edit": "Редактировать",
+        "regenerate": "Регенерировать",
+        "useful": "Полезно",
+        "notUseful": "Бесполезно",
+        "rated": "Оценено"
+      },
+      "referenceSources": {
+        "title": "Ссылки на {count} ресурсов базы знаний",
+        "knowledgeBase": "База знаний",
+        "expand": "Развернуть полный текст",
+        "collapse": "Свернуть",
+        "copy": "Копировать",
+        "copied": "Скопировано",
+        "copyFailed": "Ошибка копирования",
+        "relevanceScore": "Релевантность",
+        "wordCount": "{count} слов",
+        "page": "Страница {page}"
       }
     }
   },

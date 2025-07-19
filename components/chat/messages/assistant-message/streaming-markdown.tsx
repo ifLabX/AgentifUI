@@ -7,21 +7,23 @@ interface StreamingTextProps {
   isStreaming: boolean;
   isComplete?: boolean;
   className?: string;
-  typewriterSpeed?: number; // 字符/秒
-  children: (displayedContent: string) => React.ReactNode; // 渲染函数
+  typewriterSpeed?: number; // characters per second
+  children: (displayedContent: string) => React.ReactNode; // render function
 }
 
-// 🎯 StreamingText组件：专注于流式文本渲染逻辑
-// 职责：
-// 1. 管理流式文本的逐字符显示
-// 2. 通过render prop模式让父组件决定如何渲染内容
-// 3. 不关心具体的渲染格式（Markdown、HTML等）
+/**
+ * StreamingText component: handles streaming text rendering logic.
+ * Responsibilities:
+ * 1. Manages character-by-character display of streaming text.
+ * 2. Uses render prop pattern to let parent decide how to render content.
+ * 3. Does not care about specific rendering format (Markdown, HTML, etc).
+ */
 export const StreamingText: React.FC<StreamingTextProps> = ({
   content,
   isStreaming,
   isComplete = false,
   className,
-  typewriterSpeed = 100, // 默认100字符/秒
+  typewriterSpeed = 100, // default 100 characters/second
   children,
 }) => {
   const [displayedContent, setDisplayedContent] = useState('');
@@ -29,12 +31,14 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
   const lastUpdateTimeRef = useRef<number>(Date.now());
   const currentIndexRef = useRef<number>(0);
 
-  // 🎯 核心流式逻辑：
-  // 1. 非流式状态：直接显示完整内容
-  // 2. 流式状态：使用requestAnimationFrame实现丝滑逐字符显示
-  // 3. 内容更新时：从当前位置继续，无缝衔接
+  /**
+   * Core streaming logic:
+   * 1. If not streaming or already complete, show full content immediately.
+   * 2. If streaming, use requestAnimationFrame to smoothly reveal text character by character.
+   * 3. When content updates, continue from current position seamlessly.
+   */
   useEffect(() => {
-    // 非流式状态或已完成，直接显示完整内容
+    // If not streaming or already complete, show full content immediately
     if (!isStreaming || isComplete) {
       setDisplayedContent(content);
       currentIndexRef.current = content.length;
@@ -45,20 +49,20 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
       return;
     }
 
-    // 如果内容没有变化，不需要重新启动动画
+    // If content hasn't changed and animation is running, do nothing
     if (content === displayedContent && animationRef.current) {
       return;
     }
 
-    // 确保当前索引不超过新内容长度
+    // Ensure current index does not exceed new content length
     currentIndexRef.current = Math.min(currentIndexRef.current, content.length);
 
-    // 启动流式动画
+    // Start streaming animation
     const animate = () => {
       const now = Date.now();
       const deltaTime = now - lastUpdateTimeRef.current;
 
-      // 计算应该显示的字符数
+      // Calculate how many characters to add
       const charactersToAdd = Math.max(
         1,
         Math.floor((deltaTime * typewriterSpeed) / 1000)
@@ -73,7 +77,7 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
         lastUpdateTimeRef.current = now;
       }
 
-      // 继续动画直到显示完成
+      // Continue animation until all content is shown
       if (currentIndexRef.current < content.length) {
         animationRef.current = requestAnimationFrame(animate);
       } else {
@@ -81,7 +85,7 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
       }
     };
 
-    // 启动动画
+    // Start animation
     lastUpdateTimeRef.current = Date.now();
     animationRef.current = requestAnimationFrame(animate);
 
@@ -100,8 +104,10 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
   );
 };
 
-// 🎯 向后兼容的StreamingMarkdown组件
-// 保持原有的API，但内部使用StreamingText
+/**
+ * Backward-compatible StreamingMarkdown component.
+ * Keeps the original API, but uses StreamingText internally.
+ */
 interface StreamingMarkdownProps {
   content: string;
   isStreaming: boolean;

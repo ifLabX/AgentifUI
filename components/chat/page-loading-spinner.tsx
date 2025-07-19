@@ -1,7 +1,7 @@
 /**
- * 页面加载指示器组件
+ * Page loading spinner component
  *
- * 用于显示全屏加载状态
+ * Used to display a fullscreen loading state
  */
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
@@ -12,11 +12,15 @@ interface PageLoadingSpinnerProps {
   isLoading: boolean;
 }
 
+/**
+ * PageLoadingSpinner
+ * @description Shows a fullscreen loading spinner with a fade-in delay to prevent flicker.
+ */
 export function PageLoadingSpinner({ isLoading }: PageLoadingSpinnerProps) {
   const { colors } = useThemeColors();
   const [visible, setVisible] = useState(false);
 
-  // 添加延迟显示，避免闪烁
+  // Add a delay before showing the spinner to avoid flicker
   useEffect(() => {
     if (isLoading) {
       const timer = setTimeout(() => setVisible(true), 300);
@@ -47,6 +51,10 @@ interface SpinnerIconProps {
   size?: number;
 }
 
+/**
+ * SpinnerIcon
+ * @description SVG spinner icon for loading indication
+ */
 function SpinnerIcon({ size = 24 }: SpinnerIconProps) {
   const { isDark } = useThemeColors();
 

@@ -1,5 +1,5 @@
 // This file provides unified exports for all atomic components in the markdown-block directory,
-// making it convenient to import them in other places (e.g. AssistantMessage).
+// making it convenient to import them elsewhere (e.g., AssistantMessage).
 export * from './code-block-header';
 export * from './inline-code';
 export * from './code-block';
