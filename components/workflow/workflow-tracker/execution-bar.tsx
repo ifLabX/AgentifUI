@@ -22,25 +22,26 @@ interface ExecutionBarProps {
 }
 
 /**
- * 工作流执行条组件 - 支持迭代和并行分支的细粒度显示
+ * Workflow execution bar component - supports fine-grained display of iterations and parallel branches
  *
- * 特点：
- * - fade-in动画进入
- * - 左侧节点类型图标
- * - 中间显示节点信息和状态
- * - 右侧显示计时信息
- * - 支持迭代展开/折叠
- * - 支持并行分支显示
- * - 悬停效果和交互
+ * Features:
+ * - fade-in animation
+ * - Left node type icon
+ * - Middle display node information and status
+ * - Right display timing information
+ * - Support iteration expansion/collapse
+ * - Support parallel branch display
+ * - Hover effect and interaction
  */
 export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
   const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.nodeStatus');
   const tTypes = useTranslations('pages.workflow.nodeTypes');
+  const tDetails = useTranslations('pages.workflow.iterationDetails');
   const [isVisible, setIsVisible] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // 🎯 使用store中的展开状态和actions
+  // 🎯 Use the expanded state and actions in the store
   const {
     iterationExpandedStates,
     loopExpandedStates,
@@ -53,7 +54,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
     (node.isLoopNode && loopExpandedStates[node.id]) ||
     false;
 
-  // 延迟显示动画
+  // Delay display animation
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
@@ -62,7 +63,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
     return () => clearTimeout(timer);
   }, [delay]);
 
-  // 计时器
+  // Timer
   useEffect(() => {
     if (node.status === 'running' && node.startTime) {
       const interval = setInterval(() => {
@@ -82,7 +83,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
   };
 
   const getStatusIcon = () => {
-    // 🎯 保持workflow UI一致性：只使用两种图标 - 放大镜和spinner
+    // 🎯 Keep workflow UI consistency: only use two icons - magnifying glass and spinner
     const getSimpleIcon = () => {
       if (node.status === 'running') {
         return <Loader2 className="h-4 w-4 animate-spin" />;
@@ -92,7 +93,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
 
     const icon = getSimpleIcon();
 
-    // 根据状态设置颜色
+    // Set color based on status
     const colorClass =
       node.status === 'running'
         ? isDark
@@ -112,7 +113,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
   };
 
   const getStatusText = () => {
-    // 🎯 迭代节点显示特殊状态文本
+    // 🎯 Iteration node displays special status text
     if (node.isIterationNode) {
       switch (node.status) {
         case 'running':
@@ -126,7 +127,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
       }
     }
 
-    // 🎯 循环节点显示特殊状态文本
+    // 🎯 Loop node displays special status text
     if (node.isLoopNode) {
       switch (node.status) {
         case 'running':
@@ -140,7 +141,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
       }
     }
 
-    // 🎯 并行分支节点显示特殊状态文本
+    // 🎯 Parallel branch node displays special status text
     if (node.isParallelNode) {
       switch (node.status) {
         case 'running':
@@ -169,7 +170,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
   };
 
   const getNodeTitle = () => {
-    // 根据节点类型返回友好的中文名称
+    // Return friendly Chinese name based on node type
     switch (node.type) {
       case 'start':
         return tTypes('start');
@@ -205,26 +206,26 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
       case 'end':
         return tTypes('end');
       default:
-        return node.title || `节点 ${index + 1}`;
+        return node.title || tDetails('nodeNumber', { number: index + 1 });
     }
   };
 
   const getBarStyles = () => {
     const baseStyles = cn(
-      // 🎯 保持workflow原有样式：细bar样式 + 悬停效果
+      // 🎯 Keep workflow original style: thin bar style + hover effect
       'flex items-center gap-3 rounded-md border px-3 py-2 transition-all duration-300',
       'transform font-serif',
       isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
     );
 
-    // 🎯 关键修复：迭代/循环中的节点使用左侧指示条+连接点设计，提供清晰的层级视觉指示
+    // 🎯 Key fix: nodes in iteration/loop use left indicator bar + connection point design, providing clear hierarchical visual indicators
     const nestedStyles =
       node.isInIteration || node.isInLoop
         ? cn(
             'relative ml-6 pl-4',
-            // 使用相应的指示条样式
+            // Use the corresponding indicator bar style
             node.isInIteration ? 'iteration-node' : 'loop-node',
-            // 轻微的背景色区分
+            // Slight background color distinction
             isDark ? 'bg-stone-800/20' : 'bg-stone-50/40'
           )
         : '';
@@ -275,7 +276,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
       <div
         className={cn(
           getBarStyles(),
-          // 🎯 所有bar都有悬停效果，只有迭代、循环和并行分支节点才有cursor pointer
+          // 🎯 All bars have hover effect, only iteration, loop and parallel branch nodes have cursor pointer
           'transition-all duration-200 hover:scale-[1.02] hover:shadow-md',
           (node.isIterationNode || node.isLoopNode || node.isParallelNode) &&
             'cursor-pointer'
@@ -288,19 +289,19 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 } else if (node.isLoopNode) {
                   toggleLoopExpanded(node.id);
                 } else if (node.isParallelNode) {
-                  toggleIterationExpanded(node.id); // 并行分支暂时使用迭代展开状态
+                  toggleIterationExpanded(node.id); // Parallel branch temporarily uses iteration expanded state
                 }
               }
             : undefined
         }
       >
-        {/* 左侧：状态图标 */}
+        {/* Left: status icon */}
         <div className="flex-shrink-0">{getStatusIcon()}</div>
 
-        {/* 中间：节点信息 */}
+        {/* Middle: node information */}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            {/* 节点标题行 */}
+            {/* Node title row */}
             <div className="flex min-w-0 flex-1 items-center gap-2">
               <span
                 className={cn(
@@ -312,9 +313,9 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
               </span>
             </div>
 
-            {/* 🎯 状态标签行 - 右移一些距离让"执行完成"对齐 */}
+            {/* 🎯 Status label row - move right a little bit to align "execution completed" */}
             <div className="ml-8 flex flex-shrink-0 items-center gap-2">
-              {/* 迭代计数显示 - 显示时加1，从1开始计数 */}
+              {/* Iteration count display - display when adding 1, starting from 1 */}
               {node.isIterationNode && node.totalIterations && (
                 <span
                   className={cn(
@@ -326,7 +327,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 </span>
               )}
 
-              {/* 🎯 循环计数显示 - 显示时加1，从1开始计数 */}
+              {/* 🎯 Loop count display - display when adding 1, starting from 1 */}
               {node.isLoopNode && node.maxLoops && (
                 <span
                   className={cn(
@@ -338,7 +339,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 </span>
               )}
 
-              {/* 并行分支进度指示 */}
+              {/* Parallel branch progress indicator */}
               {node.isParallelNode && node.totalBranches && (
                 <span
                   className={cn(
@@ -376,7 +377,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
           </div>
         </div>
 
-        {/* 右侧：计时信息 */}
+        {/* Right: timing information */}
         <div className="w-16 flex-shrink-0 text-right">
           {(node.status === 'running' || node.status === 'completed') &&
             elapsedTime > 0 && (
@@ -392,7 +393,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
         </div>
       </div>
 
-      {/* 🎯 迭代详情展开区域 */}
+      {/* 🎯 Iteration detail expansion area */}
       {node.isIterationNode && node.iterations && isExpanded && (
         <div className="animate-in slide-in-from-top-2 fade-in duration-250">
           {node.iterations.map((iteration, iterIndex) => (
@@ -438,7 +439,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                     isDark ? 'text-stone-200' : 'text-stone-800'
                   )}
                 >
-                  第 {iteration.index + 1} 轮迭代
+                  {tDetails('roundIteration', { round: iteration.index + 1 })}
                 </span>
               </div>
 
@@ -459,7 +460,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
         </div>
       )}
 
-      {/* 🎯 循环详情展开区域 */}
+      {/* 🎯 Loop detail expansion area */}
       {node.isLoopNode && node.loops && isExpanded && (
         <div className="animate-in slide-in-from-top-2 fade-in duration-250">
           {node.loops.map((loop, loopIndex) => (
@@ -505,7 +506,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                     isDark ? 'text-stone-200' : 'text-stone-800'
                   )}
                 >
-                  第 {loop.index + 1} 轮循环
+                  {tDetails('roundLoop', { round: loop.index + 1 })}
                 </span>
               </div>
 
@@ -526,7 +527,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
         </div>
       )}
 
-      {/* 🎯 并行分支详情展开区域 */}
+      {/* 🎯 Parallel branch detail expansion area */}
       {node.isParallelNode && node.parallelBranches && isExpanded && (
         <div className="animate-in slide-in-from-top-2 fade-in duration-250">
           {node.parallelBranches.map((branch, branchIndex) => (

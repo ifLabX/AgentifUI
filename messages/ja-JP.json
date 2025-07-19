@@ -242,6 +242,19 @@
         "startExecution": "実行開始",
         "errors": {
           "instanceNotFound": "instanceId {instanceId} のサービスインスタンスが見つかりません"
+        },
+        "validation": {
+          "required": "{label}は必須項目です",
+          "invalidNumber": "{label}は有効な数値である必要があります",
+          "minValue": "{label}は{min}より小さくできません",
+          "maxValue": "{label}は{max}より大きくできません",
+          "stepValue": "{label}は{step}の倍数である必要があります",
+          "precisionExceeded": "{label}の小数点以下桁数は{precision}桁を超えることはできません",
+          "maxLengthExceeded": "{label}の長さは{maxLength}文字を超えることはできません",
+          "invalidSelection": "{label}で選択された値が無効です",
+          "tooManyFiles": "{label}のファイル数は{maxFiles}個を超えることはできません",
+          "fileTooLarge": "{label}のファイル\"{fileName}\"のサイズが{maxSize}MBを超えています",
+          "unsupportedFileType": "{label}のファイル\"{fileName}\"はサポートされていません。サポートされているタイプ: {allowedTypes}"
         }
       },
       "status": {
@@ -289,6 +302,11 @@
         "iteration": "ループ反復",
         "parallel": "並列分岐",
         "end": "終了ノード"
+      },
+      "iterationDetails": {
+        "roundIteration": "第{round}回イテレーション",
+        "roundLoop": "第{round}回ループ",
+        "nodeNumber": "ノード{number}"
       },
       "buttons": {
         "retry": "再試行",

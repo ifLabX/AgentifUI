@@ -242,6 +242,19 @@
         "startExecution": "Iniciar ejecución",
         "errors": {
           "instanceNotFound": "Instancia de servicio con instanceId {instanceId} no encontrada"
+        },
+        "validation": {
+          "required": "{label} es obligatorio",
+          "invalidNumber": "{label} debe ser un número válido",
+          "minValue": "{label} no puede ser menor que {min}",
+          "maxValue": "{label} no puede ser mayor que {max}",
+          "stepValue": "{label} debe ser un múltiplo de {step}",
+          "precisionExceeded": "{label} no puede tener más de {precision} decimales",
+          "maxLengthExceeded": "{label} no puede tener más de {maxLength} caracteres",
+          "invalidSelection": "Valor seleccionado para {label} es inválido",
+          "tooManyFiles": "{label} no puede tener más de {maxFiles} archivos",
+          "fileTooLarge": "El archivo \"{fileName}\" en {label} excede {maxSize}MB",
+          "unsupportedFileType": "El archivo \"{fileName}\" en {label} no es compatible, tipos soportados: {allowedTypes}"
         }
       },
       "status": {
@@ -289,6 +302,11 @@
         "iteration": "Iteración de Bucle",
         "parallel": "Rama Paralela",
         "end": "Nodo Final"
+      },
+      "iterationDetails": {
+        "roundIteration": "Iteración {round}",
+        "roundLoop": "Bucle {round}",
+        "nodeNumber": "Nodo {number}"
       },
       "buttons": {
         "retry": "Reintentar",

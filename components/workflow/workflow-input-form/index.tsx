@@ -202,7 +202,7 @@ export const WorkflowInputForm = React.forwardRef<
 
     // Validate the form
     const userInputForm = appConfig?.dify_parameters?.user_input_form || [];
-    const validationErrors = validateFormData(formData, userInputForm);
+    const validationErrors = validateFormData(formData, userInputForm, t);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);

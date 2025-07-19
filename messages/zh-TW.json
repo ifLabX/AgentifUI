@@ -242,6 +242,19 @@
         "startExecution": "開始執行",
         "errors": {
           "instanceNotFound": "未找到 instanceId 為 {instanceId} 的服務實例"
+        },
+        "validation": {
+          "required": "{label}為必填項",
+          "invalidNumber": "{label}必須是有效的數字",
+          "minValue": "{label}不能小於{min}",
+          "maxValue": "{label}不能大於{max}",
+          "stepValue": "{label}必須是{step}的倍數",
+          "precisionExceeded": "{label}小數位數不能超過{precision}位",
+          "maxLengthExceeded": "{label}長度不能超過{maxLength}個字符",
+          "invalidSelection": "{label}選擇的值無效",
+          "tooManyFiles": "{label}文件數量不能超過{maxFiles}個",
+          "fileTooLarge": "{label}中的文件\"{fileName}\"大小超過{maxSize}MB",
+          "unsupportedFileType": "{label}中的文件\"{fileName}\"類型不支持，支持的類型：{allowedTypes}"
         }
       },
       "status": {
@@ -289,6 +302,11 @@
         "iteration": "循環迭代",
         "parallel": "並行分支",
         "end": "結束節點"
+      },
+      "iterationDetails": {
+        "roundIteration": "第 {round} 輪迭代",
+        "roundLoop": "第 {round} 輪循環",
+        "nodeNumber": "節點 {number}"
       },
       "buttons": {
         "retry": "重試",

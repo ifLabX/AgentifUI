@@ -17,9 +17,9 @@ interface MobileTabSwitcherProps {
 }
 
 /**
- * 移动端标签切换器组件
+ * Mobile tab switcher component
  *
- * 在移动端提供表单、跟踪器、历史记录之间的切换
+ * Provides switching between form, tracker, and history on mobile devices
  */
 export function MobileTabSwitcher({
   activeTab,
