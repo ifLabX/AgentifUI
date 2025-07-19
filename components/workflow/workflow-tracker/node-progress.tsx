@@ -21,10 +21,10 @@ interface NodeProgressProps {
 }
 
 /**
- * 单个节点进度组件
+ * Single node progress component
  *
- * 显示节点的执行状态、耗时等信息
- * 支持 fade-in 动画效果
+ * Display the execution status, elapsed time, etc. of the node
+ * Support fade-in animation effect
  */
 export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
   const { isDark } = useTheme();
@@ -79,9 +79,9 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
       )}
     >
       <div className="flex items-start gap-4 transition-all duration-200 hover:scale-[1.01] hover:shadow-sm">
-        {/* 连接线和状态图标 */}
+        {/* Connection line and status icon */}
         <div className="flex flex-col items-center">
-          {/* 状态图标 */}
+          {/* Status icon */}
           <div
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-full border-2',
@@ -91,7 +91,7 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
             {getStatusIcon()}
           </div>
 
-          {/* 连接线 */}
+          {/* Connection line */}
           {!isLast && (
             <div
               className={cn(
@@ -102,7 +102,7 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
           )}
         </div>
 
-        {/* 节点信息 */}
+        {/* Node information */}
         <div className="flex-1 pb-6">
           <div className="mb-1 flex items-center justify-between">
             <h4

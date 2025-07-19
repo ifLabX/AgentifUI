@@ -242,6 +242,19 @@
         "startExecution": "Ausführung beginnen",
         "errors": {
           "instanceNotFound": "Service-Instanz mit instanceId {instanceId} nicht gefunden"
+        },
+        "validation": {
+          "required": "{label} ist erforderlich",
+          "invalidNumber": "{label} muss eine gültige Zahl sein",
+          "minValue": "{label} kann nicht kleiner als {min} sein",
+          "maxValue": "{label} kann nicht größer als {max} sein",
+          "stepValue": "{label} muss ein Vielfaches von {step} sein",
+          "precisionExceeded": "{label} Dezimalstellen können nicht mehr als {precision} Stellen haben",
+          "maxLengthExceeded": "{label} Länge kann nicht mehr als {maxLength} Zeichen haben",
+          "invalidSelection": "Ungültiger Wert für {label} ausgewählt",
+          "tooManyFiles": "{label} Dateianzahl kann nicht mehr als {maxFiles} sein",
+          "fileTooLarge": "Datei \"{fileName}\" in {label} überschreitet {maxSize}MB",
+          "unsupportedFileType": "Datei \"{fileName}\" in {label} wird nicht unterstützt, unterstützte Typen: {allowedTypes}"
         }
       },
       "status": {
@@ -289,6 +302,11 @@
         "iteration": "Schleifeniteration",
         "parallel": "Parallele Verzweigung",
         "end": "End-Knoten"
+      },
+      "iterationDetails": {
+        "roundIteration": "Runde {round} Iteration",
+        "roundLoop": "Runde {round} Schleife",
+        "nodeNumber": "Knoten {number}"
       },
       "buttons": {
         "retry": "Wiederholen",

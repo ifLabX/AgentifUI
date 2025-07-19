@@ -242,6 +242,19 @@
         "startExecution": "Начать выполнение",
         "errors": {
           "instanceNotFound": "Экземпляр сервиса с instanceId {instanceId} не найден"
+        },
+        "validation": {
+          "required": "{label} обязательно для заполнения",
+          "invalidNumber": "{label} должно быть действительным числом",
+          "minValue": "{label} не может быть меньше {min}",
+          "maxValue": "{label} не может быть больше {max}",
+          "stepValue": "{label} должно быть кратным {step}",
+          "precisionExceeded": "{label} не может иметь более {precision} десятичных знаков",
+          "maxLengthExceeded": "{label} не может превышать {maxLength} символов",
+          "invalidSelection": "Неверное значение выбрано для {label}",
+          "tooManyFiles": "{label} не может содержать более {maxFiles} файлов",
+          "fileTooLarge": "Файл \"{fileName}\" в {label} превышает {maxSize}МБ",
+          "unsupportedFileType": "Файл \"{fileName}\" в {label} не поддерживается, поддерживаемые типы: {allowedTypes}"
         }
       },
       "status": {
@@ -289,6 +302,11 @@
         "iteration": "Итерация цикла",
         "parallel": "Параллельное ветвление",
         "end": "Конечный узел"
+      },
+      "iterationDetails": {
+        "roundIteration": "Итерация {round}",
+        "roundLoop": "Цикл {round}",
+        "nodeNumber": "Узел {number}"
       },
       "buttons": {
         "retry": "Попробовать снова",
