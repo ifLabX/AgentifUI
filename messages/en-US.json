@@ -7,6 +7,10 @@
       "retry": "Retry",
       "remove": "Remove",
       "error": "Error",
+      "exportButton": {
+        "tooltip": "Export file",
+        "ariaLabel": "Export file"
+      },
       "logoutDialog": {
         "title": "Logout",
         "message": "Are you sure you want to logout? You will need to log in again to access your account.",
@@ -131,7 +135,12 @@
         "copyFailed": "Copy failed",
         "imageLink": "Image link",
         "viewImage": "View image",
-        "clickToView": "Click to view"
+        "clickToView": "Click to view",
+        "clickToViewWithAlt": "Click to view: {alt}"
+      },
+      "suggestedQuestions": {
+        "sendMessageError": "Failed to send message:",
+        "moreQuestions": "{count} more questions..."
       }
     },
     "chatflow": {
@@ -1908,6 +1917,22 @@
         "prefix": "© {year} ",
         "linkText": "AgentifUI",
         "suffix": ". Explore the future of large model applications."
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "Referenced {count} knowledge base resources",
+        "knowledgeBase": "Knowledge Base",
+        "expand": "Expand full text",
+        "collapse": "Collapse",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Copy failed",
+        "relevanceScore": "Relevance",
+        "wordCount": "{count} words",
+        "page": "Page {page}"
       }
     }
   },

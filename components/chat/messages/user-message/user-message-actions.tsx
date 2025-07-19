@@ -13,6 +13,12 @@ interface UserMessageActionsProps {
   className?: string;
 }
 
+/**
+ * UserMessageActions component
+ *
+ * Renders action buttons (copy and edit) for user messages.
+ * Uses MessageActionButton for consistent UI and tooltip behavior.
+ */
 export const UserMessageActions: React.FC<UserMessageActionsProps> = ({
   onCopy,
   onEdit,
@@ -20,6 +26,7 @@ export const UserMessageActions: React.FC<UserMessageActionsProps> = ({
 }) => {
   return (
     <MessageActionsContainer align="right" className={className}>
+      {/* Copy button: shows check icon and "Copied" label when active */}
       <MessageActionButton
         icon={FiCopy}
         activeIcon={FiCheck}
@@ -28,6 +35,7 @@ export const UserMessageActions: React.FC<UserMessageActionsProps> = ({
         onClick={onCopy}
         tooltipPosition="bottom"
       />
+      {/* Edit button: allows editing the user message */}
       <MessageActionButton
         icon={FiEdit2}
         label="编辑"

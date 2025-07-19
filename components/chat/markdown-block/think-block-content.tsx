@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@lib/utils';
-// 移除 useTheme 和 useThemeColors 的导入，使用 CSS 变量替代
+// Remove useTheme and useThemeColors imports, use CSS variables instead
 import { motion } from 'framer-motion';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
@@ -13,33 +13,36 @@ import remarkMath from 'remark-math';
 
 import React from 'react';
 
-// 仅导入 motion
+import { useTranslations } from 'next-intl';
+
+// Only import motion
 
 /**
- * ThinkBlock 内容容器的属性接口
+ * Props for the ThinkBlockContent container
  */
 interface ThinkBlockContentProps {
-  // 要显示的 Markdown 内容
+  // Markdown content to display
   markdownContent: string;
-  // 控制内容是否显示
-  isOpen: boolean; // 仍然需要这个属性，用于动画状态切换
+  // Controls whether the content is shown
+  isOpen: boolean; // Still needed for animation state switching
 }
 
 /**
- * ThinkBlock 的内容显示容器
- * 使用 ReactMarkdown 渲染内容
- * 针对打开和关闭提供丝滑的动画效果
+ * ThinkBlock content display container
+ * Uses ReactMarkdown to render content
+ * Provides smooth animation for open/close transitions
  */
 export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
   markdownContent,
   isOpen,
 }) => {
-  // 移除 useTheme 和 useThemeColors，使用 CSS 变量替代
+  // Remove useTheme and useThemeColors, use CSS variables instead
+  const t = useTranslations('pages.chat.messages');
 
-  // 预处理内容，转义自定义HTML标签以避免浏览器解析错误
-  // 类似于代码块的处理方式，让不认识的标签显示为文本
+  // Preprocess content: escape custom HTML tags to avoid browser parsing errors
+  // Similar to code block handling, display unknown tags as text
   const preprocessContent = (content: string): string => {
-    // 定义已知的安全HTML标签白名单
+    // Define a whitelist of known safe HTML tags
     const knownHtmlTags = new Set([
       'div',
       'span',
@@ -82,7 +85,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       'ins',
     ]);
 
-    // 转义不在白名单中的HTML标签，让它们显示为文本
+    // Escape HTML tags not in the whitelist so they display as text
     return content
       .replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
         if (!knownHtmlTags.has(tagName.toLowerCase())) {
@@ -100,11 +103,10 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
 
   const processedContent = preprocessContent(markdownContent);
 
-  // --- Markdown 渲染器的组件配置 ---
+  // --- Markdown renderer component configuration ---
   const markdownComponents: Components = {
     code({ className, children, ...props }: any) {
-      // const match = /language-(\w+)/.exec(className || '');
-      // 如果不是带有语言标识的代码块 (inline code)
+      // If not a code block with language (inline code)
       return !className?.includes('language-') ? (
         <code
           className="rounded px-2 py-1 font-mono"
@@ -117,7 +119,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
           {children}
         </code>
       ) : (
-        // 如果是带有语言标识的代码块
+        // If it is a code block with language
         <pre
           className="my-4 overflow-auto rounded-md border p-5"
           style={{
@@ -136,7 +138,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 表格渲染
+    // Table rendering
     table({ className, children, ...props }: any) {
       return (
         <div
@@ -149,7 +151,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
             className="min-w-full divide-y"
             style={{
               borderColor: 'var(--md-table-border)',
-              // CSS 没有 divideColor 属性，使用类名设置分隔线颜色
+              // CSS does not have divideColor property, use class for divider color
             }}
             {...props}
           >
@@ -159,7 +161,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 表头单元格样式
+    // Table header cell style
     th({ className, children, ...props }: any) {
       return (
         <th
@@ -175,7 +177,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 表格数据单元格样式
+    // Table data cell style
     td({ className, children, ...props }: any) {
       return (
         <td
@@ -191,7 +193,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 引用块样式
+    // Blockquote style
     blockquote({ className, children, ...props }: any) {
       return (
         <blockquote
@@ -208,11 +210,11 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 段落样式 - 完全去除段落间的间距，使其与普通换行一样
+    // Paragraph style - remove all margin so it behaves like a normal line break
     p({ className, children, ...props }: any) {
       return (
         <p
-          className="my-0 text-base leading-relaxed" // 完全去除上下外边距
+          className="my-0 text-base leading-relaxed" // Remove all vertical margin
           style={{
             color: 'var(--md-think-content-text)',
           }}
@@ -223,7 +225,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 标题样式
+    // Heading styles
     h1({ className, children, ...props }: any) {
       return (
         <h1
@@ -266,7 +268,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 列表样式
+    // List styles
     ul({ className, children, ...props }: any) {
       return (
         <ul
@@ -295,20 +297,20 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 链接样式
+    // Link styles
     a({ className, children, node, ...props }: any) {
-      // 检查链接是否包含图片：如果包含图片，将其渲染为图片链接样式
-      // 避免嵌套 <a> 标签导致的 HTML 错误
+      // Check if the link contains an image: if so, render as an image link style
+      // Avoid nested <a> tags which cause HTML errors
       const hasImageChild = node?.children?.some(
         (child: any) => child.tagName === 'img'
       );
 
       if (hasImageChild) {
-        // 如果链接包含图片，使用特殊的图片链接样式
+        // If the link contains an image, use a special image link style
         const imageChild = node.children.find(
           (child: any) => child.tagName === 'img'
         );
-        const alt = imageChild?.properties?.alt || '图片链接';
+        const alt = imageChild?.properties?.alt || t('imageLink');
 
         return (
           <a
@@ -321,7 +323,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
             }}
             target="_blank"
             rel="noopener noreferrer"
-            title={`点击查看: ${alt}`}
+            title={t('clickToViewWithAlt', { alt })}
             {...props}
           >
             <svg
@@ -342,7 +344,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         );
       }
 
-      // 普通链接的处理
+      // Normal link handling
       return (
         <a
           className="underline"
@@ -357,21 +359,21 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       );
     },
 
-    // 图片处理：将图片渲染为链接形式，避免加载抖动问题
-    // 如果图片在链接内，由 a 组件统一处理，这里返回 null 避免重复渲染
+    // Image handling: render images as links to avoid loading flicker
+    // If the image is inside a link, let the parent a component handle it, return null here to avoid duplicate rendering
     img({ src, alt, node, ...props }: any) {
-      // 确保src是字符串类型
+      // Ensure src is a string
       const imageUrl = typeof src === 'string' ? src : '';
 
-      // 检查是否在链接内部（由父级 a 组件处理）
+      // Check if inside a link (handled by parent a component)
       const isInsideLink = node?.parent?.tagName === 'a';
 
       if (isInsideLink) {
-        // 如果在链接内，返回 null，由父级 a 组件处理
+        // If inside a link, return null, handled by parent a component
         return null;
       }
 
-      // 独立的图片，创建图片链接
+      // Standalone image, create an image link
       return (
         <a
           href={imageUrl}
@@ -384,7 +386,7 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
           }}
           target="_blank"
           rel="noopener noreferrer"
-          title={alt || '查看图片'}
+          title={alt || t('viewImage')}
           {...props}
         >
           <svg
@@ -400,13 +402,13 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          {alt || '图片链接'}
+          {alt || t('imageLink')}
         </a>
       );
     },
   };
 
-  // --- 优化后的动画变体 ---
+  // --- Optimized animation variants ---
   const variants = {
     open: {
       opacity: 1,
@@ -414,11 +416,11 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
       scale: 1,
       y: 0,
       transition: {
-        type: 'spring', // 使用弹簧动画
-        stiffness: 300, // 弹性系数
-        damping: 24, // 阻尼系数，值越大动画越快结束
-        mass: 0.8, // 质量，值越小动画越快
-        height: { type: 'spring', stiffness: 100, damping: 30 }, // 高度使用更缓和的弹簧
+        type: 'spring', // Use spring animation
+        stiffness: 300, // Spring stiffness
+        damping: 24, // Damping, higher value means animation ends faster
+        mass: 0.8, // Mass, lower value means faster animation
+        height: { type: 'spring', stiffness: 100, damping: 30 }, // Height uses a softer spring
       },
     },
     closed: {
@@ -430,16 +432,16 @@ export const ThinkBlockContent: React.FC<ThinkBlockContentProps> = ({
         type: 'spring',
         stiffness: 300,
         damping: 25,
-        height: { delay: 0.1, type: 'spring', stiffness: 200, damping: 30 }, // 稍延迟高度变化
+        height: { delay: 0.1, type: 'spring', stiffness: 200, damping: 30 }, // Slightly delay height change
       },
     },
   };
 
   return (
     <motion.div
-      className="mb-2 origin-top overflow-hidden" // 添加 origin-top 并将 margin-bottom 移到这里
-      initial={false} // 不使用 initial，避免首次渲染闪烁
-      animate={isOpen ? 'open' : 'closed'} // 根据 isOpen 切换状态
+      className="mb-2 origin-top overflow-hidden" // Add origin-top and move margin-bottom here
+      initial={false} // Do not use initial to avoid flicker on first render
+      animate={isOpen ? 'open' : 'closed'} // Switch state based on isOpen
       variants={variants}
     >
       <div

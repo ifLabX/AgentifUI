@@ -3,24 +3,24 @@
 import { useCallback, useState } from 'react';
 
 /**
- * 管理反馈按钮的Hook，实现排他性选择
+ * Hook to manage feedback button state with exclusive selection.
  *
- * @param onFeedback 反馈回调函数
- * @returns 反馈状态和处理函数
+ * @param onFeedback Callback function to be called when feedback is given.
+ * @returns Feedback state and handler functions.
  */
 export function useFeedbackManager(onFeedback: (isPositive: boolean) => void) {
-  // 当前选择的反馈类型：null(未选择)、true(点赞)、false(点踩)
+  // The current selected feedback type: null (not selected), true (thumbs up), false (thumbs down)
   const [selectedFeedback, setSelectedFeedback] = useState<boolean | null>(
     null
   );
 
-  // 处理反馈操作
+  // Handler for feedback action
   const handleFeedback = useCallback(
     (isPositive: boolean) => {
       if (typeof onFeedback === 'function') {
-        // 调用外部回调
+        // Call the external callback
         onFeedback(isPositive);
-        // 设置当前选择
+        // Set the current selection
         setSelectedFeedback(isPositive);
       }
     },
@@ -28,11 +28,11 @@ export function useFeedbackManager(onFeedback: (isPositive: boolean) => void) {
   );
 
   return {
-    // 当前选择的反馈类型
+    // The current selected feedback type
     selectedFeedback,
-    // 处理反馈操作
+    // Handler for feedback action
     handleFeedback,
-    // 判断按钮是否应该显示
+    // Determines whether the button should be shown
     shouldShowButton: (isPositive: boolean) =>
       selectedFeedback === null || selectedFeedback === isPositive,
   };

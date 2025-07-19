@@ -3,18 +3,18 @@
 import { useCallback, useState } from 'react';
 
 /**
- * 反馈功能的Hook
+ * Hook for feedback functionality.
  *
- * @param onFeedback 反馈回调函数，接收一个布尔值表示反馈是否为正面
- * @returns 反馈状态和处理函数
+ * @param onFeedback Callback function to be called when feedback is given. Receives a boolean indicating if the feedback is positive.
+ * @returns Feedback state and handler function.
  */
 export function useFeedbackAction(onFeedback: (isPositive: boolean) => void) {
-  // 是否已提交反馈
+  // State indicating whether feedback has been given
   const [hasFeedback, setHasFeedback] = useState(false);
-  // 反馈是否为正面
+  // State indicating whether the feedback is positive
   const [isPositive, setIsPositive] = useState<boolean | null>(null);
 
-  // 处理反馈操作
+  // Handler for feedback action
   const handleFeedback = useCallback(
     (positive: boolean) => {
       if (typeof onFeedback === 'function') {

@@ -10,15 +10,17 @@ import { cn } from '@lib/utils';
 
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface DynamicSuggestedQuestionsProps {
   className?: string;
   onQuestionClick?: (messageText: string, files?: any[]) => Promise<void>;
 }
 
 /**
- * 动态推荐问题组件
- * 从数据库配置中获取推荐问题并渐进显示
- * 等待欢迎文字打字机完成后才开始渲染
+ * Dynamic suggested questions component.
+ * Fetches suggested questions from database config and displays them progressively.
+ * Only renders after the welcome typewriter animation is complete.
  */
 export const DynamicSuggestedQuestions = ({
   className,
@@ -27,20 +29,21 @@ export const DynamicSuggestedQuestions = ({
   const { widthClass, paddingClass } = useChatWidth();
   const { currentAppInstance, isValidating, isLoading } = useCurrentApp();
   const { setMessage } = useChatInputStore();
+  const t = useTranslations('pages.chat.suggestedQuestions');
 
-  // 🎯 监听打字机完成状态
+  // Listen for typewriter completion status
   const { isWelcomeTypewriterComplete } = useTypewriterStore();
 
-  // 使用智能布局系统获取推荐问题的位置
+  // Get suggested questions position and layout info from smart layout system
   const { suggestedQuestions: questionsPosition, needsCompactLayout } =
     useWelcomeLayout();
 
-  // 🎯 应用切换状态检测，与welcome-screen保持一致
+  // App switching state, consistent with welcome-screen logic
   const [isAppSwitching, setIsAppSwitching] = useState(false);
   const [displayQuestions, setDisplayQuestions] = useState<string[]>([]);
   const [shouldShowQuestions, setShouldShowQuestions] = useState(false);
 
-  // 🎯 应用切换检测逻辑，与welcome-screen完全一致
+  // Detect app switching, logic matches welcome-screen
   useEffect(() => {
     const pathname = window.location.pathname;
     const isOnAppDetailPage =
@@ -85,27 +88,27 @@ export const DynamicSuggestedQuestions = ({
     isLoading,
   ]);
 
-  // 🎯 获取推荐问题，等待打字机完成后才开始处理
+  // Fetch suggested questions, only after typewriter is complete
   useEffect(() => {
-    // 🎯 核心条件：必须等待打字机完成
+    // Must wait for typewriter to finish
     if (!isWelcomeTypewriterComplete) {
       setShouldShowQuestions(false);
       return;
     }
 
-    // 应用切换保护：验证期间或应用切换期间不更新推荐问题
+    // Do not update suggested questions during validation/loading/app switching
     if (isValidating || isLoading || isAppSwitching) {
       setShouldShowQuestions(false);
       return;
     }
 
-    // 🎯 应用实例完整性检查
+    // Check app instance integrity
     if (!currentAppInstance?.instance_id) {
       setShouldShowQuestions(false);
       return;
     }
 
-    // 🎯 路径一致性检查
+    // Check path consistency
     const pathname = window.location.pathname;
     const isOnAppDetailPage =
       pathname.startsWith('/apps/') && pathname.split('/').length === 4;
@@ -118,9 +121,9 @@ export const DynamicSuggestedQuestions = ({
       }
     }
 
-    // 🎯 延迟处理：在打字机完成后稍等片刻再开始渲染推荐问题
+    // Delay rendering suggested questions for 300ms after typewriter completes
     const updateTimer = setTimeout(() => {
-      // 🎯 从数据库config字段直接获取推荐问题
+      // Get suggested questions from config
       const suggestedQuestions =
         currentAppInstance?.config?.dify_parameters?.suggested_questions;
 
@@ -129,7 +132,7 @@ export const DynamicSuggestedQuestions = ({
         Array.isArray(suggestedQuestions) &&
         suggestedQuestions.length > 0
       ) {
-        // 过滤空字符串和无效问题
+        // Filter out empty strings and invalid questions
         const validQuestions = suggestedQuestions
           .filter(q => q && typeof q === 'string' && q.trim().length > 0)
           .map(q => q.trim());
@@ -145,11 +148,11 @@ export const DynamicSuggestedQuestions = ({
         setDisplayQuestions([]);
         setShouldShowQuestions(false);
       }
-    }, 300); // 打字机完成后等待300ms再开始渲染
+    }, 300); // Wait 300ms after typewriter completes
 
     return () => clearTimeout(updateTimer);
   }, [
-    isWelcomeTypewriterComplete, // 🎯 核心依赖：打字机完成状态
+    isWelcomeTypewriterComplete, // Core dependency: typewriter completion status
     currentAppInstance?.config?.dify_parameters?.suggested_questions,
     currentAppInstance?.instance_id,
     isValidating,
@@ -157,44 +160,47 @@ export const DynamicSuggestedQuestions = ({
     isAppSwitching,
   ]);
 
-  // 🎯 智能布局计算：根据问题数量动态调整布局
-  // 改用flexbox布局，让按钮根据内容宽度居中显示
+  // Smart layout calculation: dynamically adjust layout based on question count
+  // Use flexbox layout to center buttons based on content width
   const layoutConfig = useMemo(() => {
     const count = displayQuestions.length;
 
     if (count === 0) return null;
 
-    // 使用flexbox布局，支持按钮内容自适应宽度并居中
-    // 最多显示6个问题
+    // Use flexbox layout, support auto width and center alignment
+    // Show up to 6 questions
     return {
       maxDisplay: count > 6 ? 6 : count,
-      description: `${count}个问题-flexbox居中`,
+      description: `${count} questions - flexbox centered`,
     };
   }, [displayQuestions.length]);
 
-  // 🎯 问题点击处理 - 修改为直接发送消息
+  // Handle question click - send message directly
   const handleQuestionClick = async (question: string) => {
     if (onQuestionClick) {
-      // 🎯 直接发送消息，相当于在输入框中输入并点击发送
+      // Directly send message, equivalent to entering in input and clicking send
       try {
         await onQuestionClick(question);
       } catch (error) {
-        console.error('[DynamicSuggestedQuestions] 发送消息失败:', error);
-        // 如果直接发送失败，回退到设置输入框内容
+        console.error(
+          `[DynamicSuggestedQuestions] ${t('sendMessageError')}`,
+          error
+        );
+        // If sending fails, fallback to setting input box content
         setMessage(question);
       }
     } else {
-      // 回退行为：仅设置到输入框
+      // Fallback: just set input box content
       setMessage(question);
     }
   };
 
-  // 如果没有问题或不应该显示，则不渲染
+  // Do not render if there are no questions or should not show
   if (!shouldShowQuestions || !layoutConfig || displayQuestions.length === 0) {
     return null;
   }
 
-  // 限制显示的问题数量
+  // Limit the number of displayed questions
   const questionsToShow = displayQuestions.slice(0, layoutConfig.maxDisplay);
 
   return (
@@ -215,7 +221,7 @@ export const DynamicSuggestedQuestions = ({
             key={`${currentAppInstance?.instance_id}-${index}`}
             question={question}
             onClick={handleQuestionClick}
-            animationDelay={index * 100} // 每个问题间隔100ms显示
+            animationDelay={index * 100} // Each question appears with 100ms delay
             className={cn(needsCompactLayout && 'px-4 py-2 text-xs')}
           />
         ))}
@@ -233,7 +239,9 @@ export const DynamicSuggestedQuestions = ({
             animationFillMode: 'forwards',
           }}
         >
-          还有 {displayQuestions.length - layoutConfig.maxDisplay} 个问题...
+          {t('moreQuestions', {
+            count: displayQuestions.length - layoutConfig.maxDisplay,
+          })}
         </div>
       )}
     </div>

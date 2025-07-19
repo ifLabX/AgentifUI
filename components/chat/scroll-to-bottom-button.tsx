@@ -10,8 +10,10 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 
-// ScrollToBottomButton 组件
-// 简化渲染逻辑：只在 /chat 路径下（非 /chat/new）且不在底部时显示
+/**
+ * ScrollToBottomButton component
+ * Renders only on /chat route (but not /chat/new) and when not at the bottom.
+ */
 export const ScrollToBottomButton = () => {
   const { isAtBottom } = useChatScrollStore();
   const { colors, isDark } = useThemeColors();
@@ -19,18 +21,17 @@ export const ScrollToBottomButton = () => {
   const pathname = usePathname();
   const t = useTranslations('pages.chat.input');
 
-  // 🎯 简化的渲染条件：
-  // 1. 在 /chat 路径下（但不是 /chat/new）
-  // 2. 不在底部
+  // Render condition:
+  // 1. On /chat route (but not /chat/new)
+  // 2. Not at the bottom
   const isInChatPage = pathname.startsWith('/chat') && pathname !== '/chat/new';
   const shouldRender = isInChatPage && !isAtBottom;
 
-  // 动态计算 bottom 偏移量
-  // 基于输入框高度（CSS 变量 --chat-input-height）
+  // Calculate bottom offset dynamically based on input height (CSS variable --chat-input-height)
   const bottomOffset = `calc(var(--chat-input-height, 80px) + 5.5rem)`;
 
   const handleClick = () => {
-    // 重置滚动状态并滚动到底部
+    // Reset scroll state and scroll to bottom
     resetScrollState();
   };
 
@@ -42,18 +43,18 @@ export const ScrollToBottomButton = () => {
     <button
       onClick={handleClick}
       className={cn(
-        // 定位与层级
+        // Positioning and z-index
         'absolute bottom-0 left-1/2 z-10 mb-4 -translate-x-1/2',
 
-        // Base styles - 简化的样式
+        // Base styles
         'cursor-pointer rounded-full p-1.5 shadow-md transition-transform duration-150 ease-in-out',
 
-        // 颜色主题
+        // Color theme
         colors.userMessageBackground.tailwind,
         colors.buttonHover.tailwind,
         isDark ? 'text-stone-300' : 'text-stone-700',
 
-        // 交互效果
+        // Interaction effects
         'hover:scale-110 active:scale-95'
       )}
       style={{

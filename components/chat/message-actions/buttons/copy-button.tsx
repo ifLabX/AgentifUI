@@ -11,15 +11,16 @@ interface CopyButtonProps {
   content?: string;
   disabled?: boolean;
   tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-  tooltipSize?: 'sm' | 'md'; // tooltip尺寸
-  showTooltipArrow?: boolean; // 是否显示tooltip箭头
+  tooltipSize?: 'sm' | 'md'; // tooltip size
+  showTooltipArrow?: boolean; // whether to show tooltip arrow
   className?: string;
 }
 
 /**
- * 复制按钮组件
+ * Copy button component
  *
- * 封装了复制功能的按钮，点击后会复制指定内容并显示已复制状态
+ * A button component encapsulating copy functionality.
+ * When clicked, it copies the specified content and shows a copied state.
  */
 export const CopyButton: React.FC<CopyButtonProps> = ({
   content,
@@ -31,7 +32,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
 }) => {
   const { handleCopy, isCopied } = useCopyAction(content || '');
 
-  // 当没有内容或被禁用时，不执行复制操作
+  // Do not perform copy if there is no content or the button is disabled
   const handleClick = () => {
     if (disabled || !content || content.trim().length === 0) {
       return;
