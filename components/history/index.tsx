@@ -22,8 +22,8 @@ import { useRouter } from 'next/navigation';
 import { HistoryList } from './history-list';
 import { HistorySelectionBar } from './history-selection-bar';
 
-// 历史对话页面组件
-// 显示所有历史对话，支持搜索功能和多选删除功能
+// History conversation page component
+// Display all history conversations, support search function and multi-select delete function
 export function History() {
   const { isDark } = useTheme();
   const { colors } = useThemeColors();
@@ -32,7 +32,7 @@ export function History() {
   const router = useRouter();
   const { widthClass, paddingClass } = useChatWidth();
 
-  // 多选功能状态管理
+  // Multi-select function status management
   const [isSelectionMode, setIsSelectionMode] = React.useState(false);
   const [selectedConversations, setSelectedConversations] = React.useState<
     Set<string>
@@ -41,10 +41,10 @@ export function History() {
     React.useState(false);
   const [isBatchDeleting, setIsBatchDeleting] = React.useState(false);
 
-  // 搜索框引用，用于自动聚焦
+  // Search box reference, used for automatic focus
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
-  // 获取所有历史对话列表，不限制数量
+  // Get all history conversation lists, unlimited quantity
   const {
     conversations,
     isLoading,
@@ -54,7 +54,7 @@ export function History() {
     renameConversation,
   } = useAllConversations();
 
-  // 监听全局对话数据更新事件
+  // Listen to global conversation data update events
   React.useEffect(() => {
     const unsubscribe = conversationEvents.subscribe(() => {
       refresh();
@@ -65,14 +65,14 @@ export function History() {
     };
   }, [refresh]);
 
-  // 组件挂载时自动聚焦搜索框
+  // Component mounting automatically focuses search box
   React.useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, []);
 
-  // 当对话列表发生变化时，清理无效的选中项
+  // When the conversation list changes, clear invalid selected items
   React.useEffect(() => {
     if (selectedConversations.size > 0) {
       const validIds = new Set(
@@ -86,19 +86,19 @@ export function History() {
         setSelectedConversations(validSelectedIds);
       }
 
-      // 如果没有有效选中项，退出选择模式
+      // If there are no valid selected items, exit selection mode
       if (validSelectedIds.size === 0) {
         setIsSelectionMode(false);
       }
     }
   }, [conversations, selectedConversations]);
 
-  // 处理搜索输入变化
+  // Handle search input changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  // 过滤对话列表，根据搜索查询
+  // Filter conversation list, based on search query
   const filteredConversations = React.useMemo(() => {
     if (!searchQuery.trim()) return conversations;
 
@@ -110,7 +110,7 @@ export function History() {
     );
   }, [conversations, searchQuery]);
 
-  // 多选功能处理函数
+  // Multi-select function processing function
   const handleToggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode);
     if (isSelectionMode) {
@@ -127,7 +127,7 @@ export function History() {
     }
     setSelectedConversations(newSelected);
 
-    // 如果选中了项目但不在选择模式，自动进入选择模式
+    // If an item is selected but not in selection mode, automatically enter selection mode
     if (newSelected.size > 0 && !isSelectionMode) {
       setIsSelectionMode(true);
     }
@@ -166,12 +166,12 @@ export function History() {
       const successCount = results.filter(Boolean).length;
 
       if (successCount > 0) {
-        // 刷新列表
+        // Refresh list
         refresh();
-        // 触发全局同步事件
+        // Trigger global synchronization event
         conversationEvents.emit();
 
-        // 清理选择状态
+        // Clear selection state
         setSelectedConversations(new Set());
         setIsSelectionMode(false);
 
@@ -187,7 +187,7 @@ export function History() {
         alert(t('operations.batchDeleteFailed'));
       }
     } catch (error) {
-      console.error('批量删除失败:', error);
+      console.error('Batch deletion failed:', error);
       alert(t('operations.operationError'));
     } finally {
       setIsBatchDeleting(false);
@@ -195,39 +195,39 @@ export function History() {
     }
   };
 
-  // 🎯 新增：新对话处理函数，统一管理状态清理
+  // 🎯 New: new conversation processing function, unified management of state cleanup
   const { clearConversationState } = useChatInterface();
 
   const handleNewChat = () => {
-    // 跳转到新对话页面
+    // Jump to new conversation page
     router.push('/chat/new');
 
-    // 重置状态
+    // Reset state
     setTimeout(() => {
-      // 清理消息和重置状态
+      // Clear messages and reset state
       useChatStore.getState().clearMessages();
       useChatStore.getState().setCurrentConversationId(null);
 
-      // 🎯 新增：清理use-chat-interface中的对话状态
-      // 这确保difyConversationId、dbConversationUUID、conversationAppId都被正确清理
+      // 🎯 New: clear conversation state in use-chat-interface
+      // This ensures that difyConversationId, dbConversationUUID, and conversationAppId are correctly cleared
       clearConversationState();
 
-      // 清理其他UI状态
+      // Clear other UI states
       useChatInputStore.getState().setIsWelcomeScreen(true);
       useChatTransitionStore.getState().setIsTransitioningToWelcome(true);
       useChatStore.getState().setIsWaitingForResponse(false);
 
-      // 设置侧边栏选中状态 - 保持当前展开状态
+      // Set sidebar selection state - keep current expanded state
       useSidebarStore.getState().selectItem('chat', null, true);
 
-      // 设置标题
-      // 标题管理由DynamicTitle组件统一处理，无需手动设置
+      // Set title
+      // Title management is handled by DynamicTitle component, no need to set manually
     }, 100);
   };
 
-  // 处理对话项点击
+  // Handle conversation item click
   const handleConversationClick = (id: string) => {
-    // 如果在选择模式下，不跳转，而是切换选择状态
+    // If in selection mode, do not jump, but switch selection state
     if (isSelectionMode) {
       const isSelected = selectedConversations.has(id);
       handleSelectConversation(id, !isSelected);
@@ -244,9 +244,9 @@ export function History() {
         colors.mainBackground.tailwind
       )}
     >
-      {/* 固定头部区域 - 不滚动 */}
+      {/* Fixed header area - does not scroll */}
       <div className="flex-shrink-0">
-        {/* 标题和新对话按钮 - 居中显示 */}
+        {/* Title and new conversation button - centered display */}
         <div
           className={cn('mx-auto mb-6 w-full pt-4', widthClass, paddingClass)}
         >
@@ -273,7 +273,7 @@ export function History() {
             </div>
 
             <div className="flex items-center space-x-3">
-              {/* 批量选择按钮 */}
+              {/* Batch selection button */}
               {total > 0 && (
                 <button
                   onClick={handleToggleSelectionMode}
@@ -295,7 +295,7 @@ export function History() {
                 </button>
               )}
 
-              {/* 新对话按钮 */}
+              {/* New conversation button */}
               <button
                 onClick={handleNewChat}
                 className={cn(
@@ -314,7 +314,7 @@ export function History() {
           </div>
         </div>
 
-        {/* 搜索框 - 居中显示 */}
+        {/* Search box - centered display */}
         <div className={cn('mx-auto mb-4 w-full', widthClass, paddingClass)}>
           <div className="relative w-full">
             <div
@@ -342,7 +342,7 @@ export function History() {
           </div>
         </div>
 
-        {/* 选择操作栏 - 居中显示 */}
+        {/* Selection operation bar - centered display */}
         <div className={cn('mx-auto w-full', widthClass, paddingClass)}>
           <HistorySelectionBar
             isSelectionMode={isSelectionMode}
@@ -357,9 +357,9 @@ export function History() {
         </div>
       </div>
 
-      {/* 可滚动列表区域 - 独立滚动 */}
+      {/* Scrollable list area - independent scrolling */}
       <div className="flex-1 overflow-hidden">
-        {/* 对话列表容器 */}
+        {/* Conversation list container */}
         <div
           className={cn(
             'h-full overflow-y-auto',
@@ -384,7 +384,7 @@ export function History() {
         </div>
       </div>
 
-      {/* 批量删除确认对话框 */}
+      {/* Batch delete confirmation dialog */}
       <ConfirmDialog
         isOpen={showBatchDeleteDialog}
         onClose={() => setShowBatchDeleteDialog(false)}

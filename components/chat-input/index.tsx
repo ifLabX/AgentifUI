@@ -1,6 +1,6 @@
 'use client';
 
-// 导出所有子组件，方便单独使用
+// Export all sub-components for easy individual use
 export { ChatButton } from './button';
 export { ChatTextInput } from './text-input';
 export { ChatButtonArea, ChatTextArea } from './layout';

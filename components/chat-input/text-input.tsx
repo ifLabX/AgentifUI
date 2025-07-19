@@ -47,13 +47,13 @@ export const ChatTextInput = forwardRef<
     const t = useTranslations('pages.chat');
     const defaultPlaceholder = placeholder || t('input.placeholder');
 
-    // 获取主题颜色
+    // Get theme colors
     const { colors } = useThemeColors();
 
-    // 内部引用，用于在没有外部ref时使用
+    // Internal reference, used when no external ref is provided
     const internalRef = useRef<HTMLTextAreaElement>(null);
 
-    // 获取当前可用的引用
+    // Get the currently available reference
     const getTextarea = () => {
       if (ref && typeof ref === 'object' && ref.current) {
         return ref.current;
@@ -61,43 +61,43 @@ export const ChatTextInput = forwardRef<
       return internalRef.current;
     };
 
-    // 高度调整逻辑
+    // Height adjustment logic
     const updateHeight = useCallback(() => {
       const textarea = getTextarea();
       if (!textarea) return;
 
-      // 保存当前选择位置和滚动位置
+      // Save current selection position and scroll position
       const selectionStart = textarea.selectionStart;
       const selectionEnd = textarea.selectionEnd;
       const scrollTop = textarea.scrollTop;
 
-      // 重置高度以准确计算scrollHeight
+      // Reset height to accurately calculate scrollHeight
       textarea.style.height = '0';
 
-      // 获取scrollHeight并设置新高度
+      // Get scrollHeight and set new height
       const scrollHeight = textarea.scrollHeight;
       const newHeight = Math.min(scrollHeight, maxHeight);
       textarea.style.height = `${newHeight}px`;
 
-      // 恢复选择位置和滚动位置
+      // Restore selection position and scroll position
       textarea.setSelectionRange(selectionStart, selectionEnd);
       textarea.scrollTop = scrollTop;
 
-      // 通知父组件高度变化
+      // Notify parent component of height change
       if (onHeightChange) {
         onHeightChange(Math.max(newHeight, INITIAL_INPUT_HEIGHT));
       }
     }, [maxHeight, onHeightChange, ref]);
 
-    // 基于值变化调整高度
+    // Adjust height based on value change
     useEffect(() => {
       updateHeight();
     }, [value, updateHeight]);
 
-    // 组件挂载后初始调整
+    // Initial adjustment after component mount
     useEffect(() => {
       updateHeight();
-      // 添加一个额外的计时器，以便在所有DOM操作完成后再次调整（解决某些边缘情况）
+      // Add an extra timer to adjust again after all DOM operations are completed (solve some edge cases)
       const timer = setTimeout(updateHeight, 10);
       return () => clearTimeout(timer);
     }, [updateHeight]);
@@ -105,10 +105,10 @@ export const ChatTextInput = forwardRef<
     return (
       <textarea
         ref={node => {
-          // 同时更新内部引用
+          // Update internal reference simultaneously
           internalRef.current = node;
 
-          // 如果外部提供了ref回调，也调用它
+          // If an external ref callback is provided, also call it
           if (ref && typeof ref === 'function') {
             ref(node);
           }
@@ -116,7 +116,7 @@ export const ChatTextInput = forwardRef<
         value={value}
         onChange={e => {
           onChange(e);
-          // 内容变化时即时调整高度
+          // Adjust height immediately when content changes
           requestAnimationFrame(updateHeight);
         }}
         onKeyDown={onKeyDown}

@@ -103,6 +103,7 @@
         "unsupportedFormat": "サポートされていないファイル形式"
       },
       "fileTypeSelector": {
+        "ariaLabel": "添付ファイルを追加",
         "notSupported": "このアプリはファイルアップロードをサポートしていません",
         "noLimit": "ファイルアップロード制限は0です",
         "noTypesConfigured": "サポートされているファイルタイプが設定されていません",
@@ -116,7 +117,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "利用可能なモデルがありません",
-        "selectModel": "モデルを選択"
+        "selectModel": "モデルを選択",
+        "appNotFound": "アプリが見つかりません: {appId}"
       },
       "messages": {
         "assistant": "アシスタント",
@@ -170,7 +172,8 @@
         "starting": "Chatflow開始中",
         "noRecords": "ノード実行記録なし",
         "waitingUpdate": "ノードステータス更新を待機中...",
-        "showProgress": "会話開始後にノード実行進捗が表示されます"
+        "showProgress": "会話開始後にノード実行進捗が表示されます",
+        "executionError": "実行エラー："
       },
       "executionBar": {
         "status": {
@@ -1941,6 +1944,11 @@
         "relevanceScore": "関連度",
         "wordCount": "{count}文字",
         "page": "{page}ページ"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "ファイル数の上限を超えています ({current}/{max})、いくつかのファイルを削除してください"
       }
     }
   },

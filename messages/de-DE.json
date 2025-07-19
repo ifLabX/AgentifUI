@@ -103,6 +103,7 @@
         "unsupportedFormat": "Nicht unterstütztes Dateiformat"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Anhang hinzufügen",
         "notSupported": "Diese Anwendung unterstützt keine Datei-Uploads",
         "noLimit": "Datei-Upload-Limit ist 0",
         "noTypesConfigured": "Keine unterstützten Dateitypen konfiguriert",
@@ -116,7 +117,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Keine Modelle verfügbar",
-        "selectModel": "Modell auswählen"
+        "selectModel": "Modell auswählen",
+        "appNotFound": "App nicht gefunden: {appId}"
       },
       "messages": {
         "assistant": "Assistent",
@@ -170,7 +172,8 @@
         "starting": "Chatflow wird gestartet",
         "noRecords": "Keine Knoten-Ausführungseinträge",
         "waitingUpdate": "Warten auf Knoten-Status-Update...",
-        "showProgress": "Knoten-Ausführungsfortschritt wird nach Start der Unterhaltung angezeigt"
+        "showProgress": "Knoten-Ausführungsfortschritt wird nach Start der Unterhaltung angezeigt",
+        "executionError": "Ausführungsfehler:"
       },
       "executionBar": {
         "status": {
@@ -1941,6 +1944,11 @@
         "relevanceScore": "Relevanz",
         "wordCount": "{count} Wörter",
         "page": "Seite {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Dateilimit überschritten ({current}/{max}), bitte entfernen Sie einige Dateien"
       }
     }
   },

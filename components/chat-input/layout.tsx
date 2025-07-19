@@ -2,7 +2,7 @@
 
 import { cn } from '@lib/utils';
 
-// 按钮区域组件 - 处理按钮布局
+// Button area component - handle button layout
 interface ChatButtonAreaProps {
   children: React.ReactNode;
   className?: string;
@@ -21,7 +21,7 @@ export const ChatButtonArea = ({
   );
 };
 
-// 文本区域组件
+// Text area component
 interface ChatTextAreaProps {
   children: React.ReactNode;
   className?: string;

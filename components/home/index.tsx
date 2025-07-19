@@ -39,8 +39,8 @@ export function Home() {
   // Check current user authentication status
   useEffect(() => {
     const getCurrentUser = async () => {
-      // 🔒 安全修复：使用 getUser() 进行服务器端验证
-      // 避免依赖可能被篡改的本地 session 数据
+      // 🔒 Security fix: use getUser() for server-side verification
+      // Avoid relying on potentially tampered local session data
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -52,21 +52,21 @@ export function Home() {
 
   const handleStartClick = async () => {
     try {
-      // 检查用户是否已登录
+      // Check if user is logged in
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       if (session) {
-        // 用户已登录，直接跳转到聊天页面
+        // User is logged in, jump to chat page
         router.push('/chat');
       } else {
-        // 用户未登录，跳转到登录页面
+        // User is not logged in, jump to login page
         router.push('/login');
       }
     } catch (error) {
-      console.error('检查登录状态失败:', error);
-      // 出错时默认跳转到登录页面
+      console.error('Check login status failed:', error);
+      // Default jump to login page if error occurs
       router.push('/login');
     }
   };
@@ -75,7 +75,7 @@ export function Home() {
     router.push('/about');
   };
 
-  // 根据主题获取颜色
+  // Get colors based on theme
   const getColors = () => {
     if (isDark) {
       return {
@@ -128,7 +128,7 @@ export function Home() {
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-5xl"
         >
-          {/* 主标题区域 */}
+          {/* Main title area */}
           <div className="mb-16 text-center">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -149,7 +149,7 @@ export function Home() {
             </motion.p>
           </div>
 
-          {/* 特性卡片区域 */}
+          {/* Feature card area */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -177,7 +177,7 @@ export function Home() {
             ))}
           </motion.div>
 
-          {/* 按钮区域 */}
+          {/* Button area */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -201,7 +201,7 @@ export function Home() {
             </Button>
           </motion.div>
 
-          {/* 底部信息 */}
+          {/* Bottom information */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

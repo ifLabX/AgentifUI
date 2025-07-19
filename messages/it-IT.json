@@ -103,6 +103,7 @@
         "unsupportedFormat": "Formato file non supportato"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Aggiungi allegato",
         "notSupported": "Questa app non supporta il caricamento di file",
         "noLimit": "Il limite di caricamento file è 0",
         "noTypesConfigured": "Nessun tipo di file supportato configurato",
@@ -116,7 +117,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Nessun modello disponibile",
-        "selectModel": "Seleziona modello"
+        "selectModel": "Seleziona modello",
+        "appNotFound": "App non trovata: {appId}"
       },
       "messages": {
         "assistant": "Assistente",
@@ -170,7 +172,8 @@
         "starting": "Avvio di Chatflow",
         "noRecords": "Nessun record di esecuzione dei nodi",
         "waitingUpdate": "In attesa di aggiornamento dello stato del nodo...",
-        "showProgress": "Il progresso dell'esecuzione dei nodi verrà mostrato dopo l'inizio della conversazione"
+        "showProgress": "Il progresso dell'esecuzione dei nodi verrà mostrato dopo l'inizio della conversazione",
+        "executionError": "Errore di Esecuzione:"
       },
       "executionBar": {
         "status": {
@@ -1941,6 +1944,11 @@
         "relevanceScore": "Rilevanza",
         "wordCount": "{count} parole",
         "page": "Pagina {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Limite file superato ({current}/{max}), rimuovere alcuni file"
       }
     }
   },
