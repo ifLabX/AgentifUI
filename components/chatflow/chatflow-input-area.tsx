@@ -48,6 +48,7 @@ export function ChatflowInputArea({
   const { widthClass, paddingClass } = useChatWidth();
   const { currentAppInstance } = useCurrentApp();
   const t = useTranslations('pages.chatflow');
+  const tWorkflow = useTranslations('pages.workflow.form');
 
   // --- State management ---
   const [query, setQuery] = useState('');
@@ -209,7 +210,11 @@ export function ChatflowInputArea({
 
       // Verify the form fields (if any)
       if (hasFormConfig && userInputForm.length > 0) {
-        const formValidationErrors = validateFormData(formData, userInputForm);
+        const formValidationErrors = validateFormData(
+          formData,
+          userInputForm,
+          tWorkflow
+        );
         Object.assign(newErrors, formValidationErrors);
       }
 
@@ -251,7 +256,11 @@ export function ChatflowInputArea({
     if (!query.trim()) return false;
 
     if (hasFormConfig && userInputForm.length > 0) {
-      const formValidationErrors = validateFormData(formData, userInputForm);
+      const formValidationErrors = validateFormData(
+        formData,
+        userInputForm,
+        tWorkflow
+      );
       return Object.keys(formValidationErrors).length === 0;
     }
 

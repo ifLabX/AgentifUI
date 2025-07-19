@@ -25,20 +25,20 @@ interface WorkflowLayoutProps {
 type MobileTab = 'form' | 'tracker' | 'history';
 
 /**
- * 工作流主布局组件
+ * Workflow main layout component
  *
- * 布局特点：
- * - 桌面端：左右分栏布局（表单 + 跟踪器）
- * - 移动端：标签切换布局
- * - 可折叠的历史记录侧边栏
- * - 统一的状态管理和数据流
+ * Layout features:
+ * - Desktop: left-right split layout (form + tracker)
+ * - Mobile: tab switching layout
+ * - Foldable history sidebar
+ * - Unified status management and data flow
  */
 export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   const { isDark } = useTheme();
   const isMobile = useMobile();
   const t = useTranslations('pages.workflow.buttons');
 
-  // --- 新的工作流执行系统 ---
+  // --- New workflow execution system ---
   const {
     isExecuting,
     progress,
@@ -59,86 +59,89 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     loadWorkflowHistory,
   } = useWorkflowExecution(instanceId);
 
-  // --- 保留原有状态管理 ---
+  // --- Keep the original status management ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore();
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('form');
 
-  // --- ResultViewer 状态管理 ---
+  // --- ResultViewer status management ---
   const [showResultViewer, setShowResultViewer] = useState(false);
   const [selectedExecution, setSelectedExecution] = useState<any>(null);
   const [executionResult, setExecutionResult] = useState<any>(null);
 
-  // --- 表单重置引用 ---
+  // --- Form reset reference ---
   const formResetRef = React.useRef<WorkflowInputFormRef>(null);
 
-  // --- 工作流执行回调，现在使用真实的hook ---
+  // --- Workflow execution callback, now using the real hook ---
   const handleExecuteWorkflow = useCallback(
     async (formData: Record<string, any>) => {
-      console.log('[工作流布局] 开始执行工作流，输入数据:', formData);
+      console.log(
+        '[Workflow layout] Start executing workflow, input data:',
+        formData
+      );
 
       try {
         await executeWorkflow(formData);
       } catch (error) {
-        console.error('[工作流布局] 执行失败:', error);
+        console.error('[Workflow layout] Execution failed:', error);
       }
     },
     [executeWorkflow]
   );
 
-  // --- 节点状态更新回调 ---
+  // --- Node status update callback ---
   const handleNodeUpdate = useCallback((event: any) => {
-    console.log('[节点更新]', event);
-    // 注意：节点状态现在通过hook自动管理，不需要手动更新
+    console.log('[Node update]', event);
+    // Note: Node status is now automatically managed through the hook, no need to manually update
   }, []);
 
-  // --- 停止执行 ---
+  // --- Stop execution ---
   const handleStopExecution = useCallback(async () => {
-    console.log('[工作流布局] 停止执行');
+    console.log('[Workflow layout] Stop execution');
     try {
       await stopWorkflowExecution();
     } catch (error) {
-      console.error('[工作流布局] 停止执行失败:', error);
+      console.error('[Workflow layout] Stop execution failed:', error);
     }
   }, [stopWorkflowExecution]);
 
-  // --- 重试执行 ---
+  // --- Retry execution ---
   const handleRetryExecution = useCallback(async () => {
-    console.log('[工作流布局] 重试执行');
+    console.log('[Workflow layout] Retry execution');
     try {
       await retryExecution();
     } catch (error) {
-      console.error('[工作流布局] 重试执行失败:', error);
+      console.error('[Workflow layout] Retry execution failed:', error);
     }
   }, [retryExecution]);
 
-  // --- 完全重置（包括表单） ---
+  // --- Complete reset (including form) ---
   const handleCompleteReset = useCallback(() => {
-    console.log('[工作流布局] 完全重置');
+    console.log('[Workflow layout] Complete reset');
 
-    // 重置执行状态（保留历史记录）
+    // Reset execution state (keep history)
     resetExecution();
 
-    // 重置表单
+    // Reset form
     if (formResetRef.current?.resetForm) {
       formResetRef.current.resetForm();
     }
   }, [resetExecution]);
 
-  // --- 清除错误 ---
+  // --- Clear error ---
   const handleClearError = useCallback(() => {
-    console.log('[工作流布局] 清除错误');
+    console.log('[Workflow layout] Clear error');
     clearExecutionState();
   }, [clearExecutionState]);
 
-  // --- 处理查看结果 ---
+  // --- Handle view result ---
   const handleViewResult = useCallback((result: any, execution: any) => {
-    console.log('[工作流布局] 查看执行结果:', execution);
+    console.log('[Workflow layout] View execution result:', execution);
     setExecutionResult(result);
     setSelectedExecution(execution);
     setShowResultViewer(true);
   }, []);
 
-  // --- 错误提示组件 ---
+  // --- Error banner component ---
   const ErrorBanner = ({
     error,
     canRetry,
@@ -191,11 +194,11 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     </div>
   );
 
-  // --- 移动端布局 ---
+  // --- Mobile layout ---
   if (isMobile) {
     return (
       <div className="flex h-full flex-col overflow-hidden">
-        {/* 全局错误提示 */}
+        {/* Global error banner */}
         {error && (
           <ErrorBanner
             error={error}
@@ -205,14 +208,14 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
           />
         )}
 
-        {/* 移动端标签切换器 */}
+        {/* Mobile tab switcher */}
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
           onTabChange={setMobileActiveTab}
           hasHistory={showHistory}
         />
 
-        {/* 内容区域 */}
+        {/* Content area */}
         <div className="flex-1 overflow-hidden">
           {mobileActiveTab === 'form' && (
             <div className="h-full p-4">
@@ -254,10 +257,10 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     );
   }
 
-  // --- 桌面端布局 ---
+  // --- Desktop layout ---
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
-      {/* 全局错误提示 */}
+      {/* Global error banner */}
       {error && (
         <ErrorBanner
           error={error}
@@ -268,7 +271,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
       )}
 
       <div className="flex flex-1 overflow-hidden">
-        {/* 主内容区域 */}
+        {/* Main content area */}
         <div
           className={cn(
             'relative flex-1 overflow-hidden transition-all duration-300',
@@ -310,13 +313,13 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
           />
         </div>
 
-        {/* 历史记录侧边栏 */}
+        {/* History sidebar */}
         {showHistory && (
           <div
             className={cn(
               'w-80 min-w-72 overflow-hidden border-l',
               'transition-all duration-300 ease-in-out',
-              'transform-gpu', // 使用GPU加速
+              'transform-gpu', // Use GPU acceleration
               isDark ? 'border-stone-700' : 'border-stone-200'
             )}
           >
@@ -330,7 +333,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
         )}
       </div>
 
-      {/* --- 结果查看器（页面层级，带模糊背景） --- */}
+      {/* --- Result viewer (page level, with blurred background) --- */}
       {showResultViewer && executionResult && selectedExecution && (
         <ResultViewer
           result={executionResult}

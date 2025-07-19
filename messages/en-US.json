@@ -243,6 +243,19 @@
         "startExecution": "Start execution",
         "errors": {
           "instanceNotFound": "Service instance with instanceId {instanceId} not found"
+        },
+        "validation": {
+          "required": "{label} is required",
+          "invalidNumber": "{label} must be a valid number",
+          "minValue": "{label} cannot be less than {min}",
+          "maxValue": "{label} cannot be greater than {max}",
+          "stepValue": "{label} must be a multiple of {step}",
+          "precisionExceeded": "{label} decimal places cannot exceed {precision} digits",
+          "maxLengthExceeded": "{label} length cannot exceed {maxLength} characters",
+          "invalidSelection": "Invalid value selected for {label}",
+          "tooManyFiles": "{label} file count cannot exceed {maxFiles}",
+          "fileTooLarge": "File \"{fileName}\" in {label} exceeds {maxSize}MB",
+          "unsupportedFileType": "File \"{fileName}\" in {label} is not supported, supported types: {allowedTypes}"
         }
       },
       "status": {
@@ -290,6 +303,11 @@
         "iteration": "Loop Iteration",
         "parallel": "Parallel Branch",
         "end": "End Node"
+      },
+      "iterationDetails": {
+        "roundIteration": "Round {round} Iteration",
+        "roundLoop": "Round {round} Loop",
+        "nodeNumber": "Node {number}"
       },
       "buttons": {
         "retry": "Retry",

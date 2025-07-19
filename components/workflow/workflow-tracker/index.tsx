@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
-// --- 集成真实的节点状态 ---
+// --- Integrate real node status ---
 import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store';
 import { cn } from '@lib/utils';
 import { Loader2, Play } from 'lucide-react';
@@ -25,14 +25,14 @@ interface WorkflowTrackerProps {
 }
 
 /**
- * 工作流节点跟踪器组件
+ * Workflow node tracker component
  *
- * 功能特点：
- * - 实时显示工作流执行状态
- * - 细粒度节点进度跟踪
- * - 执行结果展示
- * - 支持 SSE 事件处理
- * - 统一的状态面板（合并了控制面板和状态显示）
+ * Features:
+ * - Real-time display of workflow execution status
+ * - Fine-grained node progress tracking
+ * - Execution result display
+ * - Support SSE event handling
+ * - Unified status panel (merged control panel and status display)
  */
 export function WorkflowTracker({
   isExecuting,
@@ -49,7 +49,7 @@ export function WorkflowTracker({
   const tNodeStatus = useTranslations('pages.workflow.nodeStatus');
   const [showResult, setShowResult] = useState(false);
 
-  // --- 从store获取真实的节点状态 ---
+  // --- Get real node status from store ---
   const nodes = useWorkflowExecutionStore(state => state.nodes);
   const currentNodeId = useWorkflowExecutionStore(state => state.currentNodeId);
   const progress = useWorkflowExecutionStore(state => state.executionProgress);
@@ -62,47 +62,47 @@ export function WorkflowTracker({
     state => state.loopExpandedStates
   );
 
-  // 🎯 过滤和分组节点：根据展开状态控制迭代/循环中的节点显示
+  // 🎯 Filter and group nodes: control the display of nodes in iteration/loop based on the expanded state
   const getVisibleNodes = () => {
     const visibleNodes = [];
 
     for (const node of nodes) {
-      // 🎯 容器节点（迭代/循环/并行分支）总是显示
+      // 🎯 Container nodes (iteration/loop/parallel branch) always display
       if (node.isIterationNode || node.isLoopNode || node.isParallelNode) {
         visibleNodes.push(node);
       }
-      // 非嵌套节点总是显示
+      // Non-nested nodes always display
       else if (!node.isInIteration && !node.isInLoop) {
         visibleNodes.push(node);
       }
-      // 迭代中的子节点：根据容器展开状态决定是否显示
+      // Sub-nodes in iteration: determine whether to display based on the expanded state of the container
       else if (node.isInIteration) {
-        // 迭代中的节点：需要找到对应的迭代容器节点
+        // Nodes in iteration: need to find the corresponding iteration container node
         const iterationNode = nodes.find(
           n =>
             n.isIterationNode &&
             n.id !== node.id &&
-            // 简单的判断：如果迭代节点在当前节点之前，则认为是其容器
+            // Simple judgment: if the iteration node is before the current node, it is considered to be its container
             nodes.indexOf(n) < nodes.indexOf(node)
         );
 
-        // 如果找到迭代容器节点且已展开，则显示此迭代中的节点
+        // If the iteration container node is found and expanded, display the nodes in this iteration
         if (iterationNode && iterationExpandedStates[iterationNode.id]) {
           visibleNodes.push(node);
         }
       }
-      // 循环中的子节点：根据容器展开状态决定是否显示
+      // Sub-nodes in loop: determine whether to display based on the expanded state of the container
       else if (node.isInLoop) {
-        // 循环中的节点：需要找到对应的循环容器节点
+        // Nodes in loop: need to find the corresponding loop container node
         const loopNode = nodes.find(
           n =>
             n.isLoopNode &&
             n.id !== node.id &&
-            // 简单的判断：如果循环节点在当前节点之前，则认为是其容器
+            // Simple judgment: if the loop node is before the current node, it is considered to be its container
             nodes.indexOf(n) < nodes.indexOf(node)
         );
 
-        // 如果找到循环容器节点且已展开，则显示此循环中的节点
+        // If the loop container node is found and expanded, display the nodes in this loop
         if (loopNode && loopExpandedStates[loopNode.id]) {
           visibleNodes.push(node);
         }
@@ -112,11 +112,11 @@ export function WorkflowTracker({
     return visibleNodes;
   };
 
-  // --- 自动打开结果查看器 ---
+  // --- Automatically open result viewer ---
   const prevExecutionRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // 当执行完成且有结果时，自动打开（仅在新的执行完成时触发）
+    // When execution is completed and there is a result, automatically open (only triggered when a new execution is completed)
     const currentExecutionId =
       currentExecution?.id || currentExecution?.task_id;
 
@@ -140,7 +140,7 @@ export function WorkflowTracker({
 
   return (
     <div className="flex h-full flex-col">
-      {/* --- 统一状态面板 --- */}
+      {/* --- Unified status panel --- */}
       {(onStop || onRetry || onReset) &&
         (isExecuting || currentExecution || error) && (
           <UnifiedStatusPanel
@@ -156,10 +156,10 @@ export function WorkflowTracker({
           />
         )}
 
-      {/* --- 节点列表 --- */}
+      {/* --- Node list --- */}
       <div className="flex-1 overflow-y-auto px-6 pt-2 pb-4">
         {!isExecuting && !currentExecution && nodes.length === 0 ? (
-          // 空状态
+          // Empty state
           <div className="flex h-full items-center justify-center">
             <div className="space-y-4 text-center">
               <div
@@ -196,7 +196,7 @@ export function WorkflowTracker({
             </div>
           </div>
         ) : (
-          // 节点进度列表
+          // Node progress list
           <div className="space-y-4">
             <div className="mb-4 flex items-center gap-2">
               <h3
@@ -209,7 +209,7 @@ export function WorkflowTracker({
               </h3>
             </div>
 
-            {/* 如果没有真实节点数据，显示一个简单的占位 */}
+            {/* If there is no real node data, display a simple placeholder */}
             {nodes.length === 0 && (isExecuting || currentExecution) ? (
               <div
                 className={cn(
@@ -247,13 +247,13 @@ export function WorkflowTracker({
                 </div>
               </div>
             ) : (
-              // 🎯 显示过滤后的节点数据：根据展开状态控制迭代/循环中的节点显示
+              // 🎯 Display filtered node data: control the display of nodes in iteration/loop based on the expanded state
               getVisibleNodes().map((node, index) => (
                 <ExecutionBar
                   key={node.id}
                   node={node}
                   index={index}
-                  delay={index * 200} // 每个条延迟200ms出现
+                  delay={index * 200} // Each bar appears after a delay of 200ms
                 />
               ))
             )}
@@ -261,7 +261,7 @@ export function WorkflowTracker({
         )}
       </div>
 
-      {/* --- 结果查看器 --- */}
+      {/* --- Result viewer --- */}
       {showResult && executionResult && (
         <ResultViewer
           result={executionResult}
