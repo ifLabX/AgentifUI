@@ -60,7 +60,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : 'button';
     const { isDark } = useTheme();
 
-    // 根据variant和isDark动态生成样式
+    // generate styles dynamically based on variant and isDark
     const getVariantStyles = () => {
       switch (variant) {
         case 'outline':

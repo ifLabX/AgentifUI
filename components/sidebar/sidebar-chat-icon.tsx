@@ -3,7 +3,7 @@
 import { cn } from '@lib/utils';
 
 interface SidebarChatIconProps {
-  // 允许自定义类名和大小
+  // Allow custom class name and size
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   isDark?: boolean;
@@ -14,7 +14,7 @@ export function SidebarChatIcon({
   size = 'md',
   isDark,
 }: SidebarChatIconProps) {
-  // 根据size属性确定尺寸
+  // Determine size based on size attribute
   const sizeClasses = {
     sm: {
       container: 'w-3',

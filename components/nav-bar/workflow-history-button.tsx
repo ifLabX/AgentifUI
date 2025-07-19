@@ -11,9 +11,9 @@ import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 
 /**
- * 工作流历史记录按钮组件（NavBar版本）
+ * Workflow history button component (NavBar version)
  *
- * 仅在工作流和文本生成页面显示
+ * Only displayed on workflow and text generation pages
  */
 export function WorkflowHistoryButton() {
   const { isDark } = useTheme();
@@ -21,7 +21,7 @@ export function WorkflowHistoryButton() {
   const { showHistory, toggleHistory } = useWorkflowHistoryStore();
   const t = useTranslations('navbar.workflow');
 
-  // 检查是否在工作流或文本生成页面
+  // Check if it is on the workflow or text generation page
   const isWorkflowPage =
     pathname?.includes('/apps/workflow/') ||
     pathname?.includes('/apps/text-generation/');

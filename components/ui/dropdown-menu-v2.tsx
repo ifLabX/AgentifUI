@@ -104,9 +104,9 @@ interface DropdownMenuV2Props {
   minWidth?: number;
   popoverContainerClassName?: string;
   alignToTriggerBottom?: boolean;
-  preventScroll?: boolean; // 是否阻止背景滚动
-  isOpen?: boolean; // 外部控制的打开状态
-  onOpenChange?: (isOpen: boolean) => void; // 状态变化回调
+  preventScroll?: boolean; // whether to prevent background scroll
+  isOpen?: boolean; // external controlled open state
+  onOpenChange?: (isOpen: boolean) => void; // state change callback
 }
 
 export function DropdownMenuV2({
@@ -116,7 +116,7 @@ export function DropdownMenuV2({
   placement = 'bottom',
   minWidth = 160,
   popoverContainerClassName,
-  preventScroll = true, // 默认阻止滚动
+  preventScroll = true, // default to prevent scroll
   isOpen: externalIsOpen,
   onOpenChange,
 }: DropdownMenuV2Props) {
@@ -127,16 +127,16 @@ export function DropdownMenuV2({
   const triggerRef = useRef<HTMLDivElement>(null);
   const { isDark } = useTheme();
 
-  // 使用外部状态或内部状态
+  // use external state or internal state
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const setIsOpen = onOpenChange || setInternalIsOpen;
 
-  // 🎯 客户端挂载检测
+  // 🎯 client mount detection
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // 🎯 计算trigger位置用于portal定位
+  // 🎯 calculate trigger position for portal positioning
   const updateTriggerRect = () => {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
@@ -144,11 +144,11 @@ export function DropdownMenuV2({
     }
   };
 
-  // 🎯 当菜单打开时更新位置
+  // 🎯 update position when menu is opened
   useEffect(() => {
     if (isOpen) {
       updateTriggerRect();
-      // 监听滚动和resize事件
+      // listen to scroll and resize events
       const handleUpdate = () => updateTriggerRect();
       window.addEventListener('scroll', handleUpdate, true);
       window.addEventListener('resize', handleUpdate);
@@ -159,23 +159,23 @@ export function DropdownMenuV2({
     }
   }, [isOpen]);
 
-  // 🎯 全局点击监听器：点击组件外部时关闭菜单
-  // 这样可以确保点击页面任何地方都能关闭菜单
+  // 🎯 global click listener: close menu when clicking outside the component
+  // this ensures that clicking anywhere on the page can close the menu
   useEffect(() => {
     if (!isOpen) return;
 
     const handleGlobalClick = (event: MouseEvent) => {
-      // 🎯 修复：检查点击的元素，如果是dropdown内容区域则不关闭
-      // 这样可以确保点击菜单项时不会被全局监听器干扰
+      // 🎯 fix: check the clicked element, if it is the dropdown content area, do not close
+      // this ensures that clicking on the menu item will not be interfered with by the global listener
       const target = event.target as Node;
 
-      // 如果点击的是组件内部，不关闭菜单
+      // if the clicked element is inside the component, do not close the menu
       if (containerRef.current && containerRef.current.contains(target)) {
         return;
       }
 
-      // 如果点击的是portal中的dropdown内容，也不关闭菜单
-      // 通过检查点击元素是否包含dropdown相关的class来判断
+      // if the clicked element is the dropdown content in the portal, do not close the menu
+      // check if the clicked element contains the dropdown related class to determine
       const clickedElement = event.target as Element;
       if (
         clickedElement.closest &&
@@ -184,11 +184,11 @@ export function DropdownMenuV2({
         return;
       }
 
-      // 点击组件外部，关闭菜单
+      // click outside the component, close the menu
       setIsOpen(false);
     };
 
-    // 🎯 使用setTimeout延迟添加监听器，避免与当前点击事件冲突
+    // 🎯 use setTimeout to delay adding the listener to avoid conflict with the current click event
     const timeoutId = setTimeout(() => {
       document.addEventListener('mousedown', handleGlobalClick);
     }, 0);
@@ -199,17 +199,17 @@ export function DropdownMenuV2({
     };
   }, [isOpen, setIsOpen]);
 
-  // 阻止背景滚动：当下拉菜单打开时
+  // prevent background scroll: when the dropdown menu is opened
   useEffect(() => {
     if (!preventScroll) return;
 
     if (isOpen) {
-      // 阻止滚动
+      // prevent scroll
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
 
       return () => {
-        // 恢复滚动
+        // restore scroll
         document.body.style.overflow = originalOverflow;
       };
     }
@@ -223,28 +223,28 @@ export function DropdownMenuV2({
     setIsOpen(!isOpen);
   };
 
-  // 阻止trigger点击事件冒泡
+  // prevent trigger click event from bubbling
   const handleTriggerClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleMenu();
   };
 
-  // 🎯 计算dropdown的固定位置
+  // 🎯 calculate the fixed position of the dropdown
   const getDropdownStyle = (): React.CSSProperties => {
     if (!triggerRect) return {};
 
     const style: React.CSSProperties = {};
 
     if (placement === 'bottom') {
-      style.top = triggerRect.bottom + 4; // 4px间距
-      style.left = triggerRect.right - minWidth; // 右对齐
+      style.top = triggerRect.bottom + 4; // 4px gap
+      style.left = triggerRect.right - minWidth; // right aligned
     } else {
-      style.bottom = window.innerHeight - triggerRect.top + 4; // 4px间距
-      style.left = triggerRect.right - minWidth; // 右对齐
+      style.bottom = window.innerHeight - triggerRect.top + 4; // 4px gap
+      style.left = triggerRect.right - minWidth; // right aligned
     }
 
-    // 确保不会超出视窗边界
+    // ensure it does not exceed the viewport boundary
     if (style.left && typeof style.left === 'number' && style.left < 8) {
       style.left = 8;
     }
@@ -252,7 +252,7 @@ export function DropdownMenuV2({
     return style;
   };
 
-  // 🎯 Dropdown内容 - 使用Portal渲染到body
+  // 🎯 Dropdown content - rendered to body using Portal
   const dropdownContent = isOpen && triggerRect && (
     <div
       className={cn('fixed z-[9999]', popoverContainerClassName)}
@@ -261,7 +261,7 @@ export function DropdownMenuV2({
       <div
         className={cn(
           'rounded-md border shadow-lg backdrop-blur-sm',
-          // 🎯 使用更深的颜色以区别于sidebar背景
+          // 🎯 use darker colors to distinguish from sidebar background
           isDark
             ? 'border-stone-600/80 bg-stone-800/95'
             : 'border-stone-300/80 bg-white/95',
@@ -284,7 +284,7 @@ export function DropdownMenuV2({
           {trigger}
         </div>
 
-        {/* Dropdown Menu - 使用Portal渲染到body，完全避免层叠上下文问题 */}
+        {/* Dropdown Menu - rendered to body using Portal, completely avoid stacking context problem */}
         {mounted &&
           dropdownContent &&
           createPortal(dropdownContent, document.body)}

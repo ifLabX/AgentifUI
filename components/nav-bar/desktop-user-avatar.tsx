@@ -12,12 +12,12 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 /**
- * 桌面端用户头像菜单组件
- * 特点：
- * - 纯圆形头像设计，无外框
- * - 使用useProfile hook获取用户信息，确保与认证状态同步
- * - 使用内联样式确保主题一致性
- * - 优化的渲染性能，减少重新渲染
+ * Desktop user avatar menu component
+ * Features:
+ * - Pure circular avatar design, no outer frame
+ * - Use useProfile hook to get user information, ensure synchronization with authentication status
+ * - Use inline styles to ensure theme consistency
+ * - Optimized rendering performance, reduce re-rendering
  */
 export function DesktopUserAvatar() {
   const { isDark } = useThemeColors();
@@ -25,7 +25,7 @@ export function DesktopUserAvatar() {
   const t = useTranslations('navbar.user');
   const tRoles = useTranslations('pages.settings.profileSettings.roles');
 
-  // 使用useProfile hook获取用户信息，自动处理缓存和认证状态同步
+  // Use useProfile hook to get user information, automatically handle cache and authentication status synchronization
   const { profile } = useProfile();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,7 +35,7 @@ export function DesktopUserAvatar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  // 点击外部关闭下拉菜单
+  // Click outside to close the dropdown menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -57,34 +57,34 @@ export function DesktopUserAvatar() {
     };
   }, [isDropdownOpen]);
 
-  // 切换下拉菜单
+  // Switch dropdown menu
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDropdownOpen(prev => {
       if (prev) {
-        // 关闭菜单时重置悬停状态
+        // Reset hover state when menu is closed
         setHoveredItem(null);
       }
       return !prev;
     });
   };
 
-  // 处理菜单项点击
+  // Handle menu item click
   const handleMenuItemClick = (action: () => void) => {
     action();
     setIsDropdownOpen(false);
     setHoveredItem(null);
   };
 
-  // 处理退出登录 - 显示确认对话框
+  // Handle logout - display confirmation dialog
   const handleLogout = () => {
     setShowLogoutDialog(true);
     setIsDropdownOpen(false);
     setHoveredItem(null);
   };
 
-  // 菜单项定义
+  // Menu item definition
   const menuItems = [
     {
       icon: Clock,
@@ -103,7 +103,7 @@ export function DesktopUserAvatar() {
     },
   ];
 
-  // 管理员专用菜单项，仅对管理员用户显示
+  // Admin-specific menu items, only displayed for admin users
   const adminMenuItems = [
     {
       icon: Wrench,
@@ -112,7 +112,7 @@ export function DesktopUserAvatar() {
     },
   ];
 
-  // 根据用户角色合并菜单项
+  // Merge menu items based on user role
   const allMenuItems =
     profile?.role === 'admin' ? [...menuItems, ...adminMenuItems] : menuItems;
 
@@ -123,19 +123,19 @@ export function DesktopUserAvatar() {
       ? tRoles('admin')
       : profile?.role === 'manager'
         ? tRoles('manager')
-        : tRoles('user'); // 显示用户角色而不是固定的"群组系统"
+        : tRoles('user'); // Display user role instead of fixed "Group System"
   const avatarUrl = profile?.avatar_url;
 
   return (
     <>
-      {/* 退出登录确认对话框 */}
+      {/* Logout confirmation dialog */}
       <LogoutConfirmDialog
         isOpen={showLogoutDialog}
         onClose={() => setShowLogoutDialog(false)}
       />
 
       <div className="relative mr-1">
-        {/* 纯圆形头像按钮 - 使用内联样式避免闪烁 */}
+        {/* Pure circular avatar button - use inline styles to avoid flickering */}
         <button
           ref={triggerRef}
           onClick={toggleDropdown}
@@ -152,7 +152,7 @@ export function DesktopUserAvatar() {
         >
           {isLoggedIn ? (
             <>
-              {/* 纯圆形头像 - 无边框 */}
+              {/* Pure circular avatar - no border */}
               <UserAvatar
                 avatarUrl={avatarUrl}
                 userName={userName}
@@ -180,7 +180,7 @@ export function DesktopUserAvatar() {
           )}
         </button>
 
-        {/* 下拉菜单 */}
+        {/* Dropdown menu */}
         {isDropdownOpen && (
           <div
             ref={dropdownRef}
@@ -193,7 +193,7 @@ export function DesktopUserAvatar() {
           >
             {isLoggedIn ? (
               <>
-                {/* 用户信息头部 - 无头像版本 */}
+                {/* User information header - no avatar version */}
                 <div
                   className={cn(
                     'mb-2 rounded-lg p-3',
@@ -224,7 +224,7 @@ export function DesktopUserAvatar() {
                   </div>
                 </div>
 
-                {/* 分割线 */}
+                {/* Divider */}
                 <div
                   className={cn(
                     'mb-2 h-px w-full',
@@ -232,7 +232,7 @@ export function DesktopUserAvatar() {
                   )}
                 />
 
-                {/* 菜单项 */}
+                {/* Menu items */}
                 <div className="space-y-1">
                   {allMenuItems.map((item, index) => {
                     const itemKey = `menu-${index}`;
@@ -274,7 +274,7 @@ export function DesktopUserAvatar() {
                   })}
                 </div>
 
-                {/* 分割线 */}
+                {/* Divider */}
                 <div
                   className={cn(
                     'my-2 h-px w-full',
@@ -282,7 +282,7 @@ export function DesktopUserAvatar() {
                   )}
                 />
 
-                {/* 退出登录 */}
+                {/* Logout */}
                 <button
                   onClick={handleLogout}
                   className={cn(
@@ -303,7 +303,7 @@ export function DesktopUserAvatar() {
               </>
             ) : (
               <div className="p-4">
-                {/* 未登录状态 */}
+                {/* Unlogged state */}
                 <div
                   className={cn(
                     'mb-6 rounded-xl px-4 py-6 text-center',

@@ -4,9 +4,9 @@ import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { ArrowUpIcon, Paperclip } from 'lucide-react';
 
-// 主题卡片组件 - 高颜值版本
-// 模拟真实的聊天界面预览，包含输入框、消息气泡、按钮等元素
-// 使用项目中的实际设计风格和配色方案
+// Theme card component - high-quality version
+// Simulate a real chat interface preview, including input box, message bubbles, buttons, etc.
+// Use the actual design style and color scheme in the project
 interface ThemeCardProps {
   title: string;
   theme: 'light' | 'dark' | 'system';
@@ -23,28 +23,28 @@ export function ThemeCard({
   const { isDark } = useTheme();
   const isActive = currentTheme === theme;
 
-  // 根据主题类型获取预览样式配置
-  // 完全基于项目中的真实颜色设计
+  // Get preview style configuration based on theme type
+  // Completely based on the actual colors in the project
   const getPreviewStyles = () => {
     switch (theme) {
       case 'light':
         return {
-          // 主背景 - 对应 stone-100
+          // Main background - corresponds to stone-100
           mainBg: 'bg-stone-100',
-          // 侧边栏背景 - 对应展开状态的 stone-200
+          // Sidebar background - corresponds to the expanded state of stone-200
           sidebarBg: 'bg-stone-200',
-          // 用户消息背景 - 对应 stone-200
+          // User message background - corresponds to stone-200
           userMessageBg: 'bg-stone-200',
-          // 助手消息背景 - 透明
+          // Assistant message background - transparent
           assistantMessageBg: 'bg-transparent',
-          // 输入框背景 - 白色
+          // Input box background - white
           inputBg: 'bg-white',
-          // 边框颜色
+          // Border color
           borderColor: 'border-stone-300',
-          // 文本颜色
+          // Text color
           textColor: 'text-stone-900',
           secondaryTextColor: 'text-stone-600',
-          // 按钮样式
+          // Button style
           buttonBg: 'bg-black',
           buttonText: 'text-white',
           functionButtonBg: 'bg-transparent',
@@ -53,22 +53,22 @@ export function ThemeCard({
         };
       case 'dark':
         return {
-          // 主背景 - 对应 stone-800
+          // Main background - corresponds to stone-800
           mainBg: 'bg-stone-800',
-          // 侧边栏背景 - 对应展开状态的 stone-700
+          // Sidebar background - corresponds to the expanded state of stone-700
           sidebarBg: 'bg-stone-700',
-          // 用户消息背景 - 对应 stone-700
+          // User message background - corresponds to stone-700
           userMessageBg: 'bg-stone-700/90',
-          // 助手消息背景 - 透明
+          // Assistant message background - transparent
           assistantMessageBg: 'bg-transparent',
-          // 输入框背景 - stone-800
+          // Input box background - stone-800
           inputBg: 'bg-stone-800',
-          // 边框颜色
+          // Border color
           borderColor: 'border-stone-600',
-          // 文本颜色
+          // Text color
           textColor: 'text-stone-100',
           secondaryTextColor: 'text-stone-400',
-          // 按钮样式
+          // Button style
           buttonBg: 'bg-stone-900',
           buttonText: 'text-white',
           functionButtonBg: 'bg-stone-600/30',
@@ -76,7 +76,7 @@ export function ThemeCard({
           functionButtonText: 'text-stone-300',
         };
       case 'system':
-        // 系统主题使用渐变效果展示两种模式
+        // System theme uses gradient effect to display two modes
         return {
           mainBg: 'bg-gradient-to-r from-stone-100 to-stone-800',
           sidebarBg: 'bg-gradient-to-r from-stone-200 to-stone-700',
@@ -103,7 +103,7 @@ export function ThemeCard({
       className={cn(
         'relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-lg',
         isActive
-          ? // 使用深蓝色选中状态，线条更细
+          ? // Use deep blue selected state, thinner line
             'border-blue-800 shadow-md ring-1 ring-blue-800/20'
           : isDark
             ? 'border-stone-700 hover:border-stone-600'
@@ -114,10 +114,10 @@ export function ThemeCard({
       {/* Contains sidebar, main content area, message bubbles, input box and other real elements */}
       <div className={cn('h-32 w-full', styles.mainBg)}>
         <div className="flex h-full">
-          {/* 模拟侧边栏 */}
+          {/* Simulate sidebar */}
           <div className={cn('flex h-full w-8 flex-col', styles.sidebarBg)}>
             <div className="flex-1 space-y-1 p-1.5">
-              {/* 模拟新对话按钮 */}
+              {/* Simulate new conversation button */}
               <div
                 className={cn(
                   'h-3 w-5 rounded-sm',
@@ -126,7 +126,7 @@ export function ThemeCard({
                   'border'
                 )}
               />
-              {/* 模拟聊天列表项 */}
+              {/* Simulate chat list item */}
               <div className="space-y-0.5">
                 <div className="h-1 w-4 rounded-full bg-current opacity-30" />
                 <div className="h-1 w-3 rounded-full bg-current opacity-20" />
@@ -135,13 +135,13 @@ export function ThemeCard({
             </div>
           </div>
 
-          {/* 模拟主聊天区域 */}
+          {/* Simulate main chat area */}
           <div className="flex h-full flex-1 flex-col">
-            {/* 模拟消息区域 */}
+            {/* Simulate message area */}
             <div className="flex-1 px-3 py-2">
-              {/* 消息区域 - 更加居中布局，Hello消息在顶部 */}
+              {/* Message area - more centered layout, Hello message at the top */}
               <div className="mx-auto max-w-[70%]">
-                {/* 模拟用户消息 - 在顶部 */}
+                {/* Simulate user message - at the top */}
                 <div className="flex justify-end">
                   <div
                     className={cn(
@@ -156,7 +156,7 @@ export function ThemeCard({
               </div>
             </div>
 
-            {/* 模拟输入框区域 - 更加居中布局 */}
+            {/* Simulate input box area - more centered layout */}
             <div className="px-3 pb-1.5">
               <div className="mx-auto max-w-[70%]">
                 <div
@@ -166,7 +166,7 @@ export function ThemeCard({
                     styles.borderColor
                   )}
                 >
-                  {/* 输入文本区域 */}
+                  {/* Input text area */}
                   <div className="px-2 pt-1.5 pb-2">
                     <div className="space-y-0.5">
                       <div
@@ -184,9 +184,9 @@ export function ThemeCard({
                     </div>
                   </div>
 
-                  {/* 按钮区域 */}
+                  {/* Button area */}
                   <div className="relative px-1.5 pb-1.5">
-                    {/* 左下角附件按钮 */}
+                    {/* Lower left attachment button */}
                     <div
                       className={cn(
                         'absolute bottom-1.5 left-1.5 flex h-2.5 w-2.5 items-center justify-center rounded border',
@@ -199,7 +199,7 @@ export function ThemeCard({
                       />
                     </div>
 
-                    {/* 右下角发送按钮 */}
+                    {/* Lower right send button */}
                     <div
                       className={cn(
                         'absolute right-1.5 bottom-1.5 flex h-2.5 w-2.5 items-center justify-center rounded-full',
@@ -218,7 +218,7 @@ export function ThemeCard({
         </div>
       </div>
 
-      {/* 主题标题 */}
+      {/* Theme title */}
       <div className="p-3">
         <p
           className={cn(

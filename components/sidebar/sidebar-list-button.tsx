@@ -5,11 +5,11 @@ import { cn } from '@lib/utils';
 
 import type * as React from 'react';
 
-// SidebarListButton 组件
-// 专门为侧边栏列表项设计的按钮组件，样式更加紧凑和美观
-// 不同于 SidebarButton，此组件不会占满整个侧边栏宽度
-// 支持响应式布局，在移动端和桌面端有不同的表现
-// 🎯 新增：支持more button和item区域的悬停分离效果
+// SidebarListButton component
+// Designed specifically for sidebar list items, with a more compact and elegant style
+// Unlike SidebarButton, this component does not occupy the entire sidebar width
+// Supports responsive layout, with different behaviors on mobile and desktop
+// 🎯 New: support hover separation effect for more button and item area
 interface SidebarListButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   icon?: React.ReactNode;
   active?: boolean;
@@ -17,8 +17,8 @@ interface SidebarListButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   moreActionsTrigger?: React.ReactNode;
   isDisabled?: boolean;
   children?: React.ReactNode;
-  hasOpenDropdown?: boolean; // 是否有打开的下拉菜单
-  disableHover?: boolean; // 是否禁用悬停效果（当有其他菜单打开时）
+  hasOpenDropdown?: boolean; // Whether there is an open dropdown menu
+  disableHover?: boolean; // Whether to disable hover effect (when other menus are open)
 }
 
 export function SidebarListButton({
@@ -53,9 +53,9 @@ export function SidebarListButton({
     }
   };
 
-  // 🎯 处理主要内容区域的点击（排除more button区域）
+  // 🎯 Handle the click of the main content area (excluding the more button area)
   const handleMainContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 只有点击主要内容区域时才触发选择
+    // Only trigger selection when clicking on the main content area
     handleClick(e);
   };
 
@@ -66,12 +66,12 @@ export function SidebarListButton({
       tabIndex={isDisabled ? -1 : 0}
       aria-disabled={isDisabled}
       className={cn(
-        // 基础样式 - 🎯 进一步减小内边距，使按钮更加紧凑
-        // 从 px-2.5 py-1.5 改为 px-2 py-1，减小整体尺寸
+        // Basic style - 🎯 Further reduce the padding to make the button more compact
+        // Changed from px-2.5 py-1.5 to px-2 py-1, reducing the overall size
         'group relative flex items-center rounded-lg px-2 py-1 text-sm font-medium',
         'transition-all duration-300 ease-out',
 
-        // 焦点状态样式
+        // Focus state style
         'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         isDark
           ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
@@ -121,7 +121,7 @@ export function SidebarListButton({
       <div
         className={cn(
           'flex min-w-0 flex-1 items-center',
-          // 恢复cursor-pointer，确保按钮区域有明确的交互提示
+          // Restore cursor-pointer to ensure the button area has clear interactive prompts
           !isDisabled && 'cursor-pointer'
         )}
         onClick={handleMainContentClick}
@@ -163,11 +163,11 @@ export function SidebarListButton({
         <div
           className={cn(
             'relative z-10 ml-0.5 flex-shrink-0'
-            // 🎯 More button区域的独立悬停效果，覆盖整体悬停
-            // 使用 hover:bg-transparent 来"取消"父级的悬停效果
+            // 🎯 Independent hover effect for the more button area, covering the overall hover effect
+            // Use hover:bg-transparent to "cancel" the parent's hover effect
           )}
           onClick={e => {
-            e.stopPropagation(); // 防止点击 MoreButton 区域时选中聊天项
+            e.stopPropagation(); // Prevent selecting chat items when clicking on the MoreButton area
           }}
         >
           {moreActionsTrigger}

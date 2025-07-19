@@ -29,9 +29,9 @@ interface ExecutionItemProps {
 }
 
 /**
- * 单个执行记录项组件
+ * Single execution record item component
  *
- * 显示执行记录的基本信息和状态
+ * Display the basic information and status of the execution record
  */
 export function ExecutionItem({
   execution,
@@ -98,13 +98,13 @@ export function ExecutionItem({
       className={cn(
         'cursor-pointer rounded-md border p-3 transition-all duration-200',
         'hover:scale-[1.01] hover:shadow-md',
-        // 选中状态样式
+        // Selected state style
         isMultiSelectMode &&
           isSelected &&
           (isDark
             ? 'border-stone-500 bg-stone-600/50'
             : 'border-stone-400 bg-stone-300/50'),
-        // 默认样式
+        // Default style
         (!isMultiSelectMode || !isSelected) &&
           (isDark
             ? 'border-stone-700/50 bg-stone-700/30 hover:border-stone-600/50 hover:bg-stone-700/50'
@@ -112,7 +112,7 @@ export function ExecutionItem({
       )}
     >
       <div className="flex items-center justify-between">
-        {/* 多选模式下的复选框 */}
+        {/* Checkbox in multi-select mode */}
         {isMultiSelectMode && (
           <div
             className={cn(
@@ -131,7 +131,7 @@ export function ExecutionItem({
         )}
 
         <div className="min-w-0 flex-1">
-          {/* 标题和状态 */}
+          {/* Title and status */}
           <div className="mb-1.5 flex items-center gap-2">
             {getStatusIcon()}
             <h3
@@ -144,7 +144,7 @@ export function ExecutionItem({
             </h3>
           </div>
 
-          {/* 时间和耗时 */}
+          {/* Time and duration */}
           <div className="flex items-center gap-3 font-serif text-xs">
             <span className={cn(isDark ? 'text-stone-500' : 'text-stone-500')}>
               {formatDate(execution.created_at, DateFormatPresets.dateTime)}
@@ -159,7 +159,7 @@ export function ExecutionItem({
             )}
           </div>
 
-          {/* 错误信息 */}
+          {/* Error information */}
           {execution.status === 'failed' && execution.error_message && (
             <div className="mt-1.5 truncate font-serif text-xs text-red-500">
               {execution.error_message}
@@ -167,7 +167,7 @@ export function ExecutionItem({
           )}
         </div>
 
-        {/* 状态标签 */}
+        {/* Status label */}
         <div className="ml-3 flex items-center gap-2">
           <span
             className={cn(
@@ -189,7 +189,7 @@ export function ExecutionItem({
             {getStatusText()}
           </span>
 
-          {/* 只在非多选模式下显示箭头或loading */}
+          {/* Only show arrow or loading in non-multi-select mode */}
           {!isMultiSelectMode &&
             (isLoading ? (
               <Loader2

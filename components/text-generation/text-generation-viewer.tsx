@@ -30,14 +30,14 @@ interface TextGenerationViewerProps {
 }
 
 /**
- * 文本生成查看器组件
+ * Text generation viewer component
  *
- * 功能特点：
- * - 实时显示流式文本生成
- * - 进度条显示生成进度
- * - 文本操作（复制、下载）
- * - 执行控制（停止、重试、重置）
- * - 统一的状态面板
+ * Features:
+ * - Real-time display of streaming text generation
+ * - Progress bar display generation progress
+ * - Text operation (copy, download)
+ * - Execution control (stop, retry, reset)
+ * - Unified status panel
  */
 export function TextGenerationViewer({
   isExecuting,
@@ -54,14 +54,14 @@ export function TextGenerationViewer({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const t = useTranslations('pages.textGeneration');
 
-  // --- 自动滚动到底部 ---
+  // --- Auto scroll to the bottom ---
   useEffect(() => {
     if (textAreaRef.current && isStreaming) {
       textAreaRef.current.scrollTop = textAreaRef.current.scrollHeight;
     }
   }, [generatedText, isStreaming]);
 
-  // --- 复制文本 ---
+  // --- Copy text ---
   const handleCopyText = async () => {
     if (!generatedText) return;
 
@@ -74,7 +74,7 @@ export function TextGenerationViewer({
     }
   };
 
-  // --- 下载文本 ---
+  // --- Download text ---
   const handleDownloadText = () => {
     if (!generatedText) return;
 
@@ -91,7 +91,7 @@ export function TextGenerationViewer({
     URL.revokeObjectURL(url);
   };
 
-  // --- 获取状态信息 ---
+  // --- Get status information ---
   const getStatusInfo = () => {
     if (isExecuting || isStreaming) {
       return {
@@ -136,7 +136,7 @@ export function TextGenerationViewer({
 
   return (
     <div className="flex h-full flex-col">
-      {/* --- 控制面板 --- */}
+      {/* --- Control panel --- */}
       <div
         className={cn(
           'flex-shrink-0 border-b p-4',
@@ -146,7 +146,7 @@ export function TextGenerationViewer({
         )}
       >
         <div className="flex items-center justify-between">
-          {/* 状态信息 */}
+          {/* Status information */}
           <div className="flex items-center gap-3">
             {statusInfo.icon}
             <div>
@@ -171,9 +171,9 @@ export function TextGenerationViewer({
             </div>
           </div>
 
-          {/* 操作按钮 */}
+          {/* Operation buttons */}
           <div className="flex items-center gap-2">
-            {/* 文本操作按钮 */}
+            {/* Text operation buttons */}
             {generatedText && (
               <>
                 <button
@@ -204,7 +204,7 @@ export function TextGenerationViewer({
               </>
             )}
 
-            {/* 执行控制按钮 */}
+            {/* Execution control buttons */}
             {isExecuting && onStop && (
               <button
                 onClick={onStop}
@@ -250,7 +250,7 @@ export function TextGenerationViewer({
           </div>
         </div>
 
-        {/* 进度条 */}
+        {/* Progress bar */}
         {(isExecuting || isStreaming) && (
           <div className="mt-3">
             <div
@@ -268,10 +268,10 @@ export function TextGenerationViewer({
         )}
       </div>
 
-      {/* --- 文本显示区域 --- */}
+      {/* --- Text display area --- */}
       <div className="flex-1 overflow-hidden">
         {!generatedText && !isExecuting ? (
-          // 空状态
+          // Empty state
           <div className="flex h-full items-center justify-center">
             <div className="space-y-4 text-center">
               <div
@@ -308,7 +308,7 @@ export function TextGenerationViewer({
             </div>
           </div>
         ) : (
-          // 文本显示
+          // Text display
           <div className="h-full p-6">
             <textarea
               ref={textAreaRef}
@@ -326,7 +326,7 @@ export function TextGenerationViewer({
               }
             />
 
-            {/* 流式生成指示器 */}
+            {/* Streaming generation indicator */}
             {isStreaming && (
               <div
                 className={cn(
@@ -369,7 +369,7 @@ export function TextGenerationViewer({
         )}
       </div>
 
-      {/* --- 统计信息 --- */}
+      {/* --- Statistics --- */}
       {generatedText && (
         <div
           className={cn(

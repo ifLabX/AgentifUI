@@ -14,7 +14,7 @@ export const WidePanelLeft = ({ className }: { className?: string }) => (
     strokeLinejoin="round"
     className={className}
   >
-    {/* 拉宽的PanelLeft路径 - 右侧区域更宽 */}
+    {/* The widened PanelLeft path - the right area is wider */}
     <rect width="22" height="18" x="3" y="3" rx="2" ry="2" />
     <line x1="9" x2="9" y1="5" y2="19" />
   </svg>

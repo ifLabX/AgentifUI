@@ -14,7 +14,6 @@ export { ConfirmDialog } from './confirm-dialog';
 export { InputDialog } from './input-dialog';
 export { LogoutConfirmDialog } from './logout-confirm-dialog';
 
-export { PinButton } from './pin-button';
 export { Popover, PopoverItem, PopoverDivider } from './popover';
 export { TypeWriter } from './typewriter';
 export { SuggestedQuestionButton } from './suggested-question-button';

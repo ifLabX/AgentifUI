@@ -1,3 +1,3 @@
-// 设置导航组件导出
+// Settings navigation component export
 export { SettingsSidebar } from './settings-sidebar';
 export { SettingsMobileNav } from './settings-mobile-nav';

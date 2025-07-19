@@ -16,13 +16,13 @@ interface CustomSelectProps {
 }
 
 /**
- * 现代化自定义下拉选择组件
+ * Modernized custom dropdown select component
  *
- * 特点：
- * - 美观的现代化设计
- * - 平滑的动画效果
- * - 支持键盘导航
- * - 统一的stone色系主题
+ * Features:
+ * - Modernized design
+ * - Smooth animation effect
+ * - Support keyboard navigation
+ * - Unified stone color theme
  */
 export function CustomSelect({
   value,
@@ -38,7 +38,7 @@ export function CustomSelect({
   const selectRef = useRef<HTMLDivElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
 
-  // 点击外部关闭下拉框
+  // Click outside to close the dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -54,7 +54,7 @@ export function CustomSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 键盘导航
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isOpen) return;
@@ -91,7 +91,7 @@ export function CustomSelect({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, highlightedIndex, options, onChange]);
 
-  // 滚动到高亮选项
+  // Scroll to highlighted option
   useEffect(() => {
     if (highlightedIndex >= 0 && optionsRef.current) {
       const highlightedElement = optionsRef.current.children[

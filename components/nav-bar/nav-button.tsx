@@ -10,8 +10,8 @@ interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-// NavBar 专属的可重用按钮组件
-// 设计为圆角、响应式，并支持亮/暗主题
+// NavBar exclusive reusable button component
+// Designed as rounded, responsive, and supports light/dark theme
 export function NavButton({
   icon,
   children,
@@ -23,19 +23,19 @@ export function NavButton({
   return (
     <button
       className={cn(
-        // 基础样式
+        // Basic style
         'flex items-center justify-center gap-2 rounded-md px-3 py-1.5 transition-colors duration-150',
-        // 字体和大小 (可按需调整)
+        // Font and size (can be adjusted as needed)
         'text-sm font-medium',
-        // 响应式调整 (如果需要)
+        // Responsive adjustment (if needed)
         // "sm:px-4 sm:py-2",
-        // 主题感知悬停效果
+        // Theme-aware hover effect
         isDark
           ? 'text-gray-300 hover:bg-gray-700/50 hover:text-gray-100'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
-        // 禁用状态
+        // Disabled state
         'disabled:pointer-events-none disabled:opacity-50',
-        // 外部传入的类名
+        // External class name passed in
         className
       )}
       {...props}

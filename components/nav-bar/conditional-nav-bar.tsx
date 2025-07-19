@@ -5,37 +5,37 @@ import { usePathname } from 'next/navigation';
 import { NavBar } from './nav-bar';
 
 /**
- * 条件渲染NavBar组件
- * 根据当前路由决定是否显示NavBar
- * 参考ConditionalSidebar的实现，避免路由切换时重新挂载导致的闪烁问题
+ * Conditional rendering NavBar component
+ * Determine whether to display NavBar based on the current route
+ * Reference ConditionalSidebar implementation to avoid flickering caused by route switching
  *
- * 需要隐藏NavBar的路由：
- * - 根目录 "/" (首页)
- * - "/admin" 及其子路由 (管理后台有自己的header)
- * - "/login", "/register" 等认证页面
- * - "/about" 关于页面
+ * Routes that need to hide NavBar:
+ * - Root directory "/" (home page)
+ * - "/admin" and its sub-routes (admin backend has its own header)
+ * - "/login", "/register" and other authentication pages
+ * - "/about" About page
  */
 export function ConditionalNavBar() {
   const pathname = usePathname();
 
-  // 需要隐藏NavBar的路由
-  // 与ConditionalSidebar保持一致的路由判断逻辑
+  // Routes that need to hide NavBar
+  // Same route judgment logic as ConditionalSidebar
   const shouldHideNavBar =
-    pathname === '/' || // 首页
-    pathname?.startsWith('/about') || // 关于页
-    pathname?.startsWith('/admin') || // 管理后台
-    pathname?.startsWith('/login') || // 登录页
-    pathname?.startsWith('/register') || // 注册页
-    pathname?.startsWith('/forgot-password') || // 忘记密码
-    pathname?.startsWith('/reset-password') || // 重置密码
-    pathname?.startsWith('/phone-login') || // 手机登录
-    pathname?.startsWith('/sso'); // SSO相关页面
+    pathname === '/' || // Home page
+    pathname?.startsWith('/about') || // About page
+    pathname?.startsWith('/admin') || // Admin backend
+    pathname?.startsWith('/login') || // Login page
+    pathname?.startsWith('/register') || // Register page
+    pathname?.startsWith('/forgot-password') || // Forgot password
+    pathname?.startsWith('/reset-password') || // Reset password
+    pathname?.startsWith('/phone-login') || // Phone login
+    pathname?.startsWith('/sso'); // SSO related pages
 
-  // 如果在需要隐藏的路由，不渲染NavBar
+  // If the route that needs to be hidden is not rendered NavBar
   if (shouldHideNavBar) {
     return null;
   }
 
-  // 其他路由正常渲染NavBar
+  // Other routes render NavBar normally
   return <NavBar />;
 }
