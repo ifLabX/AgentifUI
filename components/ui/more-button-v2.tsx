@@ -7,12 +7,14 @@ import { MoreHorizontal } from 'lucide-react';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface MoreButtonV2Props
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   iconClassName?: string;
-  isMenuOpen?: boolean; // 下拉菜单是否打开
-  forceVisible?: boolean; // 强制显示（移动端或其他情况）
-  disableHover?: boolean; // 是否禁用悬停效果（当有其他菜单打开时）
+  isMenuOpen?: boolean; // Whether the dropdown menu is open
+  forceVisible?: boolean; // Force display (mobile or other cases)
+  disableHover?: boolean; // Whether to disable hover effect (when other menus are open)
 }
 
 export const MoreButtonV2 = React.forwardRef<
@@ -32,8 +34,9 @@ export const MoreButtonV2 = React.forwardRef<
   ) => {
     const isMobile = useMobile();
     const { isDark } = useTheme();
+    const t = useTranslations('common.ui.moreButton');
 
-    // 响应式显示逻辑：移动端永远显示，桌面端根据悬停状态显示
+    // Responsive display logic: mobile devices always display, desktop devices display based on hover state
     const shouldForceVisible = isMobile || forceVisible;
 
     return (
@@ -42,24 +45,24 @@ export const MoreButtonV2 = React.forwardRef<
         className={cn(
           'rounded-md p-1.5 transition-all duration-200 ease-in-out',
           'flex items-center justify-center',
-          // 响应式显示：移动端永远显示，桌面端悬停显示
+          // Responsive display: mobile devices always display, desktop devices display based on hover state
           shouldForceVisible
             ? 'opacity-100'
             : 'opacity-0 group-hover:opacity-100 focus-within:opacity-100',
-          // 动态cursor：下拉菜单打开时不显示pointer
+          // Dynamic cursor: do not show pointer when dropdown menu is open
           !isMenuOpen ? 'cursor-pointer' : '',
-          // 悬停效果：圆角矩形背景
+          // Hover effect: rounded rectangle background
           disableHover ? '' : isDark ? 'hover:bg-white/12' : 'hover:bg-black/8',
-          // 选中状态：下拉菜单打开时的背景效果
+          // Selected state: background effect when dropdown menu is open
           isMenuOpen && (isDark ? 'bg-white/15' : 'bg-black/10'),
-          // 焦点状态
+          // Focus state
           'focus-visible:ring-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
           className
         )}
         {...props}
       >
         <MoreHorizontal className={cn('h-4 w-4', iconClassName)} />
-        <span className="sr-only">更多选项</span>
+        <span className="sr-only">{t('ariaLabel')}</span>
       </button>
     );
   }

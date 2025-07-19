@@ -1,9 +1,9 @@
 'use client';
 
 import { ConfirmDialog, InputDialog } from '@components/ui';
-// 🎯 新增：导入完整对话列表hook，用于查找历史对话
+// 🎯 Add: import full conversation list hook, used to find historical conversations
 import { useAllConversations } from '@lib/hooks/use-all-conversations';
-// 导入聊天接口Hook以获取对话关联的应用ID
+// Import chat interface hook to get conversation associated application ID
 import { useChatInterface } from '@lib/hooks/use-chat-interface';
 import {
   CombinedConversation,
@@ -37,25 +37,25 @@ export function ConversationTitleButton({
   const { selectItem } = useSidebarStore();
   const { conversations, refresh } = useCombinedConversations();
   const t = useTranslations('navbar.conversation');
-  // 🎯 新增：获取完整对话列表，用于查找历史对话标题
+  // 🎯 Add: get full conversation list, used to find historical conversation titles
   const { conversations: allConversations } = useAllConversations();
   const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isOperating, setIsOperating] = useState(false);
 
-  // 应用相关状态
+  // Application related states
   const { apps } = useAppListStore();
   const { addFavoriteApp, removeFavoriteApp, isFavorite } =
     useFavoriteAppsStore();
 
-  // 获取对话关联的应用ID，用于显示应用名称标签
+  // Get conversation associated application ID, used to display application name label
   const { conversationAppId } = useChatInterface();
 
-  // 模态框状态管理
+  // Modal box status management
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // 检查是否为历史对话页面：必须是 /chat/[conversationId] 格式，且不是 /chat/new
+  // Check if it is a historical conversation page: must be in the format /chat/[conversationId], and not /chat/new
   const isHistoricalChatPage = React.useMemo(() => {
     if (!pathname) return false;
 
@@ -63,28 +63,28 @@ export function ConversationTitleButton({
     if (!chatMatch) return false;
 
     const conversationId = chatMatch[1];
-    // 排除 /chat/new 页面
+    // Exclude /chat/new page
     return conversationId !== 'new' && conversationId !== 'history';
   }, [pathname]);
 
-  // 检查是否为应用详情页面：/apps/{type}/[instanceId] 格式
+  // Check if it is an application detail page: /apps/{type}/[instanceId] format
   const isAppDetailPage =
     pathname &&
     pathname.startsWith('/apps/') &&
     pathname.split('/').length === 4;
 
-  // 获取当前应用信息（仅在应用详情页面）
+  // Get current application information (only in application detail page)
   const currentApp = useMemo(() => {
     if (!isAppDetailPage || !params.instanceId) return null;
     return apps.find(app => app.instance_id === params.instanceId);
   }, [isAppDetailPage, params.instanceId, apps]);
 
-  // 🎯 修复：直接使用与sidebar相同的数据源，移除复杂的备用机制
-  // 这样确保导航栏能正确显示打字机效果和实时标题更新
+  // 🎯 Fix: use the same data source as sidebar, remove complex backup mechanism
+  // This ensures that the navigation bar can correctly display the typewriter effect and real-time title update
   const currentConversation = React.useMemo(() => {
     if (!currentConversationId) return null;
 
-    // 直接从Combined Conversations中查找，与sidebar保持一致
+    // Directly search from Combined Conversations, consistent with sidebar
     return (
       conversations.find(
         conv =>
@@ -94,12 +94,12 @@ export function ConversationTitleButton({
     );
   }, [conversations, currentConversationId]);
 
-  // 🎯 新增：当combinedConversations找不到对话时，从完整对话列表中查找
-  // 这样确保从history页面点击历史对话时能瞬间显示正确标题
+  // 🎯 Add: when combinedConversations cannot find conversation, search from full conversation list
+  // This ensures that when clicking on historical conversations from the history page, the correct title can be displayed instantly
   const fallbackConversation = React.useMemo(() => {
     if (currentConversation || !currentConversationId) return null;
 
-    // 从完整对话列表中查找历史对话
+    // Search for historical conversations from the full conversation list
     const found = allConversations.find(
       conv =>
         conv.external_id === currentConversationId ||
@@ -107,7 +107,7 @@ export function ConversationTitleButton({
     );
 
     if (found) {
-      // 转换为CombinedConversation格式
+      // Convert to CombinedConversation format
       return {
         id: found.external_id || found.id,
         title: found.title,
@@ -123,37 +123,37 @@ export function ConversationTitleButton({
     return null;
   }, [currentConversation, currentConversationId, allConversations]);
 
-  // 优先使用combinedConversations中的对话，其次使用fallback对话
+  // Use conversation in combinedConversations first, then use fallback conversation
   const finalConversation = currentConversation || fallbackConversation;
 
-  // 🎯 新增：获取当前对话关联的应用信息，用于显示应用名称标签
-  // 优先使用对话记录中的app_id，其次使用conversationAppId（用于创建中的对话）
+  // 🎯 Add: get current conversation associated application information, used to display application name label
+  // Use app_id in conversation record first, then use conversationAppId (used for creating conversation)
   const currentConversationApp = React.useMemo(() => {
     if (!finalConversation && !conversationAppId) return null;
 
-    // 获取应用ID：优先使用对话记录中的app_id，其次使用conversationAppId
+    // Get application ID: use app_id in conversation record first, then use conversationAppId
     const appId = finalConversation?.app_id || conversationAppId;
     if (!appId) return null;
 
-    // 在应用列表中查找对应的应用
+    // Search for the corresponding application in the application list
     return (
       apps.find(app => app.instance_id === appId || app.id === appId) || null
     );
   }, [finalConversation, conversationAppId, apps]);
 
-  // 🎯 支持打字机效果的标题显示，与sidebar逻辑保持一致
-  // 🎯 修复：当finalConversation为空但conversationAppId存在时，显示"创建中..."
+  // 🎯 Support typewriter effect title display, consistent with sidebar logic
+  // 🎯 Fix: when finalConversation is empty but conversationAppId exists, display "Creating..."
   const getDisplayTitle = () => {
-    // 🎯 新增：处理对话创建中的状态
+    // 🎯 Add: handle conversation creation status
     if (!finalConversation) {
       return conversationAppId ? t('creating') : t('newChat');
     }
 
-    // 检查是否需要显示打字机效果
+    // Check if typewriter effect is needed
     if (finalConversation.isPending && finalConversation.titleTypewriterState) {
       const typewriterState = finalConversation.titleTypewriterState;
 
-      // 如果正在打字，显示当前打字进度
+      // If typing, display current typing progress
       if (typewriterState.isTyping) {
         return (
           typewriterState.displayTitle ||
@@ -162,22 +162,22 @@ export function ConversationTitleButton({
         );
       }
 
-      // 如果打字完成，显示目标标题
+      // If typing is complete, display target title
       if (typewriterState.targetTitle) {
         return typewriterState.targetTitle;
       }
     }
 
-    // 默认显示对话标题
+    // Default display conversation title
     return finalConversation.title || t('newChat');
   };
 
   const conversationTitle = getDisplayTitle();
 
-  // 移除动态隐藏策略，现在使用简单的点击模式
+  // Remove dynamic hiding strategy, now use simple click mode
   const shouldHide = false;
 
-  // 处理重命名功能 - 使用InputDialog组件
+  // Handle rename function - use InputDialog component
   const handleRename = () => {
     setIsOpen(false);
     setShowRenameDialog(true);
@@ -203,26 +203,26 @@ export function ConversationTitleButton({
       const result = await renameConversation(supabasePK, newTitle.trim());
 
       if (result.success) {
-        // 标题更新后会通过refresh()和conversationEvents.emit()自动同步
+        // After title update, it will be automatically synchronized through refresh() and conversationEvents.emit()
 
-        // 刷新对话列表
+        // Refresh conversation list
         refresh();
-        // 触发全局同步事件，通知所有组件数据已更新
+        // Trigger global synchronization event, notify all components that data has been updated
         conversationEvents.emit();
         setShowRenameDialog(false);
       } else {
-        console.error('重命名对话失败:', result.error);
+        console.error('Rename conversation failed:', result.error);
         alert(t('renameFailed'));
       }
     } catch (error) {
-      console.error('重命名对话操作出错:', error);
+      console.error('Rename conversation operation error:', error);
       alert(t('operationError'));
     } finally {
       setIsOperating(false);
     }
   };
 
-  // 处理删除功能 - 使用ConfirmDialog组件
+  // Handle delete function - use ConfirmDialog component
   const handleDelete = () => {
     setIsOpen(false);
     setShowDeleteDialog(true);
@@ -248,16 +248,16 @@ export function ConversationTitleButton({
       const result = await deleteConversation(supabasePK);
 
       if (result.success) {
-        // 删除成功后跳转到新对话页面 - 与sidebar逻辑一致
-        // 触发全局同步事件，通知所有组件数据已更新
+        // After successful deletion, jump to new conversation page - consistent with sidebar logic
+        // Trigger global synchronization event, notify all components that data has been updated
         conversationEvents.emit();
         window.location.href = '/chat/new';
       } else {
-        console.error('删除对话失败:', result.error);
+        console.error('Delete conversation failed:', result.error);
         alert(t('deleteFailed'));
       }
     } catch (error) {
-      console.error('删除对话操作出错:', error);
+      console.error('Delete conversation operation error:', error);
       alert(t('operationError'));
     } finally {
       setIsOperating(false);
@@ -265,7 +265,7 @@ export function ConversationTitleButton({
     }
   };
 
-  // 处理应用收藏操作（应用详情页面使用）
+  // Handle application collection operation (used in application detail page)
   const handleToggleFavorite = async () => {
     if (!currentApp) return;
 
@@ -285,17 +285,17 @@ export function ConversationTitleButton({
           dify_apptype: appMetadata?.dify_apptype,
         });
 
-        // 收藏成功后，更新sidebar的选中状态，确保常用应用列表中显示为选中
+        // After successful collection, update the selected state of the sidebar, ensuring that the frequently used application list is displayed as selected
         selectItem('app', instanceId, true);
       }
     } catch (error) {
-      console.error('收藏操作失败:', error);
+      console.error('Collection operation failed:', error);
     }
   };
 
-  // 条件渲染：在历史对话页面显示对话标题，在应用详情页面显示应用信息
+  // Conditional rendering: display conversation title on historical conversation page, display application information on application detail page
   if (isAppDetailPage && currentApp) {
-    // 应用详情页面渲染
+    // Application detail page rendering
     const appMetadata = currentApp.config?.app_metadata;
     const instanceId = currentApp.instance_id;
 
@@ -309,7 +309,7 @@ export function ConversationTitleButton({
           className
         )}
       >
-        {/* 应用信息 */}
+        {/* Application information */}
         <div className="min-w-0 flex-1">
           <h1
             className={cn(
@@ -331,7 +331,7 @@ export function ConversationTitleButton({
           )}
         </div>
 
-        {/* 标签 */}
+        {/* Tags */}
         {appMetadata?.tags && appMetadata.tags.length > 0 && (
           <div className="hidden flex-shrink-0 gap-1 lg:flex">
             {appMetadata.tags.slice(0, 2).map((tag: string, index: number) => (
@@ -350,7 +350,7 @@ export function ConversationTitleButton({
           </div>
         )}
 
-        {/* 收藏按钮 */}
+        {/* Collection button */}
         <button
           onClick={handleToggleFavorite}
           className={cn(
@@ -376,7 +376,7 @@ export function ConversationTitleButton({
           />
         </button>
 
-        {/* 应用市场按钮 */}
+        {/* Application market button */}
         <button
           onClick={() => router.push('/apps')}
           className={cn(
@@ -392,8 +392,8 @@ export function ConversationTitleButton({
     );
   }
 
-  // 历史对话页面渲染：只在历史对话页面且有当前对话ID时显示
-  // 🎯 修复：当conversationAppId存在时（对话创建中），即使finalConversation为空也应该显示
+  // Historical conversation page rendering: only display when it is a historical conversation page and there is a current conversation ID
+  // 🎯 Fix: when conversationAppId exists (conversation creation), even if finalConversation is empty, it should also be displayed
   if (
     !isHistoricalChatPage ||
     !currentConversationId ||
@@ -407,7 +407,7 @@ export function ConversationTitleButton({
       <div
         className={cn(
           'relative flex items-center gap-2 transition-all duration-300 ease-in-out',
-          // 动态隐藏策略：悬停时透明度降为0并稍微向左移动
+          // Dynamic hiding strategy: when hovering, the opacity decreases to 0 and moves slightly to the left
           shouldHide
             ? 'pointer-events-none -translate-x-2 opacity-0'
             : 'translate-x-0 opacity-100',
@@ -483,7 +483,7 @@ export function ConversationTitleButton({
         {/* Dropdown menu: completely mimics app-selector styling */}
         {isOpen && (
           <>
-            {/* 背景遮罩 */}
+            {/* Background mask */}
             <div
               className="fixed inset-0 z-[90]"
               onClick={() => setIsOpen(false)}
@@ -500,7 +500,7 @@ export function ConversationTitleButton({
                   : 'border-stone-300/80 bg-stone-50/95 backdrop-blur-sm'
               )}
             >
-              {/* 重命名选项 */}
+              {/* Rename option */}
               <button
                 onClick={handleRename}
                 disabled={isOperating}
@@ -520,7 +520,7 @@ export function ConversationTitleButton({
                 <span>{t('rename')}</span>
               </button>
 
-              {/* 删除选项 */}
+              {/* Delete option */}
               <button
                 onClick={handleDelete}
                 disabled={isOperating}

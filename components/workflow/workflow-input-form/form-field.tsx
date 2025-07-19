@@ -28,18 +28,18 @@ interface FormFieldProps {
   value: any;
   onChange: (value: any) => void;
   error?: string;
-  instanceId?: string; // 添加instanceId用于文件上传
+  instanceId?: string; // Add instanceId for file upload
 }
 
 /**
- * 通用表单字段组件
+ * Generic form field component
  *
- * 支持的字段类型：
- * - text-input: 单行文本输入
- * - number: 数字输入
- * - paragraph: 多行文本输入
- * - select: 下拉选择
- * - file: 文件上传
+ * Supported field types:
+ * - text-input: Single line text input
+ * - number: Number input
+ * - paragraph: Multi-line text input
+ * - select: Dropdown selection
+ * - file: File upload
  */
 export function FormField({
   type,
@@ -98,42 +98,35 @@ export function FormField({
             onChange={e => {
               const inputValue = e.target.value;
               console.log(
-                `[FormField-${config.variable}] 用户输入:`,
+                `[FormField-${config.variable}] User input:`,
                 inputValue,
-                '(类型:',
+                '(type:',
                 typeof inputValue,
                 ')'
               );
 
-              // 如果输入为空，传递空字符串
+              // If the input is empty, pass an empty string
               if (inputValue === '') {
                 console.log(
-                  `[FormField-${config.variable}] 输入为空，传递空字符串`
+                  `[FormField-${config.variable}] Input is empty, pass an empty string`
                 );
                 onChange('');
                 return;
               }
 
-              // 尝试转换为数字
+              // Try to convert to a number
               const numValue = parseFloat(inputValue);
-              console.log(
-                `[FormField-${config.variable}] parseFloat结果:`,
-                numValue,
-                '(类型:',
-                typeof numValue,
-                ')'
-              );
 
               if (!isNaN(numValue)) {
                 console.log(
-                  `[FormField-${config.variable}] 传递数字值:`,
+                  `[FormField-${config.variable}] Pass number value:`,
                   numValue
                 );
                 onChange(numValue);
               } else {
-                // 如果转换失败，保持原始字符串（用于验证）
+                // If conversion fails, keep the original string (for validation)
                 console.log(
-                  `[FormField-${config.variable}] 转换失败，保持字符串:`,
+                  `[FormField-${config.variable}] Conversion failed, keep string:`,
                   inputValue
                 );
                 onChange(inputValue);
@@ -160,7 +153,7 @@ export function FormField({
             className={cn(
               baseInputClasses,
               'resize-none',
-              hasMaxLength ? 'pb-8' : '' // 为字符计数器留出空间
+              hasMaxLength ? 'pb-8' : '' // Leave space for character counter
             )}
           />
         );
@@ -180,40 +173,44 @@ export function FormField({
       case 'file':
         const fileConfig = config as any;
         if (!instanceId) {
-          console.warn('[FormField] file类型字段需要instanceId参数');
+          console.warn(
+            '[FormField] file type field requires instanceId parameter'
+          );
           return null;
         }
         return (
           <FileUploadField
             config={{
-              ...fileConfig, // 保留所有原始字段
-              enabled: true, // 确保启用
+              ...fileConfig, // Keep all original fields
+              enabled: true, // Ensure enabled
             }}
             value={value || []}
             onChange={onChange}
             error={error}
             instanceId={instanceId}
-            isSingleFileMode={true} // 单文件模式
+            isSingleFileMode={true} // Single file mode
           />
         );
 
       case 'file-list':
         const fileListConfig = config as any;
         if (!instanceId) {
-          console.warn('[FormField] file-list类型字段需要instanceId参数');
+          console.warn(
+            '[FormField] file-list type field requires instanceId parameter'
+          );
           return null;
         }
         return (
           <FileUploadField
             config={{
-              ...fileListConfig, // 保留所有原始字段
-              enabled: true, // 确保启用
+              ...fileListConfig, // Keep all original fields
+              enabled: true, // Ensure enabled
             }}
             value={value || []}
             onChange={onChange}
             error={error}
             instanceId={instanceId}
-            isSingleFileMode={false} // 多文件模式
+            isSingleFileMode={false} // Multiple file mode
           />
         );
 
@@ -222,7 +219,7 @@ export function FormField({
     }
   };
 
-  // 为number类型生成范围提示信息
+  // Generate range hint information for number type
   const getNumberHint = () => {
     if (type !== 'number') return null;
 
@@ -266,7 +263,7 @@ export function FormField({
       <div className="relative">
         {renderInput()}
 
-        {/* 字符计数（仅对有长度限制的字段显示） */}
+        {/* Character count (only display for fields with length limit) */}
         {(type === 'text-input' || type === 'paragraph') &&
           (config as any).max_length && (
             <div
@@ -281,7 +278,7 @@ export function FormField({
           )}
       </div>
 
-      {/* 数字类型的范围提示 */}
+      {/* Range hint for number type */}
       {type === 'number' && getNumberHint() && (
         <div
           className={cn(
@@ -293,7 +290,7 @@ export function FormField({
         </div>
       )}
 
-      {/* 错误提示 */}
+      {/* Error hint */}
       {error && (
         <div className={errorClasses}>
           <div className="h-1 w-1 rounded-full bg-red-500" />

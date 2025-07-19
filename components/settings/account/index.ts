@@ -1,2 +1,2 @@
-// 账户设置组件导出
+// Account settings component export
 export { AccountSettings } from './account-settings';

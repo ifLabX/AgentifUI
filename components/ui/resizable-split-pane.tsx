@@ -7,25 +7,27 @@ import { GripVertical } from 'lucide-react';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface ResizableSplitPaneProps {
   left: React.ReactNode;
   right: React.ReactNode;
-  defaultLeftWidth?: number; // 默认左侧宽度百分比
-  minLeftWidth?: number; // 最小左侧宽度百分比
-  maxLeftWidth?: number; // 最大左侧宽度百分比
+  defaultLeftWidth?: number; // Default left width percentage
+  minLeftWidth?: number; // Minimum left width percentage
+  maxLeftWidth?: number; // Maximum left width percentage
   className?: string;
-  storageKey?: string; // localStorage存储键名
+  storageKey?: string; // localStorage key name
 }
 
 /**
- * 可调整大小的分屏组件
+ * Resizable split pane component
  *
- * 功能特点：
- * - 支持拖拽调整左右面板大小
- * - 明显的分屏按钮指示器
- * - 状态持久化到localStorage
- * - 移动端自动禁用
- * - 平滑的动画效果
+ * Features:
+ * - Support dragging to adjust the size of the left and right panels
+ * - Clear split button indicator
+ * - State persistence to localStorage
+ * - Automatic disable on mobile
+ * - Smooth animation effect
  */
 export function ResizableSplitPane({
   left,
@@ -39,8 +41,9 @@ export function ResizableSplitPane({
   const { isDark } = useTheme();
   const isMobile = useMobile();
   const containerRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations('components.ui.resizableSplitPane');
 
-  // --- 从localStorage恢复状态 ---
+  // --- Restore state from localStorage ---
   const [leftWidth, setLeftWidth] = useState(() => {
     if (typeof window === 'undefined') return defaultLeftWidth;
     const saved = localStorage.getItem(storageKey);
@@ -53,12 +56,12 @@ export function ResizableSplitPane({
   const [startX, setStartX] = useState(0);
   const [startWidth, setStartWidth] = useState(0);
 
-  // --- 保存状态到localStorage ---
+  // --- Save state to localStorage ---
   useEffect(() => {
     localStorage.setItem(storageKey, leftWidth.toString());
   }, [leftWidth, storageKey]);
 
-  // --- 开始拖拽 ---
+  // --- Start dragging ---
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (isMobile) return;
@@ -68,12 +71,12 @@ export function ResizableSplitPane({
       setStartX(e.clientX);
       setStartWidth(leftWidth);
 
-      // 设置全局cursor和禁用文本选择
+      // Set global cursor and disable text selection
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
       document.body.style.pointerEvents = 'none';
 
-      // 为分割线设置特殊样式
+      // Set special style for the split line
       if (containerRef.current) {
         containerRef.current.style.pointerEvents = 'auto';
       }
@@ -81,7 +84,7 @@ export function ResizableSplitPane({
     [isMobile, leftWidth]
   );
 
-  // --- 拖拽移动 ---
+  // --- Dragging ---
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDragging || !containerRef.current) return;
@@ -99,13 +102,13 @@ export function ResizableSplitPane({
     [isDragging, startX, startWidth, minLeftWidth, maxLeftWidth]
   );
 
-  // --- 结束拖拽 ---
+  // --- End dragging ---
   const handleMouseUp = useCallback(() => {
     if (!isDragging) return;
 
     setIsDragging(false);
 
-    // 恢复全局样式
+    // Restore global styles
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
     document.body.style.pointerEvents = '';
@@ -115,7 +118,7 @@ export function ResizableSplitPane({
     }
   }, [isDragging]);
 
-  // --- 添加全局事件监听 ---
+  // --- Add global event listener ---
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -128,12 +131,12 @@ export function ResizableSplitPane({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // --- 重置为默认大小 ---
+  // --- Reset to default size ---
   const handleReset = useCallback(() => {
     setLeftWidth(defaultLeftWidth);
   }, [defaultLeftWidth]);
 
-  // 移动端直接返回简单的flex布局
+  // Mobile devices return simple flex layout
   if (isMobile) {
     return (
       <div className={cn('flex h-full', className)} ref={containerRef}>
@@ -145,7 +148,7 @@ export function ResizableSplitPane({
 
   return (
     <div className={cn('relative flex h-full', className)} ref={containerRef}>
-      {/* 左侧面板 */}
+      {/* Left panel */}
       <div
         className="min-w-0 transition-all duration-200 ease-out"
         style={{ width: `${leftWidth}%` }}
@@ -153,9 +156,9 @@ export function ResizableSplitPane({
         {left}
       </div>
 
-      {/* 分割线和拖拽区域 */}
+      {/* Split line and dragging area */}
       <div className="group relative z-10 flex items-center justify-center">
-        {/* 可视分割线 */}
+        {/* Visible split line */}
         <div
           className={cn(
             'h-full w-px transition-all duration-200',
@@ -164,7 +167,7 @@ export function ResizableSplitPane({
           )}
         />
 
-        {/* 拖拽热区 */}
+        {/* Dragging hot area */}
         <div
           className={cn(
             'absolute inset-y-0 -right-2 -left-2 cursor-col-resize',
@@ -174,24 +177,24 @@ export function ResizableSplitPane({
           )}
           onMouseDown={handleMouseDown}
           onDoubleClick={handleReset}
-          title="拖拽调整面板大小，双击重置"
+          title={t('tooltip')}
         >
-          {/* 分屏按钮指示器 */}
+          {/* Split button indicator */}
           <div
             className={cn(
               'flex items-center justify-center',
               'h-8 w-4 rounded-full border transition-all duration-150',
               'shadow-sm',
-              // 默认状态
+              // Default state
               isDark
                 ? 'border-stone-600/50 bg-stone-800/80 text-stone-400'
                 : 'border-stone-300/50 bg-white/80 text-stone-500',
-              // 悬停状态
+              // Hover state
               'group-hover:scale-105',
               isDark
                 ? 'group-hover:border-stone-500/70 group-hover:bg-stone-700/90 group-hover:text-stone-300'
                 : 'group-hover:border-stone-400/70 group-hover:bg-white/90 group-hover:text-stone-600',
-              // 拖拽状态
+              // Dragging state
               isDragging &&
                 (isDark
                   ? 'scale-105 border-stone-500/80 bg-stone-700/95 text-stone-200'
@@ -203,7 +206,7 @@ export function ResizableSplitPane({
         </div>
       </div>
 
-      {/* 右侧面板 */}
+      {/* Right panel */}
       <div
         className="min-w-0 flex-1 transition-all duration-200 ease-out"
         style={{ width: `${100 - leftWidth}%` }}
@@ -211,7 +214,7 @@ export function ResizableSplitPane({
         {right}
       </div>
 
-      {/* 拖拽时的全局遮罩 */}
+      {/* Global mask when dragging */}
       {isDragging && (
         <div
           className="fixed inset-0 z-50 cursor-col-resize"

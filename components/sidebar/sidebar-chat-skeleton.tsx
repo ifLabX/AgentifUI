@@ -10,23 +10,23 @@ interface SidebarChatSkeletonProps {
 }
 
 /**
- * 侧边栏聊天项骨架屏组件
+ * Sidebar chat item skeleton screen group
  *
- * 用于显示正在创建的新对话的占位符
+ * Used to display a placeholder for a new conversation being created
  */
 export function SidebarChatSkeleton({ isDark }: SidebarChatSkeletonProps) {
-  // 骨架屏组件，显示对话创建中的加载状态
-  // 样式与 SidebarButton 保持一致，确保尺寸和外观一致
+  // Skeleton screen component, display the loading state of the conversation creation
+  // Style consistent with SidebarButton, ensure size and appearance consistency
   return (
     <div
       className={cn(
         'flex w-full items-center rounded-lg px-3 py-2',
         'animate-pulse',
         isDark ? 'bg-stone-800/50' : 'bg-stone-100/70',
-        'h-10' // 与 SidebarButton 保持一致的高度
+        'h-10' // Height consistent with SidebarButton
       )}
     >
-      {/* 图标 */}
+      {/* Icon */}
       <div
         className={cn(
           'flex h-6 w-6 flex-none items-center justify-center rounded-full',
@@ -39,7 +39,7 @@ export function SidebarChatSkeleton({ isDark }: SidebarChatSkeletonProps) {
         />
       </div>
 
-      {/* 标题骨架屏 - 只显示一行标题 */}
+      {/* Title skeleton screen - only display one line of title */}
       <div className="ml-3 flex min-w-0 flex-1 items-center">
         <div
           className={cn(

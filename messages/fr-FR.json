@@ -7,6 +7,9 @@
       "retry": "Réessayer",
       "remove": "Supprimer",
       "error": "Erreur",
+      "customSelect": {
+        "placeholder": "Veuillez sélectionner..."
+      },
       "exportButton": {
         "tooltip": "Exporter le fichier",
         "ariaLabel": "Exporter le fichier"
@@ -17,6 +20,9 @@
         "confirm": "Déconnexion",
         "cancel": "Annuler",
         "loggingOut": "Déconnexion en cours..."
+      },
+      "moreButton": {
+        "ariaLabel": "Plus d'options"
       }
     },
     "time": {
@@ -233,7 +239,10 @@
         "noFormConfig": "Cette application n'a pas de formulaire d'entrée configuré",
         "reset": "Réinitialiser le formulaire",
         "executing": "Exécution en cours...",
-        "startExecution": "Démarrer l'exécution"
+        "startExecution": "Démarrer l'exécution",
+        "errors": {
+          "instanceNotFound": "Instance de service avec instanceId {instanceId} non trouvée"
+        }
       },
       "status": {
         "running": "Workflow en cours d'exécution",
@@ -305,7 +314,8 @@
         "loading": "Chargement de l'historique d'exécution...",
         "noRecords": "Aucun enregistrement d'exécution",
         "getDetailFailed": "Échec de l'obtention des détails de l'exécution",
-        "unknownError": "Erreur inconnue"
+        "unknownError": "Erreur inconnue",
+        "userNotLoggedIn": "Utilisateur non connecté"
       },
       "fileUpload": {
         "uploading": "Téléversement du fichier...",
@@ -355,7 +365,8 @@
         "download": "Télécharger le texte",
         "stop": "Arrêter",
         "retry": "Réessayer",
-        "reset": "Réinitialiser"
+        "reset": "Réinitialiser",
+        "close": "Fermer"
       },
       "emptyState": {
         "title": "En attente de génération de texte",
@@ -1950,6 +1961,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "Limite de fichiers dépassée ({current}/{max}), veuillez supprimer certains fichiers"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Faites glisser pour redimensionner les panneaux, double-cliquez pour réinitialiser"
+      },
+      "notificationBar": {
+        "closeNotification": "Fermer la notification"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Question suggérée: {question}"
+      }
     }
   },
   "debug": {
@@ -2212,6 +2234,30 @@
         "textGeneration": "Génération de texte",
         "contentCreation": "Création de contenu",
         "formattedOutput": "Sortie formatée"
+      },
+      "resultViewer": {
+        "title": "Résultat de génération",
+        "defaultTitle": "Résultat de génération de texte",
+        "actions": {
+          "copy": "Copier le résultat",
+          "copied": "Copié",
+          "download": "Télécharger le résultat"
+        },
+        "executionInfo": {
+          "title": "Informations d'exécution",
+          "status": "Statut :",
+          "createdAt": "Créé le :",
+          "elapsedTime": "Temps écoulé :",
+          "statusValues": {
+            "completed": "Terminé",
+            "failed": "Échec",
+            "stopped": "Arrêté"
+          }
+        },
+        "content": {
+          "title": "Contenu généré",
+          "noContent": "Aucun contenu disponible"
+        }
       }
     },
     "chatbot": {

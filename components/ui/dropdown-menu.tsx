@@ -26,7 +26,7 @@ function DropdownItem({
   const { closeDropdown } = useDropdownStore();
 
   const handleClick = (e: React.MouseEvent) => {
-    // 阻止事件冒泡
+    // prevent event bubbling
     e.stopPropagation();
     closeDropdown();
     onClick?.();
@@ -98,15 +98,15 @@ export function DropdownMenu({
 
   const isVisible = isOpen && activeDropdownId === id;
 
-  // 修改监听点击外部关闭下拉菜单
+  // modify the listener to close the dropdown menu when clicking outside
   useEffect(() => {
-    // 使用mouseup事件而不是mousedown，避免与按钮点击冲突
+    // use mouseup event instead of mousedown to avoid conflict with button click
     const handleClickOutside = (event: MouseEvent) => {
-      // 检查点击的元素是否是more-button或其子元素
+      // check if the clicked element is more-button or its child element
       const target = event.target as Element;
       const isMoreButton = target.closest('[data-more-button-id]');
 
-      // 如果是more-button，不执行关闭操作，让按钮自己的点击事件处理
+      // if it is more-button, do not execute the close operation, let the button's own click event handle it
       if (isMoreButton) {
         return;
       }
@@ -120,7 +120,7 @@ export function DropdownMenu({
     };
 
     if (isVisible) {
-      // 使用延迟添加事件监听器，避免与当前点击事件冲突
+      // use setTimeout to delay adding the listener to avoid conflict with the current click event
       setTimeout(() => {
         document.addEventListener('mousedown', handleClickOutside);
       }, 0);
@@ -131,7 +131,7 @@ export function DropdownMenu({
     };
   }, [isVisible, closeDropdown, id]);
 
-  // 滚动时关闭下拉菜单
+  // close the dropdown menu when scrolling
   useEffect(() => {
     const handleScroll = () => {
       if (isVisible) {
@@ -139,12 +139,12 @@ export function DropdownMenu({
       }
     };
 
-    // 使用capture模式监听所有滚动事件，包括容器内的滚动
+    // use capture mode to listen to all scroll events, including scroll events inside the container
     window.addEventListener('scroll', handleScroll, true);
     return () => window.removeEventListener('scroll', handleScroll, true);
   }, [isVisible, closeDropdown]);
 
-  // 处理ESC键关闭菜单
+  // handle ESC key to close the menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isVisible) {
@@ -164,7 +164,7 @@ export function DropdownMenu({
   if (!isVisible || !position) return null;
 
   const handleMenuClick = (e: React.MouseEvent) => {
-    // 阻止菜单点击事件冒泡
+    // prevent menu click event from bubbling
     e.stopPropagation();
   };
 

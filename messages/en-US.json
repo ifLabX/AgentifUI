@@ -7,6 +7,9 @@
       "retry": "Retry",
       "remove": "Remove",
       "error": "Error",
+      "customSelect": {
+        "placeholder": "Please select..."
+      },
       "exportButton": {
         "tooltip": "Export file",
         "ariaLabel": "Export file"
@@ -17,6 +20,9 @@
         "confirm": "Logout",
         "cancel": "Cancel",
         "loggingOut": "Logging out..."
+      },
+      "moreButton": {
+        "ariaLabel": "More options"
       }
     },
     "time": {
@@ -233,7 +239,10 @@
         "noFormConfig": "This app has no input form configured",
         "reset": "Reset form",
         "executing": "Executing...",
-        "startExecution": "Start execution"
+        "startExecution": "Start execution",
+        "errors": {
+          "instanceNotFound": "Service instance with instanceId {instanceId} not found"
+        }
       },
       "status": {
         "running": "Workflow executing",
@@ -305,7 +314,8 @@
         "loading": "Loading execution history...",
         "noRecords": "No execution records",
         "getDetailFailed": "Failed to get execution details",
-        "unknownError": "Unknown error"
+        "unknownError": "Unknown error",
+        "userNotLoggedIn": "User not logged in"
       },
       "fileUpload": {
         "uploading": "Uploading file...",
@@ -355,7 +365,8 @@
         "download": "Download text",
         "stop": "Stop",
         "retry": "Retry",
-        "reset": "Reset"
+        "reset": "Reset",
+        "close": "Close"
       },
       "emptyState": {
         "title": "Waiting to generate text",
@@ -1950,6 +1961,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "File limit exceeded ({current}/{max}), please remove some files"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Drag to resize panels, double-click to reset"
+      },
+      "notificationBar": {
+        "closeNotification": "Close notification"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Suggested question: {question}"
+      }
     }
   },
   "debug": {
@@ -2212,6 +2234,30 @@
         "textGeneration": "Text Generation",
         "contentCreation": "Content Creation",
         "formattedOutput": "Formatted Output"
+      },
+      "resultViewer": {
+        "title": "Generation Result",
+        "defaultTitle": "Text Generation Result",
+        "actions": {
+          "copy": "Copy Result",
+          "copied": "Copied",
+          "download": "Download Result"
+        },
+        "executionInfo": {
+          "title": "Execution Info",
+          "status": "Status:",
+          "createdAt": "Created At:",
+          "elapsedTime": "Elapsed Time:",
+          "statusValues": {
+            "completed": "Completed",
+            "failed": "Failed",
+            "stopped": "Stopped"
+          }
+        },
+        "content": {
+          "title": "Generated Content",
+          "noContent": "No content available"
+        }
       }
     },
     "chatbot": {

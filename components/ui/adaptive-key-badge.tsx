@@ -5,25 +5,25 @@ import { cn } from '@lib/utils';
 import React from 'react';
 
 interface AdaptiveKeyBadgeProps {
-  /** 按键文字 */
+  /** key text */
   keyText: string;
-  /** 尺寸模式 */
+  /** size mode */
   size?: 'sm' | 'md';
-  /** 是否为暗色主题 */
+  /** is dark theme */
   isDark?: boolean;
-  /** 额外的CSS类名 */
+  /** extra css class name */
   className?: string;
 }
 
 /**
- * 自适应快捷键徽章组件
+ * Adaptive key badge component
  *
- * 特点：
- * - 根据按键文字长度自动调整容器宽度
- * - 短文字（1-2字符）使用固定正方形
- * - 长文字（3+字符）使用自适应宽度 + 内边距
- * - 保持视觉一致性和可读性
- * - 优化垂直居中对齐
+ * Features:
+ * - Automatically adjust container width based on key text length
+ * - Use fixed square for short text (1-2 characters)
+ * - Use adaptive width + padding for long text (3+ characters)
+ * - Maintain visual consistency and readability
+ * - Optimize vertical alignment
  */
 export function AdaptiveKeyBadge({
   keyText,
@@ -33,17 +33,17 @@ export function AdaptiveKeyBadge({
 }: AdaptiveKeyBadgeProps) {
   const isLongText = keyText.length > 2;
 
-  // 基础样式 - 添加垂直居中优化
+  // base styles - add vertical alignment optimization
   const baseClasses = cn(
     'inline-flex items-center justify-center',
     'rounded border font-medium select-none',
     'transition-all duration-75',
-    // --- 垂直居中优化 ---
-    'leading-none', // 明确设置行高为1，避免默认行高影响
-    'font-sans' // 使用无衬线字体确保更好的小尺寸渲染
+    // --- vertical alignment optimization ---
+    'leading-none', // explicitly set line height to 1 to avoid default line height impact
+    'font-sans' // use sans-serif font to ensure better small size rendering
   );
 
-  // 尺寸配置
+  // size configuration
   const sizeConfig = {
     sm: {
       height: 'h-3',
@@ -63,15 +63,15 @@ export function AdaptiveKeyBadge({
 
   const config = sizeConfig[size];
 
-  // 主题样式 - 与sidebar样式一致
+  // theme styles - consistent with sidebar styles
   const themeClasses =
     size === 'sm'
-      ? 'bg-black/10 text-white/70 border-white/10' // Tooltip样式
+      ? 'bg-black/10 text-white/70 border-white/10' // tooltip styles
       : isDark
         ? 'bg-stone-800/90 text-stone-200 border-stone-500/60 shadow-sm backdrop-blur-sm'
         : 'bg-white/90 text-stone-700 border-stone-300/70 shadow-sm backdrop-blur-sm';
 
-  // 宽度样式
+  // width styles
   const widthClasses = isLongText ? config.adaptiveWidth : config.fixedWidth;
 
   return (
@@ -85,14 +85,14 @@ export function AdaptiveKeyBadge({
         className
       )}
       style={{
-        // --- 内联样式优化垂直居中 ---
+        // --- inline style optimization for vertical alignment ---
         ...(size === 'sm' ? { boxShadow: config.shadow } : {}),
-        fontSizeAdjust: 'none', // 禁用字体大小调整，避免影响垂直对齐
+        fontSizeAdjust: 'none', // disable font size adjustment to avoid vertical alignment impact
         textAlign: 'center',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        lineHeight: '1', // 强制行高为1
+        lineHeight: '1', // force line height to 1
       }}
     >
       {keyText}
@@ -101,16 +101,16 @@ export function AdaptiveKeyBadge({
 }
 
 /**
- * 快捷键组合显示组件
+ * Key combination display component
  */
 interface KeyCombinationProps {
-  /** 按键数组 */
+  /** key array */
   keys: string[];
-  /** 尺寸模式 */
+  /** size mode */
   size?: 'sm' | 'md';
-  /** 是否为暗色主题 */
+  /** is dark theme */
   isDark?: boolean;
-  /** 额外的CSS类名 */
+  /** extra css class name */
   className?: string;
 }
 

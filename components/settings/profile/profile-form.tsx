@@ -31,9 +31,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarModal } from './avatar-modal';
 
-// 个人资料表单组件
-// 采用紧凑现代化设计，优化UI布局和视觉效果
-// 支持SSO模式下的字段限制
+// Profile form component
+// Use compact modern design, optimize UI layout and visual effects
+// Support field restrictions in SSO mode
 interface ProfileFormProps {
   profile: DatabaseProfile &
     ExtendedProfile & {
@@ -46,11 +46,11 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
   const { colors, isDark } = useSettingsColors();
   const t = useTranslations('pages.settings.profileSettings');
   const format = useFormatter();
-  const { mutate: refreshProfile } = useProfile(); // 添加刷新profile的功能
+  const { mutate: refreshProfile } = useProfile(); // Add refresh profile function
   const { formatDate } = useDateFormatter();
 
-  // 检查是否为SSO单点登录模式
-  // 在SSO模式下，限制某些字段的编辑
+  // Check if it is SSO single sign-on mode
+  // In SSO mode, restrict editing of certain fields
   const isSSOOnlyMode = process.env.NEXT_PUBLIC_SSO_ONLY_MODE === 'true';
 
   const [formData, setFormData] = useState({
@@ -64,7 +64,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
   } | null>(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
 
-  // 处理头像更新
+  // Handle avatar update
   const handleAvatarUpdate = useCallback(
     async (avatarUrl: string | null) => {
       setMessage({
@@ -72,14 +72,14 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         text: avatarUrl ? t('avatar.uploadSuccess') : t('avatar.deleteSuccess'),
       });
 
-      // 刷新profile数据，让所有使用useProfile的组件都能看到最新的头像
+      // Refresh profile data, so that all components using useProfile can see the latest avatar
       try {
         await refreshProfile();
       } catch (error) {
         console.error('Profile refresh failed:', error);
       }
 
-      // 调用成功回调，通知父组件
+      // Call success callback, notify parent component
       if (onSuccess) {
         onSuccess();
       }
@@ -87,14 +87,14 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
     [t, refreshProfile, onSuccess]
   );
 
-  // 处理表单字段变更
-  // 在SSO模式下阻止full_name字段的修改
+  // Handle form field changes
+  // In SSO mode, prevent modification of the full_name field
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    // SSO模式下不允许修改姓名字段
+    // In SSO mode, do not allow modification of the full_name field
     if (isSSOOnlyMode && name === 'full_name') {
       return;
     }
@@ -105,8 +105,8 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
     }));
   };
 
-  // 处理表单提交
-  // 根据SSO模式调整提交的数据
+  // Handle form submission
+  // Adjust submitted data based on SSO mode
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -114,8 +114,8 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       setIsSubmitting(true);
       setMessage(null);
 
-      // 根据SSO模式构建更新数据
-      // SSO模式下不更新姓名和头像URL
+      // Build update data based on SSO mode
+      // In SSO mode, do not update the name and avatar URL
       const updateData: any = {
         username: formData.username,
       };
@@ -124,18 +124,18 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         updateData.full_name = formData.full_name;
       }
 
-      // 更新用户资料
+      // Update user profile
       const result = await updateUserProfile(profile.id, updateData);
 
       if (result.success && result.data) {
-        // 更新localStorage缓存，确保在其他页面能立即看到最新数据
-        // 需要类型转换以匹配ExtendedProfile接口
+        // Update localStorage cache, ensure that the latest data can be seen immediately on other pages
+        // Need type conversion to match the ExtendedProfile interface
         const extendedProfile: ExtendedProfile = {
           ...result.data,
           full_name: result.data.full_name || null,
           username: result.data.username || null,
           avatar_url: result.data.avatar_url || null,
-          // 移除组织相关字段
+          // Remove organization-related fields
           auth_last_sign_in_at: profile.auth_last_sign_in_at,
         };
         updateProfileCache(extendedProfile, profile.id);
@@ -145,7 +145,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           text: t('profileUpdated'),
         });
 
-        // 调用成功回调
+        // Call success callback
         if (onSuccess) {
           onSuccess();
         }
@@ -164,7 +164,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
 
   return (
     <div className="space-y-6">
-      {/* 消息提示 */}
+      {/* Message prompt */}
       {message && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -189,7 +189,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         </motion.div>
       )}
 
-      {/* 用户头像和基本信息 - 紧凑布局 */}
+      {/* User avatar and basic information - compact layout */}
       <div
         className={cn(
           'rounded-lg border p-4',
@@ -198,7 +198,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         )}
       >
         <div className="flex items-center space-x-4">
-          {/* 用户头像 - 缩小尺寸 */}
+          {/* User avatar - smaller size */}
           <div className="relative">
             <div
               className="group relative cursor-pointer"
@@ -220,13 +220,13 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                     t('avatar.defaultUser'),
                 })}
               />
-              {/* 悬停时显示编辑提示文字 */}
+              {/* Show edit hint text when hovering */}
               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-all duration-300 group-hover:opacity-100">
                 <span className="text-xs font-medium text-white">
                   {t('avatar.editHover')}
                 </span>
               </div>
-              {/* 右下角编辑指示器 */}
+              {/* Bottom right edit indicator */}
               <div
                 className={cn(
                   'absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full border shadow-sm transition-all duration-300 group-hover:scale-105',
@@ -240,7 +240,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             </div>
           </div>
 
-          {/* 用户基本信息 - 简化布局 */}
+          {/* User basic information - simplified layout */}
           <div className="flex-1">
             <h3
               className={cn(
@@ -265,7 +265,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         </div>
       </div>
 
-      {/* 账户信息 - 紧凑网格布局 */}
+      {/* Account information - compact grid layout */}
       <div
         className={cn(
           'rounded-lg border p-4',
@@ -332,7 +332,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         </div>
       </div>
 
-      {/* 编辑个人资料 - 简化表单 */}
+      {/* Edit personal information - simplified form */}
       <div
         className={cn(
           'rounded-lg border p-4',
@@ -355,7 +355,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 姓名字段 */}
+          {/* Full name field */}
           <div className="space-y-1">
             <label
               htmlFor="full_name"
@@ -414,7 +414,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             )}
           </div>
 
-          {/* 用户名字段 */}
+          {/* Username field */}
           <div className="space-y-1">
             <label
               htmlFor="username"
@@ -451,7 +451,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             </div>
           </div>
 
-          {/* 提交按钮 */}
+          {/* Submit button */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -468,7 +468,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         </form>
       </div>
 
-      {/* 头像模态框 */}
+      {/* Avatar modal */}
       <AvatarModal
         isOpen={showAvatarModal}
         onClose={() => setShowAvatarModal(false)}

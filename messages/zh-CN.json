@@ -7,6 +7,9 @@
       "retry": "重试",
       "remove": "移除",
       "error": "错误",
+      "customSelect": {
+        "placeholder": "请选择..."
+      },
       "exportButton": {
         "tooltip": "导出文件",
         "ariaLabel": "导出文件"
@@ -17,6 +20,9 @@
         "confirm": "确认退出",
         "cancel": "取消",
         "loggingOut": "退出中..."
+      },
+      "moreButton": {
+        "ariaLabel": "更多选项"
       }
     },
     "time": {
@@ -233,7 +239,10 @@
         "noFormConfig": "该应用未配置输入表单",
         "reset": "重置表单",
         "executing": "执行中...",
-        "startExecution": "开始执行"
+        "startExecution": "开始执行",
+        "errors": {
+          "instanceNotFound": "未找到 instanceId 为 {instanceId} 的服务实例"
+        }
       },
       "status": {
         "running": "工作流执行中",
@@ -305,7 +314,8 @@
         "loading": "正在加载历史记录...",
         "noRecords": "暂无执行记录",
         "getDetailFailed": "获取执行详情失败",
-        "unknownError": "未知错误"
+        "unknownError": "未知错误",
+        "userNotLoggedIn": "用户未登录"
       },
       "fileUpload": {
         "uploading": "正在上传文件...",
@@ -355,7 +365,8 @@
         "download": "下载文本",
         "stop": "停止",
         "retry": "重试",
-        "reset": "重置"
+        "reset": "重置",
+        "close": "关闭"
       },
       "emptyState": {
         "title": "等待生成",
@@ -1950,6 +1961,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "已超出文件数量限制 ({current}/{max})，请删除部分文件"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "拖拽调整面板大小，双击重置"
+      },
+      "notificationBar": {
+        "closeNotification": "关闭通知"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推荐问题: {question}"
+      }
     }
   },
   "debug": {
@@ -2212,6 +2234,30 @@
         "textGeneration": "文本生成",
         "contentCreation": "内容创作",
         "formattedOutput": "格式化输出"
+      },
+      "resultViewer": {
+        "title": "生成结果",
+        "defaultTitle": "文本生成结果",
+        "actions": {
+          "copy": "复制结果",
+          "copied": "已复制",
+          "download": "下载结果"
+        },
+        "executionInfo": {
+          "title": "执行信息",
+          "status": "状态：",
+          "createdAt": "创建时间：",
+          "elapsedTime": "耗时：",
+          "statusValues": {
+            "completed": "已完成",
+            "failed": "已失败",
+            "stopped": "已停止"
+          }
+        },
+        "content": {
+          "title": "生成内容",
+          "noContent": "暂无内容"
+        }
       }
     },
     "chatbot": {

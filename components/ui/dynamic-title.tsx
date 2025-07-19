@@ -10,20 +10,20 @@ import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 
 /**
- * 动态标题组件 - 重构版本
+ * Dynamic Title Component - Refactored Version
  *
- * 采用稳定的标题管理策略，防止状态冲突导致的标题回退问题
+ * Adopts a stable title management strategy to prevent title rollback issues caused by state conflicts
  * 核心原则：
- * 1. 优先级管理：明确不同数据源的优先级
- * 2. 防抖机制：避免频繁的标题更新
- * 3. 状态缓存：保留上一次有效的标题作为fallback
- * 4. 分离关注点：将标题计算逻辑与状态监听分离
+ * 1. Priority Management: Clearly define the priority of different data sources
+ * 2. Debounce Mechanism: Avoid frequent title updates
+ * 3. State Caching: Preserve the last valid title as a fallback
+ * 4. Separation of Concerns: Separate the title calculation logic from the state listening
  */
 export function DynamicTitle() {
-  // --- 国际化翻译 ---
+  // --- Internationalization Translation ---
   const t = useTranslations('dynamicTitle');
 
-  // --- 状态获取 ---
+  // --- State Acquisition ---
   const pathname = usePathname();
   const currentConversationId = useChatStore(
     state => state.currentConversationId
@@ -32,11 +32,11 @@ export function DynamicTitle() {
     useCombinedConversations();
   const { apps, isLoading: isAppsLoading } = useAppListStore();
 
-  // --- 本地状态管理 ---
+  // --- Local State Management ---
   const [currentTitle, setCurrentTitle] = useState<string>('AgentifUI');
   const [_isUpdating, setIsUpdating] = useState(false);
 
-  // --- 状态缓存 ---
+  // --- State Caching ---
   const stableStateRef = useRef<{
     lastValidConversationTitle: string | null;
     lastValidAppTitle: string | null;
@@ -49,13 +49,13 @@ export function DynamicTitle() {
     titleUpdateCount: 0,
   });
 
-  // --- 防抖定时器 ---
+  // --- Debounce Timer ---
   const updateTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  // 基础应用名称
+  // base application name
   const baseTitle = t('base');
 
-  // --- 辅助函数：获取设置页面标题 ---
+  // --- Helper Function: Get Settings Page Title ---
   const getSettingsTitle = useCallback(
     (path: string): string => {
       if (path === '/settings') return `${t('settings.main')} | ${baseTitle}`;
@@ -76,7 +76,7 @@ export function DynamicTitle() {
     [baseTitle, t]
   );
 
-  // --- 辅助函数：获取管理页面标题 ---
+  // --- Helper Function: Get Admin Page Title ---
   const getAdminTitle = useCallback(
     (path: string): string => {
       if (path === '/admin') return `${t('admin.main')} | ${baseTitle}`;
@@ -98,7 +98,7 @@ export function DynamicTitle() {
     [baseTitle, t]
   );
 
-  // --- 辅助函数：获取应用标题 ---
+  // --- Helper Function: Get Application Title ---
   const getAppTitle = useCallback(
     (
       path: string,
@@ -132,7 +132,7 @@ export function DynamicTitle() {
     [baseTitle, t]
   );
 
-  // --- 辅助函数：获取聊天标题 ---
+  // --- Helper Function: Get Chat Title ---
   const getChatTitle = useCallback(
     (
       conversationId: string,
@@ -163,7 +163,7 @@ export function DynamicTitle() {
     [baseTitle, t]
   );
 
-  // --- 标题计算逻辑 ---
+  // --- Title Calculation Logic ---
   const calculateTitle = useCallback(
     (
       currentPath: string | null,
@@ -173,13 +173,13 @@ export function DynamicTitle() {
       isConvLoading: boolean,
       isAppsDataLoading: boolean
     ): { title: string; priority: number; isStable: boolean } => {
-      // 优先级说明：数值越小优先级越高
-      // 1-10: 确定性强的标题（路由相关）
-      // 11-20: 动态内容标题（对话、应用）
-      // 90+: fallback标题
+      // Priority Explanation: The smaller the number, the higher the priority
+      // 1-10: Certain titles (related to routes)
+      // 11-20: Dynamic content titles (chat, application)
+      // 90+: fallback titles
 
       try {
-        // --- 静态路由标题（最高优先级，最稳定）---
+        // --- Static Route Titles (highest priority, most stable) ---
         if (currentPath?.startsWith('/settings')) {
           const settingsTitle = getSettingsTitle(currentPath);
           return { title: settingsTitle, priority: 1, isStable: true };
@@ -246,7 +246,7 @@ export function DynamicTitle() {
           };
         }
 
-        // --- 应用相关标题 ---
+        // --- Application-related Titles ---
         if (currentPath?.startsWith('/apps')) {
           if (currentPath === '/apps') {
             return {
@@ -256,14 +256,14 @@ export function DynamicTitle() {
             };
           }
 
-          // 应用详情页面 - 增强匹配逻辑
+          // Application details page - enhanced matching logic
           const appTitle = getAppTitle(
             currentPath,
             appsList,
             isAppsDataLoading
           );
           if (appTitle.title !== baseTitle) {
-            // 成功获取到应用标题，缓存它
+            // successfully get the application title, cache it
             stableStateRef.current.lastValidAppTitle = appTitle.title;
             return {
               title: appTitle.title,
@@ -272,7 +272,7 @@ export function DynamicTitle() {
             };
           }
 
-          // 如果无法获取当前应用标题，但有缓存的应用标题，使用缓存
+          // if the current application title cannot be obtained, but there is a cached application title, use the cached title
           if (stableStateRef.current.lastValidAppTitle) {
             return {
               title: stableStateRef.current.lastValidAppTitle,
@@ -281,7 +281,7 @@ export function DynamicTitle() {
             };
           }
 
-          // 根据应用类型提供更具体的fallback标题
+          // provide more specific fallback titles based on the application type
           if (currentPath.includes('/agent/')) {
             return {
               title: `${t('apps.agent')} | ${baseTitle}`,
@@ -321,7 +321,7 @@ export function DynamicTitle() {
           };
         }
 
-        // --- 聊天相关标题 ---
+        // --- Chat-related Titles ---
         if (currentPath?.startsWith('/chat')) {
           if (currentPath === '/chat/new') {
             return {
@@ -350,7 +350,7 @@ export function DynamicTitle() {
               chatTitle.title !== baseTitle &&
               !chatTitle.title.includes(t('chat.loading'))
             ) {
-              // 成功获取到对话标题，缓存它
+              // successfully get the conversation title, cache it
               stableStateRef.current.lastValidConversationTitle =
                 chatTitle.title;
               stableStateRef.current.lastKnownConversationId = conversationId;
@@ -361,7 +361,7 @@ export function DynamicTitle() {
               };
             }
 
-            // 如果当前对话ID和上次已知的相同，且有缓存标题，使用缓存
+            // if the current conversation ID is the same as the last known one, and there is a cached title, use the cached title
             if (
               conversationId ===
                 stableStateRef.current.lastKnownConversationId &&
@@ -374,7 +374,7 @@ export function DynamicTitle() {
               };
             }
 
-            // 对话数据仍在加载中，使用温和的加载提示
+            // the conversation data is still loading, use a gentle loading hint
             if (isConvLoading) {
               return {
                 title: `${t('chat.loading')} | ${baseTitle}`,
@@ -383,7 +383,7 @@ export function DynamicTitle() {
               };
             }
 
-            // 完全找不到对话
+            // completely cannot find the conversation
             return {
               title: `${t('chat.notFound')} | ${baseTitle}`,
               priority: 98,
@@ -391,7 +391,7 @@ export function DynamicTitle() {
             };
           }
 
-          // 在聊天页面但没有具体对话ID，默认情况
+          // on the chat page but no specific conversation ID, default case
           if (currentPath === '/chat') {
             return {
               title: `${t('chat.main')} | ${baseTitle}`,
@@ -400,7 +400,7 @@ export function DynamicTitle() {
             };
           }
 
-          // 其他聊天子页面
+          // other chat sub-pages
           return {
             title: `${t('chat.main')} | ${baseTitle}`,
             priority: 4,
@@ -408,24 +408,24 @@ export function DynamicTitle() {
           };
         }
 
-        // --- 默认首页 ---
+        // --- Default Homepage ---
         return { title: baseTitle, priority: 99, isStable: true };
       } catch (error) {
-        console.error('计算标题时出错:', error);
+        console.error('Error calculating title:', error);
         return { title: baseTitle, priority: 100, isStable: false };
       }
     },
     [baseTitle, getSettingsTitle, getAdminTitle, getAppTitle, getChatTitle]
   );
 
-  // --- 防抖更新标题 ---
+  // --- Debounce Update Title ---
   const debouncedUpdateTitle = useCallback(
     (newTitle: string, priority: number, isStable: boolean) => {
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
 
-      // 如果是稳定的高优先级标题，立即更新
+      // if it is a stable high-priority title, update immediately
       if (isStable && priority <= 10) {
         setCurrentTitle(newTitle);
         document.title = newTitle;
@@ -433,7 +433,7 @@ export function DynamicTitle() {
         return;
       }
 
-      // 其他情况使用防抖
+      // for other cases, use debounce
       updateTimeoutRef.current = setTimeout(
         () => {
           setCurrentTitle(newTitle);
@@ -441,12 +441,12 @@ export function DynamicTitle() {
           stableStateRef.current.titleUpdateCount++;
         },
         isStable ? 50 : 200
-      ); // 稳定标题延迟更短
+      ); // stable title delay shorter
     },
     []
   );
 
-  // --- 智能标题更新逻辑 ---
+  // --- Intelligent Title Update Logic ---
   const titleInfo = useMemo(
     () =>
       calculateTitle(
@@ -468,16 +468,16 @@ export function DynamicTitle() {
     ]
   );
 
-  // --- 主要副作用：监听标题变化 ---
+  // --- Main Side Effects: Listen to Title Changes ---
   useEffect(() => {
     setIsUpdating(true);
 
     const { title: newTitle, priority, isStable } = titleInfo;
 
-    // 只有在标题真正改变时才更新
+    // only update when the title really changes
     if (newTitle !== currentTitle) {
       console.log(
-        `[DynamicTitle] 标题更新: "${currentTitle}" -> "${newTitle}" (优先级: ${priority}, 稳定: ${isStable})`
+        `[DynamicTitle] Title Updated: "${currentTitle}" -> "${newTitle}" (Priority: ${priority}, Stable: ${isStable})`
       );
       debouncedUpdateTitle(newTitle, priority, isStable);
     }
@@ -485,7 +485,7 @@ export function DynamicTitle() {
     setIsUpdating(false);
   }, [titleInfo, currentTitle, debouncedUpdateTitle]);
 
-  // --- 清理副作用 ---
+  // --- Clean Up Side Effects ---
   useEffect(() => {
     return () => {
       if (updateTimeoutRef.current) {
@@ -494,7 +494,7 @@ export function DynamicTitle() {
     };
   }, []);
 
-  // --- 组件卸载时重置标题 ---
+  // --- Reset Title When Component Unmounts ---
   useEffect(() => {
     return () => {
       if (

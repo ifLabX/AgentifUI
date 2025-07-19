@@ -6,6 +6,8 @@ import { Check, ChevronDown } from 'lucide-react';
 
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface SelectOption {
   value: string;
   label: string;
@@ -23,14 +25,15 @@ export function CustomSelect({
   value,
   options,
   onChange,
-  placeholder = '请选择...',
+  placeholder,
   className,
 }: CustomSelectProps) {
   const { isDark } = useTheme();
+  const t = useTranslations('common.ui.customSelect');
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  // 点击外部关闭下拉框
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -64,7 +67,9 @@ export function CustomSelect({
         <span
           className={cn(selectedOption ? 'text-inherit' : 'text-stone-500')}
         >
-          {selectedOption ? selectedOption.label : placeholder}
+          {selectedOption
+            ? selectedOption.label
+            : placeholder || t('placeholder')}
         </span>
         <ChevronDown
           className={cn(

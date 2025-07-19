@@ -13,7 +13,7 @@ interface SidebarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   moreActionsTrigger?: React.ReactNode;
   isDisabled?: boolean;
   children?: React.ReactNode;
-  variant?: 'default' | 'transparent'; // 新增：控制悬停效果样式
+  variant?: 'default' | 'transparent'; // New: control hover effect style
 }
 
 export function SidebarButton({
@@ -34,7 +34,7 @@ export function SidebarButton({
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDisabled) return;
 
-    // 立即移除focus，避免影响父容器的cursor显示
+    // Immediately remove focus to avoid affecting the cursor display of the parent container
     e.currentTarget.blur();
 
     onClick?.(e);
@@ -63,13 +63,13 @@ export function SidebarButton({
         'relative flex items-center rounded-lg px-3 py-2 text-sm font-medium',
         'transition-all duration-150 ease-in-out',
         'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-        'select-none', // 防止文字选中
+        'select-none', // Prevent text selection
         isDark
           ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
           : 'focus-visible:ring-primary focus-visible:ring-offset-background',
         'h-10',
-        // 恢复cursor-pointer，现在父容器使用cursor-e-resize不会冲突
-        // disabled时使用cursor-not-allowed
+        // Restore cursor-pointer, now the parent container uses cursor-e-resize will not conflict
+        // When disabled, use cursor-not-allowed
         isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
         !isDark &&
           !isDisabled && [

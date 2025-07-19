@@ -5,34 +5,34 @@ import { usePathname } from 'next/navigation';
 import { Sidebar } from './index';
 
 /**
- * 条件渲染Sidebar组件
- * 根据当前路由决定是否显示Sidebar
+ * Conditional rendering Sidebar component
+ * Determine whether to display Sidebar based on the current route
  *
- * 需要隔离的路由：
- * - 根目录 "/" (首页)
- * - "/admin" 及其子路由 (管理后台有自己的侧边栏)
- * - "/login", "/register" 等认证页面
+ * Routes that need to be isolated:
+ * - Root directory "/" (homepage)
+ * - "/admin" and its sub-routes (admin backend has its own sidebar)
+ * - "/login", "/register" and other authentication pages
  */
 export function ConditionalSidebar() {
   const pathname = usePathname();
 
-  // 需要隔离Sidebar的路由
+  // Routes that need to isolate Sidebar
   const shouldHideSidebar =
-    pathname === '/' || // 首页
-    pathname?.startsWith('/about') || // 关于页
-    pathname?.startsWith('/admin') || // 管理后台
-    pathname?.startsWith('/login') || // 登录页
-    pathname?.startsWith('/register') || // 注册页
-    pathname?.startsWith('/forgot-password') || // 忘记密码
-    pathname?.startsWith('/reset-password') || // 重置密码
-    pathname?.startsWith('/phone-login') || // 手机登录
-    pathname?.startsWith('/sso'); // SSO相关页面
+    pathname === '/' || // Homepage
+    pathname?.startsWith('/about') || // About page
+    pathname?.startsWith('/admin') || // Admin backend
+    pathname?.startsWith('/login') || // Login page
+    pathname?.startsWith('/register') || // Register page
+    pathname?.startsWith('/forgot-password') || // Forgot password
+    pathname?.startsWith('/reset-password') || // Reset password
+    pathname?.startsWith('/phone-login') || // Phone login
+    pathname?.startsWith('/sso'); // SSO related pages
 
-  // 如果在需要隔离的路由，不渲染Sidebar
+  // If the route that needs to be isolated is not rendered, do not render Sidebar
   if (shouldHideSidebar) {
     return null;
   }
 
-  // 其他路由正常渲染Sidebar
+  // Other routes render Sidebar normally
   return <Sidebar />;
 }

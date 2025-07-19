@@ -15,7 +15,7 @@ import { AvatarCropper } from './avatar-cropper';
 import { AvatarPreview } from './avatar-preview';
 import { AvatarUploadArea } from './avatar-upload-area';
 
-// 头像模态框组件接口定义
+// Avatar modal component interface definition
 interface AvatarModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,17 +25,17 @@ interface AvatarModalProps {
 }
 
 /**
- * 现代化头像模态框组件
+ * Modern avatar modal component
  *
- * 功能特点：
- * - 现代化的长方形模态框设计
- * - 支持拖拽和点击上传
- * - 实时进度显示和状态反馈
- * - 图片预览功能
- * - 头像删除功能
- * - 响应式设计
- * - 符合项目主题样式
- * - 优化性能和流畅度
+ * Features:
+ * - Modern rectangular modal design
+ * - Support drag and click upload
+ * - Real-time progress display and status feedback
+ * - Image preview function
+ * - Avatar delete function
+ * - Responsive design
+ * - Project theme style
+ * - Optimized performance and smoothness
  */
 export function AvatarModal({
   isOpen,
@@ -52,11 +52,11 @@ export function AvatarModal({
   const [isDragOver, setIsDragOver] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  // 简化状态管理：主要使用useAvatarUpload的状态，只保留UI相关状态
+  // Simplify state management: mainly use the state of useAvatarUpload, only retain UI-related states
   const [showCropper, setShowCropper] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // 重置状态
+  // Reset state
   const resetState = useCallback(() => {
     avatarUpload.resetState();
     setPreviewUrl(null);
@@ -65,7 +65,7 @@ export function AvatarModal({
     setSelectedFile(null);
   }, [avatarUpload]);
 
-  // 处理模态框关闭
+  // Handle modal close
   const handleClose = useCallback(() => {
     if (!avatarUpload.state.isUploading && !avatarUpload.state.isDeleting) {
       resetState();
@@ -78,7 +78,7 @@ export function AvatarModal({
     onClose,
   ]);
 
-  // 文件验证
+  // File validation
   const validateFile = useCallback(
     (file: File): { valid: boolean; error?: string } => {
       const allowedTypes = [
@@ -108,17 +108,17 @@ export function AvatarModal({
     [t]
   );
 
-  // 处理文件选择 - 进入裁切模式
+  // Handle file selection - enter crop mode
   const handleFileSelect = useCallback(
     (file: File) => {
-      // 验证文件
+      // Validate file
       const validation = validateFile(file);
       if (!validation.valid) {
         console.error('File validation failed:', validation.error);
         return;
       }
 
-      // 设置选中的文件并进入裁切模式
+      // Set selected file and enter crop mode
       setSelectedFile(file);
       const preview = URL.createObjectURL(file);
       setPreviewUrl(preview);
@@ -127,7 +127,7 @@ export function AvatarModal({
     [validateFile]
   );
 
-  // 处理文件输入变化
+  // Handle file input change
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -139,7 +139,7 @@ export function AvatarModal({
     [handleFileSelect]
   );
 
-  // 处理拖拽事件
+  // Handle drag event
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -163,19 +163,19 @@ export function AvatarModal({
     [handleFileSelect]
   );
 
-  // 确认裁切并上传
+  // Confirm crop and upload
   const handleCropConfirm = useCallback(
     async (croppedFile: File) => {
       if (!profile?.id) return;
 
       try {
-        // 上传裁切后的图片
+        // Upload cropped image
         const result = await avatarUpload.uploadAvatar(croppedFile, profile.id);
 
-        // 通知父组件更新
+        // Notify parent component to update
         onAvatarUpdate?.(result.url);
 
-        // 1.5秒后自动关闭
+        // Close after 1.5 seconds
         setTimeout(() => {
           handleClose();
         }, 1500);
@@ -186,7 +186,7 @@ export function AvatarModal({
     [profile?.id, avatarUpload, onAvatarUpdate, handleClose]
   );
 
-  // 取消裁切，返回上传界面
+  // Cancel crop, return to upload interface
   const handleCropCancel = useCallback(() => {
     setShowCropper(false);
     setSelectedFile(null);
@@ -196,12 +196,12 @@ export function AvatarModal({
     }
   }, [previewUrl]);
 
-  // 处理删除头像（真实实现）
+  // Handle delete avatar (real implementation)
   const handleDeleteAvatar = useCallback(async () => {
     if (!profile?.id || !currentAvatarUrl) return;
 
     try {
-      // 使用useAvatarUpload中的extractFilePathFromUrl函数
+      // Use the extractFilePathFromUrl function in useAvatarUpload
       const extractFilePathFromUrl = (url: string): string | null => {
         try {
           const urlObj = new URL(url);
@@ -218,17 +218,17 @@ export function AvatarModal({
 
       const filePath = extractFilePathFromUrl(currentAvatarUrl);
       if (filePath) {
-        // 调用真实的删除API，传递userId
+        // Call the real delete API, pass userId
         await avatarUpload.deleteAvatar(filePath, profile.id);
       }
 
-      // 通知父组件更新
+      // Notify parent component to update
       onAvatarUpdate?.(null);
 
-      // 关闭确认对话框
+      // Close confirm dialog
       setShowDeleteConfirm(false);
 
-      // 1秒后自动关闭
+      // Close after 1 second
       setTimeout(() => {
         handleClose();
       }, 1000);
@@ -243,10 +243,10 @@ export function AvatarModal({
     avatarUpload,
   ]);
 
-  // 当前显示的头像URL
+  // Current displayed avatar URL
   const displayAvatarUrl = previewUrl || currentAvatarUrl;
 
-  // 获取当前的上传/删除状态
+  // Get current upload/delete status
   const isProcessing =
     avatarUpload.state.isUploading || avatarUpload.state.isDeleting;
   const currentProgress = avatarUpload.state.progress;
@@ -281,7 +281,7 @@ export function AvatarModal({
             isDark ? 'bg-stone-900/98' : 'bg-white/98'
           )}
         >
-          {/* 模态框头部 */}
+          {/* Modal header */}
           <div
             className={cn(
               'flex items-center justify-between border-b px-5 py-4',
@@ -334,9 +334,9 @@ export function AvatarModal({
             </button>
           </div>
 
-          {/* 模态框内容 */}
+          {/* Modal content */}
           <div className="space-y-5 p-5">
-            {/* 裁切界面 */}
+            {/* Crop interface */}
             {showCropper && previewUrl && (
               <AvatarCropper
                 imageUrl={previewUrl}
@@ -348,10 +348,10 @@ export function AvatarModal({
               />
             )}
 
-            {/* 原有的上传界面 - 只在非裁切模式下显示 */}
+            {/* Original upload interface - only displayed in non-crop mode */}
             {!showCropper && (
               <>
-                {/* 当前头像显示 */}
+                {/* Current avatar display */}
                 <AvatarPreview
                   avatarUrl={displayAvatarUrl}
                   userName={userName}
@@ -361,7 +361,7 @@ export function AvatarModal({
                   colors={colors}
                 />
 
-                {/* 状态消息 */}
+                {/* Status message */}
                 <AnimatePresence>
                   {currentError && (
                     <motion.div
@@ -402,7 +402,7 @@ export function AvatarModal({
                   )}
                 </AnimatePresence>
 
-                {/* 上传区域 */}
+                {/* Upload area */}
                 <AvatarUploadArea
                   onFileSelect={handleFileSelect}
                   onDrop={handleDrop}
@@ -416,7 +416,7 @@ export function AvatarModal({
                   colors={colors}
                 />
 
-                {/* 操作按钮 */}
+                {/* Operation button */}
                 <div className="flex gap-3">
                   {currentAvatarUrl && (
                     <button
@@ -455,7 +455,7 @@ export function AvatarModal({
               </>
             )}
 
-            {/* 删除确认对话框 */}
+            {/* Delete confirm dialog */}
             <AnimatePresence>
               {showDeleteConfirm && (
                 <motion.div

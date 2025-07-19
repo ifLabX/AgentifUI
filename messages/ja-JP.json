@@ -7,6 +7,9 @@
       "retry": "再試行",
       "remove": "削除",
       "error": "エラー",
+      "customSelect": {
+        "placeholder": "選択してください..."
+      },
       "exportButton": {
         "tooltip": "ファイルをエクスポート",
         "ariaLabel": "ファイルをエクスポート"
@@ -17,6 +20,9 @@
         "confirm": "ログアウト",
         "cancel": "キャンセル",
         "loggingOut": "ログアウト中..."
+      },
+      "moreButton": {
+        "ariaLabel": "その他のオプション"
       }
     },
     "time": {
@@ -233,7 +239,10 @@
         "noFormConfig": "このアプリには入力フォームが設定されていません",
         "reset": "フォームをリセット",
         "executing": "実行中...",
-        "startExecution": "実行開始"
+        "startExecution": "実行開始",
+        "errors": {
+          "instanceNotFound": "instanceId {instanceId} のサービスインスタンスが見つかりません"
+        }
       },
       "status": {
         "running": "ワークフロー実行中",
@@ -305,7 +314,8 @@
         "loading": "実行履歴を読み込み中...",
         "noRecords": "実行記録がありません",
         "getDetailFailed": "実行詳細の取得に失敗しました",
-        "unknownError": "不明なエラー"
+        "unknownError": "不明なエラー",
+        "userNotLoggedIn": "ユーザーがログインしていません"
       },
       "fileUpload": {
         "uploading": "ファイルをアップロード中...",
@@ -355,7 +365,8 @@
         "download": "テキストをダウンロード",
         "stop": "停止",
         "retry": "再試行",
-        "reset": "リセット"
+        "reset": "リセット",
+        "close": "閉じる"
       },
       "emptyState": {
         "title": "テキスト生成待機中",
@@ -1950,6 +1961,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "ファイル数の上限を超えています ({current}/{max})、いくつかのファイルを削除してください"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "ドラッグしてパネルのサイズを変更、ダブルクリックでリセット"
+      },
+      "notificationBar": {
+        "closeNotification": "通知を閉じる"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推奨質問: {question}"
+      }
     }
   },
   "debug": {
@@ -2212,6 +2234,30 @@
         "textGeneration": "テキスト生成",
         "contentCreation": "コンテンツ作成",
         "formattedOutput": "フォーマット済み出力"
+      },
+      "resultViewer": {
+        "title": "生成結果",
+        "defaultTitle": "テキスト生成結果",
+        "actions": {
+          "copy": "結果をコピー",
+          "copied": "コピー済み",
+          "download": "結果をダウンロード"
+        },
+        "executionInfo": {
+          "title": "実行情報",
+          "status": "ステータス：",
+          "createdAt": "作成日時：",
+          "elapsedTime": "経過時間：",
+          "statusValues": {
+            "completed": "完了",
+            "failed": "失敗",
+            "stopped": "停止"
+          }
+        },
+        "content": {
+          "title": "生成されたコンテンツ",
+          "noContent": "コンテンツがありません"
+        }
       }
     },
     "chatbot": {
