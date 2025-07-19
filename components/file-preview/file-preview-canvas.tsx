@@ -11,7 +11,7 @@ import React from 'react';
 
 import { FilePreviewBackdrop } from './file-preview-backdrop';
 
-// 简化版：文件内容预览组件 - 只显示基础信息
+// Simplified version: file content preview component - only display basic information
 const FileContentViewer: React.FC<{
   file: MessageAttachment | null;
   isDark: boolean;
@@ -19,9 +19,9 @@ const FileContentViewer: React.FC<{
   if (!file) return null;
 
   return (
-    // 保留外层容器用于可能的样式调整
+    // Keep outer container for possible style adjustments
     <div>
-      <h3 className="mb-4 text-lg font-semibold">文件信息</h3>
+      <h3 className="mb-4 text-lg font-semibold">File information</h3>
       <div
         className={cn(
           'space-y-1 text-sm',
@@ -29,13 +29,13 @@ const FileContentViewer: React.FC<{
         )}
       >
         <p>
-          <strong>名称:</strong> {file.name}
+          <strong>Name:</strong> {file.name}
         </p>
         <p>
-          <strong>类型:</strong> {file.type}
+          <strong>Type:</strong> {file.type}
         </p>
         <p>
-          <strong>大小:</strong> {formatBytes(file.size)}
+          <strong>Size:</strong> {formatBytes(file.size)}
         </p>
       </div>
       <p
@@ -44,7 +44,7 @@ const FileContentViewer: React.FC<{
           isDark ? 'text-stone-400' : 'text-stone-500'
         )}
       >
-        (文件内容预览功能暂不可用)
+        (File content preview function is temporarily unavailable)
       </p>
     </div>
   );
@@ -60,10 +60,10 @@ export const FilePreviewCanvas = () => {
     visible: { x: 0 },
   };
 
-  // 加快动画速度：减少 duration
+  // Speed up animation: reduce duration
   const transitionConfig = {
     type: 'tween',
-    duration: 0.2, // 从 0.3 减小到 0.2
+    duration: 0.2, // Reduce from 0.3 to 0.2
     ease: 'easeInOut',
   };
 
@@ -96,9 +96,9 @@ export const FilePreviewCanvas = () => {
             >
               <h2
                 className="truncate text-xl font-semibold"
-                title={currentPreviewFile?.name || '文件信息'}
+                title={currentPreviewFile?.name || 'File information'}
               >
-                {currentPreviewFile?.name || '文件信息'}
+                {currentPreviewFile?.name || 'File information'}
               </h2>
               <button
                 onClick={closePreview}
@@ -108,7 +108,7 @@ export const FilePreviewCanvas = () => {
                     ? 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
                     : 'text-stone-600 hover:bg-stone-200 hover:text-stone-800'
                 )}
-                aria-label="关闭预览"
+                aria-label="Close preview"
               >
                 <XIcon className="h-5 w-5" />
               </button>

@@ -11,13 +11,13 @@ interface ChatContainerProps {
   isDark?: boolean;
   className?: string;
   widthClass: string;
-  // 是否正在从对话界面过渡到欢迎界面
-  // 当为 true 时，使用闪烁效果而不是滑动
-  // 当为 false 时，保持现有的滑动效果
+  // Whether transitioning from conversation interface to welcome interface
+  // When true, use flashing effect instead of sliding
+  // When false, keep existing sliding effect
   isTransitioningToWelcome?: boolean;
 }
 
-// 定义对话界面距离底部的距离
+// Define the distance from the conversation interface to the bottom
 const INPUT_BOTTOM_MARGIN = '1rem';
 
 export const ChatContainer = ({
@@ -28,37 +28,37 @@ export const ChatContainer = ({
   widthClass,
   isTransitioningToWelcome = false,
 }: ChatContainerProps) => {
-  // 获取主题颜色和智能布局位置
+  // Get theme colors and intelligent layout position
   const { colors } = useThemeColors();
   const { input: inputPosition } = useWelcomeLayout();
 
   // Base styles including absolute positioning and width
   // Simplified transition effects using opacity instead of sliding
   const baseClasses = cn(
-    'absolute left-1/2 w-full', // 定位和宽度
+    'absolute left-1/2 w-full', // Position and width
     widthClass,
-    // 使用闪烁过渡效果，只过渡透明度
+    // Use flashing transition effect, only transition opacity
     'transition-opacity duration-100 ease-in-out',
     className
   );
 
-  // 动态计算样式，根据当前状态决定定位和变形
-  // 欢迎界面使用智能布局系统，对话界面保持原有逻辑
+  // Dynamic calculation of styles, based on current state to determine position and deformation
+  // Welcome screen uses intelligent layout system, conversation interface maintains original logic
   const dynamicStyles: React.CSSProperties = isWelcomeScreen
     ? {
-        // 欢迎界面：使用智能布局系统计算的位置
+        // Welcome screen: use intelligent layout system calculated position
         top: inputPosition.top,
-        bottom: 'auto', // 确保 bottom 无效
+        bottom: 'auto', // Ensure bottom is invalid
         transform: inputPosition.transform,
-        // 统一使用闪烁效果
+        // Use flashing effect uniformly
         transition: 'opacity 100ms ease-in-out',
       }
     : {
-        // 对话界面：基于底部定位，并通过 transform 水平居中
-        top: 'auto', // 确保 top 无效
+        // Conversation interface: based on bottom positioning, and horizontally centered through transform
+        top: 'auto', // Ensure top is invalid
         bottom: INPUT_BOTTOM_MARGIN,
         transform: 'translateX(-50%)',
-        // 统一使用闪烁效果
+        // Use flashing effect uniformly
         transition: 'opacity 100ms ease-in-out',
       };
 

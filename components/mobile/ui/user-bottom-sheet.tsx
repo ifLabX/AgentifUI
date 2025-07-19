@@ -20,10 +20,10 @@ interface UserBottomSheetProps {
 }
 
 /**
- * 用户底部弹出框内容组件
- * 根据用户登录状态显示不同内容
- * 登录状态：显示用户信息和操作按钮（设置、主题切换、退出登录等）
- * 未登录状态：显示登录、注册按钮
+ * User bottom sheet content component
+ * Display different content based on user login status
+ * Login state: display user information and operation buttons (settings, theme switch, logout, etc.)
+ * Unlogged state: display login and register buttons
  */
 export function UserBottomSheet({
   isOpen,
@@ -38,31 +38,31 @@ export function UserBottomSheet({
   const tMenu = useTranslations('mobile.menu');
   const tRoles = useTranslations('pages.settings.profileSettings.roles');
 
-  // 使用 useProfile hook 获取用户信息
+  // Use useProfile hook to get user information
   const { profile } = useProfile();
 
-  // 从 profile 中提取用户信息
+  // Extract user information from profile
   const userName = profile?.full_name || profile?.username || t('defaultUser');
   const userRole =
     profile?.role === 'admin'
       ? tRoles('admin')
       : profile?.role === 'manager'
         ? tRoles('manager')
-        : tRoles('user'); // 显示用户角色而不是固定的"群组系统"
+        : tRoles('user'); // Display user role instead of fixed "group system"
 
-  // 处理登录
+  // Handle login
   const handleLogin = () => {
     router.push('/login');
     onClose();
   };
 
-  // 处理注册
+  // Handle registration
   const handleRegister = () => {
     router.push('/register');
     onClose();
   };
 
-  // 处理退出登录 - 触发确认对话框
+  // Handle logout - trigger confirmation dialog
   const handleLogout = () => {
     if (onLogoutClick) {
       onLogoutClick();
@@ -70,7 +70,7 @@ export function UserBottomSheet({
     }
   };
 
-  // 渲染菜单项
+  // Render menu items
   const renderMenuItem = (
     icon: React.ReactNode,
     label: string,
@@ -81,7 +81,7 @@ export function UserBottomSheet({
       onClick={onClick}
       className={cn(
         'flex w-full items-center rounded-lg px-4 py-3',
-        // 亮色/暗色模式样式
+        // Light/dark mode style
         isDark
           ? danger
             ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300'
@@ -89,7 +89,7 @@ export function UserBottomSheet({
           : danger
             ? 'text-red-600 hover:bg-red-50 hover:text-red-700'
             : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900',
-        // 共用样式
+        // Shared style
         'transition-colors duration-200'
       )}
     >
@@ -106,7 +106,7 @@ export function UserBottomSheet({
     >
       {isLoggedIn ? (
         <div className="flex flex-col">
-          {/* 用户信息区域 - 简洁设计 */}
+          {/* User information area - simple design */}
           <div
             className={cn(
               'mb-3 rounded-lg px-3 py-2',
@@ -131,7 +131,7 @@ export function UserBottomSheet({
             </div>
           </div>
 
-          {/* 菜单选项 */}
+          {/* Menu options */}
           <div
             className={cn(
               'space-y-1 overflow-hidden rounded-lg',
@@ -143,7 +143,7 @@ export function UserBottomSheet({
           >
             {profile?.role === 'admin' &&
               renderMenuItem(
-                <Wrench className="h-5 w-5" />, // 管理后台
+                <Wrench className="h-5 w-5" />, // Admin backend
                 tMenu('adminPanel'),
                 () => {
                   router.push('/admin');
@@ -152,7 +152,7 @@ export function UserBottomSheet({
               )}
 
             {renderMenuItem(
-              <Sliders className="h-5 w-5" />, // 设置
+              <Sliders className="h-5 w-5" />, // Settings
               tMenu('settings'),
               () => {
                 router.push('/settings');
@@ -161,7 +161,7 @@ export function UserBottomSheet({
             )}
 
             {renderMenuItem(
-              <Info className="h-5 w-5" />, // 关于
+              <Info className="h-5 w-5" />, // About
               tMenu('about'),
               () => {
                 router.push('/about');
@@ -170,7 +170,7 @@ export function UserBottomSheet({
             )}
           </div>
 
-          {/* 退出登录按钮（单独分组） */}
+          {/* Logout button (separate group) */}
           <div
             className={cn(
               'overflow-hidden rounded-lg',
@@ -180,7 +180,7 @@ export function UserBottomSheet({
             )}
           >
             {renderMenuItem(
-              <LogOut className="h-5 w-5" />, // 退出登录
+              <LogOut className="h-5 w-5" />, // Logout
               tMenu('logout'),
               handleLogout,
               true

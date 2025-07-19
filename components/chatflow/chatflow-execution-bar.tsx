@@ -30,15 +30,15 @@ interface ChatflowExecutionBarProps {
 }
 
 /**
- * Chatflow 执行条组件 - 显示节点执行信息的长条
+ * Chatflow execution bar component - display long bar with node execution information
  *
  * 特点：
- * - fade-in 动画进入
- * - 左侧状态图标（spinner/完成/失败）
- * - 中间显示节点名称和状态描述
+ * - fade-in animation
+ * - left status icon (spinner/completed/failed)
+ * - middle display node name and status description
  * - 右侧显示执行时间
- * - 适配 chatflow 的视觉风格
- * - 临时UI，刷新后消失
+ * - Adapt to chatflow visual style
+ * - Temporary UI, disappear after refresh
  */
 export function ChatflowExecutionBar({
   node,
@@ -50,7 +50,7 @@ export function ChatflowExecutionBar({
   const [isVisible, setIsVisible] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // 🎯 使用store中的展开状态
+  // 🎯 Use the expanded state in the store
   const {
     iterationExpandedStates,
     loopExpandedStates,
@@ -64,7 +64,7 @@ export function ChatflowExecutionBar({
         ? loopExpandedStates[node.id]
         : false) || false;
 
-  // --- 延迟显示动画 ---
+  // --- Delay display animation ---
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
@@ -73,7 +73,7 @@ export function ChatflowExecutionBar({
     return () => clearTimeout(timer);
   }, [delay]);
 
-  // --- 计时器 ---
+  // --- Timer ---
   useEffect(() => {
     if (node.status === 'running' && node.startTime) {
       const interval = setInterval(() => {
@@ -86,12 +86,12 @@ export function ChatflowExecutionBar({
     }
   }, [node.status, node.startTime, node.endTime]);
 
-  // --- 自动展开逻辑已移至store中的iteration_started事件处理 ---
+  // --- Automatic expansion logic has been moved to the iteration_started event handling in the store ---
 
-  // --- 🎯 调试：监听节点变化 ---
+  // --- 🎯 Debug: Listen to node changes ---
   useEffect(() => {
     if (node.isIterationNode) {
-      console.log('[ChatflowExecutionBar] 🔍 迭代节点状态更新:', {
+      console.log('[ChatflowExecutionBar] 🔍 Iteration node status updated:', {
         id: node.id,
         title: node.title,
         isIterationNode: node.isIterationNode,
@@ -153,7 +153,7 @@ export function ChatflowExecutionBar({
   };
 
   const getStatusText = () => {
-    // 🎯 所有状态文本统一4个字，保持对齐
+    // 🎯 All status texts are unified to 4 characters, maintaining alignment
     if (node.isIterationNode) {
       switch (node.status) {
         case 'running':
@@ -195,7 +195,7 @@ export function ChatflowExecutionBar({
   };
 
   const getNodeTitle = () => {
-    // 根据节点类型返回友好的名称
+    // Return friendly name based on node type
     switch (node.type) {
       case 'start':
         return t('nodeTypes.start');
@@ -233,23 +233,23 @@ export function ChatflowExecutionBar({
     }
   };
 
-  // --- 移除节点类型图标，保持原来的文字显示 ---
+  // --- Remove node type icon, keep the original text display ---
 
   const getBarStyles = () => {
     const baseStyles = cn(
-      'flex items-center gap-3 rounded-md border px-3 py-2 transition-all duration-300', // 🎯 恢复细bar样式
+      'flex items-center gap-3 rounded-md border px-3 py-2 transition-all duration-300', // 🎯 Restore thin bar style
       'transform font-serif',
       isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
     );
 
-    // 🎯 优化：迭代/循环中的节点使用左侧指示条+连接点设计，提供清晰的层级视觉指示
+    // 🎯 Optimization: Iteration/loop nodes use left indicator bar + connection point design, providing clear hierarchical visual indicators
     const nestedStyles =
       node.isInIteration || node.isInLoop
         ? cn(
             'relative ml-6 pl-4',
-            // 使用新的指示条样式
+            // Use new indicator bar style
             node.isInIteration ? 'iteration-node' : 'loop-node',
-            // 轻微的背景色区分
+            // Slight background color distinction
             isDark ? 'bg-stone-800/20' : 'bg-stone-50/40'
           )
         : '';
@@ -300,7 +300,7 @@ export function ChatflowExecutionBar({
       <div
         className={cn(
           getBarStyles(),
-          // 🎯 所有bar都有悬停效果，只有迭代、并行分支和循环节点才有cursor pointer
+          // 🎯 All bars have hover effect, only iteration, parallel branch and loop nodes have cursor pointer
           'transition-all duration-200 hover:scale-[1.02] hover:shadow-md',
           (node.isIterationNode || node.isParallelNode || node.isLoopNode) &&
             'cursor-pointer'
@@ -317,12 +317,12 @@ export function ChatflowExecutionBar({
             : undefined
         }
       >
-        {/* 左侧：状态图标 */}
+        {/* Left: status icon */}
         <div className="flex-shrink-0">{getStatusIcon()}</div>
 
-        {/* 中间：节点信息 - 紧凑布局 */}
+        {/* Middle: node information - compact layout */}
         <div className="min-w-0 flex-1">
-          {/* 节点标题和状态在同一行 */}
+          {/* Node title and status on the same line */}
           <div className="flex items-center justify-between gap-2">
             <span
               className={cn(
@@ -333,9 +333,9 @@ export function ChatflowExecutionBar({
               {getNodeTitle()}
             </span>
 
-            {/* 状态标签 - 简化显示 */}
+            {/* Status label - simplified display */}
             <div className="flex flex-shrink-0 items-center gap-1">
-              {/* 迭代/并行分支/循环计数 */}
+              {/* Iteration/parallel branch/loop count */}
               {node.isIterationNode && node.totalIterations && (
                 <span
                   className={cn(
@@ -374,11 +374,11 @@ export function ChatflowExecutionBar({
                   'rounded px-1.5 py-0.5 font-serif text-xs transition-all duration-300',
                   node.status === 'running'
                     ? cn(
-                        // 基础样式
+                        // Base style
                         isDark
                           ? 'bg-stone-600/40 text-stone-200'
                           : 'bg-stone-300/60 text-stone-700',
-                        // 微妙的脉冲效果
+                        // Subtle pulse effect
                         'animate-pulse'
                       )
                     : node.status === 'completed'
@@ -400,7 +400,7 @@ export function ChatflowExecutionBar({
           </div>
         </div>
 
-        {/* 右侧：计时信息 - 更紧凑 */}
+        {/* Right: timing information - more compact */}
         <div className="w-12 flex-shrink-0 text-right">
           {(node.status === 'running' || node.status === 'completed') &&
             elapsedTime > 0 && (
@@ -416,10 +416,10 @@ export function ChatflowExecutionBar({
         </div>
       </div>
 
-      {/* 🎯 展开状态说明：展开/折叠控制的是迭代中的子节点显示 */}
-      {/* 实际的子节点显示由父组件根据 isExpanded 状态控制 */}
+      {/* 🎯 Expand state explanation: expand/collapse controls the display of child nodes in iteration */}
+      {/* The actual child node display is controlled by the parent component based on the isExpanded state */}
 
-      {/* 🎯 新增：展开的并行分支列表 */}
+      {/* 🎯 New: expanded parallel branch list */}
       <CollapsibleContent
         isExpanded={isExpanded}
         show={
@@ -431,7 +431,7 @@ export function ChatflowExecutionBar({
         }
       >
         <div className="ml-4 space-y-2">
-          {/* 并行分支进度条 */}
+          {/* Parallel branch progress bar */}
           {node.totalBranches && (
             <div className="px-3 py-2">
               <ProgressBar
@@ -443,7 +443,7 @@ export function ChatflowExecutionBar({
             </div>
           )}
 
-          {/* 分支列表 */}
+          {/* Branch list */}
           <div className="space-y-1">
             {node.parallelBranches?.map((branch, index) => (
               <ParallelBranchItem
@@ -460,7 +460,7 @@ export function ChatflowExecutionBar({
   );
 }
 
-// --- 🎯 新增：带有退出动画的折叠内容组件 ---
+// --- 🎯 New: collapsible content component with exit animation ---
 interface CollapsibleContentProps {
   isExpanded: boolean;
   show: boolean;
@@ -472,7 +472,7 @@ function CollapsibleContent({
   show,
   children,
 }: CollapsibleContentProps) {
-  // 🎯 简化：只有展开时才渲染，关闭时立即消失
+  // 🎯 Simplify: only render when expanded, disappear immediately when closed
   if (!show || !isExpanded) {
     return null;
   }
@@ -484,9 +484,9 @@ function CollapsibleContent({
   );
 }
 
-// --- 迭代项组件已移除，改为简化的展开信息显示 ---
+// --- Iteration item component has been removed, replaced with simplified expanded information display ---
 
-// --- 🎯 新增：并行分支项组件 ---
+// --- 🎯 New: parallel branch item component ---
 interface ParallelBranchItemProps {
   branch: ChatflowParallelBranch;
   index: number;
@@ -577,7 +577,7 @@ function ParallelBranchItem({
 
       <div className="w-12 flex-shrink-0 text-right">
         {' '}
-        {/* 🎯 固定宽度避免抖动 */}
+        {/* 🎯 Fixed width to avoid jitter */}
         {elapsedTime > 0 && (
           <span
             className={cn(
@@ -593,7 +593,7 @@ function ParallelBranchItem({
   );
 }
 
-// --- 🎯 新增：进度条组件 ---
+// --- 🎯 New: progress bar component ---
 interface ProgressBarProps {
   current: number;
   total: number;
@@ -637,7 +637,7 @@ function ProgressBar({ current, total, type, isDark }: ProgressBarProps) {
         <div
           className={cn(
             'chatflow-progress-bar h-full rounded-full transition-all duration-500 ease-out',
-            'bg-gradient-to-r from-stone-400 to-stone-500' // 🎯 统一使用stone色系
+            'bg-gradient-to-r from-stone-400 to-stone-500' // 🎯 Use stone color system
           )}
           style={
             {

@@ -6,6 +6,8 @@ import { cn } from '@lib/utils';
 
 import React, { useEffect, useRef } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { AttachmentPreviewItem } from './attachment-preview-item';
 
 /**
@@ -38,6 +40,7 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({
   const files = useAttachmentStore(state => state.files);
   const { uploadConfig } = useFileTypes();
   const containerRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations('components.chatInput.attachmentPreview');
 
   // Monitor file list changes or window size changes, dynamically calculate and notify height with animation styles
   useEffect(() => {
@@ -119,8 +122,10 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({
                   : 'border border-orange-300 bg-orange-100 text-orange-700'
               )}
             >
-              已超出文件数量限制 ({files.length}/{uploadConfig.maxFiles}
-              )，请删除部分文件
+              {t('fileLimitExceeded', {
+                current: files.length,
+                max: uploadConfig.maxFiles,
+              })}
             </div>
           )}
 

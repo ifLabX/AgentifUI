@@ -11,10 +11,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 🎯 多提供商支持：模型选择器现在支持来自不同提供商的模型
-// 过滤逻辑基于 app_type === 'model'，不再限制特定提供商
-// 保持向后兼容，现有的 Dify 模型仍然正常工作
-// 从chat-input.tsx导入全局焦点管理器
+// 🎯 Multi-provider support: model selector now supports models from different providers
+// Filter logic based on app_type === 'model', no longer limited to specific providers
+// Maintain backward compatibility, existing Dify models still work
+// Import global focus manager from chat-input.tsx
 import { useFocusManager } from './chat-input';
 
 interface ModelSelectorButtonProps {
@@ -29,25 +29,25 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOptimisticSwitching, setIsOptimisticSwitching] = useState(false);
 
-  // 获取全局焦点管理器
+  // Get global focus manager
   const { focusInput } = useFocusManager();
   const t = useTranslations('pages.chat.modelSelector');
 
-  // 获取可用的app列表
+  // Get available app list
   useEffect(() => {
     fetchApps();
   }, [fetchApps]);
 
-  // 🎯 过滤出模型类型的应用
-  // 支持多提供商：只要 app_type === 'model' 就显示，不限制提供商
-  // 这样可以显示来自不同提供商（Dify、OpenAI、Claude等）的模型
+  // 🎯 Filter out model-type applications
+  // Support multi-provider: display as long as app_type === 'model', no provider limit
+  // This allows displaying models from different providers (Dify, OpenAI, Claude, etc.)
   const modelApps = apps.filter(app => {
     const metadata = app.config?.app_metadata;
     return metadata?.app_type === 'model';
   });
 
-  // 🎯 最后使用模型记忆机制
-  // 当从非模型应用回到聊天界面时，自动恢复到最后使用的模型
+  // 🎯 Last used model memory mechanism
+  // When returning from non-model application to chat interface, automatically restore the last used model
   const getLastUsedModel = () => {
     try {
       return localStorage.getItem('last-used-model-app-id');
@@ -60,29 +60,29 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
     try {
       localStorage.setItem('last-used-model-app-id', appId);
     } catch {
-      // 忽略localStorage错误
+      // Ignore localStorage error
     }
   };
 
-  // 🎯 简化模型选择逻辑：
-  // 1. 如果当前应用是模型类型，直接使用
-  // 2. 如果当前应用不是模型类型，尝试恢复最后使用的模型
-  // 3. 如果没有最后使用的模型或该模型不可用，选择第一个可用模型
-  // 🎯 修复：使用instance_id进行匹配，因为currentAppId存储的是instance_id而不是UUID
+  // 🎯 Simplify model selection logic:
+  // 1. If the current application is a model type, use it directly
+  // 2. If the current application is not a model type, try to restore the last used model
+  // 3. If there is no last used model or the model is not available, select the first available model
+  // 🎯 Fix: use instance_id for matching, because currentAppId stores instance_id instead of UUID
   const currentApp = modelApps.find(app => app.instance_id === currentAppId);
   const isCurrentAppModel = !!currentApp;
 
-  // 获取应该显示的模型应用
+  // Get the model application to be displayed
   const getTargetModelApp = () => {
-    // 如果当前应用就是模型类型，直接使用
+    // If the current application is a model type, use it directly
     if (isCurrentAppModel) {
       return currentApp;
     }
 
-    // 如果当前应用不是模型类型，尝试恢复最后使用的模型
+    // If the current application is not a model type, try to restore the last used model
     const lastUsedModelId = getLastUsedModel();
     if (lastUsedModelId) {
-      // 🎯 修复：使用instance_id进行匹配，因为lastUsedModelId存储的是instance_id
+      // 🎯 Fix: use instance_id for matching, because lastUsedModelId stores instance_id
       const lastUsedModel = modelApps.find(
         app => app.instance_id === lastUsedModelId
       );
@@ -91,13 +91,13 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       }
     }
 
-    // 如果没有最后使用的模型或该模型不可用，选择第一个可用模型
+    // If there is no last used model or the model is not available, select the first available model
     return modelApps.length > 0 ? modelApps[0] : null;
   };
 
   const targetModelApp = getTargetModelApp();
 
-  // 🎯 简化应用切换：移除自动跳转，让用户控制导航
+  // 🎯 Simplify application switching: remove automatic jump, let users control navigation
   const handleAppChange = useCallback(
     async (newAppId: string) => {
       if (newAppId === currentAppId) {
@@ -107,38 +107,38 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       }
 
       try {
-        // 立即关闭下拉菜单
+        // Immediately close the dropdown menu
         setIsOpen(false);
 
-        // 开始乐观切换状态（显示spinner）
+        // Start optimistic switching state (display spinner)
         setIsOptimisticSwitching(true);
 
-        // 🎯 记录最后使用的模型（仅当切换到模型类型应用时）
-        // 🎯 修复：使用instance_id进行匹配，因为newAppId是instance_id
+        // 🎯 Record the last used model (only when switching to model-type application)
+        // 🎯 Fix: use instance_id for matching, because newAppId is instance_id
         const targetApp = modelApps.find(app => app.instance_id === newAppId);
         if (targetApp) {
           setLastUsedModel(newAppId);
 
-          // 🎯 静默切换应用，不强制跳转页面
-          // switchToSpecificApp需要instance_id，不是数据库UUID
+          // 🎯 Silent application switching, no forced page jump
+          // switchToSpecificApp needs instance_id, not database UUID
           await switchToSpecificApp(targetApp.instance_id);
         } else {
-          throw new Error(`未找到应用: ${newAppId}`);
+          throw new Error(t('appNotFound', { appId: newAppId }));
         }
 
-        // 切换成功后清理聊天状态
+        // After successful switching, clear the chat state
         clearMessages();
 
-        console.log(`已切换到app: ${newAppId}`);
+        console.log(`Switched to app: ${newAppId}`);
       } catch (error) {
-        console.error('切换app失败:', error);
-        // @future 显示用户友好的错误提示
+        console.error('Switch app failed:', error);
+        // @future Display user-friendly error message
       } finally {
-        // 结束乐观切换状态
+        // End optimistic switching state
         setIsOptimisticSwitching(false);
 
-        // 无论成功还是失败，都要确保恢复输入框焦点
-        // 使用setTimeout确保在状态更新完成后执行
+        // Ensure input box focus is restored, whether successful or not
+        // Use setTimeout to ensure execution after state update
         setTimeout(() => focusInput(), 0);
       }
     },
@@ -152,10 +152,10 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
     ]
   );
 
-  // 🎯 简化自动恢复逻辑：只在组件初始化时执行一次
-  // 移除复杂的路径检查和定时器，避免竞态条件
+  // 🎯 Simplify automatic recovery logic: only executed once during component initialization
+  // Remove complex path checks and timers to avoid race conditions
   useEffect(() => {
-    // 只在有模型应用且当前应用不是模型类型时才尝试恢复
+    // Only attempt recovery when there are model applications and the current application is not a model type
     if (
       modelApps.length > 0 &&
       !isCurrentAppModel &&
@@ -163,16 +163,12 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       targetModelApp &&
       targetModelApp.instance_id !== currentAppId
     ) {
-      console.log(
-        `检测到非模型应用 ${currentAppId}，静默恢复到模型: ${targetModelApp.instance_id}`
-      );
-
-      // 🎯 修复：在静默切换前先记录到localStorage，确保首次登录时也能正确保存模型选择
+      // 🎯 Fix: record to localStorage before silent switching, ensure correct model selection is saved on first login
       setLastUsedModel(targetModelApp.instance_id);
 
-      // 静默切换，不显示loading状态，不强制跳转
+      // Silent switching, no loading state, no forced jump
       switchToSpecificApp(targetModelApp.instance_id).catch(error => {
-        console.warn('静默恢复模型失败:', error);
+        console.warn('Silent model recovery failed:', error);
       });
     }
   }, [
@@ -180,15 +176,15 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
     isCurrentAppModel,
     currentAppId,
     targetModelApp?.instance_id,
-  ]); // 移除handleAppChange依赖，避免循环
+  ]); // Remove handleAppChange dependency to avoid loop
 
-  // 🎯 显示状态判断：
-  // 1. 如果正在验证或自动切换，显示loading状态
-  // 2. 如果当前应用是模型类型，显示当前模型名称
-  // 3. 如果有目标模型，显示目标模型名称
-  // 4. 否则显示默认文本
+  // 🎯 Display state judgment:
+  // 1. If validation or automatic switching is in progress, display loading state
+  // 2. If the current application is a model type, display the current model name
+  // 3. If there is a target model, display the target model name
+  // 4. Otherwise, display the default text
   const getDisplayState = () => {
-    // 如果当前应用是模型类型，显示当前模型
+    // If the current application is a model type, display the current model name
     if (isCurrentAppModel && currentApp) {
       return {
         isLoading: false,
@@ -196,7 +192,7 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       };
     }
 
-    // 如果有目标模型，显示目标模型
+    // If there is a target model, display the target model name
     if (targetModelApp) {
       return {
         isLoading: false,
@@ -204,29 +200,29 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       };
     }
 
-    // 没有可用模型
+    // No available model
     if (modelApps.length === 0) {
       return { isLoading: false, name: t('noModelsAvailable') };
     }
 
-    // 默认状态
+    // Default state
     return { isLoading: false, name: t('selectModel') };
   };
 
   const displayState = getDisplayState();
 
-  // 修改：处理下拉菜单的打开/关闭，确保操作后恢复焦点
+  // Modify: handle dropdown menu open/close, ensure focus is restored after operation
   const handleToggleDropdown = useCallback(
     (e: React.MouseEvent) => {
-      // 阻止事件冒泡，避免触发其他元素的点击事件
+      // Prevent event bubbling, avoid triggering clicks on other elements
       e.preventDefault();
       e.stopPropagation();
 
       setIsOpen(prev => {
         const newIsOpen = !prev;
 
-        // 如果是关闭下拉菜单，恢复输入框焦点
-        // 如果是打开，焦点会自然地在下拉菜单上，这是期望的行为
+        // If the dropdown menu is closed, restore the input box focus
+        // If the dropdown menu is opened, the focus will naturally be on the dropdown menu, this is the expected behavior
         if (!newIsOpen) {
           setTimeout(() => focusInput(), 0);
         }
@@ -237,26 +233,26 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
     [focusInput]
   );
 
-  // 修改：处理背景点击关闭下拉菜单，确保恢复焦点
+  // Modify: handle background click to close the dropdown menu, ensure focus is restored
   const handleBackdropClick = useCallback(() => {
     setIsOpen(false);
-    // 背景点击关闭下拉菜单后，恢复输入框焦点
+    // After the background click closes the dropdown menu, restore the input box focus
     setTimeout(() => focusInput(), 0);
   }, [focusInput]);
 
-  // 获取当前选中的app名称
+  // Get the name of the currently selected app
   const currentAppName = displayState.name;
 
-  // 🎯 骨架屏：只在真正需要时显示，避免频繁闪烁
-  // 仅在首次加载且没有模型数据时显示骨架屏
+  // 🎯 Skeleton screen: only show when really needed, avoid frequent flickering
+  // Only show when first loading and no model data
   if (isLoading && modelApps.length === 0) {
     return (
       <div className={cn('flex items-center', className)}>
         <div
           className={cn(
             'h-4 animate-pulse rounded',
-            'w-16 sm:w-20 md:w-24', // 响应式宽度
-            isDark ? 'bg-stone-500/60' : 'bg-stone-300/60' // 🎯 修复：暗黑模式使用更亮的stone-500
+            'w-16 sm:w-20 md:w-24', // Responsive width
+            isDark ? 'bg-stone-500/60' : 'bg-stone-300/60' // 🎯 Fix: dark mode uses brighter stone-500
           )}
         />
       </div>
@@ -270,7 +266,7 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       {/* Modified: use custom click handler to ensure focus management */}
       <button
         onClick={handleToggleDropdown}
-        // 添加onMouseDown防止按钮点击时输入框失去焦点
+        // Add onMouseDown to prevent input box focus loss when button is clicked
         onMouseDown={e => e.preventDefault()}
         className={cn(
           'flex items-center space-x-1 rounded-md px-2 py-1 font-serif text-sm',
@@ -312,7 +308,7 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
       {/* Modified: use custom click handler to ensure focus management */}
       {isOpen && (
         <>
-          {/* 背景遮罩 */}
+          {/* Background mask */}
           <div className="fixed inset-0 z-10" onClick={handleBackdropClick} />
 
           {/* Dropdown options: adjust positioning, ensure left alignment with button, allow wider dropdown */}
@@ -340,7 +336,7 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
                 <button
                   key={app.id}
                   onClick={() => handleAppChange(app.instance_id)}
-                  // 添加onMouseDown防止按钮点击时输入框失去焦点
+                  // Add onMouseDown to prevent input box focus loss when button is clicked
                   onMouseDown={e => e.preventDefault()}
                   className={cn(
                     'w-full px-3 py-2 text-left font-serif text-sm',

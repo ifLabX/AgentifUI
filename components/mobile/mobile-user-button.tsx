@@ -15,9 +15,9 @@ import { useTranslations } from 'next-intl';
 import { UserBottomSheet } from './ui/user-bottom-sheet';
 
 /**
- * 移动端侧边栏用户按钮组件
- * 点击触发底部弹出框
- * 样式与侧边栏其他按钮一致
+ * Mobile sidebar user button component
+ * Click to trigger bottom popup
+ * Style consistent with other sidebar buttons
  */
 export function MobileUserButton() {
   const { isDark } = useTheme();
@@ -28,10 +28,10 @@ export function MobileUserButton() {
   const t = useTranslations('mobile.user');
   const tNav = useTranslations('mobile.navigation');
 
-  // 使用 useProfile hook 获取用户信息
+  // Use useProfile hook to get user information
   const { profile } = useProfile();
 
-  // 从 profile 中提取用户信息
+  // Extract user information from profile
   const isLoggedIn = !!profile;
   const userName =
     profile?.full_name ||
@@ -39,24 +39,24 @@ export function MobileUserButton() {
     (isLoggedIn ? t('defaultUser') : t('loginRegister'));
   const avatarUrl = profile?.avatar_url;
 
-  // 打开底部弹出框
+  // Open bottom popup
   const handleOpenBottomSheet = () => {
     setIsOpen(true);
   };
 
-  // 关闭底部弹出框
+  // Close bottom popup
   const handleCloseBottomSheet = () => {
     setIsOpen(false);
   };
 
-  // 非移动端不显示内容，但保留组件结构确保Hooks正确执行
+  // Do not display content on non-mobile devices, but keep the component structure to ensure Hooks are executed correctly
   if (!isMobile) {
     return null;
   }
 
   return (
     <>
-      {/* 退出登录确认对话框 */}
+      {/* Logout confirmation dialog */}
       <LogoutConfirmDialog
         isOpen={showLogoutDialog}
         onClose={() => setShowLogoutDialog(false)}
@@ -70,7 +70,7 @@ export function MobileUserButton() {
           'transition-all duration-200 ease-in-out',
           'cursor-pointer outline-none',
 
-          // 根据主题和登录状态应用不同样式
+          // Apply different styles based on theme and login status
           !isDark && [
             'text-stone-600',
             'hover:bg-stone-300 hover:shadow-md',
@@ -85,7 +85,7 @@ export function MobileUserButton() {
         )}
         aria-label={isLoggedIn ? tNav('openUserMenu') : t('loginRegister')}
       >
-        {/* 左侧头像 */}
+        {/* Left avatar */}
         <span className="flex h-8 w-8 items-center justify-center">
           {isLoggedIn ? (
             <UserAvatar
@@ -109,7 +109,7 @@ export function MobileUserButton() {
           )}
         </span>
 
-        {/* 右侧文字，只在展开时显示 */}
+        {/* Right text, only displayed when expanded */}
         {isExpanded && (
           <span className="ml-3 truncate font-serif">
             {isLoggedIn ? userName : t('loginRegister')}

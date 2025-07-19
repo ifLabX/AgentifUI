@@ -1,9 +1,9 @@
 'use client';
 
-// 导出移动端组件
+// Export mobile components
 export { MobileNavButton } from './mobile-nav-button';
 export { MobileUserButton } from './mobile-user-button';
 
-// 导出移动端UI组件
+// Export mobile UI components
 export { BottomSheet } from './ui/bottom-sheet';
 export { UserBottomSheet } from './ui/user-bottom-sheet';
