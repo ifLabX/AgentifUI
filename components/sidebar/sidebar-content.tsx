@@ -15,10 +15,10 @@ import { SidebarChatList } from './sidebar-chat-list';
 import { SidebarFavoriteApps } from './sidebar-favorite-apps';
 
 /**
- * 侧边栏内容组件
+ * Sidebar content component
  *
- * 管理侧边栏主要内容区域，包含常用应用和聊天列表
- * 提供选中状态管理，并负责将状态传递给子组件
+ * Manage the main content area of the sidebar, including favorite apps and chat list
+ * Provide selected state management and pass the state to the child components
  */
 export function SidebarContent() {
   const {
@@ -34,53 +34,51 @@ export function SidebarContent() {
   const isMobile = useMobile();
   const router = useRouter();
 
-  // 获取聊天相关状态和方法
+  // Get chat-related status and methods
   const setCurrentConversationId = useChatStore(
     state => state.setCurrentConversationId
   );
   const { setIsWelcomeScreen } = useChatInputStore();
 
-  // 处理侧边栏展开/收起的内容显示逻辑
+  // Handle the content display logic for the sidebar expansion/collapse
   React.useEffect(() => {
-    // 首先通知store更新内容可见性的基本状态
+    // First notify the store to update the basic state of content visibility
     updateContentVisibility(isMobile);
 
-    // 只为桌面端添加延迟显示
+    // Only add delay display for desktop
     if (isExpanded && !isMobile) {
       const timer = setTimeout(() => {
         showContent();
-      }, 20); // 桌面端保留延迟动画
+      }, 20); // Desktop retains delay animation
       return () => clearTimeout(timer);
     }
-    // 🎯 移除 store 方法的依赖，避免路由切换时的重新执行和闪烁
-    // zustand store 方法在路由切换时可能改变引用，导致不必要的重新渲染
+    // 🎯 Remove the dependency on the store method to avoid re-execution and flickering when switching routes
+    // Zustand store method may change the reference when switching routes, causing unnecessary re-rendering
   }, [isExpanded, isMobile]);
 
   /**
-   * 选择聊天项目的回调函数
-   * @param chatId 聊天项目的ID
+   * Callback function for selecting a chat item
+   * @param chatId ID of the chat item
    */
   const handleSelectChat = React.useCallback(
     async (chatId: number | string) => {
       const chatIdStr = String(chatId);
 
       try {
-        console.log('[ChatList] 开始切换到对话:', chatIdStr);
-
-        // 1. 更新侧边栏选中状态 - 保持当前展开状态
+        // 1. Update the sidebar selected state - keep current expansion state
         selectItem('chat', chatId, true);
-        // 2. 不再调用 lockExpanded，由用户自行控制锁定
+        // 2. No longer call lockExpanded, user controls locking
 
-        // 3. 设置当前对话ID
+        // 3. Set the current conversation ID
         setCurrentConversationId(chatIdStr);
-        // 4. 关闭欢迎屏幕
+        // 4. Close the welcome screen
         setIsWelcomeScreen(false);
-        // 5. 路由跳转到对话页面
+        // 5. Route to the conversation page
         router.push(`/chat/${chatId}`);
 
-        console.log('[ChatList] 路由跳转已发起:', `/chat/${chatId}`);
+        console.log('[ChatList] Route jump initiated:', `/chat/${chatId}`);
       } catch (error) {
-        console.error('[ChatList] 切换对话失败:', error);
+        console.error('[ChatList] Failed to switch conversation:', error);
       }
     },
     [selectItem, setCurrentConversationId, setIsWelcomeScreen, router]
@@ -96,20 +94,20 @@ export function SidebarContent() {
           'absolute inset-0 flex flex-col overflow-y-auto pb-4',
           'scrollbar-thin scrollbar-track-transparent',
           isDark ? 'scrollbar-thumb-gray-600' : 'scrollbar-thumb-accent',
-          // 在移动端上不应用动画效果，直接显示
+          // On mobile, do not apply animation effect, display directly
           !isMobile &&
             isExpanded &&
             'transition-[opacity,transform] duration-150 ease-in-out',
-          // 控制可见性和动画状态
+          // Control visibility and animation state
           isExpanded
             ? contentVisible
-              ? // 移动端上不应用动画，直接显示
+              ? // On mobile, do not apply animation effect, display directly
                 'transform-none opacity-100'
-              : // 桌面端上保留动画效果
+              : // Desktop retains animation effect
                 !isMobile
                 ? 'pointer-events-none -translate-x-4 scale-95 opacity-0'
                 : 'transform-none opacity-100'
-            : 'hidden' // 折叠时直接隐藏
+            : 'hidden' // Collapsed, hide directly
         )}
       >
         {/* Favorite apps area: directly placed without extra wrapping, supports sticky scrolling */}

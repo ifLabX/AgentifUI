@@ -7,6 +7,9 @@
       "retry": "重試",
       "remove": "移除",
       "error": "錯誤",
+      "customSelect": {
+        "placeholder": "請選擇..."
+      },
       "exportButton": {
         "tooltip": "匯出檔案",
         "ariaLabel": "匯出檔案"
@@ -17,6 +20,9 @@
         "confirm": "確認登出",
         "cancel": "取消",
         "loggingOut": "登出中..."
+      },
+      "moreButton": {
+        "ariaLabel": "更多選項"
       }
     },
     "time": {
@@ -234,7 +240,10 @@
         "noFormConfig": "該應用未設定輸入表單",
         "reset": "重設表單",
         "executing": "執行中...",
-        "startExecution": "開始執行"
+        "startExecution": "開始執行",
+        "errors": {
+          "instanceNotFound": "未找到 instanceId 為 {instanceId} 的服務實例"
+        }
       },
       "status": {
         "running": "工作流程執行中",
@@ -306,7 +315,8 @@
         "loading": "正在載入歷史記錄...",
         "noRecords": "暫無執行記錄",
         "getDetailFailed": "取得執行詳情失敗",
-        "unknownError": "未知錯誤"
+        "unknownError": "未知錯誤",
+        "userNotLoggedIn": "使用者未登入"
       },
       "fileUpload": {
         "uploading": "正在上傳檔案...",
@@ -356,7 +366,8 @@
         "download": "下載文字",
         "stop": "停止",
         "retry": "重試",
-        "reset": "重設"
+        "reset": "重設",
+        "close": "關閉"
       },
       "emptyState": {
         "title": "等待生成文字",
@@ -1942,6 +1953,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "已超出檔案數量限制 ({current}/{max})，請刪除部分檔案"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "拖拽調整面板大小，雙擊重置"
+      },
+      "notificationBar": {
+        "closeNotification": "關閉通知"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推薦問題: {question}"
+      }
     }
   },
   "debug": {
@@ -2204,6 +2226,30 @@
         "textGeneration": "文本生成",
         "contentCreation": "內容創作",
         "formattedOutput": "格式化輸出"
+      },
+      "resultViewer": {
+        "title": "生成結果",
+        "defaultTitle": "文本生成結果",
+        "actions": {
+          "copy": "複製結果",
+          "copied": "已複製",
+          "download": "下載結果"
+        },
+        "executionInfo": {
+          "title": "執行資訊",
+          "status": "狀態：",
+          "createdAt": "建立時間：",
+          "elapsedTime": "耗時：",
+          "statusValues": {
+            "completed": "已完成",
+            "failed": "已失敗",
+            "stopped": "已停止"
+          }
+        },
+        "content": {
+          "title": "生成內容",
+          "noContent": "暫無內容"
+        }
       }
     },
     "chatbot": {

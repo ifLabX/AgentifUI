@@ -11,7 +11,7 @@ export function SidebarBackdrop() {
       className={cn(
         'fixed inset-0 z-10 bg-black/20 backdrop-blur-sm',
         'transition-opacity duration-300 ease-in-out',
-        'md:hidden', // 仅在移动设备上显示
+        'md:hidden', // Only display on mobile devices
         isExpanded
           ? 'pointer-events-auto opacity-100'
           : 'pointer-events-none opacity-0'

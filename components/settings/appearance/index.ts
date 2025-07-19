@@ -1,4 +1,4 @@
-// 外观设置组件导出
+// Appearance settings component export
 export { LanguageCard } from './language-card';
 export { ThemeCard } from './theme-card';
 export { TimezoneSelector } from './timezone-selector';

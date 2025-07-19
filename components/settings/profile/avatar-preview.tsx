@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 
 import { useTranslations } from 'next-intl';
 
-// 头像预览组件接口
+// Avatar preview component interface
 interface AvatarPreviewProps {
   avatarUrl?: string | null;
   userName: string;
@@ -49,7 +49,7 @@ export function AvatarPreview({
           alt={t('currentAvatar')}
         />
 
-        {/* 上传进度覆盖层 */}
+        {/* Upload progress overlay */}
         {isUploading && (
           <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60">
             <div className="text-center">

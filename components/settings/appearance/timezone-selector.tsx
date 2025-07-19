@@ -14,9 +14,9 @@ import { useMemo, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 时区选择器组件 - 现代玻璃态设计
-// 采用现代粘性头部最佳实践，玻璃态效果、优雅渐变
-// 符合stone风格的现代化UI设计
+// Timezone selector component - modern glass design
+// Use modern sticky header best practices, glass effect, elegant gradient
+// Modern UI design consistent with stone style
 interface TimezoneOption {
   value: string;
   cityKey: string;
@@ -30,12 +30,12 @@ interface TimezoneSelectorProps {
   className?: string;
 }
 
-// 所有时区选项 - 完整列表
+// All timezone options - complete list
 const ALL_TIMEZONES: TimezoneOption[] = [
   // UTC
   { value: 'UTC', cityKey: 'utc', region: 'utc', offset: '+00:00' },
 
-  // 亚洲时区
+  // Asia timezone
   {
     value: 'Asia/Shanghai',
     cityKey: 'shanghai',
@@ -77,7 +77,7 @@ const ALL_TIMEZONES: TimezoneOption[] = [
     offset: '+05:30',
   },
 
-  // 欧洲时区
+  // Europe timezone
   {
     value: 'Europe/London',
     cityKey: 'london',
@@ -116,7 +116,7 @@ const ALL_TIMEZONES: TimezoneOption[] = [
     offset: '+03:00',
   },
 
-  // 美洲时区
+  // America timezone
   {
     value: 'America/New_York',
     cityKey: 'newYork',
@@ -160,7 +160,7 @@ const ALL_TIMEZONES: TimezoneOption[] = [
     offset: '-06:00',
   },
 
-  // 大洋洲时区
+  // Oceania timezone
   {
     value: 'Australia/Sydney',
     cityKey: 'sydney',
@@ -186,7 +186,7 @@ const ALL_TIMEZONES: TimezoneOption[] = [
     offset: '+12:00',
   },
 
-  // 非洲时区
+  // Africa timezone
   {
     value: 'Africa/Cairo',
     cityKey: 'cairo',
@@ -217,7 +217,7 @@ export function TimezoneSelector({
   const t = useTranslations('pages.settings.appearanceSettings');
   const { formatDate } = useDateFormatter();
 
-  // 获取当前时间预览
+  // Get current time preview
   const currentTime = useMemo(() => {
     try {
       return formatDate(new Date(), {
@@ -230,10 +230,10 @@ export function TimezoneSelector({
     }
   }, [formatDate, value]);
 
-  // 获取当前选中时区信息
+  // Get current selected timezone information
   const selectedTimezone = ALL_TIMEZONES.find(tz => tz.value === value);
 
-  // 按地区分组时区
+  // Group timezones by region
   const groupedTimezones = useMemo(() => {
     const grouped = ALL_TIMEZONES.reduce(
       (acc, timezone) => {
@@ -246,7 +246,7 @@ export function TimezoneSelector({
       {} as Record<string, TimezoneOption[]>
     );
 
-    // 排序地区
+    // Sort regions
     const orderedRegions = [
       'utc',
       'asia',
@@ -266,12 +266,12 @@ export function TimezoneSelector({
     return orderedGrouped;
   }, []);
 
-  // 处理时区选择
+  // Handle timezone selection
   const handleTimezoneSelect = (timezone: string) => {
     onChange(timezone);
     setIsModalOpen(false);
 
-    // 显示成功提示
+    // Show success prompt
     const selectedTz = ALL_TIMEZONES.find(tz => tz.value === timezone);
     if (selectedTz) {
       toast.success(t('timezoneUpdated'));
@@ -280,7 +280,7 @@ export function TimezoneSelector({
 
   return (
     <div className={cn(className)}>
-      {/* 时区状态条 - 点击触发模态框 */}
+      {/* Timezone status bar - click to trigger modal */}
       <button
         onClick={() => setIsModalOpen(true)}
         className={cn(
@@ -331,7 +331,7 @@ export function TimezoneSelector({
         />
       </button>
 
-      {/* 时区选择模态框 */}
+      {/* Timezone selection modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -355,7 +355,7 @@ export function TimezoneSelector({
                   : 'border-stone-200 bg-white'
               )}
             >
-              {/* 模态框头部 - 简化设计 */}
+              {/* Modal header - simplified design */}
               <div
                 className={cn(
                   'flex items-center justify-between border-b px-6 py-4',
@@ -406,17 +406,17 @@ export function TimezoneSelector({
                 </button>
               </div>
 
-              {/* 时区列表 - 现代玻璃态粘性设计 */}
+              {/* Timezone list - modern glass sticky design */}
               <div className="max-h-96 overflow-y-auto">
                 {Object.entries(groupedTimezones).map(([region, timezones]) => (
                   <div key={region}>
-                    {/* 地区标题 - 玻璃态粘性头部 */}
+                    {/* Region title - glass sticky header */}
                     <div
                       className={cn(
                         'sticky top-0 z-20',
-                        // 玻璃态效果
+                        // Glass effect
                         'backdrop-blur-xl backdrop-saturate-150',
-                        // 渐变背景 - 深色模式
+                        // Gradient background - dark mode
                         isDark
                           ? [
                               'via-stone-750/95 bg-gradient-to-r from-stone-800/90 to-stone-800/90',
@@ -424,14 +424,14 @@ export function TimezoneSelector({
                               'shadow-lg shadow-stone-900/40',
                             ]
                           : [
-                              // 浅色模式
+                              // Light mode
                               'bg-gradient-to-r from-stone-50/90 via-white/95 to-stone-50/90',
                               'border-b border-stone-200/60',
                               'shadow-lg shadow-stone-300/20',
                             ]
                       )}
                     >
-                      {/* 装饰性顶部边框 */}
+                      {/* Decorative top border */}
                       <div
                         className={cn(
                           'absolute inset-x-0 top-0 h-px',
@@ -443,7 +443,7 @@ export function TimezoneSelector({
 
                       <div className="relative px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          {/* 发光指示器 */}
+                          {/* Glow indicator */}
                           <div className="relative">
                             <div
                               className={cn(
@@ -471,12 +471,12 @@ export function TimezoneSelector({
                             {t(`timezoneRegions.${region}`)}
                           </h3>
 
-                          {/* 装饰性分割线 */}
+                          {/* Decorative separator */}
                           <div className="h-px flex-1 bg-gradient-to-r from-current/20 to-transparent opacity-30" />
                         </div>
                       </div>
 
-                      {/* 装饰性底部边框 */}
+                      {/* Decorative bottom border */}
                       <div
                         className={cn(
                           'absolute inset-x-0 bottom-0 h-px',
@@ -487,11 +487,11 @@ export function TimezoneSelector({
                       />
                     </div>
 
-                    {/* 时区列表项 - 改善间距和视觉层次 */}
+                    {/* Timezone list item - improve spacing and visual hierarchy */}
                     <div
                       className={cn(
                         'relative space-y-2 p-4',
-                        // 微妙的背景渐变
+                        // Subtle background gradient
                         isDark
                           ? 'bg-gradient-to-b from-transparent to-stone-800/20'
                           : 'bg-gradient-to-b from-transparent to-stone-50/30'
@@ -519,7 +519,7 @@ export function TimezoneSelector({
                                   : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50/50'
                             )}
                           >
-                            {/* 微妙的悬停渐变效果 */}
+                            {/* Subtle hover gradient effect */}
                             <div
                               className={cn(
                                 'absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100',

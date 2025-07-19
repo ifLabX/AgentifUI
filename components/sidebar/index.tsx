@@ -12,7 +12,7 @@ export function Sidebar() {
   );
 }
 
-// 导出所有组件以便按需使用
+// Export all components for use as needed
 export { SidebarButton } from './sidebar-button';
 export { SidebarContainer } from './sidebar-container';
 export { SidebarContent } from './sidebar-content';

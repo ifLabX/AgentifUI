@@ -7,6 +7,9 @@
       "retry": "Wiederholen",
       "remove": "Entfernen",
       "error": "Fehler",
+      "customSelect": {
+        "placeholder": "Bitte auswählen..."
+      },
       "exportButton": {
         "tooltip": "Datei exportieren",
         "ariaLabel": "Datei exportieren"
@@ -17,6 +20,9 @@
         "confirm": "Abmelden",
         "cancel": "Abbrechen",
         "loggingOut": "Abmelden..."
+      },
+      "moreButton": {
+        "ariaLabel": "Weitere Optionen"
       }
     },
     "time": {
@@ -234,7 +240,10 @@
         "noFormConfig": "Diese Anwendung hat kein Eingabeformular konfiguriert",
         "reset": "Formular zurücksetzen",
         "executing": "Ausführung...",
-        "startExecution": "Ausführung beginnen"
+        "startExecution": "Ausführung beginnen",
+        "errors": {
+          "instanceNotFound": "Service-Instanz mit instanceId {instanceId} nicht gefunden"
+        }
       },
       "status": {
         "running": "Workflow wird ausgeführt",
@@ -306,7 +315,8 @@
         "loading": "Ausführungsverlauf wird geladen...",
         "noRecords": "Keine Ausführungseinträge",
         "getDetailFailed": "Abrufen der Ausführungsdetails fehlgeschlagen",
-        "unknownError": "Unbekannter Fehler"
+        "unknownError": "Unbekannter Fehler",
+        "userNotLoggedIn": "Benutzer nicht angemeldet"
       },
       "fileUpload": {
         "uploading": "Datei wird hochgeladen...",
@@ -356,7 +366,8 @@
         "download": "Text herunterladen",
         "stop": "Stoppen",
         "retry": "Wiederholen",
-        "reset": "Zurücksetzen"
+        "reset": "Zurücksetzen",
+        "close": "Schließen"
       },
       "emptyState": {
         "title": "Warten auf Generierung",
@@ -1942,6 +1953,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "Dateilimit überschritten ({current}/{max}), bitte entfernen Sie einige Dateien"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Ziehen zum Anpassen der Panelgröße, Doppelklick zum Zurücksetzen"
+      },
+      "notificationBar": {
+        "closeNotification": "Benachrichtigung schließen"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Vorgeschlagene Frage: {question}"
+      }
     }
   },
   "debug": {
@@ -2204,6 +2226,30 @@
         "textGeneration": "Textgenerierung",
         "contentCreation": "Inhaltserstellung",
         "formattedOutput": "Formatierte Ausgabe"
+      },
+      "resultViewer": {
+        "title": "Generierungsergebnis",
+        "defaultTitle": "Textgenerierungsergebnis",
+        "actions": {
+          "copy": "Ergebnis kopieren",
+          "copied": "Kopiert",
+          "download": "Ergebnis herunterladen"
+        },
+        "executionInfo": {
+          "title": "Ausführungsinformationen",
+          "status": "Status:",
+          "createdAt": "Erstellt am:",
+          "elapsedTime": "Verstrichene Zeit:",
+          "statusValues": {
+            "completed": "Abgeschlossen",
+            "failed": "Fehlgeschlagen",
+            "stopped": "Gestoppt"
+          }
+        },
+        "content": {
+          "title": "Generierter Inhalt",
+          "noContent": "Kein Inhalt verfügbar"
+        }
       }
     },
     "chatbot": {

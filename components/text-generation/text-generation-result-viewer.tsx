@@ -23,6 +23,8 @@ import remarkMath from 'remark-math';
 
 import React, { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface TextGenerationResultViewerProps {
   result: any;
   execution: any;
@@ -42,16 +44,17 @@ export function TextGenerationResultViewer({
 }: TextGenerationResultViewerProps) {
   const { isDark } = useTheme();
   const { formatDate } = useDateFormatter();
+  const t = useTranslations('components.text-generation.resultViewer');
   const [isVisible, setIsVisible] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  // --- 动画控制 ---
+  // --- Animation control ---
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
   }, []);
 
-  // --- 复用助手消息的Markdown组件配置 ---
+  // --- Reuse the Markdown component configuration of the assistant message ---
   const markdownComponents: Components = {
     code({ node, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
@@ -131,38 +134,38 @@ export function TextGenerationResultViewer({
     },
   };
 
-  // --- 格式化内容 ---
+  // --- Format content ---
   const formatContent = (data: any): string => {
-    // 如果result包含生成的文本内容
+    // If the result contains the generated text content
     if (typeof data === 'string') {
       try {
-        // 尝试解析JSON字符串
+        // Try to parse the JSON string
         const parsed = JSON.parse(data);
         if (parsed && typeof parsed === 'object') {
           return extractTextFromObject(parsed);
         }
       } catch {
-        // 如果不是JSON字符串，直接返回
+        // If it is not a JSON string, return directly
         return data;
       }
     }
 
-    // 如果是对象，提取文本内容
+    // If it is an object, extract the text content
     if (data && typeof data === 'object') {
       return extractTextFromObject(data);
     }
 
-    return String(data || '暂无内容');
+    return String(data || t('content.noContent'));
   };
 
-  // --- 从对象中提取文本内容 ---
+  // --- Extract text content from an object ---
   const extractTextFromObject = (obj: any): string => {
-    // 优先查找generated_text字段（文本生成的主要输出）
+    // First look for the generated_text field (the main output of text generation)
     if (obj.generated_text && typeof obj.generated_text === 'string') {
       return obj.generated_text;
     }
 
-    // 查找其他常见的文本字段
+    // Find other common text fields
     const textFields = [
       'text',
       'content',
@@ -177,29 +180,28 @@ export function TextGenerationResultViewer({
       }
     }
 
-    // 如果没有找到文本字段，返回JSON格式
+    // If no text field is found, return JSON format
     return JSON.stringify(obj, null, 2);
   };
 
   const formattedContent = formatContent(result);
 
-  // --- 复制功能 ---
+  // --- Copy function ---
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(formattedContent);
       setIsCopied(true);
-      console.log('[文本生成结果查看器] 内容已复制到剪贴板');
 
-      // 2秒后重置状态
+      // Reset state after 2 seconds
       setTimeout(() => {
         setIsCopied(false);
       }, 2000);
     } catch (error) {
-      console.error('[文本生成结果查看器] 复制失败:', error);
+      console.error('[Text generation result viewer] Copy failed:', error);
     }
   };
 
-  // --- 下载功能 ---
+  // --- Download function ---
   const handleDownload = () => {
     const blob = new Blob([formattedContent], {
       type: 'text/plain;charset=utf-8',
@@ -214,14 +216,14 @@ export function TextGenerationResultViewer({
     URL.revokeObjectURL(url);
   };
 
-  // --- 背景点击关闭 ---
+  // --- Background click to close ---
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  // --- 键盘事件监听 ---
+  // --- Keyboard event listening ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -235,7 +237,7 @@ export function TextGenerationResultViewer({
 
   return (
     <>
-      {/* 背景遮罩 */}
+      {/* Background mask */}
       <div
         className={cn(
           'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity duration-300',
@@ -244,7 +246,7 @@ export function TextGenerationResultViewer({
         onClick={handleBackdropClick}
       />
 
-      {/* 弹窗内容 */}
+      {/* Popup content */}
       <div className="fixed inset-4 z-50 flex items-center justify-center">
         <div
           className={cn(
@@ -255,7 +257,7 @@ export function TextGenerationResultViewer({
             isVisible ? 'animate-scale-in' : 'scale-95 opacity-0'
           )}
         >
-          {/* 头部 */}
+          {/* Header */}
           <div
             className={cn(
               'flex items-center justify-between border-b p-6',
@@ -269,7 +271,7 @@ export function TextGenerationResultViewer({
                   isDark ? 'text-stone-100' : 'text-stone-900'
                 )}
               >
-                生成结果
+                {t('title')}
               </h2>
               <p
                 className={cn(
@@ -277,14 +279,14 @@ export function TextGenerationResultViewer({
                   isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
-                {execution?.title || '文本生成结果'}
+                {execution?.title || t('defaultTitle')}
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* 复制按钮 */}
+              {/* Copy button */}
               <TooltipWrapper
-                content={isCopied ? '已复制' : '复制结果'}
+                content={isCopied ? t('actions.copied') : t('actions.copy')}
                 id="text-result-viewer-copy-btn"
                 placement="bottom"
                 size="sm"
@@ -301,7 +303,9 @@ export function TextGenerationResultViewer({
                     'focus:outline-none'
                   )}
                   style={{ transform: 'translateZ(0)' }}
-                  aria-label={isCopied ? '已复制' : '复制结果'}
+                  aria-label={
+                    isCopied ? t('actions.copied') : t('actions.copy')
+                  }
                 >
                   {isCopied ? (
                     <Check className="h-4 w-4" />
@@ -311,9 +315,9 @@ export function TextGenerationResultViewer({
                 </button>
               </TooltipWrapper>
 
-              {/* 下载按钮 */}
+              {/* Download button */}
               <TooltipWrapper
-                content="下载结果"
+                content={t('actions.download')}
                 id="text-result-viewer-download-btn"
                 placement="bottom"
                 size="sm"
@@ -328,13 +332,13 @@ export function TextGenerationResultViewer({
                       ? 'text-stone-400 hover:bg-stone-700 hover:text-stone-300'
                       : 'text-stone-600 hover:bg-stone-100 hover:text-stone-700'
                   )}
-                  aria-label="下载结果"
+                  aria-label={t('actions.download')}
                 >
                   <Download className="h-4 w-4" />
                 </button>
               </TooltipWrapper>
 
-              {/* 关闭按钮 */}
+              {/* Close button */}
               <button
                 onClick={onClose}
                 className={cn(
@@ -349,10 +353,10 @@ export function TextGenerationResultViewer({
             </div>
           </div>
 
-          {/* 内容区域 */}
+          {/* Content area */}
           <div className="max-h-[calc(100vh-12rem)] overflow-y-auto p-6">
             <div className="space-y-4">
-              {/* 执行信息 */}
+              {/* Execution information */}
               {execution && (
                 <div
                   className={cn(
@@ -368,7 +372,7 @@ export function TextGenerationResultViewer({
                       isDark ? 'text-stone-200' : 'text-stone-800'
                     )}
                   >
-                    执行信息
+                    {t('executionInfo.title')}
                   </h3>
                   <div className="grid grid-cols-2 gap-4 font-serif text-sm">
                     <div>
@@ -378,7 +382,7 @@ export function TextGenerationResultViewer({
                           isDark ? 'text-stone-300' : 'text-stone-700'
                         )}
                       >
-                        状态：
+                        {t('executionInfo.status')}
                       </span>
                       <span
                         className={cn(
@@ -392,11 +396,11 @@ export function TextGenerationResultViewer({
                         )}
                       >
                         {execution.status === 'completed'
-                          ? '已完成'
+                          ? t('executionInfo.statusValues.completed')
                           : execution.status === 'failed'
-                            ? '已失败'
+                            ? t('executionInfo.statusValues.failed')
                             : execution.status === 'stopped'
-                              ? '已停止'
+                              ? t('executionInfo.statusValues.stopped')
                               : execution.status}
                       </span>
                     </div>
@@ -408,7 +412,7 @@ export function TextGenerationResultViewer({
                             isDark ? 'text-stone-300' : 'text-stone-700'
                           )}
                         >
-                          创建时间：
+                          {t('executionInfo.createdAt')}
                         </span>
                         <span
                           className={cn(
@@ -431,7 +435,7 @@ export function TextGenerationResultViewer({
                             isDark ? 'text-stone-300' : 'text-stone-700'
                           )}
                         >
-                          耗时：
+                          {t('executionInfo.elapsedTime')}
                         </span>
                         <span
                           className={cn(
@@ -447,7 +451,7 @@ export function TextGenerationResultViewer({
                 </div>
               )}
 
-              {/* 生成内容 */}
+              {/* Generated content */}
               <div>
                 <h3
                   className={cn(
@@ -455,7 +459,7 @@ export function TextGenerationResultViewer({
                     isDark ? 'text-stone-200' : 'text-stone-800'
                   )}
                 >
-                  生成内容
+                  {t('content.title')}
                 </h3>
                 <div
                   className={cn(

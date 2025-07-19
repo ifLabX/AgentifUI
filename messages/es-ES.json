@@ -7,6 +7,9 @@
       "retry": "Reintentar",
       "remove": "Eliminar",
       "error": "Error",
+      "customSelect": {
+        "placeholder": "Por favor seleccione..."
+      },
       "exportButton": {
         "tooltip": "Exportar archivo",
         "ariaLabel": "Exportar archivo"
@@ -17,6 +20,9 @@
         "confirm": "Cerrar Sesión",
         "cancel": "Cancelar",
         "loggingOut": "Cerrando sesión..."
+      },
+      "moreButton": {
+        "ariaLabel": "Más opciones"
       }
     },
     "time": {
@@ -234,7 +240,10 @@
         "noFormConfig": "Esta aplicación no tiene formulario de entrada configurado",
         "reset": "Restablecer formulario",
         "executing": "Ejecutando...",
-        "startExecution": "Iniciar ejecución"
+        "startExecution": "Iniciar ejecución",
+        "errors": {
+          "instanceNotFound": "Instancia de servicio con instanceId {instanceId} no encontrada"
+        }
       },
       "status": {
         "running": "Flujo de trabajo ejecutándose",
@@ -306,7 +315,8 @@
         "loading": "Cargando historial de ejecución...",
         "noRecords": "Sin registros de ejecución",
         "getDetailFailed": "Error al obtener detalles de ejecución",
-        "unknownError": "Error desconocido"
+        "unknownError": "Error desconocido",
+        "userNotLoggedIn": "Usuario no conectado"
       },
       "fileUpload": {
         "uploading": "Subiendo archivo...",
@@ -356,7 +366,8 @@
         "download": "Descargar texto",
         "stop": "Detener",
         "retry": "Reintentar",
-        "reset": "Restablecer"
+        "reset": "Restablecer",
+        "close": "Cerrar"
       },
       "emptyState": {
         "title": "Esperando generar texto",
@@ -1942,6 +1953,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "Límite de archivos excedido ({current}/{max}), por favor elimine algunos archivos"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Arrastra para redimensionar paneles, doble clic para restablecer"
+      },
+      "notificationBar": {
+        "closeNotification": "Cerrar notificación"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Pregunta sugerida: {question}"
+      }
     }
   },
   "debug": {
@@ -2204,6 +2226,30 @@
         "textGeneration": "Generación de Texto",
         "contentCreation": "Creación de Contenido",
         "formattedOutput": "Salida Formateada"
+      },
+      "resultViewer": {
+        "title": "Resultado de Generación",
+        "defaultTitle": "Resultado de Generación de Texto",
+        "actions": {
+          "copy": "Copiar Resultado",
+          "copied": "Copiado",
+          "download": "Descargar Resultado"
+        },
+        "executionInfo": {
+          "title": "Información de Ejecución",
+          "status": "Estado:",
+          "createdAt": "Creado en:",
+          "elapsedTime": "Tiempo Transcurrido:",
+          "statusValues": {
+            "completed": "Completado",
+            "failed": "Fallido",
+            "stopped": "Detenido"
+          }
+        },
+        "content": {
+          "title": "Contenido Generado",
+          "noContent": "Sin contenido disponible"
+        }
       }
     },
     "chatbot": {

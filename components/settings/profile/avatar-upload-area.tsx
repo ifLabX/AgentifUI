@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 头像上传区域组件接口
+// Avatar upload area component interface
 interface AvatarUploadAreaProps {
   onFileSelect: (file: File) => void;
   onDrop: (e: React.DragEvent) => void;
@@ -77,7 +77,7 @@ export function AvatarUploadArea({
       />
 
       <div className="space-y-3">
-        {/* 上传图标 */}
+        {/* Upload icon */}
         <div
           className={cn(
             'inline-flex h-12 w-12 items-center justify-center rounded-full',
@@ -98,7 +98,7 @@ export function AvatarUploadArea({
           )}
         </div>
 
-        {/* 上传文本 */}
+        {/* Upload text */}
         <div className="space-y-1">
           <p
             className={cn(

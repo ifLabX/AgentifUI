@@ -1,7 +1,7 @@
 /**
- * 聊天列表骨架屏组件
+ * Chat list skeleton screen component
  *
- * 在加载对话列表时显示的骨架屏效果
+ * Skeleton screen effect displayed when loading the chat list
  */
 import { cn } from '@lib/utils';
 
@@ -29,8 +29,8 @@ interface ChatSkeletonItemProps {
 }
 
 export function ChatSkeletonItem({ isDark }: ChatSkeletonItemProps) {
-  // 骨架屏项目，模拟聊天项目的外观
-  // 不使用外框背景色，只显示内部元素的动画效果
+  // Skeleton screen project, simulating the appearance of the chat project
+  // Do not use outer frame background color, only display the animation effect of internal elements
   return (
     <div className="group relative px-3">
       <div className="flex h-9 items-center rounded-md">

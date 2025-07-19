@@ -10,24 +10,24 @@ import { useTranslations } from 'next-intl';
 
 import { ProfileForm } from './profile-form';
 
-// 个人资料设置组件
-// 包含所有数据加载、状态管理和UI逻辑
+// Profile settings component
+// Contains all data loading, state management, and UI logic
 export function ProfileSettings() {
   const { colors } = useSettingsColors();
   const { isDark } = useTheme();
   const t = useTranslations('pages.settings.profileSettings');
   const tCommon = useTranslations('common.ui');
 
-  // 使用useProfile hook获取包含组织信息的完整用户资料
+  // Use useProfile hook to get the complete user profile containing organization information
   const { profile, isLoading, error } = useProfile();
 
-  // 处理资料更新成功
+  // Handle profile update success
   const handleProfileUpdateSuccess = () => {
-    // 刷新页面数据
+    // Refresh page data
     window.location.reload();
   };
 
-  // 处理错误情况
+  // Handle error cases
   if (error) {
     return (
       <motion.div
@@ -70,7 +70,7 @@ export function ProfileSettings() {
     );
   }
 
-  // 加载状态 - 使用骨架屏
+  // Loading state - use skeleton screen
   if (isLoading) {
     return (
       <motion.div
@@ -81,7 +81,7 @@ export function ProfileSettings() {
         <h1 className="mb-6 font-serif text-2xl font-bold">{t('title')}</h1>
 
         <div className="space-y-6">
-          {/* 用户头像和基本信息骨架屏 - 紧凑布局 */}
+          {/* User avatar and basic information skeleton screen - compact layout */}
           <div
             className={cn(
               'rounded-lg border p-4',
@@ -90,7 +90,7 @@ export function ProfileSettings() {
             )}
           >
             <div className="flex items-center space-x-4">
-              {/* 头像骨架屏 - 缩小到16x16 */}
+              {/* Avatar skeleton screen - shrink to 16x16 */}
               <div
                 className={cn(
                   'h-16 w-16 rounded-full',
@@ -98,7 +98,7 @@ export function ProfileSettings() {
                   'animate-pulse'
                 )}
               ></div>
-              {/* 基本信息骨架屏 */}
+              {/* Basic information skeleton screen */}
               <div className="flex-1 space-y-2">
                 <div
                   className={cn(
@@ -118,7 +118,7 @@ export function ProfileSettings() {
             </div>
           </div>
 
-          {/* 账户信息骨架屏 - 紧凑网格布局 */}
+          {/* Account information skeleton screen - compact grid layout */}
           <div
             className={cn(
               'rounded-lg border p-4',
@@ -165,7 +165,7 @@ export function ProfileSettings() {
             </div>
           </div>
 
-          {/* 编辑表单骨架屏 - 简化布局 */}
+          {/* Edit form skeleton screen - simplified layout */}
           <div
             className={cn(
               'rounded-lg border p-4',
@@ -191,7 +191,7 @@ export function ProfileSettings() {
             </div>
 
             <div className="space-y-4">
-              {/* 表单字段骨架屏 */}
+              {/* Form field skeleton screen */}
               {[1, 2].map(item => (
                 <div key={item} className="space-y-1">
                   <div
@@ -212,7 +212,7 @@ export function ProfileSettings() {
                 </div>
               ))}
 
-              {/* 提交按钮骨架屏 */}
+              {/* Submit button skeleton screen */}
               <div
                 className={cn(
                   'h-10 w-full rounded-lg',

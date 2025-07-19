@@ -10,16 +10,16 @@ import { TooltipWrapper } from './tooltip-wrapper';
 
 interface MessageActionButtonProps {
   icon: IconType;
-  activeIcon?: IconType; // 激活状态图标（可选）
+  activeIcon?: IconType; // Optional: active state icon
   label: string;
-  activeLabel?: string; // 激活状态标签（可选）
+  activeLabel?: string; // Optional: active state label
   onClick: () => void;
   className?: string;
   tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
   disabled?: boolean;
-  active?: boolean; // 是否处于激活状态
-  tooltipSize?: 'sm' | 'md'; // tooltip尺寸
-  showTooltipArrow?: boolean; // 是否显示tooltip箭头
+  active?: boolean; // Whether the button is active
+  tooltipSize?: 'sm' | 'md'; // tooltip size
+  showTooltipArrow?: boolean; // Whether to show tooltip arrow
 }
 
 export const MessageActionButton: React.FC<MessageActionButtonProps> = ({
@@ -32,22 +32,22 @@ export const MessageActionButton: React.FC<MessageActionButtonProps> = ({
   tooltipPosition = 'bottom',
   disabled = false,
   active = false,
-  tooltipSize = 'sm', // message-actions默认使用小尺寸
-  showTooltipArrow = false, // message-actions默认不显示箭头
+  tooltipSize = 'sm', // message-actions default use small size
+  showTooltipArrow = false, // message-actions default do not show arrow
 }) => {
   const { isDark } = useTheme();
-  // 使用外部传入的active属性控制状态，而不是内部状态
-  // 当前显示的图标和标签
-  // 如果处于激活状态且提供了激活图标，则使用激活图标
+  // Use the external active property to control the state, instead of the internal state
+  // The current displayed icon and label
+  // If the button is active and an active icon is provided, use the active icon
   const DisplayIcon = active && ActiveIcon ? ActiveIcon : Icon;
   const displayLabel = active && activeLabel ? activeLabel : label;
 
-  // 创建唯一的tooltip ID
+  // Create a unique tooltip ID
   const tooltipId = `tooltip-${displayLabel.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).substring(2, 7)}`;
 
   const handleClick = () => {
     if (!disabled) {
-      // 直接调用外部点击处理函数，不在内部管理状态
+      // Directly call the external click handler, do not manage the state internally
       onClick();
     }
   };
@@ -61,11 +61,11 @@ export const MessageActionButton: React.FC<MessageActionButtonProps> = ({
       className={cn(
         'flex items-center justify-center rounded-md p-1.5 transition-all',
         'text-sm',
-        // 按钮样式，激活状态下不改变背景
+        // Button style, do not change background when active
         isDark
           ? 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-200'
           : 'text-gray-500 hover:bg-gray-200/50 hover:text-gray-700',
-        // 激活时保持原来的颜色，不使用蓝色
+        // Keep the original color when active, do not use blue
         disabled && 'cursor-not-allowed opacity-50 hover:bg-transparent',
         className
       )}
@@ -73,20 +73,20 @@ export const MessageActionButton: React.FC<MessageActionButtonProps> = ({
       <DisplayIcon
         className={cn(
           'h-4 w-4',
-          // 只有当没有提供激活图标时，才使用填充效果
-          // 这样复制按钮会显示勾勾，而反馈按钮会填充原图标
+          // Only use fill effect when no active icon is provided
+          // This way the copy button will show a checkmark, and the feedback button will fill the original icon
           active && !ActiveIcon && 'fill-current'
         )}
       />
     </button>
   );
 
-  // 如果按钮被禁用，不使用tooltip
+  // If the button is disabled, do not use tooltip
   if (disabled) {
     return button;
   }
 
-  // 使用TooltipWrapper包装按钮，传递新的tooltip属性
+  // Use TooltipWrapper to wrap the button, pass new tooltip properties
   return (
     <TooltipWrapper
       content={displayLabel}

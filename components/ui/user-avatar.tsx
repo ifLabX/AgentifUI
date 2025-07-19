@@ -5,25 +5,25 @@ import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 
 import React, { useState } from 'react';
 
-// 统一的用户头像组件接口
-// 支持图片头像和自动生成头像，自动处理加载失败的情况
+// Unified user avatar component interface
+// Supports image avatar and automatically generated avatar, automatically handling loading failure
 interface UserAvatarProps {
-  // 用户信息
+  // User information
   avatarUrl?: string | null;
   userName: string;
 
-  // 样式选项
+  // Style options
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 
-  // 其他属性
+  // Other attributes
   alt?: string;
 
-  // 可选的点击事件
+  // Optional click event
   onClick?: () => void;
 }
 
-// 尺寸预设
+// Size preset
 const sizeClasses = {
   xs: 'h-6 w-6 text-xs',
   sm: 'h-8 w-8 text-sm',
@@ -40,26 +40,26 @@ export function UserAvatar({
   alt,
   onClick,
 }: UserAvatarProps) {
-  // 使用状态来跟踪图片是否加载失败
+  // Use state to track whether the image fails to load
   const [imageLoadError, setImageLoadError] = useState(false);
 
-  // 处理图片加载失败
+  // Handle image loading failure
   const handleImageError = () => {
     setImageLoadError(true);
   };
 
-  // 重置错误状态当avatarUrl改变时
+  // Reset error status when avatarUrl changes
   React.useEffect(() => {
     setImageLoadError(false);
   }, [avatarUrl]);
 
-  // 确定是否应该显示图片
+  // Determine whether the image should be displayed
   const shouldShowImage = avatarUrl && !imageLoadError;
 
-  // 生成alt文本
+  // Generate alt text
   const altText = alt || `${userName}的头像`;
 
-  // 基础CSS类
+  // Base CSS class
   const baseClasses = cn(
     'rounded-full object-cover transition-all duration-200',
     sizeClasses[size],
@@ -79,7 +79,7 @@ export function UserAvatar({
     );
   }
 
-  // 显示自动生成的头像
+  // Display automatically generated avatar
   return (
     <div
       className={cn(

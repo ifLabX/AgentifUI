@@ -12,6 +12,8 @@ import {
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 const iconMap = {
   success: CheckCircleIcon,
   error: XCircleIcon,
@@ -27,25 +29,26 @@ const colorMap = {
 };
 
 export const NotificationBar: React.FC = () => {
+  const t = useTranslations('components.ui.notificationBar');
   const { message, type, isVisible, hideNotification } = useNotificationStore();
 
-  // 如果不可见或没有消息，则不渲染任何内容
+  // If not visible or no message, do not render anything
   if (!isVisible || !message) {
     return null;
   }
 
-  const IconComponent = iconMap[type] || InfoIcon; // 默认使用 InfoIcon
-  const colors = colorMap[type] || colorMap.info; // 默认使用 info 颜色
+  const IconComponent = iconMap[type] || InfoIcon; // Default use InfoIcon
+  const colors = colorMap[type] || colorMap.info; // Default use info color
 
   return (
     <div
       className={cn(
-        'fixed top-5 left-1/2 z-50 -translate-x-1/2 transform', // 定位在顶部居中
-        'w-auto max-w-[90%] md:max-w-md lg:max-w-lg', // 响应式宽度
-        'flex items-center space-x-3 rounded-md border p-3 text-white shadow-lg', // 基础样式
-        colors, // 根据类型应用颜色
-        'transition-all duration-300 ease-in-out', // 过渡动画
-        isVisible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0' // 显示/隐藏动画
+        'fixed top-5 left-1/2 z-50 -translate-x-1/2 transform', // Position at top center
+        'w-auto max-w-[90%] md:max-w-md lg:max-w-lg', // Responsive width
+        'flex items-center space-x-3 rounded-md border p-3 text-white shadow-lg', // Base style
+        colors, // Apply color based on type
+        'transition-all duration-300 ease-in-out', // Transition animation
+        isVisible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0' // Show/hide animation
       )}
       role="alert"
     >
@@ -54,7 +57,7 @@ export const NotificationBar: React.FC = () => {
       <button
         onClick={hideNotification}
         className="flex-shrink-0 rounded-full p-1 transition-colors hover:bg-white/20"
-        aria-label="关闭通知"
+        aria-label={t('closeNotification')}
       >
         <XIcon className="h-4 w-4" />
       </button>

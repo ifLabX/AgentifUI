@@ -7,6 +7,9 @@
       "retry": "Попробовать снова",
       "remove": "Удалить",
       "error": "Ошибка",
+      "customSelect": {
+        "placeholder": "Пожалуйста, выберите..."
+      },
       "exportButton": {
         "tooltip": "Экспорт файла",
         "ariaLabel": "Экспорт файла"
@@ -17,6 +20,9 @@
         "confirm": "Выйти",
         "cancel": "Отмена",
         "loggingOut": "Выход из системы..."
+      },
+      "moreButton": {
+        "ariaLabel": "Дополнительные опции"
       }
     },
     "time": {
@@ -234,7 +240,10 @@
         "noFormConfig": "У этого приложения нет настроенной формы ввода",
         "reset": "Сбросить форму",
         "executing": "Выполнение...",
-        "startExecution": "Начать выполнение"
+        "startExecution": "Начать выполнение",
+        "errors": {
+          "instanceNotFound": "Экземпляр сервиса с instanceId {instanceId} не найден"
+        }
       },
       "status": {
         "running": "Рабочий процесс выполняется",
@@ -306,7 +315,8 @@
         "loading": "Загрузка истории выполнения...",
         "noRecords": "Нет записей о выполнении",
         "getDetailFailed": "Не удалось получить детали выполнения",
-        "unknownError": "Неизвестная ошибка"
+        "unknownError": "Неизвестная ошибка",
+        "userNotLoggedIn": "Пользователь не авторизован"
       },
       "fileUpload": {
         "uploading": "Загрузка файла...",
@@ -356,7 +366,8 @@
         "download": "Скачать текст",
         "stop": "Остановить",
         "retry": "Попробовать снова",
-        "reset": "Сбросить"
+        "reset": "Сбросить",
+        "close": "Закрыть"
       },
       "emptyState": {
         "title": "Ожидание генерации текста",
@@ -1942,6 +1953,17 @@
       "attachmentPreview": {
         "fileLimitExceeded": "Превышен лимит файлов ({current}/{max}), пожалуйста удалите некоторые файлы"
       }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Перетащите для изменения размера панелей, дважды щелкните для сброса"
+      },
+      "notificationBar": {
+        "closeNotification": "Закрыть уведомление"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Предлагаемый вопрос: {question}"
+      }
     }
   },
   "debug": {
@@ -2204,6 +2226,30 @@
         "textGeneration": "Генерация текста",
         "contentCreation": "Создание контента",
         "formattedOutput": "Форматированный вывод"
+      },
+      "resultViewer": {
+        "title": "Результат генерации",
+        "defaultTitle": "Результат генерации текста",
+        "actions": {
+          "copy": "Скопировать результат",
+          "copied": "Скопировано",
+          "download": "Скачать результат"
+        },
+        "executionInfo": {
+          "title": "Информация о выполнении",
+          "status": "Статус:",
+          "createdAt": "Создано:",
+          "elapsedTime": "Затраченное время:",
+          "statusValues": {
+            "completed": "Завершено",
+            "failed": "Неудачно",
+            "stopped": "Остановлено"
+          }
+        },
+        "content": {
+          "title": "Созданный контент",
+          "noContent": "Нет доступного контента"
+        }
       }
     },
     "chatbot": {
