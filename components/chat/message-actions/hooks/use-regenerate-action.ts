@@ -3,33 +3,33 @@
 import { useCallback, useState } from 'react';
 
 /**
- * 重新生成功能的Hook
+ * Hook for regenerate functionality.
  *
- * @param onRegenerate 重新生成回调函数
- * @param initialRegenerating 初始是否正在重新生成状态
- * @returns 重新生成状态和处理函数
+ * @param onRegenerate Callback function to be called when regenerate is triggered.
+ * @param initialRegenerating Initial state indicating whether regenerating is in progress.
+ * @returns Regenerating state and handler functions.
  */
 export function useRegenerateAction(
   onRegenerate: () => void,
   initialRegenerating = false
 ) {
-  // 是否正在重新生成
+  // State indicating whether regenerating is in progress
   const [isRegenerating, setIsRegenerating] = useState(initialRegenerating);
 
-  // 处理重新生成操作
+  // Handler for regenerate action
   const handleRegenerate = useCallback(() => {
     if (typeof onRegenerate === 'function' && !isRegenerating) {
       setIsRegenerating(true);
 
-      // 调用回调函数
+      // Call the regenerate callback
       onRegenerate();
 
-      // 注意：实际应用中，重新生成完成后应该由外部调用方重置状态
-      // 这里仅作为示例，实际使用时可能需要提供一个resetRegenerating方法
+      // Note: In real applications, the regenerating state should be reset by the external caller after completion.
+      // This is just an example; you may want to provide a resetRegenerating method for actual usage.
     }
   }, [onRegenerate, isRegenerating]);
 
-  // 重置重新生成状态
+  // Handler to reset the regenerating state
   const resetRegenerating = useCallback(() => {
     setIsRegenerating(false);
   }, []);

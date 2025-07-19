@@ -4,54 +4,49 @@ import { cn } from '@lib/utils';
 
 import React from 'react';
 
-// Uses CSS variables instead of useThemeColors hook for better performance
-// import { useThemeColors } from "@lib/hooks/use-theme-colors";
-
 /**
- * Markdown table container component properties
+ * Props for the MarkdownTableContainer component.
+ * @property children - The table content to render.
+ * @property className - Additional CSS classes for the container.
  */
 interface MarkdownTableProps {
-  /** Table content to render */
   children: React.ReactNode;
-  /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * Markdown table container component
- * @description Renders a responsive table container with proper styling for markdown content
+ * MarkdownTableContainer renders a responsive, styled table container for markdown content.
  *
- * @features
- * - Responsive horizontal scrolling
- * - CSS variable-based theming
- * - Rounded corners with overflow handling
- * - Adaptive width sizing
+ * Features:
+ * - Responsive horizontal scrolling.
+ * - Theming via CSS variables.
+ * - Rounded corners and overflow handling.
+ * - Adaptive width sizing.
  */
 export const MarkdownTableContainer: React.FC<MarkdownTableProps> = ({
   children,
   className,
 }) => {
-  // Removed useThemeColors hook usage for better performance
-  // const { colors } = useThemeColors();
+  // The useThemeColors hook is not used for performance reasons.
 
   return (
     <div
       className={cn(
         'my-4 overflow-x-auto',
-        'w-fit max-w-full', // Container width adapts to content while respecting available space
+        'w-fit max-w-full', // The container width adapts to content but does not exceed the available space.
         className
       )}
     >
       <table
         className={cn(
           'border-collapse',
-          'overflow-hidden rounded-lg' // Rounded corners with overflow hidden
-          // Background is transparent, determined by parent element
-          // Internal borders handled by child elements
-          // External border applied via CSS variables in style prop
+          'overflow-hidden rounded-lg' // Ensures rounded corners and hides overflow.
+          // The table background is transparent and determined by the parent element.
+          // Internal borders are handled by child elements.
+          // The external border is set via CSS variables in the style prop.
         )}
         style={{
-          // Table border using CSS variables for theme consistency
+          // The table border uses a CSS variable for theme consistency.
           border: '1px solid var(--md-table-border)',
         }}
       >

@@ -12,39 +12,39 @@ import { MessageSkeleton } from './message-skeleton';
 import { AssistantMessage, UserMessage } from './messages';
 
 /**
- * 聊天加载器组件属性
- * @description 定义聊天加载器组件的属性接口
+ * ChatLoader component props
+ * @description Defines the props interface for the ChatLoader component
  */
 interface ChatLoaderProps {
-  /** 消息列表 */
+  /** List of chat messages */
   messages: ChatMessage[];
-  /** 是否正在等待响应 */
+  /** Whether waiting for response */
   isWaitingForResponse?: boolean;
-  /** 是否正在初始加载 */
+  /** Whether initial loading is in progress */
   isLoadingInitial?: boolean;
-  /** 自定义CSS类名 */
+  /** Custom CSS class name */
   className?: string;
 }
 
 /**
- * 聊天加载器组件
- * @description 负责渲染聊天消息列表，支持流式更新和自动滚动管理
+ * ChatLoader component
+ * @description Responsible for rendering the chat message list, supports streaming updates and auto scroll management
  *
  * @features
- * - 自动滚动到最新消息
- * - 支持流式消息更新
- * - 响应式布局适配
- * - 骨架屏加载状态
- * - 等待响应动画
+ * - Auto scroll to latest message
+ * - Supports streaming message updates
+ * - Responsive layout
+ * - Skeleton loading state
+ * - Waiting for response animation
  *
- * @future 计划功能
- * - 支持富文本消息渲染
- * - 添加消息时间戳显示
- * - 支持消息状态指示（发送中、已送达、已读）
- * - 支持消息操作（点赞、复制、重新生成）
- * - 支持图片、文件等多媒体消息
- * - 支持消息引用和回复
- * - 支持消息搜索和过滤
+ * @future planned features
+ * - Rich text message rendering
+ * - Message timestamp display
+ * - Message status indicators (sending, delivered, read)
+ * - Message actions (like, copy, regenerate)
+ * - Support for images, files, and other media messages
+ * - Message quoting and reply
+ * - Message search and filtering
  */
 export const ChatLoader = ({
   messages,
@@ -55,48 +55,48 @@ export const ChatLoader = ({
   const { widthClass, paddingClass } = useChatWidth();
   const { paddingBottomStyle } = useChatBottomSpacing();
 
-  // 消息容器底部引用，用于滚动到底部
+  // Ref for the bottom of the message container, used for scroll-to-bottom
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // 消息容器引用，用于scrollToBottom
+  // Ref for the message container, used for scrollToBottom
   const containerRef = useRef<HTMLDivElement>(null);
-  // 上一次消息数量引用，用于检测新消息
+  // Ref for previous message count, used to detect new messages
   const prevMessagesCountRef = useRef<number>(0);
-  // 初始加载标记
+  // Ref to mark initial load completion
   const initialLoadCompletedRef = useRef<boolean>(false);
 
-  // 使用chatScrollStore的滚动方法
+  // Chat scroll store methods
   const scrollToBottom = useChatScrollStore(state => state.scrollToBottom);
   const resetScrollState = useChatScrollStore(state => state.resetScrollState);
   const setScrollRef = useChatScrollStore(state => state.setScrollRef);
 
-  // 设置滚动容器引用
+  // Set scroll container ref
   useEffect(() => {
     if (containerRef.current) {
       setScrollRef({ current: containerRef.current });
     }
   }, [setScrollRef]);
 
-  // 初始加载完成时
+  // On initial load complete
   useEffect(() => {
     if (
       !isLoadingInitial &&
       messages.length > 0 &&
       !initialLoadCompletedRef.current
     ) {
-      // 标记初始加载已完成
+      // Mark initial load as completed
       initialLoadCompletedRef.current = true;
 
-      // 使用多次尝试确保滚动到底部
+      // Use multiple attempts to ensure scroll to bottom
       requestAnimationFrame(() => {
-        // 首先尝试使用store的方法
+        // First try using store method
         resetScrollState();
 
-        // 然后直接操作DOM确保滚动到底部
+        // Then directly manipulate DOM to ensure scroll to bottom
         requestAnimationFrame(() => {
           if (containerRef.current) {
             containerRef.current.scrollTop = containerRef.current.scrollHeight;
 
-            // 再次尝试，确保滚动到底部
+            // Try again after a short delay to ensure scroll to bottom
             setTimeout(() => {
               if (containerRef.current) {
                 containerRef.current.scrollTop =
@@ -109,29 +109,29 @@ export const ChatLoader = ({
     }
   }, [isLoadingInitial, messages.length, resetScrollState]);
 
-  // 当消息数量变化时
+  // When message count changes
   useEffect(() => {
-    // 当有新消息时，滚动到底部
+    // If there are new messages, scroll to bottom
     if (
       messages.length > prevMessagesCountRef.current &&
       initialLoadCompletedRef.current
     ) {
-      // 使用平滑滚动效果
+      // Use smooth scroll effect
       scrollToBottom('smooth');
     }
 
-    // 更新消息数量引用
+    // Update previous message count ref
     prevMessagesCountRef.current = messages.length;
   }, [messages.length, scrollToBottom]);
 
-  // 确保加载完成后滚动到底部
+  // Ensure scroll to bottom after loading is complete
   useEffect(() => {
-    // 监听加载状态从true变为false的情况
+    // Listen for loading state changing from true to false
     if (!isLoadingInitial && initialLoadCompletedRef.current) {
       requestAnimationFrame(() => {
         resetScrollState();
 
-        // 再次直接操作DOM确保滚动到底部
+        // Again, directly manipulate DOM to ensure scroll to bottom
         requestAnimationFrame(() => {
           if (containerRef.current) {
             containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -145,7 +145,7 @@ export const ChatLoader = ({
     <div className={cn('mx-auto w-full', widthClass, paddingClass, className)}>
       <div className="space-y-2 pt-4" style={paddingBottomStyle}>
         {isLoadingInitial ? (
-          // 显示骨架屏
+          // Show skeleton loading
           <MessageSkeleton />
         ) : (
           <>
@@ -177,7 +177,7 @@ export const ChatLoader = ({
           </>
         )}
 
-        {/* 这个div用于滚动定位，始终保持在消息列表底部 */}
+        {/* This div is used for scroll positioning, always stays at the bottom of the message list */}
         <div ref={messagesEndRef} className="h-0" />
       </div>
     </div>

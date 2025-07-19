@@ -18,19 +18,19 @@ interface AssistantMessageActionsProps {
   onFeedback: (isPositive: boolean) => void;
   isRegenerating?: boolean;
   className?: string;
-  // tooltip配置
+  // Tooltip configuration
   tooltipSize?: 'sm' | 'md';
   showTooltipArrow?: boolean;
 }
 
 /**
- * 助手消息操作按钮组件
+ * Assistant message action buttons component
  *
- * 组合了复制、重新生成和反馈按钮，用于助手消息下方的操作区域
+ * Combines copy, regenerate, and feedback buttons for the assistant message action area.
  *
- * 🎯 思维链支持：
- * - 对于包含思维链的消息，只复制主要内容部分，不包含 <think> 和 <details> 标签内的推理过程
- * - 当思维链未完成时，复制按钮会被隐藏，避免复制不完整的内容
+ * Chain-of-thought support:
+ * - For messages containing chain-of-thought, only the main content is copied, excluding reasoning in <think> and <details> tags.
+ * - When the chain-of-thought is incomplete, the copy button is hidden to avoid copying incomplete content.
  */
 export const AssistantMessageActions: React.FC<
   AssistantMessageActionsProps
@@ -45,11 +45,11 @@ export const AssistantMessageActions: React.FC<
 }) => {
   const { isDark } = useTheme();
 
-  // 使用反馈管理hook，实现排他性
+  // Use feedback manager hook for exclusive feedback selection
   const { selectedFeedback, handleFeedback, shouldShowButton } =
     useFeedbackManager(onFeedback);
 
-  // --- 检查是否有可复制的内容 ---
+  // Check if there is content to copy
   const hasContentToCopy = content && content.trim().length > 0;
 
   return (
@@ -58,7 +58,7 @@ export const AssistantMessageActions: React.FC<
       isAssistantMessage={true}
       className={className}
     >
-      {/* 复制按钮 - 始终显示，但根据内容条件禁用 */}
+      {/* Copy button - always shown, but disabled if no content */}
       <CopyButton
         content={content}
         disabled={!hasContentToCopy}
@@ -72,7 +72,7 @@ export const AssistantMessageActions: React.FC<
         showTooltipArrow={showTooltipArrow}
       />
 
-      {/* 分隔线 - 使用更深的颜色，在深色模式下不那么显眼 */}
+      {/* Divider - uses a deeper color, less visible in dark mode */}
       <div
         className={cn(
           'mx-1 self-stretch border-r',
@@ -80,7 +80,7 @@ export const AssistantMessageActions: React.FC<
         )}
       />
 
-      {/* 反馈按钮 - 实现排他性，点击一个时另一个消失 */}
+      {/* Feedback buttons - exclusive, only one shown at a time */}
       {shouldShowButton(true) && (
         <FeedbackButton
           onFeedback={() => handleFeedback(true)}

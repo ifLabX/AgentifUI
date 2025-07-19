@@ -11,17 +11,18 @@ interface FeedbackButtonProps {
   onFeedback: (isPositive: boolean) => void;
   isPositive: boolean;
   tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-  tooltipSize?: 'sm' | 'md'; // tooltip尺寸
-  showTooltipArrow?: boolean; // 是否显示tooltip箭头
+  tooltipSize?: 'sm' | 'md'; // tooltip size
+  showTooltipArrow?: boolean; // whether to show tooltip arrow
   className?: string;
-  active?: boolean; // 是否处于激活状态
+  active?: boolean; // whether the button is in active state
 }
 
 /**
- * 反馈按钮组件
+ * Feedback button component
  *
- * 封装了反馈功能的按钮，点击后会触发反馈回调
- * 可以是点赞或踩按钮，取决于isPositive属性
+ * A button component encapsulating feedback functionality.
+ * When clicked, it triggers the feedback callback.
+ * Can be a thumbs up or thumbs down button, depending on the isPositive property.
  */
 export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
   onFeedback,
@@ -32,13 +33,13 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
   className,
   active = false,
 }) => {
-  // 如果提供了active属性，使用外部控制，否则使用内部状态
+  // If the active property is provided, use external control; otherwise, use internal state
   const { handleFeedback, hasFeedback } = useFeedbackAction(onFeedback);
 
   return (
     <MessageActionButton
       icon={isPositive ? FiThumbsUp : FiThumbsDown}
-      // 不使用激活图标，而是使用染色效果
+      // Do not use an active icon, use color effect instead
       // activeIcon={FiCheck}
       label={isPositive ? '有用' : '无用'}
       activeLabel="已评价"
