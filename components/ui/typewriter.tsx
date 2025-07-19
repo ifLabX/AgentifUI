@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 
 interface TypeWriterProps {
   text: string;
-  speed?: number; // 打字速度（毫秒）
-  delay?: number; // 开始延迟（毫秒）
+  speed?: number; // Typing speed (milliseconds)
+  delay?: number; // Start delay (milliseconds)
   className?: string;
   onComplete?: () => void;
-  waitingEffect?: boolean; // 是否显示等待效果（shimmer）
+  waitingEffect?: boolean; // Whether to display the waiting effect (shimmer)
 }
 
 export function TypeWriter({
@@ -22,7 +22,7 @@ export function TypeWriter({
   const [displayedText, setDisplayedText] = useState('');
   const [isWaiting, setIsWaiting] = useState(false);
   const [revealProgress, setRevealProgress] = useState(0);
-  const [isComplete, setIsComplete] = useState(false); // 添加完成状态
+  const [isComplete, setIsComplete] = useState(false); // Add completion status
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const indexRef = useRef(0);
   const targetTextRef = useRef('');
@@ -49,7 +49,7 @@ export function TypeWriter({
     targetTextRef.current = targetText;
     indexRef.current = startFrom;
     setIsWaiting(false);
-    setIsComplete(false); // 重置完成状态
+    setIsComplete(false); // Reset completion status
 
     setDisplayedText(targetText);
 
@@ -70,9 +70,9 @@ export function TypeWriter({
 
         timeoutRef.current = setTimeout(typeNextChar, speed);
       } else {
-        // 🎯 打字完成：确保完全显示
+        // 🎯 Typing complete: ensure fully displayed
         setRevealProgress(100);
-        setIsComplete(true); // 标记为完成
+        setIsComplete(true); // Mark as complete
         lastCompletedTextRef.current = currentTarget;
 
         if (waitingEffect && currentTarget.endsWith('...')) {
@@ -111,19 +111,19 @@ export function TypeWriter({
     return () => clearTimeouts();
   }, []);
 
-  // 🎨 智能渐变逻辑：完成时完全显示，进行中时有渐变
+  // 🎨 Intelligent gradient logic: when complete, fully display, and when in progress, there is a gradient
   const getMaskStyle = () => {
     if (isComplete) {
-      // ✅ 完成状态：全部文字完整显示
+      // ✅ Complete state: all text fully displayed
       return {
         WebkitMask: 'none',
         mask: 'none',
       };
     }
 
-    // 🎨 进行中：带渐变效果
-    const solidEnd = Math.max(0, revealProgress - 8); // 完全显示的部分
-    const fadeEnd = revealProgress; // 渐变结束点
+    // 🎨 In progress: with gradient effect
+    const solidEnd = Math.max(0, revealProgress - 8); // The part that is fully displayed
+    const fadeEnd = revealProgress; // The gradient end point
 
     return {
       WebkitMask: `linear-gradient(90deg, 

@@ -15,14 +15,14 @@ import { DesktopUserAvatar } from './desktop-user-avatar';
 import { WorkflowHistoryButton } from './workflow-history-button';
 
 /**
- * 桌面端顶部导航栏组件
- * 特点：
- * - 仅在桌面视图显示 (md 及以上)
- * - 使用石色(stone)调色板，与应用整体风格一致
- * - 右上角显示用户头像按钮，点击弹出下拉菜单
- * - 左侧显示当前对话标题按钮（仅在历史对话页面）
- * - 布局会根据侧边栏的展开/收起状态动态调整左边距
- * - 在设置页面自动适配设置页面的背景色，实现完全融入效果
+ * Desktop top navigation bar component
+ * Features:
+ * - Only displayed in desktop view (md and above)
+ * - Use stone color palette, consistent with application overall style
+ * - Display user avatar button in the upper right corner, click to pop up dropdown menu
+ * - Display current conversation title button on the left (only on historical conversation page)
+ * - Layout adjusts left margin dynamically based on the expanded/collapsed state of the sidebar
+ * - Automatically adapt to the background color of the settings page on the settings page, achieve seamless integration effect
  */
 export function NavBar() {
   const isMobile = useMobile();
@@ -35,23 +35,23 @@ export function NavBar() {
     return null;
   }
 
-  // 🎯 根据当前页面路径选择合适的背景色
-  // Settings页面使用settings专门的背景色，其他页面使用主题背景色
-  // 确保navbar与页面完全融入，无违和感
+  // 🎯 Select appropriate background color based on current page path
+  // Settings page uses settings-specific background color, other pages use theme background color
+  // Ensure navbar is fully integrated with the page, no sense of incongruity
   const isSettingsPage = pathname?.startsWith('/settings');
   const backgroundColor = isSettingsPage
     ? settingsColors.pageBackground.tailwind
     : themeColors.mainBackground.tailwind;
 
-  // 计算左边距：桌面端始终为sidebar留出空间
-  // 根据展开状态设置相应边距
+  // Calculate left margin: desktop always leaves space for sidebar
+  // Set corresponding margin based on expansion state
   const getLeftMargin = () => {
     return isExpanded ? 'left-0 md:left-64' : 'left-0 md:left-16';
   };
 
   return (
     <>
-      {/* Header 主体 */}
+      {/* Header main */}
       <header
         className={cn(
           'fixed top-0 right-4 z-20 h-12',

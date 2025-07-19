@@ -7,12 +7,22 @@
       "retry": "Попробовать снова",
       "remove": "Удалить",
       "error": "Ошибка",
+      "customSelect": {
+        "placeholder": "Пожалуйста, выберите..."
+      },
+      "exportButton": {
+        "tooltip": "Экспорт файла",
+        "ariaLabel": "Экспорт файла"
+      },
       "logoutDialog": {
         "title": "Выход",
         "message": "Вы уверены, что хотите выйти? Вам потребуется снова войти в систему, чтобы получить доступ к своей учетной записи.",
         "confirm": "Выйти",
         "cancel": "Отмена",
         "loggingOut": "Выход из системы..."
+      },
+      "moreButton": {
+        "ariaLabel": "Дополнительные опции"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "Неподдерживаемый формат файла"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Добавить вложение",
         "notSupported": "Это приложение не поддерживает загрузку файлов",
         "noLimit": "Лимит загрузки файлов равен 0",
         "noTypesConfigured": "Не настроены поддерживаемые типы файлов",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Нет доступных моделей",
-        "selectModel": "Выберите модель"
+        "selectModel": "Выберите модель",
+        "appNotFound": "Приложение не найдено: {appId}"
       },
       "messages": {
         "assistant": "Ассистент",
@@ -131,7 +143,11 @@
         "copyFailed": "Ошибка копирования",
         "imageLink": "Ссылка на изображение",
         "viewImage": "Просмотреть изображение",
-        "clickToView": "Нажмите, чтобы просмотреть"
+        "clickToView": "Нажмите, чтобы просмотреть",
+        "clickToViewWithAlt": "Нажмите, чтобы просмотреть: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "Еще {count} вопросов..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "Запуск Chatflow",
         "noRecords": "Нет записей о выполнении узлов",
         "waitingUpdate": "Ожидание обновления статуса узла...",
-        "showProgress": "Прогресс выполнения узлов будет показан после начала разговора"
+        "showProgress": "Прогресс выполнения узлов будет показан после начала разговора",
+        "executionError": "Ошибка выполнения:"
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "У этого приложения нет настроенной формы ввода",
         "reset": "Сбросить форму",
         "executing": "Выполнение...",
-        "startExecution": "Начать выполнение"
+        "startExecution": "Начать выполнение",
+        "errors": {
+          "instanceNotFound": "Экземпляр сервиса с instanceId {instanceId} не найден"
+        },
+        "validation": {
+          "required": "{label} обязательно для заполнения",
+          "invalidNumber": "{label} должно быть действительным числом",
+          "minValue": "{label} не может быть меньше {min}",
+          "maxValue": "{label} не может быть больше {max}",
+          "stepValue": "{label} должно быть кратным {step}",
+          "precisionExceeded": "{label} не может иметь более {precision} десятичных знаков",
+          "maxLengthExceeded": "{label} не может превышать {maxLength} символов",
+          "invalidSelection": "Неверное значение выбрано для {label}",
+          "tooManyFiles": "{label} не может содержать более {maxFiles} файлов",
+          "fileTooLarge": "Файл \"{fileName}\" в {label} превышает {maxSize}МБ",
+          "unsupportedFileType": "Файл \"{fileName}\" в {label} не поддерживается, поддерживаемые типы: {allowedTypes}"
+        }
       },
       "status": {
         "running": "Рабочий процесс выполняется",
@@ -270,6 +303,11 @@
         "parallel": "Параллельное ветвление",
         "end": "Конечный узел"
       },
+      "iterationDetails": {
+        "roundIteration": "Итерация {round}",
+        "roundLoop": "Цикл {round}",
+        "nodeNumber": "Узел {number}"
+      },
       "buttons": {
         "retry": "Попробовать снова",
         "close": "Закрыть",
@@ -294,7 +332,8 @@
         "loading": "Загрузка истории выполнения...",
         "noRecords": "Нет записей о выполнении",
         "getDetailFailed": "Не удалось получить детали выполнения",
-        "unknownError": "Неизвестная ошибка"
+        "unknownError": "Неизвестная ошибка",
+        "userNotLoggedIn": "Пользователь не авторизован"
       },
       "fileUpload": {
         "uploading": "Загрузка файла...",
@@ -344,7 +383,8 @@
         "download": "Скачать текст",
         "stop": "Остановить",
         "retry": "Попробовать снова",
-        "reset": "Сбросить"
+        "reset": "Сбросить",
+        "close": "Закрыть"
       },
       "emptyState": {
         "title": "Ожидание генерации текста",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "Ссылки на {count} ресурсов базы знаний",
+        "knowledgeBase": "База знаний",
+        "expand": "Развернуть полный текст",
+        "collapse": "Свернуть",
+        "copy": "Копировать",
+        "copied": "Скопировано",
+        "copyFailed": "Ошибка копирования",
+        "relevanceScore": "Релевантность",
+        "wordCount": "{count} слов",
+        "page": "Страница {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Превышен лимит файлов ({current}/{max}), пожалуйста удалите некоторые файлы"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Перетащите для изменения размера панелей, дважды щелкните для сброса"
+      },
+      "notificationBar": {
+        "closeNotification": "Закрыть уведомление"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Предлагаемый вопрос: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "Установка приложения по умолчанию - переданный ID:",
     "currentInstances": "Текущие все экземпляры:",
@@ -2171,6 +2243,30 @@
         "textGeneration": "Генерация текста",
         "contentCreation": "Создание контента",
         "formattedOutput": "Форматированный вывод"
+      },
+      "resultViewer": {
+        "title": "Результат генерации",
+        "defaultTitle": "Результат генерации текста",
+        "actions": {
+          "copy": "Скопировать результат",
+          "copied": "Скопировано",
+          "download": "Скачать результат"
+        },
+        "executionInfo": {
+          "title": "Информация о выполнении",
+          "status": "Статус:",
+          "createdAt": "Создано:",
+          "elapsedTime": "Затраченное время:",
+          "statusValues": {
+            "completed": "Завершено",
+            "failed": "Неудачно",
+            "stopped": "Остановлено"
+          }
+        },
+        "content": {
+          "title": "Созданный контент",
+          "noContent": "Нет доступного контента"
+        }
       }
     },
     "chatbot": {

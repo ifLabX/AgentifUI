@@ -49,114 +49,119 @@ export function SidebarFavoriteApps({
     removeFavoriteApp,
     loadFavoriteApps,
     isLoading,
-    // 🎯 新增：展开/关闭状态管理
+    // 🎯 New: expand/collapse state management
     isExpanded: isAppsExpanded,
     toggleExpanded,
   } = useFavoriteAppsStore();
 
-  // 下拉菜单状态管理
+  // Dropdown menu state management
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   useEffect(() => {
     loadFavoriteApps();
   }, [loadFavoriteApps]);
 
-  // 监听sidebar展开状态，关闭时自动关闭dropdown
+  // Listen to the sidebar expansion state, close automatically when dropdown is closed
   useEffect(() => {
     if (!isExpanded && openDropdownId) {
       setOpenDropdownId(null);
     }
   }, [isExpanded, openDropdownId]);
 
-  // 根据展开状态决定显示数量：关闭时显示3个，展开时显示所有
+  // Determine the number of apps to display based on the expansion state: 3 when closed, all when expanded
   const displayApps = isAppsExpanded ? favoriteApps : favoriteApps.slice(0, 3);
 
-  // 判断应用是否处于选中状态 - 参考chat list的实现
+  // Determine if the application is selected - reference the implementation of chat list
   const isAppActive = React.useCallback((app: FavoriteApp) => {
-    // 获取当前路由路径
+    // Get the current route path
     const pathname = window.location.pathname;
 
-    // 检查当前路由是否是应用详情页面
+    // Check if the current route is an application detail page
     if (!pathname.startsWith('/apps/')) return false;
 
-    // 🎯 修复：支持新的路由结构 /apps/{type}/[instanceId]
+    // 🎯 Fix: support new route structure /apps/{type}/[instanceId]
     const pathParts = pathname.split('/apps/')[1]?.split('/');
     if (!pathParts || pathParts.length < 2) return false;
 
-    const routeAppType = pathParts[0]; // 应用类型
-    const routeInstanceId = pathParts[1]; // 实例ID
+    const routeAppType = pathParts[0]; // Application type
+    const routeInstanceId = pathParts[1]; // Instance ID
 
-    // 基本的instanceId匹配
+    // Basic instanceId matching
     if (routeInstanceId !== app.instanceId) return false;
 
-    // 检查应用类型是否匹配
+    // Check if the application type matches
     const appDifyType = app.dify_apptype || 'chatflow';
     return routeAppType === appDifyType;
   }, []);
 
-  // 🎯 重构：优化点击处理逻辑，解决用户体验问题
-  // 1. 立即跳转路由，让页面级spinner处理加载状态
-  // 2. 移除按钮级加载状态，避免按钮卡住
-  // 3. 简化应用切换逻辑，避免验证反弹
-  // 4. 保持sidebar选中状态的即时反馈
+  // 🎯 Refactor: optimize click handling logic, solve user experience problems
+  // 1. Immediately jump to the route, let the page-level spinner handle the loading state
+  // 2. Remove button-level loading state to avoid button stuck
+  // 3. Simplify application switching logic to avoid verification bounce
+  // 4. Keep the immediate feedback of the sidebar selected state
   const handleAppClick = async (app: FavoriteApp) => {
     try {
-      console.log('[FavoriteApps] 开始切换到常用应用:', app.displayName);
+      console.log(
+        '[FavoriteApps] Start switching to favorite apps:',
+        app.displayName
+      );
 
-      // 🎯 立即设置sidebar选中状态，提供即时反馈
+      // 🎯 Immediately set the sidebar selected state, provide immediate feedback
       selectItem('app', app.instanceId);
 
-      // 🎯 立即跳转路由，让页面级spinner接管加载状态
+      // 🎯 Immediately jump to the route, let the page-level spinner handle the loading state
       const difyAppType = app.dify_apptype || 'chatflow';
       const targetPath = `/apps/${difyAppType}/${app.instanceId}`;
 
-      console.log('[FavoriteApps] 立即跳转路由:', targetPath);
+      console.log('[FavoriteApps] Immediately jump to the route:', targetPath);
 
-      // 🎯 修复竞态条件：只跳转路由，让目标页面自己处理应用切换
-      // 避免同时调用 switchToSpecificApp 导致的 localStorage 状态闪烁
-      // 这与应用市场的行为保持一致
+      // 🎯 Fix race condition: only jump to the route, let the target page handle the application switching
+      // Avoid localStorage state flickering caused by simultaneous call to switchToSpecificApp
+      // This is consistent with the behavior of the application market
       router.push(targetPath);
 
-      // 🎯 移除后台应用切换调用，避免与目标页面的切换逻辑产生竞态条件
+      // 🎯 Remove background application switching call to avoid race condition with the target page's switching logic
 
-      console.log('[FavoriteApps] 路由跳转已发起，页面接管后续处理');
+      console.log(
+        '[FavoriteApps] Route jump initiated, page handles subsequent processing'
+      );
     } catch (error) {
-      console.error('[FavoriteApps] 切换到常用应用失败:', error);
+      console.error('[FavoriteApps] Failed to switch to favorite apps:', error);
 
-      // 🎯 错误处理：恢复sidebar状态
+      // 🎯 Error handling: restore sidebar state
       selectItem(null, null);
     }
   };
 
-  // 🎯 优化：发起新对话使用相同的优化策略
+  // 🎯 Optimize: use the same optimization strategy for starting a new chat
   const handleStartNewChat = async (app: FavoriteApp) => {
     try {
-      console.log('[FavoriteApps] 发起新对话:', app.displayName);
+      console.log('[FavoriteApps] Start new chat:', app.displayName);
 
-      // 立即设置sidebar选中状态
+      // Immediately set the sidebar selected state
       selectItem('app', app.instanceId);
 
-      // 立即跳转，让页面处理后续逻辑
+      // Immediately jump, let the page handle the subsequent logic
       const difyAppType = app.dify_apptype || 'chatflow';
       const targetPath = `/apps/${difyAppType}/${app.instanceId}`;
 
-      console.log('[FavoriteApps] 发起新对话，跳转到:', targetPath);
+      console.log('[FavoriteApps] Start new chat, jump to:', targetPath);
       router.push(targetPath);
 
-      // 🎯 移除后台应用切换调用，避免竞态条件
-      // 让目标页面自己处理应用切换
+      // 🎯 Remove background application switching call to avoid race condition
+      // Let the target page handle the application switching
     } catch (error) {
-      console.error('[FavoriteApps] 发起新对话失败:', error);
+      console.error('[FavoriteApps] Failed to start new chat:', error);
       selectItem(null, null);
     }
   };
 
-  // 隐藏应用
+  // Hide application
   const handleHideApp = (app: FavoriteApp) => {
     removeFavoriteApp(app.instanceId);
   };
 
-  // 获取应用图标
+  // Get application icon
   const getAppIcon = (app: FavoriteApp) => {
     if (app.iconUrl) {
       return (
@@ -168,9 +173,9 @@ export function SidebarFavoriteApps({
       );
     }
 
-    // 🎨 现代化设计：使用彩色渐变背景 + 简洁图标
-    // 基于应用ID生成一致的渐变色彩，确保每个应用都有独特且稳定的视觉标识
-    // 提升sidebar的现代感和视觉层次
+    // 🎨 Modern design: use colorful gradient background + simple icon
+    // Generate consistent gradient colors based on application ID, ensuring each application has a unique and stable visual identifier
+    // Improve the modern and visual hierarchy of the sidebar
     const getAppGradient = () => {
       const gradients = [
         'bg-gradient-to-br from-blue-400 to-blue-600',
@@ -183,7 +188,7 @@ export function SidebarFavoriteApps({
         'bg-gradient-to-br from-cyan-400 to-cyan-600',
       ];
 
-      // 基于应用ID生成一致的哈希值，确保相同应用总是显示相同颜色
+      // Generate consistent hash values based on application ID, ensuring the same application always displays the same color
       const hash = app.instanceId.split('').reduce((a, b) => {
         a = (a << 5) - a + b.charCodeAt(0);
         return a & a;
@@ -200,13 +205,13 @@ export function SidebarFavoriteApps({
           getAppGradient()
         )}
       >
-        {/* 使用简洁的几何图标，现代且通用 */}
+        {/* Use simple geometric icons, modern and universal */}
         <div className="h-2 w-2 rounded-sm bg-white/90" />
       </div>
     );
   };
 
-  // 创建下拉菜单
+  // Create dropdown menu
   const createMoreActions = (app: FavoriteApp) => {
     const isMenuOpen = openDropdownId === app.instanceId;
 
@@ -232,7 +237,7 @@ export function SidebarFavoriteApps({
         <DropdownMenuV2.Item
           icon={<Edit className="h-3.5 w-3.5" />}
           onClick={() => {
-            // 🎯 点击后立即关闭菜单，避免状态冲突
+            // 🎯 Click to immediately close the menu to avoid state conflicts
             setOpenDropdownId(null);
             handleStartNewChat(app);
           }}
@@ -259,7 +264,7 @@ export function SidebarFavoriteApps({
     );
   };
 
-  // 如果没有常用应用，不显示任何内容
+  // If there are no favorite apps, do not display any content
   if (!isLoading && displayApps.length === 0) {
     return null;
   }
@@ -371,10 +376,10 @@ export function SidebarFavoriteApps({
                         'transition-opacity',
                         // Hide more button when clicking to avoid interference
                         openDropdownId === app.instanceId
-                          ? 'opacity-100' // 当前打开菜单的item，more button保持显示
+                          ? 'opacity-100' // The item with the open menu, the more button should be displayed
                           : openDropdownId
-                            ? 'opacity-0' // 有其他菜单打开时，此item的more button不显示
-                            : 'opacity-0 group-hover:opacity-100 focus-within:opacity-100' // 正常状态下的悬停显示
+                            ? 'opacity-0' // When there are other menus open, the more button of this item is not displayed
+                            : 'opacity-0 group-hover:opacity-100 focus-within:opacity-100' // Hover display under normal state
                       )}
                     >
                       {createMoreActions(app)}

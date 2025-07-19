@@ -1,3 +1,4 @@
+// Export chat message components for unified import
 import { AssistantMessage } from './assistant-message/assistant-message';
 import { AssistantMessageActions } from './assistant-message/assistant-message-actions';
 import { FileAttachmentDisplay } from './user-message/file-attachment-display';

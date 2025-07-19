@@ -21,38 +21,38 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 定义上传文件的状态接口，与聊天输入组件保持一致
+// Define the interface for the upload file status, consistent with the chat input component
 interface UploadFile {
-  id: string; // 本地生成的唯一ID
-  file: File; // 原始 File 对象
-  name: string; // 文件名
-  size: number; // 文件大小
-  type: string; // 文件类型 (MIME type)
-  status: 'pending' | 'uploading' | 'success' | 'error'; // 上传状态
-  progress: number; // 上传进度 (0-100)
-  error?: string; // 错误信息
-  uploadedId?: string; // 上传成功后 Dify 返回的文件 ID
+  id: string; // Local generated unique ID
+  file: File; // Original File object
+  name: string; // File name
+  size: number; // File size
+  type: string; // File type (MIME type)
+  status: 'pending' | 'uploading' | 'success' | 'error'; // Upload status
+  progress: number; // Upload progress (0-100)
+  error?: string; // Error message
+  uploadedId?: string; // File ID returned by Dify after successful upload
 }
 
 interface FileUploadFieldProps {
   config: any;
-  value: any[] | any; // 支持单文件对象或文件数组
-  onChange: (files: any[] | any) => void; // 返回Dify格式的文件对象或数组
+  value: any[] | any; // Support single file object or file array
+  onChange: (files: any[] | any) => void; // Return Dify-formatted file object or array
   error?: string;
   label?: string;
-  instanceId: string; // 添加instanceId用于Dify API调用
-  isSingleFileMode?: boolean; // 是否为单文件模式
+  instanceId: string; // Add instanceId for Dify API call
+  isSingleFileMode?: boolean; // Whether to use single file mode
 }
 
 /**
- * 工作流文件上传字段组件 - 集成Dify文件上传API
+ * Workflow file upload field component - integrate Dify file upload API
  *
- * 功能特点：
- * - 集成Dify文件上传API
- * - 实时上传进度显示
- * - 支持重试上传
- * - 文件状态管理
- * - 与聊天输入组件的文件上传功能保持一致
+ * Features:
+ * - Integrate Dify file upload API
+ * - Real-time upload progress display
+ * - Support retry upload
+ * - File status management
+ * - File upload functionality consistent with chat input component
  */
 export function FileUploadField({
   config,
@@ -69,29 +69,29 @@ export function FileUploadField({
   const t = useTranslations('pages.workflow.fileUpload');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 本地文件状态管理，用于跟踪上传状态
+  // Local file status management, used to track upload status
   const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
 
-  // 当外部value prop发生变化时，同步uploadFiles状态
-  // 支持表单重置时清空文件列表
+  // When the external value prop changes, synchronize the uploadFiles status
+  // Support form reset to clear file list
   useEffect(() => {
-    // 如果value为空（null、undefined、空数组），清空文件列表
+    // If value is empty (null, undefined, empty array), clear the file list
     if (!value || (Array.isArray(value) && value.length === 0)) {
       setUploadFiles([]);
       return;
     }
 
-    // 处理单文件对象的情况
+    // Handle the case of a single file object
     const valueArray = Array.isArray(value) ? value : [value];
 
     if (valueArray.length > 0) {
-      // 检查value是否已经是处理过的Dify文件格式
+      // Check if value is already in Dify file format
       const isProcessedFiles = valueArray.every(
         (item: any) => typeof item === 'object' && item.upload_file_id
       );
 
       if (!isProcessedFiles) {
-        // 如果是原始File对象数组，转换为UploadFile格式
+        // If it is an original File object array, convert to UploadFile format
         const convertedFiles = valueArray.map((file: File) => ({
           id: `${file.name}-${file.lastModified}-${file.size}`,
           file,
@@ -106,11 +106,11 @@ export function FileUploadField({
     }
   }, [value]);
 
-  // 用ref跟踪上次的成功文件ID列表，避免无限循环
+  // Use ref to track the last successful file ID list, avoid infinite loop
   const lastSuccessIdsRef = useRef('');
 
-  // 当uploadFiles状态变化时，通知父组件
-  // 根据number_limits决定返回单个文件对象还是文件数组
+  // When the uploadFiles status changes, notify the parent component
+  // Determine whether to return a single file object or an array of files based on number_limits
   useEffect(() => {
     const successfulFiles = uploadFiles
       .filter(file => file.status === 'success' && file.uploadedId)
@@ -118,13 +118,13 @@ export function FileUploadField({
         type: getDifyFileType(file),
         transfer_method: 'local_file' as const,
         upload_file_id: file.uploadedId as string,
-        // --- 添加用于消息显示的额外字段 ---
+        // --- Add extra fields for message display ---
         name: file.name,
         size: file.size,
         mime_type: file.type,
       }));
 
-    // 只有在成功文件列表实际发生变化时才调用onChange
+    // Only call onChange when the successful file list actually changes
     const currentSuccessIds = successfulFiles
       .map(f => f.upload_file_id)
       .sort()
@@ -133,20 +133,20 @@ export function FileUploadField({
     if (lastSuccessIdsRef.current !== currentSuccessIds) {
       lastSuccessIdsRef.current = currentSuccessIds;
 
-      // 根据isSingleFileMode判断是单文件还是多文件
+      // Determine whether to return a single file object or an array of files based on isSingleFileMode
       if (isSingleFileMode) {
-        // 单文件模式：返回第一个文件对象或null
+        // Single file mode: return the first file object or null
         const singleFile =
           successfulFiles.length > 0 ? successfulFiles[0] : null;
         onChange(singleFile);
       } else {
-        // 多文件模式：返回文件数组
+        // Multiple file mode: return the file array
         onChange(successfulFiles);
       }
     }
-  }, [uploadFiles, isSingleFileMode]); // 添加isSingleFileMode依赖
+  }, [uploadFiles, isSingleFileMode]); // Add isSingleFileMode dependency
 
-  // 根据文件类型推断 Dify 文件 type 字段
+  // Infer the Dify file type field based on the file type
   const getDifyFileType = (
     file: UploadFile
   ): 'image' | 'document' | 'audio' | 'video' | 'custom' => {
@@ -169,7 +169,7 @@ export function FileUploadField({
     return 'custom';
   };
 
-  // 更新文件状态的辅助函数
+  // Helper function to update file status
   const updateFileStatus = useCallback(
     (
       id: string,
@@ -195,7 +195,7 @@ export function FileUploadField({
     []
   );
 
-  // 上传单个文件到Dify - 使用当前应用ID，与聊天输入框保持一致
+  // Upload a single file to Dify - use the current application ID, consistent with the chat input field
   const uploadFileToDify = useCallback(
     async (uploadFile: UploadFile) => {
       const userIdToUse = session?.user?.id || 'workflow-user-id';
@@ -203,8 +203,8 @@ export function FileUploadField({
       try {
         updateFileStatus(uploadFile.id, 'uploading', 0);
 
-        // 使用当前应用ID，如果没有则fallback到instanceId
-        // 与聊天输入框的逻辑保持一致
+        // Use the current application ID, if not available, fallback to instanceId
+        // Consistent with the logic of the chat input field
         const appIdToUse = currentAppId || instanceId;
 
         const response = await uploadDifyFile(
@@ -220,13 +220,16 @@ export function FileUploadField({
       } catch (error) {
         const errorMessage = (error as Error).message || t('uploadFailed');
         updateFileStatus(uploadFile.id, 'error', undefined, errorMessage);
-        console.error(`[工作流文件上传] 上传失败: ${uploadFile.name}`, error);
+        console.error(
+          `[Workflow file upload] Upload failed: ${uploadFile.name}`,
+          error
+        );
       }
     },
     [currentAppId, instanceId, session?.user?.id, updateFileStatus]
   );
 
-  // 处理文件选择
+  // Handle file selection
   const handleFileSelect = useCallback(
     (newFiles: File[]) => {
       const newUploadFiles = newFiles.map(file => {
@@ -240,7 +243,7 @@ export function FileUploadField({
           progress: 0,
         };
 
-        // 立即开始上传
+        // Start uploading immediately
         setTimeout(() => uploadFileToDify(uploadFile), 100);
 
         return uploadFile;
@@ -255,7 +258,7 @@ export function FileUploadField({
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       handleFileSelect(files);
-      // 重置输入框
+      // Reset the input field
       e.target.value = '';
     }
   };
@@ -264,7 +267,7 @@ export function FileUploadField({
     setUploadFiles(prev => prev.filter(file => file.id !== id));
   };
 
-  // 重试上传
+  // Retry upload
   const handleRetryUpload = useCallback(
     (id: string) => {
       const uploadFile = uploadFiles.find(file => file.id === id);
@@ -287,24 +290,24 @@ export function FileUploadField({
     e.preventDefault();
   };
 
-  // 文件上传字段默认启用，除非明确设置为false
+  // File upload field is enabled by default, unless explicitly set to false
   if (config?.enabled === false) {
     return null;
   }
 
-  // 计算状态统计
+  // Calculate status statistics
   const isUploading = uploadFiles.some(f => f.status === 'uploading');
   const hasError = uploadFiles.some(f => f.status === 'error');
   const successCount = uploadFiles.filter(f => f.status === 'success').length;
-  // 根据isSingleFileMode和配置确定最大文件数
-  // file-list类型使用max_length字段，file类型使用number_limits字段
+  // Determine the maximum number of files based on isSingleFileMode and configuration
+  // file-list type uses the max_length field, file type uses the number_limits field
   const maxFiles = isSingleFileMode
     ? 1
     : config.max_length || config.number_limits || 1;
   const canUploadMore = uploadFiles.length < maxFiles;
 
-  // 根据Dify文件类型标识符生成文件类型提示和accept字符串
-  // 参考file-type-selector.tsx的逻辑
+  // Generate file type hint and accept string based on Dify file type identifier
+  // Reference the logic of file-type-selector.tsx
   const getFileTypeInfo = () => {
     const types = config.allowed_file_types;
     if (!types || types.length === 0) {
@@ -353,7 +356,7 @@ export function FileUploadField({
 
   const fileTypeInfo = getFileTypeInfo();
 
-  // 生成文件大小提示文本
+  // Generate file size hint text
   const getFileSizeHint = () => {
     const maxSize = config.max_file_size_mb;
     if (maxSize) {
@@ -364,7 +367,7 @@ export function FileUploadField({
 
   return (
     <div className="space-y-4">
-      {/* 标签 */}
+      {/* Label */}
       {label && (
         <div className="flex items-center gap-3">
           <div
@@ -396,7 +399,7 @@ export function FileUploadField({
         </div>
       )}
 
-      {/* 上传区域 */}
+      {/* Upload area */}
       {canUploadMore && (
         <div
           onDrop={handleDrop}
@@ -418,7 +421,7 @@ export function FileUploadField({
           )}
           onClick={() => !isUploading && fileInputRef.current?.click()}
         >
-          {/* 背景装饰 */}
+          {/* Background decoration */}
           <div
             className={cn(
               'absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100',
@@ -477,7 +480,7 @@ export function FileUploadField({
         </div>
       )}
 
-      {/* 超出限制提示 */}
+      {/* Exceeding limit hint */}
       {uploadFiles.length >= maxFiles && (
         <div
           className={cn(
@@ -502,7 +505,7 @@ export function FileUploadField({
         </div>
       )}
 
-      {/* 隐藏的文件输入 */}
+      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -513,7 +516,7 @@ export function FileUploadField({
         disabled={isUploading || !canUploadMore}
       />
 
-      {/* 已选文件列表 */}
+      {/* Selected file list */}
       {uploadFiles.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
@@ -562,7 +565,7 @@ export function FileUploadField({
                     (isDark ? 'border-stone-600' : 'border-stone-200')
                 )}
               >
-                {/* 状态指示器 */}
+                {/* Status indicator */}
                 <div className="relative flex-shrink-0">
                   <div
                     className={cn(
@@ -620,13 +623,13 @@ export function FileUploadField({
                     )}
                   </div>
 
-                  {/* 脉冲动画（上传中） */}
+                  {/* Pulse animation (uploading) */}
                   {uploadFile.status === 'uploading' && (
                     <div className="absolute inset-0 animate-ping rounded-xl border-2 border-stone-400 opacity-30" />
                   )}
                 </div>
 
-                {/* 文件信息 */}
+                {/* File information */}
                 <div className="min-w-0 flex-1 space-y-1">
                   <p
                     className={cn(
@@ -661,7 +664,7 @@ export function FileUploadField({
                   </div>
                 </div>
 
-                {/* 删除按钮 */}
+                {/* Delete button */}
                 <TooltipWrapper
                   content={t('removeFile')}
                   placement="top"
@@ -688,7 +691,7 @@ export function FileUploadField({
         </div>
       )}
 
-      {/* 错误提示 */}
+      {/* Error hint */}
       {error && (
         <div
           className={cn(

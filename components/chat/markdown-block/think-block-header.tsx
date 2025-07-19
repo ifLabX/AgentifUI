@@ -1,50 +1,46 @@
 'use client';
 
 import { Spinner } from '@components/ui/spinner';
-// 移除 useTheme 和 useThemeColors 的导入，使用 CSS 变量替代
+// Remove useTheme and useThemeColors imports, use CSS variables instead
 import { useMobile } from '@lib/hooks/use-mobile';
 // Removed react-i18next import
-// import { useTranslation } from 'react-i18next';
 import { cn } from '@lib/utils';
 
 import React from 'react';
 
-/** Think block status types */
+/**
+ * Status types for the ThinkBlock
+ */
 export type ThinkBlockStatus = 'thinking' | 'completed' | 'stopped';
 
 /**
- * ThinkBlock header component properties
+ * Props for the ThinkBlockHeader component
  */
 interface ThinkBlockHeaderProps {
-  /** Current thinking status */
+  /** Current status of the think block */
   status: ThinkBlockStatus;
-  /** Whether content area is expanded */
+  /** Whether the content area is expanded */
   isOpen: boolean;
-  /** Callback function triggered on click */
+  /** Callback function triggered when header is clicked */
   onToggle: () => void;
-  //
-  // statusText: { ... };
 }
 
 /**
- * ThinkBlock horizontal button-style header component
- * @description Displays expand/collapse icon, status text and loading spinner
+ * ThinkBlockHeader is a horizontal button-style header component.
+ * It displays an expand/collapse icon, status text, and a loading spinner when thinking.
  */
 export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
-  //
   status,
   isOpen,
   onToggle,
 }) => {
-  //
-  // const { t } = useTranslation();
-  // 移除 useTheme 和 useThemeColors，使用 CSS 变量替代
+  // Determine if the current device is mobile
   const isMobile = useMobile();
 
-  /** Check if currently thinking */
+  // Check if the current status is "thinking"
   const isThinking = status === 'thinking';
 
-  /** Get status text based on current status */
+  // Get the status text based on the current status
   const getStatusText = () => {
     switch (status) {
       case 'thinking':
@@ -60,12 +56,12 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   return (
     <button
       className={cn(
-        // Base layout: flex, center vertically, space between
+        // Layout: flex, center vertically, space between
         'flex items-center justify-between',
-        // Size and style: full width on mobile, 22% on desktop
+        // Responsive width: full on mobile, 22% on desktop
         isMobile ? 'w-full' : 'w-[22%]',
         'mb-1 cursor-pointer rounded-md border px-3 py-1.5 text-sm',
-        // Focus style and transition effects
+        // Focus and transition styles
         'focus:outline-none'
       )}
       onClick={onToggle}
@@ -83,7 +79,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
           : 'var(--md-think-header-text)',
       }}
     >
-      {/* Left area: icon and status text */}
+      {/* Left section: expand/collapse icon and status text */}
       <div className="flex items-center">
         {/* Expand/collapse icon */}
         <svg
@@ -117,7 +113,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
         </span>
       </div>
 
-      {/* Right area: Spinner (only shown when thinking) */}
+      {/* Right section: Spinner, only shown when thinking */}
       <div className="h-4 w-4 flex-shrink-0">
         {isThinking && <Spinner size="md" className="text-current" />}
       </div>

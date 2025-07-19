@@ -3,13 +3,13 @@
 import { useCallback } from 'react';
 
 /**
- * 编辑功能的Hook
+ * Hook for edit functionality.
  *
- * @param onEdit 编辑回调函数
- * @returns 处理编辑操作的函数
+ * @param onEdit Callback function to be called when edit is triggered.
+ * @returns An object containing the handleEdit function.
  */
 export function useEditAction(onEdit: () => void) {
-  // 处理编辑操作
+  // Handler for edit action
   const handleEdit = useCallback(() => {
     if (typeof onEdit === 'function') {
       onEdit();

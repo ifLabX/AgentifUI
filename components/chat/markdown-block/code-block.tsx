@@ -13,7 +13,7 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-markdown';
-// 导入基础Prism样式 - 实际样式将使用我们的CSS变量
+// Import base Prism style - actual style will use our CSS variables
 import 'prismjs/components/prism-markup';
 import 'prismjs/components/prism-python';
 import 'prismjs/components/prism-rust';
@@ -26,33 +26,33 @@ import React from 'react';
 
 import { CodeBlockHeader } from './code-block-header';
 
-// 不再需要useTheme，因为我们使用CSS变量处理主题
+// No need for useTheme, we use CSS variables for theme
 
 interface CodeBlockProps {
   language: string | null;
   children: React.ReactNode;
   className?: string; // This className comes from react-markdown, e.g., "language-python"
   codeClassName?: string; // Additional class for the inner <code> element
-  isStreaming?: boolean; // 新增：标记是否正在流式输出
+  isStreaming?: boolean; // Indicates if the code is being streamed
 }
 
-// 使用 React.memo 包装组件，防止不必要的重新渲染
+// Use React.memo to prevent unnecessary re-renders
 export const CodeBlock: React.FC<CodeBlockProps> = React.memo(
   ({
     language,
     children,
     className, // from react-markdown
     codeClassName, // for inner code tag
-    isStreaming = false, // 默认为非流式，即代码已完整
+    isStreaming = false, // default: not streaming, code is complete
   }) => {
-    // 提取代码内容以便复制和高亮
+    // Extract code content for copy and highlight
     const codeContent = React.useMemo(() => {
-      // 如果 children 是字符串，直接返回
+      // If children is a string, return directly
       if (typeof children === 'string') {
         return children;
       }
 
-      // 如果 children 是 React 元素，尝试提取文本内容
+      // If children is a React element, try to extract text content
       if (React.isValidElement(children)) {
         const props = children.props as any;
         if (props?.children && typeof props.children === 'string') {
@@ -60,7 +60,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(
         }
       }
 
-      // 如果是数组，尝试将所有子元素连接成字符串
+      // If children is an array, try to join all child elements as string
       if (Array.isArray(children)) {
         return children
           .map(child => {
@@ -79,7 +79,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(
       return '';
     }, [children]);
 
-    // 解析语言名称，如 "language-python" 变为 "python"
+    // Parse language name, e.g., "language-python" to "python"
     const parsedLanguage = React.useMemo(() => {
       if (!language) return 'text';
       if (language.startsWith('language-')) {
@@ -90,37 +90,37 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(
 
     const codeRef = React.useRef<HTMLElement>(null);
 
-    // 使用 useEffect 在组件挂载后或内容/状态变化后应用 Prism 高亮
+    // Use useEffect to apply Prism highlight after mount or when content/state changes
     React.useEffect(() => {
-      // 调试日志：打印 useEffect 触发时的状态 (已注释)
+      // Debug log: print useEffect trigger state (commented out)
       /*
-    console.log(
-      '[CodeBlock Effect]', 
-      { 
-        isStreaming, 
-        codeContentExists: !!codeContent, 
-        refExists: !!codeRef.current,
-        language: parsedLanguage, 
-        firstChars: codeContent?.slice(0,30) 
-      }
-    );
-    */
-
-      // 确保 Prism 已加载，代码内容存在，ref 已附加，并且当前不处于流式输出状态
-      if (!isStreaming && Prism && codeContent && codeRef.current) {
-        // 调试日志：准备执行高亮 (已注释)
-        /*
-      console.log('[CodeBlock Highlighting]', parsedLanguage, codeContent?.slice(0, 50));
+      console.log(
+        '[CodeBlock Effect]', 
+        { 
+          isStreaming, 
+          codeContentExists: !!codeContent, 
+          refExists: !!codeRef.current,
+          language: parsedLanguage, 
+          firstChars: codeContent?.slice(0,30) 
+        }
+      );
       */
+
+      // Ensure Prism is loaded, code content exists, ref is attached, and not streaming
+      if (!isStreaming && Prism && codeContent && codeRef.current) {
+        // Debug log: ready to highlight (commented out)
+        /*
+        console.log('[CodeBlock Highlighting]', parsedLanguage, codeContent?.slice(0, 50));
+        */
         Prism.highlightElement(codeRef.current);
       }
-      // 依赖项：当代码内容、语言或流式状态变化时，重新评估高亮逻辑
-      // 当 isStreaming 从 true 变为 false 时，此 effect 会执行，并进行高亮
+      // Dependencies: re-evaluate highlight logic when code content, language, or streaming state changes
+      // When isStreaming changes from true to false, this effect will run and highlight
     }, [codeContent, parsedLanguage, isStreaming]);
 
-    // Prism.highlightElement 会直接修改DOM，
-    // 所以我们不再需要 dangerouslySetInnerHTML 和 getHighlightedCode。
-    // 我们将直接把 codeContent 放入 <code> 标签，Prism.highlightElement 会读取它并修改。
+    // Prism.highlightElement will directly modify the DOM,
+    // so we don't need dangerouslySetInnerHTML or getHighlightedCode.
+    // We just put codeContent into <code>, Prism.highlightElement will process it.
     return (
       <div
         className="my-3 transform-gpu rounded-lg border shadow-sm"
@@ -138,12 +138,12 @@ export const CodeBlock: React.FC<CodeBlockProps> = React.memo(
             }}
           >
             <code
-              ref={codeRef} // 附加 ref
+              ref={codeRef} // attach ref
               className={cn(`language-${parsedLanguage}`, codeClassName)}
-              style={{ display: 'block' }} // 确保代码块是块级元素
+              style={{ display: 'block' }} // ensure code block is block-level
             >
               {codeContent}{' '}
-              {/* 直接渲染代码内容，Prism.highlightElement 会处理它 */}
+              {/* Directly render code content, Prism.highlightElement will process it */}
             </code>
           </pre>
         </div>

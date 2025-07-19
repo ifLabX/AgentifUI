@@ -8,8 +8,8 @@ import * as React from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 历史对话选择操作栏组件
-// 提供全选、取消选择和批量删除功能
+// History conversation selection operation bar component
+// Provides full selection, cancel selection, and batch deletion functions
 interface HistorySelectionBarProps {
   isSelectionMode: boolean;
   selectedCount: number;
@@ -34,7 +34,7 @@ export function HistorySelectionBar({
   const { isDark } = useTheme();
   const t = useTranslations('history');
 
-  // 如果不在选择模式且没有选中项，则不显示操作栏
+  // If not in selection mode and no items are selected, do not display the operation bar
   if (!isSelectionMode && selectedCount === 0) {
     return null;
   }
@@ -55,9 +55,9 @@ export function HistorySelectionBar({
     >
       <div className="px-6 py-2.5">
         <div className="flex items-center justify-between">
-          {/* --- 左侧：选择状态和全选按钮 --- */}
+          {/* --- Left: selection status and full selection button --- */}
           <div className="flex items-center space-x-4">
-            {/* 全选/取消全选按钮 */}
+            {/* Full selection/cancel full selection button */}
             <button
               onClick={allSelected ? onDeselectAll : onSelectAll}
               className={cn(
@@ -79,7 +79,7 @@ export function HistorySelectionBar({
               <span>{allSelected ? t('deselectAll') : t('selectAll')}</span>
             </button>
 
-            {/* 选择状态显示 */}
+            {/* Selection status display */}
             {hasSelection && (
               <div
                 className={cn(
@@ -92,9 +92,9 @@ export function HistorySelectionBar({
             )}
           </div>
 
-          {/* --- 右侧：操作按钮 --- */}
+          {/* --- Right: operation button --- */}
           <div className="flex items-center space-x-2">
-            {/* 批量删除按钮 */}
+            {/* Batch delete button */}
             {hasSelection && (
               <button
                 onClick={onBatchDelete}
@@ -119,7 +119,7 @@ export function HistorySelectionBar({
               </button>
             )}
 
-            {/* 取消选择按钮 */}
+            {/* Cancel selection button */}
             <button
               onClick={onCancelSelection}
               className={cn(

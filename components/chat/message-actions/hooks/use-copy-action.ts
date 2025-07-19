@@ -3,22 +3,22 @@
 import { useCallback, useState } from 'react';
 
 /**
- * 复制功能的Hook
+ * Hook for copy-to-clipboard functionality.
  *
- * @param content 要复制的内容
- * @returns 复制状态和处理函数
+ * @param content The content to be copied.
+ * @returns Copy state and handler function.
  */
 export function useCopyAction(content: string) {
-  // 是否已复制状态
+  // State indicating whether the content has been copied
   const [isCopied, setIsCopied] = useState(false);
 
-  // 处理复制操作
+  // Handler for performing the copy action
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(content);
       setIsCopied(true);
 
-      // 2秒后重置状态
+      // Reset the copied state after 2 seconds
       setTimeout(() => {
         setIsCopied(false);
       }, 2000);

@@ -37,17 +37,17 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   const pathname = usePathname();
   const t = useTranslations('sidebar');
 
-  // 🎯 路由激活状态检测
+  // 🎯 Check the activation status of the routes
   const isNewChatActive = pathname === '/chat/new';
   const isHistoryActive = pathname === '/chat/history';
   const isAppsActive = pathname === '/apps';
 
-  // 🎯 使用正确的快捷键映射
+  // 🎯 Use the correct shortcut mapping
   const newChatShortcut = useFormattedShortcut('NEW_CHAT');
   const recentChatsShortcut = useFormattedShortcut('RECENT_CHATS');
   const appsMarketShortcut = useFormattedShortcut('APPS_MARKET');
 
-  // 🎯 点击状态管理 - 用于控制点击时的立即切换效果
+  // 🎯 Click state management - used to control the immediate switching effect when clicking
   const [isClicking, setIsClicking] = React.useState(false);
 
   const setCurrentConversationId = useChatStore(
@@ -61,38 +61,34 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   const { setIsTransitioningToWelcome } = useChatTransitionStore();
   const { clearConversationState } = useChatInterface();
 
-  // 🎯 新增：新对话处理函数
+  // 🎯 New: new chat processing function
   const handleNewChat = () => {
     const isAlreadyOnNewChat = window.location.pathname === '/chat/new';
     if (isAlreadyOnNewChat) {
       return;
     }
 
-    console.log('[SidebarHeader] 开始新对话，清理所有状态');
-
-    // 立即路由到新对话页面
+    // Immediately route to the new chat page
     router.push('/chat/new');
 
-    // 延迟清理状态，确保路由完成
+    // Delay cleaning state to ensure routing is complete
     setTimeout(() => {
-      // 清理chatStore状态
+      // Clean chatStore state
       useChatStore.getState().clearMessages();
       clearMessages();
       setCurrentConversationId(null);
 
-      // 🎯 新增：清理use-chat-interface中的对话状态
-      // 这确保difyConversationId、dbConversationUUID、conversationAppId都被正确清理
+      // 🎯 New: clean the conversation state in use-chat-interface
+      // This ensures that difyConversationId, dbConversationUUID, and conversationAppId are correctly cleaned
       clearConversationState();
 
-      // 清理其他UI状态
+      // Clean other UI states
       setIsWelcomeScreen(true);
       setIsTransitioningToWelcome(true);
       setIsWaitingForResponse(false);
 
       const { selectItem } = useSidebarStore.getState();
       selectItem('chat', null, true);
-
-      console.log('[SidebarHeader] 状态清理完成');
     }, 100);
   };
 
@@ -114,14 +110,14 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               role="button"
               tabIndex={0}
               onClick={e => {
-                // 立即移除focus，避免影响父容器的cursor显示
+                // Immediately remove focus to avoid affecting the cursor display of the parent container
                 e.currentTarget.blur();
 
-                // 🎯 设置点击状态，确保立即显示目标箭头
+                // 🎯 Set click state to ensure the target arrow is displayed immediately
                 setIsClicking(true);
                 toggleSidebar();
 
-                // 延迟重置点击状态，让过渡动画完成
+                // Delay resetting the click state to ensure the transition animation is complete
                 setTimeout(() => {
                   setIsClicking(false);
                 }, 200);
@@ -135,21 +131,21 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               aria-label={t('expand')}
               className={cn(
                 'group relative flex items-center justify-center px-2 py-2 text-sm font-medium',
-                // 使用resize cursor表示可以调整sidebar宽度：展开时向右箭头，收起时向左箭头
+                // Use resize cursor to indicate that the sidebar width can be adjusted: right arrow when expanded, left arrow when collapsed
                 'cursor-e-resize',
                 'transition-all duration-150 ease-in-out',
                 'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                'select-none', // 防止文字选中
+                'select-none', // Prevent text selection
                 isDark
                   ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
                   : 'focus-visible:ring-primary focus-visible:ring-offset-background',
                 'border border-transparent',
-                'h-10 w-10', // 正方形固定大小
-                'text-gray-200', // 基础文字颜色
-                '[margin-left:1px]' // 整个按钮向右移动一点点
+                'h-10 w-10', // Fixed square size
+                'text-gray-200', // Basic text color
+                '[margin-left:1px]' // Move the entire button a little to the right
               )}
             >
-              {/* 🎨 内部背景 - 收起状态仅悬停显示 */}
+              {/* 🎨 Internal background - collapsed state only displays on hover */}
               <div
                 className={cn(
                   'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
@@ -168,28 +164,28 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                     : 'text-gray-500 group-hover:text-stone-800'
                 )}
               >
-                {/* 默认图标 - 拉宽版窗口图标，只在非悬停且非点击状态下显示 */}
+                {/* Default icon - wide panel window icon, only displayed when not hovering and not clicking */}
                 <WidePanelLeft
                   className={cn(
                     'absolute h-5 w-5 transition-all duration-150 ease-out',
-                    // 收起状态：sidebar悬停时隐藏窗口图标并放大
+                    // Collapsed state: hide window icon when sidebar is hovered and enlarge
                     isHovering && 'scale-110 opacity-0',
-                    // 按钮悬停时隐藏窗口图标并添加更大的放大效果
+                    // Button hover: hide window icon and add a larger zoom effect
                     'group-hover:scale-125 group-hover:opacity-0',
-                    // 点击时立即隐藏窗口图标
+                    // Click to immediately hide the window icon
                     isClicking && 'scale-110 opacity-0'
                   )}
                 />
 
-                {/* 悬停图标 - 右箭头，收起状态下悬停或点击时显示 */}
+                {/* Hover icon - right arrow, displayed when hovering or clicking in collapsed state */}
                 <ArrowRightToLine
                   className={cn(
                     'absolute h-4 w-4 transition-all duration-150 ease-out',
-                    // 收起状态：sidebar悬停、按钮悬停或点击时显示箭头
+                    // Collapsed state: sidebar hover, button hover, or click to display arrow
                     isHovering || isClicking
                       ? 'scale-110 opacity-100'
                       : 'scale-102 opacity-0',
-                    'group-hover:opacity-100' // 🎨 移除放大效果
+                    'group-hover:opacity-100' // 🎨 Remove zoom effect
                   )}
                 />
               </span>
@@ -200,14 +196,14 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             role="button"
             tabIndex={0}
             onClick={e => {
-              // 立即移除focus，避免影响父容器的cursor显示
+              // Immediately remove focus to avoid affecting the cursor display of the parent container
               e.currentTarget.blur();
 
-              // 🎯 设置点击状态，确保立即显示目标箭头
+              // 🎯 Set click state to ensure the target arrow is displayed immediately
               setIsClicking(true);
               toggleSidebar();
 
-              // 延迟重置点击状态，让过渡动画完成
+              // Delay resetting the click state to ensure the transition animation is complete
               setTimeout(() => {
                 setIsClicking(false);
               }, 200);
@@ -221,24 +217,24 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             aria-label={t('collapse')}
             className={cn(
               'group relative flex items-center justify-center px-2 py-2 text-sm font-medium',
-              // 使用resize cursor表示可以调整sidebar宽度：展开时向左箭头，收起时向右箭头
+              // Use resize cursor to indicate that the sidebar width can be adjusted: left arrow when expanded, right arrow when collapsed
               'cursor-w-resize',
               'transition-all duration-150 ease-in-out',
               'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-              'select-none', // 防止文字选中
+              'select-none', // Prevent text selection
               isDark
                 ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
                 : 'focus-visible:ring-primary focus-visible:ring-offset-background',
               'border border-transparent',
-              'h-10 w-10', // 正方形固定大小
-              '[margin-left:1px]' // 整个按钮向右移动一点点
+              'h-10 w-10', // Fixed square size
+              '[margin-left:1px]' // Move the entire button a little to the right
             )}
           >
-            {/* 🎨 内部背景 - 展开状态默认显示，悬停时增强 */}
+            {/* 🎨 Internal background - expanded state displays by default, enhanced when hovering */}
             <div
               className={cn(
                 'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
-                // 展开状态：默认有背景色，悬停时增强
+                // Expanded state: default has background color, enhanced when hovering
                 isDark
                   ? 'bg-stone-600/50 group-hover:bg-stone-600/70'
                   : 'bg-stone-300/50 group-hover:bg-stone-300/80'
@@ -254,24 +250,24 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                   : 'text-gray-500 group-hover:text-stone-800'
               )}
             >
-              {/* 默认图标 - 拉宽版窗口图标，只在非悬停且非点击状态下显示 */}
+              {/* Default icon - wide panel window icon, only displayed when not hovering and not clicking */}
               <WidePanelLeft
                 className={cn(
                   'absolute h-5 w-5 transition-all duration-150 ease-out',
-                  // 按钮悬停时隐藏窗口图标并添加更大的放大效果
+                  // Button hover: hide window icon and add a larger zoom effect
                   'group-hover:scale-125 group-hover:opacity-0',
-                  // 点击时立即隐藏窗口图标
+                  // Click to immediately hide the window icon
                   isClicking && 'scale-110 opacity-0'
                 )}
               />
 
-              {/* 悬停图标 - 左箭头，展开状态下悬停或点击时显示 */}
+              {/* Hover icon - left arrow, displayed when hovering or clicking in expanded state */}
               <ArrowLeftToLine
                 className={cn(
                   'absolute h-4 w-4 transition-all duration-150 ease-out',
-                  // 展开状态：按钮悬停或点击时显示箭头
+                  // Expanded state: display arrow when button is hovered or clicked
                   isClicking ? 'scale-110 opacity-100' : 'scale-102 opacity-0',
-                  'group-hover:opacity-100' // 🎨 移除放大效果
+                  'group-hover:opacity-100' // 🎨 Remove zoom effect
                 )}
               />
             </span>
@@ -285,7 +281,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'min-w-0 flex-1 truncate',
               'flex items-center leading-none',
               'font-display text-base font-bold tracking-wide',
-              '-mt-0.5 -ml-1', // 微调：稍微往上移一点，向右移动与按钮对齐
+              '-mt-0.5 -ml-1', // Fine-tune: move up a little, move right to align with the button
               isDark ? 'text-gray-100' : 'text-stone-700'
             )}
           >
@@ -303,7 +299,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         )}
       </div>
 
-      {/* 🎯 新对话按钮 - 重要功能，响应式设计突出显示 */}
+      {/* 🎯 New chat button - important function, responsive design highlights */}
       {isExpanded ? (
         <SidebarButton
           icon={
@@ -326,7 +322,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           )}
         >
           <span className="font-serif">{t('newChat')}</span>
-          {/* 悬停时显示的快捷键 */}
+          {/* Displayed when hovering */}
           <div
             className={cn(
               'opacity-0 transition-opacity duration-200 group-hover:opacity-60',
@@ -377,7 +373,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         </TooltipWrapper>
       )}
 
-      {/* 🎯 历史对话按钮 - 提升重要性，与新对话按钮并列 */}
+      {/* 🎯 History chat button - important function, displayed alongside the new chat button */}
       {isExpanded ? (
         <SidebarButton
           icon={
@@ -402,7 +398,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           )}
         >
           <span className="font-serif">{t('historyChats')}</span>
-          {/* 悬停时显示的快捷键 */}
+          {/* Displayed when hovering */}
           <div
             className={cn(
               'opacity-0 transition-opacity duration-200 group-hover:opacity-60',
@@ -455,7 +451,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
         </TooltipWrapper>
       )}
 
-      {/* 🎯 应用市场按钮 - 与新对话按钮样式完全一致 */}
+      {/* 🎯 Apps market button - completely consistent with the new chat button style */}
       {isExpanded ? (
         <SidebarButton
           icon={
@@ -480,7 +476,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           )}
         >
           <span className="font-serif">{t('appsMarket')}</span>
-          {/* 悬停时显示的快捷键 */}
+          {/* Displayed when hovering */}
           <div
             className={cn(
               'opacity-0 transition-opacity duration-200 group-hover:opacity-60',

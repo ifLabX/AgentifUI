@@ -8,27 +8,29 @@ import { MoreHorizontal } from 'lucide-react';
 
 import React, { useRef } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface MoreButtonProps {
   id: string;
   className?: string;
   tooltipText?: string;
 }
 
-export function MoreButton({
-  id,
-  className,
-  tooltipText = '更多选项',
-}: MoreButtonProps) {
+export function MoreButton({ id, className, tooltipText }: MoreButtonProps) {
   const { isDark } = useTheme();
   const isMobile = useMobile();
   const { toggleDropdown, isOpen, activeDropdownId } = useDropdownStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const t = useTranslations('common.ui.moreButton');
 
-  // 判断当前按钮是否处于激活状态
+  // Use translation as default tooltip text if not provided
+  const defaultTooltipText = tooltipText || t('ariaLabel');
+
+  // Check if the current button is active
   const isActive = isOpen && activeDropdownId === id;
 
   const handleClick = (e: React.MouseEvent) => {
-    // 阻止事件冒泡
+    // Prevent event bubbling
     e.stopPropagation();
 
     if (buttonRef.current) {
@@ -49,7 +51,7 @@ export function MoreButton({
         isMobile
           ? 'flex items-center justify-center'
           : 'opacity-0 group-hover:opacity-100',
-        // 激活状态时显示
+        // Show when active
         isActive && 'opacity-100',
         isDark
           ? [
@@ -63,8 +65,8 @@ export function MoreButton({
         className
       )}
       onClick={handleClick}
-      aria-label={tooltipText}
-      title={tooltipText}
+      aria-label={defaultTooltipText}
+      title={defaultTooltipText}
       data-more-button-id={id}
     >
       <MoreHorizontal className="h-4 w-4" />

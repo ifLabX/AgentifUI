@@ -12,16 +12,17 @@ interface RegenerateButtonProps {
   onRegenerate: () => void;
   isRegenerating?: boolean;
   tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-  tooltipSize?: 'sm' | 'md'; // tooltip尺寸
-  showTooltipArrow?: boolean; // 是否显示tooltip箭头
+  tooltipSize?: 'sm' | 'md'; // tooltip size
+  showTooltipArrow?: boolean; // whether to show tooltip arrow
   className?: string;
 }
 
 /**
- * 重新生成按钮组件
+ * Regenerate button component
  *
- * 封装了重新生成功能的按钮，点击后会触发重新生成回调
- * 支持显示加载状态
+ * A button component encapsulating the regenerate functionality.
+ * When clicked, it triggers the regenerate callback.
+ * Supports displaying loading state.
  */
 export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
   onRegenerate,

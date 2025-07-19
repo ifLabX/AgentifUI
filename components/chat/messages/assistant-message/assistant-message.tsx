@@ -51,6 +51,7 @@ import { useTranslations } from 'next-intl';
 
 import { StreamingText } from './streaming-markdown';
 
+// Extract think block and main content from raw message content
 const extractThinkContent = (
   rawContent: string
 ): {
@@ -59,7 +60,7 @@ const extractThinkContent = (
   mainContent: string;
   thinkClosed: boolean;
 } => {
-  // Debug: Check position and format of details tags
+  // Debug: log details tag position and format if present
   if (rawContent.includes('<details')) {
     console.log('[AssistantMessage] Details tag detected:', {
       content: rawContent.substring(0, 200) + '...',
@@ -69,26 +70,20 @@ const extractThinkContent = (
     });
   }
 
-  // Fix: Support both <think> and <details> tags
-  // Priority check <think> tags first, then <details> tags if not found
-  // New: Allow a small amount of whitespace or very short content before tags
-  // Preprocessing: Remove leading whitespace but preserve original content for subsequent processing
-  // const trimmedContent = rawContent.trim();
-
-  // Check <think> tags
+  // Support both <think> and <details> tags, prioritize <think>
+  // Allow a small amount of whitespace or short content before tags
   const thinkStartTag = '<think>';
   const thinkEndTag = '</think>';
 
-  // New logic: Check if think tag is at the beginning or near the beginning
-  // Allow small amount of whitespace or short non-important content before
+  // Find <think> tag near the start
   const thinkStartIndex = rawContent.indexOf(thinkStartTag);
   if (thinkStartIndex !== -1) {
-    // Check if content before think tag can be ignored (whitespace or very short content)
+    // Allow up to 10 characters of non-whitespace before <think>
     const contentBeforeThink = rawContent.substring(0, thinkStartIndex).trim();
     const isThinkAtEffectiveStart =
       thinkStartIndex === 0 ||
       contentBeforeThink.length === 0 ||
-      contentBeforeThink.length <= 10; // Allow up to 10 characters of content before
+      contentBeforeThink.length <= 10;
 
     if (isThinkAtEffectiveStart) {
       const thinkContentStart = thinkStartIndex + thinkStartTag.length;
@@ -110,7 +105,7 @@ const extractThinkContent = (
         };
       }
 
-      // Unclosed think tag
+      // Unclosed <think> tag
       const thinkContent = rawContent.substring(thinkContentStart);
       return {
         hasThinkBlock: true,
@@ -121,22 +116,20 @@ const extractThinkContent = (
     }
   }
 
-  // Check <details> tags
+  // Find <details> tag near the start
   const detailsStartRegex = /<details(?:\s[^>]*)?>/i;
   const detailsMatch = rawContent.match(detailsStartRegex);
 
   if (detailsMatch) {
     const detailsStartIndex = rawContent.indexOf(detailsMatch[0]);
-
-    // New logic: Check if details tag is at the beginning or near the beginning
-    // Allow small amount of whitespace or short non-important content before
+    // Allow up to 10 characters of non-whitespace before <details>
     const contentBeforeDetails = rawContent
       .substring(0, detailsStartIndex)
       .trim();
     const isDetailsAtEffectiveStart =
       detailsStartIndex === 0 ||
       contentBeforeDetails.length === 0 ||
-      contentBeforeDetails.length <= 10; // Allow up to 10 characters of content before
+      contentBeforeDetails.length <= 10;
 
     if (isDetailsAtEffectiveStart) {
       const detailsStartTag = detailsMatch[0];
@@ -148,13 +141,11 @@ const extractThinkContent = (
       );
 
       if (endTagIndex !== -1) {
-        // Extract details content, remove summary part
+        // Extract content inside <details>, remove <summary> if present
         let detailsContent = rawContent.substring(
           detailsContentStart,
           endTagIndex
         );
-
-        // Remove <summary>...</summary> part, keep only actual content
         const summaryRegex = /<summary[^>]*>[\s\S]*?<\/summary>/i;
         detailsContent = detailsContent.replace(summaryRegex, '').trim();
 
@@ -169,10 +160,8 @@ const extractThinkContent = (
         };
       }
 
-      // Unclosed details tag
+      // Unclosed <details> tag
       let detailsContent = rawContent.substring(detailsContentStart);
-
-      // Remove <summary>...</summary> part if exists
       const summaryRegex = /<summary[^>]*>[\s\S]*?<\/summary>/i;
       detailsContent = detailsContent.replace(summaryRegex, '').trim();
 
@@ -185,6 +174,7 @@ const extractThinkContent = (
     }
   }
 
+  // No think block found
   return {
     hasThinkBlock: false,
     thinkContent: '',
@@ -193,9 +183,9 @@ const extractThinkContent = (
   };
 };
 
-// Extract clean main content for copy functionality
+// Extract main content for copy (removes think/details blocks)
 const extractMainContentForCopy = (rawContent: string): string => {
-  // Check for unclosed key tags (both think and details are handled by Think Block)
+  // If there are unclosed <think> or <details> tags, return empty string (still streaming)
   const openThinkCount = (rawContent.match(/<think(?:\s[^>]*)?>/gi) || [])
     .length;
   const closeThinkCount = (rawContent.match(/<\/think>/gi) || []).length;
@@ -203,7 +193,6 @@ const extractMainContentForCopy = (rawContent: string): string => {
     .length;
   const closeDetailsCount = (rawContent.match(/<\/details>/gi) || []).length;
 
-  // If there are unclosed tags, content is still being generated, return empty string
   if (
     openThinkCount > closeThinkCount ||
     openDetailsCount > closeDetailsCount
@@ -217,11 +206,11 @@ const extractMainContentForCopy = (rawContent: string): string => {
   const thinkRegex = /<think(?:\s[^>]*)?>[\s\S]*?<\/think>/gi;
   cleanContent = cleanContent.replace(thinkRegex, '');
 
-  // Remove all <details>...</details> blocks (now handled by Think Block)
+  // Remove all <details>...</details> blocks
   const detailsRegex = /<details(?:\s[^>]*)?>[\s\S]*?<\/details>/gi;
   cleanContent = cleanContent.replace(detailsRegex, '');
 
-  // Clean up excess whitespace
+  // Remove extra blank lines
   return cleanContent.replace(/\n\s*\n/g, '\n').trim();
 };
 
@@ -230,28 +219,29 @@ interface AssistantMessageProps {
   content: string;
   isStreaming: boolean;
   wasManuallyStopped: boolean;
-  metadata?: Record<string, any>; // New: Receive message metadata
+  metadata?: Record<string, any>; // Message metadata
   className?: string;
 }
 
 /**
  * Assistant Message Component
- * @description Renders assistant messages with streaming support, think blocks, and markdown content
+ * Renders assistant messages with streaming, think blocks, markdown, references, and actions.
  *
- * @features
- * - Streaming text display with typewriter effect
+ * Features:
+ * - Streaming text with typewriter effect
  * - Think block extraction and rendering
- * - Markdown content processing
+ * - Markdown content rendering
  * - Reference sources display
  * - Message actions (copy, regenerate, feedback)
  *
- * Uses React.memo for performance optimization - only re-renders when props actually change
+ * Uses React.memo for performance optimization.
  */
 export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
   ({ id, content, isStreaming, wasManuallyStopped, metadata, className }) => {
     const { isDark } = useTheme();
     const t = useTranslations('pages.chat');
 
+    // Extract think block and main content from message
     const { hasThinkBlock, thinkContent, mainContent, thinkClosed } = useMemo(
       () => extractThinkContent(content),
       [content]
@@ -263,18 +253,14 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
       setIsOpen(prev => !prev);
     };
 
-    // Preprocess main content, escape custom HTML tags to avoid browser parsing errors
-    // Uses same processing logic as Think Block Content
+    // Preprocess main content: ensure details tags are separated, escape unknown HTML tags
     const preprocessMainContent = (content: string): string => {
-      // Key fix: Ensure details tags have enough blank lines after them to separate markdown content
-      // This prevents rehypeRaw plugin from affecting subsequent markdown parsing
+      // Ensure </details> is followed by two newlines, and <details> is preceded by two newlines if needed
       const processedContent = content
-        // Ensure details closing tag has two newlines after it
         .replace(/(<\/details>)(\s*)([^\s])/g, '$1\n\n$3')
-        // Ensure details opening tag has newline before it (if there's content before)
         .replace(/([^\n])(\s*)(<details[^>]*>)/g, '$1\n\n$3');
 
-      // Define whitelist of known safe HTML tags
+      // Whitelist of allowed HTML tags
       const knownHtmlTags = new Set([
         'div',
         'span',
@@ -319,7 +305,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
         'summary',
       ]);
 
-      // Escape HTML tags not in whitelist, make them display as text
+      // Escape HTML tags not in whitelist
       return processedContent
         .replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
           if (!knownHtmlTags.has(tagName.toLowerCase())) {
@@ -335,23 +321,22 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
         });
     };
 
+    // Calculate the current think block status
     const calculateStatus = (): ThinkBlockStatus => {
       if (hasThinkBlock && thinkClosed) {
         return 'completed';
       }
-
       if (wasManuallyStopped) {
         return hasThinkBlock ? 'stopped' : 'completed';
       }
-
       if (isStreaming && hasThinkBlock && !thinkClosed) {
         return 'thinking';
       }
-
       return 'completed';
     };
     const currentStatus = calculateStatus();
 
+    // Track previous status to control think block open/close animation
     const prevStatusRef = useRef<ThinkBlockStatus>(currentStatus);
 
     useEffect(() => {
@@ -369,15 +354,15 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
       prevStatusRef.current = currentStatus;
     }, [currentStatus]);
 
+    // Markdown rendering components for main content
     const mainMarkdownComponents: Components = {
-      // Use atomic components to render code blocks and inline code
+      // Render code blocks and inline code
       code({ node, className, children, ...props }: any) {
         const match = /language-(\w+)/.exec(className || '');
         const language = match ? match[1] : null;
 
         if (node.position?.start.line !== node.position?.end.line || language) {
-          // Multi-line code or specified language -> code block
-          // Pass AssistantMessage's isStreaming prop to CodeBlock
+          // Multi-line code or specified language: code block
           return (
             <CodeBlock
               language={language}
@@ -389,11 +374,11 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
             </CodeBlock>
           );
         }
-        // Single line code -> inline code
+        // Single line code: inline code
         return <InlineCode {...props}>{children}</InlineCode>;
       },
 
-      // Use atomic components to render table container, define modern th and td styles directly here
+      // Render table container and table cells
       table({ children, ...props }: any) {
         return (
           <MarkdownTableContainer {...props}>{children}</MarkdownTableContainer>
@@ -507,10 +492,10 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
         );
       },
       a({ children, href, ...props }: any) {
-        // Ensure href is string type
+        // Ensure href is a string
         const linkUrl = typeof href === 'string' ? href : '';
 
-        // Image link handling: if link contains image, render as image link
+        // If the link contains an image, render as image link
         const hasImageChild = React.Children.toArray(children).some(
           child =>
             React.isValidElement(child) &&
@@ -559,7 +544,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           );
         }
 
-        // Regular link handling
+        // Regular link
         return (
           <a
             href={href}
@@ -588,21 +573,20 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           />
         );
       },
-      // Image handling: Render images as links to avoid loading jitter issues
-      // If image is inside a link, handled by a component uniformly, return null here to avoid duplicate rendering
+      // Render images as links to avoid loading jitter
+      // If image is inside a link, skip rendering here (handled by parent <a>)
       img({ src, alt, node, ...props }: any) {
-        // Ensure src is string type
+        // Ensure src is a string
         const imageUrl = typeof src === 'string' ? src : '';
 
-        // Check if inside a link (handled by parent a component)
+        // If inside a link, skip rendering
         const isInsideLink = node?.parent?.tagName === 'a';
 
         if (isInsideLink) {
-          // If inside a link, return null, handled by parent a component
           return null;
         }
 
-        // Independent image, create image link
+        // Render image as a link
         return (
           <a
             href={imageUrl}
@@ -668,19 +652,12 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
         )}
 
         {mainContent && (
-          /**
-           * Assistant message main content area style configuration
-           *
-           * New streaming rendering support:
-           * - Uses StreamingMarkdown component for smooth typewriter effect
-           * - Maintains original Markdown rendering capabilities and styles
-           * - Automatically switches rendering modes based on isStreaming state
-           */
+          // Main content area: streaming markdown, references, and actions
           <div
             className={cn(
               'markdown-body main-content-area assistant-message-content w-full text-base',
-              isDark ? 'text-stone-200' : 'text-stone-800', // Switch text color based on theme for consistency
-              !hasThinkBlock ? 'py-2' : 'pt-1 pb-2' // Adjust vertical spacing based on think block presence
+              isDark ? 'text-stone-200' : 'text-stone-800', // Set text color based on theme
+              !hasThinkBlock ? 'py-2' : 'pt-1 pb-2' // Adjust vertical spacing if think block is present
             )}
           >
             <StreamingText
@@ -700,7 +677,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
               )}
             </StreamingText>
 
-            {/* Reference sources and attribution component */}
+            {/* Reference sources and attribution */}
             <ReferenceSources
               retrieverResources={
                 metadata?.dify_retriever_resources ||
@@ -708,10 +685,10 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
               }
               isDark={isDark}
               className="mt-4 mb-2"
-              animationDelay={isStreaming ? 0 : 300} // Delay 300ms display after streaming response ends
+              animationDelay={isStreaming ? 0 : 300} // Delay 300ms after streaming ends
             />
 
-            {/* Assistant message action buttons - Add -ml-2 for left alignment, adjust spacing */}
+            {/* Assistant message action buttons */}
             <AssistantMessageActions
               messageId={id}
               content={extractMainContentForCopy(content) || undefined}
@@ -722,17 +699,17 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
                   isPositive ? 'positive' : 'negative',
                   id
                 )
-              } // Will modify feedback functionality later
+              } // Feedback functionality can be updated later
               isRegenerating={isStreaming}
               className={cn(
                 '-ml-2',
-                // Adjust button top margin based on reference presence
+                // Adjust top margin based on reference presence
                 (
                   metadata?.dify_retriever_resources ||
                   metadata?.dify_metadata?.retriever_resources
                 )?.length > 0
-                  ? 'mt-0' // Normal spacing when references exist
-                  : '-mt-4' // Maintain original negative spacing when no references
+                  ? 'mt-0' // Normal spacing if references exist
+                  : '-mt-4' // Negative spacing if no references
               )}
             />
           </div>
@@ -742,5 +719,5 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
   }
 );
 
-// Add displayName property for React DevTools debugging
+// Set displayName for React DevTools
 AssistantMessage.displayName = 'AssistantMessage';

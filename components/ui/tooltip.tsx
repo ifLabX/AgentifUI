@@ -20,12 +20,12 @@ export interface TooltipProps {
   delayHide?: number;
 }
 
-// 工具函数，用于合并类名
+// Utility function, used to merge class names
 const cn = (...classes: (string | boolean | undefined)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
-// 全局状态，确保在组件外部定义
+// Global state, ensure it is defined outside the component
 let activeTooltipId: string | null = null;
 const listeners: ((id: string | null) => void)[] = [];
 
@@ -55,14 +55,14 @@ const tooltipState = {
   },
 };
 
-// Tooltip容器组件
+// Tooltip container component
 export function TooltipContainer() {
   const [_isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
 
-    // 确保容器存在
+    // Ensure the container exists
     if (!document.getElementById('tooltip-root')) {
       const tooltipRoot = document.createElement('div');
       tooltipRoot.id = 'tooltip-root';
@@ -74,7 +74,7 @@ export function TooltipContainer() {
     return () => setIsMounted(false);
   }, []);
 
-  return null; // 不需要渲染任何内容，因为我们已经在useEffect中创建了容器
+  return null; // No need to render anything, because we have created the container in useEffect
 }
 
 export function Tooltip({
@@ -85,7 +85,7 @@ export function Tooltip({
   size = 'md',
   showArrow = true,
   className,
-  delayShow = 100, // 减少延迟，使响应更快
+  delayShow = 100, // Reduce delay, make response faster
   delayHide = 100,
 }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -95,10 +95,10 @@ export function Tooltip({
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 检测是否为暗色模式（简化版）
-  const isDark = false; // 默认使用亮色模式
+  // Detect if it is dark mode (simplified version)
+  const isDark = false; // Default use light mode
 
-  // 根据尺寸获取样式
+  // Get the style based on the size
   const getSizeStyles = () => {
     switch (size) {
       case 'sm':
@@ -119,17 +119,17 @@ export function Tooltip({
 
   const sizeStyles = getSizeStyles();
 
-  // 客户端挂载检测
+  // Client-side mount detection
   useEffect(() => {
     setMounted(true);
 
-    // 订阅全局tooltip状态
+    // Subscribe to the global tooltip state
     const unsubscribe = tooltipState.subscribe(activeId => {
       setIsVisible(activeId === id);
     });
 
     return () => {
-      // 不要在清理函数中调用 setMounted(false)，这可能导致无限循环更新
+      // Do not call setMounted(false) in the cleanup function, this may cause an infinite loop update
       unsubscribe();
     };
   }, [id]);
@@ -143,13 +143,13 @@ export function Tooltip({
     const tooltipEl = tooltipRef.current;
     const triggerRect = triggerRef.current.getBoundingClientRect();
 
-    // 先让tooltip可见但置于屏幕外以便测量尺寸
+    // First make the tooltip visible but outside the screen to measure the size
     tooltipEl.style.visibility = 'hidden';
     tooltipEl.style.position = 'fixed';
     tooltipEl.style.top = '-9999px';
     tooltipEl.style.left = '-9999px';
 
-    // 获取tooltip尺寸
+    // Get the tooltip size
     const tooltipRect = tooltipEl.getBoundingClientRect();
 
     if (tooltipRect.width === 0 || tooltipRect.height === 0) {
@@ -157,10 +157,10 @@ export function Tooltip({
       return;
     }
 
-    // 计算位置
+    // Calculate the position
     let top: number;
     let left: number;
-    // tooltip与触发元素之间的间隙 - 右侧placement增加距离
+    // The gap between the tooltip and the trigger element - the right placement increases the distance
     const gap = placement === 'right' ? 10 : 8;
     let effectivePlacement = placement;
 
@@ -186,23 +186,23 @@ export function Tooltip({
         left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
     }
 
-    // 边界检查
+    // Boundary check
     const viewportWidth =
       window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight =
       window.innerHeight || document.documentElement.clientHeight;
-    const margin = 10; // 视口边缘的最小间距
+    const margin = 10; // The minimum distance from the edge of the viewport
 
-    // 水平边界检查
+    // Horizontal boundary check
     if (left < margin) {
       left = margin;
     } else if (left + tooltipRect.width > viewportWidth - margin) {
       left = viewportWidth - tooltipRect.width - margin;
     }
 
-    // 垂直边界检查，包括翻转逻辑
+    // Vertical boundary check, including flip logic
     if (placement === 'top' && top < margin) {
-      // 尝试向下翻转
+      // Try to flip down
       const newTop = triggerRect.bottom + gap;
       if (newTop + tooltipRect.height <= viewportHeight - margin) {
         top = newTop;
@@ -214,7 +214,7 @@ export function Tooltip({
       placement === 'bottom' &&
       top + tooltipRect.height > viewportHeight - margin
     ) {
-      // 尝试向上翻转
+      // Try to flip up
       const newTop = triggerRect.top - tooltipRect.height - gap;
       if (newTop >= margin) {
         top = newTop;
@@ -224,17 +224,17 @@ export function Tooltip({
       }
     }
 
-    // 应用最终定位
+    // Apply the final position
     tooltipEl.style.top = `${top}px`;
     tooltipEl.style.left = `${left}px`;
     tooltipEl.style.visibility = 'visible';
 
-    // 更新箭头方向
+    // Update the arrow direction
     tooltipEl.setAttribute('data-placement', effectivePlacement);
   };
 
   const handleMouseEnter = () => {
-    // 检测是否为移动设备（简化版）
+    // Detect if it is a mobile device (simplified version)
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     if (isMobile) return;
 
@@ -243,7 +243,7 @@ export function Tooltip({
       hideTimeoutRef.current = null;
     }
 
-    // 添加调试信息
+    // Add debug information
     // console.log(`Mouse enter on tooltip ${id}, setting timeout to show`)
 
     showTimeoutRef.current = setTimeout(() => {
@@ -258,7 +258,7 @@ export function Tooltip({
       showTimeoutRef.current = null;
     }
 
-    // 添加调试信息
+    // Add debug information
     // console.log(`Mouse leave on tooltip ${id}, setting timeout to hide`)
 
     hideTimeoutRef.current = setTimeout(() => {
@@ -267,7 +267,7 @@ export function Tooltip({
     }, delayHide);
   };
 
-  // 当tooltip可见性变化时，更新其位置
+  // When the tooltip visibility changes, update its position
   useEffect(() => {
     // console.log(`Tooltip ${id} visibility changed to: ${isVisible}`)
 
@@ -277,7 +277,7 @@ export function Tooltip({
     }
   }, [isVisible, id]);
 
-  // 监听滚动和窗口大小调整事件
+  // Listen for scroll and window size adjustment events
   useEffect(() => {
     if (!isVisible) return;
 
@@ -293,7 +293,7 @@ export function Tooltip({
     };
   }, [isVisible]);
 
-  // 组件卸载时清理定时器
+  // Clean up the timer when the component is unmounted
   useEffect(() => {
     return () => {
       if (showTimeoutRef.current) clearTimeout(showTimeoutRef.current);
@@ -301,28 +301,28 @@ export function Tooltip({
     };
   }, []);
 
-  // 检测是否为移动设备（简化版）
+  // Detect if it is a mobile device (simplified version)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-  // 在移动设备上不渲染tooltip
+  // Do not render the tooltip on mobile devices
   if (isMobile) {
     return <>{children}</>;
   }
 
   return (
     <>
-      {/* 触发器元素 */}
+      {/* Trigger element */}
       <div
         ref={triggerRef}
         className="inline-block"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        data-tooltip-id={id} // 添加数据属性，便于调试
+        data-tooltip-id={id} // Add data attribute for debugging
       >
         {children}
       </div>
 
-      {/* Tooltip内容 */}
+      {/* Tooltip content */}
       {mounted &&
         createPortal(
           <div
@@ -336,7 +336,7 @@ export function Tooltip({
               left: '-9999px',
             }}
             data-placement={placement}
-            data-tooltip-content-id={id} // 添加数据属性，便于调试
+            data-tooltip-content-id={id} // Add data attribute for debugging
           >
             <div
               className={cn(
@@ -352,7 +352,7 @@ export function Tooltip({
               onMouseLeave={handleMouseLeave}
             >
               {content}
-              {/* 箭头元素 - 可选显示 */}
+              {/* Arrow element - optional display */}
               {showArrow && (
                 <div
                   className={cn(
@@ -377,7 +377,7 @@ export function Tooltip({
   );
 }
 
-// 简化的TooltipProvider组件，只负责渲染TooltipContainer
+// Simplified TooltipProvider component, only responsible for rendering TooltipContainer
 export function TooltipProvider({ children }: { children: React.ReactNode }) {
   return (
     <>

@@ -19,13 +19,13 @@ export function SidebarFooter() {
   const { isExpanded } = useSidebarStore();
   const t = useTranslations('sidebar');
 
-  // 🎯 设置页面激活状态检测
+  // 🎯 Check the activation status of the settings page
   const isSettingsActive = pathname === '/settings';
 
   return (
     <div className={cn('mt-auto flex flex-col gap-1.5 p-3')}>
       {!isMobile &&
-        // 在slim状态下显示右侧tooltip，展开状态下不显示tooltip
+        // Display the right tooltip in slim state, do not display the tooltip in expanded state
         (isExpanded ? (
           <SidebarButton
             icon={

@@ -1,7 +1,7 @@
 /**
- * 消息骨架屏组件
+ * Message skeleton component
  *
- * 用于消息加载时显示的占位效果
+ * Used as a placeholder effect when messages are loading
  */
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
@@ -18,7 +18,7 @@ export function MessageSkeleton() {
           : 'linear-gradient(to bottom, rgba(245, 245, 245, 1), rgba(245, 245, 245, 0.3))',
       }}
     >
-      {/* 用户消息骨架 */}
+      {/* User message skeleton */}
       <div className="flex justify-end">
         <div
           className={cn(
@@ -32,7 +32,7 @@ export function MessageSkeleton() {
         </div>
       </div>
 
-      {/* 助手消息骨架 */}
+      {/* Assistant message skeleton */}
       <div className="flex justify-start">
         <div
           className={cn(
@@ -52,7 +52,7 @@ export function MessageSkeleton() {
   );
 }
 
-// 添加 MessageSkeletonGroup 组件，用于显示多个消息骨架屏
+// MessageSkeletonGroup component, used to display multiple message skeletons
 interface MessageSkeletonGroupProps {
   count?: number;
   className?: string;

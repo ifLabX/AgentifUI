@@ -16,6 +16,8 @@ import { AlertCircle, RefreshCw, X } from 'lucide-react';
 
 import React, { useCallback, useRef, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { TextGenerationResultViewer } from './text-generation-result-viewer';
 import { TextGenerationTracker } from './text-generation-tracker';
 
@@ -24,22 +26,23 @@ interface TextGenerationLayoutProps {
 }
 
 /**
- * 文本生成主布局组件
+ * Text generation main layout component
  *
- * 布局特点：
- * - 桌面端：左右分栏布局（表单 + 跟踪器）
- * - 移动端：标签切换布局
- * - 可折叠的历史记录侧边栏
- * - 复用workflow的状态管理和数据流
- * - 适配文本生成的流式输出特点
+ * Layout characteristics:
+ * - Desktop: left and right split layout (form + tracker)
+ * - Mobile: tab switching layout
+ * - Collapsible history sidebar
+ * - Reuse workflow state management and data flow
+ * - Adapt to the streaming output characteristics of text generation
  */
 export function TextGenerationLayout({
   instanceId,
 }: TextGenerationLayoutProps) {
   const { isDark } = useTheme();
   const isMobile = useMobile();
+  const t = useTranslations('pages.textGeneration.buttons');
 
-  // --- 文本生成执行系统 ---
+  // --- Text generation execution system ---
   const {
     isExecuting,
     isStreaming,
@@ -53,94 +56,97 @@ export function TextGenerationLayout({
     resetTextGeneration,
   } = useTextGenerationExecution(instanceId);
 
-  // --- 保留原有状态管理 ---
+  // --- Preserve the original state management ---
   const { showHistory, setShowHistory } = useWorkflowHistoryStore();
   const [mobileActiveTab, setMobileActiveTab] = useState<
     'form' | 'tracker' | 'history'
   >('form');
 
-  // --- 结果查看器状态 ---
+  // --- Result viewer state ---
   const [showResultViewer, setShowResultViewer] = useState(false);
   const [viewerResult, setViewerResult] = useState<any>(null);
   const [viewerExecution, setViewerExecution] = useState<any>(null);
 
-  // --- 表单重置引用 ---
+  // --- Form reset reference ---
   const formResetRef = useRef<WorkflowInputFormRef>(null);
 
-  // --- 文本生成执行回调 ---
+  // --- Text generation execution callback ---
   const handleExecuteTextGeneration = useCallback(
     async (formData: Record<string, any>) => {
-      console.log('[文本生成布局] 开始执行文本生成，输入数据:', formData);
+      console.log(
+        '[Text generation layout] Start executing text generation, input data:',
+        formData
+      );
 
       try {
         await executeTextGeneration(formData);
       } catch (error) {
-        console.error('[文本生成布局] 执行失败:', error);
+        console.error('[Text generation layout] Execution failed:', error);
       }
     },
     [executeTextGeneration]
   );
 
-  // --- 停止执行 ---
+  // --- Stop execution ---
   const handleStopExecution = useCallback(async () => {
-    console.log('[文本生成布局] 停止执行');
+    console.log('[Text generation layout] Stop execution');
     try {
       await stopTextGeneration();
     } catch (error) {
-      console.error('[文本生成布局] 停止执行失败:', error);
+      console.error('[Text generation layout] Stop execution failed:', error);
     }
   }, [stopTextGeneration]);
 
-  // --- 重试执行 ---
+  // --- Retry execution ---
   const handleRetryExecution = useCallback(async () => {
-    console.log('[文本生成布局] 重试执行');
+    console.log('[Text generation layout] Retry execution');
     try {
       await retryTextGeneration();
     } catch (error) {
-      console.error('[文本生成布局] 重试执行失败:', error);
+      console.error('[Text generation layout] Retry execution failed:', error);
     }
   }, [retryTextGeneration]);
 
-  // --- 完全重置（包括表单） ---
+  // --- Complete reset (including form) ---
   const handleCompleteReset = useCallback(() => {
-    console.log('[文本生成布局] 完全重置');
+    console.log('[Text generation layout] Complete reset');
 
-    // 重置执行状态
+    // Reset execution state
     resetTextGeneration();
 
-    // 重置表单
+    // Reset form
     if (formResetRef.current?.resetForm) {
       formResetRef.current.resetForm();
     }
   }, [resetTextGeneration]);
 
-  // --- 清除错误 ---
+  // --- Clear error ---
   const handleClearError = useCallback(() => {
-    console.log('[文本生成布局] 清除错误');
-    // 这里可以添加清除错误的逻辑
+    console.log('[Text generation layout] Clear error');
+    // Here you can add the logic to clear the error
   }, []);
 
-  // --- 节点状态更新回调（文本生成不需要，但保持接口一致） ---
+  // --- Node status update callback (text generation does not need it, but keep the interface consistent) ---
   const handleNodeUpdate = useCallback((event: any) => {
-    console.log('[文本生成布局] 节点更新:', event);
+    console.log('[Text generation layout] Node update:', event);
   }, []);
 
-  // --- 查看结果回调 ---
+  // --- View result callback ---
   const handleViewResult = useCallback((result: any, execution: any) => {
-    console.log('[文本生成布局] 查看结果:', result, execution);
+    console.log('[Text generation layout] View result:', result, execution);
     setViewerResult(result);
     setViewerExecution(execution);
     setShowResultViewer(true);
   }, []);
 
-  // --- 关闭结果查看器 ---
+  // --- Close result viewer ---
   const handleCloseResultViewer = useCallback(() => {
     setShowResultViewer(false);
     setViewerResult(null);
     setViewerExecution(null);
   }, []);
 
-  // --- 错误提示组件 ---
+  // --- Error prompt component ---
   const ErrorBanner = ({
     error,
     canRetry,
@@ -172,7 +178,7 @@ export function TextGenerationLayout({
                 ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
                 : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
             )}
-            title="重试"
+            title={t('retry')}
           >
             <RefreshCw className="h-4 w-4" />
           </button>
@@ -185,7 +191,7 @@ export function TextGenerationLayout({
               ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
               : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
           )}
-          title="关闭"
+          title={t('close')}
         >
           <X className="h-4 w-4" />
         </button>
@@ -193,11 +199,11 @@ export function TextGenerationLayout({
     </div>
   );
 
-  // --- 移动端布局 ---
+  // --- Mobile layout ---
   if (isMobile) {
     return (
       <div className="flex h-full flex-col overflow-hidden">
-        {/* 全局错误提示 */}
+        {/* Global error prompt */}
         {error && (
           <ErrorBanner
             error={error}
@@ -207,14 +213,14 @@ export function TextGenerationLayout({
           />
         )}
 
-        {/* 移动端标签切换器 */}
+        {/* Mobile tab switcher */}
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
           onTabChange={setMobileActiveTab}
           hasHistory={showHistory}
         />
 
-        {/* 内容区域 */}
+        {/* Content area */}
         <div className="flex-1 overflow-hidden">
           {mobileActiveTab === 'form' && (
             <div className="h-full p-4">
@@ -253,7 +259,7 @@ export function TextGenerationLayout({
           )}
         </div>
 
-        {/* 结果查看器弹窗 */}
+        {/* Result viewer popup */}
         {showResultViewer && viewerResult && viewerExecution && (
           <TextGenerationResultViewer
             result={viewerResult}
@@ -265,10 +271,10 @@ export function TextGenerationLayout({
     );
   }
 
-  // --- 桌面端布局 ---
+  // --- Desktop layout ---
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
-      {/* 全局错误提示 */}
+      {/* Global error prompt */}
       {error && (
         <ErrorBanner
           error={error}
@@ -279,7 +285,7 @@ export function TextGenerationLayout({
       )}
 
       <div className="flex flex-1 overflow-hidden">
-        {/* 主内容区域 */}
+        {/* Main content area */}
         <div
           className={cn(
             'relative flex-1 overflow-hidden transition-all duration-300',
@@ -321,13 +327,13 @@ export function TextGenerationLayout({
           />
         </div>
 
-        {/* 历史记录侧边栏 */}
+        {/* History sidebar */}
         {showHistory && (
           <div
             className={cn(
               'w-80 min-w-72 overflow-hidden border-l',
               'transition-all duration-300 ease-in-out',
-              'transform-gpu', // 使用GPU加速
+              'transform-gpu', // Use GPU acceleration
               isDark ? 'border-stone-700' : 'border-stone-200'
             )}
           >
@@ -341,7 +347,7 @@ export function TextGenerationLayout({
         )}
       </div>
 
-      {/* 结果查看器弹窗 */}
+      {/* Result viewer popup */}
       {showResultViewer && viewerResult && viewerExecution && (
         <TextGenerationResultViewer
           result={viewerResult}

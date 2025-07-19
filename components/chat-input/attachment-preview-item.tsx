@@ -14,8 +14,8 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 
 /**
- * 单个附件预览项的 Props 定义
- * 使用石色(stone)调色板，与应用整体风格一致
+ * Props for a single attachment preview item.
+ * Uses the stone color palette to match the overall app style.
  */
 interface AttachmentPreviewItemProps {
   attachment: AttachmentFile;
@@ -24,8 +24,8 @@ interface AttachmentPreviewItemProps {
 }
 
 /**
- * 圆形进度条组件 (无文字)
- * 使用石色(stone)调色板，与应用整体风格一致
+ * Circular progress bar component (no text).
+ * Uses the stone color palette to match the overall app style.
  */
 const CircularProgress: React.FC<{
   progress: number;
@@ -35,7 +35,7 @@ const CircularProgress: React.FC<{
 }> = ({ progress, size = 20, strokeWidth = 2, isDark = false }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  // 确保进度在 0-100 之间，防止 offset 计算错误
+  // Ensure progress is between 0-100 to prevent offset calculation errors
   const safeProgress = Math.max(0, Math.min(100, progress));
   const offset = circumference - (safeProgress / 100) * circumference;
 
@@ -45,10 +45,10 @@ const CircularProgress: React.FC<{
       height={size}
       className="absolute inset-0 m-auto -rotate-90 transform"
     >
-      {/* 背景圆环 */}
+      {/* Background ring */}
       <circle
         className={cn(
-          isDark ? 'text-stone-600' : 'text-stone-300' // 石色背景环
+          isDark ? 'text-stone-600' : 'text-stone-300' // Stone color background ring
         )}
         strokeWidth={strokeWidth}
         stroke="currentColor"
@@ -57,11 +57,11 @@ const CircularProgress: React.FC<{
         cx={size / 2}
         cy={size / 2}
       />
-      {/* 进度圆环 */}
+      {/* Progress ring */}
       <circle
         className={cn(
           'transition-all duration-300 ease-linear',
-          isDark ? 'text-stone-300' : 'text-stone-700' // 石色进度环
+          isDark ? 'text-stone-300' : 'text-stone-700' // Stone color progress ring
         )}
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
@@ -78,8 +78,8 @@ const CircularProgress: React.FC<{
 };
 
 /**
- * 单个附件预览项组件 (简约风格)
- * 使用石色(stone)调色板，与应用整体风格一致
+ * Single attachment preview item component (minimalist style).
+ * Uses the stone color palette to match the overall app style.
  */
 export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
   attachment,
@@ -89,16 +89,19 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
   const removeFile = useAttachmentStore(state => state.removeFile);
   const t = useTranslations('common.ui');
 
+  // Remove file handler
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
     removeFile(attachment.id);
   };
 
+  // Retry upload handler
   const handleRetryClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onRetry(attachment.id);
   };
 
+  // Render status icon based on attachment status
   const StatusIcon = () => {
     switch (attachment.status) {
       case 'uploading':

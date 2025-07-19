@@ -31,13 +31,13 @@ interface UnifiedStatusPanelProps {
 }
 
 /**
- * 统一的工作流状态面板
+ * Unified workflow status panel
  *
- * 合并了ExecutionControlPanel和WorkflowStatus的功能：
- * - 显示执行状态和进度
- * - 提供操作按钮（停止、重试、重置、查看结果）
- * - 显示执行时间和进度条
- * - 统一的视觉设计
+ * Merges the functionality of ExecutionControlPanel and WorkflowStatus:
+ * - Displays execution status and progress
+ * - Provides operation buttons (stop, retry, reset, view result)
+ * - Displays execution time and progress bar
+ * - Unified visual design
  */
 export function UnifiedStatusPanel({
   isExecuting,
@@ -107,14 +107,14 @@ export function UnifiedStatusPanel({
     <div
       className={cn(
         'flex-shrink-0 px-6 pt-2 pb-3'
-        // 去掉分割线和背景，融入页面
+        // Remove the split line and background, integrate into the page
       )}
     >
       <div className="space-y-3">
-        {/* 主状态行 - 只在有状态时显示 */}
+        {/* Main status row - only displayed when there is a status */}
         {(isExecuting || currentExecution || error) && (
           <div className="flex items-center justify-between">
-            {/* 左侧：状态信息 */}
+            {/* Left: status information */}
             <div className="flex items-center gap-3">
               <div className={cn('flex items-center gap-2', statusInfo.color)}>
                 {statusInfo.icon}
@@ -124,9 +124,9 @@ export function UnifiedStatusPanel({
               </div>
             </div>
 
-            {/* 右侧：主要操作按钮 */}
+            {/* Right: main operation buttons */}
             <div className="flex items-center gap-2">
-              {/* 查看结果按钮 */}
+              {/* View result button */}
               {showResultButton &&
                 overallStatus === 'completed' &&
                 currentExecution?.outputs && (
@@ -144,7 +144,7 @@ export function UnifiedStatusPanel({
                   </button>
                 )}
 
-              {/* 停止按钮 */}
+              {/* Stop button */}
               {isExecuting && (
                 <button
                   onClick={onStop}
@@ -161,7 +161,7 @@ export function UnifiedStatusPanel({
                 </button>
               )}
 
-              {/* 重试按钮 */}
+              {/* Retry button */}
               {error && canRetry && (
                 <button
                   onClick={onRetry}
@@ -178,7 +178,7 @@ export function UnifiedStatusPanel({
                 </button>
               )}
 
-              {/* 重置按钮 */}
+              {/* Reset button */}
               {(currentExecution || error) && !isExecuting && (
                 <button
                   onClick={onReset}
@@ -198,10 +198,10 @@ export function UnifiedStatusPanel({
           </div>
         )}
 
-        {/* 详细信息行 */}
+        {/* Detailed information row */}
         {(currentExecution?.elapsed_time || error) && (
           <div className="flex items-center gap-6">
-            {/* 执行时间 */}
+            {/* Execution time */}
             {currentExecution?.elapsed_time && (
               <div
                 className={cn(
@@ -218,7 +218,7 @@ export function UnifiedStatusPanel({
               </div>
             )}
 
-            {/* 错误信息 */}
+            {/* Error information */}
             {error && (
               <div
                 className={cn(

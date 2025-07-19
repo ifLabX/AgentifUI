@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 头像裁切组件接口
+// Avatar cropper component interface
 interface AvatarCropperProps {
   imageUrl: string;
   onConfirm: (croppedFile: File) => void;
@@ -19,7 +19,7 @@ interface AvatarCropperProps {
   colors: any;
 }
 
-// 裁切状态接口
+// Crop state interface
 interface CropState {
   crop: { x: number; y: number };
   zoom: number;
@@ -42,7 +42,7 @@ export function AvatarCropper({
     croppedAreaPixels: null,
   });
 
-  // 简化滑块样式 - 连接式设计
+  // Simplify slider style - connected design
   const sliderStyles = `
     .custom-slider {
       -webkit-appearance: none;
@@ -98,7 +98,7 @@ export function AvatarCropper({
     }
   `;
 
-  // 裁切完成回调
+  // Crop complete callback
   const onCropComplete = useCallback(
     (croppedArea: Area, croppedAreaPixels: Area) => {
       setCropState(prev => ({
@@ -109,7 +109,7 @@ export function AvatarCropper({
     []
   );
 
-  // 确认裁切
+  // Confirm crop
   const handleConfirm = useCallback(async () => {
     if (!cropState.croppedAreaPixels) return;
 
@@ -128,13 +128,13 @@ export function AvatarCropper({
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: sliderStyles }} />
-      {/* 裁切器容器 */}
+      {/* Cropper container */}
       <div className="relative h-80 w-full overflow-hidden rounded-lg bg-black">
         <Cropper
           image={imageUrl}
           crop={cropState.crop}
           zoom={cropState.zoom}
-          aspect={1} // 1:1 圆形头像比例
+          aspect={1} // 1:1 circular avatar ratio
           onCropChange={crop => setCropState(prev => ({ ...prev, crop }))}
           onZoomChange={zoom => setCropState(prev => ({ ...prev, zoom }))}
           onCropComplete={onCropComplete}
@@ -143,9 +143,9 @@ export function AvatarCropper({
         />
       </div>
 
-      {/* 裁切控制区域 */}
+      {/* Crop control area */}
       <div className="space-y-4">
-        {/* 缩放控制 */}
+        {/* Zoom control */}
         <div className="space-y-2">
           <label
             className={cn('text-sm font-medium', colors.textColor.tailwind)}
@@ -165,7 +165,7 @@ export function AvatarCropper({
           />
         </div>
 
-        {/* 裁切操作按钮 */}
+        {/* Crop operation button */}
         <div className="flex gap-3">
           <button
             onClick={onCancel}

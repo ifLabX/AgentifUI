@@ -9,10 +9,10 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 
-// 复用相同的设置项定义
+// Reuse the same settings item definition
 import { getSettingsNavItems } from './settings-sidebar';
 
-// 设置项类型定义
+// Settings item type definition
 type SettingsNavItem = {
   title: string;
   href: string;
@@ -26,12 +26,12 @@ export function SettingsMobileNav() {
   const t = useTranslations('pages.settings');
   const [isOpen, setIsOpen] = useState(false);
 
-  // 根据当前路径获取当前选中的导航项
-  // 根据当前路径查找匹配的导航项
+  // Get the currently selected navigation item based on the current path
+  // Find the matching navigation item based on the current path
   const navItems = getSettingsNavItems(t);
   const currentItem =
     navItems.find((item: SettingsNavItem) => item.href === pathname) ||
-    navItems[0]; // 默认使用第一项（概览）
+    navItems[0]; // Default to use the first item (overview)
 
   const handleSelectChange = (path: string) => {
     router.push(path);

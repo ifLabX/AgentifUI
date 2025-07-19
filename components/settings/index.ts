@@ -1,12 +1,12 @@
-// 设置相关组件统一导出
-// 个人资料设置
+// Export all settings related components
+// Profile settings
 export * from './profile';
 
-// 账户设置
+// Account settings
 export * from './account';
 
-// 外观设置
+// Appearance settings
 export * from './appearance';
 
-// 导航设置
+// Navigation settings
 export * from './navigation';

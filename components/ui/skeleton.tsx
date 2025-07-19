@@ -9,7 +9,7 @@ interface SkeletonProps {
   height?: string | number;
 }
 
-// 基础骨架屏组件
+// Basic skeleton component
 export function Skeleton({ className, width, height }: SkeletonProps) {
   const { isDark } = useTheme();
 
@@ -38,7 +38,7 @@ export function Skeleton({ className, width, height }: SkeletonProps) {
   );
 }
 
-// 文本输入框骨架屏
+// Text input skeleton
 export function InputSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn('space-y-2', className)}>
@@ -48,22 +48,22 @@ export function InputSkeleton({ className }: { className?: string }) {
   );
 }
 
-// 按钮骨架屏
+// Button skeleton
 export function ButtonSkeleton({ className }: { className?: string }) {
   return <Skeleton className={cn('h-10 w-full', className)} />;
 }
 
-// 头像骨架屏
+// Avatar skeleton
 export function AvatarSkeleton({ size = 40 }: { size?: number }) {
   return <Skeleton className="rounded-full" width={size} height={size} />;
 }
 
-// 标题骨架屏
+// Title skeleton
 export function TitleSkeleton({ width = '1/3' }: { width?: string }) {
   return <Skeleton className={`h-8 w-${width} mb-6`} />;
 }
 
-// 资料表单骨架屏
+// Profile form skeleton
 export function ProfileFormSkeleton() {
   return (
     <div className="mx-auto w-full max-w-md space-y-6 p-4">
@@ -77,7 +77,7 @@ export function ProfileFormSkeleton() {
   );
 }
 
-// 聊天消息骨架屏
+// Chat message skeleton
 export function ChatMessageSkeleton() {
   return (
     <div className="mb-4 flex items-start space-x-3">
@@ -90,7 +90,7 @@ export function ChatMessageSkeleton() {
   );
 }
 
-// 聊天列表骨架屏
+// Chat list skeleton
 export function ChatListSkeleton({
   messageCount = 3,
 }: {
@@ -105,7 +105,7 @@ export function ChatListSkeleton({
   );
 }
 
-// 卡片骨架屏
+// Card skeleton
 export function CardSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn('rounded-lg p-4', className)}>
@@ -116,7 +116,7 @@ export function CardSkeleton({ className }: { className?: string }) {
   );
 }
 
-// 表格骨架屏
+// Table skeleton
 export function TableSkeleton({
   rows = 3,
   className,
@@ -144,19 +144,19 @@ export function TableSkeleton({
   );
 }
 
-// API配置页面骨架屏
+// API configuration page skeleton
 export function ApiConfigSkeleton() {
   const { isDark } = useTheme();
 
   return (
     <div className="space-y-8">
-      {/* 标题区域 */}
+      {/* Title area */}
       <div className="space-y-2">
         <Skeleton className="h-10 w-1/3" />
         <Skeleton className="h-5 w-2/3" />
       </div>
 
-      {/* API密钥管理提示区域 */}
+      {/* API key management prompt area */}
       <div
         className={cn(
           'rounded-lg border p-4',
@@ -191,7 +191,7 @@ export function ApiConfigSkeleton() {
         />
       </div>
 
-      {/* 选项卡区域 */}
+      {/* Tab area */}
       <div>
         <div
           className={cn(
@@ -203,14 +203,14 @@ export function ApiConfigSkeleton() {
           <Skeleton className="h-10 w-24" />
         </div>
 
-        {/* 应用实例列表区域 */}
+        {/* Application instance list area */}
         <div className="space-y-6">
           <div className="mb-4 flex items-center justify-between">
             <Skeleton className="h-8 w-1/4" />
             <Skeleton className="h-10 w-32" />
           </div>
 
-          {/* 表格 - 使用卡片包裹 */}
+          {/* Table - use card wrapper */}
           <div
             className={cn(
               'overflow-hidden rounded-lg border',
@@ -219,7 +219,7 @@ export function ApiConfigSkeleton() {
                 : 'border-stone-300/50 bg-white'
             )}
           >
-            {/* 表头 */}
+            {/* Table header */}
             <div
               className={cn(
                 'flex p-4',
@@ -233,7 +233,7 @@ export function ApiConfigSkeleton() {
               <Skeleton className="h-6 w-1/5" />
             </div>
 
-            {/* 表行 */}
+            {/* Table row */}
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}

@@ -1,5 +1,5 @@
 /**
- * 消息加载指示器组件
+ * Message loading indicator component
  */
 import { LoadingState } from '@lib/hooks/use-conversation-messages';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
@@ -28,8 +28,8 @@ export function MessagesLoadingIndicator({
   const t = useTranslations('loading');
   const [isAtTop, setIsAtTop] = useState(false);
 
-  // 监听滚动容器的滚动事件
-  // 使用防抖处理并延迟初始检测，避免初始加载完成后立即触发加载更多
+  // Listen to scroll events on the scroll container.
+  // Use debounce and delay initial check to avoid triggering load more immediately after initial load.
   const initialCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isInitialLoadCompleteRef = useRef<boolean>(false);
@@ -39,21 +39,21 @@ export function MessagesLoadingIndicator({
       const container = e.target as HTMLElement;
       if (!container) return;
 
-      // 清除之前的延时
+      // Clear previous debounce timeout
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      // 添加一个防抖延迟，避免滚动过程中频繁触发
+      // Add debounce delay to avoid frequent triggers during scrolling
       scrollTimeoutRef.current = setTimeout(() => {
-        // 只有在初始加载完成后才允许设置顶部状态
+        // Only allow setting top state after initial load is complete
         if (isInitialLoadCompleteRef.current) {
           setIsAtTop(container.scrollTop < 50);
         }
       }, 200);
     };
 
-    // 获取滚动容器
+    // Get the scroll container
     const scrollContainer = document.querySelector('.chat-scroll-container');
 
     if (scrollContainer) {
@@ -61,11 +61,11 @@ export function MessagesLoadingIndicator({
         passive: true,
       });
 
-      // 延迟初始检查，等待初始加载完成
+      // Delay initial check, wait for initial load to complete
       initialCheckTimeoutRef.current = setTimeout(() => {
         isInitialLoadCompleteRef.current = true;
         handleScroll({ target: scrollContainer } as unknown as Event);
-      }, 1000); // 当初始加载完成并居中后，等待1秒才允许进行顶部检测
+      }, 1000); // After initial load and centering, wait 1s before allowing top detection
 
       return () => {
         if (scrollTimeoutRef.current) {
@@ -79,7 +79,7 @@ export function MessagesLoadingIndicator({
     }
   }, []);
 
-  // 如果有错误，显示错误信息
+  // If there is an error, show error message
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-4">
@@ -106,7 +106,7 @@ export function MessagesLoadingIndicator({
     );
   }
 
-  // 正在加载中
+  // Show loading indicator when loading more messages
   if (loadingState === 'loading' && isLoadingMore) {
     return (
       <div className="flex justify-center py-4">
@@ -123,7 +123,7 @@ export function MessagesLoadingIndicator({
     );
   }
 
-  // 只有既有更多消息可加载，又滚动到了顶部，且不在加载过程中，才显示"加载更多"按钮
+  // Show "load more" button only if there are more messages, at top, and not currently loading
   if (hasMoreMessages && isAtTop && loadingState !== 'loading') {
     return (
       <div className="flex justify-center py-4">
@@ -145,6 +145,7 @@ export function MessagesLoadingIndicator({
   return null;
 }
 
+// Simple loading spinner component
 function LoadingSpinner() {
   return (
     <svg

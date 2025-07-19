@@ -15,9 +15,9 @@ interface HistoryButtonProps {
 }
 
 /**
- * 历史记录按钮组件
+ * History button component
  *
- * 固定在右上角的浮动按钮，用于打开/关闭历史记录侧边栏
+ * Fixed floating button at the top right corner, used to open/close the history sidebar
  */
 export function HistoryButton({
   onClick,

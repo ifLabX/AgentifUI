@@ -29,14 +29,14 @@ export const ChatButton = ({
   forceActiveStyle = false,
 }: ChatButtonProps) => {
   const isMounted = useMounted();
-  // 获取主题颜色
+  // Get theme colors
   const { colors } = useThemeColors();
 
   if (!isMounted) {
     return null;
   }
 
-  // 功能按钮 - 带有渐变感觉的浅灰色边框
+  // Function button - with subtle gray border
   if (variant === 'function') {
     return (
       <UIButton
@@ -61,7 +61,7 @@ export const ChatButton = ({
     );
   }
 
-  // 提交/上传按钮 - 空状态为深灰色
+  // Submit/upload button - empty state is dark gray
   return (
     <UIButton
       type="button"

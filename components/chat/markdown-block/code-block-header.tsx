@@ -11,17 +11,15 @@ import { ExportButton } from './export-button';
 interface CodeBlockHeaderProps {
   language: string | null;
   className?: string;
-  codeContent?: string; // 代码内容属性用于复制功能
+  codeContent?: string; // code content prop for copy functionality
 }
 
-// 使用 React.memo 包装组件，防止不必要的重新渲染
-
-// 使用 React.memo 包装组件，防止不必要的重新渲染
+// Use React.memo to prevent unnecessary re-renders
 export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(
   ({ language, className, codeContent }) => {
-    // 注意：复制功能已移至CopyButton组件中
+    // Note: Copy functionality is handled in the CopyButton component
 
-    // 注意：这个组件只处理头部UI和复制功能，不影响代码高亮
+    // Note: This component only handles the header UI and copy/export actions, does not affect code highlighting
 
     if (!language) {
       return null; // Don't render header if language is not specified
@@ -30,7 +28,7 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(
     return (
       <div
         className={cn(
-          'flex transform-gpu items-center justify-between rounded-t-lg border-b px-3 py-1', // 降低头部高度
+          'flex transform-gpu items-center justify-between rounded-t-lg border-b px-3 py-1', // Reduce header height
           className
         )}
         style={{
@@ -50,14 +48,14 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(
         {/* Uses flex layout with moderate spacing to maintain visual balance */}
         {codeContent && (
           <div className="flex items-center gap-1">
-            {/* 导出按钮 */}
+            {/* Export button */}
             <ExportButton
               content={codeContent}
               language={language}
               tooltipPlacement="bottom"
             />
 
-            {/* 复制按钮 */}
+            {/* Copy button */}
             <CopyButton content={codeContent} tooltipPlacement="bottom" />
           </div>
         )}

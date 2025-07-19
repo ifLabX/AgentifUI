@@ -15,84 +15,82 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
-  // 🎯 使用统一的时间格式化Hook，替代重复的问候语逻辑
+  // Use unified time-based greeting hook to replace duplicated greeting logic
   const { getTimeBasedGreeting } = useDateFormatter();
   const [finalText, setFinalText] = useState('');
-  // 🎯 新增：TypeWriter重置键，确保应用切换时能够重新打字
+  // TypeWriter reset key, ensures re-typing when switching apps
   const [typewriterKey, setTypewriterKey] = useState(0);
 
-  // 🎯 新增：打字机状态管理
+  // Typewriter state management
   const { setWelcomeTypewriterComplete, resetWelcomeTypewriter } =
     useTypewriterStore();
 
-  // 🎯 新增：动态打字速度配置
-  // 根据文字长度智能调整打字速度，提升长文本体验
+  // Dynamic typewriter speed config
+  // Adjust typing speed based on text length for better UX
   const typewriterConfig = useMemo(() => {
     const textLength = finalText.length;
 
-    // 🎯 智能速度阈值配置
-    // 短文本：慢速打字，营造仪式感
-    // 中等文本：中速打字，平衡体验
-    // 长文本：快速打字，避免等待过久
-    // 超长文本：极速打字，快速完成
+    // Smart speed threshold config:
+    // Short text: slow for ceremonial feel
+    // Medium: moderate speed
+    // Long: fast to avoid long waits
+    // Extra long: ultra fast
     if (textLength <= 20) {
-      // 短文本（≤20字符）：慢速打字，营造仪式感
+      // Short text (≤20 chars): slow
       return {
         speed: 20,
         delay: 50,
-        description: '短文本-慢速',
+        description: 'short-slow',
       };
     } else if (textLength <= 50) {
-      // 中短文本（21-50字符）：标准速度
+      // Medium-short (21-50 chars): standard
       return {
         speed: 15,
         delay: 40,
-        description: '中短文本-标准',
+        description: 'medium-short-standard',
       };
     } else if (textLength <= 100) {
-      // 中等文本（51-100字符）：中速打字
+      // Medium (51-100 chars): moderate
       return {
         speed: 10,
         delay: 30,
-        description: '中等文本-中速',
+        description: 'medium-moderate',
       };
     } else if (textLength <= 200) {
-      // 长文本（101-200字符）：快速打字
+      // Long (101-200 chars): fast
       return {
         speed: 5,
         delay: 10,
-        description: '长文本-快速',
+        description: 'long-fast',
       };
     } else {
-      // 超长文本（>200字符）：极速打字
+      // Extra long (>200 chars): ultra fast
       return {
         speed: 8,
         delay: 100,
-        description: '超长文本-极速',
+        description: 'extra-long-ultrafast',
       };
     }
   }, [finalText.length]);
 
-  // 使用智能布局系统获取欢迎文字的位置和标题样式
+  // Get welcome text position and title style from layout hook
   const {
     welcomeText: welcomePosition,
     welcomeTextTitle,
     needsCompactLayout,
   } = useWelcomeLayout();
 
-  // 🎯 直接从当前应用实例获取开场白配置
-  // 完全基于数据库，无任何API调用
-  // 添加验证状态保护，避免应用切换时显示错误内容
-  // 🎯 新增：路径感知的状态保护，确保应用切换时序正确
+  // Get opening statement config directly from current app instance
+  // No API call, only DB
+  // Add validation state protection to avoid showing wrong content during app switching
   const { currentAppInstance, isValidating, isLoading } = useCurrentApp();
 
-  // 🎯 移除复杂的应用切换检测逻辑，简化组件职责
-  // 欢迎文字显示不应该依赖复杂的路径匹配和应用状态
-  // 🎯 修复的欢迎文字显示逻辑
-  // 优先级：数据库开场白 → 用户名问候 → 默认时间问候
-  // 🚨 修复：重新添加阻塞等待机制，避免重复渲染错误的欢迎文字
+  // Remove complex app switching detection logic, simplify component responsibility
+  // Welcome text display should not depend on complex path matching or app state
+  // Priority: DB opening statement > username greeting > default time greeting
+  // Add blocking wait to avoid rendering wrong welcome text during app switching
   useEffect(() => {
-    console.log('[WelcomeScreen] 当前状态:', {
+    console.log('[WelcomeScreen] Current state:', {
       username,
       hasOpeningStatement:
         !!currentAppInstance?.config?.dify_parameters?.opening_statement,
@@ -102,75 +100,80 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
       isLoading,
     });
 
-    // 🚨 修复：重新添加应用状态检查，避免在应用切换时显示错误内容
-    // 这是防止重复渲染的关键阻塞点
+    // Add app state check to avoid showing wrong content during app switching
+    // This is the key blocking point to prevent repeated rendering
     if (isValidating || isLoading) {
-      console.log('[WelcomeScreen] 应用正在验证或加载中，暂停更新欢迎文字', {
-        isValidating,
-        isLoading,
-      });
+      console.log(
+        '[WelcomeScreen] App is validating or loading, pause updating welcome text',
+        {
+          isValidating,
+          isLoading,
+        }
+      );
       return;
     }
 
-    // 🎯 简化检查：只要用户名不是undefined就可以显示欢迎文字
-    // 即使用户名是null也显示默认问候
+    // As long as username is not undefined, show welcome text
+    // Even if username is null, show default greeting
     if (username === undefined) {
-      console.log('[WelcomeScreen] 等待用户信息加载...');
+      console.log('[WelcomeScreen] Waiting for user info to load...');
       return;
     }
 
-    // 🚨 修复：增加延迟时间，确保应用数据完全稳定后再渲染
-    // 避免在应用切换过程中的中间状态渲染错误内容
+    // Add delay to ensure app data is stable before rendering
+    // Avoid rendering wrong content during intermediate app switching state
     const updateTimer = setTimeout(() => {
-      // 🎯 重置打字机状态，准备开始新的打字动画
+      // Reset typewriter state, prepare for new typing animation
       resetWelcomeTypewriter();
 
-      // 🎯 确定最终显示的文字 - 简化版本
+      // Determine final text to display - simplified version
       let welcomeText = '';
 
-      // 🎯 从数据库config字段直接获取开场白（如果有的话）
+      // Get opening statement from DB config field (if any)
       const openingStatement =
         currentAppInstance?.config?.dify_parameters?.opening_statement;
 
       if (openingStatement && openingStatement.trim()) {
-        // 情况1：数据库中有应用的开场白配置
+        // Case 1: App has opening statement config in DB
         welcomeText = openingStatement.trim();
-        console.log('[WelcomeScreen] 使用数据库开场白:', {
+        console.log('[WelcomeScreen] Using DB opening statement:', {
           appId: currentAppInstance?.instance_id,
           text: welcomeText.substring(0, 50) + '...',
         });
       } else if (username) {
-        // 情况2：没有开场白但有用户名 → 个性化时间问候
+        // Case 2: No opening statement but has username -> personalized time greeting
         welcomeText = getTimeBasedGreeting({ includeUsername: true, username });
-        console.log('[WelcomeScreen] 使用用户名问候:', welcomeText);
+        console.log('[WelcomeScreen] Using username greeting:', welcomeText);
       } else {
-        // 情况3：没有用户名 → 默认时间问候
+        // Case 3: No username -> default time greeting
         welcomeText = getTimeBasedGreeting();
-        console.log('[WelcomeScreen] 使用默认问候:', welcomeText);
+        console.log('[WelcomeScreen] Using default greeting:', welcomeText);
       }
 
-      // 🎯 直接设置文字并强制重新开始打字动画
+      // Set text and force restart typewriter animation
       setFinalText(welcomeText);
       setTypewriterKey(prev => prev + 1);
 
-      console.log('[WelcomeScreen] 欢迎文字更新完成:', welcomeText);
-    }, 200); // 🚨 修复：增加到200ms，确保应用数据稳定
+      console.log('[WelcomeScreen] Welcome text updated:', welcomeText);
+    }, 200); // Increased to 200ms to ensure app data is stable
 
-    // 清理定时器
+    // Cleanup timer
     return () => clearTimeout(updateTimer);
   }, [
     username,
     currentAppInstance?.config?.dify_parameters?.opening_statement,
     currentAppInstance?.instance_id,
-    isValidating, // 🚨 修复：重新监听验证状态
-    isLoading, // 🚨 修复：重新监听加载状态
+    isValidating, // Listen to validation state
+    isLoading, // Listen to loading state
     resetWelcomeTypewriter,
     getTimeBasedGreeting,
   ]);
 
-  // 🎯 打字机完成回调
+  // Typewriter complete callback
   const handleTypewriterComplete = () => {
-    console.log('[WelcomeScreen] 打字机动画完成，通知推荐问题组件开始渲染');
+    console.log(
+      '[WelcomeScreen] Typewriter animation complete, notify suggested questions component to render'
+    );
     setWelcomeTypewriterComplete(true);
   };
 
@@ -197,12 +200,12 @@ export const WelcomeScreen = ({ className, username }: WelcomeScreenProps) => {
           {/* Added key property to restart typewriter animation on app switch */}
           {/* Added onComplete callback to notify suggested questions component to start rendering */}
           <TypeWriter
-            key={typewriterKey} // 🎯 强制重新开始打字动画
+            key={typewriterKey} // Force restart typewriter animation
             text={finalText}
-            speed={typewriterConfig.speed} // 🎯 动态速度
-            delay={typewriterConfig.delay} // 🎯 动态延迟
+            speed={typewriterConfig.speed} // Dynamic speed
+            delay={typewriterConfig.delay} // Dynamic delay
             waitingEffect={finalText.endsWith('...')}
-            onComplete={handleTypewriterComplete} // 🎯 打字机完成回调
+            onComplete={handleTypewriterComplete} // Typewriter complete callback
             className={cn(
               'leading-tight font-bold',
               needsCompactLayout ? 'text-xl' : 'text-3xl'

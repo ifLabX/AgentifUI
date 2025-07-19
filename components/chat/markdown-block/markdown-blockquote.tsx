@@ -4,8 +4,10 @@ import { cn } from '@lib/utils';
 
 import React from 'react';
 
-// 使用 CSS 变量而不是 React 状态或 Tailwind 类
-
+/**
+ * Blockquote component for markdown rendering.
+ * Uses CSS variables for styling instead of React state or Tailwind theme classes.
+ */
 interface MarkdownBlockquoteProps {
   children: React.ReactNode;
   className?: string;
@@ -15,13 +17,13 @@ export const MarkdownBlockquote: React.FC<MarkdownBlockquoteProps> = ({
   children,
   className,
 }) => {
-  // 不使用任何 React 状态，完全依赖 CSS 变量
+  // No React state is used; all styling relies on CSS variables.
 
-  // 现代化引用块样式：
-  // - 调整 padding、margin、左边框和圆角。
-  // - 使用柔和的背景色和清晰的文字颜色，确保对比度和美观。
-  // - 响应式设计，确保在不同屏幕尺寸和主题下均表现良好。
-  // - 暗黑模式兼容。
+  // Modern blockquote style:
+  // - Adjusts padding, margin, left border, and border radius.
+  // - Uses a soft background color and clear text color for good contrast and aesthetics.
+  // - Responsive design for good appearance on different screen sizes and themes.
+  // - Dark mode compatible.
   return (
     <blockquote
       className={cn(

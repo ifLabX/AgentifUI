@@ -7,12 +7,22 @@
       "retry": "Reintentar",
       "remove": "Eliminar",
       "error": "Error",
+      "customSelect": {
+        "placeholder": "Por favor seleccione..."
+      },
+      "exportButton": {
+        "tooltip": "Exportar archivo",
+        "ariaLabel": "Exportar archivo"
+      },
       "logoutDialog": {
         "title": "Cerrar Sesión",
         "message": "¿Estás seguro de que quieres cerrar sesión? Necesitarás iniciar sesión nuevamente para acceder a tu cuenta.",
         "confirm": "Cerrar Sesión",
         "cancel": "Cancelar",
         "loggingOut": "Cerrando sesión..."
+      },
+      "moreButton": {
+        "ariaLabel": "Más opciones"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "Formato de archivo no soportado"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Agregar adjunto",
         "notSupported": "Esta aplicación no admite cargas de archivos",
         "noLimit": "El límite de carga de archivos es 0",
         "noTypesConfigured": "No hay tipos de archivo compatibles configurados",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "No hay modelos disponibles",
-        "selectModel": "Seleccionar modelo"
+        "selectModel": "Seleccionar modelo",
+        "appNotFound": "Aplicación no encontrada: {appId}"
       },
       "messages": {
         "assistant": "Asistente",
@@ -131,7 +143,11 @@
         "copyFailed": "Error al copiar",
         "imageLink": "Enlace de imagen",
         "viewImage": "Ver imagen",
-        "clickToView": "Haz clic para ver"
+        "clickToView": "Haz clic para ver",
+        "clickToViewWithAlt": "Haz clic para ver: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} preguntas más..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "Iniciando Chatflow",
         "noRecords": "Sin registros de ejecución de nodos",
         "waitingUpdate": "Esperando actualización del estado del nodo...",
-        "showProgress": "El progreso de ejecución de nodos se mostrará después de iniciar la conversación"
+        "showProgress": "El progreso de ejecución de nodos se mostrará después de iniciar la conversación",
+        "executionError": "Error de Ejecución:"
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "Esta aplicación no tiene formulario de entrada configurado",
         "reset": "Restablecer formulario",
         "executing": "Ejecutando...",
-        "startExecution": "Iniciar ejecución"
+        "startExecution": "Iniciar ejecución",
+        "errors": {
+          "instanceNotFound": "Instancia de servicio con instanceId {instanceId} no encontrada"
+        },
+        "validation": {
+          "required": "{label} es obligatorio",
+          "invalidNumber": "{label} debe ser un número válido",
+          "minValue": "{label} no puede ser menor que {min}",
+          "maxValue": "{label} no puede ser mayor que {max}",
+          "stepValue": "{label} debe ser un múltiplo de {step}",
+          "precisionExceeded": "{label} no puede tener más de {precision} decimales",
+          "maxLengthExceeded": "{label} no puede tener más de {maxLength} caracteres",
+          "invalidSelection": "Valor seleccionado para {label} es inválido",
+          "tooManyFiles": "{label} no puede tener más de {maxFiles} archivos",
+          "fileTooLarge": "El archivo \"{fileName}\" en {label} excede {maxSize}MB",
+          "unsupportedFileType": "El archivo \"{fileName}\" en {label} no es compatible, tipos soportados: {allowedTypes}"
+        }
       },
       "status": {
         "running": "Flujo de trabajo ejecutándose",
@@ -270,6 +303,11 @@
         "parallel": "Rama Paralela",
         "end": "Nodo Final"
       },
+      "iterationDetails": {
+        "roundIteration": "Iteración {round}",
+        "roundLoop": "Bucle {round}",
+        "nodeNumber": "Nodo {number}"
+      },
       "buttons": {
         "retry": "Reintentar",
         "close": "Cerrar",
@@ -294,7 +332,8 @@
         "loading": "Cargando historial de ejecución...",
         "noRecords": "Sin registros de ejecución",
         "getDetailFailed": "Error al obtener detalles de ejecución",
-        "unknownError": "Error desconocido"
+        "unknownError": "Error desconocido",
+        "userNotLoggedIn": "Usuario no conectado"
       },
       "fileUpload": {
         "uploading": "Subiendo archivo...",
@@ -344,7 +383,8 @@
         "download": "Descargar texto",
         "stop": "Detener",
         "retry": "Reintentar",
-        "reset": "Restablecer"
+        "reset": "Restablecer",
+        "close": "Cerrar"
       },
       "emptyState": {
         "title": "Esperando generar texto",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "Se referenció {count} recursos de base de conocimiento",
+        "knowledgeBase": "Base de Conocimiento",
+        "expand": "Expandir texto completo",
+        "collapse": "Contraer",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "copyFailed": "Error al copiar",
+        "relevanceScore": "Relevancia",
+        "wordCount": "{count} palabras",
+        "page": "Página {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Límite de archivos excedido ({current}/{max}), por favor elimine algunos archivos"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Arrastra para redimensionar paneles, doble clic para restablecer"
+      },
+      "notificationBar": {
+        "closeNotification": "Cerrar notificación"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Pregunta sugerida: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "Configurando aplicación predeterminada - ID pasado:",
     "currentInstances": "Todas las instancias actuales:",
@@ -2171,6 +2243,30 @@
         "textGeneration": "Generación de Texto",
         "contentCreation": "Creación de Contenido",
         "formattedOutput": "Salida Formateada"
+      },
+      "resultViewer": {
+        "title": "Resultado de Generación",
+        "defaultTitle": "Resultado de Generación de Texto",
+        "actions": {
+          "copy": "Copiar Resultado",
+          "copied": "Copiado",
+          "download": "Descargar Resultado"
+        },
+        "executionInfo": {
+          "title": "Información de Ejecución",
+          "status": "Estado:",
+          "createdAt": "Creado en:",
+          "elapsedTime": "Tiempo Transcurrido:",
+          "statusValues": {
+            "completed": "Completado",
+            "failed": "Fallido",
+            "stopped": "Detenido"
+          }
+        },
+        "content": {
+          "title": "Contenido Generado",
+          "noContent": "Sin contenido disponible"
+        }
       }
     },
     "chatbot": {

@@ -19,8 +19,8 @@ interface PopoverProps {
   onOpenChange?: (isOpen: boolean) => void;
   minWidth?: number;
   alignToTriggerBottom?: boolean; // New prop to control bottom alignment
-  offsetX?: number; // 新增：水平偏移量
-  offsetY?: number; // 新增：垂直偏移量
+  offsetX?: number; // New prop to control horizontal offset
+  offsetY?: number; // New prop to control vertical offset
 }
 
 export function Popover({
@@ -33,8 +33,8 @@ export function Popover({
   onOpenChange,
   minWidth = 180,
   alignToTriggerBottom = false, // Default to false
-  offsetX, // 新增：水平偏移量参数
-  offsetY, // 新增：垂直偏移量参数
+  offsetX, // New prop to control horizontal offset
+  offsetY, // New prop to control vertical offset
 }: PopoverProps) {
   const { isDark } = useTheme();
   const { colors } = useThemeColors();
@@ -121,7 +121,7 @@ export function Popover({
     let adjustedLeft = left;
 
     if (!isMobile) {
-      // 使用自定义偏移量或默认值
+      // Use custom offset or default value
       const defaultVerticalOffset = 12;
       const defaultHorizontalOffset = 105;
 
@@ -140,7 +140,7 @@ export function Popover({
         updatePosition();
       });
     }
-  }, [isOpen, minWidth, alignToTriggerBottom, placement, offsetX, offsetY]); // 添加新的依赖项
+  }, [isOpen, minWidth, alignToTriggerBottom, placement, offsetX, offsetY]); // Add new dependency
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

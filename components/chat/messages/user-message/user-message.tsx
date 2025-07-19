@@ -37,7 +37,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   return (
     <div className="group mb-6 flex w-full justify-end" data-message-id={id}>
       <div className="flex w-full max-w-3xl flex-col items-end">
-        {/* 附件显示区域 - 直接右对齐 */}
+        {/* Attachment display area - right aligned */}
         {hasAttachments && (
           <FileAttachmentDisplay
             attachments={attachments.map(att => ({
@@ -51,7 +51,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             className={cn('mb-2 w-full')}
           />
         )}
-        {/* 消息气泡 - 现代化设计，石色主题 */}
+        {/* Message bubble - modern design, stone color theme */}
         <div
           className={cn(
             'max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed',
@@ -68,7 +68,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
           {content}
         </div>
 
-        {/* 消息操作按钮 */}
+        {/* Message action buttons */}
         <UserMessageActions messageId={id} content={content} onEdit={onEdit} />
       </div>
     </div>

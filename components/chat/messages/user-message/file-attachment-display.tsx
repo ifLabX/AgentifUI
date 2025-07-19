@@ -22,9 +22,13 @@ interface FileAttachmentDisplayProps {
   className?: string;
 }
 
-// 根据MIME类型获取相应图标
+/**
+ * Get the appropriate file icon component based on MIME type.
+ * @param mimeType - The MIME type of the file.
+ * @returns The icon component for the file type.
+ */
 const getFileIcon = (mimeType: string | undefined) => {
-  // --- 类型安全检查 ---
+  // Type safety check
   if (!mimeType || typeof mimeType !== 'string') return FileIcon;
 
   if (mimeType.startsWith('image/')) return FileImageIcon;
@@ -49,6 +53,10 @@ const getFileIcon = (mimeType: string | undefined) => {
   return FileIcon;
 };
 
+/**
+ * FileAttachmentDisplay component
+ * Renders a list of file attachments with icons and file info.
+ */
 export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
   attachments,
   isDark = false,
@@ -57,8 +65,14 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
   const openPreview = useFilePreviewStore(state => state.openPreview);
   const isMobile = useMobile();
 
+  // If there are no attachments, render nothing
   if (!attachments || attachments.length === 0) return null;
 
+  /**
+   * Handle click on an attachment.
+   * Closes sidebar or mobile nav if open, then opens file preview.
+   * @param attachment - The clicked attachment
+   */
   const handleAttachmentClick = (attachment: MessageAttachment) => {
     const sidebarState = useSidebarStore.getState();
 

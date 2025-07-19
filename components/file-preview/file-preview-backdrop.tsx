@@ -3,27 +3,27 @@
 import { useFilePreviewStore } from '@lib/stores/ui/file-preview-store';
 import { cn } from '@lib/utils';
 
-// 文件预览面板的背景遮罩组件
-// 仅在移动设备 (md 断点以下) 显示，并在预览打开时出现
-// 点击遮罩会调用 closePreview 关闭面板
+// File preview panel background backdrop component
+// Only display on mobile devices (md breakpoint and below), and appear when preview is open
+// Clicking the backdrop will call closePreview to close the panel
 export function FilePreviewBackdrop() {
   const { isPreviewOpen, closePreview } = useFilePreviewStore();
 
   return (
     <div
       className={cn(
-        // 基础样式: 固定定位, 覆盖全屏, 背景模糊, 层级低于面板
+        // Basic style: fixed positioning, cover full screen, background blur, layer below panel
         'bg-background/70 fixed inset-0 z-40 backdrop-blur-sm',
-        // 过渡效果
+        // Transition effect
         'transition-opacity duration-300 ease-in-out',
-        // 响应式: 仅在 md 断点以下显示
+        // Responsive: only display on md breakpoint and below
         'md:hidden',
-        // 可见性: 根据 isPreviewOpen 控制透明度和交互
+        // Visibility: control transparency and interaction based on isPreviewOpen
         isPreviewOpen
           ? 'pointer-events-auto opacity-100'
           : 'pointer-events-none opacity-0'
       )}
-      // 点击事件: 调用 closePreview
+      // Click event: call closePreview
       onClick={closePreview}
       aria-hidden="true"
     />

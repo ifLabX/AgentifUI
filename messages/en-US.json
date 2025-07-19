@@ -7,12 +7,22 @@
       "retry": "Retry",
       "remove": "Remove",
       "error": "Error",
+      "customSelect": {
+        "placeholder": "Please select..."
+      },
+      "exportButton": {
+        "tooltip": "Export file",
+        "ariaLabel": "Export file"
+      },
       "logoutDialog": {
         "title": "Logout",
         "message": "Are you sure you want to logout? You will need to log in again to access your account.",
         "confirm": "Logout",
         "cancel": "Cancel",
         "loggingOut": "Logging out..."
+      },
+      "moreButton": {
+        "ariaLabel": "More options"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "Unsupported file format"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Add attachment",
         "notSupported": "This app does not support file uploads",
         "noLimit": "File upload limit is 0",
         "noTypesConfigured": "No supported file types configured",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "No models available",
-        "selectModel": "Select model"
+        "selectModel": "Select model",
+        "appNotFound": "App not found: {appId}"
       },
       "messages": {
         "assistant": "Assistant",
@@ -131,7 +143,11 @@
         "copyFailed": "Copy failed",
         "imageLink": "Image link",
         "viewImage": "View image",
-        "clickToView": "Click to view"
+        "clickToView": "Click to view",
+        "clickToViewWithAlt": "Click to view: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} more questions..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "Starting Chatflow",
         "noRecords": "No node execution records",
         "waitingUpdate": "Waiting for node status update...",
-        "showProgress": "Node execution progress will be shown after starting conversation"
+        "showProgress": "Node execution progress will be shown after starting conversation",
+        "executionError": "Execution Error:"
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "This app has no input form configured",
         "reset": "Reset form",
         "executing": "Executing...",
-        "startExecution": "Start execution"
+        "startExecution": "Start execution",
+        "errors": {
+          "instanceNotFound": "Service instance with instanceId {instanceId} not found"
+        },
+        "validation": {
+          "required": "{label} is required",
+          "invalidNumber": "{label} must be a valid number",
+          "minValue": "{label} cannot be less than {min}",
+          "maxValue": "{label} cannot be greater than {max}",
+          "stepValue": "{label} must be a multiple of {step}",
+          "precisionExceeded": "{label} decimal places cannot exceed {precision} digits",
+          "maxLengthExceeded": "{label} length cannot exceed {maxLength} characters",
+          "invalidSelection": "Invalid value selected for {label}",
+          "tooManyFiles": "{label} file count cannot exceed {maxFiles}",
+          "fileTooLarge": "File \"{fileName}\" in {label} exceeds {maxSize}MB",
+          "unsupportedFileType": "File \"{fileName}\" in {label} is not supported, supported types: {allowedTypes}"
+        }
       },
       "status": {
         "running": "Workflow executing",
@@ -270,6 +303,11 @@
         "parallel": "Parallel Branch",
         "end": "End Node"
       },
+      "iterationDetails": {
+        "roundIteration": "Round {round} Iteration",
+        "roundLoop": "Round {round} Loop",
+        "nodeNumber": "Node {number}"
+      },
       "buttons": {
         "retry": "Retry",
         "close": "Close",
@@ -294,7 +332,8 @@
         "loading": "Loading execution history...",
         "noRecords": "No execution records",
         "getDetailFailed": "Failed to get execution details",
-        "unknownError": "Unknown error"
+        "unknownError": "Unknown error",
+        "userNotLoggedIn": "User not logged in"
       },
       "fileUpload": {
         "uploading": "Uploading file...",
@@ -344,7 +383,8 @@
         "download": "Download text",
         "stop": "Stop",
         "retry": "Retry",
-        "reset": "Reset"
+        "reset": "Reset",
+        "close": "Close"
       },
       "emptyState": {
         "title": "Waiting to generate text",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "Referenced {count} knowledge base resources",
+        "knowledgeBase": "Knowledge Base",
+        "expand": "Expand full text",
+        "collapse": "Collapse",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Copy failed",
+        "relevanceScore": "Relevance",
+        "wordCount": "{count} words",
+        "page": "Page {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "File limit exceeded ({current}/{max}), please remove some files"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Drag to resize panels, double-click to reset"
+      },
+      "notificationBar": {
+        "closeNotification": "Close notification"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Suggested question: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "Setting default app - passed ID:",
     "currentInstances": "Current all instances:",
@@ -2171,6 +2243,30 @@
         "textGeneration": "Text Generation",
         "contentCreation": "Content Creation",
         "formattedOutput": "Formatted Output"
+      },
+      "resultViewer": {
+        "title": "Generation Result",
+        "defaultTitle": "Text Generation Result",
+        "actions": {
+          "copy": "Copy Result",
+          "copied": "Copied",
+          "download": "Download Result"
+        },
+        "executionInfo": {
+          "title": "Execution Info",
+          "status": "Status:",
+          "createdAt": "Created At:",
+          "elapsedTime": "Elapsed Time:",
+          "statusValues": {
+            "completed": "Completed",
+            "failed": "Failed",
+            "stopped": "Stopped"
+          }
+        },
+        "content": {
+          "title": "Generated Content",
+          "noContent": "No content available"
+        }
       }
     },
     "chatbot": {

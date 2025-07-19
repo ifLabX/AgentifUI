@@ -7,12 +7,22 @@
       "retry": "Réessayer",
       "remove": "Supprimer",
       "error": "Erreur",
+      "customSelect": {
+        "placeholder": "Veuillez sélectionner..."
+      },
+      "exportButton": {
+        "tooltip": "Exporter le fichier",
+        "ariaLabel": "Exporter le fichier"
+      },
       "logoutDialog": {
         "title": "Déconnexion",
         "message": "Êtes-vous sûr de vouloir vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte.",
         "confirm": "Déconnexion",
         "cancel": "Annuler",
         "loggingOut": "Déconnexion en cours..."
+      },
+      "moreButton": {
+        "ariaLabel": "Plus d'options"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "Format de fichier non pris en charge"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Ajouter une pièce jointe",
         "notSupported": "Cette application ne prend pas en charge le téléversement de fichiers",
         "noLimit": "La limite de téléversement de fichiers est de 0",
         "noTypesConfigured": "Aucun type de fichier pris en charge n'est configuré",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Aucun modèle disponible",
-        "selectModel": "Sélectionner un modèle"
+        "selectModel": "Sélectionner un modèle",
+        "appNotFound": "Application non trouvée: {appId}"
       },
       "messages": {
         "assistant": "Assistant",
@@ -131,7 +143,11 @@
         "copyFailed": "Échec de la copie",
         "imageLink": "Lien de l'image",
         "viewImage": "Voir l'image",
-        "clickToView": "Cliquer pour voir"
+        "clickToView": "Cliquer pour voir",
+        "clickToViewWithAlt": "Cliquer pour voir: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} questions de plus..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "Démarrage du Chatflow",
         "noRecords": "Aucun enregistrement d'exécution de nœud",
         "waitingUpdate": "En attente de la mise à jour de l'état du nœud...",
-        "showProgress": "La progression de l'exécution des nœuds sera affichée après le début de la conversation"
+        "showProgress": "La progression de l'exécution des nœuds sera affichée après le début de la conversation",
+        "executionError": "Erreur d'exécution :"
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "Cette application n'a pas de formulaire d'entrée configuré",
         "reset": "Réinitialiser le formulaire",
         "executing": "Exécution en cours...",
-        "startExecution": "Démarrer l'exécution"
+        "startExecution": "Démarrer l'exécution",
+        "errors": {
+          "instanceNotFound": "Instance de service avec instanceId {instanceId} non trouvée"
+        },
+        "validation": {
+          "required": "{label} est requis",
+          "invalidNumber": "{label} doit être un nombre valide",
+          "minValue": "{label} ne peut pas être inférieur à {min}",
+          "maxValue": "{label} ne peut pas être supérieur à {max}",
+          "stepValue": "{label} doit être un multiple de {step}",
+          "precisionExceeded": "{label} ne peut pas avoir plus de {precision} décimales",
+          "maxLengthExceeded": "{label} ne peut pas dépasser {maxLength} caractères",
+          "invalidSelection": "Valeur sélectionnée pour {label} invalide",
+          "tooManyFiles": "{label} ne peut pas avoir plus de {maxFiles} fichiers",
+          "fileTooLarge": "Le fichier \"{fileName}\" dans {label} dépasse {maxSize}MB",
+          "unsupportedFileType": "Le fichier \"{fileName}\" dans {label} n'est pas pris en charge, types pris en charge: {allowedTypes}"
+        }
       },
       "status": {
         "running": "Workflow en cours d'exécution",
@@ -270,6 +303,11 @@
         "parallel": "Branche parallèle",
         "end": "Nœud de fin"
       },
+      "iterationDetails": {
+        "roundIteration": "Itération {round}",
+        "roundLoop": "Boucle {round}",
+        "nodeNumber": "Nœud {number}"
+      },
       "buttons": {
         "retry": "Réessayer",
         "close": "Fermer",
@@ -294,7 +332,8 @@
         "loading": "Chargement de l'historique d'exécution...",
         "noRecords": "Aucun enregistrement d'exécution",
         "getDetailFailed": "Échec de l'obtention des détails de l'exécution",
-        "unknownError": "Erreur inconnue"
+        "unknownError": "Erreur inconnue",
+        "userNotLoggedIn": "Utilisateur non connecté"
       },
       "fileUpload": {
         "uploading": "Téléversement du fichier...",
@@ -344,7 +383,8 @@
         "download": "Télécharger le texte",
         "stop": "Arrêter",
         "retry": "Réessayer",
-        "reset": "Réinitialiser"
+        "reset": "Réinitialiser",
+        "close": "Fermer"
       },
       "emptyState": {
         "title": "En attente de génération de texte",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "{count} ressources de base de connaissances référencées",
+        "knowledgeBase": "Base de Connaissances",
+        "expand": "Développer le texte complet",
+        "collapse": "Réduire",
+        "copy": "Copier",
+        "copied": "Copié",
+        "copyFailed": "Échec de la copie",
+        "relevanceScore": "Pertinence",
+        "wordCount": "{count} mots",
+        "page": "Page {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Limite de fichiers dépassée ({current}/{max}), veuillez supprimer certains fichiers"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Faites glisser pour redimensionner les panneaux, double-cliquez pour réinitialiser"
+      },
+      "notificationBar": {
+        "closeNotification": "Fermer la notification"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Question suggérée: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "Définition de l'application par défaut - ID passé :",
     "currentInstances": "Toutes les instances actuelles :",
@@ -2171,6 +2243,30 @@
         "textGeneration": "Génération de texte",
         "contentCreation": "Création de contenu",
         "formattedOutput": "Sortie formatée"
+      },
+      "resultViewer": {
+        "title": "Résultat de génération",
+        "defaultTitle": "Résultat de génération de texte",
+        "actions": {
+          "copy": "Copier le résultat",
+          "copied": "Copié",
+          "download": "Télécharger le résultat"
+        },
+        "executionInfo": {
+          "title": "Informations d'exécution",
+          "status": "Statut :",
+          "createdAt": "Créé le :",
+          "elapsedTime": "Temps écoulé :",
+          "statusValues": {
+            "completed": "Terminé",
+            "failed": "Échec",
+            "stopped": "Arrêté"
+          }
+        },
+        "content": {
+          "title": "Contenu généré",
+          "noContent": "Aucun contenu disponible"
+        }
       }
     },
     "chatbot": {

@@ -10,30 +10,30 @@ import React, { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface UserAvatarDisplayProps {
-  // 未来可以传入 src 用于显示图片头像
+  // Future can pass in src to display picture avatar
   // src?: string;
   alt?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   dropdownId: string;
-  isDark: boolean; // 添加 isDark prop
+  isDark: boolean; // Add isDark prop
 }
 
 /**
- * 用户头像按钮组件
- * 用于显示用户头像（当前为图标占位），并作为下拉菜单的触发器
- * 设计风格与应用的石色(stone)主题保持一致，同时有足够对比度
+ * User avatar button component
+ * Used to display user avatar (currently placeholder icon), and as a trigger for dropdown menu
+ * Design style consistent with the stone theme of the application, with enough contrast
  */
 export function AvatarButton({
   alt,
   onClick,
   dropdownId,
-  isDark, // 接收 isDark prop
+  isDark, // Receive isDark prop
 }: UserAvatarDisplayProps) {
   const t = useTranslations('navbar.user');
   const avatarRef = useRef<HTMLButtonElement>(null);
   const { toggleDropdown, isOpen, activeDropdownId } = useDropdownStore();
 
-  // 使用翻译作为默认值
+  // Use translation as default value
   const defaultAlt = alt || t('userMenu');
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -60,9 +60,9 @@ export function AvatarButton({
 
   const isDropdownActive = isOpen && activeDropdownId === dropdownId;
 
-  // 根据主题状态选择颜色
+  // Select colors based on theme status
   const getButtonStyles = () => {
-    // 暗色模式下，使用深色系石色
+    // Dark mode, use dark stone color
     if (isDark) {
       return {
         base: 'bg-stone-700',
@@ -71,7 +71,7 @@ export function AvatarButton({
         iconColor: 'text-stone-300',
       };
     }
-    // 亮色模式下，使用浅色系石色
+    // Light mode, use light stone color
     else {
       return {
         base: 'bg-stone-200',
@@ -94,15 +94,15 @@ export function AvatarButton({
         styles.base,
         styles.hover,
         styles.active,
-        'focus:outline-none', // 移除焦点环
+        'focus:outline-none', // Remove focus ring
 
-        'mt-1', // 保持上边距
-        'cursor-pointer hover:scale-105' // 添加悬停指针和缩放效果
+        'mt-1', // Keep top margin
+        'cursor-pointer hover:scale-105' // Add hover pointer and scale effect
       )}
       aria-label={defaultAlt}
       data-more-button-id={`${dropdownId}-trigger`}
     >
-      {/* 未来可以替换为 <Image /> 组件显示用户头像 */}
+      {/* Future can replace with <Image /> component to display user avatar */}
       <User className={cn('h-5 w-5', styles.iconColor)} />
     </button>
   );

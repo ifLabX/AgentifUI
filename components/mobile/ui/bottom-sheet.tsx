@@ -16,9 +16,9 @@ interface BottomSheetProps {
 }
 
 /**
- * 移动端专用的底部弹出模态框组件
- * 从屏幕底部弹出，覆盖部分屏幕，适合移动端用户交互
- * 使用Portal确保在整个页面级别渲染，不受父组件布局限制
+ * Mobile-specific bottom modal component
+ * Pop up from the bottom of the screen, covering part of the screen, suitable for mobile user interaction
+ * Use Portal to ensure rendering at the page level, not limited by parent component layout
  */
 export function BottomSheet({
   isOpen,
@@ -31,19 +31,19 @@ export function BottomSheet({
   const sheetRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = React.useState(false);
 
-  // 客户端挂载后才能使用Portal
+  // Only use Portal after client mount
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  // 点击遮罩层关闭弹窗
+  // Click on the backdrop to close the popup
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  // 处理点击外部关闭
+  // Handle clicking outside to close
   useEffect(() => {
     if (!isOpen) return;
 
@@ -53,7 +53,7 @@ export function BottomSheet({
       }
     };
 
-    // 添加延迟，避免打开时立即关闭
+    // Add delay to avoid closing immediately when opening
     const timer = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
     }, 100);
@@ -64,7 +64,7 @@ export function BottomSheet({
     };
   }, [isOpen, onClose]);
 
-  // 处理滑动关闭
+  // Handle sliding to close
   useEffect(() => {
     if (!isOpen || !sheetRef.current) return;
 
@@ -89,10 +89,10 @@ export function BottomSheet({
       const deltaY = currentY - startY;
 
       if (deltaY > 100) {
-        // 向下滑动超过阈值，关闭弹窗
+        // Slide down beyond threshold, close popup
         onClose();
       } else {
-        // 恢复原位
+        // Restore original position
         sheet.style.transform = '';
       }
     };
@@ -108,12 +108,12 @@ export function BottomSheet({
     };
   }, [isOpen, onClose, sheetRef]);
 
-  // 非移动端不渲染
+  // Not rendered on non-mobile devices
   if (!isMobile) {
     return null;
   }
 
-  // 弹出框内容
+  // Popup content
   const sheetContent = (
     <div
       className={cn(
@@ -137,7 +137,7 @@ export function BottomSheet({
         )}
         style={{ maxHeight: '85vh', overflowY: 'auto' }}
       >
-        {/* 顶部拖动条 */}
+        {/* Top drag bar */}
         <div className="flex items-center justify-center pt-3 pb-2">
           <div
             className={cn(
@@ -147,7 +147,7 @@ export function BottomSheet({
           ></div>
         </div>
 
-        {/* 标题和关闭按钮 */}
+        {/* Title and close button */}
         {title && (
           <div
             className={cn(
@@ -179,12 +179,12 @@ export function BottomSheet({
           </div>
         )}
 
-        {/* 内容区域 */}
+        {/* Content area */}
         <div className="p-4">{children}</div>
       </div>
     </div>
   );
 
-  // 使用Portal将组件渲染到body下，确保它在整个屏幕范围内
+  // Use Portal to render the component to the body, ensuring it is within the entire screen range
   return mounted ? createPortal(sheetContent, document.body) : null;
 }

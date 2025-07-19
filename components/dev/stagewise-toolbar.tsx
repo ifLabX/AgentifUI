@@ -4,23 +4,23 @@ import { StagewiseToolbar } from '@stagewise/toolbar-next';
 
 import { useEffect, useState } from 'react';
 
-// 这个组件封装了 Stagewise 工具栏，确保它只在开发环境中运行
-// 通过使用 useEffect 和 useState 来处理客户端渲染
-// Next.js 在客户端会自动暴露 process.env.NODE_ENV
+// This component encapsulates the Stagewise toolbar, ensuring it only runs in the development environment
+// By using useEffect and useState to handle client-side rendering
+// Next.js automatically exposes the process.env.NODE_ENV in the client
 export function StagewiseToolbarWrapper() {
-  // 使用状态来跟踪是否在客户端环境
+  // Use state to track whether it is in the client environment
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // 基本工具栏配置
+  // Basic toolbar configuration
   const stagewiseConfig = {
     plugins: [],
   };
 
-  // 只在客户端渲染，且依赖 Next.js 自带的环境变量检测
+  // Only render in the client, and rely on Next.js's built-in environment variable detection
   if (isMounted && process.env.NODE_ENV === 'development') {
     return <StagewiseToolbar config={stagewiseConfig} />;
   }

@@ -13,8 +13,8 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-// 账号设置组件
-// 包含所有账号相关逻辑：数据加载、状态管理、退出登录等
+// Account settings component
+// Includes all account-related logic: data loading, state management, logout, etc.
 export function AccountSettings() {
   const { colors } = useSettingsColors();
   const { isDark } = useTheme();
@@ -30,14 +30,14 @@ export function AccountSettings() {
   const router = useRouter();
   const supabase = createClient();
 
-  // 加载用户账号数据
+  // Load user account data
   useEffect(() => {
     async function loadUserAccount() {
       try {
         setIsLoading(true);
         setError(null);
 
-        // 检查用户是否已登录
+        // Check if user is logged in
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -46,11 +46,11 @@ export function AccountSettings() {
           return;
         }
 
-        // 获取用户邮箱和认证来源
+        // Get user email and authentication source
         setUserEmail(user.email || null);
         setAuthSource(user.app_metadata?.provider || t('emailPasswordAuth'));
       } catch (err) {
-        console.error('加载用户账号信息失败:', err);
+        console.error('Failed to load user account information:', err);
         setError(err instanceof Error ? err : new Error(t('loadAccountError')));
       } finally {
         setIsLoading(false);
@@ -60,14 +60,14 @@ export function AccountSettings() {
     loadUserAccount();
   }, [router, supabase.auth, t]);
 
-  // 处理退出登录
+  // Handle logout
   const handleLogout = async () => {
     if (showConfirm) {
       try {
         setIsLoggingOut(true);
         await logout();
       } catch (error) {
-        console.error('退出登录失败:', error);
+        console.error('Logout failed:', error);
       } finally {
         setIsLoggingOut(false);
       }
@@ -76,12 +76,12 @@ export function AccountSettings() {
     }
   };
 
-  // 取消退出登录
+  // Cancel logout
   const cancelLogout = () => {
     setShowConfirm(false);
   };
 
-  // 处理错误情况
+  // Handle error cases
   if (error) {
     return (
       <motion.div
@@ -133,7 +133,7 @@ export function AccountSettings() {
       <h1 className="mb-6 font-serif text-2xl font-bold">{t('title')}</h1>
 
       <div className="space-y-8">
-        {/* 账户信息卡片 */}
+        {/* Account information card */}
         {isLoading ? (
           <div
             className={cn(
@@ -267,7 +267,7 @@ export function AccountSettings() {
           </div>
         )}
 
-        {/* 安全设置卡片 - 始终显示 */}
+        {/* Security settings card - always displayed */}
         <div
           className={cn(
             'rounded-lg border p-6',
@@ -285,7 +285,7 @@ export function AccountSettings() {
           </h3>
 
           <div className="space-y-4">
-            {/* 退出登录确认提示 */}
+            {/* Logout confirmation prompt */}
             {showConfirm && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -302,7 +302,7 @@ export function AccountSettings() {
               </motion.div>
             )}
 
-            {/* 退出登录按钮 */}
+            {/* Logout button */}
             <div className="flex items-center justify-between">
               <div
                 className={cn(

@@ -33,14 +33,14 @@ interface TextGenerationTrackerProps {
 }
 
 /**
- * 文本生成跟踪器组件
+ * Text generation tracker component
  *
- * 功能特点：
- * - 实时显示文本生成状态
- * - 流式文本展示
- * - 统一的状态面板
- * - 文本操作功能（复制、下载）
- * - 与WorkflowTracker保持一致的布局结构
+ * Features:
+ * - Real-time display of text generation status
+ * - Streaming text display
+ * - Unified status panel
+ * - Text operation features (copy, download)
+ * - Layout structure consistent with WorkflowTracker
  */
 export function TextGenerationTracker({
   isExecuting,
@@ -56,7 +56,7 @@ export function TextGenerationTracker({
   const [isCopied, setIsCopied] = useState(false);
   const t = useTranslations('pages.textGeneration');
 
-  // --- 自动滚动到底部 ---
+  // --- Auto scroll to the bottom ---
   useEffect(() => {
     if (markdownContainerRef.current && isStreaming) {
       markdownContainerRef.current.scrollTop =
@@ -64,7 +64,7 @@ export function TextGenerationTracker({
     }
   }, [generatedText, isStreaming]);
 
-  // --- 复用助手消息的Markdown组件配置 ---
+  // --- Reuse the Markdown component configuration of the assistant message ---
   const markdownComponents: Components = {
     code({ node, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
@@ -144,25 +144,24 @@ export function TextGenerationTracker({
     },
   };
 
-  // --- 复制文本 ---
+  // --- Copy text ---
   const handleCopyText = async () => {
     if (generatedText) {
       try {
         await navigator.clipboard.writeText(generatedText);
         setIsCopied(true);
-        console.log('[文本生成跟踪器] 文本已复制到剪贴板');
 
-        // 2秒后重置状态
+        // Reset state after 2 seconds
         setTimeout(() => {
           setIsCopied(false);
         }, 2000);
       } catch (error) {
-        console.error('[文本生成跟踪器] 复制失败:', error);
+        console.error('[Text generation tracker] Copy failed:', error);
       }
     }
   };
 
-  // --- 下载文本 ---
+  // --- Download text ---
   const handleDownloadText = () => {
     if (generatedText) {
       const blob = new Blob([generatedText], {
@@ -181,26 +180,26 @@ export function TextGenerationTracker({
 
   return (
     <div className="flex h-full flex-col">
-      {/* --- 统一状态面板 --- */}
+      {/* --- Unified status panel --- */}
       {(onStop || onRetry || onReset) && (
         <UnifiedStatusPanel
           isExecuting={isExecuting}
-          progress={0} // 文本生成不显示具体进度
-          error={null} // 错误由外层处理
-          canRetry={false} // 重试由外层处理
+          progress={0} // Text generation does not show specific progress
+          error={null} // Error handled by outer layer
+          canRetry={false} // Retry handled by outer layer
           currentExecution={currentExecution}
           onStop={onStop || (() => {})}
           onRetry={onRetry || (() => {})}
           onReset={onReset || (() => {})}
-          onShowResult={() => {}} // 文本生成不需要单独的结果查看器
-          showResultButton={false} // 文本生成不显示查看结果按钮
+          onShowResult={() => {}} // Text generation does not need a separate result viewer
+          showResultButton={false} // Text generation does not show the result viewer button
         />
       )}
 
-      {/* --- 文本生成区域 --- */}
+      {/* --- Text generation area --- */}
       <div className="flex-1 overflow-hidden px-6 py-4">
         {!isExecuting && !currentExecution && !generatedText ? (
-          // 空状态
+          // Empty state
           <div className="flex h-full items-center justify-center">
             <div className="space-y-4 text-center">
               <div
@@ -237,9 +236,9 @@ export function TextGenerationTracker({
             </div>
           </div>
         ) : (
-          // 文本生成内容
+          // Text generation content
           <div className="flex h-full flex-col space-y-4">
-            {/* 状态标题 */}
+            {/* Status title */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h3
@@ -254,10 +253,10 @@ export function TextGenerationTracker({
                 </h3>
               </div>
 
-              {/* 操作按钮 */}
+              {/* Operation buttons */}
               {generatedText && !isExecuting && (
                 <div className="flex items-center gap-2">
-                  {/* 复制按钮 */}
+                  {/* Copy button */}
                   <TooltipWrapper
                     content={isCopied ? t('buttons.copied') : t('buttons.copy')}
                     id="text-generation-copy-btn"
@@ -292,7 +291,7 @@ export function TextGenerationTracker({
                     </button>
                   </TooltipWrapper>
 
-                  {/* 下载按钮 */}
+                  {/* Download button */}
                   <TooltipWrapper
                     content={t('buttons.download')}
                     id="text-generation-download-btn"
@@ -324,10 +323,10 @@ export function TextGenerationTracker({
               )}
             </div>
 
-            {/* 文本显示区域 */}
+            {/* Text display area */}
             <div className="relative flex-1 overflow-hidden">
               {isExecuting && !generatedText ? (
-                // 加载状态
+                // Loading state
                 <div
                   className={cn(
                     'absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed',
@@ -364,13 +363,13 @@ export function TextGenerationTracker({
                   </div>
                 </div>
               ) : (
-                // Markdown渲染内容
+                // Markdown rendered content
                 <div
                   ref={markdownContainerRef}
                   className={cn(
                     'absolute inset-0 overflow-y-auto overscroll-contain rounded-lg border p-4 font-serif',
                     'focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                    'assistant-message-content', // 复用助手消息的样式类
+                    'assistant-message-content', // Reuse the style class of the assistant message
                     isDark
                       ? 'border-stone-600 bg-stone-800 text-stone-200'
                       : 'border-stone-300 bg-white text-stone-900'
@@ -402,7 +401,7 @@ export function TextGenerationTracker({
                 </div>
               )}
 
-              {/* 流式生成指示器 */}
+              {/* Streaming generation indicator */}
               {isStreaming && (
                 <div
                   className={cn(

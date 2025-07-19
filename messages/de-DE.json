@@ -7,12 +7,22 @@
       "retry": "Wiederholen",
       "remove": "Entfernen",
       "error": "Fehler",
+      "customSelect": {
+        "placeholder": "Bitte auswählen..."
+      },
+      "exportButton": {
+        "tooltip": "Datei exportieren",
+        "ariaLabel": "Datei exportieren"
+      },
       "logoutDialog": {
         "title": "Abmelden",
         "message": "Sind Sie sicher, dass Sie sich abmelden möchten? Sie müssen sich erneut anmelden, um auf Ihr Konto zuzugreifen.",
         "confirm": "Abmelden",
         "cancel": "Abbrechen",
         "loggingOut": "Abmelden..."
+      },
+      "moreButton": {
+        "ariaLabel": "Weitere Optionen"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "Nicht unterstütztes Dateiformat"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Anhang hinzufügen",
         "notSupported": "Diese Anwendung unterstützt keine Datei-Uploads",
         "noLimit": "Datei-Upload-Limit ist 0",
         "noTypesConfigured": "Keine unterstützten Dateitypen konfiguriert",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Keine Modelle verfügbar",
-        "selectModel": "Modell auswählen"
+        "selectModel": "Modell auswählen",
+        "appNotFound": "App nicht gefunden: {appId}"
       },
       "messages": {
         "assistant": "Assistent",
@@ -131,7 +143,11 @@
         "copyFailed": "Kopieren fehlgeschlagen",
         "imageLink": "Bildlink",
         "viewImage": "Bild anzeigen",
-        "clickToView": "Zum Anzeigen klicken"
+        "clickToView": "Zum Anzeigen klicken",
+        "clickToViewWithAlt": "Zum Anzeigen klicken: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} weitere Fragen..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "Chatflow wird gestartet",
         "noRecords": "Keine Knoten-Ausführungseinträge",
         "waitingUpdate": "Warten auf Knoten-Status-Update...",
-        "showProgress": "Knoten-Ausführungsfortschritt wird nach Start der Unterhaltung angezeigt"
+        "showProgress": "Knoten-Ausführungsfortschritt wird nach Start der Unterhaltung angezeigt",
+        "executionError": "Ausführungsfehler:"
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "Diese Anwendung hat kein Eingabeformular konfiguriert",
         "reset": "Formular zurücksetzen",
         "executing": "Ausführung...",
-        "startExecution": "Ausführung beginnen"
+        "startExecution": "Ausführung beginnen",
+        "errors": {
+          "instanceNotFound": "Service-Instanz mit instanceId {instanceId} nicht gefunden"
+        },
+        "validation": {
+          "required": "{label} ist erforderlich",
+          "invalidNumber": "{label} muss eine gültige Zahl sein",
+          "minValue": "{label} kann nicht kleiner als {min} sein",
+          "maxValue": "{label} kann nicht größer als {max} sein",
+          "stepValue": "{label} muss ein Vielfaches von {step} sein",
+          "precisionExceeded": "{label} Dezimalstellen können nicht mehr als {precision} Stellen haben",
+          "maxLengthExceeded": "{label} Länge kann nicht mehr als {maxLength} Zeichen haben",
+          "invalidSelection": "Ungültiger Wert für {label} ausgewählt",
+          "tooManyFiles": "{label} Dateianzahl kann nicht mehr als {maxFiles} sein",
+          "fileTooLarge": "Datei \"{fileName}\" in {label} überschreitet {maxSize}MB",
+          "unsupportedFileType": "Datei \"{fileName}\" in {label} wird nicht unterstützt, unterstützte Typen: {allowedTypes}"
+        }
       },
       "status": {
         "running": "Workflow wird ausgeführt",
@@ -270,6 +303,11 @@
         "parallel": "Parallele Verzweigung",
         "end": "End-Knoten"
       },
+      "iterationDetails": {
+        "roundIteration": "Runde {round} Iteration",
+        "roundLoop": "Runde {round} Schleife",
+        "nodeNumber": "Knoten {number}"
+      },
       "buttons": {
         "retry": "Wiederholen",
         "close": "Schließen",
@@ -294,7 +332,8 @@
         "loading": "Ausführungsverlauf wird geladen...",
         "noRecords": "Keine Ausführungseinträge",
         "getDetailFailed": "Abrufen der Ausführungsdetails fehlgeschlagen",
-        "unknownError": "Unbekannter Fehler"
+        "unknownError": "Unbekannter Fehler",
+        "userNotLoggedIn": "Benutzer nicht angemeldet"
       },
       "fileUpload": {
         "uploading": "Datei wird hochgeladen...",
@@ -344,7 +383,8 @@
         "download": "Text herunterladen",
         "stop": "Stoppen",
         "retry": "Wiederholen",
-        "reset": "Zurücksetzen"
+        "reset": "Zurücksetzen",
+        "close": "Schließen"
       },
       "emptyState": {
         "title": "Warten auf Generierung",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "{count} Wissensbasis-Ressourcen referenziert",
+        "knowledgeBase": "Wissensbasis",
+        "expand": "Volltext erweitern",
+        "collapse": "Einklappen",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "copyFailed": "Kopieren fehlgeschlagen",
+        "relevanceScore": "Relevanz",
+        "wordCount": "{count} Wörter",
+        "page": "Seite {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Dateilimit überschritten ({current}/{max}), bitte entfernen Sie einige Dateien"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Ziehen zum Anpassen der Panelgröße, Doppelklick zum Zurücksetzen"
+      },
+      "notificationBar": {
+        "closeNotification": "Benachrichtigung schließen"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Vorgeschlagene Frage: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "Standard-App setzen - übergebene ID:",
     "currentInstances": "Aktuelle alle Instanzen:",
@@ -2171,6 +2243,30 @@
         "textGeneration": "Textgenerierung",
         "contentCreation": "Inhaltserstellung",
         "formattedOutput": "Formatierte Ausgabe"
+      },
+      "resultViewer": {
+        "title": "Generierungsergebnis",
+        "defaultTitle": "Textgenerierungsergebnis",
+        "actions": {
+          "copy": "Ergebnis kopieren",
+          "copied": "Kopiert",
+          "download": "Ergebnis herunterladen"
+        },
+        "executionInfo": {
+          "title": "Ausführungsinformationen",
+          "status": "Status:",
+          "createdAt": "Erstellt am:",
+          "elapsedTime": "Verstrichene Zeit:",
+          "statusValues": {
+            "completed": "Abgeschlossen",
+            "failed": "Fehlgeschlagen",
+            "stopped": "Gestoppt"
+          }
+        },
+        "content": {
+          "title": "Generierter Inhalt",
+          "noContent": "Kein Inhalt verfügbar"
+        }
       }
     },
     "chatbot": {

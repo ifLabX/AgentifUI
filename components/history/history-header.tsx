@@ -6,13 +6,15 @@ import { ArrowLeft } from 'lucide-react';
 
 import * as React from 'react';
 
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-// 历史对话页面的头部组件
-// 包含标题和返回按钮
+// History conversation page header component
+// Contains title and return button
 export function HistoryHeader() {
   const { isDark } = useTheme();
   const router = useRouter();
+  const t = useTranslations();
 
   return (
     <header
@@ -31,7 +33,7 @@ export function HistoryHeader() {
               ? 'text-stone-400 hover:bg-stone-800 hover:text-stone-300'
               : 'text-stone-500 hover:bg-stone-100 hover:text-stone-700'
           )}
-          aria-label="返回"
+          aria-label={t('common.ui.back')}
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -42,7 +44,7 @@ export function HistoryHeader() {
             isDark ? 'text-stone-100' : 'text-stone-800'
           )}
         >
-          历史对话
+          {t('history.title')}
         </h1>
       </div>
     </header>

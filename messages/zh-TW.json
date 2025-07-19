@@ -7,12 +7,22 @@
       "retry": "重試",
       "remove": "移除",
       "error": "錯誤",
+      "customSelect": {
+        "placeholder": "請選擇..."
+      },
+      "exportButton": {
+        "tooltip": "匯出檔案",
+        "ariaLabel": "匯出檔案"
+      },
       "logoutDialog": {
         "title": "登出",
         "message": "確定要登出嗎？登出後需要重新登入才能存取您的帳戶。",
         "confirm": "確認登出",
         "cancel": "取消",
         "loggingOut": "登出中..."
+      },
+      "moreButton": {
+        "ariaLabel": "更多選項"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "不支援的檔案格式"
       },
       "fileTypeSelector": {
+        "ariaLabel": "新增附件",
         "notSupported": "該應用不支援上傳檔案",
         "noLimit": "檔案上傳數量限制為0",
         "noTypesConfigured": "未設定支援的檔案類型",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "暫無可用模型",
-        "selectModel": "選擇模型"
+        "selectModel": "選擇模型",
+        "appNotFound": "未找到應用: {appId}"
       },
       "messages": {
         "assistant": "助理",
@@ -131,7 +143,11 @@
         "copyFailed": "複製失敗",
         "imageLink": "圖片連結",
         "viewImage": "檢視圖片",
-        "clickToView": "點擊檢視"
+        "clickToView": "點擊檢視",
+        "clickToViewWithAlt": "點擊檢視: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "還有 {count} 個問題..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "正在啟動 Chatflow",
         "noRecords": "暫無節點執行記錄",
         "waitingUpdate": "等待節點狀態更新...",
-        "showProgress": "開始對話後將顯示節點執行進度"
+        "showProgress": "開始對話後將顯示節點執行進度",
+        "executionError": "執行錯誤："
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "該應用未設定輸入表單",
         "reset": "重設表單",
         "executing": "執行中...",
-        "startExecution": "開始執行"
+        "startExecution": "開始執行",
+        "errors": {
+          "instanceNotFound": "未找到 instanceId 為 {instanceId} 的服務實例"
+        },
+        "validation": {
+          "required": "{label}為必填項",
+          "invalidNumber": "{label}必須是有效的數字",
+          "minValue": "{label}不能小於{min}",
+          "maxValue": "{label}不能大於{max}",
+          "stepValue": "{label}必須是{step}的倍數",
+          "precisionExceeded": "{label}小數位數不能超過{precision}位",
+          "maxLengthExceeded": "{label}長度不能超過{maxLength}個字符",
+          "invalidSelection": "{label}選擇的值無效",
+          "tooManyFiles": "{label}文件數量不能超過{maxFiles}個",
+          "fileTooLarge": "{label}中的文件\"{fileName}\"大小超過{maxSize}MB",
+          "unsupportedFileType": "{label}中的文件\"{fileName}\"類型不支持，支持的類型：{allowedTypes}"
+        }
       },
       "status": {
         "running": "工作流程執行中",
@@ -270,6 +303,11 @@
         "parallel": "並行分支",
         "end": "結束節點"
       },
+      "iterationDetails": {
+        "roundIteration": "第 {round} 輪迭代",
+        "roundLoop": "第 {round} 輪循環",
+        "nodeNumber": "節點 {number}"
+      },
       "buttons": {
         "retry": "重試",
         "close": "關閉",
@@ -294,7 +332,8 @@
         "loading": "正在載入歷史記錄...",
         "noRecords": "暫無執行記錄",
         "getDetailFailed": "取得執行詳情失敗",
-        "unknownError": "未知錯誤"
+        "unknownError": "未知錯誤",
+        "userNotLoggedIn": "使用者未登入"
       },
       "fileUpload": {
         "uploading": "正在上傳檔案...",
@@ -344,7 +383,8 @@
         "download": "下載文字",
         "stop": "停止",
         "retry": "重試",
-        "reset": "重設"
+        "reset": "重設",
+        "close": "關閉"
       },
       "emptyState": {
         "title": "等待生成文字",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "引用了 {count} 個知識庫資源",
+        "knowledgeBase": "知識庫",
+        "expand": "展開全文",
+        "collapse": "收起",
+        "copy": "複製",
+        "copied": "已複製",
+        "copyFailed": "複製失敗",
+        "relevanceScore": "相關度",
+        "wordCount": "{count} 字",
+        "page": "第 {page} 頁"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "已超出檔案數量限制 ({current}/{max})，請刪除部分檔案"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "拖拽調整面板大小，雙擊重置"
+      },
+      "notificationBar": {
+        "closeNotification": "關閉通知"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推薦問題: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "設定預設應用程式 - 傳入ID:",
     "currentInstances": "目前所有實例:",
@@ -2171,6 +2243,30 @@
         "textGeneration": "文本生成",
         "contentCreation": "內容創作",
         "formattedOutput": "格式化輸出"
+      },
+      "resultViewer": {
+        "title": "生成結果",
+        "defaultTitle": "文本生成結果",
+        "actions": {
+          "copy": "複製結果",
+          "copied": "已複製",
+          "download": "下載結果"
+        },
+        "executionInfo": {
+          "title": "執行資訊",
+          "status": "狀態：",
+          "createdAt": "建立時間：",
+          "elapsedTime": "耗時：",
+          "statusValues": {
+            "completed": "已完成",
+            "failed": "已失敗",
+            "stopped": "已停止"
+          }
+        },
+        "content": {
+          "title": "生成內容",
+          "noContent": "暫無內容"
+        }
       }
     },
     "chatbot": {

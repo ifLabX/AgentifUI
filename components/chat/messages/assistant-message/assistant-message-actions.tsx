@@ -23,6 +23,11 @@ interface AssistantMessageActionsProps {
   isRegenerating?: boolean;
 }
 
+/**
+ * Assistant message action buttons component
+ *
+ * Combines copy, regenerate, and feedback buttons for the assistant message action area.
+ */
 export const AssistantMessageActions: React.FC<
   AssistantMessageActionsProps
 > = ({
@@ -40,6 +45,7 @@ export const AssistantMessageActions: React.FC<
       isAssistantMessage={true}
       className={className}
     >
+      {/* Copy button, shows check icon and label when active */}
       <MessageActionButton
         icon={FiCopy}
         activeIcon={FiCheck}
@@ -48,6 +54,7 @@ export const AssistantMessageActions: React.FC<
         onClick={onCopy}
         tooltipPosition="bottom"
       />
+      {/* Regenerate button, shows spinning animation when regenerating */}
       <MessageActionButton
         icon={FiRefreshCw}
         label="重新生成"
@@ -56,12 +63,14 @@ export const AssistantMessageActions: React.FC<
         className={isRegenerating ? 'animate-spin' : ''}
         tooltipPosition="bottom"
       />
+      {/* Divider between main actions and feedback */}
       <div
         className={cn(
           'mx-1 self-stretch border-r',
           isDark ? 'border-gray-700' : 'border-gray-300'
         )}
       />
+      {/* Thumbs up feedback button */}
       <MessageActionButton
         icon={FiThumbsUp}
         label="有用"
@@ -69,6 +78,7 @@ export const AssistantMessageActions: React.FC<
         onClick={() => onFeedback(true)}
         tooltipPosition="bottom"
       />
+      {/* Thumbs down feedback button */}
       <MessageActionButton
         icon={FiThumbsDown}
         label="无用"

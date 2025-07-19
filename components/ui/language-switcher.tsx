@@ -15,10 +15,10 @@ import { useEffect, useState } from 'react';
 
 import { useLocale, useTranslations } from 'next-intl';
 
-// 现代化语言切换器组件
-// 支持三种变体：floating（首页）、navbar（导航栏）、settings（设置页面）
-// 使用真正的 dropdown，参考 sidebar button 的悬停效果
-// 所有硬编码文本已国际化
+// Modern language switcher component
+// Supports three variants: floating (homepage), navbar (navigation bar), settings (settings page)
+// Uses a real dropdown, reference the hover effect of the sidebar button
+// All hard-coded text is internationalized
 interface LanguageSwitcherProps {
   variant?: 'floating' | 'navbar' | 'settings';
 }
@@ -31,19 +31,19 @@ export function LanguageSwitcher({
   const t = useTranslations('pages.settings.languageSettings');
   const [isOpen, setIsOpen] = useState(false);
 
-  // 实际的语言切换逻辑：设置 Cookie 并刷新页面
+  // Actual language switching logic: set Cookie and refresh page
   const handleLanguageChange = async (locale: SupportedLocale) => {
-    // 设置 Cookie
+    // Set Cookie
     setLanguageCookie(locale);
 
-    // 关闭下拉菜单
+    // Close dropdown menu
     setIsOpen(false);
 
-    // 刷新页面以应用新语言
+    // Refresh page to apply new language
     window.location.reload();
   };
 
-  // 点击外部区域关闭下拉菜单
+  // Click outside to close dropdown menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -56,7 +56,7 @@ export function LanguageSwitcher({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // 根据主题获取按钮样式：参考 sidebar button 的悬停效果
+  // Get button style based on theme: reference the hover effect of the sidebar button
   const getButtonColors = () => {
     if (isDark) {
       return 'bg-stone-800/50 hover:bg-stone-600/60 text-gray-200 border-stone-600/30';
@@ -64,7 +64,7 @@ export function LanguageSwitcher({
     return 'bg-stone-200/50 hover:bg-stone-300/80 text-stone-600 border-stone-400/30';
   };
 
-  // 获取下拉菜单的样式
+  // Get dropdown menu style
   const getDropdownColors = () => {
     if (isDark) {
       return 'bg-stone-900/95 border-stone-600/30 text-gray-200';
@@ -72,7 +72,7 @@ export function LanguageSwitcher({
     return 'bg-white/95 border-stone-400/30 text-stone-600';
   };
 
-  // 获取选中指示器的颜色 - 使用stone风格的primary色彩
+  // Get the color of the selected indicator - use the primary color of the stone style
   const getIndicatorColor = () => {
     if (isDark) {
       return 'bg-stone-300';
@@ -80,10 +80,10 @@ export function LanguageSwitcher({
     return 'bg-stone-700';
   };
 
-  // 获取当前语言信息
+  // Get current language information
   const currentLanguageInfo = getLanguageInfo(currentLocale);
 
-  // settings变体：用于设置页面，与theme-card类似的样式
+  // settings variant: used for settings page, similar to theme-card style
   if (variant === 'settings') {
     return (
       <div className="relative" data-language-switcher>
@@ -98,7 +98,7 @@ export function LanguageSwitcher({
                 : 'border-stone-200'
           )}
         >
-          {/* 语言预览区域 */}
+          {/* Language preview area */}
           <div
             className={cn(
               'mb-4 flex h-24 items-center justify-center rounded-md bg-gradient-to-r from-blue-100 to-green-100',
@@ -117,7 +117,7 @@ export function LanguageSwitcher({
             </div>
           </div>
 
-          {/* 语言名称 */}
+          {/* Language name */}
           <p
             className={cn(
               'text-center font-serif text-sm font-medium',
@@ -188,7 +188,7 @@ export function LanguageSwitcher({
     );
   }
 
-  // floating变体：用于首页，带有动画效果
+  // floating variant: used for homepage, with animation effect
   if (variant === 'floating') {
     return (
       <motion.div
@@ -259,7 +259,7 @@ export function LanguageSwitcher({
     );
   }
 
-  // navbar变体：用于导航栏，更紧凑的设计
+  // navbar variant: used for navigation bar, more compact design
   return (
     <div className="relative" data-language-switcher>
       <button

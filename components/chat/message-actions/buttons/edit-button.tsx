@@ -10,15 +10,16 @@ import { useEditAction } from '../hooks/use-edit-action';
 interface EditButtonProps {
   onEdit: () => void;
   tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-  tooltipSize?: 'sm' | 'md'; // tooltip尺寸
-  showTooltipArrow?: boolean; // 是否显示tooltip箭头
+  tooltipSize?: 'sm' | 'md'; // tooltip size
+  showTooltipArrow?: boolean; // whether to show tooltip arrow
   className?: string;
 }
 
 /**
- * 编辑按钮组件
+ * Edit button component
  *
- * 封装了编辑功能的按钮，点击后会触发编辑回调
+ * A button component encapsulating edit functionality.
+ * When clicked, it triggers the edit callback.
  */
 export const EditButton: React.FC<EditButtonProps> = ({
   onEdit,

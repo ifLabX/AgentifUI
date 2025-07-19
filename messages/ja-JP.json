@@ -7,12 +7,22 @@
       "retry": "再試行",
       "remove": "削除",
       "error": "エラー",
+      "customSelect": {
+        "placeholder": "選択してください..."
+      },
+      "exportButton": {
+        "tooltip": "ファイルをエクスポート",
+        "ariaLabel": "ファイルをエクスポート"
+      },
       "logoutDialog": {
         "title": "ログアウト",
         "message": "本当にログアウトしますか？アカウントにアクセスするには再度ログインする必要があります。",
         "confirm": "ログアウト",
         "cancel": "キャンセル",
         "loggingOut": "ログアウト中..."
+      },
+      "moreButton": {
+        "ariaLabel": "その他のオプション"
       }
     },
     "time": {
@@ -99,6 +109,7 @@
         "unsupportedFormat": "サポートされていないファイル形式"
       },
       "fileTypeSelector": {
+        "ariaLabel": "添付ファイルを追加",
         "notSupported": "このアプリはファイルアップロードをサポートしていません",
         "noLimit": "ファイルアップロード制限は0です",
         "noTypesConfigured": "サポートされているファイルタイプが設定されていません",
@@ -112,7 +123,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "利用可能なモデルがありません",
-        "selectModel": "モデルを選択"
+        "selectModel": "モデルを選択",
+        "appNotFound": "アプリが見つかりません: {appId}"
       },
       "messages": {
         "assistant": "アシスタント",
@@ -131,7 +143,11 @@
         "copyFailed": "コピー失敗",
         "imageLink": "画像リンク",
         "viewImage": "画像を表示",
-        "clickToView": "クリックして表示"
+        "clickToView": "クリックして表示",
+        "clickToViewWithAlt": "クリックして表示: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "他に {count} つの質問があります..."
       }
     },
     "chatflow": {
@@ -162,7 +178,8 @@
         "starting": "Chatflow開始中",
         "noRecords": "ノード実行記録なし",
         "waitingUpdate": "ノードステータス更新を待機中...",
-        "showProgress": "会話開始後にノード実行進捗が表示されます"
+        "showProgress": "会話開始後にノード実行進捗が表示されます",
+        "executionError": "実行エラー："
       },
       "executionBar": {
         "status": {
@@ -222,7 +239,23 @@
         "noFormConfig": "このアプリには入力フォームが設定されていません",
         "reset": "フォームをリセット",
         "executing": "実行中...",
-        "startExecution": "実行開始"
+        "startExecution": "実行開始",
+        "errors": {
+          "instanceNotFound": "instanceId {instanceId} のサービスインスタンスが見つかりません"
+        },
+        "validation": {
+          "required": "{label}は必須項目です",
+          "invalidNumber": "{label}は有効な数値である必要があります",
+          "minValue": "{label}は{min}より小さくできません",
+          "maxValue": "{label}は{max}より大きくできません",
+          "stepValue": "{label}は{step}の倍数である必要があります",
+          "precisionExceeded": "{label}の小数点以下桁数は{precision}桁を超えることはできません",
+          "maxLengthExceeded": "{label}の長さは{maxLength}文字を超えることはできません",
+          "invalidSelection": "{label}で選択された値が無効です",
+          "tooManyFiles": "{label}のファイル数は{maxFiles}個を超えることはできません",
+          "fileTooLarge": "{label}のファイル\"{fileName}\"のサイズが{maxSize}MBを超えています",
+          "unsupportedFileType": "{label}のファイル\"{fileName}\"はサポートされていません。サポートされているタイプ: {allowedTypes}"
+        }
       },
       "status": {
         "running": "ワークフロー実行中",
@@ -270,6 +303,11 @@
         "parallel": "並列分岐",
         "end": "終了ノード"
       },
+      "iterationDetails": {
+        "roundIteration": "第{round}回イテレーション",
+        "roundLoop": "第{round}回ループ",
+        "nodeNumber": "ノード{number}"
+      },
       "buttons": {
         "retry": "再試行",
         "close": "閉じる",
@@ -294,7 +332,8 @@
         "loading": "実行履歴を読み込み中...",
         "noRecords": "実行記録がありません",
         "getDetailFailed": "実行詳細の取得に失敗しました",
-        "unknownError": "不明なエラー"
+        "unknownError": "不明なエラー",
+        "userNotLoggedIn": "ユーザーがログインしていません"
       },
       "fileUpload": {
         "uploading": "ファイルをアップロード中...",
@@ -344,7 +383,8 @@
         "download": "テキストをダウンロード",
         "stop": "停止",
         "retry": "再試行",
-        "reset": "リセット"
+        "reset": "リセット",
+        "close": "閉じる"
       },
       "emptyState": {
         "title": "テキスト生成待機中",
@@ -1911,6 +1951,38 @@
       }
     }
   },
+  "components": {
+    "chat": {
+      "referenceSources": {
+        "title": "{count}つのナレッジベースリソースを参照",
+        "knowledgeBase": "ナレッジベース",
+        "expand": "全文を展開",
+        "collapse": "折りたたむ",
+        "copy": "コピー",
+        "copied": "コピー済み",
+        "copyFailed": "コピー失敗",
+        "relevanceScore": "関連度",
+        "wordCount": "{count}文字",
+        "page": "{page}ページ"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "ファイル数の上限を超えています ({current}/{max})、いくつかのファイルを削除してください"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "ドラッグしてパネルのサイズを変更、ダブルクリックでリセット"
+      },
+      "notificationBar": {
+        "closeNotification": "通知を閉じる"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推奨質問: {question}"
+      }
+    }
+  },
   "debug": {
     "setDefaultApp": "デフォルトアプリを設定 - 渡されたID:",
     "currentInstances": "現在のすべてのインスタンス:",
@@ -2171,6 +2243,30 @@
         "textGeneration": "テキスト生成",
         "contentCreation": "コンテンツ作成",
         "formattedOutput": "フォーマット済み出力"
+      },
+      "resultViewer": {
+        "title": "生成結果",
+        "defaultTitle": "テキスト生成結果",
+        "actions": {
+          "copy": "結果をコピー",
+          "copied": "コピー済み",
+          "download": "結果をダウンロード"
+        },
+        "executionInfo": {
+          "title": "実行情報",
+          "status": "ステータス：",
+          "createdAt": "作成日時：",
+          "elapsedTime": "経過時間：",
+          "statusValues": {
+            "completed": "完了",
+            "failed": "失敗",
+            "stopped": "停止"
+          }
+        },
+        "content": {
+          "title": "生成されたコンテンツ",
+          "noContent": "コンテンツがありません"
+        }
       }
     },
     "chatbot": {

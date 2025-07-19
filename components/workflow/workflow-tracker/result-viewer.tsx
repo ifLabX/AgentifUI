@@ -1,6 +1,6 @@
 'use client';
 
-// --- 引入工作流Markdown组件 ---
+// --- Import workflow Markdown components ---
 import {
   CodeBlock,
   InlineCode,
@@ -8,7 +8,7 @@ import {
   MarkdownTableContainer,
 } from '@components/chat/markdown-block';
 import { ThinkBlockContent } from '@components/chat/markdown-block/think-block-content';
-// --- 引入ThinkBlock组件 ---
+// --- Import ThinkBlock components ---
 import { ThinkBlockHeader } from '@components/chat/markdown-block/think-block-header';
 import { useMobile } from '@lib/hooks/use-mobile';
 import { useTheme } from '@lib/hooks/use-theme';
@@ -21,7 +21,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
 import { useCallback, useEffect, useMemo } from 'react';
-// --- 引入React Hook ---
+// --- Import React Hook ---
 import React, { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
@@ -33,9 +33,9 @@ interface ResultViewerProps {
 }
 
 /**
- * 解析工作流结果中的think标签内容
- * @param content 原始内容字符串
- * @returns 解析结果包含think内容和主内容
+ * Parse the think tag content in the workflow result
+ * @param content Original content string
+ * @returns Parsed result containing think content and main content
  */
 const parseThinkContent = (
   content: string
@@ -48,13 +48,13 @@ const parseThinkContent = (
   const thinkStartTag = '<think>';
   const thinkEndTag = '</think>';
 
-  // 检查是否包含think标签
+  // Check if it contains think tags
   if (content.includes(thinkStartTag)) {
     const startIndex = content.indexOf(thinkStartTag);
     const endIndex = content.indexOf(thinkEndTag, startIndex);
 
     if (endIndex !== -1) {
-      // Think块完整
+      // Think block complete
       const thinkContent = content.substring(
         startIndex + thinkStartTag.length,
         endIndex
@@ -70,7 +70,7 @@ const parseThinkContent = (
         isThinkComplete: true,
       };
     } else {
-      // Think块未完成（理论上在结果查看器中不应该出现）
+      // Think block incomplete (theoretically should not appear in the result viewer)
       const thinkContent = content.substring(startIndex + thinkStartTag.length);
       return {
         hasThinkBlock: true,
@@ -81,7 +81,7 @@ const parseThinkContent = (
     }
   }
 
-  // 没有think标签
+  // No think tags
   return {
     hasThinkBlock: false,
     thinkContent: '',
@@ -99,8 +99,8 @@ export function ResultViewer({
   const isMobile = useMobile();
   const t = useTranslations('pages.workflow.resultViewer');
 
-  // --- ThinkBlock状态管理 ---
-  const [isThinkOpen, setIsThinkOpen] = useState(false); // 默认折叠
+  // --- ThinkBlock status management ---
+  const [isThinkOpen, setIsThinkOpen] = useState(false); // Default folded
 
   const formatResult = (
     data: any
@@ -124,20 +124,20 @@ export function ResultViewer({
         };
       }
 
-      // 检查是否有result1、result2等字段（工作流结果模式）
+      // Check if there are result1, result2, etc. fields (workflow result mode)
       const resultKeys = Object.keys(data).filter(key =>
         key.startsWith('result')
       );
       if (resultKeys.length > 0) {
-        // 优先使用第一个result字段
+        // Use the first result field first
         const firstResultKey = resultKeys[0];
         const resultContent = data[firstResultKey];
 
         if (typeof resultContent === 'string') {
-          // 🎯 关键修改：不再删除think块，而是解析它们
+          // 🎯 Key modification: no longer delete think blocks, but parse them
           const parsed = parseThinkContent(resultContent);
 
-          // 检查主内容是否包含markdown
+          // Check if the main content contains markdown
           const markdownContent = parsed.mainContent || parsed.thinkContent;
           const isMarkdown =
             markdownContent.includes('```') ||
@@ -154,7 +154,7 @@ export function ResultViewer({
         }
       }
 
-      // 如果有text字段，优先显示text内容
+      // If there is a text field, display the text content first
       if (data.text && typeof data.text === 'string') {
         const parsed = parseThinkContent(data.text);
         const isMarkdown = data.text.includes('```');
@@ -168,7 +168,7 @@ export function ResultViewer({
         };
       }
 
-      // 如果有outputs字段，优先显示outputs
+      // If there is an outputs field, display the outputs content first
       if (data.outputs && typeof data.outputs === 'object') {
         const content = JSON.stringify(data.outputs, null, 2);
         return {
@@ -180,7 +180,7 @@ export function ResultViewer({
         };
       }
 
-      // 否则显示完整数据
+      // Otherwise, display the complete data
       const content = JSON.stringify(data, null, 2);
       return {
         content,
@@ -190,7 +190,7 @@ export function ResultViewer({
         mainContent: content,
       };
     } catch (error) {
-      console.error('[结果查看器] 数据格式化失败:', error);
+      console.error('[Result viewer] Data formatting failed:', error);
       const content = String(data);
       const parsed = parseThinkContent(content);
       return {
@@ -211,14 +211,14 @@ export function ResultViewer({
     mainContent,
   } = formatResult(result);
 
-  // --- Markdown组件配置 ---
+  // --- Markdown component configuration ---
   const markdownComponents: any = {
     code({ node, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : null;
 
       if (language) {
-        // 代码块
+        // Code block
         return (
           <CodeBlock
             language={language}
@@ -229,7 +229,7 @@ export function ResultViewer({
           </CodeBlock>
         );
       } else {
-        // 内联代码
+        // Inline code
         return (
           <InlineCode className={className} {...props}>
             {children}
@@ -350,12 +350,12 @@ export function ResultViewer({
 
   const handleCopy = async () => {
     try {
-      // 复制时只复制主内容，不包含think块
+      // When copying, only copy the main content, not the think block
       const copyContent = hasThinkBlock ? mainContent : formattedContent;
       await navigator.clipboard.writeText(copyContent);
-      // 这里可以添加成功提示
+      // Here you can add a success prompt
     } catch (error) {
-      console.error('复制失败:', error);
+      console.error('Copy failed:', error);
     }
   };
 
@@ -404,7 +404,7 @@ export function ResultViewer({
           isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'
         )}
       >
-        {/* 头部区域 */}
+        {/* Header area */}
         <div
           className={cn(
             'flex items-center justify-between border-b px-6 py-4',
@@ -459,14 +459,14 @@ export function ResultViewer({
           </div>
         </div>
 
-        {/* 内容区域 */}
+        {/* Content area */}
         <div
           className={cn(
             'flex-1 overflow-y-auto p-6',
             isDark ? 'bg-gray-900' : 'bg-white'
           )}
         >
-          {/* 🎯 Think Block 区域 */}
+          {/* 🎯 Think Block area */}
           {hasThinkBlock && thinkContent && (
             <div className="mb-4">
               <ThinkBlockHeader
@@ -483,7 +483,7 @@ export function ResultViewer({
             </div>
           )}
 
-          {/* 主内容区域 */}
+          {/* Main content area */}
           {(mainContent || (!hasThinkBlock && formattedContent)) && (
             <div
               className={cn(
