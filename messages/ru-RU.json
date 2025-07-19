@@ -103,6 +103,7 @@
         "unsupportedFormat": "Неподдерживаемый формат файла"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Добавить вложение",
         "notSupported": "Это приложение не поддерживает загрузку файлов",
         "noLimit": "Лимит загрузки файлов равен 0",
         "noTypesConfigured": "Не настроены поддерживаемые типы файлов",
@@ -116,7 +117,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Нет доступных моделей",
-        "selectModel": "Выберите модель"
+        "selectModel": "Выберите модель",
+        "appNotFound": "Приложение не найдено: {appId}"
       },
       "messages": {
         "assistant": "Ассистент",
@@ -171,7 +173,8 @@
         "starting": "Запуск Chatflow",
         "noRecords": "Нет записей о выполнении узлов",
         "waitingUpdate": "Ожидание обновления статуса узла...",
-        "showProgress": "Прогресс выполнения узлов будет показан после начала разговора"
+        "showProgress": "Прогресс выполнения узлов будет показан после начала разговора",
+        "executionError": "Ошибка выполнения:"
       },
       "executionBar": {
         "status": {
@@ -1933,6 +1936,11 @@
         "relevanceScore": "Релевантность",
         "wordCount": "{count} слов",
         "page": "Страница {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Превышен лимит файлов ({current}/{max}), пожалуйста удалите некоторые файлы"
       }
     }
   },

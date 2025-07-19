@@ -16,7 +16,7 @@ import { useTranslations } from 'next-intl';
 
 import { ChatButton } from './button';
 
-// 定义文件选择回调类型
+// Define file selection callback type
 export type FileSelectCallback = (
   files: FileList | null,
   accept: string
@@ -32,7 +32,7 @@ interface FileTypeSelectorProps {
 export const FileTypeSelector = ({
   onFileSelect,
   disabled = false,
-  ariaLabel = '添加附件',
+  ariaLabel,
   className,
 }: FileTypeSelectorProps) => {
   const { fileTypes, uploadConfig, isLoading, error } = useFileTypes();
@@ -48,7 +48,7 @@ export const FileTypeSelector = ({
   const hasReachedLimit = attachmentFiles.length >= uploadConfig.maxFiles;
   const isDisabled = disabled || !canUpload || hasReachedLimit;
 
-  // 生成tooltip内容
+  // Generate tooltip content
   const getTooltipContent = () => {
     if (!uploadConfig.enabled) {
       return t('fileTypeSelector.notSupported');
@@ -70,20 +70,20 @@ export const FileTypeSelector = ({
     });
   };
 
-  // 创建文件输入引用回调
+  // Create file input reference callback
   const fileInputCallback = useCallback(
     (fileInput: HTMLInputElement | null, accept: string) => {
       if (fileInput) {
-        // 设置接受的文件类型
+        // Set accepted file type
         fileInput.accept = accept;
-        // 触发文件选择对话框
+        // Trigger file selection dialog
         fileInput.click();
-        // 监听文件选择完成事件
+        // Listen for file selection completion event
         const handleChange = () => {
           onFileSelect(fileInput.files, accept);
-          // 重置输入框，允许选择相同文件
+          // Reset input box, allow selecting same file
           fileInput.value = '';
-          // 移除事件监听器
+          // Remove event listener
           fileInput.removeEventListener('change', handleChange);
         };
         fileInput.addEventListener('change', handleChange);
@@ -92,26 +92,26 @@ export const FileTypeSelector = ({
     [onFileSelect]
   );
 
-  // 处理文件类型选择
+  // Handle file type selection
   const handleFileTypeSelect = (accept: string) => {
-    // 再次检查是否可以上传
+    // Check again if upload is possible
     if (isDisabled) {
       return;
     }
 
-    // 创建临时文件输入框
+    // Create temporary file input box
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.multiple = true; // 允许多选
+    fileInput.multiple = true; // Allow multiple selection
 
-    // 使用回调处理文件选择
+    // Use callback to handle file selection
     fileInputCallback(fileInput, accept);
 
-    // 关闭弹出框
+    // Close pop-up box
     setIsOpen(false);
   };
 
-  // 创建触发器按钮，并用 Tooltip 包裹
+  // Create trigger button, and wrap with Tooltip
   const triggerButton = (
     <TooltipWrapper
       content={getTooltipContent()}
@@ -129,7 +129,7 @@ export const FileTypeSelector = ({
           )
         }
         isDark={isDark}
-        ariaLabel={ariaLabel}
+        ariaLabel={ariaLabel || t('fileTypeSelector.ariaLabel')}
         disabled={isDisabled}
         className={cn(
           className,
@@ -140,7 +140,7 @@ export const FileTypeSelector = ({
     </TooltipWrapper>
   );
 
-  // 如果配置不允许上传，直接返回禁用按钮
+  // If upload is not allowed, return disabled button
   if (!canUpload) {
     return triggerButton;
   }
@@ -159,8 +159,8 @@ export const FileTypeSelector = ({
           hideActiveTooltip();
         }
       }}
-      minWidth={170} // 减小宽度从180到160
-      offsetX={isMobile ? undefined : 105} // 相应调整偏移量
+      minWidth={170} // Decrease width from 180 to 160
+      offsetX={isMobile ? undefined : 105} // Adjust offset accordingly
       offsetY={isMobile ? undefined : 42}
     >
       <div className="px-1 py-1">

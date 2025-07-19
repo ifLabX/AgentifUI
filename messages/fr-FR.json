@@ -103,6 +103,7 @@
         "unsupportedFormat": "Format de fichier non pris en charge"
       },
       "fileTypeSelector": {
+        "ariaLabel": "Ajouter une pièce jointe",
         "notSupported": "Cette application ne prend pas en charge le téléversement de fichiers",
         "noLimit": "La limite de téléversement de fichiers est de 0",
         "noTypesConfigured": "Aucun type de fichier pris en charge n'est configuré",
@@ -116,7 +117,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "Aucun modèle disponible",
-        "selectModel": "Sélectionner un modèle"
+        "selectModel": "Sélectionner un modèle",
+        "appNotFound": "Application non trouvée: {appId}"
       },
       "messages": {
         "assistant": "Assistant",
@@ -171,7 +173,8 @@
         "starting": "Démarrage du Chatflow",
         "noRecords": "Aucun enregistrement d'exécution de nœud",
         "waitingUpdate": "En attente de la mise à jour de l'état du nœud...",
-        "showProgress": "La progression de l'exécution des nœuds sera affichée après le début de la conversation"
+        "showProgress": "La progression de l'exécution des nœuds sera affichée après le début de la conversation",
+        "executionError": "Erreur d'exécution :"
       },
       "executionBar": {
         "status": {
@@ -1933,6 +1936,11 @@
         "relevanceScore": "Pertinence",
         "wordCount": "{count} mots",
         "page": "Page {page}"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Limite de fichiers dépassée ({current}/{max}), veuillez supprimer certains fichiers"
       }
     }
   },

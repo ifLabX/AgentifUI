@@ -103,6 +103,7 @@
         "unsupportedFormat": "不支持的文件格式"
       },
       "fileTypeSelector": {
+        "ariaLabel": "添加附件",
         "notSupported": "该应用不支持上传文件",
         "noLimit": "文件上传数量限制为0",
         "noTypesConfigured": "未配置支持的文件类型",
@@ -116,7 +117,8 @@
       },
       "modelSelector": {
         "noModelsAvailable": "暂无可用模型",
-        "selectModel": "选择模型"
+        "selectModel": "选择模型",
+        "appNotFound": "未找到应用: {appId}"
       },
       "messages": {
         "assistant": "助手",
@@ -171,7 +173,8 @@
         "starting": "正在启动 Chatflow",
         "noRecords": "暂无节点执行记录",
         "waitingUpdate": "等待节点状态更新...",
-        "showProgress": "开始对话后将显示节点执行进度"
+        "showProgress": "开始对话后将显示节点执行进度",
+        "executionError": "执行错误："
       },
       "executionBar": {
         "status": {
@@ -1933,6 +1936,11 @@
         "relevanceScore": "相关度",
         "wordCount": "{count} 字",
         "page": "第 {page} 页"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "已超出文件数量限制 ({current}/{max})，请删除部分文件"
       }
     }
   },

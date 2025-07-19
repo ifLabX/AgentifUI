@@ -18,12 +18,12 @@ interface ChatflowFloatingControllerProps {
 }
 
 /**
- * Chatflow 悬浮控制器组件
+ * Chatflow floating controller component
  *
- * 功能：
- * - 悬浮球形式的控制器
- * - 点击直接切换节点跟踪器的显示/隐藏
- * - 临时UI，可以完全关闭
+ * Features:
+ * - Floating ball-shaped controller
+ * - Click to directly switch the display/hide of the node tracker
+ * - Temporary UI, can be completely closed
  */
 export function ChatflowFloatingController({
   isVisible,
@@ -35,12 +35,12 @@ export function ChatflowFloatingController({
   const { isDark } = useTheme();
   const t = useTranslations('pages.chatflow.floatingController');
 
-  // 从 store 获取执行状态
+  // Get execution status from store
   const nodes = useChatflowExecutionStore(state => state.nodes);
   const isExecuting = useChatflowExecutionStore(state => state.isExecuting);
   const error = useChatflowExecutionStore(state => state.error);
 
-  // 只要isVisible为true就显示悬浮球，不管是否有节点执行
+  // As long as isVisible is true, the floating ball is displayed, regardless of whether there are nodes executing
   if (!isVisible) {
     return null;
   }
@@ -57,7 +57,7 @@ export function ChatflowFloatingController({
 
   return (
     <div className={cn('fixed right-4 bottom-24 z-20', className)}>
-      {/* 悬浮球 - 点击直接切换节点跟踪器 */}
+      {/* Floating ball - click to directly switch the node tracker */}
       <button
         onClick={handleToggleTracker}
         className={cn(

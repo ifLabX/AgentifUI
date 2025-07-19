@@ -28,13 +28,13 @@ interface ChatflowInputAreaProps {
 }
 
 /**
- * Chatflow 输入区域组件
+ * Chatflow input area component
  *
- * 功能特点：
- * - 始终包含查询输入框（sys.query）
- * - 根据应用配置显示动态表单字段
- * - 完整的表单验证（必选字段、文件类型等）
- * - 正确构建 chat-messages API payload
+ * Features:
+ * - Always includes a query input field (sys.query)
+ * - Display dynamic form fields based on application configuration
+ * - Complete form validation (required fields, file types, etc.)
+ * - Correctly build chat-messages API payload
  */
 export function ChatflowInputArea({
   instanceId,
@@ -49,7 +49,7 @@ export function ChatflowInputArea({
   const { currentAppInstance } = useCurrentApp();
   const t = useTranslations('pages.chatflow');
 
-  // --- 状态管理 ---
+  // --- State management ---
   const [query, setQuery] = useState('');
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -62,17 +62,13 @@ export function ChatflowInputArea({
   );
   const [hasFormConfig, setHasFormConfig] = useState(false);
 
-  // --- 初始化应用配置 ---
+  // --- Initialize application configuration ---
   useEffect(() => {
     const initializeFormConfig = async () => {
       try {
         setIsLoading(true);
-        console.log(
-          '[ChatflowInputArea] 开始加载应用配置，instanceId:',
-          instanceId
-        );
 
-        // 从数据库获取应用配置
+        // Get application configuration from database
         const { createClient } = await import('@lib/supabase/client');
         const supabase = createClient();
 
@@ -83,26 +79,24 @@ export function ChatflowInputArea({
           .single();
 
         if (error || !serviceInstance) {
-          console.warn('[ChatflowInputArea] 未找到服务实例，使用纯查询模式');
+          console.warn(
+            '[ChatflowInputArea] Service instance not found, using pure query mode'
+          );
           setHasFormConfig(false);
           onFormConfigChange?.(false);
           return;
         }
 
-        console.log('[ChatflowInputArea] 找到服务实例:', serviceInstance);
-
-        // 解析 user_input_form 配置
+        // Parse user_input_form configuration
         const difyParams = serviceInstance.config?.dify_parameters;
         const formItems = difyParams?.user_input_form || [];
-
-        console.log('[ChatflowInputArea] 解析到的 user_input_form:', formItems);
 
         if (Array.isArray(formItems) && formItems.length > 0) {
           setUserInputForm(formItems);
           setHasFormConfig(true);
           onFormConfigChange?.(true);
 
-          // 初始化表单默认值
+          // Initialize form default values
           const initialData: Record<string, any> = {};
           formItems.forEach((formItem: DifyUserInputFormItem) => {
             const fieldType = Object.keys(formItem)[0];
@@ -130,7 +124,7 @@ export function ChatflowInputArea({
           onFormConfigChange?.(false);
         }
       } catch (error) {
-        console.error('[ChatflowInputArea] 初始化失败:', error);
+        console.error('[ChatflowInputArea] Initialization failed:', error);
         setHasFormConfig(false);
         onFormConfigChange?.(false);
       } finally {
@@ -143,7 +137,7 @@ export function ChatflowInputArea({
     }
   }, [instanceId, onFormConfigChange]);
 
-  // --- 表单字段更新 ---
+  // --- Form field update ---
   const handleFieldChange = useCallback(
     (variable: string, value: any) => {
       setFormData(prev => ({
@@ -151,7 +145,7 @@ export function ChatflowInputArea({
         [variable]: value,
       }));
 
-      // 清除该字段的错误
+      // Clear the error of this field
       if (errors[variable]) {
         setErrors(prev => {
           const newErrors = { ...prev };
@@ -163,15 +157,15 @@ export function ChatflowInputArea({
     [errors]
   );
 
-  // --- 输入法组合状态管理 ---
+  // --- Input method composition state management ---
   const [isComposing, setIsComposing] = useState(false);
 
-  // --- 查询输入更新 ---
+  // --- Query input update ---
   const handleQueryChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setQuery(e.target.value);
 
-      // 清除查询字段的错误
+      // Clear the error of the query field
       if (errors.query) {
         setErrors(prev => {
           const newErrors = { ...prev };
@@ -183,14 +177,14 @@ export function ChatflowInputArea({
     [errors]
   );
 
-  // --- 表单重置 ---
+  // --- Form reset ---
   const handleReset = useCallback(() => {
     setQuery('');
     setFormData({ ...initialFormData });
     setErrors({});
   }, [initialFormData]);
 
-  // --- 表单提交 ---
+  // --- Form submission ---
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -199,13 +193,13 @@ export function ChatflowInputArea({
 
       const newErrors: Record<string, string> = {};
 
-      // 验证查询字段（必填）
+      // Verify the query field (required)
       if (!query.trim()) {
         newErrors.query = t('form.question.required');
       } else {
-        // 检查查询字段长度限制（如果有的话）
-        // 注意：这里我们设置一个合理的默认最大长度，防止过长的输入
-        const maxQueryLength = 2000; // 设置合理的查询最大长度
+        // Check the length limit of the query field (if any)
+        // Note: Here we set a reasonable default maximum length to prevent excessive input
+        const maxQueryLength = 2000; // Set a reasonable query maximum length
         if (query.length > maxQueryLength) {
           newErrors.query = t('form.question.tooLong', {
             maxLength: maxQueryLength,
@@ -213,7 +207,7 @@ export function ChatflowInputArea({
         }
       }
 
-      // 验证表单字段（如果有的话）
+      // Verify the form fields (if any)
       if (hasFormConfig && userInputForm.length > 0) {
         const formValidationErrors = validateFormData(formData, userInputForm);
         Object.assign(newErrors, formValidationErrors);
@@ -224,20 +218,20 @@ export function ChatflowInputArea({
         return;
       }
 
-      // 提取文件
+      // Extract files
       const files = extractFilesFromFormData(formData);
 
-      // 清除错误并提交
+      // Clear errors and submit
       setErrors({});
 
       try {
         await onSubmit(query.trim(), formData, files);
 
-        // 提交成功后清空表单
+        // Clear the form after successful submission
         setQuery('');
         setFormData({ ...initialFormData });
       } catch (error) {
-        console.error('[ChatflowInputArea] 提交失败:', error);
+        console.error('[ChatflowInputArea] Submission failed:', error);
       }
     },
     [
@@ -252,7 +246,7 @@ export function ChatflowInputArea({
     ]
   );
 
-  // --- 检查是否可以提交 ---
+  // --- Check if it can be submitted ---
   const canSubmit = useCallback(() => {
     if (!query.trim()) return false;
 
@@ -264,15 +258,15 @@ export function ChatflowInputArea({
     return true;
   }, [query, formData, userInputForm, hasFormConfig]);
 
-  // --- 键盘事件处理：Enter提交，Shift+Enter换行 ---
+  // --- Keyboard event handling: Enter submission, Shift+Enter line break ---
   const handleQueryKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
         e.preventDefault();
 
-        // 检查是否可以提交
+        // Check if it can be submitted
         if (!isProcessing && !isWaiting && canSubmit()) {
-          // 创建一个模拟的表单事件来触发提交
+          // Create a simulated form event to trigger submission
           const form = e.currentTarget.closest('form');
           if (form) {
             const submitEvent = new Event('submit', {
@@ -287,7 +281,7 @@ export function ChatflowInputArea({
     [isProcessing, isWaiting, canSubmit, isComposing]
   );
 
-  // --- 输入法组合事件处理 ---
+  // --- Input method composition event handling ---
   const handleCompositionStart = useCallback(() => {
     setIsComposing(true);
   }, []);
@@ -296,7 +290,7 @@ export function ChatflowInputArea({
     setIsComposing(false);
   }, []);
 
-  // --- 加载状态 ---
+  // --- Loading state ---
   if (isLoading) {
     return (
       <div className={cn('mx-auto w-full', widthClass, paddingClass, 'py-8')}>
@@ -332,7 +326,7 @@ export function ChatflowInputArea({
         className
       )}
     >
-      {/* --- 现代化表单容器 --- */}
+      {/* --- Modern form container --- */}
       <div
         className={cn(
           'mx-auto max-w-2xl',
@@ -342,7 +336,7 @@ export function ChatflowInputArea({
             : 'border border-stone-200/60 bg-gradient-to-br from-white/95 to-stone-50/95 shadow-stone-200/40 hover:shadow-2xl hover:shadow-stone-300/50'
         )}
       >
-        {/* --- 表单头部 --- */}
+        {/* --- Form header --- */}
         <div
           className={cn(
             'border-b p-8 pb-6',
@@ -389,9 +383,9 @@ export function ChatflowInputArea({
           </div>
         </div>
 
-        {/* --- 表单内容区域 --- */}
+        {/* --- Form content area --- */}
         <form onSubmit={handleSubmit} className="space-y-8 p-8">
-          {/* --- 主要查询输入区域 --- */}
+          {/* --- Main query input area --- */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div
@@ -448,10 +442,10 @@ export function ChatflowInputArea({
             </div>
           </div>
 
-          {/* --- 动态表单字段区域 --- */}
+          {/* --- Dynamic form field area --- */}
           {hasFormConfig && userInputForm.length > 0 && (
             <div className="space-y-6">
-              {/* 分隔线 */}
+              {/* Separator line */}
               <div className="flex items-center gap-4">
                 <div
                   className={cn(
@@ -477,7 +471,7 @@ export function ChatflowInputArea({
                 />
               </div>
 
-              {/* 表单字段网格 */}
+              {/* Form field grid */}
               <div className="grid gap-6">
                 {userInputForm.map(
                   (formItem: DifyUserInputFormItem, index: number) => {
@@ -497,7 +491,7 @@ export function ChatflowInputArea({
                             : 'border border-stone-200/60 bg-gradient-to-br from-stone-50/80 to-white/80 hover:border-stone-300 hover:shadow-lg hover:shadow-stone-200/50'
                         )}
                       >
-                        {/* 字段装饰线 */}
+                        {/* Field decoration line */}
                         <div
                           className={cn(
                             'absolute top-0 left-6 h-1 w-12 rounded-full transition-all duration-300 group-hover:w-16',
@@ -507,7 +501,7 @@ export function ChatflowInputArea({
                           )}
                         />
 
-                        {/* 文件上传字段 */}
+                        {/* File upload field */}
                         {fieldType === 'file' || fieldType === 'file-list' ? (
                           <FileUploadField
                             config={fieldConfig}
@@ -545,7 +539,7 @@ export function ChatflowInputArea({
             </div>
           )}
 
-          {/* --- 表单操作区域 --- */}
+          {/* --- Form operation area --- */}
           <div
             className={cn(
               'border-t pt-6',
@@ -553,7 +547,7 @@ export function ChatflowInputArea({
             )}
           >
             <div className="flex flex-col gap-4 sm:flex-row">
-              {/* 重置按钮 */}
+              {/* Reset button */}
               <button
                 type="button"
                 onClick={handleReset}
@@ -590,7 +584,7 @@ export function ChatflowInputArea({
                 {t('form.reset')}
               </button>
 
-              {/* 提交按钮 */}
+              {/* Submit button */}
               <button
                 type="submit"
                 disabled={isProcessing || isWaiting || !canSubmit()}
@@ -624,7 +618,7 @@ export function ChatflowInputArea({
               </button>
             </div>
 
-            {/* 表单错误提示 */}
+            {/* Form error prompt */}
             {Object.keys(errors).length > 0 && (
               <div
                 className={cn(
@@ -655,23 +649,20 @@ export function ChatflowInputArea({
 }
 
 /**
- * 从表单数据中提取文件
+ * Extract files from form data
  */
 function extractFilesFromFormData(formData: Record<string, any>): any[] {
   const files: any[] = [];
 
-  console.log('[extractFilesFromFormData] 输入的formData:', formData);
-
   Object.values(formData).forEach(value => {
     if (Array.isArray(value)) {
-      // 检查是否是文件数组
+      // Check if it is an array of files
       value.forEach(item => {
         if (
           item &&
           typeof item === 'object' &&
           (item.file || item.upload_file_id)
         ) {
-          console.log('[extractFilesFromFormData] 找到文件数组中的文件:', item);
           files.push(item);
         }
       });
@@ -680,12 +671,9 @@ function extractFilesFromFormData(formData: Record<string, any>): any[] {
       typeof value === 'object' &&
       (value.file || value.upload_file_id)
     ) {
-      // 单个文件对象
-      console.log('[extractFilesFromFormData] 找到单个文件对象:', value);
       files.push(value);
     }
   });
 
-  console.log('[extractFilesFromFormData] 提取的文件列表:', files);
   return files;
 }

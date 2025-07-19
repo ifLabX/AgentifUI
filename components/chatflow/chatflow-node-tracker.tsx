@@ -17,14 +17,14 @@ interface ChatflowNodeTrackerProps {
 }
 
 /**
- * Chatflow 节点跟踪器组件
+ * Chatflow node tracker component
  *
- * 功能：
- * - 显示 chatflow 执行过程中的节点进度
- * - 实时更新节点状态
- * - fade-in 动画显示
- * - 临时UI，刷新后消失
- * - 不影响正常的流式响应
+ * Features:
+ * - Display node progress during chatflow execution
+ * - Real-time update of node status
+ * - Fade-in animation display
+ * - Temporary UI, disappear after refresh
+ * - Does not affect normal streaming response
  */
 export function ChatflowNodeTracker({
   isVisible,
@@ -33,7 +33,7 @@ export function ChatflowNodeTracker({
   const { isDark } = useTheme();
   const t = useTranslations('pages.chatflow.nodeTracker');
 
-  // 从 store 获取节点状态
+  // Get node status from store
   const nodes = useChatflowExecutionStore(state => state.nodes);
   const isExecuting = useChatflowExecutionStore(state => state.isExecuting);
   const error = useChatflowExecutionStore(state => state.error);
@@ -44,47 +44,47 @@ export function ChatflowNodeTracker({
     state => state.loopExpandedStates
   );
 
-  // 🎯 过滤和分组节点：根据展开状态控制迭代/循环中的节点显示
+  // 🎯 Filter and group nodes: control node display in iteration/loop based on expansion state
   const getVisibleNodes = () => {
     const visibleNodes = [];
 
     for (const node of nodes) {
-      // 🎯 修复：容器节点（迭代/循环/并行分支）总是显示
+      // 🎯 Fix: container nodes (iteration/loop/parallel branch) always display
       if (node.isIterationNode || node.isLoopNode || node.isParallelNode) {
         visibleNodes.push(node);
       }
-      // 非嵌套节点总是显示
+      // Non-nested nodes always display
       else if (!node.isInIteration && !node.isInLoop) {
         visibleNodes.push(node);
       }
-      // 迭代中的子节点：根据容器展开状态决定是否显示
+      // Sub-nodes in iteration: determine whether to display based on container expansion state
       else if (node.isInIteration) {
-        // 迭代中的节点：需要找到对应的迭代容器节点
+        // Nodes in iteration: need to find the corresponding iteration container node
         const iterationNode = nodes.find(
           n =>
             n.isIterationNode &&
             n.id !== node.id &&
-            // 简单的判断：如果迭代节点在当前节点之前，则认为是其容器
+            // Simple judgment: if the iteration node is before the current node, it is considered to be its container
             nodes.indexOf(n) < nodes.indexOf(node)
         );
 
-        // 如果找到迭代容器节点且已展开，则显示此迭代中的节点
+        // If the iteration container node is found and expanded, display the node in this iteration
         if (iterationNode && iterationExpandedStates[iterationNode.id]) {
           visibleNodes.push(node);
         }
       }
-      // 循环中的子节点：根据容器展开状态决定是否显示
+      // Sub-nodes in loop: determine whether to display based on container expansion state
       else if (node.isInLoop) {
-        // 循环中的节点：需要找到对应的循环容器节点
+        // Nodes in loop: need to find the corresponding loop container node
         const loopNode = nodes.find(
           n =>
             n.isLoopNode &&
             n.id !== node.id &&
-            // 简单的判断：如果循环节点在当前节点之前，则认为是其容器
+            // Simple judgment: if the loop node is before the current node, it is considered to be its container
             nodes.indexOf(n) < nodes.indexOf(node)
         );
 
-        // 如果找到循环容器节点且已展开，则显示此循环中的节点
+        // If the loop container node is found and expanded, display the node in this loop
         if (loopNode && loopExpandedStates[loopNode.id]) {
           visibleNodes.push(node);
         }
@@ -96,7 +96,7 @@ export function ChatflowNodeTracker({
 
   const visibleNodes = getVisibleNodes();
 
-  // 如果不可见，不显示
+  // If not visible, do not display
   if (!isVisible) {
     return null;
   }
@@ -112,14 +112,14 @@ export function ChatflowNodeTracker({
       <div
         className={cn(
           'space-y-3 rounded-lg border p-4',
-          // 限制实际宽度，避免与聊天内容冲突
+          // Limit actual width to avoid conflict with chat content
           'max-w-[320px] min-w-[280px]',
           isDark
             ? 'border-stone-700/50 bg-stone-800/50 backdrop-blur-sm'
             : 'border-stone-200 bg-white/80 backdrop-blur-sm'
         )}
       >
-        {/* 标题栏 */}
+        {/* Title bar */}
         <div
           className={cn(
             'flex items-center gap-2 border-b pb-2',
@@ -142,12 +142,12 @@ export function ChatflowNodeTracker({
           </span>
         </div>
 
-        {/* 节点列表 */}
+        {/* Node list */}
         <div className="relative space-y-2">
           {' '}
-          {/* 🎯 添加relative用于竖线定位 */}
+          {/* 🎯 Add relative for vertical line positioning */}
           {nodes.length === 0 ? (
-            // 没有节点数据时的显示
+            // Display when there is no node data
             <div
               className={cn(
                 'flex items-center gap-3 rounded-lg border-2 border-dashed px-4 py-3',
@@ -191,19 +191,19 @@ export function ChatflowNodeTracker({
               </div>
             </div>
           ) : (
-            // 🎯 显示过滤后的节点列表
+            // 🎯 Display filtered node list
             visibleNodes.map((node, index) => (
               <ChatflowExecutionBar
                 key={node.id}
                 node={node}
                 index={index}
-                delay={index * 150} // 每个条延迟150ms出现
+                delay={index * 150} // Each bar appears after a delay of 150ms
               />
             ))
           )}
         </div>
 
-        {/* 错误信息 */}
+        {/* Error information */}
         {error && (
           <div
             className={cn(
@@ -214,7 +214,7 @@ export function ChatflowNodeTracker({
             )}
           >
             <div className="font-serif text-sm">
-              <strong>执行错误：</strong> {error}
+              <strong>{t('executionError')}</strong> {error}
             </div>
           </div>
         )}
