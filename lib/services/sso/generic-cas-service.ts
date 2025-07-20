@@ -31,15 +31,15 @@ export interface CASConfig {
 
 // CAS user info interface
 export interface CASUserInfo {
-  employeeNumber: string; // 学工号（主要标识）
-  username: string; // 用户名
-  success: boolean; // 验证是否成功
+  employeeNumber: string; // Employee number (primary identifier)
+  username: string; // Username
+  success: boolean; // Whether validation is successful
   attributes?: {
-    name?: string; // 真实姓名
-    username?: string; // 用户名
-    [key: string]: any; // 其他可能的属性
+    name?: string; // Real name
+    username?: string; // Username
+    [key: string]: any; // Other possible attributes
   };
-  rawResponse?: string; // 原始XML响应（调试用）
+  rawResponse?: string; // Original XML response (for debugging)
 }
 
 // CAS validation error type

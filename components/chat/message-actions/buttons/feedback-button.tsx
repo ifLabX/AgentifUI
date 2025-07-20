@@ -5,6 +5,8 @@ import { FiThumbsDown, FiThumbsUp } from 'react-icons/fi';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { useFeedbackAction } from '../hooks/use-feedback-action';
 
 interface FeedbackButtonProps {
@@ -35,14 +37,15 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({
 }) => {
   // If the active property is provided, use external control; otherwise, use internal state
   const { handleFeedback, hasFeedback } = useFeedbackAction(onFeedback);
+  const t = useTranslations('components.chat.messageActions');
 
   return (
     <MessageActionButton
       icon={isPositive ? FiThumbsUp : FiThumbsDown}
       // Do not use an active icon, use color effect instead
       // activeIcon={FiCheck}
-      label={isPositive ? '有用' : '无用'}
-      activeLabel="已评价"
+      label={isPositive ? t('useful') : t('notUseful')}
+      activeLabel={t('rated')}
       onClick={() => handleFeedback(isPositive)}
       active={active || hasFeedback}
       tooltipPosition={tooltipPosition}

@@ -37,7 +37,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslations('pages.admin.users.filters');
 
-  // 角色选项
+  // Role options
   const roleOptions = [
     {
       value: '',
@@ -61,7 +61,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
     },
   ];
 
-  // 状态选项
+  // Status options
   const statusOptions = [
     {
       value: '',
@@ -85,7 +85,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
     },
   ];
 
-  // 认证来源选项（直接对应Supabase的provider值）
+  // Authentication source options (directly corresponding to the provider value of Supabase)
   const authSourceOptions = [
     { value: '', label: t('authSourceOptions.all') },
     { value: 'email', label: t('authSourceOptions.email') },
@@ -94,7 +94,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
     { value: 'google', label: '🔍 Google' },
   ];
 
-  // 排序选项
+  // Sort options
   const sortOptions = [
     { value: 'created_at', label: t('sortOptions.createdAt') },
     { value: 'last_sign_in_at', label: t('sortOptions.lastSignIn') },
@@ -102,12 +102,12 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
     { value: 'full_name', label: t('sortOptions.fullName') },
   ];
 
-  // 处理搜索输入
+  // Handle search input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFiltersChange({ search: e.target.value });
   };
 
-  // 检查是否有任何筛选条件被应用（移除组织部门检查）
+  // Check if any filter conditions are applied (remove organization department check)
   const hasActiveFilters =
     filters.role || filters.status || filters.auth_source || filters.search;
   const hasSearchFilter = filters.search;
@@ -124,7 +124,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
       {/* Search bar - always visible */}
       <div className="p-4">
         <div className="flex items-center gap-4">
-          {/* --- 搜索框 --- */}
+          {/* --- Search box --- */}
           <div className="relative flex-1">
             <Search
               className={cn(
@@ -148,7 +148,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
             />
           </div>
 
-          {/* --- 展开/收起按钮 --- */}
+          {/* --- Expand/collapse button --- */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className={cn(
@@ -175,7 +175,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
             )}
           </button>
 
-          {/* --- 重置按钮 --- */}
+          {/* --- Reset button --- */}
           {(hasActiveFilters || hasSearchFilter) && (
             <button
               onClick={onReset}
@@ -202,7 +202,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
           )}
         >
           <div className="grid grid-cols-1 gap-4 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {/* --- 角色筛选 --- */}
+            {/* --- Role filter --- */}
             <div>
               <label
                 className={cn(
@@ -244,7 +244,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
               </div>
             </div>
 
-            {/* --- 状态筛选 --- */}
+            {/* --- Status filter --- */}
             <div>
               <label
                 className={cn(
@@ -286,7 +286,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
               </div>
             </div>
 
-            {/* --- 认证来源筛选 --- */}
+            {/* --- Authentication source filter --- */}
             <div>
               <label
                 className={cn(
@@ -328,7 +328,7 @@ export const UserFiltersComponent: React.FC<UserFiltersProps> = ({
               </div>
             </div>
 
-            {/* --- 排序选择 --- */}
+            {/* --- Sort selection --- */}
             <div>
               <label
                 className={cn(

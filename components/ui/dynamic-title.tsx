@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
  * Dynamic Title Component - Refactored Version
  *
  * Adopts a stable title management strategy to prevent title rollback issues caused by state conflicts
- * 核心原则：
+ * Core principles:
  * 1. Priority Management: Clearly define the priority of different data sources
  * 2. Debounce Mechanism: Avoid frequent title updates
  * 3. State Caching: Preserve the last valid title as a fallback

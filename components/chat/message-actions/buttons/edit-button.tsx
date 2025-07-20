@@ -5,6 +5,8 @@ import { FiEdit2 } from 'react-icons/fi';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { useEditAction } from '../hooks/use-edit-action';
 
 interface EditButtonProps {
@@ -29,11 +31,12 @@ export const EditButton: React.FC<EditButtonProps> = ({
   className,
 }) => {
   const { handleEdit } = useEditAction(onEdit);
+  const t = useTranslations('components.chat.messageActions');
 
   return (
     <MessageActionButton
       icon={FiEdit2}
-      label="编辑"
+      label={t('edit')}
       onClick={handleEdit}
       tooltipPosition={tooltipPosition}
       tooltipSize={tooltipSize}

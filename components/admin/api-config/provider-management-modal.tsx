@@ -33,18 +33,18 @@ import React, { useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-// 提供商类型枚举，基于数据库分析的建议
+// Provider type enumeration, based on database analysis suggestions
 const PROVIDER_TYPES = [
-  { value: 'llm', label: 'LLM (大语言模型)' },
-  { value: 'platform', label: 'Platform (聚合平台)' },
-  { value: 'embedding', label: 'Embedding (向量化)' },
-  { value: 'tts', label: 'TTS (文本转语音)' },
-  { value: 'stt', label: 'STT (语音转文本)' },
-  { value: 'vision', label: 'Vision (图像识别)' },
-  { value: 'multimodal', label: 'Multimodal (多模态)' },
+  { value: 'llm', label: 'LLM (Large Language Model)' },
+  { value: 'platform', label: 'Platform (Aggregation Platform)' },
+  { value: 'embedding', label: 'Embedding (Vectorization)' },
+  { value: 'tts', label: 'TTS (Text-to-Speech)' },
+  { value: 'stt', label: 'STT (Speech-to-Text)' },
+  { value: 'vision', label: 'Vision (Image Recognition)' },
+  { value: 'multimodal', label: 'Multimodal (Multimodal)' },
 ] as const;
 
-// 认证类型枚举
+// Authentication type enumeration
 const AUTH_TYPES = [
   { value: 'api_key', label: 'API Key' },
   { value: 'bearer_token', label: 'Bearer Token' },

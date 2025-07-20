@@ -1973,6 +1973,11 @@
         "relevanceScore": "Relevanz",
         "wordCount": "{count} Wörter",
         "page": "Seite {page}"
+      },
+      "thinkBlock": {
+        "thinking": "Tief nachdenken",
+        "stopped": "Denken gestoppt",
+        "completed": "Tiefes Nachdenken abgeschlossen"
       }
     },
     "chatInput": {
@@ -1989,6 +1994,14 @@
       },
       "suggestedQuestionButton": {
         "ariaLabel": "Vorgeschlagene Frage: {question}"
+      },
+      "copyButton": {
+        "copy": "Inhalt kopieren",
+        "copied": "Kopiert",
+        "noContent": "Kein Inhalt zum Kopieren"
+      },
+      "userAvatar": {
+        "alt": "s Avatar"
       }
     }
   },

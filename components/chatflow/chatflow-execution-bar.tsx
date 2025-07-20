@@ -32,11 +32,11 @@ interface ChatflowExecutionBarProps {
 /**
  * Chatflow execution bar component - display long bar with node execution information
  *
- * 特点：
+ * Features:
  * - fade-in animation
  * - left status icon (spinner/completed/failed)
  * - middle display node name and status description
- * - 右侧显示执行时间
+ * - right display execution time
  * - Adapt to chatflow visual style
  * - Temporary UI, disappear after refresh
  */

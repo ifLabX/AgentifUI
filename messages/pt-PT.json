@@ -1973,6 +1973,11 @@
         "relevanceScore": "Relevância",
         "wordCount": "{count} palavras",
         "page": "Página {page}"
+      },
+      "thinkBlock": {
+        "thinking": "Pensamento profundo",
+        "stopped": "Pensamento parado",
+        "completed": "Pensamento profundo concluído"
       }
     },
     "chatInput": {
@@ -1989,6 +1994,14 @@
       },
       "suggestedQuestionButton": {
         "ariaLabel": "Pergunta sugerida: {question}"
+      },
+      "copyButton": {
+        "copy": "Copiar conteúdo",
+        "copied": "Copiado",
+        "noContent": "Nenhum conteúdo para copiar"
+      },
+      "userAvatar": {
+        "alt": " avatar de"
       }
     }
   },

@@ -205,7 +205,7 @@ export function AppFilters({
                   onClick={() => onCategoryChange(category)}
                   className={cn(
                     'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm font-medium transition-all duration-200',
-                    'flex-shrink-0 whitespace-nowrap', // 防止收缩和换行
+                    'flex-shrink-0 whitespace-nowrap', // Prevent shrink and line break
                     isSelected
                       ? [
                           isDark
@@ -239,7 +239,7 @@ export function AppFilters({
           </div>
         </div>
 
-        {/* 右滚动按钮 */}
+        {/* Right scroll button */}
         {canScrollRight && (
           <button
             onClick={() => scrollCategories('right')}

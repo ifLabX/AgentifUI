@@ -1973,6 +1973,11 @@
         "relevanceScore": "関連度",
         "wordCount": "{count}文字",
         "page": "{page}ページ"
+      },
+      "thinkBlock": {
+        "thinking": "深く思考中",
+        "stopped": "思考が停止しました",
+        "completed": "深い思考が完了しました"
       }
     },
     "chatInput": {
@@ -1989,6 +1994,14 @@
       },
       "suggestedQuestionButton": {
         "ariaLabel": "推奨質問: {question}"
+      },
+      "copyButton": {
+        "copy": "内容をコピー",
+        "copied": "コピー済み",
+        "noContent": "コピーする内容がありません"
+      },
+      "userAvatar": {
+        "alt": "のアバター"
       }
     }
   },

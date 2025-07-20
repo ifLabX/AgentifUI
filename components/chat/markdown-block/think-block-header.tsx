@@ -8,6 +8,8 @@ import { cn } from '@lib/utils';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 /**
  * Status types for the ThinkBlock
  */
@@ -37,6 +39,9 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   // Determine if the current device is mobile
   const isMobile = useMobile();
 
+  // i18n translation hook
+  const t = useTranslations('components.chat.thinkBlock');
+
   // Check if the current status is "thinking"
   const isThinking = status === 'thinking';
 
@@ -44,12 +49,12 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   const getStatusText = () => {
     switch (status) {
       case 'thinking':
-        return '正在深度思考';
+        return t('thinking');
       case 'stopped':
-        return '思考已停止';
+        return t('stopped');
       case 'completed':
       default:
-        return '已深度思考';
+        return t('completed');
     }
   };
 

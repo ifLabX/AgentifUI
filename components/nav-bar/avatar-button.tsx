@@ -1,6 +1,6 @@
 'use client';
 
-// 默认图标
+// Default icon
 import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { cn } from '@lib/utils';
 import { User } from 'lucide-react';

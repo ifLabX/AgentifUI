@@ -32,10 +32,10 @@ interface TextGenerationResultViewerProps {
 }
 
 /**
- * 文本生成结果查看器
+ * Text generation result viewer
  *
- * 专门用于展示文本生成的历史记录结果
- * 模仿工作流的ResultViewer组件样式和功能
+ * Specialized for displaying the result of text generation history records
+ * Mimic the ResultViewer component style and function of the workflow
  */
 export function TextGenerationResultViewer({
   result,

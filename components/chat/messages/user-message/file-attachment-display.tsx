@@ -113,8 +113,8 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
                 ? 'border border-stone-700/80 bg-stone-800/90 hover:bg-stone-700/90'
                 : 'border border-stone-300 bg-stone-200 hover:bg-stone-300'
             )}
-            title={`预览 ${attachment.name}`}
-            aria-label={`预览文件 ${attachment.name}`}
+            title={`Preview ${attachment.name}`}
+            aria-label={`Preview file ${attachment.name}`}
           >
             <div
               className={cn(

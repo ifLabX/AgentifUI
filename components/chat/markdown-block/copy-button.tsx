@@ -7,6 +7,8 @@ import { FiCheck, FiCopy } from 'react-icons/fi';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 interface CopyButtonProps {
   content?: string;
   className?: string;
@@ -35,6 +37,7 @@ export const CopyButton: React.FC<CopyButtonProps> = React.memo(
     onCopy,
   }) => {
     const { isDark } = useTheme();
+    const t = useTranslations('components.ui.copyButton');
 
     // State for copy status
     const [isCopied, setIsCopied] = React.useState(false);
@@ -68,7 +71,7 @@ export const CopyButton: React.FC<CopyButtonProps> = React.memo(
 
     return (
       <TooltipWrapper
-        content={isCopied ? '已复制' : '复制内容'}
+        content={isCopied ? t('copied') : t('copy')}
         id={tooltipId}
         placement={tooltipPlacement}
         size={tooltipSize}
@@ -89,7 +92,7 @@ export const CopyButton: React.FC<CopyButtonProps> = React.memo(
             className
           )}
           style={{ transform: 'translateZ(0)' }} // Add hardware acceleration to reduce flicker
-          aria-label={isCopied ? '已复制' : '复制内容'}
+          aria-label={isCopied ? t('copied') : t('copy')}
         >
           {isCopied ? (
             <FiCheck className="h-4 w-4" />

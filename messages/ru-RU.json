@@ -1973,6 +1973,11 @@
         "relevanceScore": "Релевантность",
         "wordCount": "{count} слов",
         "page": "Страница {page}"
+      },
+      "thinkBlock": {
+        "thinking": "Глубокое размышление",
+        "stopped": "Размышление остановлено",
+        "completed": "Глубокое размышление завершено"
       }
     },
     "chatInput": {
@@ -1989,6 +1994,14 @@
       },
       "suggestedQuestionButton": {
         "ariaLabel": "Предлагаемый вопрос: {question}"
+      },
+      "copyButton": {
+        "copy": "Копировать содержимое",
+        "copied": "Скопировано",
+        "noContent": "Нет содержимого для копирования"
+      },
+      "userAvatar": {
+        "alt": " аватар"
       }
     }
   },

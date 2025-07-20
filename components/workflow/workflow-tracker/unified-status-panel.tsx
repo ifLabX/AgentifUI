@@ -27,7 +27,7 @@ interface UnifiedStatusPanelProps {
   onRetry: () => void;
   onReset: () => void;
   onShowResult: () => void;
-  showResultButton?: boolean; // 是否显示查看结果按钮，默认为true
+  showResultButton?: boolean; // Whether to display the view result button, default is true
 }
 
 /**

@@ -1973,6 +1973,11 @@
         "relevanceScore": "相关度",
         "wordCount": "{count} 字",
         "page": "第 {page} 页"
+      },
+      "thinkBlock": {
+        "thinking": "正在深度思考",
+        "stopped": "思考已停止",
+        "completed": "已深度思考"
       }
     },
     "chatInput": {
@@ -1989,6 +1994,14 @@
       },
       "suggestedQuestionButton": {
         "ariaLabel": "推荐问题: {question}"
+      },
+      "copyButton": {
+        "copy": "复制内容",
+        "copied": "已复制",
+        "noContent": "无内容可复制"
+      },
+      "userAvatar": {
+        "alt": "的头像"
       }
     }
   },

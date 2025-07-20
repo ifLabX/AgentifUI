@@ -6,6 +6,8 @@ import { FiRefreshCw } from 'react-icons/fi';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { useRegenerateAction } from '../hooks/use-regenerate-action';
 
 interface RegenerateButtonProps {
@@ -32,6 +34,7 @@ export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
   showTooltipArrow = false,
   className,
 }) => {
+  const t = useTranslations('components.chat.messageActions');
   const { handleRegenerate } = useRegenerateAction(
     onRegenerate,
     isRegenerating
@@ -40,7 +43,7 @@ export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
   return (
     <MessageActionButton
       icon={FiRefreshCw}
-      label="重新生成"
+      label={t('regenerate')}
       onClick={handleRegenerate}
       disabled={isRegenerating}
       tooltipPosition={tooltipPosition}

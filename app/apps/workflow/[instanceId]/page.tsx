@@ -62,21 +62,21 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
         const needsAppListFetch = apps.length === 0;
         const currentAppMatches = currentAppId === instanceId;
 
-        // 如果应用列表为空，需要获取
+        // If the application list is empty, it needs to be fetched
         if (needsAppListFetch) {
           setIsInitializing(true);
           console.log('[workflow page] app list is empty, start fetching');
           await fetchApps();
         }
 
-        // 重新获取最新的应用列表
+        // Re-fetch the latest application list
         const latestApps = useAppListStore.getState().apps;
         console.log(
           '[workflow page] current app list length:',
           latestApps.length
         );
 
-        // 检查应用是否存在
+        // Check if the application exists
         const targetApp = latestApps.find(
           app => app.instance_id === instanceId
         );
@@ -91,10 +91,10 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
           targetApp.display_name
         );
 
-        // immediately set sidebar selected state
+        // Immediately set the sidebar selected state
         selectItem('app', instanceId);
 
-        // only switch when current app does not match
+        // Only switch when the current app does not match
         if (!currentAppMatches) {
           console.log(
             '[workflow page] need to switch app, from',

@@ -94,20 +94,20 @@ export function GroupMembersModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* 背景遮罩 */}
+      {/* Background mask */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* 模态框内容 */}
+      {/* Modal content */}
       <div
         className={cn(
           'relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-xl border shadow-lg',
           isDark ? 'border-stone-700 bg-stone-800' : 'border-stone-200 bg-white'
         )}
       >
-        {/* 头部 */}
+        {/* Header */}
         <div
           className={cn(
             'flex items-center justify-between border-b p-6',
@@ -174,7 +174,7 @@ export function GroupMembersModal({
           </div>
         </div>
 
-        {/* 搜索栏 */}
+        {/* Search bar */}
         <div className="p-6 pb-4">
           <div className="relative">
             <Search
@@ -199,7 +199,7 @@ export function GroupMembersModal({
           </div>
         </div>
 
-        {/* 成员列表 */}
+        {/* Member list */}
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           {loading.members ? (
             <div className="flex items-center justify-center py-12">
@@ -264,7 +264,7 @@ export function GroupMembersModal({
                     )}
                   >
                     <div className="flex items-center gap-4">
-                      {/* 用户头像 */}
+                      {/* User avatar */}
                       <div
                         className={cn(
                           'flex h-12 w-12 items-center justify-center rounded-xl font-serif font-semibold',
@@ -278,7 +278,7 @@ export function GroupMembersModal({
                         )}
                       </div>
 
-                      {/* 用户信息 */}
+                      {/* User information */}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <h4
@@ -334,7 +334,7 @@ export function GroupMembersModal({
                       </div>
                     </div>
 
-                    {/* 操作按钮 */}
+                    {/* Operation buttons */}
                     <button
                       onClick={() => handleRemoveMember(member)}
                       disabled={loading.members}
@@ -372,7 +372,7 @@ export function GroupMembersModal({
   );
 }
 
-// 添加成员模态框组件
+// Add member modal component
 function AddMemberModal({
   group,
   isOpen,
@@ -511,7 +511,7 @@ function AddMemberModal({
       if (successCount > 0) {
         toast.success(t('addSuccess', { count: successCount }));
         setSelectedUserIds([]);
-        // 重新加载用户列表，排除新添加的成员
+        // Reload user list, excluding new added members
         loadUsers(pagination.page, searchTerm);
       }
 
@@ -542,7 +542,7 @@ function AddMemberModal({
           isDark ? 'border-stone-700 bg-stone-800' : 'border-stone-200 bg-white'
         )}
       >
-        {/* 头部 */}
+        {/* Header */}
         <div
           className={cn(
             'flex items-center justify-between border-b p-6',
@@ -581,10 +581,10 @@ function AddMemberModal({
           </button>
         </div>
 
-        {/* 搜索栏和批量操作 */}
+        {/* Search bar and batch operations */}
         <div className="p-6 pb-4">
           <div className="flex items-center gap-4">
-            {/* 搜索框 */}
+            {/* Search box */}
             <div className="relative flex-1">
               <Search
                 className={cn(
@@ -607,7 +607,7 @@ function AddMemberModal({
               />
             </div>
 
-            {/* 批量添加按钮 */}
+            {/* Batch add button */}
             {selectedUserIds.length > 0 && (
               <button
                 onClick={handleBatchAddMembers}
@@ -631,7 +631,7 @@ function AddMemberModal({
           </div>
         </div>
 
-        {/* 用户列表 */}
+        {/* User list */}
         <div className="flex-1 overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -663,7 +663,7 @@ function AddMemberModal({
             </div>
           ) : (
             <div className="overflow-y-auto p-2" style={{ maxHeight: '420px' }}>
-              {/* 表格头部 */}
+              {/* Table header */}
               <div
                 className={cn(
                   'bg-opacity-95 sticky top-0 mb-3 rounded-xl backdrop-blur-sm',
@@ -713,7 +713,7 @@ function AddMemberModal({
                 </div>
               </div>
 
-              {/* 用户列表 */}
+              {/* User list */}
               <div>
                 {users.map(user => {
                   const isSelected = selectedUserIds.includes(user.id);
@@ -731,7 +731,7 @@ function AddMemberModal({
                             : 'bg-stone-50/50 hover:bg-stone-100/80'
                       )}
                     >
-                      {/* 选择框 */}
+                      {/* Selection box */}
                       <div className="w-12">
                         <button
                           onClick={() => handleToggleUser(user.id)}
@@ -750,9 +750,9 @@ function AddMemberModal({
                         </button>
                       </div>
 
-                      {/* 用户信息 */}
+                      {/* User information */}
                       <div className="flex flex-1 items-center gap-3">
-                        {/* 头像 */}
+                        {/* Avatar */}
                         <div
                           className={cn(
                             'flex h-10 w-10 items-center justify-center rounded-xl font-serif font-semibold',
@@ -766,7 +766,7 @@ function AddMemberModal({
                           )}
                         </div>
 
-                        {/* 用户详情 */}
+                        {/* User details */}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <h4
@@ -807,7 +807,7 @@ function AddMemberModal({
                         </div>
                       </div>
 
-                      {/* 角色标签 */}
+                      {/* Role tag */}
                       <div className="w-24">
                         <span
                           className={cn(
@@ -840,7 +840,7 @@ function AddMemberModal({
           )}
         </div>
 
-        {/* 分页控制 */}
+        {/* Pagination control */}
         {pagination.totalPages > 1 && (
           <div className="p-4 pt-6">
             <div className="flex items-center justify-between">

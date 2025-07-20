@@ -5,6 +5,8 @@ import { getAvatarBgColor, getInitials } from '@lib/utils/avatar';
 
 import React, { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 // Unified user avatar component interface
 // Supports image avatar and automatically generated avatar, automatically handling loading failure
 interface UserAvatarProps {
@@ -40,6 +42,8 @@ export function UserAvatar({
   alt,
   onClick,
 }: UserAvatarProps) {
+  const t = useTranslations('components.ui.userAvatar');
+
   // Use state to track whether the image fails to load
   const [imageLoadError, setImageLoadError] = useState(false);
 
@@ -57,7 +61,7 @@ export function UserAvatar({
   const shouldShowImage = avatarUrl && !imageLoadError;
 
   // Generate alt text
-  const altText = alt || `${userName}的头像`;
+  const altText = alt || `${userName}${t('alt')}`;
 
   // Base CSS class
   const baseClasses = cn(

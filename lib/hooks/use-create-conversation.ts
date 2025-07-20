@@ -311,7 +311,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     summary: null,
                     settings: {},
                     status: 'active',
-                    last_message_preview: null, // 由数据库触发器自动设置
+                    last_message_preview: null, // Set by database trigger automatically
                     metadata: {},
                   });
 

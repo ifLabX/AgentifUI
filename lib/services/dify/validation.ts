@@ -140,18 +140,12 @@ export function generateConfigSuggestions(
     return suggestions;
   }
 
-  const { dify_apptype, app_type, tags } = config.app_metadata;
+  const { dify_apptype, app_type } = config.app_metadata;
 
   // --- Suggestion based on Dify app type ---
   if (dify_apptype === 'workflow' && app_type === 'model') {
     suggestions.push(
       'For workflow apps, it is recommended to set app_type as marketplace instead of model'
-    );
-  }
-
-  if (dify_apptype === 'text-generation' && !tags?.includes('文本生成')) {
-    suggestions.push(
-      'For text-generation apps, it is recommended to add the "文本生成" tag'
     );
   }
 

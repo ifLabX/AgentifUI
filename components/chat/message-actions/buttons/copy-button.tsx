@@ -5,6 +5,8 @@ import { FiCheck, FiCopy } from 'react-icons/fi';
 
 import React from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { useCopyAction } from '../hooks/use-copy-action';
 
 interface CopyButtonProps {
@@ -30,6 +32,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
   showTooltipArrow = false,
   className,
 }) => {
+  const t = useTranslations('components.ui.copyButton');
   const { handleCopy, isCopied } = useCopyAction(content || '');
 
   // Do not perform copy if there is no content or the button is disabled
@@ -44,8 +47,8 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
     <MessageActionButton
       icon={FiCopy}
       activeIcon={FiCheck}
-      label={disabled ? '无内容可复制' : '复制'}
-      activeLabel="已复制"
+      label={disabled ? t('noContent') : t('copy')}
+      activeLabel={t('copied')}
       onClick={handleClick}
       active={isCopied && !disabled}
       disabled={disabled}

@@ -11,11 +11,11 @@ import { useTranslations } from 'next-intl';
 
 interface InstanceFilterSelectorProps {
   providers: Provider[];
-  selectedProviderId: string | null; // null表示"全部"
+  selectedProviderId: string | null; // null means "all"
   onFilterChange: (providerId: string | null) => void;
   instanceCount: number;
   className?: string;
-  isLoading?: boolean; // 新增loading状态
+  isLoading?: boolean; // New loading state
 }
 
 export const InstanceFilterSelector = memo(function InstanceFilterSelector({
@@ -30,12 +30,12 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations('pages.admin.apiConfig.instanceFilter');
 
-  // 获取当前选中的提供商信息
+  // Get the current selected provider information
   const selectedProvider = selectedProviderId
     ? providers.find(p => p.id === selectedProviderId)
     : null;
 
-  // 处理筛选选择
+  // Handle filter selection
   const handleFilterSelect = (providerId: string | null) => {
     onFilterChange(providerId);
     setIsOpen(false);
@@ -106,13 +106,13 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
       {/* Dropdown menu: fully mimic conversation-title-button style */}
       {isOpen && (
         <>
-          {/* 背景遮罩 */}
+          {/* Background mask */}
           <div
             className="fixed inset-0 z-[90]"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* 下拉选项 */}
+          {/* Dropdown options */}
           <div
             className={cn(
               'absolute top-full left-0 z-[95] mt-1 min-w-[10rem]',
@@ -122,7 +122,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
                 : 'border-stone-300/80 bg-stone-50/95 backdrop-blur-sm'
             )}
           >
-            {/* 全部选项 */}
+            {/* All options */}
             <button
               onClick={() => handleFilterSelect(null)}
               className={cn(
@@ -146,7 +146,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
               )}
             </button>
 
-            {/* 分隔线 */}
+            {/* Separator */}
             <div
               className={cn(
                 'mx-2 h-px',
@@ -154,7 +154,7 @@ export const InstanceFilterSelector = memo(function InstanceFilterSelector({
               )}
             />
 
-            {/* 提供商选项 */}
+            {/* Provider options */}
             {providers
               .filter(p => p.is_active)
               .map(provider => (

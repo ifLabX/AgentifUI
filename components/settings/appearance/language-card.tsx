@@ -23,24 +23,6 @@ export function LanguageCard({
   const isActive = currentLanguage === language;
   const languageInfo = getLanguageInfo(language);
 
-  // Get the characteristic text example of the language
-  const getLanguageExample = (lang: SupportedLocale) => {
-    switch (lang) {
-      case 'zh-CN':
-        return '简体中文';
-      case 'zh-TW':
-        return '繁體中文';
-      case 'en-US':
-        return 'English';
-      case 'ja-JP':
-        return '日本語';
-      case 'es-ES':
-        return 'Español';
-      default:
-        return languageInfo.nativeName;
-    }
-  };
-
   return (
     <div
       onClick={onClick}
@@ -105,7 +87,7 @@ export function LanguageCard({
                   : 'text-stone-800'
             )}
           >
-            {getLanguageExample(language)}
+            {languageInfo.nativeName}
           </h3>
 
           {/* English name */}
