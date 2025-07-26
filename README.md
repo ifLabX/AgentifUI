@@ -137,3 +137,4 @@ docker run -p 8080:8080 ghcr.io/agentifui/community:latest
 - **Enterprise/OEM inquiries**: For commercial support or integration, email [license@iflabx.com](mailto:license@iflabx.com)
 
 > AgentifUI is dual-licensed. The Community Edition is open source under **Apache 2.0**; the Enterprise Edition adds multi-tenant, SAML/LDAP, branding removal and SLA support under a commercial license. See `LICENSE`, `NOTICE` and `TRADEMARK_POLICY.md` for details.
+> Welcome to use.
