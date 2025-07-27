@@ -306,20 +306,44 @@ jobs:
 
       - name: Generate summary
         run: |
-          echo "Generating code quality summary..."
+          echo "Generating simplified code quality summary..."
           
-          echo "# Code Quality Summary" > quality-summary.md
-          echo "Generated at: $(date)" >> quality-summary.md
+          echo "## 📊 Code Quality Summary" > quality-summary.md
           echo "" >> quality-summary.md
           
-          # Add all individual reports
-          for report in reports/*/; do
-            if [ -f "$report"/*.md ]; then
-              echo "---" >> quality-summary.md
-              cat "$report"/*.md >> quality-summary.md
-              echo "" >> quality-summary.md
+          # Bundle size summary
+          if [ -f "reports/bundle-analysis/bundle-size.md" ]; then
+            BUNDLE_SIZE=$(grep "Total build size" reports/bundle-analysis/bundle-size.md | cut -d':' -f2 | xargs)
+            STATIC_SIZE=$(grep "Static assets size" reports/bundle-analysis/bundle-size.md | cut -d':' -f2 | xargs)
+            echo "### 📦 Bundle Analysis" >> quality-summary.md
+            echo "- **Total build size:** $BUNDLE_SIZE" >> quality-summary.md
+            echo "- **Static assets:** $STATIC_SIZE" >> quality-summary.md
+            echo "" >> quality-summary.md
+          fi
+          
+          # TypeScript coverage
+          if [ -f "reports/type-coverage-report/type-coverage.md" ]; then
+            TS_COVERAGE=$(grep "TypeScript Coverage" reports/type-coverage-report/type-coverage.md | head -1)
+            echo "### 🔍 TypeScript Coverage" >> quality-summary.md
+            echo "- $TS_COVERAGE" >> quality-summary.md
+            echo "" >> quality-summary.md
+          fi
+          
+          # Complexity issues (only show count of complex files)
+          if [ -f "reports/complexity-report/complexity.md" ]; then
+            COMPLEX_COUNT=$(grep -c "⚠️" reports/complexity-report/complexity.md || echo "0")
+            echo "### ⚡ Code Complexity" >> quality-summary.md
+            if [ "$COMPLEX_COUNT" -gt 0 ]; then
+              echo "- **$COMPLEX_COUNT** files with high complexity (>20 lines/function)" >> quality-summary.md
+              echo "- Consider refactoring large functions for better maintainability" >> quality-summary.md
+            else
+              echo "- ✅ All files have acceptable complexity" >> quality-summary.md
             fi
-          done
+            echo "" >> quality-summary.md
+          fi
+          
+          echo "---" >> quality-summary.md
+          echo "*Full reports available in workflow artifacts*" >> quality-summary.md
 
       - name: Upload quality summary
         uses: actions/upload-artifact@v4
@@ -342,7 +366,7 @@ jobs:
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `## 📊 Code Quality Analysis Results\n\n${summary}\n\n---\n*This comment was generated automatically by the code quality workflow.*`
+                body: `${summary}\n\n*Automated quality analysis - view detailed reports in [workflow artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})*`
               });
             } catch (error) {
               console.log('Could not create PR comment:', error.message);
