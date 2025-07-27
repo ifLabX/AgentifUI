@@ -3,6 +3,8 @@ name: Security Checks
 on:
   schedule:
     - cron: '0 2 * * 1'  # Run every Monday at 2:00 AM
+  pull_request:
+    branches: [ master, main, develop ]
   workflow_dispatch:
 
 permissions:

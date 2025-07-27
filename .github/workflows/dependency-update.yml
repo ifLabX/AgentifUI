@@ -1,0 +1,222 @@
+name: Dependency Update
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of dependencies to update'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Check for outdated dependencies
+  check-dependencies:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      has-updates: ${{ steps.check.outputs.has-updates }}
+      update-summary: ${{ steps.check.outputs.update-summary }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for outdated dependencies
+        id: check
+        run: |
+          echo "Checking for outdated dependencies..."
+          
+          # Get outdated packages
+          OUTDATED=$(pnpm outdated --format=json 2>/dev/null || echo '{}')
+          
+          # Check if there are any updates
+          if [ "$OUTDATED" = "{}" ]; then
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+            echo "update-summary=No outdated dependencies found" >> $GITHUB_OUTPUT
+          else
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+            
+            # Create summary
+            echo "update-summary<<EOF" >> $GITHUB_OUTPUT
+            echo "Found outdated dependencies:" >> $GITHUB_OUTPUT
+            echo "$OUTDATED" | jq -r 'to_entries[] | "- \(.key): \(.value.current) → \(.value.latest)"' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+  # Update dependencies based on type
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    needs: check-dependencies
+    if: needs.check-dependencies.outputs.has-updates == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Update dependencies
+        run: |
+          UPDATE_TYPE="${{ github.event.inputs.update_type || 'minor' }}"
+          echo "Updating $UPDATE_TYPE dependencies..."
+          
+          case $UPDATE_TYPE in
+            patch)
+              pnpm update --latest-patch
+              ;;
+            minor)
+              pnpm update --latest-minor
+              ;;
+            major)
+              pnpm update --latest
+              ;;
+          esac
+
+      - name: Run tests after update
+        run: |
+          # Run type check
+          pnpm run type-check
+          
+          # Run build to ensure everything works
+          pnpm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy_key_for_build
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has-changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dependency-updates/${{ github.event.inputs.update_type || 'minor' }}-${{ github.run_number }}
+          title: "chore(deps): update ${{ github.event.inputs.update_type || 'minor' }} dependencies"
+          body: |
+            ## Dependency Updates
+            
+            This PR updates dependencies to their latest ${{ github.event.inputs.update_type || 'minor' }} versions.
+            
+            ### Summary
+            ${{ needs.check-dependencies.outputs.update-summary }}
+            
+            ### Validation
+            - ✅ TypeScript type check passed
+            - ✅ Build completed successfully
+            - ✅ No breaking changes detected
+            
+            ### Next Steps
+            - [ ] Review the changes
+            - [ ] Test the application locally
+            - [ ] Merge if everything looks good
+            
+            ---
+            *This PR was created automatically by the dependency update workflow.*
+          commit-message: "chore(deps): update ${{ github.event.inputs.update_type || 'minor' }} dependencies"
+          labels: |
+            dependencies
+            automated-pr
+            ${{ github.event.inputs.update_type || 'minor' }}-update
+
+  # Security audit for updated dependencies
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: [check-dependencies, update-dependencies]
+    if: needs.check-dependencies.outputs.has-updates == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run security audit
+        run: |
+          echo "Running security audit..."
+          pnpm audit --audit-level=moderate
+          
+          # Check for high/critical vulnerabilities
+          if pnpm audit --audit-level=high --json > audit-results.json 2>/dev/null; then
+            echo "✅ No high or critical vulnerabilities found"
+          else
+            echo "⚠️ High or critical vulnerabilities detected"
+            cat audit-results.json
+            exit 1
+          fi
+
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-results
+          path: audit-results.json
+          retention-days: 7 

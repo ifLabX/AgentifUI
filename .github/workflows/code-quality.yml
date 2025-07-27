@@ -1,0 +1,349 @@
+name: Code Quality Analysis
+
+on:
+  pull_request:
+    branches: [ master, main, develop ]
+  push:
+    branches: [ master, main ]
+  schedule:
+    # Run weekly on Sunday at 6:00 AM UTC
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Code complexity analysis
+  complexity-analysis:
+    name: Code Complexity Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze code complexity
+        run: |
+          echo "Analyzing code complexity..."
+          
+          # Create complexity report directory
+          mkdir -p reports
+          
+          # Find complex files (> 20 lines per function on average)
+          echo "## Code Complexity Report" > reports/complexity.md
+          echo "Generated at: $(date)" >> reports/complexity.md
+          echo "" >> reports/complexity.md
+          
+          # Analyze TypeScript/JavaScript files
+          find app components lib -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | while read file; do
+            lines=$(wc -l < "$file")
+            functions=$(grep -c "function\|=>" "$file" 2>/dev/null || echo 0)
+            
+            if [ "$functions" -gt 0 ]; then
+              complexity=$((lines / functions))
+              if [ "$complexity" -gt 20 ]; then
+                echo "⚠️ **$file**: $complexity lines/function (total: $lines lines, $functions functions)" >> reports/complexity.md
+              fi
+            fi
+          done
+          
+          # Check if any complex files found
+          if ! grep -q "⚠️" reports/complexity.md; then
+            echo "✅ No overly complex files detected" >> reports/complexity.md
+          fi
+
+      - name: Upload complexity report
+        uses: actions/upload-artifact@v4
+        with:
+          name: complexity-report
+          path: reports/complexity.md
+          retention-days: 30
+
+  # Bundle size analysis
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and analyze bundle
+        run: |
+          echo "Building application for bundle analysis..."
+          pnpm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy_key_for_build
+          ANALYZE: true
+
+      - name: Analyze bundle size
+        run: |
+          echo "Analyzing bundle size..."
+          mkdir -p reports
+          
+          # Check .next directory size
+          if [ -d ".next" ]; then
+            echo "## Bundle Size Report" > reports/bundle-size.md
+            echo "Generated at: $(date)" >> reports/bundle-size.md
+            echo "" >> reports/bundle-size.md
+            
+            # Total build size
+            total_size=$(du -sh .next | cut -f1)
+            echo "**Total build size:** $total_size" >> reports/bundle-size.md
+            echo "" >> reports/bundle-size.md
+            
+            # Static directory size
+            if [ -d ".next/static" ]; then
+              static_size=$(du -sh .next/static | cut -f1)
+              echo "**Static assets size:** $static_size" >> reports/bundle-size.md
+            fi
+            
+            # Find large files (> 1MB)
+            echo "" >> reports/bundle-size.md
+            echo "### Large Files (> 1MB)" >> reports/bundle-size.md
+            find .next -type f -size +1M -exec ls -lh {} \; | \
+              awk '{print "- " $9 ": " $5}' >> reports/bundle-size.md || \
+              echo "No large files found" >> reports/bundle-size.md
+          fi
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: reports/bundle-size.md
+          retention-days: 30
+
+  # Type coverage analysis
+  type-coverage:
+    name: TypeScript Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze TypeScript usage
+        run: |
+          echo "Analyzing TypeScript coverage..."
+          mkdir -p reports
+          
+          echo "## TypeScript Coverage Report" > reports/type-coverage.md
+          echo "Generated at: $(date)" >> reports/type-coverage.md
+          echo "" >> reports/type-coverage.md
+          
+          # Count file types
+          ts_files=$(find app components lib -name "*.ts" | wc -l)
+          tsx_files=$(find app components lib -name "*.tsx" | wc -l)
+          js_files=$(find app components lib -name "*.js" | wc -l)
+          jsx_files=$(find app components lib -name "*.jsx" | wc -l)
+          
+          total_files=$((ts_files + tsx_files + js_files + jsx_files))
+          ts_total=$((ts_files + tsx_files))
+          
+          if [ $total_files -gt 0 ]; then
+            coverage=$((ts_total * 100 / total_files))
+            echo "**TypeScript Coverage:** $coverage% ($ts_total/$total_files files)" >> reports/type-coverage.md
+            echo "" >> reports/type-coverage.md
+            echo "- TypeScript files: $ts_files" >> reports/type-coverage.md
+            echo "- TSX files: $tsx_files" >> reports/type-coverage.md
+            echo "- JavaScript files: $js_files" >> reports/type-coverage.md
+            echo "- JSX files: $jsx_files" >> reports/type-coverage.md
+            
+            # Warn if coverage is low
+            if [ $coverage -lt 80 ]; then
+              echo "" >> reports/type-coverage.md
+              echo "⚠️ **Warning:** TypeScript coverage is below 80%" >> reports/type-coverage.md
+            fi
+          fi
+
+      - name: Check for any type issues
+        run: |
+          echo "Checking for TypeScript issues..."
+          pnpm run type-check 2>&1 | tee type-check.log || true
+          
+          # Add results to report
+          echo "" >> reports/type-coverage.md
+          echo "### Type Check Results" >> reports/type-coverage.md
+          if grep -q "error" type-check.log; then
+            echo "❌ Type errors found:" >> reports/type-coverage.md
+            echo '```' >> reports/type-coverage.md
+            cat type-check.log >> reports/type-coverage.md
+            echo '```' >> reports/type-coverage.md
+          else
+            echo "✅ No type errors found" >> reports/type-coverage.md
+          fi
+
+      - name: Upload type coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: type-coverage-report
+          path: reports/type-coverage.md
+          retention-days: 30
+
+  # Documentation coverage
+  docs-coverage:
+    name: Documentation Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Analyze documentation coverage
+        run: |
+          echo "Analyzing documentation coverage..."
+          mkdir -p reports
+          
+          echo "## Documentation Coverage Report" > reports/docs-coverage.md
+          echo "Generated at: $(date)" >> reports/docs-coverage.md
+          echo "" >> reports/docs-coverage.md
+          
+          # Count functions without JSDoc comments
+          undocumented=0
+          total_functions=0
+          
+          find app components lib -name "*.ts" -o -name "*.tsx" | while read file; do
+            # Look for function declarations and exports
+            grep -n "export.*function\|function.*(" "$file" | while read line; do
+              line_num=$(echo "$line" | cut -d: -f1)
+              
+              # Check if previous line has JSDoc comment
+              prev_line=$((line_num - 1))
+              if [ $prev_line -gt 0 ]; then
+                prev_content=$(sed -n "${prev_line}p" "$file")
+                if ! echo "$prev_content" | grep -q "\*\|//"; then
+                  echo "Undocumented function at $file:$line_num"
+                fi
+              fi
+            done
+          done > undoc_functions.tmp
+          
+          undocumented=$(wc -l < undoc_functions.tmp)
+          
+          # Count total exported functions
+          total_functions=$(find app components lib -name "*.ts" -o -name "*.tsx" -exec grep -l "export.*function\|function.*(" {} \; | wc -l)
+          
+          if [ $total_functions -gt 0 ]; then
+            documented=$((total_functions - undocumented))
+            coverage=$((documented * 100 / total_functions))
+            echo "**Documentation Coverage:** $coverage% ($documented/$total_functions functions)" >> reports/docs-coverage.md
+            echo "" >> reports/docs-coverage.md
+            
+            if [ $undocumented -gt 0 ]; then
+              echo "### Undocumented Functions" >> reports/docs-coverage.md
+              cat undoc_functions.tmp >> reports/docs-coverage.md
+            fi
+          fi
+          
+          rm -f undoc_functions.tmp
+
+      - name: Upload docs coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-coverage-report
+          path: reports/docs-coverage.md
+          retention-days: 30
+
+  # Generate quality summary
+  quality-summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [complexity-analysis, bundle-analysis, type-coverage, docs-coverage]
+    if: always()
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: reports
+
+      - name: Generate summary
+        run: |
+          echo "Generating code quality summary..."
+          
+          echo "# Code Quality Summary" > quality-summary.md
+          echo "Generated at: $(date)" >> quality-summary.md
+          echo "" >> quality-summary.md
+          
+          # Add all individual reports
+          for report in reports/*/; do
+            if [ -f "$report"/*.md ]; then
+              echo "---" >> quality-summary.md
+              cat "$report"/*.md >> quality-summary.md
+              echo "" >> quality-summary.md
+            fi
+          done
+
+      - name: Upload quality summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-summary
+          path: quality-summary.md
+          retention-days: 30
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const summary = fs.readFileSync('quality-summary.md', 'utf8');
+              
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 📊 Code Quality Analysis Results\n\n${summary}\n\n---\n*This comment was generated automatically by the code quality workflow.*`
+              });
+            } catch (error) {
+              console.log('Could not create PR comment:', error.message);
+            } 
