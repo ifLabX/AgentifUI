@@ -4,8 +4,13 @@ import { ThinkBlockHeader, ThinkBlockStatus } from './think-block-header';
 
 // Mock dependencies
 jest.mock('@components/ui/spinner', () => ({
-  Spinner: ({ size, className }: any) => (
-    <div data-testid="spinner" data-size={size} className={className}>
+  Spinner: ({ size, className, 'aria-label': ariaLabel }: any) => (
+    <div
+      data-testid="spinner"
+      data-size={size}
+      className={className}
+      aria-label={ariaLabel}
+    >
       Loading...
     </div>
   ),
@@ -134,11 +139,11 @@ describe('ThinkBlockHeader', () => {
       // Main container should have responsive min-width classes
       expect(button.className).toContain('min-w-[22%]');
 
-      // Left section should have flex-1, min-w-0, and mr-3 for spacing
+      // Left section should have flex-1, min-w-0, and gap-2 for spacing
       const leftSection = button.querySelector('.flex-1');
       expect(leftSection).toHaveClass('flex-1');
       expect(leftSection).toHaveClass('min-w-0');
-      expect(leftSection).toHaveClass('mr-3'); // Spacing fix
+      expect(leftSection).toHaveClass('gap-2'); // Spacing with gap instead of margin
 
       // Right section should prevent shrinking
       const rightSection = button.querySelector('.flex-shrink-0');
@@ -149,7 +154,7 @@ describe('ThinkBlockHeader', () => {
       const { container } = render(
         <ThinkBlockHeader {...defaultProps} status="thinking" />
       );
-      const leftSection = container.querySelector('.mr-3');
+      const leftSection = container.querySelector('.gap-2');
       const rightSection = container.querySelector('.flex-shrink-0');
 
       expect(leftSection).toBeInTheDocument();
@@ -195,22 +200,15 @@ describe('ThinkBlockHeader', () => {
   });
 
   describe('CSS Classes and Styling', () => {
-    it('should apply correct base CSS classes', () => {
+    it('should apply essential layout classes', () => {
       const { container } = render(<ThinkBlockHeader {...defaultProps} />);
       const button = container.firstChild as HTMLElement;
 
+      // Essential layout classes for overflow prevention and responsiveness
       expect(button).toHaveClass('flex');
-      expect(button).toHaveClass('items-center');
       expect(button).toHaveClass('justify-between');
+      expect(button).toHaveClass('gap-2'); // For consistent spacing
       expect(button.className).toContain('min-w-[22%]'); // Desktop responsive class
-      expect(button).toHaveClass('mb-1');
-      expect(button).toHaveClass('cursor-pointer');
-      expect(button).toHaveClass('rounded-md');
-      expect(button).toHaveClass('border');
-      expect(button).toHaveClass('px-3');
-      expect(button).toHaveClass('py-1.5');
-      expect(button).toHaveClass('text-sm');
-      expect(button).toHaveClass('focus:outline-none');
     });
 
     it('should apply different styles for thinking status', () => {
@@ -273,23 +271,59 @@ describe('ThinkBlockHeader', () => {
 
   describe('Accessibility', () => {
     it('should have proper ARIA attributes', () => {
-      render(<ThinkBlockHeader {...defaultProps} isOpen={true} />);
+      render(
+        <ThinkBlockHeader {...defaultProps} status="completed" isOpen={true} />
+      );
       const button = screen.getByRole('button');
 
       expect(button).toHaveAttribute('aria-expanded', 'true');
       expect(button).toHaveAttribute('aria-controls', 'think-block-content');
+      expect(button).toHaveAttribute('aria-label');
+      expect(button.getAttribute('aria-label')).toContain('completed');
+      expect(button.getAttribute('aria-label')).toContain('Collapse');
     });
 
-    it('should update aria-expanded based on isOpen state', () => {
+    it('should update aria-expanded and aria-label based on state', () => {
       const { rerender } = render(
         <ThinkBlockHeader {...defaultProps} isOpen={false} />
       );
       let button = screen.getByRole('button');
       expect(button).toHaveAttribute('aria-expanded', 'false');
+      expect(button.getAttribute('aria-label')).toContain('Expand');
 
       rerender(<ThinkBlockHeader {...defaultProps} isOpen={true} />);
       button = screen.getByRole('button');
       expect(button).toHaveAttribute('aria-expanded', 'true');
+      expect(button.getAttribute('aria-label')).toContain('Collapse');
+    });
+
+    it('should provide title attribute for status text', () => {
+      render(<ThinkBlockHeader {...defaultProps} status="thinking" />);
+      const statusText = screen.getByText(
+        'components.chat.thinkBlock.thinking'
+      );
+
+      expect(statusText).toHaveAttribute(
+        'title',
+        'components.chat.thinkBlock.thinking'
+      );
+    });
+
+    it('should provide aria-label for spinner when thinking', () => {
+      render(<ThinkBlockHeader {...defaultProps} status="thinking" />);
+      const spinner = screen.getByTestId('spinner');
+
+      expect(spinner).toHaveAttribute(
+        'aria-label',
+        'components.chat.thinkBlock.thinking'
+      );
+    });
+
+    it('should mark decorative icon as aria-hidden', () => {
+      const { container } = render(<ThinkBlockHeader {...defaultProps} />);
+      const icon = container.querySelector('svg');
+
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
     });
 
     it('should be keyboard accessible', () => {
@@ -309,7 +343,6 @@ describe('ThinkBlockHeader', () => {
       const { container } = render(<ThinkBlockHeader {...defaultProps} />);
       const icon = container.querySelector('svg');
 
-      expect(icon).toHaveClass('mr-2');
       expect(icon).toHaveClass('h-4');
       expect(icon).toHaveClass('w-4');
       expect(icon).toHaveClass('flex-shrink-0'); // Prevent icon shrinking

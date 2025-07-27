@@ -50,10 +50,12 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
     }
   };
 
+  const statusText = getStatusText();
+
   return (
     <button
       className={cn(
-        'flex items-center justify-between',
+        'flex items-center justify-between gap-2',
         isMobile ? 'w-full' : 'max-w-[50%] min-w-[22%]',
         'mb-1 cursor-pointer rounded-md border px-3 py-1.5 text-sm',
         'focus:outline-none'
@@ -61,6 +63,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
       onClick={onToggle}
       aria-expanded={isOpen}
       aria-controls="think-block-content"
+      aria-label={`${statusText} - ${isOpen ? 'Collapse' : 'Expand'} think block`}
       style={{
         backgroundColor: isThinking
           ? 'var(--md-think-thinking-bg)'
@@ -73,10 +76,10 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
           : 'var(--md-think-header-text)',
       }}
     >
-      <div className="mr-3 flex min-w-0 flex-1 items-center">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         <svg
           className={cn(
-            'mr-2 h-4 w-4 flex-shrink-0',
+            'h-4 w-4 flex-shrink-0',
             isOpen ? 'rotate-90' : 'rotate-0'
           )}
           style={{
@@ -87,6 +90,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -96,19 +100,26 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
           />
         </svg>
         <span
-          className={cn('truncate font-medium')}
+          className={cn('min-w-0 flex-1 truncate font-medium')}
+          title={statusText}
           style={{
             color: isThinking
               ? 'var(--md-think-thinking-text)'
               : 'var(--md-think-header-text)',
           }}
         >
-          {getStatusText()}
+          {statusText}
         </span>
       </div>
 
       <div className="h-4 w-4 flex-shrink-0">
-        {isThinking && <Spinner size="md" className="text-current" />}
+        {isThinking && (
+          <Spinner
+            size="md"
+            className="text-current"
+            aria-label={t('thinking')}
+          />
+        )}
       </div>
     </button>
   );

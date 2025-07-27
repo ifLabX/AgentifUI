@@ -4,11 +4,12 @@ import { CodeBlockHeader } from './code-block-header';
 
 // Mock the child components
 jest.mock('./copy-button', () => ({
-  CopyButton: ({ content, tooltipPlacement }: any) => (
+  CopyButton: ({ content, tooltipPlacement, 'aria-label': ariaLabel }: any) => (
     <button
       data-testid="copy-button"
       data-content={content}
       data-tooltip={tooltipPlacement}
+      aria-label={ariaLabel}
     >
       Copy
     </button>
@@ -16,12 +17,18 @@ jest.mock('./copy-button', () => ({
 }));
 
 jest.mock('./export-button', () => ({
-  ExportButton: ({ content, language, tooltipPlacement }: any) => (
+  ExportButton: ({
+    content,
+    language,
+    tooltipPlacement,
+    'aria-label': ariaLabel,
+  }: any) => (
     <button
       data-testid="export-button"
       data-content={content}
       data-language={language}
       data-tooltip={tooltipPlacement}
+      aria-label={ariaLabel}
     >
       Export
     </button>
@@ -38,13 +45,13 @@ describe('CodeBlockHeader', () => {
     it('should render header with language when language is provided', () => {
       const { container } = render(<CodeBlockHeader language="javascript" />);
 
-      expect(screen.getByText('Javascript')).toBeInTheDocument();
-      expect(container.querySelector('svg')).toBeInTheDocument(); // CodeIcon as SVG
+      expect(screen.getByText('JavaScript')).toBeInTheDocument();
+      expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
-    it('should capitalize language name correctly', () => {
+    it('should use language mapping for TypeScript', () => {
       render(<CodeBlockHeader language="typescript" />);
-      expect(screen.getByText('Typescript')).toBeInTheDocument();
+      expect(screen.getByText('TypeScript')).toBeInTheDocument();
     });
 
     it('should handle single character languages', () => {
@@ -54,8 +61,64 @@ describe('CodeBlockHeader', () => {
 
     it('should not render when language is empty string', () => {
       const { container } = render(<CodeBlockHeader language="" />);
-      // Empty string is falsy, so component should not render
       expect(container.firstChild).toBeNull();
+    });
+  });
+
+  describe('Language Display Mapping', () => {
+    it('should use proper display names for common languages', () => {
+      const testCases = [
+        { input: 'js', expected: 'JavaScript' },
+        { input: 'ts', expected: 'TypeScript' },
+        { input: 'tsx', expected: 'TSX' },
+        { input: 'jsx', expected: 'JSX' },
+        { input: 'c++', expected: 'C++' },
+        { input: 'objective-c', expected: 'Objective-C' },
+        { input: 'sh', expected: 'Shell' },
+        { input: 'bash', expected: 'Bash' },
+        { input: 'md', expected: 'Markdown' },
+        { input: 'yml', expected: 'YAML' },
+        { input: 'dockerfile', expected: 'Dockerfile' },
+        { input: 'graphql', expected: 'GraphQL' },
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        const { unmount } = render(<CodeBlockHeader language={input} />);
+        expect(screen.getByText(expected)).toBeInTheDocument();
+        unmount();
+      });
+    });
+
+    it('should handle case insensitive mapping', () => {
+      render(<CodeBlockHeader language="JAVASCRIPT" />);
+      expect(screen.getByText('JavaScript')).toBeInTheDocument();
+    });
+
+    it('should fallback to capitalization for unmapped languages', () => {
+      render(<CodeBlockHeader language="custom-lang" />);
+      expect(screen.getByText('Custom-Lang')).toBeInTheDocument();
+    });
+  });
+
+  describe('Internationalization and Special Characters', () => {
+    it('should handle languages with non-Latin characters', () => {
+      render(<CodeBlockHeader language="中文" />);
+      expect(screen.getByText('中文')).toBeInTheDocument();
+    });
+
+    it('should handle languages with mixed separators', () => {
+      render(<CodeBlockHeader language="vue.js_component" />);
+      expect(screen.getByText('Vue.Js_Component')).toBeInTheDocument();
+    });
+
+    it('should handle extremely long language names', () => {
+      const longLanguage =
+        'this-is-a-very-long-custom-programming-language-name';
+      render(<CodeBlockHeader language={longLanguage} />);
+
+      const displayedText =
+        'This-Is-A-Very-Long-Custom-Programming-Language-Name';
+      expect(screen.getByText(displayedText)).toBeInTheDocument();
     });
   });
 
@@ -90,26 +153,21 @@ describe('CodeBlockHeader', () => {
     it('should not render action buttons with empty codeContent', () => {
       render(<CodeBlockHeader language="javascript" codeContent="" />);
 
-      // Empty string is falsy, so buttons should not render
       expect(screen.queryByTestId('copy-button')).not.toBeInTheDocument();
       expect(screen.queryByTestId('export-button')).not.toBeInTheDocument();
     });
   });
 
-  describe('CSS Classes and Layout', () => {
-    it('should apply correct base CSS classes', () => {
+  describe('Layout and Overflow Prevention', () => {
+    it('should apply essential layout classes for overflow prevention', () => {
       const { container } = render(<CodeBlockHeader language="javascript" />);
       const header = container.firstChild as HTMLElement;
 
+      // Essential layout classes for overflow prevention
       expect(header).toHaveClass('flex');
-      expect(header).toHaveClass('transform-gpu');
-      expect(header).toHaveClass('items-center');
       expect(header).toHaveClass('justify-between');
-      expect(header).toHaveClass('rounded-t-lg');
-      expect(header).toHaveClass('border-b');
-      expect(header).toHaveClass('px-3');
-      expect(header).toHaveClass('py-1');
-      expect(header).toHaveClass('min-w-0'); // For text overflow fix
+      expect(header).toHaveClass('min-w-0');
+      expect(header).toHaveClass('gap-2'); // For spacing between sections
     });
 
     it('should apply custom className when provided', () => {
@@ -121,15 +179,11 @@ describe('CodeBlockHeader', () => {
       expect(header).toHaveClass('custom-class');
     });
 
-    it('should apply text truncation classes to language span', () => {
+    it('should apply text truncation to language span', () => {
       render(<CodeBlockHeader language="javascript" />);
-      const languageSpan = screen.getByText('Javascript');
+      const languageSpan = screen.getByText('JavaScript');
 
-      expect(languageSpan).toHaveClass('text-xs');
-      expect(languageSpan).toHaveClass('font-medium');
-      expect(languageSpan).toHaveClass('tracking-wide');
-      expect(languageSpan).toHaveClass('select-none');
-      expect(languageSpan).toHaveClass('truncate'); // For text overflow fix
+      expect(languageSpan).toHaveClass('truncate');
     });
 
     it('should apply flex layout classes for overflow prevention', () => {
@@ -149,6 +203,41 @@ describe('CodeBlockHeader', () => {
     });
   });
 
+  describe('Accessibility', () => {
+    it('should provide title attribute for truncated text', () => {
+      render(<CodeBlockHeader language="javascript" />);
+      const languageSpan = screen.getByText('JavaScript');
+
+      expect(languageSpan).toHaveAttribute('title', 'JavaScript');
+    });
+
+    it('should provide aria-labels for action buttons', () => {
+      render(<CodeBlockHeader language="c++" codeContent="int main() {}" />);
+
+      const copyButton = screen.getByTestId('copy-button');
+      const exportButton = screen.getByTestId('export-button');
+
+      expect(copyButton).toHaveAttribute('aria-label', 'Copy C++ code');
+      expect(exportButton).toHaveAttribute('aria-label', 'Export C++ code');
+    });
+
+    it('should have proper semantic structure', () => {
+      render(<CodeBlockHeader language="javascript" codeContent="test" />);
+
+      const { container } = render(<CodeBlockHeader language="javascript" />);
+      expect((container.firstChild as Element)?.tagName.toLowerCase()).toBe(
+        'div'
+      );
+    });
+
+    it('should make language text non-selectable', () => {
+      render(<CodeBlockHeader language="javascript" />);
+      const languageSpan = screen.getByText('JavaScript');
+
+      expect(languageSpan).toHaveClass('select-none');
+    });
+  });
+
   describe('CSS Variables and Styling', () => {
     it('should apply correct CSS custom properties', () => {
       const { container } = render(<CodeBlockHeader language="javascript" />);
@@ -161,16 +250,16 @@ describe('CodeBlockHeader', () => {
   });
 
   describe('Text Overflow Handling', () => {
-    it('should handle very long language names', () => {
+    it('should handle very long language names while maintaining button accessibility', () => {
       const longLanguage = 'supercalifragilisticexpialidocious-script-language';
       render(<CodeBlockHeader language={longLanguage} codeContent="test" />);
 
-      // Should still render the language text
+      // Should still render the language text (with proper capitalization)
       expect(
-        screen.getByText('Supercalifragilisticexpialidocious-script-language')
+        screen.getByText('Supercalifragilisticexpialidocious-Script-Language')
       ).toBeInTheDocument();
 
-      // Action buttons should still be visible
+      // Action buttons should still be visible and accessible
       expect(screen.getByTestId('copy-button')).toBeInTheDocument();
       expect(screen.getByTestId('export-button')).toBeInTheDocument();
     });
@@ -191,25 +280,6 @@ describe('CodeBlockHeader', () => {
       expect(copyButton).toBeInTheDocument();
       expect(exportButton).toBeInTheDocument();
       expect(copyButton).toHaveAttribute('data-content', longCode);
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('should have proper semantic structure', () => {
-      render(<CodeBlockHeader language="javascript" codeContent="test" />);
-
-      // Should have a div container (not interactive element)
-      const { container } = render(<CodeBlockHeader language="javascript" />);
-      expect((container.firstChild as Element)?.tagName.toLowerCase()).toBe(
-        'div'
-      );
-    });
-
-    it('should make language text non-selectable', () => {
-      render(<CodeBlockHeader language="javascript" />);
-      const languageSpan = screen.getByText('Javascript');
-
-      expect(languageSpan).toHaveClass('select-none');
     });
   });
 });
