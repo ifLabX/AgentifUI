@@ -11,24 +11,23 @@ import { ExportButton } from './export-button';
 interface CodeBlockHeaderProps {
   language: string | null;
   className?: string;
-  codeContent?: string; // code content prop for copy functionality
+  codeContent?: string;
 }
 
-// Use React.memo to prevent unnecessary re-renders
+/**
+ * Header component for code blocks with language display and action buttons
+ * @description Displays programming language and provides copy/export functionality
+ */
 export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(
   ({ language, className, codeContent }) => {
-    // Note: Copy functionality is handled in the CopyButton component
-
-    // Note: This component only handles the header UI and copy/export actions, does not affect code highlighting
-
     if (!language) {
-      return null; // Don't render header if language is not specified
+      return null;
     }
 
     return (
       <div
         className={cn(
-          'flex transform-gpu items-center justify-between rounded-t-lg border-b px-3 py-1', // Reduce header height
+          'flex min-w-0 transform-gpu items-center justify-between rounded-t-lg border-b px-3 py-1',
           className
         )}
         style={{
@@ -37,25 +36,20 @@ export const CodeBlockHeader: React.FC<CodeBlockHeaderProps> = React.memo(
           color: 'var(--md-code-header-text)',
         }}
       >
-        <div className="flex items-center gap-1.5">
-          <CodeIcon className="h-3.5 w-3.5" />
-          <span className="text-xs font-medium tracking-wide select-none">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <CodeIcon className="h-3.5 w-3.5 flex-shrink-0" />
+          <span className="truncate text-xs font-medium tracking-wide select-none">
             {language.charAt(0).toUpperCase() + language.slice(1)}
           </span>
         </div>
 
-        {/* Button group: export button on left, copy button on right */}
-        {/* Uses flex layout with moderate spacing to maintain visual balance */}
         {codeContent && (
-          <div className="flex items-center gap-1">
-            {/* Export button */}
+          <div className="flex flex-shrink-0 items-center gap-1">
             <ExportButton
               content={codeContent}
               language={language}
               tooltipPlacement="bottom"
             />
-
-            {/* Copy button */}
             <CopyButton content={codeContent} tooltipPlacement="bottom" />
           </div>
         )}
