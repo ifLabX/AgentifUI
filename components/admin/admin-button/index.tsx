@@ -14,19 +14,16 @@ import Link from 'next/link';
  * Features:
  * - Only show to admin users
  * - Use the same style as the language switcher
- * - Support multi-language display
  */
 export function AdminButton() {
   const { isAdmin } = useAdminAuth(false);
   const { isDark } = useTheme();
   const t = useTranslations('pages.admin');
 
-  // Only show to admin users
   if (!isAdmin) {
     return null;
   }
 
-  // Get button style based on theme: reference sidebar button hover effect
   const getButtonColors = () => {
     if (isDark) {
       return 'bg-stone-800/50 hover:bg-stone-600/60 text-gray-200 border-stone-600/30';

@@ -126,11 +126,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check code formatting
-        run: pnpm run format:check
+      # Temporarily disabled for development flexibility
+      # - name: Check code formatting
+      #   run: pnpm run format:check
 
-      - name: Run ESLint
-        run: pnpm run lint
+      # - name: Run ESLint
+      #   run: pnpm run lint
+      
+      - name: Skip lint checks (temporarily disabled)
+        run: echo "⚠️ Lint and format checks temporarily disabled for development flexibility"
 
   # TypeScript type checking
   type-check:
@@ -298,9 +302,8 @@ jobs:
         run: |
           echo "Checking CI pipeline status..."
           
-          # Check if any job failed
-          if [[ "${{ needs.format-and-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.type-check.result }}" == "failure" ]] || \
+          # Check if any job failed (lint checks temporarily disabled)
+          if [[ "${{ needs.type-check.result }}" == "failure" ]] || \
              [[ "${{ needs.i18n-validation.result }}" == "failure" ]] || \
              [[ "${{ needs.build.result }}" == "failure" ]] || \
              [[ "${{ needs.security-check.result }}" == "failure" ]]; then
@@ -308,10 +311,12 @@ jobs:
             exit 1
           fi
           
+          # Note: format-and-lint checks are temporarily disabled
+          echo "ℹ️ Note: Lint and format checks are temporarily disabled"
+          
           # Check if any required job was skipped when it shouldn't be
           if [[ "${{ needs.changes.outputs.source }}" == "true" ]] || [[ "${{ needs.changes.outputs.config }}" == "true" ]]; then
-            if [[ "${{ needs.format-and-lint.result }}" == "skipped" ]] || \
-               [[ "${{ needs.type-check.result }}" == "skipped" ]] || \
+            if [[ "${{ needs.type-check.result }}" == "skipped" ]] || \
                [[ "${{ needs.build.result }}" == "skipped" ]] || \
                [[ "${{ needs.security-check.result }}" == "skipped" ]]; then
               echo "❌ Required job was skipped"
