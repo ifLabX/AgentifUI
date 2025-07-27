@@ -126,15 +126,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Temporarily disabled for development flexibility
-      # - name: Check code formatting
-      #   run: pnpm run format:check
+      - name: Check code formatting
+        run: pnpm run format:check
 
+      # Temporarily disabled for development flexibility
       # - name: Run ESLint
       #   run: pnpm run lint
       
-      - name: Skip lint checks (temporarily disabled)
-        run: echo "⚠️ Lint and format checks temporarily disabled for development flexibility"
+      - name: Skip ESLint checks (temporarily disabled)
+        run: echo "⚠️ ESLint checks temporarily disabled for development flexibility"
 
   # TypeScript type checking
   type-check:
