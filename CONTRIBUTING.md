@@ -46,7 +46,7 @@ For detailed setup instructions, see [SETUP-REQUIREMENTS.md](./docs/SETUP-REQUIR
 ## 2 – Fork → Branch → Pull Request
 
 1. Fork `ifLabX/AgentifUI` to your account.
-2. Create a feature branch off `master`:
+2. Create a feature branch off `main`:
    ```bash
    git checkout -b feat/your-feature-name
    # or for bug fixes:

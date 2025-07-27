@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   pull_request:
-    branches: [ master, main, develop ]
+    branches: [ main, develop ]
   push:
-    branches: [ master, main ]
+    branches: [ main ]
   workflow_dispatch:
 
 # Cancel previous runs for the same PR/branch
