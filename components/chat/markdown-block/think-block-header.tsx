@@ -53,7 +53,7 @@ export const ThinkBlockHeader: React.FC<ThinkBlockHeaderProps> = ({
   return (
     <button
       className={cn(
-        'flex min-w-0 items-center justify-between',
+        'flex items-center justify-between',
         isMobile ? 'w-full' : 'max-w-[50%] min-w-[22%]',
         'mb-1 cursor-pointer rounded-md border px-3 py-1.5 text-sm',
         'focus:outline-none'
