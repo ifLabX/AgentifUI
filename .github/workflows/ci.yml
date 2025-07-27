@@ -177,10 +177,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python with uv
-        uses: astral-sh/setup-uv@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          enable-cache: true
+          python-version: '3.x'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

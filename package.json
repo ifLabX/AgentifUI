@@ -15,9 +15,9 @@
     "format:staged": "lint-staged",
     "prepare": "husky",
     "type-check": "tsc --noEmit",
-    "i18n:check": "uv run scripts/i18n-refactor-helper.py quick-check",
-    "i18n:validate": "uv run scripts/validate-i18n-consistency.py",
-    "i18n:detect": "uv run scripts/i18n-refactor-helper.py detect-missing",
+    "i18n:check": "python3 scripts/i18n-refactor-helper.py quick-check",
+    "i18n:validate": "python3 scripts/validate-i18n-consistency.py",
+    "i18n:detect": "python3 scripts/i18n-refactor-helper.py detect-missing",
     "deploy": "pnpm build && pm2 startOrRestart ecosystem.config.js --only $(node -e \"console.log(require('./ecosystem.config.js').apps[0].name)\") --update-env || { echo 'Deploy failed'; exit 1; }"
   },
   "pnpm": {
