@@ -1,0 +1,95 @@
+name: 📚 Documentation
+description: Report issues with documentation or suggest improvements
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve our documentation! Clear documentation is essential for project success.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Self Checks
+      description: Please confirm you have completed the following steps
+      options:
+        - label: I have searched for existing issues
+          required: true
+        - label: I confirm that I am using English to submit this report
+          required: true
+        - label: Please do not modify this template and fill in all the required fields
+          required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation issue is this?
+      options:
+        - Missing documentation
+        - Incorrect information
+        - Unclear instructions
+        - Outdated content
+        - Formatting issue
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation located?
+      placeholder: 'e.g., README.md, docs/SETUP-REQUIREMENTS.md, specific section, etc.'
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue Description
+      description: Describe the documentation issue or improvement needed
+      placeholder: |
+        What does the document currently say and what are the issues?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_content
+    attributes:
+      label: Proposed Content
+      description: If you have specific content suggestions, please provide them
+      placeholder: |
+        Provide the proposed text, code examples, or structure improvements.
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Target Audience
+      description: Who is the primary audience for this documentation?
+      options:
+        - End users
+        - Developers
+        - Administrators
+        - Contributors
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any additional context that would help improve the documentation
+      placeholder: |
+        An explanation of why the change is useful or links to similar documentation in other projects...
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to help improve this documentation?
+      options:
+        - label: I can write the content
+        - label: I can review the content
+        - label: I can provide technical review
+        - label: I can test the instructions

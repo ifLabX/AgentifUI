@@ -1,0 +1,70 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for AgentifUI
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! We appreciate your input to help make AgentifUI better.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Self Checks
+      description: Please confirm you have completed the following steps
+      options:
+        - label: I have searched for existing issues and feature requests
+          required: true
+        - label: I confirm that I am using English to submit this report
+          required: true
+        - label: Please do not modify this template and fill in all the required fields
+          required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature Summary
+      description: A clear and concise title for the proposed feature
+      placeholder: 'e.g., Add voice message support in chat'
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: |
+        Describe the problem or limitation you're facing that this feature would address.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution in detail
+      placeholder: |
+        Describe how it should work and what it should look like.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: |
+        Attach any mockups, sketches, or reference images that help illustrate your idea.
+      placeholder: |
+        Add any other context about the problem here...
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to contribute to this feature?
+      options:
+        - label: I can help with design/mockups
+        - label: I can help with frontend development
+        - label: I can help with testing
+        - label: I can provide feedback during development
