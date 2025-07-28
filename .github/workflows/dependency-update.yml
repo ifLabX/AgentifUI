@@ -25,7 +25,6 @@ env:
   PNPM_VERSION: '9'
 
 jobs:
-  # Check for outdated dependencies
   check-dependencies:
     name: Check Dependencies
     runs-on: ubuntu-latest
@@ -54,25 +53,21 @@ jobs:
         id: check
         run: |
           echo "Checking for outdated dependencies..."
-          
-          # Get outdated packages
+
           OUTDATED=$(pnpm outdated --format=json 2>/dev/null || echo '{}')
-          
-          # Check if there are any updates
+
           if [ "$OUTDATED" = "{}" ]; then
             echo "has-updates=false" >> $GITHUB_OUTPUT
             echo "update-summary=No outdated dependencies found" >> $GITHUB_OUTPUT
           else
             echo "has-updates=true" >> $GITHUB_OUTPUT
-            
-            # Create summary
+
             echo "update-summary<<EOF" >> $GITHUB_OUTPUT
             echo "Found outdated dependencies:" >> $GITHUB_OUTPUT
             echo "$OUTDATED" | jq -r 'to_entries[] | "- \(.key): \(.value.current) → \(.value.latest)"' >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           fi
 
-  # Update dependencies based on type
   update-dependencies:
     name: Update Dependencies
     runs-on: ubuntu-latest
@@ -103,29 +98,31 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
+      - name: Install npm-check-updates
+        run: pnpm add -D npm-check-updates
+
       - name: Update dependencies
         run: |
           UPDATE_TYPE="${{ github.event.inputs.update_type || 'minor' }}"
           echo "Updating $UPDATE_TYPE dependencies..."
-          
-          case $UPDATE_TYPE in
+
+          case "$UPDATE_TYPE" in
             patch)
-              pnpm update --latest-patch
+              npx ncu -t patch -u
               ;;
             minor)
-              pnpm update --latest-minor
+              npx ncu -t minor -u
               ;;
             major)
-              pnpm update --latest
+              npx ncu -t major -u
               ;;
           esac
 
+          pnpm install
+
       - name: Run tests after update
         run: |
-          # Run type check
           pnpm run type-check
-          
-          # Run build to ensure everything works
           pnpm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -175,7 +172,6 @@ jobs:
             automated-pr
             ${{ github.event.inputs.update_type || 'minor' }}-update
 
-  # Security audit for updated dependencies
   security-audit:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -203,8 +199,7 @@ jobs:
         run: |
           echo "Running security audit..."
           pnpm audit --audit-level=moderate
-          
-          # Check for high/critical vulnerabilities
+
           if pnpm audit --audit-level=high --json > audit-results.json 2>/dev/null; then
             echo "✅ No high or critical vulnerabilities found"
           else
@@ -219,4 +214,4 @@ jobs:
         with:
           name: security-audit-results
           path: audit-results.json
-          retention-days: 7 
+          retention-days: 7
