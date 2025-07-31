@@ -8,12 +8,12 @@ This document provides a step-by-step guide to deploy the AgentifUI project from
 
 Before starting, make sure the following tools are installed on your system:
 
-| Tool             | Minimum Version | Recommended Version | Installation Method                         | Verification Command     |
-| ---------------- | ---------------- | -------------------- | ------------------------------------------- | ------------------------ |
-| **Node.js**      | 18.0.0+          | 22.15.0+             | [Download](https://nodejs.org/)             | `node --version`         |
-| **pnpm**         | 9.0.0+           | 10.11.0+             | `npm install -g pnpm`                       | `pnpm --version`         |
-| **Git**          | 2.30.0+          | 2.39.5+              | [Download](https://git-scm.com/)            | `git --version`          |
-| **Supabase CLI** | 1.0.0+           | Latest               | `pnpm add -g supabase`                      | `supabase --version`     |
+| Tool             | Minimum Version | Recommended Version | Installation Method              | Verification Command |
+| ---------------- | --------------- | ------------------- | -------------------------------- | -------------------- |
+| **Node.js**      | 18.0.0+         | 22.15.0+            | [Download](https://nodejs.org/)  | `node --version`     |
+| **pnpm**         | 9.0.0+          | 10.11.0+            | `npm install -g pnpm`            | `pnpm --version`     |
+| **Git**          | 2.30.0+         | 2.39.5+             | [Download](https://git-scm.com/) | `git --version`      |
+| **Supabase CLI** | 1.0.0+          | Latest              | `pnpm add -g supabase`           | `supabase --version` |
 
 ### 2. Installation Steps
 
@@ -107,11 +107,11 @@ After project creation:
 2. Select the **"API"** tab
 3. Record the following details:
 
-| Config Key       | Location                        | Description                                               |
-| ---------------- | ------------------------------- | --------------------------------------------------------- |
-| **Project URL**  | API Settings → URL              | Format like `https://xxx.supabase.co`                     |
-| **anon public**  | API Settings → Project API keys | Public anonymous key (starts with `eyJ...`)               |
-| **service_role** | API Settings → Project API keys | Full access service role key (starts with `eyJ...`)       |
+| Config Key       | Location                        | Description                                         |
+| ---------------- | ------------------------------- | --------------------------------------------------- |
+| **Project URL**  | API Settings → URL              | Format like `https://xxx.supabase.co`               |
+| **anon public**  | API Settings → Project API keys | Public anonymous key (starts with `eyJ...`)         |
+| **service_role** | API Settings → Project API keys | Full access service role key (starts with `eyJ...`) |
 
 ⚠️ **Important Security Note**:
 
