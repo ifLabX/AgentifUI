@@ -146,7 +146,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 API_ENCRYPTION_KEY=your_random_32_byte_hex_string_here
 
 # ===========================================
-# App Config (Optional)
+# App Config (Required)
 # ===========================================
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
@@ -217,24 +217,11 @@ pnpm run dev
 
 ### 2. Set Admin Role via Supabase Console
 
-#### Option 1: SQL Editor (Recommended)
+SQL Editor (Recommended)
 
 ```sql
 -- Replace with your registered email
 SELECT public.initialize_admin('your-email@example.com');
-```
-
-> ✅ Fixed: First admin creation bug resolved  
-> ✅ Safe: Only works if no admins exist  
-> ⚠️ Use for initialization only
-
-#### Option 2: CLI Shell
-
-```bash
-supabase db shell
-# Then run:
-SELECT public.initialize_admin('your-email@example.com');
-\q
 ```
 
 ### 3. Verify Admin Access
@@ -267,36 +254,6 @@ Visit http://localhost:3000 and check:
   - [ ] User data saved
   - [ ] Chat history saved
 
-### 3. Troubleshooting
-
-#### Issue: Env vars not working
-
-```bash
-echo $NEXT_PUBLIC_SUPABASE_URL
-echo $SUPABASE_SERVICE_ROLE_KEY
-pnpm run dev
-```
-
-#### Issue: DB connection failure
-
-- Check Supabase URL and keys
-- Project status should be "Active"
-- Check network
-
-#### Issue: Admin setup failed
-
-```sql
-SELECT id, email FROM auth.users WHERE email = 'your-email@example.com';
-SELECT id, role FROM profiles WHERE id = (
-  SELECT id FROM auth.users WHERE email = 'your-email@example.com'
-);
-UPDATE profiles
-SET role = 'admin'
-WHERE id = (
-  SELECT id FROM auth.users WHERE email = 'your-email@example.com'
-);
-```
-
 ## 🚀 Production Deployment
 
 ### 1. Production Env Vars
@@ -312,8 +269,7 @@ API_ENCRYPTION_KEY=your-production-encryption-key
 ### 2. Build and Deploy
 
 ```bash
-pnpm run build
-pnpm run start
+pnpm run deploy
 # Or deploy to Vercel, Netlify, etc.
 ```
 
@@ -328,17 +284,16 @@ pnpm run start
 ## 📚 Related Docs
 
 - [Setup Requirements](./SETUP-REQUIREMENTS.md)
-- [Contribution Guide](./CONTRIBUTING.md)
+- [Contribution Guide](../CONTRIBUTING.md)
 - [API Key Management](./README-API-KEY-MANAGEMENT.md)
 - [Database Design](./DATABASE-DESIGN.md)
 - [Supabase Config](./supabase-docs.md)
 
 ## 🆘 Get Help
 
-1. Check [Troubleshooting](#3-Troubleshooting)
-2. Open GitHub issues
-3. Read related docs
-4. Contact maintainers
+1. Open GitHub issues
+2. Read related docs
+3. Contact maintainers
 
 ---
 
