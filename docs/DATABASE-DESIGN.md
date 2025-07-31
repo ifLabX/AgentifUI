@@ -37,22 +37,22 @@ This document provides a detailed description of the AgentifUI platform's databa
 
 Extends `auth.users` and contains basic user information and status.
 
-| Field Name      | Type                     | Description              | Constraints                                                   |
-| --------------- | ------------------------ | ------------------------ | ------------------------------------------------------------- |
-| id              | UUID                     | User ID                  | Primary Key, references `auth.users(id)`                      |
-| full_name       | TEXT                     | User's full name         |                                                               |
-| username        | TEXT                     | Username                 | UNIQUE                                                        |
-| avatar_url      | TEXT                     | Avatar URL               |                                                               |
-| email           | TEXT                     | User's email             | Synced from `auth.users`                                      |
-| phone           | TEXT                     | User's phone number      | Synced from `auth.users`                                      |
-| role            | user_role                | User role                | DEFAULT `'user'::user_role`                                   |
-| status          | account_status           | Account status           | DEFAULT `'active'::account_status`                            |
-| created_at      | TIMESTAMP WITH TIME ZONE | Creation time            | DEFAULT `CURRENT_TIMESTAMP`                                   |
-| updated_at      | TIMESTAMP WITH TIME ZONE | Update time              | DEFAULT `CURRENT_TIMESTAMP`                                   |
-| last_login      | TIMESTAMP WITH TIME ZONE | Last login time          |                                                               |
-| auth_source     | TEXT                     | Authentication source    | DEFAULT `'email'`, supports `email/google/github/phone/cas_sso` |
-| sso_provider_id | UUID                     | SSO Provider ID          | References `sso_providers(id)`                                |
-| employee_number | TEXT                     | Employee number          | SSO unified identity identifier, UNIQUE constraint            |
+| Field Name      | Type                     | Description           | Constraints                                                     |
+| --------------- | ------------------------ | --------------------- | --------------------------------------------------------------- |
+| id              | UUID                     | User ID               | Primary Key, references `auth.users(id)`                        |
+| full_name       | TEXT                     | User's full name      |                                                                 |
+| username        | TEXT                     | Username              | UNIQUE                                                          |
+| avatar_url      | TEXT                     | Avatar URL            |                                                                 |
+| email           | TEXT                     | User's email          | Synced from `auth.users`                                        |
+| phone           | TEXT                     | User's phone number   | Synced from `auth.users`                                        |
+| role            | user_role                | User role             | DEFAULT `'user'::user_role`                                     |
+| status          | account_status           | Account status        | DEFAULT `'active'::account_status`                              |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time         | DEFAULT `CURRENT_TIMESTAMP`                                     |
+| updated_at      | TIMESTAMP WITH TIME ZONE | Update time           | DEFAULT `CURRENT_TIMESTAMP`                                     |
+| last_login      | TIMESTAMP WITH TIME ZONE | Last login time       |                                                                 |
+| auth_source     | TEXT                     | Authentication source | DEFAULT `'email'`, supports `email/google/github/phone/cas_sso` |
+| sso_provider_id | UUID                     | SSO Provider ID       | References `sso_providers(id)`                                  |
+| employee_number | TEXT                     | Employee number       | SSO unified identity identifier, UNIQUE constraint              |
 
 **Enum Type Definitions:**
 
@@ -63,15 +63,15 @@ Extends `auth.users` and contains basic user information and status.
 
 Stores user interface and feature preference settings.
 
-| Field Name              | Type                     | Description               | Constraints                       |
-| ----------------------- | ------------------------ | ------------------------- | --------------------------------- |
-| id                      | UUID                     | Preference ID             | Primary Key                       |
-| user_id                 | UUID                     | User ID                   | References `auth.users(id)`, UNIQUE |
-| theme                   | TEXT                     | UI Theme                  | DEFAULT `'light'`                 |
-| language                | TEXT                     | UI Language               | DEFAULT `'zh-CN'`                 |
-| notification_settings | JSONB                    | Notification settings     | DEFAULT `'{}'`                    |
-| ai_preferences          | JSONB                    | AI preference settings    | DEFAULT `'{}'`                    |
-| updated_at              | TIMESTAMP WITH TIME ZONE | Update time               | DEFAULT `CURRENT_TIMESTAMP`       |
+| Field Name            | Type                     | Description            | Constraints                         |
+| --------------------- | ------------------------ | ---------------------- | ----------------------------------- |
+| id                    | UUID                     | Preference ID          | Primary Key                         |
+| user_id               | UUID                     | User ID                | References `auth.users(id)`, UNIQUE |
+| theme                 | TEXT                     | UI Theme               | DEFAULT `'light'`                   |
+| language              | TEXT                     | UI Language            | DEFAULT `'zh-CN'`                   |
+| notification_settings | JSONB                    | Notification settings  | DEFAULT `'{}'`                      |
+| ai_preferences        | JSONB                    | AI preference settings | DEFAULT `'{}'`                      |
+| updated_at            | TIMESTAMP WITH TIME ZONE | Update time            | DEFAULT `CURRENT_TIMESTAMP`         |
 
 ### Group and Member Management
 
@@ -79,25 +79,25 @@ Stores user interface and feature preference settings.
 
 Stores group information, replacing complex organizational structures.
 
-| Field Name  | Type                     | Description       | Constraints                         |
-| ----------- | ------------------------ | ----------------- | ----------------------------------- |
-| id          | UUID                     | Group ID          | Primary Key                         |
-| name        | TEXT                     | Group name        | NOT NULL                            |
-| description | TEXT                     | Group description |                                     |
-| created_by  | UUID                     | Creator ID        | References `auth.users(id)`         |
-| created_at  | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP`         |
+| Field Name  | Type                     | Description       | Constraints                 |
+| ----------- | ------------------------ | ----------------- | --------------------------- |
+| id          | UUID                     | Group ID          | Primary Key                 |
+| name        | TEXT                     | Group name        | NOT NULL                    |
+| description | TEXT                     | Group description |                             |
+| created_by  | UUID                     | Creator ID        | References `auth.users(id)` |
+| created_at  | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP` |
 
 #### group_members
 
 Stores group membership relationships for simplified member management.
 
-| Field Name | Type                     | Description        | Constraints                               |
-| ---------- | ------------------------ | ------------------ | ----------------------------------------- |
-| id         | UUID                     | Relationship ID    | Primary Key                               |
-| group_id   | UUID                     | Group ID           | References `groups(id)`, NOT NULL         |
-| user_id    | UUID                     | User ID            | References `profiles(id)`, NOT NULL       |
-| created_at | TIMESTAMP WITH TIME ZONE | Creation time      | DEFAULT `CURRENT_TIMESTAMP`               |
-|            |                          |                    | UNIQUE(`group_id`, `user_id`)             |
+| Field Name | Type                     | Description     | Constraints                         |
+| ---------- | ------------------------ | --------------- | ----------------------------------- |
+| id         | UUID                     | Relationship ID | Primary Key                         |
+| group_id   | UUID                     | Group ID        | References `groups(id)`, NOT NULL   |
+| user_id    | UUID                     | User ID         | References `profiles(id)`, NOT NULL |
+| created_at | TIMESTAMP WITH TIME ZONE | Creation time   | DEFAULT `CURRENT_TIMESTAMP`         |
+|            |                          |                 | UNIQUE(`group_id`, `user_id`)       |
 
 ### Group App Permission Management
 
@@ -105,16 +105,16 @@ Stores group membership relationships for simplified member management.
 
 Stores group-level application access permissions, implementing simplified permission control.
 
-| Field Name          | Type                     | Description            | Constraints                                           |
-| ------------------- | ------------------------ | ---------------------- | ----------------------------------------------------- |
-| id                  | UUID                     | Permission ID          | Primary Key                                           |
-| group_id            | UUID                     | Group ID               | References `groups(id)`, NOT NULL                     |
-| service_instance_id | UUID                     | Service Instance ID    | References `service_instances(id)`, NOT NULL          |
-| is_enabled          | BOOLEAN                  | Is enabled             | DEFAULT `TRUE`                                        |
-| usage_quota         | INTEGER                  | Usage quota            | `NULL` means unlimited                                |
-| used_count          | INTEGER                  | Times used             | DEFAULT `0`                                           |
-| created_at          | TIMESTAMP WITH TIME ZONE | Creation time          | DEFAULT `CURRENT_TIMESTAMP`                           |
-|                     |                          |                        | UNIQUE(`group_id`, `service_instance_id`)             |
+| Field Name          | Type                     | Description         | Constraints                                  |
+| ------------------- | ------------------------ | ------------------- | -------------------------------------------- |
+| id                  | UUID                     | Permission ID       | Primary Key                                  |
+| group_id            | UUID                     | Group ID            | References `groups(id)`, NOT NULL            |
+| service_instance_id | UUID                     | Service Instance ID | References `service_instances(id)`, NOT NULL |
+| is_enabled          | BOOLEAN                  | Is enabled          | DEFAULT `TRUE`                               |
+| usage_quota         | INTEGER                  | Usage quota         | `NULL` means unlimited                       |
+| used_count          | INTEGER                  | Times used          | DEFAULT `0`                                  |
+| created_at          | TIMESTAMP WITH TIME ZONE | Creation time       | DEFAULT `CURRENT_TIMESTAMP`                  |
+|                     |                          |                     | UNIQUE(`group_id`, `service_instance_id`)    |
 
 **Permission Control Explanation:**
 
@@ -151,17 +151,17 @@ Stores conversation sessions between users and the AI.
 
 Stores messages within a conversation.
 
-| Field Name       | Type                     | Description       | Constraints                                    |
-| ---------------- | ------------------------ | ----------------- | ---------------------------------------------- |
-| id               | UUID                     | Message ID        | Primary Key                                    |
-| conversation_id  | UUID                     | Conversation ID   | References `conversations(id)`, NOT NULL       |
-| user_id          | UUID                     | User ID           | References `auth.users(id)`                    |
-| role             | message_role             | Message role      | NOT NULL                                       |
-| content          | TEXT                     | Message content   | NOT NULL                                       |
-| metadata         | JSONB                    | Metadata          | DEFAULT `'{}'`                                 |
-| created_at       | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP`                    |
-| status           | message_status           | Message status    | DEFAULT `'sent'`                               |
-| sequence_index   | INT                      | Sequence Index    | DEFAULT `0`, supports high-performance sorting |
+| Field Name      | Type                     | Description     | Constraints                                    |
+| --------------- | ------------------------ | --------------- | ---------------------------------------------- |
+| id              | UUID                     | Message ID      | Primary Key                                    |
+| conversation_id | UUID                     | Conversation ID | References `conversations(id)`, NOT NULL       |
+| user_id         | UUID                     | User ID         | References `auth.users(id)`                    |
+| role            | message_role             | Message role    | NOT NULL                                       |
+| content         | TEXT                     | Message content | NOT NULL                                       |
+| metadata        | JSONB                    | Metadata        | DEFAULT `'{}'`                                 |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time   | DEFAULT `CURRENT_TIMESTAMP`                    |
+| status          | message_status           | Message status  | DEFAULT `'sent'`                               |
+| sequence_index  | INT                      | Sequence Index  | DEFAULT `0`, supports high-performance sorting |
 
 **Index Explanation:**
 
@@ -178,38 +178,38 @@ Stores messages within a conversation.
 
 Stores API service provider information.
 
-| Field Name | Type                     | Description             | Constraints                                          |
-| ---------- | ------------------------ | ----------------------- | ---------------------------------------------------- |
-| id         | UUID                     | Provider ID             | Primary Key                                          |
-| name       | TEXT                     | Provider name           | NOT NULL, UNIQUE                                     |
-| type       | TEXT                     | Provider type           | NOT NULL                                             |
-| base_url   | TEXT                     | Base URL                | NOT NULL                                             |
-| auth_type  | TEXT                     | Authentication type     | NOT NULL                                             |
-| is_active  | BOOLEAN                  | Is active               | DEFAULT `TRUE`                                       |
-| is_default | BOOLEAN                  | Is default provider     | DEFAULT `FALSE`                                      |
-| created_at | TIMESTAMP WITH TIME ZONE | Creation time           | DEFAULT `NOW()`                                      |
-| updated_at | TIMESTAMP WITH TIME ZONE | Update time             | DEFAULT `NOW()`                                      |
-|            |                          |                         | UNIQUE INDEX: Only one default provider in the system. |
+| Field Name | Type                     | Description         | Constraints                                            |
+| ---------- | ------------------------ | ------------------- | ------------------------------------------------------ |
+| id         | UUID                     | Provider ID         | Primary Key                                            |
+| name       | TEXT                     | Provider name       | NOT NULL, UNIQUE                                       |
+| type       | TEXT                     | Provider type       | NOT NULL                                               |
+| base_url   | TEXT                     | Base URL            | NOT NULL                                               |
+| auth_type  | TEXT                     | Authentication type | NOT NULL                                               |
+| is_active  | BOOLEAN                  | Is active           | DEFAULT `TRUE`                                         |
+| is_default | BOOLEAN                  | Is default provider | DEFAULT `FALSE`                                        |
+| created_at | TIMESTAMP WITH TIME ZONE | Creation time       | DEFAULT `NOW()`                                        |
+| updated_at | TIMESTAMP WITH TIME ZONE | Update time         | DEFAULT `NOW()`                                        |
+|            |                          |                     | UNIQUE INDEX: Only one default provider in the system. |
 
 #### service_instances
 
 Stores service instance information.
 
-| Field Name   | Type                     | Description            | Constraints                                                        |
-| ------------ | ------------------------ | ---------------------- | ------------------------------------------------------------------ |
-| id           | UUID                     | Instance ID            | Primary Key                                                        |
-| provider_id  | UUID                     | Provider ID            | References `providers(id)`                                         |
-| display_name | TEXT                     | Display name           | DEFAULT `''`                                                       |
-| description  | TEXT                     | Description            | DEFAULT `''`                                                       |
-| instance_id  | TEXT                     | Instance identifier    | NOT NULL                                                           |
-| api_path     | TEXT                     | API path               | DEFAULT `''`                                                       |
-| is_default   | BOOLEAN                  | Is default             | DEFAULT `FALSE`                                                    |
-| visibility   | TEXT                     | Application Visibility | DEFAULT `'public'`, CHECK IN (`'public'`, `'group_only'`, `'private'`) |
-| config       | JSONB                    | Configuration parameters| DEFAULT `'{}'`                                                       |
-| created_at   | TIMESTAMP WITH TIME ZONE | Creation time          | DEFAULT `NOW()`                                                    |
-| updated_at   | TIMESTAMP WITH TIME ZONE | Update time            | DEFAULT `NOW()`                                                    |
-|              |                          |                        | UNIQUE(`provider_id`, `instance_id`)                               |
-|              |                          |                        | UNIQUE INDEX: At most one default app per provider.                |
+| Field Name   | Type                     | Description              | Constraints                                                            |
+| ------------ | ------------------------ | ------------------------ | ---------------------------------------------------------------------- |
+| id           | UUID                     | Instance ID              | Primary Key                                                            |
+| provider_id  | UUID                     | Provider ID              | References `providers(id)`                                             |
+| display_name | TEXT                     | Display name             | DEFAULT `''`                                                           |
+| description  | TEXT                     | Description              | DEFAULT `''`                                                           |
+| instance_id  | TEXT                     | Instance identifier      | NOT NULL                                                               |
+| api_path     | TEXT                     | API path                 | DEFAULT `''`                                                           |
+| is_default   | BOOLEAN                  | Is default               | DEFAULT `FALSE`                                                        |
+| visibility   | TEXT                     | Application Visibility   | DEFAULT `'public'`, CHECK IN (`'public'`, `'group_only'`, `'private'`) |
+| config       | JSONB                    | Configuration parameters | DEFAULT `'{}'`                                                         |
+| created_at   | TIMESTAMP WITH TIME ZONE | Creation time            | DEFAULT `NOW()`                                                        |
+| updated_at   | TIMESTAMP WITH TIME ZONE | Update time              | DEFAULT `NOW()`                                                        |
+|              |                          |                          | UNIQUE(`provider_id`, `instance_id`)                                   |
+|              |                          |                          | UNIQUE INDEX: At most one default app per provider.                    |
 
 **Application Visibility Explanation:**
 
@@ -221,18 +221,18 @@ Stores service instance information.
 
 Stores API keys.
 
-| Field Name          | Type                     | Description            | Constraints                         |
-| ------------------- | ------------------------ | ---------------------- | ----------------------------------- |
-| id                  | UUID                     | Key ID                 | Primary Key                         |
-| provider_id         | UUID                     | Provider ID            | References `providers(id)`          |
-| service_instance_id | UUID                     | Service Instance ID    | References `service_instances(id)`  |
-| user_id             | UUID                     | User ID                | References `auth.users(id)`         |
-| key_value           | TEXT                     | Encrypted key value    | NOT NULL                            |
-| is_default          | BOOLEAN                  | Is default             | DEFAULT `FALSE`                     |
-| usage_count         | INTEGER                  | Usage count            | DEFAULT `0`                         |
-| last_used_at        | TIMESTAMP WITH TIME ZONE | Last used time         |                                     |
-| created_at          | TIMESTAMP WITH TIME ZONE | Creation time          | DEFAULT `NOW()`                     |
-| updated_at          | TIMESTAMP WITH TIME ZONE | Update time            | DEFAULT `NOW()`                     |
+| Field Name          | Type                     | Description         | Constraints                        |
+| ------------------- | ------------------------ | ------------------- | ---------------------------------- |
+| id                  | UUID                     | Key ID              | Primary Key                        |
+| provider_id         | UUID                     | Provider ID         | References `providers(id)`         |
+| service_instance_id | UUID                     | Service Instance ID | References `service_instances(id)` |
+| user_id             | UUID                     | User ID             | References `auth.users(id)`        |
+| key_value           | TEXT                     | Encrypted key value | NOT NULL                           |
+| is_default          | BOOLEAN                  | Is default          | DEFAULT `FALSE`                    |
+| usage_count         | INTEGER                  | Usage count         | DEFAULT `0`                        |
+| last_used_at        | TIMESTAMP WITH TIME ZONE | Last used time      |                                    |
+| created_at          | TIMESTAMP WITH TIME ZONE | Creation time       | DEFAULT `NOW()`                    |
+| updated_at          | TIMESTAMP WITH TIME ZONE | Update time         | DEFAULT `NOW()`                    |
 
 ### SSO Authentication
 
@@ -240,20 +240,20 @@ Stores API keys.
 
 Stores SSO provider information, supporting multiple single sign-on protocols and dynamic configuration management.
 
-| Field Name      | Type                     | Description                  | Constraints                                                                         |
-| --------------- | ------------------------ | ---------------------------- | ----------------------------------------------------------------------------------- |
-| id              | UUID                     | Provider ID                  | Primary Key, used for API routing (`/api/sso/{id}/*`) and service instance caching.   |
-| name            | TEXT                     | Provider Name                | NOT NULL, used for management UI display and logging.                               |
-| protocol        | sso_protocol             | Protocol Type                | NOT NULL, determines which service implementation class to use.                     |
-| settings        | JSONB                    | Unified Configuration Structure| NOT NULL, DEFAULT `'{}'`, contains `protocol_config`, `security`, and `ui` sections. |
-| client_id       | TEXT                     | Client ID                    | Used by OAuth2/OIDC protocols; not used by CAS protocol.                            |
-| client_secret   | TEXT                     | Client Secret                | Used by OAuth2/OIDC protocols; encrypted storage is recommended.                    |
-| metadata_url    | TEXT                     | Metadata URL                 | Used by SAML protocol for automatic endpoint configuration.                         |
-| enabled         | BOOLEAN                  | Is Enabled                   | DEFAULT `TRUE`, if `false`, will not be displayed on the login page and APIs will deny access. |
-| display_order   | INTEGER                  | Display Order                | DEFAULT `0`, order of buttons on the login page (smaller numbers appear first).       |
-| button_text     | TEXT                     | Button Text                  | Text displayed on the login button; uses `name` field if empty; supports i18n.      |
-| created_at      | TIMESTAMP WITH TIME ZONE | Creation time                | DEFAULT `CURRENT_TIMESTAMP`                                                         |
-| updated_at      | TIMESTAMP WITH TIME ZONE | Update time                  | DEFAULT `CURRENT_TIMESTAMP`                                                         |
+| Field Name    | Type                     | Description                     | Constraints                                                                                    |
+| ------------- | ------------------------ | ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| id            | UUID                     | Provider ID                     | Primary Key, used for API routing (`/api/sso/{id}/*`) and service instance caching.            |
+| name          | TEXT                     | Provider Name                   | NOT NULL, used for management UI display and logging.                                          |
+| protocol      | sso_protocol             | Protocol Type                   | NOT NULL, determines which service implementation class to use.                                |
+| settings      | JSONB                    | Unified Configuration Structure | NOT NULL, DEFAULT `'{}'`, contains `protocol_config`, `security`, and `ui` sections.           |
+| client_id     | TEXT                     | Client ID                       | Used by OAuth2/OIDC protocols; not used by CAS protocol.                                       |
+| client_secret | TEXT                     | Client Secret                   | Used by OAuth2/OIDC protocols; encrypted storage is recommended.                               |
+| metadata_url  | TEXT                     | Metadata URL                    | Used by SAML protocol for automatic endpoint configuration.                                    |
+| enabled       | BOOLEAN                  | Is Enabled                      | DEFAULT `TRUE`, if `false`, will not be displayed on the login page and APIs will deny access. |
+| display_order | INTEGER                  | Display Order                   | DEFAULT `0`, order of buttons on the login page (smaller numbers appear first).                |
+| button_text   | TEXT                     | Button Text                     | Text displayed on the login button; uses `name` field if empty; supports i18n.                 |
+| created_at    | TIMESTAMP WITH TIME ZONE | Creation time                   | DEFAULT `CURRENT_TIMESTAMP`                                                                    |
+| updated_at    | TIMESTAMP WITH TIME ZONE | Update time                     | DEFAULT `CURRENT_TIMESTAMP`                                                                    |
 
 **Enum Type Definition:**
 
@@ -311,16 +311,16 @@ Stores mappings from domains to SSO providers.
 
 Stores global authentication settings.
 
-| Field Name                 | Type                     | Description                  | Constraints                                |
-| -------------------------- | ------------------------ | ---------------------------- | ------------------------------------------ |
-| id                         | UUID                     | Setting ID                   | Primary Key                                |
-| allow_email_registration   | BOOLEAN                  | Allow email registration     | DEFAULT `FALSE`                            |
-| allow_phone_registration   | BOOLEAN                  | Allow phone registration     | DEFAULT `FALSE`                            |
-| allow_password_login       | BOOLEAN                  | Allow password login         | DEFAULT `TRUE`                             |
-| require_email_verification | BOOLEAN                  | Require email verification   | DEFAULT `TRUE`                             |
-| password_policy            | JSONB                    | Password policy              | DEFAULT `{"min_length": 8, ...}`           |
-| created_at                 | TIMESTAMP WITH TIME ZONE | Creation time                | DEFAULT `CURRENT_TIMESTAMP`                |
-| updated_at                 | TIMESTAMP WITH TIME ZONE | Update time                  | DEFAULT `CURRENT_TIMESTAMP`                |
+| Field Name                 | Type                     | Description                | Constraints                      |
+| -------------------------- | ------------------------ | -------------------------- | -------------------------------- |
+| id                         | UUID                     | Setting ID                 | Primary Key                      |
+| allow_email_registration   | BOOLEAN                  | Allow email registration   | DEFAULT `FALSE`                  |
+| allow_phone_registration   | BOOLEAN                  | Allow phone registration   | DEFAULT `FALSE`                  |
+| allow_password_login       | BOOLEAN                  | Allow password login       | DEFAULT `TRUE`                   |
+| require_email_verification | BOOLEAN                  | Require email verification | DEFAULT `TRUE`                   |
+| password_policy            | JSONB                    | Password policy            | DEFAULT `{"min_length": 8, ...}` |
+| created_at                 | TIMESTAMP WITH TIME ZONE | Creation time              | DEFAULT `CURRENT_TIMESTAMP`      |
+| updated_at                 | TIMESTAMP WITH TIME ZONE | Update time                | DEFAULT `CURRENT_TIMESTAMP`      |
 
 ### Storage and File Management
 
@@ -330,14 +330,14 @@ AgentifUI uses Supabase Storage for file management, primarily for user avatar u
 
 **avatars Bucket**
 
-| Configuration Item | Value                                                    | Description                             |
-| ------------------ | -------------------------------------------------------- | --------------------------------------- |
-| Bucket ID          | `avatars`                                                | Unique identifier for the bucket        |
-| Bucket Name        | `avatars`                                                | Display name for the bucket             |
-| Public Access      | `true`                                                   | Enables public access, anyone can view avatars |
-| File Size Limit    | `5242880` (5MB)                                          | Maximum size for a single file          |
-| Allowed MIME Types | `['image/jpeg', 'image/jpg', 'image/png', 'image/webp']` | Supported image formats                 |
-| File Path Structure| `user-{userID}/{timestamp}.{extension}`                  | User-isolated file path structure       |
+| Configuration Item  | Value                                                    | Description                                    |
+| ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| Bucket ID           | `avatars`                                                | Unique identifier for the bucket               |
+| Bucket Name         | `avatars`                                                | Display name for the bucket                    |
+| Public Access       | `true`                                                   | Enables public access, anyone can view avatars |
+| File Size Limit     | `5242880` (5MB)                                          | Maximum size for a single file                 |
+| Allowed MIME Types  | `['image/jpeg', 'image/jpg', 'image/png', 'image/webp']` | Supported image formats                        |
+| File Path Structure | `user-{userID}/{timestamp}.{extension}`                  | User-isolated file path structure              |
 
 ### Other Tables
 
@@ -345,34 +345,34 @@ AgentifUI uses Supabase Storage for file management, primarily for user avatar u
 
 Stores AI service configurations.
 
-| Field Name | Type                     | Description       | Constraints                 |
-| ---------- | ------------------------ | ----------------- | --------------------------- |
-| id         | UUID                     | Config ID         | Primary Key                 |
-| provider   | TEXT                     | Provider          | NOT NULL                    |
-| app_id     | TEXT                     | App ID            |                             |
-| api_key    | TEXT                     | API Key           | NOT NULL                    |
-| api_url    | TEXT                     | API URL           | NOT NULL                    |
-| settings   | JSONB                    | Config settings   | DEFAULT `'{}'`              |
-| enabled    | BOOLEAN                  | Is enabled        | DEFAULT `TRUE`              |
-| created_at | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP` |
-| updated_at | TIMESTAMP WITH TIME ZONE | Update time       | DEFAULT `CURRENT_TIMESTAMP` |
+| Field Name | Type                     | Description     | Constraints                 |
+| ---------- | ------------------------ | --------------- | --------------------------- |
+| id         | UUID                     | Config ID       | Primary Key                 |
+| provider   | TEXT                     | Provider        | NOT NULL                    |
+| app_id     | TEXT                     | App ID          |                             |
+| api_key    | TEXT                     | API Key         | NOT NULL                    |
+| api_url    | TEXT                     | API URL         | NOT NULL                    |
+| settings   | JSONB                    | Config settings | DEFAULT `'{}'`              |
+| enabled    | BOOLEAN                  | Is enabled      | DEFAULT `TRUE`              |
+| created_at | TIMESTAMP WITH TIME ZONE | Creation time   | DEFAULT `CURRENT_TIMESTAMP` |
+| updated_at | TIMESTAMP WITH TIME ZONE | Update time     | DEFAULT `CURRENT_TIMESTAMP` |
 
 #### api_logs
 
 Stores API call logs.
 
-| Field Name      | Type                     | Description       | Constraints                 |
-| --------------- | ------------------------ | ----------------- | --------------------------- |
-| id              | UUID                     | Log ID            | Primary Key                 |
-| user_id         | UUID                     | User ID           | References `auth.users(id)` |
-| conversation_id | UUID                     | Conversation ID   | References `conversations(id)`|
-| provider        | TEXT                     | Provider          | NOT NULL                    |
-| endpoint        | TEXT                     | Endpoint          | NOT NULL                    |
-| request         | JSONB                    | Request content   | DEFAULT `'{}'`              |
-| response        | JSONB                    | Response content  | DEFAULT `'{}'`              |
-| status_code     | INTEGER                  | Status code       |                             |
-| latency_ms      | INTEGER                  | Latency (ms)      |                             |
-| created_at      | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP` |
+| Field Name      | Type                     | Description      | Constraints                    |
+| --------------- | ------------------------ | ---------------- | ------------------------------ |
+| id              | UUID                     | Log ID           | Primary Key                    |
+| user_id         | UUID                     | User ID          | References `auth.users(id)`    |
+| conversation_id | UUID                     | Conversation ID  | References `conversations(id)` |
+| provider        | TEXT                     | Provider         | NOT NULL                       |
+| endpoint        | TEXT                     | Endpoint         | NOT NULL                       |
+| request         | JSONB                    | Request content  | DEFAULT `'{}'`                 |
+| response        | JSONB                    | Response content | DEFAULT `'{}'`                 |
+| status_code     | INTEGER                  | Status code      |                                |
+| latency_ms      | INTEGER                  | Latency (ms)     |                                |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time    | DEFAULT `CURRENT_TIMESTAMP`    |
 
 ## Database Features
 
@@ -420,18 +420,18 @@ API keys are stored using the AES-256-GCM encryption algorithm in the format `"i
 
 Relationships between tables are maintained through foreign key constraints to ensure data consistency:
 
--   **Cascade Delete**: When a parent record is deleted, related child records are also deleted.
--   **Set to NULL**: In some cases, when a parent record is deleted, the foreign key field in child records is set to `NULL`.
+- **Cascade Delete**: When a parent record is deleted, related child records are also deleted.
+- **Set to NULL**: In some cases, when a parent record is deleted, the foreign key field in child records is set to `NULL`.
 
 #### Unique Constraints
 
 Several tables include unique constraints to ensure data uniqueness:
 
--   Username uniqueness constraint.
--   Domain name uniqueness constraint.
--   Service instance ID is unique within the same provider.
--   Group members are unique within the same group.
--   **Default App Uniqueness Constraint**: Each provider can have at most one default service instance (implemented via a partial unique index).
+- Username uniqueness constraint.
+- Domain name uniqueness constraint.
+- Service instance ID is unique within the same provider.
+- Group members are unique within the same group.
+- **Default App Uniqueness Constraint**: Each provider can have at most one default service instance (implemented via a partial unique index).
 
 ### Automation Features
 
@@ -546,46 +546,46 @@ Due to a simplified architecture, the system no longer presets initial data. Aft
 
 The database design adopts a modular approach, clearly separating different functional areas:
 
--   User and Identity Management
--   Group and Member Management
--   Chat and Messages
--   API Key Management
--   SSO Authentication
+- User and Identity Management
+- Group and Member Management
+- Chat and Messages
+- API Key Management
+- SSO Authentication
 
 ### Simplified Architecture
 
 The system uses a simplified group permission architecture:
 
--   Each group has a simple membership relationship.
--   Groups have binary permission control over applications.
--   Supports three application visibilities: `public`, `group_only`, and `private`.
+- Each group has a simple membership relationship.
+- Groups have binary permission control over applications.
+- Supports three application visibilities: `public`, `group_only`, and `private`.
 
 ### Flexible API Key Management
 
 The API key management system is designed to be flexible and support various scenarios:
 
--   Supports multiple providers and service instances.
--   Encrypted storage ensures security.
--   Supports user-level configuration.
--   Extendable configuration parameters.
+- Supports multiple providers and service instances.
+- Encrypted storage ensures security.
+- Supports user-level configuration.
+- Extendable configuration parameters.
 
 ### Comprehensive SSO Integration
 
 The SSO authentication system supports multiple authentication methods:
 
--   Supports SAML, OAuth2, and OIDC protocols.
--   Domain-based automatic routing.
--   Configurable authentication policies.
--   Seamless integration with user profiles.
--   Secure configuration information filtering mechanism.
+- Supports SAML, OAuth2, and OIDC protocols.
+- Domain-based automatic routing.
+- Configurable authentication policies.
+- Seamless integration with user profiles.
+- Secure configuration information filtering mechanism.
 
 ### Scalability
 
 The database design considers future expansion needs:
 
--   JSON/JSONB fields are used to store flexible configurations.
--   Reserved fields and settings for future extensions.
--   The modular design facilitates the addition of new features.
+- JSON/JSONB fields are used to store flexible configurations.
+- Reserved fields and settings for future extensions.
+- The modular design facilitates the addition of new features.
 
 ## ER Diagram
 
@@ -686,6 +686,5 @@ The database design considers future expansion needs:
                                |                |       | updated_at    |
                                |                |       +---------------+
 ```
-
 
 This database design provides a streamlined yet comprehensive foundation for AgentifUI, supporting user management, group collaboration, AI chat, SSO authentication, and API integration. It emphasizes simplicity, security, and extensibility for future growth and maintenance.

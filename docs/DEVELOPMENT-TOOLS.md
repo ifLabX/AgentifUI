@@ -4,12 +4,12 @@ This document provides guidelines for contributors on using development tools an
 
 ## Tool Overview
 
-| Tool           | Purpose             | Automatic Run            |
-| -------------- | ------------------- | ------------------------ |
+| Tool           | Purpose             | Automatic Run             |
+| -------------- | ------------------- | ------------------------- |
 | **Prettier**   | Code formatting     | ✅ On save and pre-commit |
 | **ESLint**     | Code quality checks | ✅ On pre-commit          |
 | **Husky**      | Git hook management | ✅ Automatic              |
-| **TypeScript** | Type checking       | Manual                   |
+| **TypeScript** | Type checking       | Manual                    |
 
 ## Available Commands
 
@@ -36,14 +36,14 @@ pnpm run build
 
 ### Development Environment (VSCode)
 
-* **On save**: Prettier automatically formats the current file
-* **Live**: ESLint displays warnings and errors in real time
+- **On save**: Prettier automatically formats the current file
+- **Live**: ESLint displays warnings and errors in real time
 
 ### Git Commit
 
-* **Pre-commit hook**: Automatically runs lint-staged
-* **Staged files only**: Formats only staged files
-* **Auto-fix**: ESLint automatically fixes fixable issues
+- **Pre-commit hook**: Automatically runs lint-staged
+- **Staged files only**: Formats only staged files
+- **Auto-fix**: ESLint automatically fixes fixable issues
 
 ### CI/CD Recommendations
 
@@ -59,22 +59,20 @@ pnpm run build           # Build the project
 ### Developer Setup
 
 1. **Install VSCode extensions**:
-
-   * Prettier – Code formatter
-   * ESLint
-   * Tailwind CSS IntelliSense
+   - Prettier – Code formatter
+   - ESLint
+   - Tailwind CSS IntelliSense
 
 2. **Use project commands**:
-
-   * Run `pnpm run type-check` before committing
-   * Enable VSCode to auto-format code on save
-   * Leverage automation tools for consistency
+   - Run `pnpm run type-check` before committing
+   - Enable VSCode to auto-format code on save
+   - Leverage automation tools for consistency
 
 ### Team Collaboration
 
-* Ensure all developers share the same configuration
-* Focus code reviews on logic rather than formatting
-* Rely on automated formatting to maintain consistency
+- Ensure all developers share the same configuration
+- Focus code reviews on logic rather than formatting
+- Rely on automated formatting to maintain consistency
 
 ## Troubleshooting
 
@@ -114,20 +112,20 @@ git stash pop
 
 | File Type | Prettier | ESLint | Auto-format |
 | --------- | -------- | ------ | ----------- |
-| `.ts`     | ✅        | ✅      | ✅           |
-| `.tsx`    | ✅        | ✅      | ✅           |
-| `.js`     | ✅        | ✅      | ✅           |
-| `.jsx`    | ✅        | ✅      | ✅           |
-| `.json`   | ✅        | ❌      | ✅           |
-| `.md`     | ✅        | ❌      | ✅           |
-| `.css`    | ✅        | ❌      | ✅           |
+| `.ts`     | ✅       | ✅     | ✅          |
+| `.tsx`    | ✅       | ✅     | ✅          |
+| `.js`     | ✅       | ✅     | ✅          |
+| `.jsx`    | ✅       | ✅     | ✅          |
+| `.json`   | ✅       | ❌     | ✅          |
+| `.md`     | ✅       | ❌     | ✅          |
+| `.css`    | ✅       | ❌     | ✅          |
 
 ## Configuration Files
 
-* **`.prettierrc.json`** – Prettier formatting rules
-* **`.prettierignore`** – Files and directories to ignore
-* **`.husky/pre-commit`** – Git pre-commit hook scripts
-* **`package.json`** – lint-staged configuration
-* **`.vscode/settings.json`** – VSCode workspace settings
+- **`.prettierrc.json`** – Prettier formatting rules
+- **`.prettierignore`** – Files and directories to ignore
+- **`.husky/pre-commit`** – Git pre-commit hook scripts
+- **`package.json`** – lint-staged configuration
+- **`.vscode/settings.json`** – VSCode workspace settings
 
 Adhering to these tools and workflows ensures consistent code quality across the project.
