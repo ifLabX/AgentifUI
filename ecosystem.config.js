@@ -23,8 +23,9 @@ module.exports = {
     },
     {
       name: 'AgentifUI-Standalone',
-      script: '.next/standalone/server.js',
-      interpreter: 'node',
+      script: 'pnpm',
+      args: 'start:standalone',
+      interpreter: 'none',
       env: {
         NODE_ENV: 'production',
         PORT: process.env.PORT || 3000,
