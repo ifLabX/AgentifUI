@@ -1,591 +1,593 @@
 # AgentifUI 数据库设计文档
 
-本文档详细描述了 AgentifUI 平台的数据库设计，包括表结构、关系、安全机制和特性。本文档与当前数据库状态完全同步，包含所有已应用的迁移文件。
+# AgentifUI Database Design Document
 
-**文档更新日期**: 2025-07-12
-**数据库版本**: 包含至 20250712133249_add_sequence_index_column.sql 的所有迁移
+This document provides a detailed description of the AgentifUI platform's database design, including table structures, relationships, security mechanisms, and features. This document is fully synchronized with the current database state and includes all applied migration files.
 
-## 目录
+**Document Update Date**: 2025-07-12
+**Database Version**: Includes all migrations up to `20250712133249_add_sequence_index_column.sql`
 
-1. [核心表结构](#核心表结构)
-   - [用户和身份管理](#用户和身份管理)
-   - [群组和成员管理](#群组和成员管理)
-   - [聊天和消息](#聊天和消息)
-   - [API密钥管理](#api密钥管理)
-   - [SSO认证](#sso认证)
-   - [存储和文件管理](#存储和文件管理)
-   - [其他表](#其他表)
-2. [数据库特性](#数据库特性)
-   - [安全机制](#安全机制)
-   - [数据完整性](#数据完整性)
-   - [自动化功能](#自动化功能)
-3. [用户管理系统](#用户管理系统)
-   - [管理员视图](#管理员视图)
-   - [权限保护机制](#权限保护机制)
-   - [安全函数](#安全函数)
-4. [初始数据](#初始数据)
-5. [设计特点](#设计特点)
-6. [ER图](#er图)
+## Table of Contents
 
-## 核心表结构
+1. [Core Table Structure](#core-table-structure)
+   - [User and Identity Management](#user-and-identity-management)
+   - [Group and Member Management](#group-and-member-management)
+   - [Chat and Messages](#chat-and-messages)
+   - [API Key Management](#api-key-management)
+   - [SSO Authentication](#sso-authentication)
+   - [Storage and File Management](#storage-and-file-management)
+   - [Other Tables](#other-tables)
+2. [Database Features](#database-features)
+   - [Security Mechanisms](#security-mechanisms)
+   - [Data Integrity](#data-integrity)
+   - [Automation Features](#automation-features)
+3. [User Management System](#user-management-system)
+   - [Admin View](#admin-view)
+   - [Permission Protection Mechanism](#permission-protection-mechanism)
+   - [Security Functions](#security-functions)
+4. [Initial Data](#initial-data)
+5. [Design Features](#design-features)
+6. [ER Diagram](#er-diagram)
 
-### 用户和身份管理
+## Core Table Structure
+
+### User and Identity Management
 
 #### profiles
 
-扩展自 `auth.users`，包含用户的基本信息和状态。
+Extends `auth.users` and contains basic user information and status.
 
-| 字段名          | 类型                     | 描述         | 约束                                                    |
-| --------------- | ------------------------ | ------------ | ------------------------------------------------------- |
-| id              | UUID                     | 用户ID       | 主键，引用 auth.users(id)                               |
-| full_name       | TEXT                     | 用户全名     |                                                         |
-| username        | TEXT                     | 用户名       | 唯一                                                    |
-| avatar_url      | TEXT                     | 头像URL      |                                                         |
-| email           | TEXT                     | 用户邮箱     | 从 auth.users 同步                                      |
-| phone           | TEXT                     | 用户手机号   | 从 auth.users 同步                                      |
-| role            | user_role                | 用户角色     | DEFAULT 'user'::user_role                               |
-| status          | account_status           | 账号状态     | DEFAULT 'active'::account_status                        |
-| created_at      | TIMESTAMP WITH TIME ZONE | 创建时间     | DEFAULT CURRENT_TIMESTAMP                               |
-| updated_at      | TIMESTAMP WITH TIME ZONE | 更新时间     | DEFAULT CURRENT_TIMESTAMP                               |
-| last_login      | TIMESTAMP WITH TIME ZONE | 最后登录时间 |                                                         |
-| auth_source     | TEXT                     | 认证来源     | DEFAULT 'email'，支持 email/google/github/phone/cas_sso |
-| sso_provider_id | UUID                     | SSO提供商ID  | 引用 sso_providers(id)                                  |
-| employee_number | TEXT                     | 员工编号     | SSO统一身份标识，唯一约束                               |
+| Field Name      | Type                     | Description              | Constraints                                                   |
+| --------------- | ------------------------ | ------------------------ | ------------------------------------------------------------- |
+| id              | UUID                     | User ID                  | Primary Key, references `auth.users(id)`                      |
+| full_name       | TEXT                     | User's full name         |                                                               |
+| username        | TEXT                     | Username                 | UNIQUE                                                        |
+| avatar_url      | TEXT                     | Avatar URL               |                                                               |
+| email           | TEXT                     | User's email             | Synced from `auth.users`                                      |
+| phone           | TEXT                     | User's phone number      | Synced from `auth.users`                                      |
+| role            | user_role                | User role                | DEFAULT `'user'::user_role`                                   |
+| status          | account_status           | Account status           | DEFAULT `'active'::account_status`                            |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time            | DEFAULT `CURRENT_TIMESTAMP`                                   |
+| updated_at      | TIMESTAMP WITH TIME ZONE | Update time              | DEFAULT `CURRENT_TIMESTAMP`                                   |
+| last_login      | TIMESTAMP WITH TIME ZONE | Last login time          |                                                               |
+| auth_source     | TEXT                     | Authentication source    | DEFAULT `'email'`, supports `email/google/github/phone/cas_sso` |
+| sso_provider_id | UUID                     | SSO Provider ID          | References `sso_providers(id)`                                |
+| employee_number | TEXT                     | Employee number          | SSO unified identity identifier, UNIQUE constraint            |
 
-**枚举类型定义：**
+**Enum Type Definitions:**
 
 - `user_role`: ENUM ('admin', 'manager', 'user')
 - `account_status`: ENUM ('active', 'suspended', 'pending')
 
 #### user_preferences
 
-存储用户界面和功能偏好设置。
+Stores user interface and feature preference settings.
 
-| 字段名                | 类型                     | 描述       | 约束                      |
-| --------------------- | ------------------------ | ---------- | ------------------------- |
-| id                    | UUID                     | 偏好设置ID | 主键                      |
-| user_id               | UUID                     | 用户ID     | 引用 auth.users(id)，唯一 |
-| theme                 | TEXT                     | 界面主题   | DEFAULT 'light'           |
-| language              | TEXT                     | 界面语言   | DEFAULT 'zh-CN'           |
-| notification_settings | JSONB                    | 通知设置   | DEFAULT '{}'              |
-| ai_preferences        | JSONB                    | AI偏好设置 | DEFAULT '{}'              |
-| updated_at            | TIMESTAMP WITH TIME ZONE | 更新时间   | DEFAULT CURRENT_TIMESTAMP |
+| Field Name              | Type                     | Description               | Constraints                       |
+| ----------------------- | ------------------------ | ------------------------- | --------------------------------- |
+| id                      | UUID                     | Preference ID             | Primary Key                       |
+| user_id                 | UUID                     | User ID                   | References `auth.users(id)`, UNIQUE |
+| theme                   | TEXT                     | UI Theme                  | DEFAULT `'light'`                 |
+| language                | TEXT                     | UI Language               | DEFAULT `'zh-CN'`                 |
+| notification_settings | JSONB                    | Notification settings     | DEFAULT `'{}'`                    |
+| ai_preferences          | JSONB                    | AI preference settings    | DEFAULT `'{}'`                    |
+| updated_at              | TIMESTAMP WITH TIME ZONE | Update time               | DEFAULT `CURRENT_TIMESTAMP`       |
 
-### 群组和成员管理
+### Group and Member Management
 
 #### groups
 
-存储群组信息，替代复杂的组织架构。
+Stores group information, replacing complex organizational structures.
 
-| 字段名      | 类型                     | 描述     | 约束                      |
-| ----------- | ------------------------ | -------- | ------------------------- |
-| id          | UUID                     | 群组ID   | 主键                      |
-| name        | TEXT                     | 群组名称 | NOT NULL                  |
-| description | TEXT                     | 群组描述 |                           |
-| created_by  | UUID                     | 创建者ID | 引用 auth.users(id)       |
-| created_at  | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP |
+| Field Name  | Type                     | Description       | Constraints                         |
+| ----------- | ------------------------ | ----------------- | ----------------------------------- |
+| id          | UUID                     | Group ID          | Primary Key                         |
+| name        | TEXT                     | Group name        | NOT NULL                            |
+| description | TEXT                     | Group description |                                     |
+| created_by  | UUID                     | Creator ID        | References `auth.users(id)`         |
+| created_at  | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP`         |
 
 #### group_members
 
-存储群组成员关系，简化的成员管理。
+Stores group membership relationships for simplified member management.
 
-| 字段名     | 类型                     | 描述     | 约束                        |
-| ---------- | ------------------------ | -------- | --------------------------- |
-| id         | UUID                     | 关系ID   | 主键                        |
-| group_id   | UUID                     | 群组ID   | 引用 groups(id)，NOT NULL   |
-| user_id    | UUID                     | 用户ID   | 引用 profiles(id)，NOT NULL |
-| created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP   |
-|            |                          |          | UNIQUE(group_id, user_id)   |
+| Field Name | Type                     | Description        | Constraints                               |
+| ---------- | ------------------------ | ------------------ | ----------------------------------------- |
+| id         | UUID                     | Relationship ID    | Primary Key                               |
+| group_id   | UUID                     | Group ID           | References `groups(id)`, NOT NULL         |
+| user_id    | UUID                     | User ID            | References `profiles(id)`, NOT NULL       |
+| created_at | TIMESTAMP WITH TIME ZONE | Creation time      | DEFAULT `CURRENT_TIMESTAMP`               |
+|            |                          |                    | UNIQUE(`group_id`, `user_id`)             |
 
-### 群组应用权限管理
+### Group App Permission Management
 
 #### group_app_permissions
 
-存储群组级应用访问权限，实现简化的权限控制。
+Stores group-level application access permissions, implementing simplified permission control.
 
-| 字段名              | 类型                     | 描述       | 约束                                  |
-| ------------------- | ------------------------ | ---------- | ------------------------------------- |
-| id                  | UUID                     | 权限ID     | 主键                                  |
-| group_id            | UUID                     | 群组ID     | 引用 groups(id)，NOT NULL             |
-| service_instance_id | UUID                     | 服务实例ID | 引用 service_instances(id)，NOT NULL  |
-| is_enabled          | BOOLEAN                  | 是否启用   | DEFAULT TRUE                          |
-| usage_quota         | INTEGER                  | 使用配额   | NULL表示无限制                        |
-| used_count          | INTEGER                  | 已使用次数 | DEFAULT 0                             |
-| created_at          | TIMESTAMP WITH TIME ZONE | 创建时间   | DEFAULT CURRENT_TIMESTAMP             |
-|                     |                          |            | UNIQUE(group_id, service_instance_id) |
+| Field Name          | Type                     | Description            | Constraints                                           |
+| ------------------- | ------------------------ | ---------------------- | ----------------------------------------------------- |
+| id                  | UUID                     | Permission ID          | Primary Key                                           |
+| group_id            | UUID                     | Group ID               | References `groups(id)`, NOT NULL                     |
+| service_instance_id | UUID                     | Service Instance ID    | References `service_instances(id)`, NOT NULL          |
+| is_enabled          | BOOLEAN                  | Is enabled             | DEFAULT `TRUE`                                        |
+| usage_quota         | INTEGER                  | Usage quota            | `NULL` means unlimited                                |
+| used_count          | INTEGER                  | Times used             | DEFAULT `0`                                           |
+| created_at          | TIMESTAMP WITH TIME ZONE | Creation time          | DEFAULT `CURRENT_TIMESTAMP`                           |
+|                     |                          |                        | UNIQUE(`group_id`, `service_instance_id`)             |
 
-**权限控制说明：**
+**Permission Control Explanation:**
 
-- **简化设计**: 基于群组的二元权限控制（启用/禁用）
-- **配额管理**: 支持群组级使用配额限制
-- **权限逻辑**: public(全员) | group_only(群组成员) | private(管理员)
+- **Simplified Design**: Group-based binary permission control (enabled/disabled).
+- **Quota Management**: Supports group-level usage quota limits.
+- **Permission Logic**: `public` (all users) | `group_only` (group members) | `private` (administrators).
 
-**外键关系修复（20250630034523）：**
+**Foreign Key Relationship Fix (20250630034523):**
 
-- **问题修复**: `group_members.user_id` 外键从 `auth.users(id)` 修改为 `profiles(id)`
-- **解决原因**: 确保群组成员查询时可以正确关联 profiles 表获取用户信息
-- **影响范围**: 修复了群组成员列表查询中的关系查询错误
-- **安全保证**: 保持级联删除行为，确保用户删除时清理群组成员关系
+- **Issue Fixed**: `group_members.user_id` foreign key was changed from `auth.users(id)` to `profiles(id)`.
+- **Reason for Fix**: To ensure that queries for group members can correctly join with the `profiles` table to fetch user information.
+- **Impact Scope**: Fixed a relationship query error in the group member list query.
+- **Security Guarantee**: Maintains cascade delete behavior, ensuring group member relationships are cleaned up when a user is deleted.
 
-### 聊天和消息
+### Chat and Messages
 
 #### conversations
 
-存储用户与AI的对话会话。
+Stores conversation sessions between users and the AI.
 
-| 字段名       | 类型                     | 描述     | 约束                          |
-| ------------ | ------------------------ | -------- | ----------------------------- |
-| id           | UUID                     | 对话ID   | 主键                          |
-| user_id      | UUID                     | 用户ID   | 引用 auth.users(id)，NOT NULL |
-| ai_config_id | UUID                     | AI配置ID | 引用 ai_configs(id)           |
-| title        | TEXT                     | 对话标题 | NOT NULL                      |
-| summary      | TEXT                     | 对话摘要 |                               |
-| settings     | JSONB                    | 对话设置 | DEFAULT '{}'                  |
-| created_at   | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP     |
-| updated_at   | TIMESTAMP WITH TIME ZONE | 更新时间 | DEFAULT CURRENT_TIMESTAMP     |
-| status       | TEXT                     | 对话状态 | DEFAULT 'active'              |
+| Field Name   | Type                     | Description           | Constraints                           |
+| ------------ | ------------------------ | --------------------- | ------------------------------------- |
+| id           | UUID                     | Conversation ID       | Primary Key                           |
+| user_id      | UUID                     | User ID               | References `auth.users(id)`, NOT NULL |
+| ai_config_id | UUID                     | AI Config ID          | References `ai_configs(id)`           |
+| title        | TEXT                     | Conversation title    | NOT NULL                              |
+| summary      | TEXT                     | Conversation summary  |                                       |
+| settings     | JSONB                    | Conversation settings | DEFAULT `'{}'`                        |
+| created_at   | TIMESTAMP WITH TIME ZONE | Creation time         | DEFAULT `CURRENT_TIMESTAMP`           |
+| updated_at   | TIMESTAMP WITH TIME ZONE | Update time           | DEFAULT `CURRENT_TIMESTAMP`           |
+| status       | TEXT                     | Conversation status   | DEFAULT `'active'`                    |
 
 #### messages
 
-存储对话中的消息。
+Stores messages within a conversation.
 
-| 字段名          | 类型                     | 描述     | 约束                             |
-| --------------- | ------------------------ | -------- | -------------------------------- |
-| id              | UUID                     | 消息ID   | 主键                             |
-| conversation_id | UUID                     | 对话ID   | 引用 conversations(id)，NOT NULL |
-| user_id         | UUID                     | 用户ID   | 引用 auth.users(id)              |
-| role            | message_role             | 消息角色 | NOT NULL                         |
-| content         | TEXT                     | 消息内容 | NOT NULL                         |
-| metadata        | JSONB                    | 元数据   | DEFAULT '{}'                     |
-| created_at      | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP        |
-| status          | message_status           | 消息状态 | DEFAULT 'sent'                   |
-| sequence_index  | INT                      | 顺序索引 | DEFAULT 0，支持高性能排序        |
+| Field Name       | Type                     | Description       | Constraints                                    |
+| ---------------- | ------------------------ | ----------------- | ---------------------------------------------- |
+| id               | UUID                     | Message ID        | Primary Key                                    |
+| conversation_id  | UUID                     | Conversation ID   | References `conversations(id)`, NOT NULL       |
+| user_id          | UUID                     | User ID           | References `auth.users(id)`                    |
+| role             | message_role             | Message role      | NOT NULL                                       |
+| content          | TEXT                     | Message content   | NOT NULL                                       |
+| metadata         | JSONB                    | Metadata          | DEFAULT `'{}'`                                 |
+| created_at       | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP`                    |
+| status           | message_status           | Message status    | DEFAULT `'sent'`                               |
+| sequence_index   | INT                      | Sequence Index    | DEFAULT `0`, supports high-performance sorting |
 
-**索引说明：**
+**Index Explanation:**
 
-- `idx_messages_conversation_time_sequence`：(`conversation_id`, `created_at` ASC, `sequence_index` ASC)
-- `idx_messages_conversation_stable_sort`：(`conversation_id`, `created_at` ASC, `sequence_index` ASC, `id` ASC)
+- `idx_messages_conversation_time_sequence`: (`conversation_id`, `created_at` ASC, `sequence_index` ASC)
+- `idx_messages_conversation_stable_sort`: (`conversation_id`, `created_at` ASC, `sequence_index` ASC, `id` ASC)
 
-**排序要求：**
+**Sorting Requirement:**
 
-- 查询消息时，务必使用 `ORDER BY created_at ASC, sequence_index ASC, id ASC`，确保顺序稳定与高性能。
+- When querying messages, you must use `ORDER BY created_at ASC, sequence_index ASC, id ASC` to ensure stable and high-performance ordering.
 
-### API密钥管理
+### API Key Management
 
 #### providers
 
-存储API服务提供商信息。
+Stores API service provider information.
 
-| 字段名     | 类型                     | 描述           | 约束                                     |
-| ---------- | ------------------------ | -------------- | ---------------------------------------- |
-| id         | UUID                     | 提供商ID       | 主键                                     |
-| name       | TEXT                     | 提供商名称     | NOT NULL，唯一                           |
-| type       | TEXT                     | 提供商类型     | NOT NULL                                 |
-| base_url   | TEXT                     | 基础URL        | NOT NULL                                 |
-| auth_type  | TEXT                     | 认证类型       | NOT NULL                                 |
-| is_active  | BOOLEAN                  | 是否激活       | DEFAULT TRUE                             |
-| is_default | BOOLEAN                  | 是否默认提供商 | DEFAULT FALSE                            |
-| created_at | TIMESTAMP WITH TIME ZONE | 创建时间       | DEFAULT NOW()                            |
-| updated_at | TIMESTAMP WITH TIME ZONE | 更新时间       | DEFAULT NOW()                            |
-|            |                          |                | UNIQUE INDEX: 系统中只能有一个默认提供商 |
+| Field Name | Type                     | Description             | Constraints                                          |
+| ---------- | ------------------------ | ----------------------- | ---------------------------------------------------- |
+| id         | UUID                     | Provider ID             | Primary Key                                          |
+| name       | TEXT                     | Provider name           | NOT NULL, UNIQUE                                     |
+| type       | TEXT                     | Provider type           | NOT NULL                                             |
+| base_url   | TEXT                     | Base URL                | NOT NULL                                             |
+| auth_type  | TEXT                     | Authentication type     | NOT NULL                                             |
+| is_active  | BOOLEAN                  | Is active               | DEFAULT `TRUE`                                       |
+| is_default | BOOLEAN                  | Is default provider     | DEFAULT `FALSE`                                      |
+| created_at | TIMESTAMP WITH TIME ZONE | Creation time           | DEFAULT `NOW()`                                      |
+| updated_at | TIMESTAMP WITH TIME ZONE | Update time             | DEFAULT `NOW()`                                      |
+|            |                          |                         | UNIQUE INDEX: Only one default provider in the system. |
 
 #### service_instances
 
-存储服务实例信息。
+Stores service instance information.
 
-| 字段名       | 类型                     | 描述       | 约束                                                           |
-| ------------ | ------------------------ | ---------- | -------------------------------------------------------------- |
-| id           | UUID                     | 实例ID     | 主键                                                           |
-| provider_id  | UUID                     | 提供商ID   | 引用 providers(id)                                             |
-| display_name | TEXT                     | 显示名称   | DEFAULT ''                                                     |
-| description  | TEXT                     | 描述       | DEFAULT ''                                                     |
-| instance_id  | TEXT                     | 实例标识符 | NOT NULL                                                       |
-| api_path     | TEXT                     | API路径    | DEFAULT ''                                                     |
-| is_default   | BOOLEAN                  | 是否默认   | DEFAULT FALSE                                                  |
-| visibility   | TEXT                     | 应用可见性 | DEFAULT 'public'，CHECK IN ('public', 'group_only', 'private') |
-| config       | JSONB                    | 配置参数   | DEFAULT '{}'                                                   |
-| created_at   | TIMESTAMP WITH TIME ZONE | 创建时间   | DEFAULT NOW()                                                  |
-| updated_at   | TIMESTAMP WITH TIME ZONE | 更新时间   | DEFAULT NOW()                                                  |
-|              |                          |            | UNIQUE(provider_id, instance_id)                               |
-|              |                          |            | UNIQUE INDEX: 每个提供商最多一个默认应用                       |
+| Field Name   | Type                     | Description            | Constraints                                                        |
+| ------------ | ------------------------ | ---------------------- | ------------------------------------------------------------------ |
+| id           | UUID                     | Instance ID            | Primary Key                                                        |
+| provider_id  | UUID                     | Provider ID            | References `providers(id)`                                         |
+| display_name | TEXT                     | Display name           | DEFAULT `''`                                                       |
+| description  | TEXT                     | Description            | DEFAULT `''`                                                       |
+| instance_id  | TEXT                     | Instance identifier    | NOT NULL                                                           |
+| api_path     | TEXT                     | API path               | DEFAULT `''`                                                       |
+| is_default   | BOOLEAN                  | Is default             | DEFAULT `FALSE`                                                    |
+| visibility   | TEXT                     | Application Visibility | DEFAULT `'public'`, CHECK IN (`'public'`, `'group_only'`, `'private'`) |
+| config       | JSONB                    | Configuration parameters| DEFAULT `'{}'`                                                       |
+| created_at   | TIMESTAMP WITH TIME ZONE | Creation time          | DEFAULT `NOW()`                                                    |
+| updated_at   | TIMESTAMP WITH TIME ZONE | Update time            | DEFAULT `NOW()`                                                    |
+|              |                          |                        | UNIQUE(`provider_id`, `instance_id`)                               |
+|              |                          |                        | UNIQUE INDEX: At most one default app per provider.                |
 
-**应用可见性说明：**
+**Application Visibility Explanation:**
 
-- `public`: 公开应用，所有用户可见
-- `group_only`: 群组应用，只有群组成员可见
-- `private`: 私有应用，仅管理员可见
+- `public`: Public application, visible to all users.
+- `group_only`: Group application, visible only to group members.
+- `private`: Private application, visible only to administrators.
 
 #### api_keys
 
-存储API密钥。
+Stores API keys.
 
-| 字段名              | 类型                     | 描述         | 约束                       |
-| ------------------- | ------------------------ | ------------ | -------------------------- |
-| id                  | UUID                     | 密钥ID       | 主键                       |
-| provider_id         | UUID                     | 提供商ID     | 引用 providers(id)         |
-| service_instance_id | UUID                     | 服务实例ID   | 引用 service_instances(id) |
-| user_id             | UUID                     | 用户ID       | 引用 auth.users(id)        |
-| key_value           | TEXT                     | 加密的密钥值 | NOT NULL                   |
-| is_default          | BOOLEAN                  | 是否默认     | DEFAULT FALSE              |
-| usage_count         | INTEGER                  | 使用次数     | DEFAULT 0                  |
-| last_used_at        | TIMESTAMP WITH TIME ZONE | 最后使用时间 |                            |
-| created_at          | TIMESTAMP WITH TIME ZONE | 创建时间     | DEFAULT NOW()              |
-| updated_at          | TIMESTAMP WITH TIME ZONE | 更新时间     | DEFAULT NOW()              |
+| Field Name          | Type                     | Description            | Constraints                         |
+| ------------------- | ------------------------ | ---------------------- | ----------------------------------- |
+| id                  | UUID                     | Key ID                 | Primary Key                         |
+| provider_id         | UUID                     | Provider ID            | References `providers(id)`          |
+| service_instance_id | UUID                     | Service Instance ID    | References `service_instances(id)`  |
+| user_id             | UUID                     | User ID                | References `auth.users(id)`         |
+| key_value           | TEXT                     | Encrypted key value    | NOT NULL                            |
+| is_default          | BOOLEAN                  | Is default             | DEFAULT `FALSE`                     |
+| usage_count         | INTEGER                  | Usage count            | DEFAULT `0`                         |
+| last_used_at        | TIMESTAMP WITH TIME ZONE | Last used time         |                                     |
+| created_at          | TIMESTAMP WITH TIME ZONE | Creation time          | DEFAULT `NOW()`                     |
+| updated_at          | TIMESTAMP WITH TIME ZONE | Update time            | DEFAULT `NOW()`                     |
 
-### SSO认证
+### SSO Authentication
 
 #### sso_providers
 
-存储SSO提供商信息，支持多种单点登录协议和动态配置管理。
+Stores SSO provider information, supporting multiple single sign-on protocols and dynamic configuration management.
 
-| 字段名        | 类型                     | 描述         | 约束                                                                  |
-| ------------- | ------------------------ | ------------ | --------------------------------------------------------------------- |
-| id            | UUID                     | 提供商ID     | 主键，用于API路由(/api/sso/{id}/\*)和服务实例缓存                     |
-| name          | TEXT                     | 提供商名称   | NOT NULL，用于管理界面展示和日志记录                                  |
-| protocol      | sso_protocol             | 协议类型     | NOT NULL，决定使用哪个服务实现类                                      |
-| settings      | JSONB                    | 统一配置结构 | NOT NULL，DEFAULT '{}'，包含protocol_config、security、ui三个主要部分 |
-| client_id     | TEXT                     | 客户端ID     | OAuth2/OIDC协议使用，CAS协议不使用此字段                              |
-| client_secret | TEXT                     | 客户端密钥   | OAuth2/OIDC协议使用，建议加密存储                                     |
-| metadata_url  | TEXT                     | 元数据URL    | SAML协议使用，用于自动配置端点信息                                    |
-| enabled       | BOOLEAN                  | 是否启用     | DEFAULT TRUE，false时不会在登录页面显示且API拒绝访问                  |
-| display_order | INTEGER                  | 显示顺序     | DEFAULT 0，登录页面按钮显示顺序（数字越小越靠前）                     |
-| button_text   | TEXT                     | 按钮文本     | 登录按钮显示文本，为空时使用name字段值，支持多语言                    |
-| created_at    | TIMESTAMP WITH TIME ZONE | 创建时间     | DEFAULT CURRENT_TIMESTAMP                                             |
-| updated_at    | TIMESTAMP WITH TIME ZONE | 更新时间     | DEFAULT CURRENT_TIMESTAMP                                             |
+| Field Name      | Type                     | Description                  | Constraints                                                                         |
+| --------------- | ------------------------ | ---------------------------- | ----------------------------------------------------------------------------------- |
+| id              | UUID                     | Provider ID                  | Primary Key, used for API routing (`/api/sso/{id}/*`) and service instance caching.   |
+| name            | TEXT                     | Provider Name                | NOT NULL, used for management UI display and logging.                               |
+| protocol        | sso_protocol             | Protocol Type                | NOT NULL, determines which service implementation class to use.                     |
+| settings        | JSONB                    | Unified Configuration Structure| NOT NULL, DEFAULT `'{}'`, contains `protocol_config`, `security`, and `ui` sections. |
+| client_id       | TEXT                     | Client ID                    | Used by OAuth2/OIDC protocols; not used by CAS protocol.                            |
+| client_secret   | TEXT                     | Client Secret                | Used by OAuth2/OIDC protocols; encrypted storage is recommended.                    |
+| metadata_url    | TEXT                     | Metadata URL                 | Used by SAML protocol for automatic endpoint configuration.                         |
+| enabled         | BOOLEAN                  | Is Enabled                   | DEFAULT `TRUE`, if `false`, will not be displayed on the login page and APIs will deny access. |
+| display_order   | INTEGER                  | Display Order                | DEFAULT `0`, order of buttons on the login page (smaller numbers appear first).       |
+| button_text     | TEXT                     | Button Text                  | Text displayed on the login button; uses `name` field if empty; supports i18n.      |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time                | DEFAULT `CURRENT_TIMESTAMP`                                                         |
+| updated_at      | TIMESTAMP WITH TIME ZONE | Update time                  | DEFAULT `CURRENT_TIMESTAMP`                                                         |
 
-**枚举类型定义：**
+**Enum Type Definition:**
 
 - `sso_protocol`: ENUM ('OIDC', 'SAML', 'CAS')
 
-#### SSO安全访问函数 (2025-07-09)
+#### SSO Secure Access Functions (2025-07-09)
 
-为了解决SSO登录页面访问权限问题，系统增加了多个安全访问函数：
+To address access permission issues for the SSO login page, several secure access functions have been added:
 
 **1. `filter_sensitive_sso_settings(settings_input JSONB)`**
 
-- 过滤SSO配置中的敏感信息
-- 移除OAuth2/OIDC客户端密钥、客户端ID和重定向主机等敏感配置
-- 确保公开访问时不暴露敏感信息
+- Filters sensitive information from SSO configurations.
+- Removes sensitive settings like OAuth2/OIDC client secret, client ID, and redirect hosts.
+- Ensures no sensitive information is exposed during public access.
 
 **2. `get_public_sso_providers()`**
 
-- 为登录页面提供SSO提供商列表
-- 自动过滤敏感信息
-- 支持按display_order排序
-- 只返回已启用的提供商
+- Provides a list of SSO providers for the login page.
+- Automatically filters sensitive information.
+- Supports sorting by `display_order`.
+- Returns only enabled providers.
 
 **3. `get_sso_provider_config(provider_id UUID)`**
 
-- 为服务端API提供完整的SSO配置
-- 包含敏感信息，仅供服务端使用
-- 支持提供商启用状态检查
+- Provides the complete SSO configuration for server-side APIs.
+- Includes sensitive information, for server-side use only.
+- Supports checking the provider's enabled status.
 
 **4. `get_enabled_sso_providers(protocol_filter TEXT)`**
 
-- 获取启用的SSO提供商列表
-- 支持按协议类型过滤
-- 过滤敏感信息，适用于前端展示
+- Gets a list of enabled SSO providers.
+- Supports filtering by protocol type.
+- Filters sensitive information, suitable for frontend display.
 
-**权限设置：**
+**Permission Settings:**
 
-- `anon` 用户可以访问公开函数和视图
-- `authenticated` 用户可以访问所有函数
-- `service_role` 可以访问所有函数，包括完整配置
+- `anon` users can access public functions and views.
+- `authenticated` users can access all functions.
+- `service_role` can access all functions, including the full configuration.
 
 #### domain_sso_mappings
 
-存储域名到SSO提供商的映射。
+Stores mappings from domains to SSO providers.
 
-| 字段名          | 类型                     | 描述        | 约束                             |
-| --------------- | ------------------------ | ----------- | -------------------------------- |
-| id              | UUID                     | 映射ID      | 主键                             |
-| domain          | TEXT                     | 域名        | NOT NULL，唯一                   |
-| sso_provider_id | UUID                     | SSO提供商ID | 引用 sso_providers(id)，NOT NULL |
-| enabled         | BOOLEAN                  | 是否启用    | DEFAULT TRUE                     |
-| created_at      | TIMESTAMP WITH TIME ZONE | 创建时间    | DEFAULT CURRENT_TIMESTAMP        |
-| updated_at      | TIMESTAMP WITH TIME ZONE | 更新时间    | DEFAULT CURRENT_TIMESTAMP        |
+| Field Name      | Type                     | Description     | Constraints                              |
+| --------------- | ------------------------ | --------------- | ---------------------------------------- |
+| id              | UUID                     | Mapping ID      | Primary Key                              |
+| domain          | TEXT                     | Domain          | NOT NULL, UNIQUE                         |
+| sso_provider_id | UUID                     | SSO Provider ID | References `sso_providers(id)`, NOT NULL |
+| enabled         | BOOLEAN                  | Is enabled      | DEFAULT `TRUE`                           |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time   | DEFAULT `CURRENT_TIMESTAMP`              |
+| updated_at      | TIMESTAMP WITH TIME ZONE | Update time     | DEFAULT `CURRENT_TIMESTAMP`              |
 
 #### auth_settings
 
-存储全局认证设置。
+Stores global authentication settings.
 
-| 字段名                     | 类型                     | 描述         | 约束                             |
-| -------------------------- | ------------------------ | ------------ | -------------------------------- |
-| id                         | UUID                     | 设置ID       | 主键                             |
-| allow_email_registration   | BOOLEAN                  | 允许邮箱注册 | DEFAULT FALSE                    |
-| allow_phone_registration   | BOOLEAN                  | 允许手机注册 | DEFAULT FALSE                    |
-| allow_password_login       | BOOLEAN                  | 允许密码登录 | DEFAULT TRUE                     |
-| require_email_verification | BOOLEAN                  | 要求邮箱验证 | DEFAULT TRUE                     |
-| password_policy            | JSONB                    | 密码策略     | DEFAULT '{"min_length": 8, ...}' |
-| created_at                 | TIMESTAMP WITH TIME ZONE | 创建时间     | DEFAULT CURRENT_TIMESTAMP        |
-| updated_at                 | TIMESTAMP WITH TIME ZONE | 更新时间     | DEFAULT CURRENT_TIMESTAMP        |
+| Field Name                 | Type                     | Description                  | Constraints                                |
+| -------------------------- | ------------------------ | ---------------------------- | ------------------------------------------ |
+| id                         | UUID                     | Setting ID                   | Primary Key                                |
+| allow_email_registration   | BOOLEAN                  | Allow email registration     | DEFAULT `FALSE`                            |
+| allow_phone_registration   | BOOLEAN                  | Allow phone registration     | DEFAULT `FALSE`                            |
+| allow_password_login       | BOOLEAN                  | Allow password login         | DEFAULT `TRUE`                             |
+| require_email_verification | BOOLEAN                  | Require email verification   | DEFAULT `TRUE`                             |
+| password_policy            | JSONB                    | Password policy              | DEFAULT `{"min_length": 8, ...}`           |
+| created_at                 | TIMESTAMP WITH TIME ZONE | Creation time                | DEFAULT `CURRENT_TIMESTAMP`                |
+| updated_at                 | TIMESTAMP WITH TIME ZONE | Update time                  | DEFAULT `CURRENT_TIMESTAMP`                |
 
-### 存储和文件管理
+### Storage and File Management
 
-AgentifUI 使用 Supabase Storage 进行文件存储管理，主要用于用户头像上传。存储系统采用公共存储桶设计，支持灵活的权限控制和安全策略。
+AgentifUI uses Supabase Storage for file management, primarily for user avatar uploads. The storage system uses a public bucket design, supporting flexible permission controls and security policies.
 
-#### 存储桶配置
+#### Bucket Configuration
 
-**avatars 存储桶**
+**avatars Bucket**
 
-| 配置项         | 值                                                       | 描述                           |
-| -------------- | -------------------------------------------------------- | ------------------------------ |
-| 存储桶ID       | `avatars`                                                | 存储桶唯一标识符               |
-| 存储桶名称     | `avatars`                                                | 存储桶显示名称                 |
-| 公共访问       | `true`                                                   | 启用公共访问，任何人可查看头像 |
-| 文件大小限制   | `5242880` (5MB)                                          | 单个文件最大大小               |
-| 允许的MIME类型 | `['image/jpeg', 'image/jpg', 'image/png', 'image/webp']` | 支持的图片格式                 |
-| 文件路径结构   | `user-{用户ID}/{时间戳}.{扩展名}`                        | 用户隔离的文件路径             |
+| Configuration Item | Value                                                    | Description                             |
+| ------------------ | -------------------------------------------------------- | --------------------------------------- |
+| Bucket ID          | `avatars`                                                | Unique identifier for the bucket        |
+| Bucket Name        | `avatars`                                                | Display name for the bucket             |
+| Public Access      | `true`                                                   | Enables public access, anyone can view avatars |
+| File Size Limit    | `5242880` (5MB)                                          | Maximum size for a single file          |
+| Allowed MIME Types | `['image/jpeg', 'image/jpg', 'image/png', 'image/webp']` | Supported image formats                 |
+| File Path Structure| `user-{userID}/{timestamp}.{extension}`                  | User-isolated file path structure       |
 
-### 其他表
+### Other Tables
 
 #### ai_configs
 
-存储AI服务配置。
+Stores AI service configurations.
 
-| 字段名     | 类型                     | 描述     | 约束                      |
-| ---------- | ------------------------ | -------- | ------------------------- |
-| id         | UUID                     | 配置ID   | 主键                      |
-| provider   | TEXT                     | 提供商   | NOT NULL                  |
-| app_id     | TEXT                     | 应用ID   |                           |
-| api_key    | TEXT                     | API密钥  | NOT NULL                  |
-| api_url    | TEXT                     | API URL  | NOT NULL                  |
-| settings   | JSONB                    | 配置设置 | DEFAULT '{}'              |
-| enabled    | BOOLEAN                  | 是否启用 | DEFAULT TRUE              |
-| created_at | TIMESTAMP WITH TIME ZONE | 创建时间 | DEFAULT CURRENT_TIMESTAMP |
-| updated_at | TIMESTAMP WITH TIME ZONE | 更新时间 | DEFAULT CURRENT_TIMESTAMP |
+| Field Name | Type                     | Description       | Constraints                 |
+| ---------- | ------------------------ | ----------------- | --------------------------- |
+| id         | UUID                     | Config ID         | Primary Key                 |
+| provider   | TEXT                     | Provider          | NOT NULL                    |
+| app_id     | TEXT                     | App ID            |                             |
+| api_key    | TEXT                     | API Key           | NOT NULL                    |
+| api_url    | TEXT                     | API URL           | NOT NULL                    |
+| settings   | JSONB                    | Config settings   | DEFAULT `'{}'`              |
+| enabled    | BOOLEAN                  | Is enabled        | DEFAULT `TRUE`              |
+| created_at | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP` |
+| updated_at | TIMESTAMP WITH TIME ZONE | Update time       | DEFAULT `CURRENT_TIMESTAMP` |
 
 #### api_logs
 
-存储API调用日志。
+Stores API call logs.
 
-| 字段名          | 类型                     | 描述       | 约束                      |
-| --------------- | ------------------------ | ---------- | ------------------------- |
-| id              | UUID                     | 日志ID     | 主键                      |
-| user_id         | UUID                     | 用户ID     | 引用 auth.users(id)       |
-| conversation_id | UUID                     | 对话ID     | 引用 conversations(id)    |
-| provider        | TEXT                     | 提供商     | NOT NULL                  |
-| endpoint        | TEXT                     | 端点       | NOT NULL                  |
-| request         | JSONB                    | 请求内容   | DEFAULT '{}'              |
-| response        | JSONB                    | 响应内容   | DEFAULT '{}'              |
-| status_code     | INTEGER                  | 状态码     |                           |
-| latency_ms      | INTEGER                  | 延迟(毫秒) |                           |
-| created_at      | TIMESTAMP WITH TIME ZONE | 创建时间   | DEFAULT CURRENT_TIMESTAMP |
+| Field Name      | Type                     | Description       | Constraints                 |
+| --------------- | ------------------------ | ----------------- | --------------------------- |
+| id              | UUID                     | Log ID            | Primary Key                 |
+| user_id         | UUID                     | User ID           | References `auth.users(id)` |
+| conversation_id | UUID                     | Conversation ID   | References `conversations(id)`|
+| provider        | TEXT                     | Provider          | NOT NULL                    |
+| endpoint        | TEXT                     | Endpoint          | NOT NULL                    |
+| request         | JSONB                    | Request content   | DEFAULT `'{}'`              |
+| response        | JSONB                    | Response content  | DEFAULT `'{}'`              |
+| status_code     | INTEGER                  | Status code       |                             |
+| latency_ms      | INTEGER                  | Latency (ms)      |                             |
+| created_at      | TIMESTAMP WITH TIME ZONE | Creation time     | DEFAULT `CURRENT_TIMESTAMP` |
 
-## 数据库特性
+## Database Features
 
-### 安全机制
+### Security Mechanisms
 
-#### 行级安全性(RLS)
+#### Row-Level Security (RLS)
 
-所有表都启用了行级安全性策略，确保数据访问安全：
+All tables have Row-Level Security (RLS) policies enabled to ensure secure data access:
 
-1. **用户数据**
-   - 用户只能查看和更新自己的资料
-   - 用户只能查看和更新自己的偏好设置
+1.  **User Data**
+    - Users can only view and update their own profiles.
+    - Users can only view and update their own preference settings.
 
-2. **群组数据**
-   - 群组成员可以查看群组信息
-   - 只有管理员可以管理群组
-   - 群组成员可以查看成员列表
+2.  **Group Data**
+    - Group members can view group information.
+    - Only administrators can manage groups.
+    - Group members can view the member list.
 
-3. **对话和消息**
-   - 用户只能查看、更新和删除自己的对话
-   - 用户只能查看自己对话中的消息
+3.  **Conversations and Messages**
+    - Users can only view, update, and delete their own conversations.
+    - Users can only view messages in their own conversations.
 
-4. **API密钥和配置**
-   - 管理员可以进行所有操作（增删改查）
-   - 服务端（未认证请求）和已认证用户可以读取配置信息
-   - 这种设计支持API路由访问Dify配置，同时保持安全控制
+4.  **API Keys and Configurations**
+    - Administrators can perform all operations (CRUD).
+    - The server (unauthenticated requests) and authenticated users can read configuration information.
+    - This design supports API routes accessing Dify configurations while maintaining security controls.
 
-5. **SSO配置**
-   - 只有管理员可以访问和管理SSO提供商配置
-   - 匿名用户可以通过安全函数访问过滤后的SSO提供商列表
-   - 服务端可以获取完整的SSO配置信息
+5.  **SSO Configuration**
+    - Only administrators can access and manage SSO provider configurations.
+    - Anonymous users can access a filtered list of SSO providers through secure functions.
+    - The server can retrieve complete SSO configuration information.
 
-6. **群组应用权限**
-   - 用户只能查看自己所属群组的应用权限
-   - 管理员可以管理所有群组的应用权限
-   - 权限检查基于用户群组成员身份
+6.  **Group App Permissions**
+    - Users can only view the app permissions of groups they belong to.
+    - Administrators can manage the app permissions of all groups.
+    - Permission checks are based on the user's group membership.
 
-#### 加密存储
+#### Encrypted Storage
 
-API密钥使用AES-256-GCM加密算法存储，格式为"iv:authTag:encryptedData"，确保即使数据库被泄露，密钥也不会被直接获取。
+API keys are stored using the AES-256-GCM encryption algorithm in the format `"iv:authTag:encryptedData"`, ensuring that even if the database is compromised, the keys will not be directly accessible.
 
-### 数据完整性
+### Data Integrity
 
-#### 外键约束
+#### Foreign Key Constraints
 
-表间关系通过外键约束维护，确保数据一致性：
+Relationships between tables are maintained through foreign key constraints to ensure data consistency:
 
-- 级联删除：当父记录被删除时，相关子记录也会被删除
-- 设置为NULL：某些情况下，当父记录被删除时，子记录的外键字段会被设置为NULL
+-   **Cascade Delete**: When a parent record is deleted, related child records are also deleted.
+-   **Set to NULL**: In some cases, when a parent record is deleted, the foreign key field in child records is set to `NULL`.
 
-#### 唯一约束
+#### Unique Constraints
 
-多个表包含唯一约束，确保数据唯一性：
+Several tables include unique constraints to ensure data uniqueness:
 
-- 用户名唯一性约束
-- 域名唯一性约束
-- 服务实例在同一提供商下实例ID唯一
-- 群组成员在同一群组中唯一
-- **默认应用唯一性约束**：每个提供商最多只能有一个默认服务实例（通过部分唯一索引实现）
+-   Username uniqueness constraint.
+-   Domain name uniqueness constraint.
+-   Service instance ID is unique within the same provider.
+-   Group members are unique within the same group.
+-   **Default App Uniqueness Constraint**: Each provider can have at most one default service instance (implemented via a partial unique index).
 
-### 自动化功能
+### Automation Features
 
-#### 触发器
+#### Triggers
 
-系统使用多个触发器实现自动化功能和数据完整性保护：
+The system uses multiple triggers to implement automation and data integrity protection:
 
-1. **用户管理触发器**
-   - `handle_new_user`: 用户注册时自动创建profiles记录，优先使用用户提供的username
-   - `handle_user_deletion_prep`: 用户删除前处理权限转移，防止孤儿数据
+1.  **User Management Triggers**
+    - `handle_new_user`: Automatically creates a `profiles` record when a user registers, prioritizing the user-provided `username`.
+    - `handle_user_deletion_prep`: Handles permission transfers before user deletion to prevent orphan data.
 
-2. **群组管理触发器**
-   - `handle_group_member_deletion`: 群组成员删除后自动清理孤儿群组
-   - `validate_group_member_operations`: 验证群组成员操作，确保不会移除最后一个创建者
+2.  **Group Management Triggers**
+    - `handle_group_member_deletion`: Automatically cleans up orphan groups after a group member is deleted.
+    - `validate_group_member_operations`: Validates group member operations to ensure the last creator is not removed.
 
-3. **消息管理触发器**
-   - `set_message_synced_on_update`: 自动维护消息同步状态和时间戳
-   - `update_conversation_last_message_preview`: 自动更新对话的最后消息预览
+3.  **Message Management Triggers**
+    - `set_message_synced_on_update`: Automatically maintains message sync status and timestamps.
+    - `update_conversation_last_message_preview`: Automatically updates the last message preview for a conversation.
 
-4. **更新时间戳触发器**
-   - 自动更新表记录的updated_at字段
-   - 应用于所有主要表
+4.  **Update Timestamp Triggers**
+    - Automatically updates the `updated_at` field of table records.
+    - Applied to all major tables.
 
-5. **数据清理和维护函数**
-   - `cleanup_orphan_data`: 清理孤儿数据（群组、AI配置、消息）
-   - `safe_cleanup_orphan_data`: 安全的批量清理，支持dry_run模式
+5.  **Data Cleanup and Maintenance Functions**
+    - `cleanup_orphan_data`: Cleans up orphan data (groups, AI configs, messages).
+    - `safe_cleanup_orphan_data`: Safe batch cleanup, supports a `dry_run` mode.
 
-6. **服务实例管理函数**
-   - `set_default_service_instance(target_instance_id uuid, target_provider_id uuid)`: 原子性地设置默认服务实例，确保同一提供商只有一个默认实例
+6.  **Service Instance Management Functions**
+    - `set_default_service_instance(target_instance_id uuid, target_provider_id uuid)`: Atomically sets the default service instance, ensuring only one default instance per provider.
 
-7. **群组权限管理函数**
-   - `get_user_accessible_apps(user_id UUID)`: 获取用户可访问的应用列表，基于群组权限和应用可见性
-   - `check_user_app_permission(user_id UUID, app_instance_id TEXT)`: 检查用户对特定应用的访问权限
-   - `increment_app_usage(user_id UUID, app_instance_id TEXT)`: 增加应用使用计数，支持配额管理
+7.  **Group Permission Management Functions**
+    - `get_user_accessible_apps(user_id UUID)`: Gets the list of apps accessible to a user, based on group permissions and app visibility.
+    - `check_user_app_permission(user_id UUID, app_instance_id TEXT)`: Checks a user's access permission for a specific app.
+    - `increment_app_usage(user_id UUID, app_instance_id TEXT)`: Increments the app usage count, supporting quota management.
 
-## 用户管理系统
+## User Management System
 
-### 管理员视图
+### Admin View
 
-#### 用户数据访问
+#### User Data Access
 
-管理员功能通过以下方式实现用户数据访问：
+Admin functionality for user data access is implemented as follows:
 
-**管理员功能实现：**
+**Admin Functionality Implementation:**
 
-- 管理员通过 `lib/db/users.ts` 中的 `getUserList` 函数获取用户数据
-- 使用 RLS 策略控制数据访问权限
-- 管理员可以访问包括 `auth.users` 表中的邮箱、手机号等敏感信息
-- 普通用户只能访问自己的数据
+- Administrators use the `getUserList` function in `lib/db/users.ts` to fetch user data.
+- RLS policies control data access permissions.
+- Administrators can access sensitive information from the `auth.users` table, such as email and phone numbers.
+- Regular users can only access their own data.
 
-### 权限保护机制
+### Permission Protection Mechanism
 
-#### 角色更新保护
+#### Role Update Protection
 
-**触发器函数：** `validate_role_update()`
+**Trigger Function:** `validate_role_update()`
 
-防止管理员进行危险的角色操作：
+Prevents administrators from performing dangerous role operations:
 
-1. **自我保护**：管理员不能修改自己的角色
-2. **管理员保护**：不能降级其他管理员的权限
-3. **权限验证**：只有管理员可以修改用户角色
+1.  **Self-protection**: Administrators cannot change their own role.
+2.  **Admin protection**: Cannot downgrade the permissions of other administrators.
+3.  **Permission validation**: Only administrators can change user roles.
 
-#### 用户删除保护
+#### User Deletion Protection
 
-**触发器函数：** `validate_user_deletion()`
+**Trigger Function:** `validate_user_deletion()`
 
-防止删除关键用户：
+Prevents the deletion of critical users:
 
-1. **自我保护**：管理员不能删除自己的账号
-2. **管理员保护**：不能删除其他管理员账号
-3. **权限验证**：只有管理员可以删除用户
+1.  **Self-protection**: Administrators cannot delete their own accounts.
+2.  **Admin protection**: Cannot delete other administrator accounts.
+3.  **Permission validation**: Only administrators can delete users.
 
-### 安全函数
+### Security Functions
 
-#### 管理员权限检查
+#### Admin Permission Check
 
-**函数：** `public.is_admin()`
+**Function:** `public.is_admin()`
 
-#### 批量角色更新
+#### Batch Role Update
 
-**函数：** `safe_batch_update_role(target_user_ids UUID[], target_role user_role)`
+**Function:** `safe_batch_update_role(target_user_ids UUID[], target_role user_role)`
 
-安全的批量角色更新函数，包含完整的权限检查。
+A secure batch role update function that includes comprehensive permission checks.
 
-#### 用户统计函数
+#### User Statistics Function
 
-**函数：** `get_user_stats()`
+**Function:** `get_user_stats()`
 
-为管理员提供用户统计信息。
+Provides user statistics for administrators.
 
-#### SSO用户管理
+#### SSO User Management
 
-**函数：** `find_user_by_employee_number(emp_num TEXT)`
+**Function:** `find_user_by_employee_number(emp_num TEXT)`
 
-根据员工编号查找用户信息，专用于CAS SSO登录。
+Finds user information by employee number, specifically for CAS SSO login.
 
-**函数：** `create_sso_user(emp_number TEXT, user_name TEXT, sso_provider_uuid UUID)`
+**Function:** `create_sso_user(emp_number TEXT, user_name TEXT, sso_provider_uuid UUID)`
 
-为SSO用户创建新账户，用于首次登录。
+Creates a new account for an SSO user on their first login.
 
-## 初始数据
+## Initial Data
 
-由于架构简化，系统不再预设初始数据。用户注册后可以：
+Due to a simplified architecture, the system no longer presets initial data. After registration, users can:
 
-1. 自主创建群组
-2. 管理员配置SSO提供商
-3. 管理员配置应用实例和API密钥
+1.  Create groups on their own.
+2.  Administrators can configure SSO providers.
+3.  Administrators can configure application instances and API keys.
 
-## 设计特点
+## Design Features
 
-### 模块化设计
+### Modular Design
 
-数据库设计采用模块化方法，清晰分离不同功能领域：
+The database design adopts a modular approach, clearly separating different functional areas:
 
-- 用户和身份管理
-- 群组和成员管理
-- 聊天和消息
-- API密钥管理
-- SSO认证
+-   User and Identity Management
+-   Group and Member Management
+-   Chat and Messages
+-   API Key Management
+-   SSO Authentication
 
-### 简化架构
+### Simplified Architecture
 
-系统采用简化的群组权限架构：
+The system uses a simplified group permission architecture:
 
-- 每个群组有简单的成员关系
-- 群组对应用有二元权限控制
-- 支持三种应用可见性：public、group_only、private
+-   Each group has a simple membership relationship.
+-   Groups have binary permission control over applications.
+-   Supports three application visibilities: `public`, `group_only`, and `private`.
 
-### 灵活的API密钥管理
+### Flexible API Key Management
 
-API密钥管理系统设计灵活，支持多种场景：
+The API key management system is designed to be flexible and support various scenarios:
 
-- 支持多提供商和多服务实例
-- 加密存储确保安全性
-- 支持用户级配置
-- 可扩展的配置参数
+-   Supports multiple providers and service instances.
+-   Encrypted storage ensures security.
+-   Supports user-level configuration.
+-   Extendable configuration parameters.
 
-### 完善的SSO集成
+### Comprehensive SSO Integration
 
-SSO认证系统支持多种认证方式：
+The SSO authentication system supports multiple authentication methods:
 
-- 支持SAML、OAuth2和OIDC协议
-- 基于域名的自动路由
-- 可配置的认证策略
-- 与用户资料无缝集成
-- 安全的配置信息过滤机制
+-   Supports SAML, OAuth2, and OIDC protocols.
+-   Domain-based automatic routing.
+-   Configurable authentication policies.
+-   Seamless integration with user profiles.
+-   Secure configuration information filtering mechanism.
 
-### 可扩展性
+### Scalability
 
-数据库设计考虑了未来扩展的需求：
+The database design considers future expansion needs:
 
-- JSON/JSONB字段用于存储灵活配置
-- 预留了扩展字段和设置
-- 模块化设计便于添加新功能
+-   JSON/JSONB fields are used to store flexible configurations.
+-   Reserved fields and settings for future extensions.
+-   The modular design facilitates the addition of new features.
 
-## ER图
+## ER Diagram
 
 ```
 +---------------+       +----------------+       +---------------+
@@ -685,4 +687,5 @@ SSO认证系统支持多种认证方式：
                                |                |       +---------------+
 ```
 
-这个数据库设计为 AgentifUI 平台提供了简化但功能完整的基础，支持用户管理、群组协作、AI对话、SSO认证和API集成等核心功能。设计注重简洁性、安全性和可扩展性，便于未来功能扩展和维护。
+
+This database design provides a streamlined yet comprehensive foundation for AgentifUI, supporting user management, group collaboration, AI chat, SSO authentication, and API integration. It emphasizes simplicity, security, and extensibility for future growth and maintenance.
