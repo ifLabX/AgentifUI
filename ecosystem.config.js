@@ -13,11 +13,6 @@ module.exports = {
         NODE_ENV: 'development',
         PORT: 3000,
       },
-      env_standalone: {
-        NODE_ENV: 'production',
-        PORT: process.env.PORT || 3000,
-        HOSTNAME: '0.0.0.0',
-      },
       cwd: './',
       instances: 1,
       exec_mode: 'fork',
