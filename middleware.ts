@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
     return handleCorsPreflightRequest(request);
   }
 
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },

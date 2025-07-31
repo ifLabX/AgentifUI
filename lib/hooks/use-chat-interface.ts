@@ -374,7 +374,7 @@ export function useChatInterface(
       let streamError: Error | null = null;
       setCurrentTaskId(null);
 
-      let currentConvId = useChatStore.getState().currentConversationId;
+      const currentConvId = useChatStore.getState().currentConversationId;
 
       // Modified logic for determining new conversations using difyConversationId instead of currentConvId
       // 1. If URL is /chat/new or contains temp-, it's a new conversation
@@ -390,7 +390,7 @@ export function useChatInterface(
           setDifyConversationId(null);
         }
         // Database ID can remain unchanged, as it's independent
-        let currentConvId = useChatStore.getState().currentConversationId;
+        const currentConvId = useChatStore.getState().currentConversationId;
         if (urlIndicatesNew && currentConvId !== null) {
           setCurrentConversationId(null);
         }
