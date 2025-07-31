@@ -1,0 +1,123 @@
+name: Bundle Analysis
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'app/**/*.{ts,tsx,js,jsx}'
+      - 'components/**/*.{ts,tsx,js,jsx}'
+      - 'lib/**/*.{ts,tsx,js,jsx}'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'next.config.ts'
+  workflow_dispatch:
+
+# Cancel previous runs for the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '9'
+
+jobs:
+  analyze-bundle:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build with bundle analysis
+        run: pnpm run analyze
+        env:
+          # Provide dummy environment variables for build
+          NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy_key_for_build
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: |
+            .next/analyze/
+            .next/static/
+          retention-days: 30
+
+      - name: Comment bundle analysis results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Try to read bundle analysis results
+            let analysisComment = '## 📦 Bundle Analysis Results\n\n';
+            
+            try {
+              // Check if analysis files exist
+              const analysisDir = '.next/analyze';
+              if (fs.existsSync(analysisDir)) {
+                analysisComment += '✅ Bundle analysis completed successfully!\n\n';
+                analysisComment += '📊 **Analysis artifacts have been uploaded.** ';
+                analysisComment += 'Download them from the Actions tab to view detailed bundle information.\n\n';
+                analysisComment += '### Key Metrics to Review:\n';
+                analysisComment += '- **Client Bundle Size**: Check for unexpected increases\n';
+                analysisComment += '- **Server Bundle Size**: Monitor for server-side bloat\n';
+                analysisComment += '- **Shared Chunks**: Verify optimal code splitting\n';
+                analysisComment += '- **Dependencies**: Watch for new heavy dependencies\n\n';
+                analysisComment += '💡 **Tip**: Use `pnpm analyze` locally to explore the bundle interactively.';
+              } else {
+                analysisComment += '❌ Bundle analysis artifacts not found.\n\n';
+                analysisComment += 'This may indicate a build issue. Please check the build logs above.';
+              }
+            } catch (error) {
+              analysisComment += `❌ Error reading bundle analysis: ${error.message}`;
+            }
+            
+            // Find existing comment and update or create new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Bundle Analysis Results')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: analysisComment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: analysisComment
+              });
+            }

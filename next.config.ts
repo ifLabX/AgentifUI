@@ -1,3 +1,5 @@
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -10,8 +12,17 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin();
 
+// Bundle analyzer for production optimization
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig: NextConfig = {
   /* config options here */
+
+  // Enable standalone output only when explicitly requested
+  output:
+    process.env.NEXT_OUTPUT_MODE === 'standalone' ? 'standalone' : undefined,
 
   // Allow cross-origin requests from specific domains during development
   allowedDevOrigins: process.env.DEV_ALLOWED_ORIGINS
@@ -65,4 +76,4 @@ const nextConfig: NextConfig = {
   // Use traditional webpack for proper font loading
 };
 
-export default withNextIntl(nextConfig);
+export default bundleAnalyzer(withNextIntl(nextConfig));
