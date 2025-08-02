@@ -26,7 +26,7 @@ Unacceptable behavior includes:
 
 Project maintainers have the right to remove, edit, or reject any contributions, comments, commits, code, issues, and other interactions that do not align with this Code of Conduct.
 
-Instances of abusive or unacceptable behavior may be reported by contacting the maintainer at: **bitifirefly@gmail.com**
+Instances of abusive or unacceptable behavior may be reported by contacting the maintainer.
 
 ---
 
