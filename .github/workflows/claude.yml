@@ -1,4 +1,4 @@
-name: Claude Code
+name: Claude AI Agent
 
 on:
   issue_comment:
@@ -6,54 +6,110 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, assigned]
+    types: [opened, assigned, labeled]
   pull_request_review:
     types: [submitted]
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
-  claude:
+  claude-agent:
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && !contains(github.event.comment.body, 'review') && !contains(github.event.comment.body, 'Review')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') && !contains(github.event.comment.body, 'review') && !contains(github.event.comment.body, 'Review')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') && !contains(github.event.review.body, 'review') && !contains(github.event.review.body, 'Review')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) && !contains(github.event.issue.body, 'review') && !contains(github.event.issue.title, 'review') && !contains(github.event.issue.body, 'Review') && !contains(github.event.issue.title, 'Review'))
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))) ||
+      (github.event_name == 'pull_request' && github.event.action == 'opened' && github.event.pull_request.draft == false)
+    
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write
+      pull-requests: write
+      issues: write
       id-token: write
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run Claude Code
-        id: claude
+      - name: Claude AI Agent
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          mode: "tag"
+          trigger_phrase: "@claude"
+          custom_instructions: |
+            You are an intelligent AI agent for this Next.js 15 + TypeScript + Supabase project.
+            
+            **Decision Guidelines:**
+            
+            1. **For Pull Requests**: 
+               - If mentioned in comments: Provide code review, answer questions, or implement requested changes
+               - If opening PR: Perform automatic code review focusing on our tech stack
+               - Always consider making commits if changes are needed
+            
+            2. **For Issues**:
+               - Analyze the problem and provide solutions
+               - Create implementation plans when appropriate
+               - Make code changes if the issue is clear and actionable
+            
+            3. **Code Changes**:
+               - Follow our existing patterns (Next.js App Router, TypeScript, Tailwind CSS 4)
+               - Always run type checking with `pnpm type-check`
+               - Maintain i18n compatibility - never hardcode strings
+               - Follow comment standards (English, explain "why" not "what")
+            
+            4. **Communication Style**:
+               - Be concise and actionable
+               - Always explain your reasoning for the chosen action
+               - Provide context about what you're doing and why
+            
+            **Tech Stack Context:**
+            - Next.js 15 with App Router
+            - TypeScript with strict mode
+            - Supabase for auth/database
+            - Tailwind CSS 4 for styling
+            - Zustand for state management
+            - next-intl for internationalization
+            
+            **Always decide autonomously** whether to:
+            - Comment with analysis/feedback
+            - Make code changes via commits
+            - Ask clarifying questions
+            - Provide documentation updates
           
-          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
-          # model: "claude-opus-4-20250514"
-          
-          # Optional: Customize the trigger phrase (default: @claude)
-          # trigger_phrase: "/claude"
-          
-          # Optional: Trigger when specific user is assigned to an issue
-          # assignee_trigger: "claude-bot"
-          
-          # Optional: Allow Claude to run specific commands
-          # allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
-          
-          # Optional: Add custom instructions for Claude to customize its behavior for your project
-          # custom_instructions: |
-          #   Follow our coding standards
-          #   Ensure all new code has tests
-          #   Use TypeScript for new files
-          
-          # Optional: Custom environment variables for Claude
-          # claude_env: |
-          #   NODE_ENV: test
-
+          allowed_tools: |
+            "Bash(ls:*)",
+            "Bash(find:*)",
+            "Bash(pwd:*)",
+            "Bash(cd:*)",
+            "Bash(git:*)",
+            "Bash(pnpm:*)",
+            "Bash(pnpm type-check:*)",
+            "Bash(pnpm build:*)",
+            "Bash(pnpm format:*)",
+            "Bash(pnpm format:check:*)",
+            "Bash(pnpm i18n:check:*)",
+            "Bash(pnpm i18n:validate:*)",
+            "Bash(pnpm i18n:detect:*)",
+            "Bash(pnpm run type-check:*)",
+            "Bash(pnpm run i18n:check:*)",
+            "Bash(pnpm run build:*)",
+            "Bash(npm:*)",
+            "Bash(cat:*)",
+            "Bash(echo:*)",
+            "Bash(grep:*)",
+            "Bash(rg:*)",
+            "Bash(date:*)",
+            "Bash(wc:*)",
+            "Bash(head:*)",
+            "Bash(tail:*)",
+            "Bash(awk:*)",
+            "Bash(sed:*)",
+            "Bash(sort:*)",
+            "Bash(uniq:*)",
+            "Bash(supabase:*)"
+          max_turns: 3
