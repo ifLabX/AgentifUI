@@ -82,7 +82,7 @@ supabase/              # Database migrations and configuration
 1. **Security-First**: Uses Supabase RLS (Row Level Security) and encrypted API key storage
 2. **Layered Architecture**: Clear separation between UI, services, and data layers
 3. **Type Safety**: Full TypeScript coverage with strict typing
-4. **Internationalization**: Multi-language support with next-intl (en-US, zh-CN, es-ES, zh-TW, ja-JP)
+4. **Internationalization**: Multi-language support with next-intl (en-US, zh-CN, es-ES, zh-TW, ja-JP, de-DE, fr-FR, ru-RU, it-IT, pt-PT)
 5. **Real-time Updates**: Supabase realtime subscriptions for live data
 
 ### Dify Integration Architecture
