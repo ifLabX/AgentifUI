@@ -215,3 +215,77 @@ pnpm run build         # Build validation (ask user first)
 4. Update documentation when needed
 
 **Memory Anchor**: These rule summaries provide persistent reference for AI agents, extracted from detailed rule files for quick compliance checking.
+
+# Testing Framework
+
+The project uses Jest with React Testing Library:
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run tests for CI (with coverage, no watch)
+pnpm test:ci
+```
+
+Test files are located alongside source files with `.spec.tsx` or `.test.tsx` extensions.
+
+# Linting and Code Quality
+
+The project uses a dual-linting approach for maximum code quality:
+
+```bash
+# Fast linting with oxlint (Rust-based, very fast)
+pnpm lint:fast
+
+# Full ESLint check (comprehensive but slower)
+pnpm lint:eslint
+
+# Full lint (oxlint + ESLint)
+pnpm lint
+
+# Fix auto-fixable issues
+pnpm fix
+pnpm fix:eslint
+
+# Check code complexity
+pnpm lint:complexity
+
+# Only show errors (quiet mode)
+pnpm lint:errors
+```
+
+### Code Analysis Tools
+
+- **Bundle Analysis**: `pnpm analyze` - Analyze bundle size and composition
+- **Claude Linting**: `pnpm lint:claude` - AI-powered typo detection
+- **Type Checking**: `pnpm type-check` - TypeScript validation without compilation
+
+# Deployment Commands
+
+```bash
+# Build for standalone deployment
+pnpm build:standalone
+
+# Deploy with PM2 (standalone mode)
+pnpm deploy
+
+# Deploy legacy mode
+pnpm deploy:legacy
+
+# Start standalone server (after build:standalone)
+pnpm start:standalone
+```
+
+# important-instruction-reminders
+
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

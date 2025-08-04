@@ -68,23 +68,41 @@ Supabase Client
 
 ## 🚀 Quick Start (Community Edition)
 
-> 📋 **Full environment requirements:** See [`docs/SETUP-REQUIREMENTS.md`](./docs/SETUP-REQUIREMENTS.md)
+### 🏃‍♂️ Quick Server Deployment
 
-### Local Dev
+> 📋 **New to deployment?** See our streamlined guide: [`docs/QUICK-DEPLOYMENT.md`](./docs/QUICK-DEPLOYMENT.md)
+
+```bash
+# Quick deployment on Ubuntu/Debian server
+# Installs: NVM, pnpm, PM2, Supabase CLI, Docker, Dify, AgentifUI
+
+# Follow the 13-step guide in docs/QUICK-DEPLOYMENT.md
+```
+
+### 💻 Local Development
+
+For local development and testing:
 
 ```bash
 # 1 — Install dependencies
 pnpm install
 
-# 2 — Copy env template and fill values
+# 2 — Copy environment template and configure
 cp .env.example .env.local
+# Edit .env.local with your Supabase and other settings
 
-# 3 — Run dev server
+# 3 — Run development server
 pnpm run dev
 
 # 4 — Open your browser
 http://localhost:3000
 ```
+
+**Prerequisites for local development:**
+
+- Node.js 18+ (22+ recommended)
+- pnpm 9+
+- Supabase account or local Supabase instance
 
 ### Development Tools
 
