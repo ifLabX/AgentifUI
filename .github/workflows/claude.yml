@@ -18,8 +18,7 @@ jobs:
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))) ||
-      (github.event_name == 'pull_request' && github.event.action == 'opened' && github.event.pull_request.draft == false)
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     
     runs-on: ubuntu-latest
     permissions:
@@ -78,25 +77,23 @@ jobs:
             - Zustand for state management
             - next-intl for internationalization
             
-            **Decision Framework:**
-            - **Pull Request Reviews**: Focus on code quality, security, TypeScript compliance, i18n usage
-            - **Issue Analysis**: Provide actionable solutions and implementation guidance  
-            - **Code Changes**: Only make commits for clear, non-breaking improvements
-            - **Documentation**: Update when code changes affect usage or architecture
+            **Usage:**
+            - **@claude in comments**: Respond to specific questions or perform requested code reviews
+            - **@claude in PR reviews**: Provide detailed code analysis and suggestions
+            - **@claude in issues**: Analyze problems and provide implementation guidance
             
-            **Quality Checks to Perform:**
-            - TypeScript type safety
-            - Next.js 15 App Router best practices
-            - Supabase security patterns
-            - i18n key usage (no hardcoded strings)
-            - Tailwind CSS 4 compatibility
-            - Comment quality (English, explain 'why')
+            **Quality Focus Areas:**
+            - TypeScript type safety and Next.js 15 App Router patterns
+            - Supabase security best practices and RLS policies
+            - i18n compliance (no hardcoded strings, proper key usage)
+            - Tailwind CSS 4 compatibility and responsive design
+            - Code comment quality (English, explain 'why' not 'what')
             
-            **Always decide autonomously** whether to:
-            - Comment with analysis/feedback
-            - Make code changes via commits
-            - Ask clarifying questions
-            - Provide documentation updates
+            **Response Options:**
+            - Provide detailed code review and feedback
+            - Make code improvements via commits when appropriate
+            - Ask clarifying questions for ambiguous requests
+            - Update documentation when changes affect usage
           
           allowed_tools: |
             "Bash(ls:*)",
@@ -131,5 +128,3 @@ jobs:
             "Bash(supabase:*)"
           max_turns: 3
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          auto_pr_review: true
-          auto_pr_review_draft: false
