@@ -40,7 +40,7 @@ body:
     attributes:
       label: Documentation Location
       description: Where is the documentation located?
-      placeholder: 'e.g., README.md, docs/SETUP-REQUIREMENTS.md, specific section, etc.'
+      placeholder: 'e.g., README.md, docs/QUICK-DEPLOYMENT.md, specific section, etc.'
     validations:
       required: true
 

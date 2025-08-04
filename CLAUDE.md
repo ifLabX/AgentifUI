@@ -82,7 +82,7 @@ supabase/              # Database migrations and configuration
 1. **Security-First**: Uses Supabase RLS (Row Level Security) and encrypted API key storage
 2. **Layered Architecture**: Clear separation between UI, services, and data layers
 3. **Type Safety**: Full TypeScript coverage with strict typing
-4. **Internationalization**: Multi-language support with next-intl (zh-CN, en-US, es-ES, zh-TW, ja-JP)
+4. **Internationalization**: Multi-language support with next-intl (en-US, zh-CN, es-ES, zh-TW, ja-JP)
 5. **Real-time Updates**: Supabase realtime subscriptions for live data
 
 ### Dify Integration Architecture
@@ -144,12 +144,12 @@ Example JSDoc:
 ### I18n Development
 
 - All user-facing text must be internationalized
-- Add keys to `messages/zh-CN.json` first (source language)
+- Add keys to `messages/en-US.json` first (source language)
 - Maintain structure consistency across all language files
 - Run `pnpm i18n:check` after adding translations
 - **NEVER replace existing `t()` calls with hardcoded English text**
 - **NEVER use hardcoded strings like "Loading..." - always use translations**
-- When adding dynamic translation features, preserve existing translation patterns
+- English-first development: write in English, then translate to other languages
 
 ### Dify API Integration
 
@@ -198,13 +198,11 @@ Example JSDoc:
 - **I18n Work**: MUST NOT hardcode text, maintain key structure consistency
 - **Dify API**: MUST follow 3-layer architecture (proxy→service→type)
 
-### Mandatory Validation Commands
+### Essential Validation
 
 ```bash
-# Before any commit
-pnpm run type-check    # TypeScript validation
-pnpm run i18n:check    # Translation validation
-pnpm run build         # Build validation (ask user first)
+pnpm type-check    # TypeScript validation
+pnpm i18n:check    # Translation validation
 ```
 
 ### Rule Enforcement Protocol
@@ -216,71 +214,23 @@ pnpm run build         # Build validation (ask user first)
 
 **Memory Anchor**: These rule summaries provide persistent reference for AI agents, extracted from detailed rule files for quick compliance checking.
 
-# Testing Framework
+# Testing
 
-The project uses Jest with React Testing Library:
+Uses Jest with React Testing Library. Husky handles precommit testing automatically.
 
 ```bash
-# Run all tests
 pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Run tests for CI (with coverage, no watch)
-pnpm test:ci
 ```
 
-Test files are located alongside source files with `.spec.tsx` or `.test.tsx` extensions.
-
-# Linting and Code Quality
-
-The project uses a dual-linting approach for maximum code quality:
+# Code Quality Tools
 
 ```bash
-# Fast linting with oxlint (Rust-based, very fast)
-pnpm lint:fast
-
-# Full ESLint check (comprehensive but slower)
-pnpm lint:eslint
-
-# Full lint (oxlint + ESLint)
+# Essential linting
 pnpm lint
-
-# Fix auto-fixable issues
-pnpm fix
 pnpm fix:eslint
 
-# Check code complexity
-pnpm lint:complexity
-
-# Only show errors (quiet mode)
-pnpm lint:errors
-```
-
-### Code Analysis Tools
-
-- **Bundle Analysis**: `pnpm analyze` - Analyze bundle size and composition
-- **Claude Linting**: `pnpm lint:claude` - AI-powered typo detection
-- **Type Checking**: `pnpm type-check` - TypeScript validation without compilation
-
-# Deployment Commands
-
-```bash
-# Build for standalone deployment
-pnpm build:standalone
-
-# Deploy with PM2 (standalone mode)
-pnpm deploy
-
-# Deploy legacy mode
-pnpm deploy:legacy
-
-# Start standalone server (after build:standalone)
-pnpm start:standalone
+# Type checking
+pnpm type-check
 ```
 
 # important-instruction-reminders
