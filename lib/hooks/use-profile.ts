@@ -1,10 +1,16 @@
 import { createClient } from '@lib/supabase/client';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 import type { UserRole } from '@lib/types/database';
+import {
+  safeJsonParse,
+  sanitizeAvatarUrl,
+  secureLog,
+  validateProfileCacheData,
+} from '@lib/utils/profile-cache-security';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { PageKey, useLoadingStore } from '../stores/loading-store';
+import { useLoadingStore } from '../stores/loading-store';
 
 /**
  * Profile type definition
@@ -30,7 +36,7 @@ const PROFILE_CACHE_KEY = 'user_profile_cache';
 const CACHE_EXPIRY_TIME = 2 * 60 * 1000; // 2 minutes cache expiry for higher security
 
 // Profile cache data structure
-interface ProfileCache {
+interface ProfileCache extends Record<string, unknown> {
   profile: Profile;
   timestamp: number;
   userId: string;
@@ -44,28 +50,67 @@ const getProfileFromCache = (userId: string): Profile | null => {
     const cached = sessionStorage.getItem(PROFILE_CACHE_KEY);
     if (!cached) return null;
 
-    const cacheData: ProfileCache = JSON.parse(cached);
+    // Use safe JSON parsing to prevent prototype pollution
+    const cacheData = safeJsonParse<ProfileCache>(cached);
+    if (!cacheData) {
+      secureLog(
+        'warn',
+        'Profile Cache',
+        'Invalid cache data detected, clearing'
+      );
+      sessionStorage.removeItem(PROFILE_CACHE_KEY);
+      return null;
+    }
+
+    // Validate cache data structure
+    const validation = validateProfileCacheData<ProfileCache>(cacheData);
+    if (!validation.isValid) {
+      secureLog(
+        'warn',
+        'Profile Cache',
+        'Cache validation failed, clearing',
+        `Errors: ${validation.errors.join(', ')}`
+      );
+      sessionStorage.removeItem(PROFILE_CACHE_KEY);
+      return null;
+    }
+
+    const validatedCacheData = validation.data!;
 
     // Strict userId check to prevent cross-user data pollution
-    if (cacheData.userId !== userId) {
-      console.warn(
-        `[Profile Cache] User ID mismatch, clearing cache (cache:${cacheData.userId}, current:${userId})`
+    if (validatedCacheData.userId !== userId) {
+      secureLog(
+        'warn',
+        'Profile Cache',
+        'User ID mismatch detected, clearing cache',
+        validatedCacheData.userId
       );
       sessionStorage.removeItem(PROFILE_CACHE_KEY);
       return null;
     }
 
     // Check if cache expired
-    if (Date.now() - cacheData.timestamp > CACHE_EXPIRY_TIME) {
-      console.log(`[Profile Cache] Cache expired, clearing`);
+    if (Date.now() - validatedCacheData.timestamp > CACHE_EXPIRY_TIME) {
+      secureLog('log', 'Profile Cache', 'Cache expired, clearing');
       sessionStorage.removeItem(PROFILE_CACHE_KEY);
       return null;
     }
 
-    console.log(`[Profile Cache] Cache hit: ${userId}`);
-    return cacheData.profile;
+    // Sanitize avatar URL before returning
+    const sanitizedProfile = {
+      ...validatedCacheData.profile,
+      avatar_url: sanitizeAvatarUrl(validatedCacheData.profile.avatar_url),
+    };
+
+    secureLog('log', 'Profile Cache', 'Cache hit', userId);
+    return sanitizedProfile;
   } catch (error) {
-    console.warn('[Profile Cache] Failed to read profile cache:', error);
+    secureLog(
+      'warn',
+      'Profile Cache',
+      'Failed to read profile cache',
+      error instanceof Error ? error.message : 'Unknown error'
+    );
     // Clean up corrupted cache
     try {
       sessionStorage.removeItem(PROFILE_CACHE_KEY);
@@ -79,16 +124,27 @@ const setProfileToCache = (profile: Profile, userId: string): void => {
   try {
     if (typeof window === 'undefined') return; // SSR safety check
 
+    // Sanitize profile data before caching
+    const sanitizedProfile: Profile = {
+      ...profile,
+      avatar_url: sanitizeAvatarUrl(profile.avatar_url),
+    };
+
     const cacheData: ProfileCache = {
-      profile,
+      profile: sanitizedProfile,
       timestamp: Date.now(),
       userId,
     };
 
     sessionStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cacheData));
-    console.log(`[Profile Cache] Cached user profile: ${userId}`);
+    secureLog('log', 'Profile Cache', 'Cached user profile', userId);
   } catch (error) {
-    console.warn('[Profile Cache] Failed to save profile cache:', error);
+    secureLog(
+      'warn',
+      'Profile Cache',
+      'Failed to save profile cache',
+      error instanceof Error ? error.message : 'Unknown error'
+    );
   }
 };
 
@@ -100,9 +156,14 @@ export const clearProfileCache = (): void => {
   try {
     if (typeof window === 'undefined') return;
     sessionStorage.removeItem(PROFILE_CACHE_KEY);
-    console.log('[Profile Cache] Cleared user profile cache');
+    secureLog('log', 'Profile Cache', 'Cleared user profile cache');
   } catch (error) {
-    console.warn('[Profile Cache] Failed to clear profile cache:', error);
+    secureLog(
+      'warn',
+      'Profile Cache',
+      'Failed to clear profile cache',
+      error instanceof Error ? error.message : 'Unknown error'
+    );
   }
 };
 
@@ -140,7 +201,7 @@ export function useProfile(userId?: string): UseProfileResult {
   const setPageLoading = useLoadingStore(state => state.setPageLoading);
 
   // Function to load profile
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       setError(null);
 
@@ -215,7 +276,7 @@ export function useProfile(userId?: string): UseProfileResult {
       setIsLoading(false);
       setPageLoading('profile', false);
     }
-  };
+  }, [userId, session, setPageLoading]);
 
   // Load profile on first mount and when dependencies change
   useEffect(() => {
@@ -223,7 +284,7 @@ export function useProfile(userId?: string): UseProfileResult {
       // Only load if session (current user) or userId is present
       loadProfile();
     }
-  }, [userId, session]);
+  }, [userId, session, loadProfile]);
 
   // Return profile data, loading state, error, and refresh method
   return {
