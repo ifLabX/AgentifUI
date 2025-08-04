@@ -63,19 +63,10 @@ export function SidebarContent() {
   const handleSelectChat = React.useCallback(
     (chatId: number | string) => {
       try {
-        // CRITICAL: Execute sidebar highlight and URL navigation simultaneously
-        // This ensures perfect synchronization between visual feedback and URL state
         selectItem('chat', chatId, true);
         router.push(`/chat/${chatId}`);
-
-        // Optional: Set conversation ID for consistency (non-blocking)
         setCurrentConversationId(String(chatId));
         setIsWelcomeScreen(false);
-
-        console.log(
-          '[ChatList] Synchronized highlight and route update:',
-          `/chat/${chatId}`
-        );
       } catch (error) {
         console.error('[ChatList] Failed to switch conversation:', error);
       }
