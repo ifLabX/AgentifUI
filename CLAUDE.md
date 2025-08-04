@@ -217,6 +217,8 @@ pnpm i18n:check    # Translation validation
 # Testing
 
 Uses Jest with React Testing Library. Husky handles precommit testing automatically.
+Config: jest.config.js and jest.setup.js
+Test files: `*.test.{ts,tsx}` or `*.spec.{ts,tsx}` in same directory, or in `__tests__/` directory.
 
 ```bash
 pnpm test
