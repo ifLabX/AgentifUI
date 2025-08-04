@@ -1,8 +1,31 @@
 #!/bin/sh
+
+# Get the list of staged files
+files=$(git diff --cached --name-only)
+
 echo "🔍 Running TypeScript type check before commit..."
 pnpm run type-check || exit 1
 echo "✅ TypeScript check passed!"
 
-echo "🎨 Running code formatting on staged files..."
-pnpm run format:staged
-echo "✅ Code formatting completed!"
+echo "🎨 Running lint-staged on staged files..."
+pnpm run format:staged || exit 1
+echo "✅ Linting and formatting completed!"
+
+# Check if any test files are in staging area
+test_files=$(echo "$files" | grep -E '\.(test|spec)\.(ts|tsx|js|jsx)$' || true)
+
+if [ -n "$test_files" ]; then
+    echo "🧪 Running tests for staged test files..."
+    for test_file in $test_files; do
+        echo "🔍 Running: $test_file"
+        pnpm test "$test_file" --passWithNoTests || {
+            echo "❌ Test failed: $test_file"
+            exit 1
+        }
+    done
+    echo "✅ All staged tests passed!"
+else
+    echo "ℹ️  No test files in staging area, skipping tests"
+fi
+
+echo "🎉 Pre-commit checks completed successfully!"
