@@ -41,6 +41,7 @@ const mockZhCNMessages = {
 };
 
 // Test the deep merge function from i18n/request.ts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepMerge(target: any, source: any): any {
   const result = { ...target };
 
