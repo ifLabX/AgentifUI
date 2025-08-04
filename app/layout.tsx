@@ -1,4 +1,3 @@
-import { StagewiseToolbarWrapper } from '@components/dev/stagewise-toolbar';
 import { ConditionalNavBar } from '@components/nav-bar';
 import { ConditionalSidebar } from '@components/sidebar/conditional-sidebar';
 import { DynamicTitle } from '@components/ui/dynamic-title';
@@ -103,8 +102,6 @@ export default async function RootLayout({
             </ClientLayout>
           </NextIntlClientProvider>
         </Providers>
-        {process.env.ENABLE_STAGEWISE_TOOLBAR === 'true' &&
-          process.env.NODE_ENV === 'development' && <StagewiseToolbarWrapper />}
       </body>
     </html>
   );
