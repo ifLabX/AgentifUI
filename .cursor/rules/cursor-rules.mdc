@@ -40,9 +40,13 @@ alwaysApply: true
   - *Dependencies*: development-workflow-rule, git-commit-rule
   - *Enforcement*: Migration validation, type sync required
 
-- **i18n-development**: MUST read when adding translation keys or working with i18n
+- **i18n**: MUST read when adding translation keys or working with i18n
   - *Dependencies*: development-workflow-rule
   - *Enforcement*: Structure validation, key consistency required
+
+- **test**: MUST read when writing tests or working with testing framework
+  - *Dependencies*: development-workflow-rule
+  - *Enforcement*: Test coverage, mocking patterns required
 
 ### Technical Integration Rules (STANDARD)
 
@@ -65,7 +69,8 @@ development-workflow-rule (ROOT)
 ├── comment-rule
 ├── git-commit-rule
 ├── database-development-rule
-├── i18n-development
+├── i18n
+├── test
 └── dify-integration-rule
     ├── api-routes
     └── dify-api-endpoints
@@ -80,14 +85,16 @@ development-workflow-rule (ROOT)
 
 ### Domain-Specific Tasks (MANDATORY)
 - **Database changes** → **database-development-rule**
-- **Translation work** → **i18n-development**
+- **Translation work** → **i18n**
+- **Testing work** → **test**
 - **Dify API work** → **dify-integration-rule** + **dify-api-endpoints**
 - **API route creation** → **api-routes**
 
 ### Cross-Domain Tasks (MULTIPLE RULES)
 - **New feature development** → development-workflow-rule + comment-rule + git-commit-rule
 - **Database + API changes** → database-development-rule + api-routes + development-workflow-rule
-- **I18n + Frontend** → i18n-development + comment-rule + development-workflow-rule
+- **I18n + Frontend** → i18n + comment-rule + development-workflow-rule
+- **Testing + Feature** → test + development-workflow-rule + comment-rule
 
 ## 🔧 AI Agent Usage Protocol
 

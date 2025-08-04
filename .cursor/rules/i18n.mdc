@@ -9,7 +9,7 @@ alwaysApply: false
 
 AgentifUI uses next-intl for internationalization with unified JSON configuration architecture:
 
-- **Default Language**: Simplified Chinese (zh-CN) as source language
+- **Default Language**: English (en-US) as source language
 - **Supported Languages**: 10 languages (zh-CN, en-US, es-ES, zh-TW, ja-JP, de-DE, fr-FR, ru-RU, it-IT, pt-PT)
 - **Framework**: next-intl with Next.js 15 App Router
 - **Validation Tools**: Python scripts wrapped in pnpm scripts for structural consistency validation
@@ -18,8 +18,8 @@ AgentifUI uses next-intl for internationalization with unified JSON configuratio
 
 ```
 messages/
-├── zh-CN.json        # Simplified Chinese (primary language)
-├── en-US.json        # English
+├── en-US.json        # English (primary language)
+├── zh-CN.json        # Simplified Chinese
 ├── es-ES.json        # Spanish
 ├── zh-TW.json        # Traditional Chinese
 ├── ja-JP.json        # Japanese
@@ -52,7 +52,7 @@ pnpm run i18n:detect
 
 ### 1. Adding New Translation Keys (MANDATORY PROCESS)
 
-**Step 1**: Add key to `messages/zh-CN.json` first
+**Step 1**: Add key to `messages/en-US.json` first (source language)
 **Step 2**: Add same structure to all 9 other language files
 **Step 3**: Run validation immediately
 
