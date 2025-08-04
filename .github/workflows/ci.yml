@@ -141,7 +141,7 @@ jobs:
           
           if [ -n "$CHANGED_FILES" ]; then
             echo "Running ESLint on changed files: $CHANGED_FILES"
-            npx eslint $CHANGED_FILES
+            pnpm exec eslint --cache --cache-location node_modules/.cache/eslint/.eslint-cache $CHANGED_FILES
           else
             echo "No JS/TS files changed in this PR"
           fi
@@ -309,7 +309,7 @@ jobs:
           
           if [ -n "$ALL_TEST_FILES" ] && [ "$ALL_TEST_FILES" != " " ]; then
             echo "Running tests for files: $ALL_TEST_FILES"
-            npx jest $ALL_TEST_FILES --passWithNoTests
+            pnpm exec jest $ALL_TEST_FILES --passWithNoTests
           else
             echo "No test files found for changed source files, running all tests"
             pnpm test
