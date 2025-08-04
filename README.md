@@ -128,12 +128,6 @@ pnpm run build
 - **Git Hooks**: Husky automatically formats code on commit
 - **Supported Files**: TypeScript, React, JSON, Markdown, CSS, YAML
 
-### Docker (alternative)
-
-```bash
-docker run -p 8080:8080 ghcr.io/agentifui/community:latest
-```
-
 ---
 
 ## 📂 Project Structure
