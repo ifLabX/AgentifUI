@@ -19,6 +19,9 @@ pnpm build
 # Format code
 pnpm format
 pnpm format:check
+
+# Create PR (Read .github/PULL_REQUEST_TEMPLATE.md first, push branch, then use --head, --title, --body)
+gh pr create --head <branch-name> --title "fix(scope): description" --body "$(cat <<'EOF'\n<PR content>\nEOF\n)"
 ```
 
 ### I18n Commands
