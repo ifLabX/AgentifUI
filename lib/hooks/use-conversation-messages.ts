@@ -14,12 +14,11 @@ import { getConversationByExternalId } from '@lib/db/conversations';
 import { messageService } from '@lib/services/db/message-service';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 import { ChatMessage, useChatStore } from '@lib/stores/chat-store';
-import { useSupabaseAuth } from '@lib/supabase/hooks';
 import { Message } from '@lib/types/database';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 // Number of messages to load per page
 const MESSAGES_PER_PAGE = 20;
@@ -68,8 +67,6 @@ function dbMessageToChatMessage(dbMessage: Message): ChatMessage {
  */
 export function useConversationMessages() {
   const pathname = usePathname();
-  const { session } = useSupabaseAuth();
-  const userId = session?.user?.id;
 
   // Use unified loading state object for state management
   // Merge multiple state variables into one structured state object
@@ -104,7 +101,7 @@ export function useConversationMessages() {
   });
 
   // Get current message state and actions from chatStore
-  const { messages, addMessage, clearMessages, updateMessage } = useChatStore();
+  const { clearMessages } = useChatStore();
 
   // Helper function to start loading
   const startLoading = useCallback((type: 'initial' | 'more') => {
@@ -374,7 +371,15 @@ export function useConversationMessages() {
         finishLoading('error');
       }
     },
-    [clearMessages, organizeMessages]
+    [
+      clearMessages,
+      organizeMessages,
+      cancelCurrentRequest,
+      finishLoading,
+      getConversationIdFromPath,
+      loading.isLocked,
+      startLoading,
+    ]
   );
 
   /**
@@ -395,11 +400,6 @@ export function useConversationMessages() {
     }
 
     // Record the current scroll position to prevent the scroll position from being lost after loading
-    let scrollPosition = 0;
-    const scrollContainer = document.querySelector('.chat-scroll-container');
-    if (scrollContainer) {
-      scrollPosition = scrollContainer.scrollTop;
-    }
 
     // Cancel any ongoing requests
     cancelCurrentRequest();
@@ -539,7 +539,15 @@ export function useConversationMessages() {
       // Unlock the loading state
       finishLoading('idle');
     }
-  }, [dbConversationId, loading, hasMoreMessages, organizeMessages]);
+  }, [
+    dbConversationId,
+    loading,
+    hasMoreMessages,
+    organizeMessages,
+    cancelCurrentRequest,
+    finishLoading,
+    startLoading,
+  ]);
 
   /**
    * Set the message container reference, used for scroll detection
@@ -651,18 +659,21 @@ export function useConversationMessages() {
     }
 
     // For non-first message route changes, execute normal loading logic
-    // Optimize state update order to avoid old messages flickering
-    // 1. First reset the state and clear the messages
-    // 2. Then set the loading state and initial loading state
-    // 3. Ensure the skeleton screen is displayed until the new messages are fully loaded
+    // OPTIMIZATION: Prioritize UI responsiveness over heavy operations
+    // 1. Reset loader state immediately
+    // 2. Set loading state immediately (shows skeleton)
+    // 3. Defer heavy operations to avoid blocking sidebar highlight updates
     resetLoader();
-    clearMessages();
 
-    // Immediately set the loading state, ensuring that the UI displays the skeleton screen
+    // Immediately set loading state - this shows skeleton and gives visual feedback
     startLoading('initial');
 
-    // Ensure the scroll is at the top, avoiding the scroll button from being displayed when loading a new conversation
-    resetScrollState();
+    // Defer heavy operations to next tick to avoid blocking sidebar highlight updates
+    // This ensures sidebar responds immediately while content loading happens in background
+    requestAnimationFrame(() => {
+      clearMessages();
+      resetScrollState();
+    });
 
     if (externalId) {
       setDifyConversationId(externalId);
@@ -713,6 +724,9 @@ export function useConversationMessages() {
     getConversationIdFromPath,
     resetLoader,
     clearMessages,
+    cancelCurrentRequest,
+    finishLoading,
+    startLoading,
   ]);
 
   /**

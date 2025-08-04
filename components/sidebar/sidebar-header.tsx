@@ -38,7 +38,11 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   const t = useTranslations('sidebar');
 
   // 🎯 Check the activation status of the routes
-  const isNewChatActive = pathname === '/chat/new';
+  // OPTIMIZATION: For new chat, also check if selectedId is null to ensure immediate deactivation
+  // when user clicks on historical conversations, even if pathname hasn't updated yet
+  const { selectedType, selectedId } = useSidebarStore();
+  const isNewChatActive =
+    pathname === '/chat/new' && (selectedType !== 'chat' || !selectedId);
   const isHistoryActive = pathname === '/chat/history';
   const isAppsActive = pathname === '/apps';
 

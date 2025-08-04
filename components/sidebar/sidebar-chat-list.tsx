@@ -158,7 +158,7 @@ export function SidebarChatList({
         setIsOperating(false);
       }
     },
-    [selectedConversation, selectedId, refresh]
+    [selectedConversation, selectedId, refresh, t]
   );
 
   const handleDelete = React.useCallback(
@@ -206,7 +206,7 @@ export function SidebarChatList({
     } finally {
       setIsOperating(false);
     }
-  }, [selectedConversation, selectedId, refresh]);
+  }, [selectedConversation, selectedId, refresh, t]);
 
   // Add auxiliary function, determine whether the chat item should be selected
   // Consider the conversion between temporary ID and official ID
@@ -219,22 +219,21 @@ export function SidebarChatList({
       // First check if there is a selected ID
       if (!selectedId) return false;
 
-      // Get the current route path
-      const pathname = window.location.pathname;
-
-      // Check if the current route is a chat page
-      // Only consider the selected state of the chat item when the route starts with /chat/
-      // Do not consider the selected state of the chat item when the route is /chat/history
-      if (!pathname.startsWith('/chat/')) return false;
-      if (pathname === '/chat/history') return false;
-
-      // Direct ID matching
+      // PRIORITY 1: Direct selectedId matching - immediate response for clicked conversations
+      // This ensures instant highlight when user clicks, regardless of pathname update status
       if (chat.id === selectedId) return true;
-
-      // Temporary ID matching (handle the case of switching from temp-xxx to official ID)
       if (chat.tempId && selectedId.includes(chat.tempId)) return true;
 
-      // Ensure no false matching
+      // PRIORITY 2: Fallback pathname-based check for edge cases
+      // Only apply when selectedId doesn't match this chat
+      const pathname = window.location.pathname;
+
+      // Skip pathname check if we're not on a chat page or on history page
+      if (!pathname.startsWith('/chat/') || pathname === '/chat/history') {
+        return false;
+      }
+
+      // If selectedId doesn't match this chat, it's definitely not active
       return false;
     },
     [selectedId]
@@ -334,7 +333,6 @@ export function SidebarChatList({
     const canPerformActions = !!chat.supabase_pk;
     const isTempChat = !chat.id || chat.id.startsWith('temp-');
     const isMenuOpen = openDropdownId === chat.id;
-    const isItemSelected = isChatActive(chat);
 
     // 🎯 Handle dropdown menu state changes
     const handleMenuOpenChange = (isOpen: boolean) => {
