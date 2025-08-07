@@ -1067,6 +1067,7 @@
           "noInstances": "アプリケーションインスタンスがありません",
           "noInstancesForProvider": "このプロバイダーのアプリケーションインスタンスがありません",
           "addFirstApp": "最初のアプリケーションを追加",
+          "searchPlaceholder": "アプリを検索...",
           "defaultApp": "デフォルト",
           "delete": "削除",
           "deleteConfirm": "このアプリケーションインスタンスを削除してもよろしいですか？この操作は元に戻せません。",

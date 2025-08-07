@@ -1067,6 +1067,7 @@
           "noInstances": "Nenhuma instância da aplicação",
           "noInstancesForProvider": "Nenhuma instância da aplicação para este fornecedor",
           "addFirstApp": "Adicionar primeira aplicação",
+          "searchPlaceholder": "Pesquisar aplicações...",
           "defaultApp": "Padrão",
           "delete": "Apagar",
           "deleteConfirm": "Tem a certeza que quer apagar esta instância da aplicação? Esta ação não pode ser desfeita.",

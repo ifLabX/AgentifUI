@@ -1067,6 +1067,7 @@
           "noInstances": "No application instances",
           "noInstancesForProvider": "No application instances for this provider",
           "addFirstApp": "Add first application",
+          "searchPlaceholder": "Search applications...",
           "defaultApp": "Default",
           "delete": "Delete",
           "deleteConfirm": "Are you sure you want to delete this application instance? This action cannot be undone.",

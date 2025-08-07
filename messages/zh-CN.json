@@ -1067,6 +1067,7 @@
           "noInstances": "暂无应用实例",
           "noInstancesForProvider": "该提供商暂无应用实例",
           "addFirstApp": "添加第一个应用",
+          "searchPlaceholder": "搜索应用...",
           "defaultApp": "默认",
           "delete": "删除",
           "deleteConfirm": "确定要删除此应用实例吗？此操作不可撤销。",

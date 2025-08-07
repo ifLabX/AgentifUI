@@ -1067,6 +1067,7 @@
           "noInstances": "Nessuna istanza di applicazione",
           "noInstancesForProvider": "Nessuna istanza di applicazione per questo fornitore",
           "addFirstApp": "Aggiungi la prima applicazione",
+          "searchPlaceholder": "Cerca applicazioni...",
           "defaultApp": "Predefinito",
           "delete": "Elimina",
           "deleteConfirm": "Sei sicuro di voler eliminare questa istanza di applicazione? Questa azione non può essere annullata.",

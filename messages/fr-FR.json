@@ -1067,6 +1067,7 @@
           "noInstances": "Aucune instance d'application",
           "noInstancesForProvider": "Aucune instance d'application pour ce fournisseur",
           "addFirstApp": "Ajouter la première application",
+          "searchPlaceholder": "Rechercher des applications...",
           "defaultApp": "Par défaut",
           "delete": "Supprimer",
           "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette instance d'application ? Cette action est irréversible.",

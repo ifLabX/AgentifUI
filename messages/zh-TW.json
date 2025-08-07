@@ -1067,6 +1067,7 @@
           "noInstances": "暫無應用程式實例",
           "noInstancesForProvider": "該提供商暫無應用程式實例",
           "addFirstApp": "新增第一個應用程式",
+          "searchPlaceholder": "搜尋應用程式...",
           "defaultApp": "預設",
           "delete": "刪除",
           "deleteConfirm": "確定要刪除此應用程式實例嗎？此操作不可復原。",

@@ -1067,6 +1067,7 @@
           "noInstances": "Keine Anwendungsinstanzen",
           "noInstancesForProvider": "Keine Anwendungsinstanzen für diesen Anbieter",
           "addFirstApp": "Erste Anwendung hinzufügen",
+          "searchPlaceholder": "Anwendungen suchen...",
           "defaultApp": "Standard",
           "delete": "Löschen",
           "deleteConfirm": "Sind Sie sicher, dass Sie diese Anwendungsinstanz löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",

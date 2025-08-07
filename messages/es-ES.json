@@ -1067,6 +1067,7 @@
           "noInstances": "Sin instancias de aplicación",
           "noInstancesForProvider": "Sin instancias de aplicación para este proveedor",
           "addFirstApp": "Agregar primera aplicación",
+          "searchPlaceholder": "Buscar aplicaciones...",
           "defaultApp": "Predeterminado",
           "delete": "Eliminar",
           "deleteConfirm": "¿Está seguro de que desea eliminar esta instancia de aplicación? Esta acción no se puede deshacer.",

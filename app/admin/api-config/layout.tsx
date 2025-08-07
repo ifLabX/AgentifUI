@@ -12,6 +12,7 @@ import {
   Loader2,
   MessageSquare,
   Plus,
+  Search,
   Settings,
   Star,
   StarOff,
@@ -82,6 +83,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       return searchParams.get('provider') || null;
     }
   );
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   // initialize data loading
   useEffect(() => {
@@ -135,13 +137,34 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
 
   // 🎯 filter instances based on filter conditions
   const filteredInstances = useMemo(() => {
-    if (!filterProviderId) {
-      return instances; // show all
+    let filtered = instances;
+
+    // Filter by provider
+    if (filterProviderId) {
+      filtered = filtered.filter(
+        instance => instance.provider_id === filterProviderId
+      );
     }
-    return instances.filter(
-      instance => instance.provider_id === filterProviderId
-    );
-  }, [instances, filterProviderId]);
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(instance => {
+        const provider = providers.find(p => p.id === instance.provider_id);
+        const difyAppType = instance.config?.app_metadata?.dify_apptype || '';
+
+        return (
+          instance.display_name?.toLowerCase().includes(searchLower) ||
+          instance.instance_id?.toLowerCase().includes(searchLower) ||
+          instance.description?.toLowerCase().includes(searchLower) ||
+          difyAppType.toLowerCase().includes(searchLower) ||
+          provider?.name?.toLowerCase().includes(searchLower)
+        );
+      });
+    }
+
+    return filtered;
+  }, [instances, filterProviderId, searchTerm, providers]);
 
   const handleSetDefaultInstance = useCallback(
     async (instanceId: string) => {
@@ -321,6 +344,29 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                 )}
               />
             </button>
+          </div>
+
+          {/* Search input */}
+          <div className="relative">
+            <Search
+              className={cn(
+                'absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2',
+                isDark ? 'text-stone-400' : 'text-stone-500'
+              )}
+            />
+            <input
+              type="text"
+              placeholder={t('searchPlaceholder')}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className={cn(
+                'w-full rounded-lg border py-2.5 pr-4 pl-10 font-serif text-sm transition-all duration-200',
+                'focus:ring-2 focus:ring-offset-2 focus:outline-none',
+                isDark
+                  ? 'border-stone-600 bg-stone-700 text-stone-200 placeholder-stone-400 focus:border-stone-500 focus:ring-stone-500 focus:ring-offset-stone-800'
+                  : 'border-stone-300 bg-stone-50 text-stone-900 placeholder-stone-500 focus:border-stone-400 focus:ring-stone-400 focus:ring-offset-white'
+              )}
+            />
           </div>
         </div>
 
