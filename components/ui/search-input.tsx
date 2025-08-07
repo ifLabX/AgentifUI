@@ -10,6 +10,8 @@ export interface SearchInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string;
   onValueChange: (value: string) => void;
+  containerClassName?: string;
+  iconClassName?: string;
 }
 
 /**
@@ -17,15 +19,27 @@ export interface SearchInputProps
  * Provides consistent styling and theming across the application
  */
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, value, onValueChange, placeholder, ...props }, ref) => {
+  (
+    {
+      className,
+      containerClassName,
+      iconClassName,
+      value,
+      onValueChange,
+      placeholder,
+      ...props
+    },
+    ref
+  ) => {
     const { isDark } = useTheme();
 
     return (
-      <div className="relative">
+      <div className={cn('relative', containerClassName)}>
         <Search
           className={cn(
             'absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            isDark ? 'text-stone-400' : 'text-stone-500',
+            iconClassName
           )}
         />
         <input

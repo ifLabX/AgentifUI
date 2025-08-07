@@ -1,6 +1,6 @@
 'use client';
 
-import { ConfirmDialog } from '@components/ui';
+import { ConfirmDialog, SearchInput } from '@components/ui';
 import { useAllConversations } from '@lib/hooks/use-all-conversations';
 import { useChatInterface } from '@lib/hooks/use-chat-interface';
 import { useChatWidth } from '@lib/hooks/use-chat-width';
@@ -12,7 +12,7 @@ import { useChatStore } from '@lib/stores/chat-store';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
-import { Edit, Search, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -92,11 +92,6 @@ export function History() {
       }
     }
   }, [conversations, selectedConversations]);
-
-  // Handle search input changes
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
 
   // Filter conversation list, based on search query
   const filteredConversations = React.useMemo(() => {
@@ -316,30 +311,19 @@ export function History() {
 
         {/* Search box - centered display */}
         <div className={cn('mx-auto mb-4 w-full', widthClass, paddingClass)}>
-          <div className="relative w-full">
-            <div
-              className={cn(
-                'absolute top-1/2 left-3 -translate-y-1/2 transform',
-                isDark ? 'text-stone-400' : 'text-stone-500'
-              )}
-            >
-              <Search className="h-4 w-4" />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder={t('searchPlaceholder')}
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className={cn(
-                'w-full rounded-lg py-2 pr-4 pl-10 font-serif text-sm',
-                'focus:ring-2 focus:ring-offset-2 focus:outline-none',
-                isDark
-                  ? 'border border-stone-700 bg-stone-800 text-stone-200 focus:ring-stone-600 focus:ring-offset-stone-900'
-                  : 'border border-stone-300 bg-white text-stone-800 focus:ring-stone-400 focus:ring-offset-stone-50'
-              )}
-            />
-          </div>
+          <SearchInput
+            ref={searchInputRef}
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            placeholder={t('searchPlaceholder')}
+            containerClassName="w-full"
+            className={cn(
+              'py-2', // History specific: py-2 instead of py-2.5
+              isDark
+                ? 'border-stone-700 bg-stone-800 text-stone-200 focus:ring-stone-600 focus:ring-offset-stone-900'
+                : 'border-stone-300 bg-white text-stone-800 focus:ring-stone-400 focus:ring-offset-stone-50'
+            )}
+          />
         </div>
 
         {/* Selection operation bar - centered display */}
