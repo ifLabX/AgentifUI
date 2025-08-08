@@ -2347,6 +2347,15 @@
       "downloadButton": "Скачать",
       "fileSize": "{size} МБ"
     },
+    "imagePreview": {
+      "title": "Предварительный просмотр изображения",
+      "downloadButton": "Скачать",
+      "loadError": "Ошибка загрузки изображения",
+      "downloadToView": "Скачать для просмотра",
+      "filename": "Имя файла",
+      "fileSize": "Размер файла",
+      "fileType": "Тип файла"
+    },
     "markdownPreview": {
       "title": "Предварительный просмотр Markdown",
       "renderedMode": "Отображение",

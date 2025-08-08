@@ -2347,6 +2347,15 @@
       "downloadButton": "Transferir",
       "fileSize": "{size} MB"
     },
+    "imagePreview": {
+      "title": "Pré-visualização de imagem",
+      "downloadButton": "Transferir",
+      "loadError": "Falha ao carregar imagem",
+      "downloadToView": "Transferir para ver",
+      "filename": "Nome do ficheiro",
+      "fileSize": "Tamanho do ficheiro",
+      "fileType": "Tipo de ficheiro"
+    },
     "markdownPreview": {
       "title": "Pré-visualização de Markdown",
       "renderedMode": "Renderizado",

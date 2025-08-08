@@ -2347,6 +2347,15 @@
       "downloadButton": "下載",
       "fileSize": "{size} MB"
     },
+    "imagePreview": {
+      "title": "圖片預覽",
+      "downloadButton": "下載",
+      "loadError": "圖片載入失敗",
+      "downloadToView": "下載檢視",
+      "filename": "檔案名稱",
+      "fileSize": "檔案大小",
+      "fileType": "檔案類型"
+    },
     "markdownPreview": {
       "title": "Markdown 預覽",
       "renderedMode": "渲染模式",

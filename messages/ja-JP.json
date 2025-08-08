@@ -2347,6 +2347,15 @@
       "downloadButton": "ダウンロード",
       "fileSize": "{size} MB"
     },
+    "imagePreview": {
+      "title": "画像プレビュー",
+      "downloadButton": "ダウンロード",
+      "loadError": "画像の読み込みに失敗しました",
+      "downloadToView": "ダウンロードして表示",
+      "filename": "ファイル名",
+      "fileSize": "ファイルサイズ",
+      "fileType": "ファイルタイプ"
+    },
     "markdownPreview": {
       "title": "Markdownプレビュー",
       "renderedMode": "レンダリング",
