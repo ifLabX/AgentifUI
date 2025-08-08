@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "Дополнительные опции"
-      }
+      },
+      "download": "Скачать",
+      "copy": "Копировать",
+      "copied": "Скопировано!",
+      "open": "Открыть",
+      "dismiss": "Закрыть"
     },
     "time": {
       "notRecorded": "Не записано",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Условное ветвление",
         "conversationManagement": "Управление разговором"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "Загрузка содержимого файла...",
+    "failed": "Не удалось загрузить файл",
+    "retryButton": "Повторить",
+    "dismissButton": "Закрыть",
+    "downloadButton": "Скачать файл",
+    "noFileSelected": "Файл не выбран",
+    "previewNotSupported": "Предварительный просмотр не поддерживается для этого типа файла. Вы можете скачать его для просмотра содержимого.",
+    "textPreview": {
+      "title": "Предварительный просмотр текста",
+      "copyButton": "Копировать",
+      "copiedButton": "Скопировано!",
+      "downloadButton": "Скачать",
+      "charactersCount": "{count} символов"
+    },
+    "pdfPreview": {
+      "title": "Предварительный просмотр PDF",
+      "openButton": "Открыть",
+      "downloadButton": "Скачать",
+      "fileSize": "{size} МБ"
+    },
+    "markdownPreview": {
+      "title": "Предварительный просмотр Markdown",
+      "renderedMode": "Отображение",
+      "rawMode": "Исходный текст",
+      "downloadButton": "Скачать",
+      "charactersCount": "{count} символов"
+    },
+    "errors": {
+      "noAppId": "ID приложения недоступен для предварительного просмотра файла",
+      "downloadNoAppId": "ID приложения недоступен для загрузки файла"
+    },
+    "fileInfo": {
+      "title": "Информация о файле",
+      "name": "Имя:",
+      "type": "Тип:",
+      "size": "Размер:"
     }
   }
 }

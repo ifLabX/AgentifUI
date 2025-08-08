@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "Plus d'options"
-      }
+      },
+      "download": "Télécharger",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "open": "Ouvrir",
+      "dismiss": "Fermer"
     },
     "time": {
       "notRecorded": "Non enregistré",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Branchement conditionnel",
         "conversationManagement": "Gestion de la conversation"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "Chargement du contenu du fichier...",
+    "failed": "Échec du chargement du fichier",
+    "retryButton": "Réessayer",
+    "dismissButton": "Fermer",
+    "downloadButton": "Télécharger le fichier",
+    "noFileSelected": "Aucun fichier sélectionné",
+    "previewNotSupported": "Aperçu non pris en charge pour ce type de fichier. Vous pouvez le télécharger pour voir le contenu.",
+    "textPreview": {
+      "title": "Aperçu du texte",
+      "copyButton": "Copier",
+      "copiedButton": "Copié !",
+      "downloadButton": "Télécharger",
+      "charactersCount": "{count} caractères"
+    },
+    "pdfPreview": {
+      "title": "Aperçu PDF",
+      "openButton": "Ouvrir",
+      "downloadButton": "Télécharger",
+      "fileSize": "{size} Mo"
+    },
+    "markdownPreview": {
+      "title": "Aperçu Markdown",
+      "renderedMode": "Rendu",
+      "rawMode": "Brut",
+      "downloadButton": "Télécharger",
+      "charactersCount": "{count} caractères"
+    },
+    "errors": {
+      "noAppId": "ID d'application non disponible pour l'aperçu du fichier",
+      "downloadNoAppId": "ID d'application non disponible pour le téléchargement du fichier"
+    },
+    "fileInfo": {
+      "title": "Informations du fichier",
+      "name": "Nom :",
+      "type": "Type :",
+      "size": "Taille :"
     }
   }
 }

@@ -7,6 +7,11 @@
       "retry": "重试",
       "remove": "移除",
       "error": "错误",
+      "download": "下载",
+      "copy": "复制",
+      "copied": "已复制！",
+      "open": "打开",
+      "dismiss": "关闭",
       "customSelect": {
         "placeholder": "请选择..."
       },
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "条件分支",
         "conversationManagement": "对话管理"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "正在加载文件内容...",
+    "failed": "文件加载失败",
+    "retryButton": "重试",
+    "dismissButton": "关闭",
+    "downloadButton": "下载文件",
+    "noFileSelected": "未选择文件",
+    "previewNotSupported": "不支持预览此文件类型。您可以下载查看内容。",
+    "textPreview": {
+      "title": "文本预览",
+      "copyButton": "复制",
+      "copiedButton": "已复制！",
+      "downloadButton": "下载",
+      "charactersCount": "{count} 个字符"
+    },
+    "pdfPreview": {
+      "title": "PDF 预览",
+      "openButton": "打开",
+      "downloadButton": "下载",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Markdown 预览",
+      "renderedMode": "渲染模式",
+      "rawMode": "原始模式",
+      "downloadButton": "下载",
+      "charactersCount": "{count} 个字符"
+    },
+    "errors": {
+      "noAppId": "文件预览缺少应用程序 ID",
+      "downloadNoAppId": "文件下载缺少应用程序 ID"
+    },
+    "fileInfo": {
+      "title": "文件信息",
+      "name": "名称：",
+      "type": "类型：",
+      "size": "大小："
     }
   }
 }

@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "更多選項"
-      }
+      },
+      "download": "下載",
+      "copy": "複製",
+      "copied": "已複製！",
+      "open": "開啟",
+      "dismiss": "關閉"
     },
     "time": {
       "notRecorded": "未記錄",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "條件分支",
         "conversationManagement": "對話管理"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "正在載入檔案內容...",
+    "failed": "檔案載入失敗",
+    "retryButton": "重試",
+    "dismissButton": "關閉",
+    "downloadButton": "下載檔案",
+    "noFileSelected": "未選擇檔案",
+    "previewNotSupported": "不支援預覽此檔案類型。您可以下載查看內容。",
+    "textPreview": {
+      "title": "文字預覽",
+      "copyButton": "複製",
+      "copiedButton": "已複製！",
+      "downloadButton": "下載",
+      "charactersCount": "{count} 個字符"
+    },
+    "pdfPreview": {
+      "title": "PDF 預覽",
+      "openButton": "開啟",
+      "downloadButton": "下載",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Markdown 預覽",
+      "renderedMode": "渲染模式",
+      "rawMode": "原始模式",
+      "downloadButton": "下載",
+      "charactersCount": "{count} 個字符"
+    },
+    "errors": {
+      "noAppId": "檔案預覽缺少應用程式 ID",
+      "downloadNoAppId": "檔案下載缺少應用程式 ID"
+    },
+    "fileInfo": {
+      "title": "檔案資訊",
+      "name": "名稱：",
+      "type": "類型：",
+      "size": "大小："
     }
   }
 }

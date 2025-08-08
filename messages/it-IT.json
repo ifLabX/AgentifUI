@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "Altre opzioni"
-      }
+      },
+      "download": "Scarica",
+      "copy": "Copia",
+      "copied": "Copiato!",
+      "open": "Apri",
+      "dismiss": "Chiudi"
     },
     "time": {
       "notRecorded": "Non registrato",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Ramificazione Condizionale",
         "conversationManagement": "Gestione della Conversazione"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "Caricamento contenuto file...",
+    "failed": "Caricamento file fallito",
+    "retryButton": "Riprova",
+    "dismissButton": "Chiudi",
+    "downloadButton": "Scarica file",
+    "noFileSelected": "Nessun file selezionato",
+    "previewNotSupported": "Anteprima non supportata per questo tipo di file. Puoi scaricarlo per visualizzare il contenuto.",
+    "textPreview": {
+      "title": "Anteprima testo",
+      "copyButton": "Copia",
+      "copiedButton": "Copiato!",
+      "downloadButton": "Scarica",
+      "charactersCount": "{count} caratteri"
+    },
+    "pdfPreview": {
+      "title": "Anteprima PDF",
+      "openButton": "Apri",
+      "downloadButton": "Scarica",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Anteprima Markdown",
+      "renderedMode": "Renderizzato",
+      "rawMode": "Grezzo",
+      "downloadButton": "Scarica",
+      "charactersCount": "{count} caratteri"
+    },
+    "errors": {
+      "noAppId": "ID applicazione non disponibile per anteprima file",
+      "downloadNoAppId": "ID applicazione non disponibile per download file"
+    },
+    "fileInfo": {
+      "title": "Informazioni file",
+      "name": "Nome:",
+      "type": "Tipo:",
+      "size": "Dimensione:"
     }
   }
 }

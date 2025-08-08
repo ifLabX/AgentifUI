@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "Mais opções"
-      }
+      },
+      "download": "Transferir",
+      "copy": "Copiar",
+      "copied": "Copiado!",
+      "open": "Abrir",
+      "dismiss": "Fechar"
     },
     "time": {
       "notRecorded": "Não registado",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Ramificação Condicional",
         "conversationManagement": "Gestão de Conversa"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "A carregar conteúdo do ficheiro...",
+    "failed": "Falha ao carregar ficheiro",
+    "retryButton": "Tentar novamente",
+    "dismissButton": "Fechar",
+    "downloadButton": "Transferir ficheiro",
+    "noFileSelected": "Nenhum ficheiro selecionado",
+    "previewNotSupported": "Pré-visualização não suportada para este tipo de ficheiro. Pode transferir para ver o conteúdo.",
+    "textPreview": {
+      "title": "Pré-visualização de texto",
+      "copyButton": "Copiar",
+      "copiedButton": "Copiado!",
+      "downloadButton": "Transferir",
+      "charactersCount": "{count} caracteres"
+    },
+    "pdfPreview": {
+      "title": "Pré-visualização de PDF",
+      "openButton": "Abrir",
+      "downloadButton": "Transferir",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Pré-visualização de Markdown",
+      "renderedMode": "Renderizado",
+      "rawMode": "Bruto",
+      "downloadButton": "Transferir",
+      "charactersCount": "{count} caracteres"
+    },
+    "errors": {
+      "noAppId": "ID da aplicação não disponível para pré-visualização do ficheiro",
+      "downloadNoAppId": "ID da aplicação não disponível para transferência do ficheiro"
+    },
+    "fileInfo": {
+      "title": "Informação do ficheiro",
+      "name": "Nome:",
+      "type": "Tipo:",
+      "size": "Tamanho:"
     }
   }
 }

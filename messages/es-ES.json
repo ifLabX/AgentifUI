@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "Más opciones"
-      }
+      },
+      "download": "Descargar",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "open": "Abrir",
+      "dismiss": "Cerrar"
     },
     "time": {
       "notRecorded": "No registrado",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Ramificación Condicional",
         "conversationManagement": "Gestión de Conversaciones"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "Cargando contenido del archivo...",
+    "failed": "Error al cargar el archivo",
+    "retryButton": "Reintentar",
+    "dismissButton": "Cerrar",
+    "downloadButton": "Descargar archivo",
+    "noFileSelected": "No se seleccionó ningún archivo",
+    "previewNotSupported": "No se admite la vista previa de este tipo de archivo. Puedes descargarlo para ver el contenido.",
+    "textPreview": {
+      "title": "Vista previa de texto",
+      "copyButton": "Copiar",
+      "copiedButton": "¡Copiado!",
+      "downloadButton": "Descargar",
+      "charactersCount": "{count} caracteres"
+    },
+    "pdfPreview": {
+      "title": "Vista previa de PDF",
+      "openButton": "Abrir",
+      "downloadButton": "Descargar",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Vista previa de Markdown",
+      "renderedMode": "Renderizado",
+      "rawMode": "Sin formato",
+      "downloadButton": "Descargar",
+      "charactersCount": "{count} caracteres"
+    },
+    "errors": {
+      "noAppId": "ID de aplicación no disponible para vista previa del archivo",
+      "downloadNoAppId": "ID de aplicación no disponible para descarga del archivo"
+    },
+    "fileInfo": {
+      "title": "Información del archivo",
+      "name": "Nombre:",
+      "type": "Tipo:",
+      "size": "Tamaño:"
     }
   }
 }

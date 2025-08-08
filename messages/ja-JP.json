@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "その他のオプション"
-      }
+      },
+      "download": "ダウンロード",
+      "copy": "コピー",
+      "copied": "コピーしました！",
+      "open": "開く",
+      "dismiss": "閉じる"
     },
     "time": {
       "notRecorded": "記録なし",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "条件分岐",
         "conversationManagement": "会話管理"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "ファイル内容を読み込み中...",
+    "failed": "ファイルの読み込みに失敗しました",
+    "retryButton": "再試行",
+    "dismissButton": "閉じる",
+    "downloadButton": "ファイルダウンロード",
+    "noFileSelected": "ファイルが選択されていません",
+    "previewNotSupported": "このファイルタイプのプレビューはサポートされていません。ダウンロードして内容を確認できます。",
+    "textPreview": {
+      "title": "テキストプレビュー",
+      "copyButton": "コピー",
+      "copiedButton": "コピーしました！",
+      "downloadButton": "ダウンロード",
+      "charactersCount": "{count} 文字"
+    },
+    "pdfPreview": {
+      "title": "PDFプレビュー",
+      "openButton": "開く",
+      "downloadButton": "ダウンロード",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Markdownプレビュー",
+      "renderedMode": "レンダリング",
+      "rawMode": "生テキスト",
+      "downloadButton": "ダウンロード",
+      "charactersCount": "{count} 文字"
+    },
+    "errors": {
+      "noAppId": "ファイルプレビューに必要なアプリケーションIDがありません",
+      "downloadNoAppId": "ファイルダウンロードに必要なアプリケーションIDがありません"
+    },
+    "fileInfo": {
+      "title": "ファイル情報",
+      "name": "名前：",
+      "type": "タイプ：",
+      "size": "サイズ："
     }
   }
 }

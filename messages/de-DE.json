@@ -23,7 +23,12 @@
       },
       "moreButton": {
         "ariaLabel": "Weitere Optionen"
-      }
+      },
+      "download": "Herunterladen",
+      "copy": "Kopieren",
+      "copied": "Kopiert!",
+      "open": "Öffnen",
+      "dismiss": "Schließen"
     },
     "time": {
       "notRecorded": "Nicht aufgezeichnet",
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Bedingte Verzweigung",
         "conversationManagement": "Unterhaltungsmanagement"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "Dateiinhalt wird geladen...",
+    "failed": "Datei konnte nicht geladen werden",
+    "retryButton": "Wiederholen",
+    "dismissButton": "Schließen",
+    "downloadButton": "Datei herunterladen",
+    "noFileSelected": "Keine Datei ausgewählt",
+    "previewNotSupported": "Vorschau für diesen Dateityp nicht unterstützt. Sie können die Datei herunterladen, um den Inhalt anzuzeigen.",
+    "textPreview": {
+      "title": "Textvorschau",
+      "copyButton": "Kopieren",
+      "copiedButton": "Kopiert!",
+      "downloadButton": "Herunterladen",
+      "charactersCount": "{count} Zeichen"
+    },
+    "pdfPreview": {
+      "title": "PDF-Vorschau",
+      "openButton": "Öffnen",
+      "downloadButton": "Herunterladen",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Markdown-Vorschau",
+      "renderedMode": "Gerendert",
+      "rawMode": "Roh",
+      "downloadButton": "Herunterladen",
+      "charactersCount": "{count} Zeichen"
+    },
+    "errors": {
+      "noAppId": "Keine Anwendungs-ID für Dateivorschau verfügbar",
+      "downloadNoAppId": "Keine Anwendungs-ID für Dateidownload verfügbar"
+    },
+    "fileInfo": {
+      "title": "Dateiinformationen",
+      "name": "Name:",
+      "type": "Typ:",
+      "size": "Größe:"
     }
   }
 }
