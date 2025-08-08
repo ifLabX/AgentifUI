@@ -29,7 +29,7 @@ import { cn } from '@lib/utils';
 import { Edit, Plus, Save, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -88,7 +88,7 @@ export function ProviderManagementModal({
   });
   const [errors, setErrors] = useState<Partial<ProviderFormData>>({});
 
-  const loadProviders = async () => {
+  const loadProviders = useCallback(async () => {
     setLoading(true);
     try {
       const result = await getAllProviders();
@@ -103,7 +103,7 @@ export function ProviderManagementModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     if (open) {
