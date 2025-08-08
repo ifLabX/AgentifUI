@@ -2,6 +2,7 @@
 
 import { UserMessageActions } from '@components/chat/message-actions';
 import { useMobile, useMounted, useTheme } from '@lib/hooks';
+import { useCurrentApp } from '@lib/hooks/use-current-app';
 import { MessageAttachment } from '@lib/stores/chat-store';
 import { cn } from '@lib/utils';
 
@@ -28,6 +29,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   const { isDark } = useTheme();
   const isMobile = useMobile();
   const isMounted = useMounted();
+  const { currentAppId } = useCurrentApp();
   const hasAttachments = attachments && attachments.length > 0;
 
   if (!isMounted) {
@@ -46,7 +48,9 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               size: att.size,
               type: att.type,
               upload_file_id: att.upload_file_id,
+              app_id: att.app_id || currentAppId || undefined, // Preserve app_id or use current app ID
             }))}
+            appId={currentAppId || undefined} // Pass current app ID for file preview
             isDark={isDark}
             className={cn('mb-2 w-full')}
           />
