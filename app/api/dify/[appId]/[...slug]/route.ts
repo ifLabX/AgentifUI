@@ -453,6 +453,34 @@ async function proxyToDify(
 
         return baseResponse;
       }
+      // handle image response (file preview/download) - direct pipe binary data
+      else if (
+        responseContentType?.startsWith('image/') ||
+        responseContentType === 'application/octet-stream'
+      ) {
+        console.log(
+          `[App: ${appId}] [${req.method}] Image/Binary response detected.`
+        );
+        const imageHeaders = createMinimalHeaders(); // Start with minimal CORS
+        response.headers.forEach((value, key) => {
+          // copy essential image/binary headers
+          if (
+            key.toLowerCase().startsWith('content-') ||
+            key.toLowerCase() === 'accept-ranges' ||
+            key.toLowerCase() === 'vary'
+          ) {
+            imageHeaders.set(key, value);
+          }
+        });
+        // direct pipe binary data to preserve integrity
+        const baseResponse = new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: imageHeaders,
+        });
+
+        return baseResponse;
+      }
       // handle regular response (mainly JSON or Text)
       else {
         // handle non-streaming response
