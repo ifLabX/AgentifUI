@@ -48,6 +48,7 @@ scripts/*
 
 # env files
 .env.*
+.env
 !env.example
 
 # docs
