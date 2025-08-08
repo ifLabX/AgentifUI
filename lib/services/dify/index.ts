@@ -61,7 +61,7 @@ export {
 } from './annotation-service';
 
 // File Service
-export { uploadDifyFile } from './file-service';
+export { uploadDifyFile, previewDifyFile } from './file-service';
 
 // Type Definitions
 export type {
@@ -118,7 +118,12 @@ export type {
   DifyAsyncJobResponse,
   DifyAsyncJobStatusResponse,
 
-  // Common Types
+  // File Related Types
   DifyFile,
+  DifyFileUploadResponse,
+  DifyFilePreviewOptions,
+  DifyFilePreviewResponse,
+
+  // Common Types
   DifyApiError,
 } from './types';

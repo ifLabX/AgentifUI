@@ -589,6 +589,37 @@ export interface DifyFileUploadResponse {
 }
 
 /**
+ * File preview request options
+ * @description Options for file preview/download API requests
+ */
+export interface DifyFilePreviewOptions {
+  /** Whether to force download the file as an attachment. Default is false (preview in browser) */
+  as_attachment?: boolean;
+}
+
+/**
+ * File preview response metadata
+ * @description Response headers and metadata for file preview API
+ */
+export interface DifyFilePreviewResponse {
+  /** File content as blob */
+  content: Blob;
+  /** Response headers */
+  headers: {
+    /** MIME type of the file */
+    contentType: string;
+    /** File size in bytes */
+    contentLength?: number;
+    /** Content disposition header */
+    contentDisposition?: string;
+    /** Cache control header */
+    cacheControl?: string;
+    /** Accept ranges header for audio/video files */
+    acceptRanges?: string;
+  };
+}
+
+/**
  * Messages API Type Definitions
  * @description Type definitions for Dify messages API endpoints
  */
