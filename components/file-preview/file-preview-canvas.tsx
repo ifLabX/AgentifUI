@@ -17,6 +17,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 
 import { FilePreviewBackdrop } from './file-preview-backdrop';
+import { ImagePreview } from './previews/image-preview';
 import { MarkdownPreview } from './previews/markdown-preview';
 import { PDFPreview } from './previews/pdf-preview';
 import { TextPreview } from './previews/text-preview';
@@ -279,6 +280,17 @@ const FileContentViewer: React.FC<{
   if (contentType === 'application/pdf') {
     return (
       <PDFPreview
+        content={previewContent}
+        filename={file.name}
+        onDownload={downloadFile}
+      />
+    );
+  }
+
+  // Image files (JPG, PNG, GIF, WebP, etc.)
+  if (contentType.startsWith('image/')) {
+    return (
+      <ImagePreview
         content={previewContent}
         filename={file.name}
         onDownload={downloadFile}
