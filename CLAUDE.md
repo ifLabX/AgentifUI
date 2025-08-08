@@ -238,6 +238,10 @@ pnpm fix:eslint
 pnpm type-check
 ```
 
+## Code Quality Standards
+
+- **Logging Policy**: Avoid `console.log` in production code except for debugging purposes
+
 # important-instruction-reminders
 
 Do what has been asked; nothing more, nothing less.
