@@ -145,7 +145,7 @@ pnpm run build
 ## 🤝 Getting Help / Contributing
 
 - **Issues & PRs**: Please open them on [GitHub Issues](https://github.com/ifLabX/AgentifUI/issues). All contributors must pass the CLA bot check.
-- **Security reports**: Please email [bitifirefly@gmail.com](mailto:bitifirefly@gmail.com)
+- **Security reports**: Please email [security@iflabx.com](mailto:security@iflabx.com)
 - **Enterprise/OEM inquiries**: For commercial support or integration, email [license@iflabx.com](mailto:license@iflabx.com)
 
 > AgentifUI is dual-licensed. The Community Edition is open source under **Apache 2.0**; the Enterprise Edition adds multi-tenant, SAML/LDAP, branding removal and SLA support under a commercial license. See `LICENSE`, `NOTICE` and `TRADEMARK_POLICY.md` for details.
