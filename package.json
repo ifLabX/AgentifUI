@@ -12,6 +12,7 @@
     "start": "next start",
     "start:standalone": "pnpm build:standalone && [ -d .next/static ] && cp -r .next/static .next/standalone/.next/static || echo 'No static files to copy' && [ -d public ] && cp -r public .next/standalone/public || echo 'No public directory found' && cross-env PORT=$npm_config_port HOSTNAME=$npm_config_host node .next/standalone/server.js",
     "lint": "pnpx oxlint && eslint --cache --cache-location node_modules/.cache/eslint/.eslint-cache .",
+    "lint:files": "eslint --cache --cache-location node_modules/.cache/eslint/.eslint-cache",
     "lint:fast": "pnpx oxlint",
     "lint:eslint": "eslint --cache --cache-location node_modules/.cache/eslint/.eslint-cache .",
     "lint:errors": "pnpx oxlint && eslint --cache --cache-location node_modules/.cache/eslint/.eslint-cache . --quiet",

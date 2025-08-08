@@ -11,7 +11,7 @@ import type { DifySseEvent } from '@lib/services/dify/types';
 // - 'error': Error occurred during parsing
 export type SseParserResult =
   | { type: 'event'; event: DifySseEvent } // Successfully parsed a Dify event
-  | { type: 'error'; error: any };
+  | { type: 'error'; error: Error };
 
 // Core SSE parsing function
 // Uses an async generator (AsyncGenerator) to process streaming data.
@@ -69,7 +69,7 @@ export async function* parseSseStream(
   } catch (error) {
     console.error('[SSE Parser] Error reading or processing stream:', error);
     // This yield is legal in the top-level try...catch
-    yield { type: 'error', error: error }; // Yield error event on read error
+    yield { type: 'error', error: error as Error }; // Yield error event on read error
   } finally {
     reader.releaseLock(); // Ensure reader lock is released
     console.log('[SSE Parser] Reader lock released.');
@@ -197,7 +197,7 @@ export async function* parseSseStream(
         currentData
       );
       // If data cannot be parsed as JSON, return an error event object
-      result = { type: 'error', error: jsonError };
+      result = { type: 'error', error: jsonError as Error };
     }
 
     // After dispatching an event (success or error), reset state for next event
