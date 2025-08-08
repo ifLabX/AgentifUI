@@ -14,6 +14,8 @@ export interface MessageAttachment {
   type: string;
   /** Uploaded file ID */
   upload_file_id: string;
+  /** Dify application ID for API calls (optional for backward compatibility) */
+  app_id?: string;
 }
 
 /**
@@ -49,7 +51,7 @@ export interface ChatMessage {
   /** Token count, for billing or statistics */
   token_count?: number;
   /** Metadata, stores additional info */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -138,7 +140,7 @@ interface ChatState {
  * Chat state management store
  * @description Uses Zustand to manage chat-related state and actions
  */
-export const useChatStore = create<ChatState>((set, get) => ({
+export const useChatStore = create<ChatState>(set => ({
   // Initial state
   messages: [],
   streamingMessageId: null,

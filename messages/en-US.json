@@ -7,6 +7,11 @@
       "retry": "Retry",
       "remove": "Remove",
       "error": "Error",
+      "download": "Download",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "open": "Open",
+      "dismiss": "Dismiss",
       "customSelect": {
         "placeholder": "Please select..."
       },
@@ -2319,6 +2324,45 @@
         "conditionalBranching": "Conditional Branching",
         "conversationManagement": "Conversation Management"
       }
+    }
+  },
+  "filePreview": {
+    "loading": "Loading file content...",
+    "failed": "Failed to load file",
+    "retryButton": "Retry",
+    "dismissButton": "Dismiss",
+    "downloadButton": "Download File",
+    "noFileSelected": "No file selected",
+    "previewNotSupported": "Preview not supported for this file type. You can download it to view the content.",
+    "textPreview": {
+      "title": "Text Preview",
+      "copyButton": "Copy",
+      "copiedButton": "Copied!",
+      "downloadButton": "Download",
+      "charactersCount": "{count} characters"
+    },
+    "pdfPreview": {
+      "title": "PDF Preview",
+      "openButton": "Open",
+      "downloadButton": "Download",
+      "fileSize": "{size} MB"
+    },
+    "markdownPreview": {
+      "title": "Markdown Preview",
+      "renderedMode": "Rendered",
+      "rawMode": "Raw",
+      "downloadButton": "Download",
+      "charactersCount": "{count} characters"
+    },
+    "errors": {
+      "noAppId": "No application ID available for file preview",
+      "downloadNoAppId": "No application ID available for file download"
+    },
+    "fileInfo": {
+      "title": "File Information",
+      "name": "Name:",
+      "type": "Type:",
+      "size": "Size:"
     }
   }
 }

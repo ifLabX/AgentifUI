@@ -18,6 +18,7 @@ import React from 'react';
 
 interface FileAttachmentDisplayProps {
   attachments: MessageAttachment[];
+  appId?: string; // Dify application ID for preview functionality
   isDark?: boolean;
   className?: string;
 }
@@ -59,6 +60,7 @@ const getFileIcon = (mimeType: string | undefined) => {
  */
 export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
   attachments,
+  appId,
   isDark = false,
   className,
 }) => {
@@ -85,7 +87,14 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
         sidebarState.toggleSidebar();
       }
     }
-    openPreview(attachment);
+
+    // Create enhanced attachment with appId if available
+    const enhancedAttachment: MessageAttachment = {
+      ...attachment,
+      app_id: appId || attachment.app_id,
+    };
+
+    openPreview(enhancedAttachment, appId);
   };
 
   return (
