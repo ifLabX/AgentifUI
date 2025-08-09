@@ -41,6 +41,9 @@ export function UserBottomSheet({
   // Use useProfile hook to get user information
   const { profile } = useProfile();
 
+  // Get version from environment variable
+  const version = process.env.NEXT_PUBLIC_APP_VERSION;
+
   // Extract user information from profile
   const userName = profile?.full_name || profile?.username || t('defaultUser');
   const userRole =
@@ -75,7 +78,8 @@ export function UserBottomSheet({
     icon: React.ReactNode,
     label: string,
     onClick: () => void,
-    danger: boolean = false
+    danger: boolean = false,
+    showVersion: boolean = false
   ) => (
     <button
       onClick={onClick}
@@ -94,7 +98,18 @@ export function UserBottomSheet({
       )}
     >
       <span className="mr-3 flex-shrink-0">{icon}</span>
-      <span className="font-serif font-medium">{label}</span>
+      <span className="flex-1 font-serif font-medium">{label}</span>
+      {/* Show version number if requested */}
+      {showVersion && version && (
+        <span
+          className={cn(
+            'font-serif text-xs opacity-60',
+            isDark ? 'text-stone-400' : 'text-stone-500'
+          )}
+        >
+          v{version}
+        </span>
+      )}
     </button>
   );
 
@@ -166,7 +181,9 @@ export function UserBottomSheet({
               () => {
                 router.push('/about');
                 onClose();
-              }
+              },
+              false, // not a danger item
+              true // show version number
             )}
           </div>
 

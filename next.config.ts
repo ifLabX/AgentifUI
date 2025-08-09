@@ -3,6 +3,8 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+import pkg from './package.json';
+
 /**
  * Next.js Configuration
  * @description Configure Next.js with traditional webpack to avoid Turbopack font loading issues
@@ -19,6 +21,11 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+  // Inject version information for frontend display
+  env: {
+    NEXT_PUBLIC_APP_VERSION: pkg.version,
+  },
 
   // Enable standalone output only when explicitly requested
   output:

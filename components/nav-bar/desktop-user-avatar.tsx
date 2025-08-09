@@ -25,6 +25,9 @@ export function DesktopUserAvatar() {
   const t = useTranslations('navbar.user');
   const tRoles = useTranslations('pages.settings.profileSettings.roles');
 
+  // Get version from environment variable
+  const version = process.env.NEXT_PUBLIC_APP_VERSION;
+
   // Use useProfile hook to get user information, automatically handle cache and authentication status synchronization
   const { profile } = useProfile();
 
@@ -269,6 +272,17 @@ export function DesktopUserAvatar() {
                         >
                           {item.label}
                         </span>
+                        {/* Show version number for About menu item */}
+                        {item.label === t('about') && version && (
+                          <span
+                            className={cn(
+                              'font-serif text-xs opacity-60',
+                              isDark ? 'text-[#a8a29e]' : 'text-[#78716c]'
+                            )}
+                          >
+                            v{version}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
