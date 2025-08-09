@@ -1,3 +1,4 @@
+import { MediaResponseHandler } from '@lib/api/dify/handlers/media-response-handler';
 import { getDifyAppConfig } from '@lib/config/dify-config';
 import { type DifyAppConfig } from '@lib/config/dify-config';
 import { createClient } from '@lib/supabase/server';
@@ -430,105 +431,19 @@ async function proxyToDify(
         return baseResponse;
       }
 
-      // handle audio response (text-to-speech) - keep simple direct pipe method
-      else if (responseContentType?.startsWith('audio/')) {
-        console.log(`[App: ${appId}] [${req.method}] Audio response detected.`);
-        const audioHeaders = createMinimalHeaders(); // Start with minimal CORS
-        response.headers.forEach((value, key) => {
-          // copy essential audio headers
-          if (
-            key.toLowerCase().startsWith('content-') ||
-            key.toLowerCase() === 'accept-ranges' ||
-            key.toLowerCase() === 'vary'
-          ) {
-            audioHeaders.set(key, value);
-          }
-        });
-        // for one-time streams, direct pipe is usually efficient and stable enough, middleware will automatically add CORS headers
-        const baseResponse = new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: audioHeaders,
-        });
-
-        return baseResponse;
-      }
-      // handle video response (file preview/download) - direct pipe binary data
-      else if (responseContentType?.startsWith('video/')) {
-        console.log(`[App: ${appId}] [${req.method}] Video response detected.`);
-        const videoHeaders = createMinimalHeaders(); // Start with minimal CORS
-        response.headers.forEach((value, key) => {
-          // copy essential video headers
-          if (
-            key.toLowerCase().startsWith('content-') ||
-            key.toLowerCase() === 'accept-ranges' ||
-            key.toLowerCase() === 'vary'
-          ) {
-            videoHeaders.set(key, value);
-          }
-        });
-        // direct pipe binary data to preserve integrity
-        const baseResponse = new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: videoHeaders,
-        });
-
-        return baseResponse;
-      }
-      // handle PDF response (file preview/download) - direct pipe binary data
-      else if (responseContentType === 'application/pdf') {
-        console.log(`[App: ${appId}] [${req.method}] PDF response detected.`);
-        const pdfHeaders = createMinimalHeaders(); // Start with minimal CORS
-        response.headers.forEach((value, key) => {
-          // copy essential PDF headers
-          if (
-            key.toLowerCase().startsWith('content-') ||
-            key.toLowerCase() === 'accept-ranges' ||
-            key.toLowerCase() === 'vary'
-          ) {
-            pdfHeaders.set(key, value);
-          }
-        });
-        // direct pipe binary data to preserve integrity
-        const baseResponse = new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: pdfHeaders,
-        });
-
-        return baseResponse;
-      }
-      // handle image response (file preview/download) - direct pipe binary data
-      else if (
-        responseContentType?.startsWith('image/') ||
-        responseContentType === 'application/octet-stream'
-      ) {
-        console.log(
-          `[App: ${appId}] [${req.method}] Image/Binary response detected.`
-        );
-        const imageHeaders = createMinimalHeaders(); // Start with minimal CORS
-        response.headers.forEach((value, key) => {
-          // copy essential image/binary headers
-          if (
-            key.toLowerCase().startsWith('content-') ||
-            key.toLowerCase() === 'accept-ranges' ||
-            key.toLowerCase() === 'vary'
-          ) {
-            imageHeaders.set(key, value);
-          }
-        });
-        // direct pipe binary data to preserve integrity
-        const baseResponse = new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: imageHeaders,
-        });
-
-        return baseResponse;
-      }
-      // handle regular response (mainly JSON or Text)
+      // Try to handle as media response (audio, video, PDF, image) using centralized handler
       else {
+        const mediaResponse = MediaResponseHandler.handleMediaResponse(
+          response,
+          appId,
+          req.method
+        );
+
+        if (mediaResponse) {
+          return mediaResponse;
+        }
+
+        // handle regular response (mainly JSON or Text) - fallback when not a media type
         // handle non-streaming response
         const responseData = await response.text();
         try {
