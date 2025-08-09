@@ -1,5 +1,6 @@
 'use client';
 
+import { VersionTag } from '@components/ui';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
@@ -19,12 +20,6 @@ interface UserBottomSheetProps {
   onLogoutClick?: () => void;
 }
 
-/**
- * User bottom sheet content component
- * Display different content based on user login status
- * Login state: display user information and operation buttons (settings, theme switch, logout, etc.)
- * Unlogged state: display login and register buttons
- */
 export function UserBottomSheet({
   isOpen,
   onClose,
@@ -38,34 +33,24 @@ export function UserBottomSheet({
   const tMenu = useTranslations('mobile.menu');
   const tRoles = useTranslations('pages.settings.profileSettings.roles');
 
-  // Use useProfile hook to get user information
   const { profile } = useProfile();
-
-  // Get version from environment variable
-  const version = process.env.NEXT_PUBLIC_APP_VERSION;
-
-  // Extract user information from profile
   const userName = profile?.full_name || profile?.username || t('defaultUser');
   const userRole =
     profile?.role === 'admin'
       ? tRoles('admin')
       : profile?.role === 'manager'
         ? tRoles('manager')
-        : tRoles('user'); // Display user role instead of fixed "group system"
-
-  // Handle login
+        : tRoles('user');
   const handleLogin = () => {
     router.push('/login');
     onClose();
   };
 
-  // Handle registration
   const handleRegister = () => {
     router.push('/register');
     onClose();
   };
 
-  // Handle logout - trigger confirmation dialog
   const handleLogout = () => {
     if (onLogoutClick) {
       onLogoutClick();
@@ -73,7 +58,6 @@ export function UserBottomSheet({
     }
   };
 
-  // Render menu items
   const renderMenuItem = (
     icon: React.ReactNode,
     label: string,
@@ -85,7 +69,6 @@ export function UserBottomSheet({
       onClick={onClick}
       className={cn(
         'flex w-full items-center rounded-lg px-4 py-3',
-        // Light/dark mode style
         isDark
           ? danger
             ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300'
@@ -93,21 +76,14 @@ export function UserBottomSheet({
           : danger
             ? 'text-red-600 hover:bg-red-50 hover:text-red-700'
             : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900',
-        // Shared style
         'transition-colors duration-200'
       )}
     >
       <span className="mr-3 flex-shrink-0">{icon}</span>
-      <span className="flex-1 font-serif font-medium">{label}</span>
-      {/* Show version number if requested */}
-      {showVersion && version && (
-        <span
-          className={cn(
-            'font-serif text-xs opacity-60',
-            isDark ? 'text-stone-400' : 'text-stone-500'
-          )}
-        >
-          v{version}
+      <span className="font-serif font-medium">{label}</span>
+      {showVersion && (
+        <span className="ml-auto">
+          <VersionTag variant="tag" size="xs" />
         </span>
       )}
     </button>
@@ -121,7 +97,6 @@ export function UserBottomSheet({
     >
       {isLoggedIn ? (
         <div className="flex flex-col">
-          {/* User information area - simple design */}
           <div
             className={cn(
               'mb-3 rounded-lg px-3 py-2',
@@ -146,7 +121,6 @@ export function UserBottomSheet({
             </div>
           </div>
 
-          {/* Menu options */}
           <div
             className={cn(
               'space-y-1 overflow-hidden rounded-lg',
@@ -158,7 +132,7 @@ export function UserBottomSheet({
           >
             {profile?.role === 'admin' &&
               renderMenuItem(
-                <Wrench className="h-5 w-5" />, // Admin backend
+                <Wrench className="h-5 w-5" />,
                 tMenu('adminPanel'),
                 () => {
                   router.push('/admin');
@@ -167,7 +141,7 @@ export function UserBottomSheet({
               )}
 
             {renderMenuItem(
-              <Sliders className="h-5 w-5" />, // Settings
+              <Sliders className="h-5 w-5" />,
               tMenu('settings'),
               () => {
                 router.push('/settings');
@@ -176,18 +150,17 @@ export function UserBottomSheet({
             )}
 
             {renderMenuItem(
-              <Info className="h-5 w-5" />, // About
+              <Info className="h-5 w-5" />,
               tMenu('about'),
               () => {
                 router.push('/about');
                 onClose();
               },
-              false, // not a danger item
-              true // show version number
+              false,
+              true
             )}
           </div>
 
-          {/* Logout button (separate group) */}
           <div
             className={cn(
               'overflow-hidden rounded-lg',
@@ -197,7 +170,7 @@ export function UserBottomSheet({
             )}
           >
             {renderMenuItem(
-              <LogOut className="h-5 w-5" />, // Logout
+              <LogOut className="h-5 w-5" />,
               tMenu('logout'),
               handleLogout,
               true

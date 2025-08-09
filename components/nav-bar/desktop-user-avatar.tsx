@@ -1,6 +1,6 @@
 'use client';
 
-import { LogoutConfirmDialog, UserAvatar } from '@components/ui';
+import { LogoutConfirmDialog, UserAvatar, VersionTag } from '@components/ui';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
@@ -11,24 +11,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-/**
- * Desktop user avatar menu component
- * Features:
- * - Pure circular avatar design, no outer frame
- * - Use useProfile hook to get user information, ensure synchronization with authentication status
- * - Use inline styles to ensure theme consistency
- * - Optimized rendering performance, reduce re-rendering
- */
 export function DesktopUserAvatar() {
   const { isDark } = useThemeColors();
   const router = useRouter();
   const t = useTranslations('navbar.user');
   const tRoles = useTranslations('pages.settings.profileSettings.roles');
-
-  // Get version from environment variable
-  const version = process.env.NEXT_PUBLIC_APP_VERSION;
-
-  // Use useProfile hook to get user information, automatically handle cache and authentication status synchronization
   const { profile } = useProfile();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,7 +25,6 @@ export function DesktopUserAvatar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  // Click outside to close the dropdown menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -60,34 +46,29 @@ export function DesktopUserAvatar() {
     };
   }, [isDropdownOpen]);
 
-  // Switch dropdown menu
   const toggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDropdownOpen(prev => {
       if (prev) {
-        // Reset hover state when menu is closed
         setHoveredItem(null);
       }
       return !prev;
     });
   };
 
-  // Handle menu item click
   const handleMenuItemClick = (action: () => void) => {
     action();
     setIsDropdownOpen(false);
     setHoveredItem(null);
   };
 
-  // Handle logout - display confirmation dialog
   const handleLogout = () => {
     setShowLogoutDialog(true);
     setIsDropdownOpen(false);
     setHoveredItem(null);
   };
 
-  // Menu item definition
   const menuItems = [
     {
       icon: Clock,
@@ -106,7 +87,6 @@ export function DesktopUserAvatar() {
     },
   ];
 
-  // Admin-specific menu items, only displayed for admin users
   const adminMenuItems = [
     {
       icon: Wrench,
@@ -115,7 +95,6 @@ export function DesktopUserAvatar() {
     },
   ];
 
-  // Merge menu items based on user role
   const allMenuItems =
     profile?.role === 'admin' ? [...menuItems, ...adminMenuItems] : menuItems;
 
@@ -126,19 +105,17 @@ export function DesktopUserAvatar() {
       ? tRoles('admin')
       : profile?.role === 'manager'
         ? tRoles('manager')
-        : tRoles('user'); // Display user role instead of fixed "Group System"
+        : tRoles('user');
   const avatarUrl = profile?.avatar_url;
 
   return (
     <>
-      {/* Logout confirmation dialog */}
       <LogoutConfirmDialog
         isOpen={showLogoutDialog}
         onClose={() => setShowLogoutDialog(false)}
       />
 
       <div className="relative mr-1">
-        {/* Pure circular avatar button - use inline styles to avoid flickering */}
         <button
           ref={triggerRef}
           onClick={toggleDropdown}
@@ -154,15 +131,12 @@ export function DesktopUserAvatar() {
           aria-label={isLoggedIn ? t('userMenu') : t('login')}
         >
           {isLoggedIn ? (
-            <>
-              {/* Pure circular avatar - no border */}
-              <UserAvatar
-                avatarUrl={avatarUrl}
-                userName={userName}
-                size="lg"
-                className="h-9 w-9 transition-all duration-200"
-              />
-            </>
+            <UserAvatar
+              avatarUrl={avatarUrl}
+              userName={userName}
+              size="lg"
+              className="h-9 w-9 transition-all duration-200"
+            />
           ) : (
             <div
               style={{
@@ -182,8 +156,6 @@ export function DesktopUserAvatar() {
             </div>
           )}
         </button>
-
-        {/* Dropdown menu */}
         {isDropdownOpen && (
           <div
             ref={dropdownRef}
@@ -196,7 +168,6 @@ export function DesktopUserAvatar() {
           >
             {isLoggedIn ? (
               <>
-                {/* User information header - no avatar version */}
                 <div
                   className={cn(
                     'mb-2 rounded-lg p-3',
@@ -227,7 +198,6 @@ export function DesktopUserAvatar() {
                   </div>
                 </div>
 
-                {/* Divider */}
                 <div
                   className={cn(
                     'mb-2 h-px w-full',
@@ -235,7 +205,6 @@ export function DesktopUserAvatar() {
                   )}
                 />
 
-                {/* Menu items */}
                 <div className="space-y-1">
                   {allMenuItems.map((item, index) => {
                     const itemKey = `menu-${index}`;
@@ -272,15 +241,9 @@ export function DesktopUserAvatar() {
                         >
                           {item.label}
                         </span>
-                        {/* Show version number for About menu item */}
-                        {item.label === t('about') && version && (
-                          <span
-                            className={cn(
-                              'font-serif text-xs opacity-60',
-                              isDark ? 'text-[#a8a29e]' : 'text-[#78716c]'
-                            )}
-                          >
-                            v{version}
+                        {item.label === t('about') && (
+                          <span className="ml-auto">
+                            <VersionTag variant="tag" size="xs" />
                           </span>
                         )}
                       </button>
@@ -288,7 +251,6 @@ export function DesktopUserAvatar() {
                   })}
                 </div>
 
-                {/* Divider */}
                 <div
                   className={cn(
                     'my-2 h-px w-full',
@@ -296,7 +258,6 @@ export function DesktopUserAvatar() {
                   )}
                 />
 
-                {/* Logout */}
                 <button
                   onClick={handleLogout}
                   className={cn(
@@ -317,7 +278,6 @@ export function DesktopUserAvatar() {
               </>
             ) : (
               <div className="p-4">
-                {/* Unlogged state */}
                 <div
                   className={cn(
                     'mb-6 rounded-xl px-4 py-6 text-center',
