@@ -12,9 +12,10 @@ import {
   XIcon,
 } from 'lucide-react';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
 
 import { FilePreviewBackdrop } from './file-preview-backdrop';
 import { AudioPreview } from './previews/audio-preview';
@@ -332,6 +333,15 @@ export const FilePreviewCanvas = () => {
   const { isPreviewOpen, currentPreviewFile, closePreview } =
     useFilePreviewStore();
   const { isDark } = useTheme();
+  const pathname = usePathname();
+
+  // Auto-close preview when route changes (best practice for modal state management)
+  useEffect(() => {
+    if (isPreviewOpen) {
+      closePreview();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const panelVariants = {
     hidden: { x: '100%' },
@@ -391,7 +401,7 @@ export const FilePreviewCanvas = () => {
                 <XIcon className="h-5 w-5" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex flex-1 flex-col overflow-y-auto p-6">
               <FileContentViewer
                 file={currentPreviewFile}
                 isDark={isDark ?? false}

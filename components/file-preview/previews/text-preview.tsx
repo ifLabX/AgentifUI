@@ -78,7 +78,7 @@ export const TextPreview: React.FC<TextPreviewProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full flex-col space-y-4">
       {/* Header with actions */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">{t('title')}</h3>
@@ -115,7 +115,7 @@ export const TextPreview: React.FC<TextPreviewProps> = ({
       {/* Content */}
       <div
         className={cn(
-          'max-h-96 overflow-auto rounded-md border p-4',
+          'min-h-[60vh] flex-1 overflow-auto rounded-md border p-4',
           isDark
             ? 'border-stone-700 bg-stone-800'
             : 'border-stone-200 bg-stone-50'
@@ -133,7 +133,10 @@ export const TextPreview: React.FC<TextPreviewProps> = ({
 
       {/* File info */}
       <div
-        className={cn('text-xs', isDark ? 'text-stone-400' : 'text-stone-500')}
+        className={cn(
+          'flex-shrink-0 text-xs',
+          isDark ? 'text-stone-400' : 'text-stone-500'
+        )}
       >
         {filename} • {contentType} •{' '}
         {t('charactersCount', { count: text.length.toLocaleString() })}
