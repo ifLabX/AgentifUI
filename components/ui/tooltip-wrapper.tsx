@@ -26,7 +26,7 @@ export function TooltipWrapper({
 }: TooltipWrapperProps) {
   return (
     <ClientRender fallback={children}>
-      {clientProps => <Tooltip {...tooltipProps}>{children}</Tooltip>}
+      {() => <Tooltip {...tooltipProps}>{children}</Tooltip>}
     </ClientRender>
   );
 }

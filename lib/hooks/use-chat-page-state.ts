@@ -2,7 +2,7 @@ import { useChatStore } from '@lib/stores/chat-store';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 import { useChatStateSync } from './use-chat-state-sync';
 
@@ -122,9 +122,12 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
   // Ensure sidebar selection state is correctly synced when submitting a message
   const wrapHandleSubmit = useCallback(
     (
-      originalHandleSubmit: (message: string, files?: any[]) => Promise<any>
+      originalHandleSubmit: (
+        message: string,
+        files?: unknown[]
+      ) => Promise<unknown>
     ) => {
-      return async (message: string, files?: any[]) => {
+      return async (message: string, files?: unknown[]) => {
         // Immediately set submitting state to true
         setIsSubmitting(true);
         // Immediately close welcome screen
@@ -171,7 +174,7 @@ export function useChatPageState(conversationIdFromUrl: string | undefined) {
         return result;
       };
     },
-    [setIsWelcomeScreen, clearMessages, selectItem]
+    [setIsWelcomeScreen, clearMessages, selectItem, setIsTransitioningToWelcome]
   );
 
   return {

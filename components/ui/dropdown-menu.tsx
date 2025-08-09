@@ -1,7 +1,6 @@
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
-import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { cn } from '@lib/utils';
 
@@ -93,7 +92,6 @@ export function DropdownMenu({
   const { isDark } = useTheme();
   const { isOpen, activeDropdownId, position, closeDropdown } =
     useDropdownStore();
-  const { isExpanded } = useSidebarStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isVisible = isOpen && activeDropdownId === id;

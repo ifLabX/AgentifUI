@@ -4,7 +4,10 @@ import { getRequestConfig } from 'next-intl/server';
 import { cookies } from 'next/headers';
 
 // Deep merge function to merge fallback messages
-function deepMerge(target: any, source: any): any {
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
   const result = { ...target };
 
   for (const key in source) {
@@ -17,7 +20,10 @@ function deepMerge(target: any, source: any): any {
         result[key] !== null &&
         !Array.isArray(result[key])
       ) {
-        result[key] = deepMerge(result[key], source[key]);
+        result[key] = deepMerge(
+          result[key] as Record<string, unknown>,
+          source[key] as Record<string, unknown>
+        );
       } else if (result[key] === undefined) {
         // Only use fallback if key doesn't exist in target
         result[key] = source[key];
@@ -42,8 +48,9 @@ export default getRequestConfig(async () => {
   try {
     messages = (await import(`../messages/${finalLocale}.json`)).default;
   } catch (error) {
-    console.warn(
-      `Failed to load messages for locale ${finalLocale}, falling back to ${DEFAULT_LOCALE}`
+    console.error(
+      `Failed to load messages for locale ${finalLocale}, falling back to ${DEFAULT_LOCALE}:`,
+      error
     );
     messages = (await import(`../messages/${DEFAULT_LOCALE}.json`)).default;
   }
@@ -56,7 +63,10 @@ export default getRequestConfig(async () => {
       // Merge fallback messages with current locale messages
       messages = deepMerge(messages, fallbackMessages);
     } catch (error) {
-      console.warn(`Failed to load fallback messages for ${DEFAULT_LOCALE}`);
+      console.error(
+        `Failed to load fallback messages for ${DEFAULT_LOCALE}:`,
+        error
+      );
     }
   }
 

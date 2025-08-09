@@ -98,7 +98,7 @@ export interface ProviderConfigResult {
  * @returns Provider config result
  */
 export function useProviderConfig(providerId: string): ProviderConfigResult {
-  const [provider, setProvider] = useState<ProviderConfig | null>(null);
+  const [provider] = useState<ProviderConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
