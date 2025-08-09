@@ -48,8 +48,8 @@ export default getRequestConfig(async () => {
   try {
     messages = (await import(`../messages/${finalLocale}.json`)).default;
   } catch (error) {
-    console.warn(
-      `Failed to load messages for locale ${finalLocale}, falling back to ${DEFAULT_LOCALE}`,
+    console.error(
+      `Failed to load messages for locale ${finalLocale}, falling back to ${DEFAULT_LOCALE}:`,
       error
     );
     messages = (await import(`../messages/${DEFAULT_LOCALE}.json`)).default;
@@ -63,8 +63,8 @@ export default getRequestConfig(async () => {
       // Merge fallback messages with current locale messages
       messages = deepMerge(messages, fallbackMessages);
     } catch (error) {
-      console.warn(
-        `Failed to load fallback messages for ${DEFAULT_LOCALE}`,
+      console.error(
+        `Failed to load fallback messages for ${DEFAULT_LOCALE}:`,
         error
       );
     }
