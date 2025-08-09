@@ -2,7 +2,6 @@
 
 import { useTheme } from '@lib/hooks/use-theme';
 import type {
-  ChatflowIteration,
   ChatflowNode,
   ChatflowParallelBranch,
 } from '@lib/stores/chatflow-execution-store';
@@ -14,9 +13,7 @@ import {
   Clock,
   GitBranch,
   Loader2,
-  RotateCcw,
   XCircle,
-  Zap,
 } from 'lucide-react';
 
 import React, { useEffect, useState } from 'react';
@@ -445,11 +442,10 @@ export function ChatflowExecutionBar({
 
           {/* Branch list */}
           <div className="space-y-1">
-            {node.parallelBranches?.map((branch, index) => (
+            {node.parallelBranches?.map(branch => (
               <ParallelBranchItem
                 key={branch.id}
                 branch={branch}
-                index={index}
                 isDark={isDark}
               />
             ))}
@@ -489,15 +485,10 @@ function CollapsibleContent({
 // --- 🎯 New: parallel branch item component ---
 interface ParallelBranchItemProps {
   branch: ChatflowParallelBranch;
-  index: number;
   isDark: boolean;
 }
 
-function ParallelBranchItem({
-  branch,
-  index,
-  isDark,
-}: ParallelBranchItemProps) {
+function ParallelBranchItem({ branch, isDark }: ParallelBranchItemProps) {
   const t = useTranslations('pages.chatflow.executionBar');
   const [elapsedTime, setElapsedTime] = useState(0);
 
