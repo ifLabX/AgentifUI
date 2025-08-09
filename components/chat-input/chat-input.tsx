@@ -193,15 +193,10 @@ export const ChatInput = ({
 
   // User ID and App ID information
   const { session } = useSupabaseAuth();
-  const activeUserId = session?.user?.id;
   const {
     currentAppId,
-    isLoading: isLoadingAppId,
     isValidating: isValidatingAppConfig, // New: validation state
     isValidatingForMessage: isValidatingForMessageOnly, // New: validation state specifically for message sending
-    error: errorLoadingAppId,
-    hasCurrentApp,
-    isReady: isAppReady,
   } = useCurrentApp();
 
   // Check if there are available models and if a valid model is selected
@@ -432,7 +427,7 @@ export const ChatInput = ({
 
   // File type selection handling
   // Handle file upload after file type selection
-  const handleFileSelect = (files: FileList | null, accept: string) => {
+  const handleFileSelect = (files: FileList | null) => {
     if (files && files.length > 0) {
       const filesArray = Array.from(files);
       addFiles(filesArray); // Add to Store
@@ -527,7 +522,7 @@ export const ChatInput = ({
           );
       }
     },
-    [currentAppId, updateFileStatus, updateFileUploadedId, session?.user?.id]
+    [currentAppId, updateFileStatus, updateFileUploadedId, session?.user?.id, t]
   );
 
   // --- Calculate button disable status (depends on store) ---
