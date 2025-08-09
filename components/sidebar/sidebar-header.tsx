@@ -40,7 +40,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   // 🎯 Check the activation status of the routes
   // OPTIMIZATION: For new chat, also check if selectedId is null to ensure immediate deactivation
   // when user clicks on historical conversations, even if pathname hasn't updated yet
-  const { selectedType, selectedId } = useSidebarStore();
+  const { selectedType, selectedId, selectItem } = useSidebarStore();
   const isNewChatActive =
     pathname === '/chat/new' && (selectedType !== 'chat' || !selectedId);
   const isHistoryActive = pathname === '/chat/history';
@@ -392,6 +392,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
           }
           active={isHistoryActive}
           onClick={() => {
+            selectItem(null, null);
             router.push('/chat/history');
           }}
           aria-label={t('historyChats')}
@@ -442,6 +443,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             }
             active={isHistoryActive}
             onClick={() => {
+              selectItem(null, null);
               router.push('/chat/history');
             }}
             aria-label={t('historyChats')}

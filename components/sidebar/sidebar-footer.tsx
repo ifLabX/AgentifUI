@@ -16,7 +16,7 @@ export function SidebarFooter() {
   const isMobile = useMobile();
   const router = useRouter();
   const pathname = usePathname();
-  const { isExpanded } = useSidebarStore();
+  const { isExpanded, selectItem } = useSidebarStore();
   const t = useTranslations('sidebar');
 
   // 🎯 Check the activation status of the settings page
@@ -35,6 +35,7 @@ export function SidebarFooter() {
             }
             active={isSettingsActive}
             onClick={() => {
+              selectItem(null, null);
               router.push('/settings');
             }}
             aria-label={t('settings')}
@@ -59,6 +60,7 @@ export function SidebarFooter() {
               }
               active={isSettingsActive}
               onClick={() => {
+                selectItem(null, null);
                 router.push('/settings');
               }}
               aria-label={t('settings')}
