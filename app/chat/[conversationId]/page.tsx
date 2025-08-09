@@ -210,11 +210,6 @@ export default function ChatPage() {
             isVisible={showFloatingController}
             isTrackerVisible={showNodeTracker}
             onToggleTracker={() => setShowNodeTracker(!showNodeTracker)}
-            onClose={() => {
-              // The floating ball cannot be closed, because it is the core function of the chatflow app
-              // If you need to hide it, you can close the tracker
-              setShowNodeTracker(false);
-            }}
           />
         )}
 

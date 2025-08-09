@@ -5,7 +5,7 @@ import { useChatflowExecutionStore } from '@lib/stores/chatflow-execution-store'
 import { cn } from '@lib/utils';
 import { Workflow } from 'lucide-react';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -13,7 +13,6 @@ interface ChatflowFloatingControllerProps {
   isVisible: boolean;
   isTrackerVisible: boolean;
   onToggleTracker: () => void;
-  onClose: () => void;
   className?: string;
 }
 
@@ -29,14 +28,12 @@ export function ChatflowFloatingController({
   isVisible,
   isTrackerVisible,
   onToggleTracker,
-  onClose,
   className,
 }: ChatflowFloatingControllerProps) {
   const { isDark } = useTheme();
   const t = useTranslations('pages.chatflow.floatingController');
 
   // Get execution status from store
-  const nodes = useChatflowExecutionStore(state => state.nodes);
   const isExecuting = useChatflowExecutionStore(state => state.isExecuting);
   const error = useChatflowExecutionStore(state => state.error);
 
