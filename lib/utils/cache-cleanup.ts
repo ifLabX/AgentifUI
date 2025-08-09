@@ -189,6 +189,9 @@ const clearZustandCache = (): void => {
     // Clear current app storage
     localStorage.removeItem('current-app-storage');
 
+    // Clear file preview cache storage
+    localStorage.removeItem('file-preview-cache-storage');
+
     // Clear other Zustand storage (if any)
     const zustandKeys: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -219,6 +222,9 @@ const clearZustandUserCache = (): void => {
 
     // Clear current app storage (user-related)
     localStorage.removeItem('current-app-storage');
+
+    // Clear file preview cache storage (user-related)
+    localStorage.removeItem('file-preview-cache-storage');
 
     console.log('[Cache Cleanup] Zustand user cache cleanup completed');
   } catch (error) {

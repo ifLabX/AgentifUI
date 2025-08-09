@@ -3,6 +3,11 @@ import type { DifyFilePreviewResponse } from '@lib/services/dify/types';
 import type { MessageAttachment } from '@lib/stores/chat-store';
 import { create } from 'zustand';
 
+import {
+  getCacheKey,
+  useFilePreviewCacheStore,
+} from './file-preview-cache-store';
+
 interface FilePreviewState {
   // Basic State
   isPreviewOpen: boolean;
@@ -21,6 +26,7 @@ interface FilePreviewState {
   closePreview: () => void;
   downloadFile: () => Promise<void>;
   clearError: () => void;
+  clearCache: () => void;
 }
 
 export const useFilePreviewStore = create<FilePreviewState>((set, get) => ({
@@ -51,6 +57,27 @@ export const useFilePreviewStore = create<FilePreviewState>((set, get) => ({
       return;
     }
 
+    // Generate cache key
+    const cacheKey = getCacheKey(finalAppId, file.upload_file_id);
+    const cacheStore = useFilePreviewCacheStore.getState();
+
+    // Try to get from cache first
+    const cachedEntry = cacheStore.get(cacheKey);
+
+    if (cachedEntry) {
+      // Cache hit - use cached content
+      set({
+        isPreviewOpen: true,
+        currentPreviewFile: file,
+        previewContent: cachedEntry.content,
+        contentHeaders: cachedEntry.headers,
+        isLoading: false,
+        error: null,
+      });
+      return;
+    }
+
+    // Cache miss - show loading and fetch from API
     set({
       isPreviewOpen: true,
       currentPreviewFile: file,
@@ -67,6 +94,20 @@ export const useFilePreviewStore = create<FilePreviewState>((set, get) => ({
         file.upload_file_id,
         { as_attachment: false } // Preview mode
       );
+
+      // Store in cache
+      const cached = cacheStore.set(
+        cacheKey,
+        response.content,
+        response.headers
+      );
+
+      // Log cache status for debugging (only in development)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[File Preview] Cache ${cached ? 'stored' : 'skipped'} for ${file.name} (${(response.content.size / 1024).toFixed(1)}KB)`
+        );
+      }
 
       set({
         previewContent: response.content,
@@ -138,4 +179,13 @@ export const useFilePreviewStore = create<FilePreviewState>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  clearCache: () => {
+    const cacheStore = useFilePreviewCacheStore.getState();
+    cacheStore.clear();
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[File Preview] Cache cleared');
+    }
+  },
 }));
