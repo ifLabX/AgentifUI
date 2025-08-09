@@ -17,8 +17,6 @@ export interface AttachmentFile {
   type: string;
   /** Upload status */
   status: 'pending' | 'uploading' | 'success' | 'error';
-  /** Upload progress (0-100) */
-  progress: number;
   /** Error message if upload failed */
   error?: string;
   /** Dify-returned file ID after successful upload */
@@ -36,11 +34,10 @@ interface AttachmentStoreState {
   addFiles: (files: File[]) => void;
   /** Remove file by ID */
   removeFile: (id: string) => void;
-  /** Update file status and progress */
+  /** Update file status */
   updateFileStatus: (
     id: string,
     status: AttachmentFile['status'],
-    progress?: number,
     error?: string
   ) => void;
   /** Update file's uploaded ID after successful upload */
@@ -69,7 +66,6 @@ export const useAttachmentStore = create<AttachmentStoreState>(set => ({
         size: file.size,
         type: file.type,
         status: 'pending',
-        progress: 0,
       };
       return attachment;
     });
@@ -94,15 +90,14 @@ export const useAttachmentStore = create<AttachmentStoreState>(set => ({
     });
   },
 
-  // Update file status and progress (may clear uploadedId and error)
-  updateFileStatus: (id, status, progress, error) => {
+  // Update file status (may clear uploadedId and error)
+  updateFileStatus: (id, status, error) => {
     set(state => ({
       files: state.files.map(f =>
         f.id === id
           ? {
               ...f,
               status,
-              progress: progress ?? (status === 'uploading' ? 0 : f.progress), // Reset progress if starting upload
               error: error ?? (status !== 'error' ? undefined : f.error), // Clear error for non-error status
               uploadedId: status !== 'success' ? undefined : f.uploadedId, // Clear uploadedId for non-success status
             }
@@ -116,7 +111,7 @@ export const useAttachmentStore = create<AttachmentStoreState>(set => ({
     set(state => ({
       files: state.files.map(f =>
         f.id === id
-          ? { ...f, uploadedId: uploadedId, status: 'success', progress: 100 }
+          ? { ...f, uploadedId: uploadedId, status: 'success' }
           : f
       ),
     }));

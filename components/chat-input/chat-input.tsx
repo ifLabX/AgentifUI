@@ -440,7 +440,7 @@ export const ChatInput = ({
       // For each file, initiate upload
       filesArray.forEach(file => {
         const fileId = `${file.name}-${file.lastModified}-${file.size}`;
-        updateFileStatus(fileId, 'uploading', 0); // Immediately mark as uploading
+        updateFileStatus(fileId, 'uploading'); // Immediately mark as uploading
 
         // Call upload service
         // Use current appId for upload, use default if not available
@@ -448,10 +448,7 @@ export const ChatInput = ({
         const userIdToUse =
           session?.user?.id || 'chat-input-warning-no-user-id'; // Use anonymous user ID
 
-        uploadDifyFile(appIdToUse, file, userIdToUse, progress => {
-          // Update progress
-          updateFileStatus(fileId, 'uploading', progress);
-        })
+        uploadDifyFile(appIdToUse, file, userIdToUse)
           .then(response => {
             // Upload successful
             updateFileUploadedId(fileId, response.id);
@@ -464,7 +461,6 @@ export const ChatInput = ({
             updateFileStatus(
               fileId,
               'error',
-              undefined,
               error.message || t('input.uploadFailed')
             );
             console.error(`[ChatInput] File upload failed: ${fileId}`, error);
@@ -496,7 +492,7 @@ export const ChatInput = ({
       }
 
       // 1. Reset status to uploading
-      updateFileStatus(fileId, 'uploading', 0);
+      updateFileStatus(fileId, 'uploading');
 
       // 2. Re-call upload service
       try {
@@ -508,11 +504,7 @@ export const ChatInput = ({
         const response = await uploadDifyFile(
           appIdToUse,
           attachment.file, // Use original File object
-          userIdToUse,
-          progress => {
-            // Update progress callback
-            updateFileStatus(fileId, 'uploading', progress);
-          }
+          userIdToUse
         );
         // Retry successful
         updateFileUploadedId(fileId, response.id);
@@ -524,7 +516,6 @@ export const ChatInput = ({
         updateFileStatus(
           fileId,
           'error',
-          undefined,
           (error as Error).message || t('input.retryUpload')
         );
         console.error(`[ChatInput] Retry upload failed: ${fileId}`, error);

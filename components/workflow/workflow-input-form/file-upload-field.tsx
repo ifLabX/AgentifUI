@@ -210,13 +210,10 @@ export function FileUploadField({
         const response = await uploadDifyFile(
           appIdToUse,
           uploadFile.file,
-          userIdToUse,
-          progress => {
-            updateFileStatus(uploadFile.id, 'uploading', progress);
-          }
+          userIdToUse
         );
 
-        updateFileStatus(uploadFile.id, 'success', 100, undefined, response.id);
+        updateFileStatus(uploadFile.id, 'success', undefined, undefined, response.id);
       } catch (error) {
         const errorMessage = (error as Error).message || t('uploadFailed');
         updateFileStatus(uploadFile.id, 'error', undefined, errorMessage);

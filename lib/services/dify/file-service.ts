@@ -13,20 +13,18 @@ import type {
 const DIFY_API_BASE_URL = '/api/dify';
 
 /**
- * Upload a single file to Dify (via backend proxy), supporting progress callback.
+ * Upload a single file to Dify (via backend proxy).
  *
  * @param appId - Dify application ID.
  * @param file - File object to upload.
  * @param user - User identifier required by Dify.
- * @param onProgress - Upload progress callback (0-100).
  * @returns A Promise resolving to DifyFileUploadResponse.
  * @throws Throws an error if the request fails or API returns an error status.
  */
 export async function uploadDifyFile(
   appId: string,
   file: File,
-  user: string,
-  onProgress?: (progress: number) => void
+  user: string
 ): Promise<DifyFileUploadResponse> {
   // Use XMLHttpRequest to support upload progress callback
   return new Promise((resolve, reject) => {
@@ -39,13 +37,7 @@ export async function uploadDifyFile(
     const xhr = new XMLHttpRequest();
     xhr.open('POST', apiUrl, true);
 
-    // Listen for upload progress events
-    xhr.upload.onprogress = event => {
-      if (event.lengthComputable && onProgress) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        onProgress(percent);
-      }
-    };
+    // Progress events not needed - just show loading spinner
 
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE) {

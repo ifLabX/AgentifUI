@@ -23,59 +23,6 @@ interface AttachmentPreviewItemProps {
   onRetry: (id: string) => void;
 }
 
-/**
- * Circular progress bar component (no text).
- * Uses the stone color palette to match the overall app style.
- */
-const CircularProgress: React.FC<{
-  progress: number;
-  size?: number;
-  strokeWidth?: number;
-  isDark?: boolean;
-}> = ({ progress, size = 20, strokeWidth = 2, isDark = false }) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  // Ensure progress is between 0-100 to prevent offset calculation errors
-  const safeProgress = Math.max(0, Math.min(100, progress));
-  const offset = circumference - (safeProgress / 100) * circumference;
-
-  return (
-    <svg
-      width={size}
-      height={size}
-      className="absolute inset-0 m-auto -rotate-90 transform"
-    >
-      {/* Background ring */}
-      <circle
-        className={cn(
-          isDark ? 'text-stone-600' : 'text-stone-300' // Stone color background ring
-        )}
-        strokeWidth={strokeWidth}
-        stroke="currentColor"
-        fill="transparent"
-        r={radius}
-        cx={size / 2}
-        cy={size / 2}
-      />
-      {/* Progress ring */}
-      <circle
-        className={cn(
-          'transition-all duration-300 ease-linear',
-          isDark ? 'text-stone-300' : 'text-stone-700' // Stone color progress ring
-        )}
-        strokeWidth={strokeWidth}
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        stroke="currentColor"
-        fill="transparent"
-        r={radius}
-        cx={size / 2}
-        cy={size / 2}
-      />
-    </svg>
-  );
-};
 
 /**
  * Single attachment preview item component (minimalist style).
