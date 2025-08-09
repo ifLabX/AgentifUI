@@ -9,7 +9,7 @@ import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store';
 import { cn } from '@lib/utils';
 import { AlertCircle, RefreshCw, X } from 'lucide-react';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -41,22 +41,14 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   // --- New workflow execution system ---
   const {
     isExecuting,
-    progress,
     error,
     canRetry,
-    nodes,
-    currentNodeId,
     currentExecution,
-    executionHistory,
-    formData,
-    formLocked,
     executeWorkflow,
     stopWorkflowExecution,
     retryExecution,
     resetExecution,
-    resetAll,
     clearExecutionState,
-    loadWorkflowHistory,
   } = useWorkflowExecution(instanceId);
 
   // --- Keep the original status management ---
@@ -65,7 +57,9 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
 
   // --- ResultViewer status management ---
   const [showResultViewer, setShowResultViewer] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedExecution, setSelectedExecution] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [executionResult, setExecutionResult] = useState<any>(null);
 
   // --- Form reset reference ---
@@ -73,6 +67,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
 
   // --- Workflow execution callback, now using the real hook ---
   const handleExecuteWorkflow = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (formData: Record<string, any>) => {
       console.log(
         '[Workflow layout] Start executing workflow, input data:',
@@ -89,6 +84,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   );
 
   // --- Node status update callback ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeUpdate = useCallback((event: any) => {
     console.log('[Node update]', event);
     // Note: Node status is now automatically managed through the hook, no need to manually update
@@ -134,6 +130,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   }, [clearExecutionState]);
 
   // --- Handle view result ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleViewResult = useCallback((result: any, execution: any) => {
     console.log('[Workflow layout] View execution result:', execution);
     setExecutionResult(result);

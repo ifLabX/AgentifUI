@@ -25,6 +25,7 @@ import {
 // Use new hook
 import type {
   DifyChatRequestPayload,
+  DifyRetrieverResource,
   DifySseIterationCompletedEvent,
   DifySseIterationNextEvent,
   DifySseIterationStartedEvent,
@@ -35,15 +36,10 @@ import type {
   DifySseNodeStartedEvent,
   DifySseParallelBranchFinishedEvent,
   DifySseParallelBranchStartedEvent,
-  DifyStopTaskResponse,
-  DifyStreamResponse,
+  DifyUsage,
 } from '@lib/services/dify/types';
 import { useChatInputStore } from '@lib/stores/chat-input-store';
-import {
-  ChatMessage,
-  selectIsProcessing,
-  useChatStore,
-} from '@lib/stores/chat-store';
+import { selectIsProcessing, useChatStore } from '@lib/stores/chat-store';
 import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 import type { ServiceInstance } from '@lib/types/database';
@@ -64,18 +60,6 @@ const CHUNK_APPEND_INTERVAL = 30;
 // Multi-provider support: chat interface now supports multi-provider environments
 // ensureAppReady and validateConfig have been updated to use default provider fallback
 // When sending messages in /chat/new, the appropriate provider and app will be selected automatically
-/**
- * Conversation state interface
- * @description Manages various conversation IDs and states
- */
-interface ConversationState {
-  /** Dify conversation ID (external ID), used for routing and API calls */
-  difyConversationId: string | null;
-  /** Database conversation ID (internal ID), used for message persistence */
-  dbConversationUUID: string | null;
-  /** Original appId for historical conversation, takes precedence over current app in localStorage */
-  conversationAppId: string | null;
-}
 
 /**
  * Chat interface interaction hook
@@ -110,8 +94,6 @@ export function useChatInterface(
     currentAppInstance,
     isLoading: isLoadingAppId,
     error: errorLoadingAppId,
-    hasCurrentApp,
-    isReady: isAppReady,
     ensureAppReady, // New: method to force wait for app config to be ready
     validateConfig, // New: method to validate and switch app config
   } = useCurrentApp();
@@ -267,6 +249,7 @@ export function useChatInterface(
   }, [currentPathname]);
 
   const handleSubmit = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (message: string, files?: any[], inputs?: Record<string, any>) => {
       if (isSubmittingRef.current) {
         console.warn('[handleSubmit] Submission blocked: already submitting.');
@@ -335,9 +318,6 @@ export function useChatInterface(
         return;
       }
 
-      // Record start time for performance analysis
-      const startTime = Date.now();
-
       isSubmittingRef.current = true;
       setIsWaitingForResponse(true);
 
@@ -374,8 +354,6 @@ export function useChatInterface(
       let streamError: Error | null = null;
       setCurrentTaskId(null);
 
-      const currentConvId = useChatStore.getState().currentConversationId;
-
       // Modified logic for determining new conversations using difyConversationId instead of currentConvId
       // 1. If URL is /chat/new or contains temp-, it's a new conversation
       // 2. If no difyConversationId exists, also treat as new conversation
@@ -410,9 +388,10 @@ export function useChatInterface(
       // Store completionPromise for Dify metadata
       let completionPromise:
         | Promise<{
-            usage?: any;
+            usage?: DifyUsage;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             metadata?: Record<string, any>;
-            retrieverResources?: any[];
+            retrieverResources?: DifyRetrieverResource[];
           }>
         | undefined;
 
@@ -427,7 +406,7 @@ export function useChatInterface(
           | {
               type: 'document';
               transfer_method: 'local_file';
-              upload_file_id: any;
+              upload_file_id: string;
             }[]
           | undefined =
           Array.isArray(files) && files.length > 0
@@ -1256,8 +1235,9 @@ export function useChatInterface(
                 const currentPath = window.location.pathname;
                 if (currentPath === `/chat/${currentConvId}`) {
                   // Use selectItem method from sidebar store to select current conversation
-                  const { selectItem } =
-                    require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                  const { selectItem } = await import(
+                    '@lib/stores/sidebar-store'
+                  ).then(m => m.useSidebarStore.getState());
                   selectItem('chat', currentConvId, true);
                 }
               } catch (error) {
@@ -1316,6 +1296,7 @@ export function useChatInterface(
   // Equivalent to entering message in input box and clicking send
   // Fully reuses existing handleSubmit logic, including validation and state management
   const sendDirectMessage = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (messageText: string, files?: any[]) => {
       if (!messageText.trim()) {
         console.warn(
@@ -1325,7 +1306,7 @@ export function useChatInterface(
       }
 
       // Temporarily set message to input store (so handleSubmit can read it)
-      const { setMessage, clearMessage } = useChatInputStore.getState();
+      const { setMessage } = useChatInputStore.getState();
       const originalMessage = useChatInputStore.getState().message;
 
       try {
