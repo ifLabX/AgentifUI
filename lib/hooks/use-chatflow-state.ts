@@ -40,17 +40,31 @@ export function useChatflowState(isChatflowApp: boolean) {
   const showFloatingController = isChatflowApp;
 
   // Only auto-show tracker when execution actually starts and user hasn't closed it
-  // Avoids auto-popup when switching between chatflow apps
+  // Avoids auto-popup when switching between chatflow apps or loading historical data
   React.useEffect(() => {
     if (!isChatflowApp) return;
 
     const isExecuting = nodeTracker?.isExecuting;
+    const nodes = nodeTracker?.nodes || [];
 
-    // Only auto-show tracker if execution starts and user hasn't closed it
+    // Only auto-show tracker for fresh executions, not historical data
     if (isExecuting && !userHasClosed) {
-      setShowNodeTracker(true);
+      const currentTime = Date.now();
+      const hasRecentExecution = nodes.some(
+        node => node.startTime && currentTime - node.startTime < 30000 // 30 seconds
+      );
+
+      // Only auto-show for recent executions (not historical conversations)
+      if (hasRecentExecution) {
+        setShowNodeTracker(true);
+      }
     }
-  }, [isChatflowApp, nodeTracker?.isExecuting, userHasClosed]);
+  }, [
+    isChatflowApp,
+    nodeTracker?.isExecuting,
+    nodeTracker?.nodes,
+    userHasClosed,
+  ]);
 
   // Wrap setShowNodeTracker to track user's manual actions
   const handleToggleNodeTracker = React.useCallback(
@@ -72,16 +86,33 @@ export function useChatflowState(isChatflowApp: boolean) {
 
   // Reset user closed state when a new execution starts
   // This allows tracker to auto-show for each new conversation
+  // But avoid resetting for historical conversations
   React.useEffect(() => {
     if (!isChatflowApp) return;
 
     const isExecuting = nodeTracker?.isExecuting;
+    const nodes = nodeTracker?.nodes || [];
 
-    // Reset user closed state when execution starts
-    if (isExecuting) {
-      setUserHasClosed(false);
+    // Only reset user closed state for new executions (not historical data)
+    // Check if this is a fresh execution by looking at node execution start time
+    const hasActiveExecution =
+      isExecuting &&
+      nodes.some(
+        node => node.status === 'running' || node.status === 'completed'
+      );
+
+    // Only reset for truly new executions, not when loading historical data
+    if (hasActiveExecution && isExecuting) {
+      const currentTime = Date.now();
+      const recentExecution = nodes.some(
+        node => node.startTime && currentTime - node.startTime < 30000 // 30 seconds
+      );
+
+      if (recentExecution) {
+        setUserHasClosed(false);
+      }
     }
-  }, [isChatflowApp, nodeTracker?.isExecuting]);
+  }, [isChatflowApp, nodeTracker?.isExecuting, nodeTracker?.nodes]);
 
   return {
     // Chat interface
