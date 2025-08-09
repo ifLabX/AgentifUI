@@ -456,7 +456,7 @@ const InstanceForm = ({
 
         // check if form config is complete
         if (!formData.config.api_url || !formData.apiKey) {
-          toast.warning('Please fill in API URL and API Key');
+          toast.warning(t('validation.fillApiCredentials'));
           return;
         }
 
@@ -1276,6 +1276,7 @@ export default function ApiConfigPage() {
   } = useApiConfigStore();
 
   // translation function
+  const t = useTranslations('pages.admin.apiConfig.page');
   const tInstanceSaveHandlers = useTranslations(
     'pages.admin.apiConfig.instanceSaveHandlers'
   );
@@ -1316,7 +1317,7 @@ export default function ApiConfigPage() {
   const handleProviderChange = () => {
     // reload providers data
     window.dispatchEvent(new CustomEvent('reloadProviders'));
-    toast.success('Provider configuration updated');
+    toast.success(t('provider.configUpdated'));
   };
 
   useEffect(() => {
