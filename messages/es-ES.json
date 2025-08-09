@@ -2356,6 +2356,19 @@
       "fileSize": "Tamaño del archivo",
       "fileType": "Tipo de archivo"
     },
+    "audio": {
+      "title": "Vista previa de audio",
+      "duration": "Duración",
+      "loadError": "Error al cargar el archivo de audio",
+      "notSupported": "Su navegador no admite la reproducción de audio"
+    },
+    "video": {
+      "title": "Vista previa de video",
+      "duration": "Duración",
+      "resolution": "Resolución",
+      "loadError": "Error al cargar el archivo de video",
+      "notSupported": "Su navegador no admite la reproducción de video"
+    },
     "markdownPreview": {
       "title": "Vista previa de Markdown",
       "renderedMode": "Renderizado",

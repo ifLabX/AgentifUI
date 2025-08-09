@@ -2356,6 +2356,19 @@
       "fileSize": "Tamanho do ficheiro",
       "fileType": "Tipo de ficheiro"
     },
+    "audio": {
+      "title": "Pré-visualização de áudio",
+      "duration": "Duração",
+      "loadError": "Falha ao carregar ficheiro de áudio",
+      "notSupported": "O seu navegador não suporta reprodução de áudio"
+    },
+    "video": {
+      "title": "Pré-visualização de vídeo",
+      "duration": "Duração",
+      "resolution": "Resolução",
+      "loadError": "Falha ao carregar ficheiro de vídeo",
+      "notSupported": "O seu navegador não suporta reprodução de vídeo"
+    },
     "markdownPreview": {
       "title": "Pré-visualização de Markdown",
       "renderedMode": "Renderizado",

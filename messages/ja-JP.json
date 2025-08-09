@@ -2356,6 +2356,19 @@
       "fileSize": "ファイルサイズ",
       "fileType": "ファイルタイプ"
     },
+    "audio": {
+      "title": "オーディオプレビュー",
+      "duration": "時間",
+      "loadError": "オーディオファイルの読み込みに失敗しました",
+      "notSupported": "お使いのブラウザーはオーディオ再生に対応していません"
+    },
+    "video": {
+      "title": "ビデオプレビュー",
+      "duration": "時間",
+      "resolution": "解像度",
+      "loadError": "ビデオファイルの読み込みに失敗しました",
+      "notSupported": "お使いのブラウザーはビデオ再生に対応していません"
+    },
     "markdownPreview": {
       "title": "Markdownプレビュー",
       "renderedMode": "レンダリング",

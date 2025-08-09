@@ -2356,6 +2356,19 @@
       "fileSize": "Taille du fichier",
       "fileType": "Type de fichier"
     },
+    "audio": {
+      "title": "Aperçu audio",
+      "duration": "Durée",
+      "loadError": "Échec du chargement du fichier audio",
+      "notSupported": "Votre navigateur ne prend pas en charge la lecture audio"
+    },
+    "video": {
+      "title": "Aperçu vidéo",
+      "duration": "Durée",
+      "resolution": "Résolution",
+      "loadError": "Échec du chargement du fichier vidéo",
+      "notSupported": "Votre navigateur ne prend pas en charge la lecture vidéo"
+    },
     "markdownPreview": {
       "title": "Aperçu Markdown",
       "renderedMode": "Rendu",

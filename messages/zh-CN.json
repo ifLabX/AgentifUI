@@ -2356,6 +2356,19 @@
       "fileSize": "文件大小",
       "fileType": "文件类型"
     },
+    "audio": {
+      "title": "音频预览",
+      "duration": "时长",
+      "loadError": "音频文件加载失败",
+      "notSupported": "您的浏览器不支持音频播放"
+    },
+    "video": {
+      "title": "视频预览",
+      "duration": "时长",
+      "resolution": "分辨率",
+      "loadError": "视频文件加载失败",
+      "notSupported": "您的浏览器不支持视频播放"
+    },
     "markdownPreview": {
       "title": "Markdown 预览",
       "renderedMode": "渲染模式",
