@@ -17,10 +17,12 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 
 import { FilePreviewBackdrop } from './file-preview-backdrop';
+import { AudioPreview } from './previews/audio-preview';
 import { ImagePreview } from './previews/image-preview';
 import { MarkdownPreview } from './previews/markdown-preview';
 import { PDFPreview } from './previews/pdf-preview';
 import { TextPreview } from './previews/text-preview';
+import { VideoPreview } from './previews/video-preview';
 
 /**
  * Loading skeleton component
@@ -291,6 +293,28 @@ const FileContentViewer: React.FC<{
   if (contentType.startsWith('image/')) {
     return (
       <ImagePreview
+        content={previewContent}
+        filename={file.name}
+        onDownload={downloadFile}
+      />
+    );
+  }
+
+  // Audio files (MP3, WAV, etc.)
+  if (contentType.startsWith('audio/')) {
+    return (
+      <AudioPreview
+        content={previewContent}
+        filename={file.name}
+        onDownload={downloadFile}
+      />
+    );
+  }
+
+  // Video files (MP4, WebM, etc.)
+  if (contentType.startsWith('video/')) {
+    return (
+      <VideoPreview
         content={previewContent}
         filename={file.name}
         onDownload={downloadFile}

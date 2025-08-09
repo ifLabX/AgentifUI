@@ -2356,6 +2356,19 @@
       "fileSize": "File Size",
       "fileType": "File Type"
     },
+    "audio": {
+      "title": "Audio Preview",
+      "duration": "Duration",
+      "loadError": "Failed to load audio file",
+      "notSupported": "Your browser does not support audio playback"
+    },
+    "video": {
+      "title": "Video Preview",
+      "duration": "Duration",
+      "resolution": "Resolution",
+      "loadError": "Failed to load video file",
+      "notSupported": "Your browser does not support video playback"
+    },
     "markdownPreview": {
       "title": "Markdown Preview",
       "renderedMode": "Rendered",

@@ -453,6 +453,29 @@ async function proxyToDify(
 
         return baseResponse;
       }
+      // handle video response (file preview/download) - direct pipe binary data
+      else if (responseContentType?.startsWith('video/')) {
+        console.log(`[App: ${appId}] [${req.method}] Video response detected.`);
+        const videoHeaders = createMinimalHeaders(); // Start with minimal CORS
+        response.headers.forEach((value, key) => {
+          // copy essential video headers
+          if (
+            key.toLowerCase().startsWith('content-') ||
+            key.toLowerCase() === 'accept-ranges' ||
+            key.toLowerCase() === 'vary'
+          ) {
+            videoHeaders.set(key, value);
+          }
+        });
+        // direct pipe binary data to preserve integrity
+        const baseResponse = new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: videoHeaders,
+        });
+
+        return baseResponse;
+      }
       // handle image response (file preview/download) - direct pipe binary data
       else if (
         responseContentType?.startsWith('image/') ||
