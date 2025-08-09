@@ -29,6 +29,7 @@ export function useChatflowInterface() {
    * Build the correct chat-messages API payload from query and form data
    */
   const handleChatflowSubmit = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (query: string, inputs: Record<string, any>, files?: any[]) => {
       console.log('[useChatflowInterface] Handling Chatflow submit', {
         query,
@@ -189,7 +190,8 @@ export function useChatflowInterface() {
  */
 function formatChatflowMessage(
   query: string,
-  inputs: Record<string, any>
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+  _inputs: Record<string, any>
 ): string {
   // Only return the user's original question, do not add form summary
   // Form data is passed via the inputs field to Dify API, should not pollute the query field
@@ -199,6 +201,7 @@ function formatChatflowMessage(
 /**
  * Format files to Dify format
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatFilesForDify(files: any[]): any[] {
   return files.map(file => {
     if (file.upload_file_id) {
@@ -218,6 +221,7 @@ function formatFilesForDify(files: any[]): any[] {
 /**
  * Format form data to user-friendly message content (kept for compatibility)
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 function formatFormDataToMessage(formData: Record<string, any>): string {
   const messageParts: string[] = [];
 
@@ -272,7 +276,9 @@ function formatFormDataToMessage(formData: Record<string, any>): string {
 /**
  * Extract files from form data
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractFilesFromFormData(formData: Record<string, any>): any[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const files: any[] = [];
 
   Object.values(formData).forEach(value => {
@@ -299,6 +305,7 @@ function extractFilesFromFormData(formData: Record<string, any>): any[] {
 /**
  * Check if form data contains files
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function hasFilesInFormData(formData: Record<string, any>): boolean {
   return extractFilesFromFormData(formData).length > 0;
 }
@@ -306,6 +313,7 @@ export function hasFilesInFormData(formData: Record<string, any>): boolean {
 /**
  * Get summary information of form data
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFormDataSummary(formData: Record<string, any>): {
   fieldCount: number;
   hasFiles: boolean;

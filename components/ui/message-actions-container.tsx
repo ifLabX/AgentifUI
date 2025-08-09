@@ -1,6 +1,6 @@
 'use client';
 
-import { useMobile, useTheme } from '@lib/hooks';
+import { useMobile } from '@lib/hooks';
 import { cn } from '@lib/utils';
 
 import React from 'react';

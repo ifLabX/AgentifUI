@@ -1,12 +1,11 @@
 'use client';
 
 import { useProfile } from '@lib/hooks/use-profile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store';
 import type { AppExecution } from '@lib/types/database';
 import { cn } from '@lib/utils';
-import { Check, History, Loader2, Search, Trash2, X } from 'lucide-react';
+import { History, Loader2, Trash2, X } from 'lucide-react';
 
 import React, { useEffect, useState } from 'react';
 
@@ -18,6 +17,7 @@ interface ExecutionHistoryProps {
   instanceId: string;
   onClose: () => void;
   isMobile: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onViewResult: (result: any, execution: AppExecution) => void;
 }
 
@@ -35,6 +35,7 @@ interface ExecutionHistoryProps {
 export function ExecutionHistory({
   instanceId,
   onClose,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isMobile,
   onViewResult,
 }: ExecutionHistoryProps) {
@@ -44,8 +45,9 @@ export function ExecutionHistory({
   const t = useTranslations('pages.workflow.history');
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // Keep but not used
+  const [isClosing] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [searchTerm] = useState(''); // Keep but not used
 
   // --- Multi-select delete related status ---
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
