@@ -15,7 +15,7 @@ import { useTranslations } from 'next-intl';
 // Filter logic based on app_type === 'model', no longer limited to specific providers
 // Maintain backward compatibility, existing Dify models still work
 // Import global focus manager from chat-input.tsx
-import { useFocusManager } from './chat-input';
+import { useFocusManager } from './index';
 
 interface ModelSelectorButtonProps {
   className?: string;
