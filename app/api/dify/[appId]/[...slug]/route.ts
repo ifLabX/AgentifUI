@@ -476,6 +476,29 @@ async function proxyToDify(
 
         return baseResponse;
       }
+      // handle PDF response (file preview/download) - direct pipe binary data
+      else if (responseContentType === 'application/pdf') {
+        console.log(`[App: ${appId}] [${req.method}] PDF response detected.`);
+        const pdfHeaders = createMinimalHeaders(); // Start with minimal CORS
+        response.headers.forEach((value, key) => {
+          // copy essential PDF headers
+          if (
+            key.toLowerCase().startsWith('content-') ||
+            key.toLowerCase() === 'accept-ranges' ||
+            key.toLowerCase() === 'vary'
+          ) {
+            pdfHeaders.set(key, value);
+          }
+        });
+        // direct pipe binary data to preserve integrity
+        const baseResponse = new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: pdfHeaders,
+        });
+
+        return baseResponse;
+      }
       // handle image response (file preview/download) - direct pipe binary data
       else if (
         responseContentType?.startsWith('image/') ||
