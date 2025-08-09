@@ -6,7 +6,6 @@
 import { CacheKeys, cacheService } from '@lib/services/db/cache-service';
 import { dataService } from '@lib/services/db/data-service';
 import {
-  SubscriptionConfigs,
   SubscriptionKeys,
   realtimeService,
 } from '@lib/services/db/realtime-service';
@@ -71,6 +70,7 @@ export function useSidebarConversations(limit: number = 20) {
   // Optimized version of loading conversation list
   // Uses unified data service, supports cache and error handling
   const loadConversations = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (reset: boolean = false) => {
       if (!userId) {
         setConversations([]);
