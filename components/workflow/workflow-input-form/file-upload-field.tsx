@@ -213,7 +213,13 @@ export function FileUploadField({
           userIdToUse
         );
 
-        updateFileStatus(uploadFile.id, 'success', undefined, undefined, response.id);
+        updateFileStatus(
+          uploadFile.id,
+          'success',
+          undefined,
+          undefined,
+          response.id
+        );
       } catch (error) {
         const errorMessage = (error as Error).message || t('uploadFailed');
         updateFileStatus(uploadFile.id, 'error', undefined, errorMessage);

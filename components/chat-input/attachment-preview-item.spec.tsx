@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
 import { useAttachmentStore } from '@lib/stores/attachment-store';
+import { fireEvent, render, screen } from '@testing-library/react';
+
 import { AttachmentPreviewItem } from './attachment-preview-item';
 
 // Mock the attachment store
@@ -14,14 +15,20 @@ jest.mock('next-intl', () => ({
 
 // Mock the spinner component
 jest.mock('@components/ui/spinner', () => ({
-  Spinner: ({ size }: { size?: string }) => <div data-testid="spinner" data-size={size} />,
+  Spinner: ({ size }: { size?: string }) => (
+    <div data-testid="spinner" data-size={size} />
+  ),
 }));
 
 // Mock tooltip wrapper
 jest.mock('@components/ui/tooltip-wrapper', () => ({
-  TooltipWrapper: ({ children, content }: { children: React.ReactNode; content: string }) => (
-    <div data-tooltip={content}>{children}</div>
-  ),
+  TooltipWrapper: ({
+    children,
+    content,
+  }: {
+    children: React.ReactNode;
+    content: string;
+  }) => <div data-tooltip={content}>{children}</div>,
 }));
 
 // Mock lucide-react icons
@@ -43,7 +50,9 @@ describe('AttachmentPreviewItem', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (useAttachmentStore as jest.MockedFunction<any>).mockReturnValue(mockRemoveFile);
+    (useAttachmentStore as jest.MockedFunction<any>).mockReturnValue(
+      mockRemoveFile
+    );
   });
 
   const baseAttachment = {
@@ -57,7 +66,7 @@ describe('AttachmentPreviewItem', () => {
   describe('Status Display', () => {
     it('displays spinner when uploading', () => {
       const attachment = { ...baseAttachment, status: 'uploading' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -72,7 +81,7 @@ describe('AttachmentPreviewItem', () => {
 
     it('displays success icon when upload successful', () => {
       const attachment = { ...baseAttachment, status: 'success' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -85,12 +94,12 @@ describe('AttachmentPreviewItem', () => {
     });
 
     it('displays retry button when upload failed', () => {
-      const attachment = { 
-        ...baseAttachment, 
+      const attachment = {
+        ...baseAttachment,
         status: 'error' as const,
-        error: 'Upload failed'
+        error: 'Upload failed',
       };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -104,7 +113,7 @@ describe('AttachmentPreviewItem', () => {
 
     it('displays file icon for pending status', () => {
       const attachment = { ...baseAttachment, status: 'pending' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -120,7 +129,7 @@ describe('AttachmentPreviewItem', () => {
   describe('File Information Display', () => {
     it('displays file name and size', () => {
       const attachment = { ...baseAttachment, status: 'pending' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -134,12 +143,12 @@ describe('AttachmentPreviewItem', () => {
     });
 
     it('displays error message in title when upload failed', () => {
-      const attachment = { 
-        ...baseAttachment, 
+      const attachment = {
+        ...baseAttachment,
         status: 'error' as const,
-        error: 'Network error'
+        error: 'Network error',
       };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -155,12 +164,12 @@ describe('AttachmentPreviewItem', () => {
 
   describe('User Interactions', () => {
     it('calls onRetry when retry button is clicked', async () => {
-      const attachment = { 
-        ...baseAttachment, 
+      const attachment = {
+        ...baseAttachment,
         status: 'error' as const,
-        error: 'Upload failed'
+        error: 'Upload failed',
       };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -177,7 +186,7 @@ describe('AttachmentPreviewItem', () => {
 
     it('calls removeFile when remove button is clicked', async () => {
       const attachment = { ...baseAttachment, status: 'pending' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -195,7 +204,7 @@ describe('AttachmentPreviewItem', () => {
     it('prevents event propagation on button clicks', () => {
       const mockContainerClick = jest.fn();
       const attachment = { ...baseAttachment, status: 'pending' as const };
-      
+
       render(
         <div onClick={mockContainerClick}>
           <AttachmentPreviewItem
@@ -217,7 +226,7 @@ describe('AttachmentPreviewItem', () => {
   describe('Dark Mode Support', () => {
     it('applies dark mode classes when isDark is true', () => {
       const attachment = { ...baseAttachment, status: 'success' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -233,7 +242,7 @@ describe('AttachmentPreviewItem', () => {
 
     it('applies light mode classes when isDark is false', () => {
       const attachment = { ...baseAttachment, status: 'success' as const };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -249,12 +258,12 @@ describe('AttachmentPreviewItem', () => {
 
   describe('Error State Styling', () => {
     it('applies error border when status is error', () => {
-      const attachment = { 
-        ...baseAttachment, 
+      const attachment = {
+        ...baseAttachment,
         status: 'error' as const,
-        error: 'Upload failed'
+        error: 'Upload failed',
       };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}
@@ -268,12 +277,12 @@ describe('AttachmentPreviewItem', () => {
     });
 
     it('applies error border with dark mode when status is error and isDark is true', () => {
-      const attachment = { 
-        ...baseAttachment, 
+      const attachment = {
+        ...baseAttachment,
         status: 'error' as const,
-        error: 'Upload failed'
+        error: 'Upload failed',
       };
-      
+
       render(
         <AttachmentPreviewItem
           attachment={attachment}

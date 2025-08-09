@@ -110,9 +110,7 @@ export const useAttachmentStore = create<AttachmentStoreState>(set => ({
   updateFileUploadedId: (id, uploadedId) => {
     set(state => ({
       files: state.files.map(f =>
-        f.id === id
-          ? { ...f, uploadedId: uploadedId, status: 'success' }
-          : f
+        f.id === id ? { ...f, uploadedId: uploadedId, status: 'success' } : f
       ),
     }));
   },

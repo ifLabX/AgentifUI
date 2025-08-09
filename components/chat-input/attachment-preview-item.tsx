@@ -23,7 +23,6 @@ interface AttachmentPreviewItemProps {
   onRetry: (id: string) => void;
 }
 
-
 /**
  * Single attachment preview item component (minimalist style).
  * Uses the stone color palette to match the overall app style.
