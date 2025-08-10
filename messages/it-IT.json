@@ -1529,7 +1529,7 @@
           "moreGroups": "+{count} gruppi",
           "notInGroup": "Non in nessun gruppo",
           "moreGroupsTooltip": "{count} altri gruppi: {names}",
-          "confirm": "Confermare"
+          "confirm": "Conferma"
         },
         "pagination": {
           "showing": "Mostrando {start} - {end} di {total} record",
