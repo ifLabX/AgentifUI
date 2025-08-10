@@ -18,6 +18,7 @@ const eslintConfig = [
       'dist/**/*',
       'build/**/*',
       '.cache/**/*',
+      'scripts/auto-gen-i18n.js',
     ],
   },
 ];
