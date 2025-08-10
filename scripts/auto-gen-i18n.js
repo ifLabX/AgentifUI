@@ -40,8 +40,8 @@ function loadLanguageConfig() {
 
 function getBingLanguageCode(langCode) {
   const langMap = {
-    'zh-CN': 'zh-Hans',
-    'zh-TW': 'zh-Hant',
+    'zh-CN': 'zh-CN',
+    'zh-TW': 'zh-TW',
     'ja-JP': 'ja',
     'de-DE': 'de',
     'fr-FR': 'fr',
@@ -67,7 +67,7 @@ async function translateText(text, targetLanguage) {
     const url = new URL('https://api.mymemory.translated.net/get');
     url.searchParams.append('q', text);
     url.searchParams.append('langpair', `en|${targetLanguage}`);
-    url.searchParams.append('de', 'claude@agentifui.com');
+    url.searchParams.append('de', 'license@iflabx.com');
 
     const translationResponse = await fetch(url.toString(), {
       method: 'GET',
@@ -122,6 +122,28 @@ function isTranslatableText(text) {
   return !skipPatterns.some(pattern => pattern.test(text.trim()));
 }
 
+async function translateWithBackoff(text, targetLanguage, retries = 3) {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const result = await translateText(text, targetLanguage);
+      if (result !== text) {
+        return result;
+      }
+    } catch (error) {
+      if (attempt === retries - 1) {
+        throw error;
+      }
+
+      const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
+      console.warn(
+        `⚠️  Translation attempt ${attempt + 1} failed, retrying in ${delay}ms...`
+      );
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  return text;
+}
+
 async function translateMissingKeys(
   sourceObj,
   targetObj,
@@ -152,11 +174,11 @@ async function translateMissingKeys(
           console.log(
             `🔄 Translating missing key "${currentPath}": "${value}"`
           );
-          const translated = await translateText(value, targetLanguage);
+          const translated = await translateWithBackoff(value, targetLanguage);
           targetObj[key] = translated;
           stats.translated++;
 
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 200));
         } catch (error) {
           console.error(
             `❌ Error translating "${currentPath}":`,
