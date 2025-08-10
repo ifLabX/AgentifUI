@@ -40,11 +40,8 @@ next-env.d.ts
 # test files
 /files
 
-# scripts - allow specific files only
-scripts/*
-!scripts/validate-i18n-consistency.py
-!scripts/i18n-refactor-helper.py
-!scripts/auto-gen-i18n.js
+# scripts - allow all development scripts
+# scripts/
 
 # venv
 .venv
