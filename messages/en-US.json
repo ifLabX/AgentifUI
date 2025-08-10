@@ -997,12 +997,6 @@
             "loading": "Loading...",
             "noProviders": "No providers configured",
             "deleteConfirm": "Are you sure you want to delete provider \"{name}\"? This action cannot be undone.",
-            "buttons": {
-              "delete": "Delete",
-              "cancel": "Cancel",
-              "save": "Save",
-              "saving": "Saving..."
-            },
             "messages": {
               "loadFailed": "Failed to load provider list",
               "createSuccess": "Provider created successfully",
@@ -1065,6 +1059,12 @@
                 "notDefault": "Not Default"
               },
               "authMethod": "Authentication Method"
+            },
+            "buttons": {
+              "delete": "Delete",
+              "cancel": "Cancel",
+              "save": "Save",
+              "saving": "Saving..."
             }
           }
         },

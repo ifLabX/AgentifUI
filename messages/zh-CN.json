@@ -1063,7 +1063,8 @@
             "buttons": {
               "cancel": "取消",
               "save": "保存",
-              "saving": "保存中..."
+              "saving": "保存中...",
+              "delete": "删除"
             }
           }
         },
@@ -1527,7 +1528,8 @@
           "phoneIcon": "📱",
           "moreGroups": "+{count} 个群组",
           "notInGroup": "未加入群组",
-          "moreGroupsTooltip": "还有 {count} 个群组：{names}"
+          "moreGroupsTooltip": "还有 {count} 个群组：{names}",
+          "confirm": "確認"
         },
         "pagination": {
           "showing": "显示第 {start} - {end} 条， 共 {total} 条记录",
@@ -1556,7 +1558,11 @@
             "active": "活跃",
             "suspended": "已暂停",
             "pending": "待激活"
-          }
+          },
+          "roleChangeConfirm": "将{name}的角色更改为{role} ？",
+          "statusChangeConfirm": "将{name}的状态更改为{status} ？",
+          "batchRoleChangeConfirm": "将{count}个用户的角色更改为{role} ？",
+          "batchStatusChangeConfirm": "将{count}个用户的状态更改为{status} ？"
         }
       },
       "ssoProviders": {
