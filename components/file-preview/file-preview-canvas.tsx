@@ -334,6 +334,7 @@ export const FilePreviewCanvas = () => {
     useFilePreviewStore();
   const { isDark } = useTheme();
   const pathname = usePathname();
+  const t = useTranslations('filePreview');
 
   // Auto-close preview when route changes (best practice for modal state management)
   useEffect(() => {
@@ -396,7 +397,7 @@ export const FilePreviewCanvas = () => {
                     ? 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
                     : 'text-stone-600 hover:bg-stone-200 hover:text-stone-800'
                 )}
-                aria-label="Close preview"
+                aria-label={t('closeButton')}
               >
                 <XIcon className="h-5 w-5" />
               </button>

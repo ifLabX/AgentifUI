@@ -2338,6 +2338,7 @@
     "retryButton": "Retry",
     "dismissButton": "Dismiss",
     "downloadButton": "Download File",
+    "closeButton": "Close preview",
     "noFileSelected": "No file selected",
     "previewNotSupported": "Preview not supported for this file type. You can download it to view the content.",
     "textPreview": {
