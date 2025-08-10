@@ -1063,7 +1063,8 @@
             "buttons": {
               "cancel": "Annuler",
               "save": "Enregistrer",
-              "saving": "Enregistrement..."
+              "saving": "Enregistrement...",
+              "delete": "Supprimer"
             }
           }
         },
@@ -1527,7 +1528,8 @@
           "phoneIcon": "📱",
           "moreGroups": "+{count} groupes",
           "notInGroup": "N'appartient à aucun groupe",
-          "moreGroupsTooltip": "{count} groupes de plus : {names}"
+          "moreGroupsTooltip": "{count} groupes de plus : {names}",
+          "confirm": "Confirmer"
         },
         "pagination": {
           "showing": "Affichage de {start} à {end} sur {total} enregistrements",
@@ -1556,7 +1558,11 @@
             "active": "Actif",
             "suspended": "Suspendu",
             "pending": "En attente"
-          }
+          },
+          "roleChangeConfirm": "Changer le rôle de {name} en {role} ?",
+          "statusChangeConfirm": "Changer le statut de {name} en {status} ?",
+          "batchRoleChangeConfirm": "Changer les rôles de {count} utilisateurs en {role} ?",
+          "batchStatusChangeConfirm": "Changer le statut de {count} utilisateurs en {status} ?"
         }
       },
       "ssoProviders": {
@@ -2385,6 +2391,7 @@
       "name": "Nom :",
       "type": "Type :",
       "size": "Taille :"
-    }
+    },
+    "closeButton": "Fermer l'aperçu"
   }
 }
