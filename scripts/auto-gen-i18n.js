@@ -40,7 +40,7 @@ function loadLanguageConfig() {
 
 function getBingLanguageCode(langCode) {
   const langMap = {
-    'zh-CN': 'zh',
+    'zh-CN': 'zh-Hans',
     'zh-TW': 'zh-Hant',
     'ja-JP': 'ja',
     'de-DE': 'de',
@@ -59,26 +59,42 @@ const MESSAGES_DIR = path.resolve(__dirname, '../messages');
 
 async function translateText(text, targetLanguage) {
   try {
-    const response = await fetch('https://api.mymemory.translated.net/get', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: null,
-    });
+    if (text.length > 450) {
+      console.warn(`⚠️  Text too long for "${text.substring(0, 50)}..."`);
+      return text;
+    }
 
     const url = new URL('https://api.mymemory.translated.net/get');
     url.searchParams.append('q', text);
     url.searchParams.append('langpair', `en|${targetLanguage}`);
+    url.searchParams.append('de', 'claude@agentifui.com');
 
-    const translationResponse = await fetch(url.toString());
+    const translationResponse = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'AgentifUI/1.0',
+      },
+    });
+
+    if (!translationResponse.ok) {
+      throw new Error(
+        `HTTP ${translationResponse.status}: ${translationResponse.statusText}`
+      );
+    }
+
     const data = await translationResponse.json();
 
     if (data.responseStatus === 200 && data.responseData) {
-      return data.responseData.translatedText;
+      const translated = data.responseData.translatedText;
+
+      if (translated && translated !== text && translated.length > 0) {
+        return translated;
+      }
     }
 
-    throw new Error('Translation failed');
+    throw new Error(
+      `Translation API error: ${data.responseDetails || 'Unknown error'}`
+    );
   } catch (error) {
     console.warn(
       `⚠️  Translation failed for "${text}" to ${targetLanguage}:`,
@@ -104,56 +120,6 @@ function isTranslatableText(text) {
   ];
 
   return !skipPatterns.some(pattern => pattern.test(text.trim()));
-}
-
-async function translateObjectDeep(obj, targetLanguage, parentKey = '') {
-  const result = {};
-  const stats = { translated: 0, skipped: 0, errors: 0 };
-
-  for (const [key, value] of Object.entries(obj)) {
-    const currentPath = parentKey ? `${parentKey}.${key}` : key;
-
-    if (typeof value === 'object' && value !== null) {
-      const subResult = await translateObjectDeep(
-        value,
-        targetLanguage,
-        currentPath
-      );
-      result[key] = subResult.data;
-      stats.translated += subResult.stats.translated;
-      stats.skipped += subResult.stats.skipped;
-      stats.errors += subResult.stats.errors;
-    } else if (typeof value === 'string') {
-      if (isTranslatableText(value)) {
-        try {
-          console.log(`🔄 Translating "${currentPath}": "${value}"`);
-          const translated = await translateText(value, targetLanguage);
-          result[key] = translated;
-          stats.translated++;
-
-          await new Promise(resolve => setTimeout(resolve, 100));
-        } catch (error) {
-          console.error(
-            `❌ Error translating "${currentPath}":`,
-            error.message
-          );
-          result[key] = value;
-          stats.errors++;
-        }
-      } else {
-        console.log(
-          `⏭️  Skipping non-translatable: "${currentPath}": "${value}"`
-        );
-        result[key] = value;
-        stats.skipped++;
-      }
-    } else {
-      result[key] = value;
-      stats.skipped++;
-    }
-  }
-
-  return { data: result, stats };
 }
 
 async function translateMissingKeys(
@@ -215,7 +181,7 @@ async function translateMissingKeys(
   return stats;
 }
 
-async function processLanguage(languageConfig, mode = 'missing') {
+async function processLanguage(languageConfig) {
   const { code, bingCode } = languageConfig;
   const sourceFilePath = path.join(MESSAGES_DIR, `${SOURCE_LANGUAGE}.json`);
   const targetFilePath = path.join(MESSAGES_DIR, `${code}.json`);
@@ -235,18 +201,11 @@ async function processLanguage(languageConfig, mode = 'missing') {
       targetContent = JSON.parse(fs.readFileSync(targetFilePath, 'utf8'));
     }
 
-    let stats;
-    if (mode === 'full') {
-      const result = await translateObjectDeep(sourceContent, bingCode);
-      targetContent = result.data;
-      stats = result.stats;
-    } else {
-      stats = await translateMissingKeys(
-        sourceContent,
-        targetContent,
-        bingCode
-      );
-    }
+    const stats = await translateMissingKeys(
+      sourceContent,
+      targetContent,
+      bingCode
+    );
 
     fs.writeFileSync(targetFilePath, JSON.stringify(targetContent, null, 2));
 
@@ -278,10 +237,6 @@ function parseArgs(args) {
       case '-d':
         config.isDryRun = true;
         break;
-      case '--full':
-      case '-f':
-        config.mode = 'full';
-        break;
       case '--help':
       case '-h':
         config.help = true;
@@ -311,20 +266,17 @@ Usage: node scripts/auto-gen-i18n.js [options]
 
 Options:
   -l, --lang <code>     Target language code (e.g. zh-CN, ja-JP)
-  -f, --full           Full translation mode (retranslate all keys)
   -d, --dry-run        Dry run mode (preview without changes)  
   -h, --help           Show this help message
 
 Examples:
   node scripts/auto-gen-i18n.js                    # Translate missing keys for all languages
   node scripts/auto-gen-i18n.js --lang zh-CN       # Translate missing keys for Chinese only
-  node scripts/auto-gen-i18n.js -l ja-JP -f        # Full retranslation for Japanese
   node scripts/auto-gen-i18n.js --dry-run          # Preview what would be translated
   
   # Using pnpm scripts:
   pnpm i18n:translate                               # Translate missing keys
   pnpm i18n:translate -- --lang zh-CN              # Target specific language
-  pnpm i18n:translate:full                          # Full retranslation
   pnpm i18n:translate:dry                           # Dry run preview
 
 Supported Languages:
@@ -343,7 +295,7 @@ async function main() {
 
   console.log('🚀 Starting AgentifUI auto-translation...');
   console.log(
-    `📋 Mode: ${config.isDryRun ? 'DRY RUN' : 'LIVE'} - ${config.mode === 'full' ? 'Full translation' : 'Missing keys only'}`
+    `📋 Mode: ${config.isDryRun ? 'DRY RUN' : 'LIVE'} - Missing keys only`
   );
 
   const languagesToProcess = config.targetLang
@@ -366,7 +318,7 @@ async function main() {
 
   for (const language of languagesToProcess) {
     if (!config.isDryRun) {
-      const stats = await processLanguage(language, config.mode);
+      const stats = await processLanguage(language);
       if (stats) {
         totalStats.translated += stats.translated;
         totalStats.skipped += stats.skipped;

@@ -40,7 +40,6 @@
     "i18n:remove-extra": "python3 scripts/i18n-refactor-helper.py remove-extra",
     "i18n:remove-extra:dry": "python3 scripts/i18n-refactor-helper.py remove-extra --dry",
     "i18n:translate": "node scripts/auto-gen-i18n.js",
-    "i18n:translate:full": "node scripts/auto-gen-i18n.js --full",
     "i18n:translate:dry": "node scripts/auto-gen-i18n.js --dry-run",
     "i18n:translate:help": "node scripts/auto-gen-i18n.js --help",
     "deploy": "pnpm build:standalone && pm2 startOrRestart ecosystem.config.js --only AgentifUI-Standalone --update-env || { echo 'Deploy failed'; exit 1; }",

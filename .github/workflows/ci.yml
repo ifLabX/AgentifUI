@@ -109,6 +109,7 @@ jobs:
   format-and-lint:
     name: Format and Lint Check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [changes, install]
     if: needs.changes.outputs.source == 'true' || needs.changes.outputs.config == 'true' || needs.changes.outputs.styles == 'true'
     permissions:
@@ -150,6 +151,7 @@ jobs:
   type-check:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [changes, install]
     if: needs.changes.outputs.source == 'true' || needs.changes.outputs.config == 'true'
     permissions:
@@ -216,6 +218,7 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [changes, install]
     if: needs.changes.outputs.source == 'true' || needs.changes.outputs.config == 'true'
     permissions:
@@ -252,10 +255,11 @@ jobs:
           path: .next/
           retention-days: 7
 
-  # Run tests for changed test files
+  # Run tests
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [changes, install]
     if: needs.changes.outputs.tests == 'true' || needs.changes.outputs.source == 'true'
     permissions:
@@ -263,8 +267,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -280,45 +282,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests for changed files
-        run: |
-          # Get list of changed test files and source files that might have related tests
-          CHANGED_TEST_FILES=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -E '\.(test|spec)\.(js|jsx|ts|tsx)$' | tr '\n' ' ' || true)
-          CHANGED_SOURCE_FILES=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | grep -E '\.(js|jsx|ts|tsx)$' | grep -v -E '\.(test|spec)\.' | tr '\n' ' ' || true)
-          
-          # Find related test files for changed source files
-          RELATED_TEST_FILES=""
-          if [ -n "$CHANGED_SOURCE_FILES" ]; then
-            for file in $CHANGED_SOURCE_FILES; do
-              # Look for corresponding test files
-              base_name=$(basename "$file" | sed 's/\.[^.]*$//')
-              dir_name=$(dirname "$file")
-              
-              # Check multiple test file patterns
-              for pattern in "${dir_name}/${base_name}.test.*" "${dir_name}/${base_name}.spec.*" "__tests__/**/${base_name}.*" "**/${base_name}.test.*" "**/${base_name}.spec.*"; do
-                if ls $pattern 1> /dev/null 2>&1; then
-                  RELATED_TEST_FILES="$RELATED_TEST_FILES $(ls $pattern)"
-                fi
-              done
-            done
-          fi
-          
-          # Combine all test files to run
-          ALL_TEST_FILES="$CHANGED_TEST_FILES $RELATED_TEST_FILES"
-          ALL_TEST_FILES=$(echo $ALL_TEST_FILES | tr ' ' '\n' | sort -u | tr '\n' ' ')
-          
-          if [ -n "$ALL_TEST_FILES" ] && [ "$ALL_TEST_FILES" != " " ]; then
-            echo "Running tests for files: $ALL_TEST_FILES"
-            pnpm exec jest $ALL_TEST_FILES --passWithNoTests
-          else
-            echo "No test files found for changed source files, running all tests"
-            pnpm test
-          fi
+      - name: Run tests
+        run: pnpm test
 
   # Security checks
   security-check:
     name: Security Check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [changes, install]
     if: needs.changes.outputs.source == 'true' || needs.changes.outputs.config == 'true'
     permissions:

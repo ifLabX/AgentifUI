@@ -1529,7 +1529,7 @@
           "moreGroups": "+{count} 个群组",
           "notInGroup": "未加入群组",
           "moreGroupsTooltip": "还有 {count} 个群组：{names}",
-          "confirm": "確認"
+          "confirm": "确认"
         },
         "pagination": {
           "showing": "显示第 {start} - {end} 条， 共 {total} 条记录",
