@@ -1,6 +1,6 @@
 'use client';
 
-import { UserAvatar } from '@components/ui';
+import { ConfirmDialog, UserAvatar } from '@components/ui';
 import { Dropdown } from '@components/ui/dropdown';
 import type { EnhancedUser } from '@lib/db/users';
 import {
@@ -61,9 +61,18 @@ export const UserTable: React.FC<UserTableProps> = ({
   onChangeStatus,
 }) => {
   const { isDark } = useTheme();
-  const { profile: currentUserProfile } = useProfile(); // Get current user information
+  const { profile: currentUserProfile } = useProfile();
   const { formatDate } = useDateFormatter();
   const t = useTranslations('pages.admin.users');
+
+  const [showRoleDialog, setShowRoleDialog] = React.useState(false);
+  const [showStatusDialog, setShowStatusDialog] = React.useState(false);
+  const [pendingAction, setPendingAction] = React.useState<{
+    user: EnhancedUser;
+    type: 'role' | 'status';
+    value: string;
+  } | null>(null);
+  const [isUpdating, setIsUpdating] = React.useState(false);
 
   // Check if the user can change the user role (prevent admin from demoting other admins)
   const canChangeUserRole = (
@@ -117,6 +126,46 @@ export const UserTable: React.FC<UserTableProps> = ({
 
     // Other roles can only edit themselves
     return targetUser.id === currentUserProfile?.id;
+  };
+
+  const handleRoleChange = (
+    user: EnhancedUser,
+    role: 'admin' | 'manager' | 'user'
+  ) => {
+    setPendingAction({ user, type: 'role', value: role });
+    setShowRoleDialog(true);
+  };
+
+  const handleStatusChange = (
+    user: EnhancedUser,
+    status: 'active' | 'suspended' | 'pending'
+  ) => {
+    setPendingAction({ user, type: 'status', value: status });
+    setShowStatusDialog(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!pendingAction) return;
+
+    setIsUpdating(true);
+    try {
+      if (pendingAction.type === 'role') {
+        await onChangeRole(
+          pendingAction.user,
+          pendingAction.value as 'admin' | 'manager' | 'user'
+        );
+        setShowRoleDialog(false);
+      } else {
+        await onChangeStatus(
+          pendingAction.user,
+          pendingAction.value as 'active' | 'suspended' | 'pending'
+        );
+        setShowStatusDialog(false);
+      }
+      setPendingAction(null);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // Get role display information - use stone theme colors
@@ -680,7 +729,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                           return (
                             <button
                               key={role}
-                              onClick={() => onChangeRole(user, role)}
+                              onClick={() => handleRoleChange(user, role)}
                               disabled={!canChange || isCurrent}
                               className={cn(
                                 'flex w-full items-center gap-3 px-4 py-2 font-serif text-sm transition-colors',
@@ -743,7 +792,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                             return (
                               <button
                                 key={status}
-                                onClick={() => onChangeStatus(user, status)}
+                                onClick={() => handleStatusChange(user, status)}
                                 disabled={isCurrent}
                                 className={cn(
                                   'flex w-full items-center gap-3 px-4 py-2 font-serif text-sm transition-colors',
@@ -814,6 +863,48 @@ export const UserTable: React.FC<UserTableProps> = ({
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        isOpen={showRoleDialog}
+        onClose={() => !isUpdating && setShowRoleDialog(false)}
+        onConfirm={handleConfirmAction}
+        title={t('actions.changeRole')}
+        message={t('messages.roleChangeConfirm', {
+          name:
+            pendingAction?.user?.full_name ||
+            pendingAction?.user?.email ||
+            'Unknown User',
+          role:
+            pendingAction?.value && pendingAction?.type === 'role'
+              ? t(`messages.roles.${pendingAction.value}`)
+              : pendingAction?.value || '',
+        })}
+        confirmText={t('actions.changeRole')}
+        variant="default"
+        icon="edit"
+        isLoading={isUpdating}
+      />
+
+      <ConfirmDialog
+        isOpen={showStatusDialog}
+        onClose={() => !isUpdating && setShowStatusDialog(false)}
+        onConfirm={handleConfirmAction}
+        title={t('actions.changeStatus')}
+        message={t('messages.statusChangeConfirm', {
+          name:
+            pendingAction?.user?.full_name ||
+            pendingAction?.user?.email ||
+            'Unknown User',
+          status:
+            pendingAction?.value && pendingAction?.type === 'status'
+              ? t(`messages.statuses.${pendingAction.value}`)
+              : pendingAction?.value || '',
+        })}
+        confirmText={t('actions.changeStatus')}
+        variant="default"
+        icon="edit"
+        isLoading={isUpdating}
+      />
     </div>
   );
 };

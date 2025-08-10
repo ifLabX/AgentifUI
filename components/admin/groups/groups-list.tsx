@@ -1,5 +1,6 @@
 'use client';
 
+import { ConfirmDialog } from '@components/ui';
 import type { Group } from '@lib/db/group-permissions';
 import {
   DateFormatPresets,
@@ -42,13 +43,26 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
   );
   const { formatDate } = useDateFormatter();
 
-  const handleDeleteGroup = async (group: Group) => {
-    if (window.confirm(t('messages.deleteConfirm', { name: group.name }))) {
-      const success = await deleteGroup(group.id);
-      if (success) {
-        toast.success(t('messages.deleteSuccess', { name: group.name }));
-      }
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteGroup = (group: Group) => {
+    setGroupToDelete(group);
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDeleteGroup = async () => {
+    if (!groupToDelete) return;
+
+    setIsDeleting(true);
+    const success = await deleteGroup(groupToDelete.id);
+    if (success) {
+      toast.success(t('messages.deleteSuccess', { name: groupToDelete.name }));
+      setShowDeleteDialog(false);
+      setGroupToDelete(null);
     }
+    setIsDeleting(false);
   };
 
   const handleViewMembers = (group: Group) => {
@@ -310,7 +324,6 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
         ))}
       </div>
 
-      {/* Edit group modal */}
       {editingGroup && (
         <EditGroupModal
           group={editingGroup}
@@ -319,7 +332,6 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
         />
       )}
 
-      {/* Member management modal */}
       {viewingMembersGroup && (
         <GroupMembersModal
           group={viewingMembersGroup}
@@ -327,6 +339,20 @@ export function GroupsList({ groups, isLoading }: GroupsListProps) {
           onClose={() => setViewingMembersGroup(null)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => !isDeleting && setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDeleteGroup}
+        title={t('list.actions.deleteGroup')}
+        message={t('messages.deleteConfirm', {
+          name: groupToDelete?.name || '',
+        })}
+        confirmText={t('list.actions.deleteGroup')}
+        variant="danger"
+        icon="delete"
+        isLoading={isDeleting}
+      />
     </>
   );
 }

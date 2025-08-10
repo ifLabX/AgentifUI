@@ -1,5 +1,6 @@
 'use client';
 
+import { ConfirmDialog } from '@components/ui/confirm-dialog';
 import type {
   Group,
   GroupMember,
@@ -49,6 +50,11 @@ export function GroupMembersModal({
 
   const [showAddMember, setShowAddMember] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<GroupMember | null>(
+    null
+  );
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const members = groupMembers[group.id] || [];
 
@@ -73,20 +79,30 @@ export function GroupMembersModal({
     }
   }, [isOpen, group.id, loadGroupMembers]);
 
-  const handleRemoveMember = async (member: GroupMember) => {
+  const handleRemoveMember = (member: GroupMember) => {
     if (!member.user) return;
+    setMemberToRemove(member);
+    setShowRemoveDialog(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!memberToRemove?.user) return;
 
     const memberName =
-      member.user.full_name || member.user.username || t('unknownUser');
-    if (
-      window.confirm(
-        t('removeMemberConfirm', { memberName, groupName: group.name })
-      )
-    ) {
-      const success = await removeMember(group.id, member.user_id);
+      memberToRemove.user.full_name ||
+      memberToRemove.user.username ||
+      t('unknownUser');
+
+    setIsRemoving(true);
+    try {
+      const success = await removeMember(group.id, memberToRemove.user_id);
       if (success) {
         toast.success(t('removeMemberSuccess', { memberName }));
+        setShowRemoveDialog(false);
+        setMemberToRemove(null);
       }
+    } finally {
+      setIsRemoving(false);
     }
   };
 
@@ -368,6 +384,24 @@ export function GroupMembersModal({
           onClose={() => setShowAddMember(false)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={showRemoveDialog}
+        onClose={() => !isRemoving && setShowRemoveDialog(false)}
+        onConfirm={handleConfirmRemove}
+        title={t('removeMember')}
+        message={t('removeMemberConfirm', {
+          memberName:
+            memberToRemove?.user?.full_name ||
+            memberToRemove?.user?.username ||
+            t('unknownUser'),
+          groupName: group.name,
+        })}
+        confirmText={t('removeMember')}
+        variant="danger"
+        icon="delete"
+        isLoading={isRemoving}
+      />
     </div>
   );
 }

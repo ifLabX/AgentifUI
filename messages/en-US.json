@@ -997,6 +997,12 @@
             "loading": "Loading...",
             "noProviders": "No providers configured",
             "deleteConfirm": "Are you sure you want to delete provider \"{name}\"? This action cannot be undone.",
+            "buttons": {
+              "delete": "Delete",
+              "cancel": "Cancel",
+              "save": "Save",
+              "saving": "Saving..."
+            },
             "messages": {
               "loadFailed": "Failed to load provider list",
               "createSuccess": "Provider created successfully",
@@ -1059,11 +1065,6 @@
                 "notDefault": "Not Default"
               },
               "authMethod": "Authentication Method"
-            },
-            "buttons": {
-              "cancel": "Cancel",
-              "save": "Save",
-              "saving": "Saving..."
             }
           }
         },
@@ -1516,6 +1517,7 @@
           "changeRole": "Change Role",
           "changeStatus": "Change Status",
           "deleteUser": "Delete User",
+          "confirm": "Confirm",
           "current": "(Current)",
           "self": "(Self)",
           "admin": "(Admin)",
@@ -1545,6 +1547,10 @@
           "statusChangeSuccess": "Changed {name}'s status to {status}",
           "batchRoleChangeSuccess": "Batch changed {count} users' roles",
           "batchStatusChangeSuccess": "Batch changed {count} users' status",
+          "roleChangeConfirm": "Change {name}'s role to {role}?",
+          "statusChangeConfirm": "Change {name}'s status to {status}?",
+          "batchRoleChangeConfirm": "Change {count} users' roles to {role}?",
+          "batchStatusChangeConfirm": "Change {count} users' status to {status}?",
           "deleteConfirm": "Are you sure you want to delete user {name}? This action cannot be undone.",
           "deleteSuccess": "Deleted user {name}",
           "roles": {

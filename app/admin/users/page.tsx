@@ -3,6 +3,7 @@
 import { UserFiltersComponent } from '@components/admin/users/user-filters';
 import { UserStatsCards } from '@components/admin/users/user-stats-cards';
 import { UserTable } from '@components/admin/users/user-table';
+import { ConfirmDialog } from '@components/ui';
 import { useProfile } from '@lib/hooks/use-profile';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useUserManagementStore } from '@lib/stores/user-management-store';
@@ -35,6 +36,18 @@ export default function UsersManagementPage() {
   const { isDark } = useTheme();
   const { profile: currentUserProfile } = useProfile();
   const t = useTranslations('pages.admin.users');
+
+  // Dialog state for delete confirmation
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const [showBatchDialog, setShowBatchDialog] = React.useState(false);
+  const [batchAction, setBatchAction] = React.useState<{
+    type: 'role' | 'status';
+    value: string;
+  } | null>(null);
+  const [isBatchUpdating, setIsBatchUpdating] = React.useState(false);
 
   // get status and operations from user management store
   const {
@@ -218,54 +231,80 @@ export default function UsersManagementPage() {
   };
 
   // handle user delete (with safety check)
-  const handleDeleteUser = async (user: User) => {
+  const handleDeleteUser = (user: User) => {
     if (!canDeleteUser(user)) {
       return;
     }
 
-    if (
-      window.confirm(
-        t('messages.deleteConfirm', {
-          name: user.full_name || user.email || 'Unknown User',
-        })
-      )
-    ) {
-      const success = await removeUser(user.id);
-      if (success) {
-        toast.success(
-          t('messages.deleteSuccess', {
-            name: user.full_name || user.email || 'Unknown User',
-          })
-        );
-      }
-    }
+    setUserToDelete(user);
+    setShowDeleteDialog(true);
   };
 
-  // handle batch role change (with safety check)
-  const handleBatchChangeRole = async (role: 'admin' | 'manager' | 'user') => {
+  // confirm delete user
+  const handleConfirmDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    setIsDeleting(true);
+    const success = await removeUser(userToDelete.id);
+    if (success) {
+      toast.success(
+        t('messages.deleteSuccess', {
+          name: userToDelete.full_name || userToDelete.email || 'Unknown User',
+        })
+      );
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
+    }
+    setIsDeleting(false);
+  };
+
+  const handleBatchChangeRole = (role: 'admin' | 'manager' | 'user') => {
     if (!canBatchChangeRole(role)) {
       return;
     }
-
-    const success = await batchChangeRole(role);
-    if (success) {
-      toast.success(
-        t('messages.batchRoleChangeSuccess', { count: selectedUserIds.length })
-      );
-    }
+    setBatchAction({ type: 'role', value: role });
+    setShowBatchDialog(true);
   };
 
-  // handle batch status change
-  const handleBatchChangeStatus = async (
+  const handleBatchChangeStatus = (
     status: 'active' | 'suspended' | 'pending'
   ) => {
-    const success = await batchChangeStatus(status);
-    if (success) {
-      toast.success(
-        t('messages.batchStatusChangeSuccess', {
-          count: selectedUserIds.length,
-        })
-      );
+    setBatchAction({ type: 'status', value: status });
+    setShowBatchDialog(true);
+  };
+
+  const handleConfirmBatchAction = async () => {
+    if (!batchAction) return;
+
+    setIsBatchUpdating(true);
+    try {
+      if (batchAction.type === 'role') {
+        const success = await batchChangeRole(
+          batchAction.value as 'admin' | 'manager' | 'user'
+        );
+        if (success) {
+          toast.success(
+            t('messages.batchRoleChangeSuccess', {
+              count: selectedUserIds.length,
+            })
+          );
+        }
+      } else {
+        const success = await batchChangeStatus(
+          batchAction.value as 'active' | 'suspended' | 'pending'
+        );
+        if (success) {
+          toast.success(
+            t('messages.batchStatusChangeSuccess', {
+              count: selectedUserIds.length,
+            })
+          );
+        }
+      }
+      setShowBatchDialog(false);
+      setBatchAction(null);
+    } finally {
+      setIsBatchUpdating(false);
     }
   };
 
@@ -581,6 +620,52 @@ export default function UsersManagementPage() {
 
         {/* Pagination controls */}
         <PaginationControls />
+
+        {/* Delete confirmation dialog */}
+        <ConfirmDialog
+          isOpen={showDeleteDialog}
+          onClose={() => !isDeleting && setShowDeleteDialog(false)}
+          onConfirm={handleConfirmDeleteUser}
+          title={t('actions.deleteUser')}
+          message={t('messages.deleteConfirm', {
+            name:
+              userToDelete?.full_name || userToDelete?.email || 'Unknown User',
+          })}
+          confirmText={t('actions.deleteUser')}
+          variant="danger"
+          icon="delete"
+          isLoading={isDeleting}
+        />
+
+        <ConfirmDialog
+          isOpen={showBatchDialog}
+          onClose={() => !isBatchUpdating && setShowBatchDialog(false)}
+          onConfirm={handleConfirmBatchAction}
+          title={
+            batchAction?.type === 'role'
+              ? t('actions.changeRole')
+              : t('actions.changeStatus')
+          }
+          message={
+            batchAction?.type === 'role'
+              ? t('messages.batchRoleChangeConfirm', {
+                  count: selectedUserIds.length,
+                  role: batchAction?.value
+                    ? t(`messages.roles.${batchAction.value}`)
+                    : batchAction?.value || '',
+                })
+              : t('messages.batchStatusChangeConfirm', {
+                  count: selectedUserIds.length,
+                  status: batchAction?.value
+                    ? t(`messages.statuses.${batchAction.value}`)
+                    : batchAction?.value || '',
+                })
+          }
+          confirmText={t('actions.confirm')}
+          variant="default"
+          icon="edit"
+          isLoading={isBatchUpdating}
+        />
       </div>
     </div>
   );

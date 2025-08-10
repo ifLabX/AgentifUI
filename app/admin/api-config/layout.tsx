@@ -2,8 +2,10 @@
 
 import { InstanceFilterSelector } from '@components/admin/api-config/instance-filter-selector';
 import { SearchInput } from '@components/ui';
+import { ConfirmDialog } from '@components/ui/confirm-dialog';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useApiConfigStore } from '@lib/stores/api-config-store';
+import { ServiceInstance } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import {
   Bot,
@@ -76,6 +78,10 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(
     null
   );
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [instanceToDelete, setInstanceToDelete] =
+    useState<ServiceInstance | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // get filter state from URL query params
   const [filterProviderId, setFilterProviderId] = useState<string | null>(
@@ -222,6 +228,26 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
     },
     [instances, t, tDebug, setDefaultInstance]
   );
+
+  const handleDeleteInstance = (instance: ServiceInstance) => {
+    setInstanceToDelete(instance);
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!instanceToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteInstance(instanceToDelete.id);
+      setShowDeleteDialog(false);
+      setInstanceToDelete(null);
+    } catch (error) {
+      console.error('Failed to delete instance:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // listen to page component's state change, fully sync page's form state
   useEffect(() => {
@@ -533,7 +559,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                         <button
                           onClick={e => {
                             e.stopPropagation();
-                            deleteInstance(instance.instance_id);
+                            handleDeleteInstance(instance);
                           }}
                           disabled={isProcessing || instance.is_default}
                           className={cn(
@@ -582,6 +608,18 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
       <div className="ml-80 h-full flex-1 overflow-hidden pl-px">
         {children}
       </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => !isDeleting && setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('delete')}
+        message={t('deleteConfirm')}
+        confirmText={t('delete')}
+        variant="danger"
+        icon="delete"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
