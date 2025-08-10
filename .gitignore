@@ -49,7 +49,7 @@ scripts/*
 # env files
 .env.*
 .env
-!env.example
+!.env.example
 
 # docs
 docs/security
