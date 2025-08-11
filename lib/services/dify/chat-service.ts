@@ -104,7 +104,7 @@ export async function streamDifyChat(
       metadata?: Record<string, unknown>;
       retrieverResources?: DifyRetrieverResource[];
     }) => void;
-    let completionReject: (reason?: Error) => void;
+    let completionReject: (reason?: unknown) => void;
     let completionResolved = false;
 
     const completionPromise = new Promise<{
