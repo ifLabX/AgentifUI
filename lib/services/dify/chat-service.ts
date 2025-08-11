@@ -7,6 +7,7 @@ import { parseSseStream } from '@lib/utils/sse-parser';
 
 import {
   DifyChatRequestPayload,
+  DifyRetrieverResource,
   DifySseEvent,
   DifySseIterationCompletedEvent,
   DifySseIterationNextEvent,
@@ -19,6 +20,7 @@ import {
   DifySseParallelBranchFinishedEvent,
   DifySseParallelBranchStartedEvent,
   DifyStreamResponse,
+  DifyUsage,
 } from './types';
 /**
  * Type definitions for stopping Dify streaming tasks
@@ -98,17 +100,17 @@ export async function streamDifyChat(
 
     // Create completionPromise to capture metadata from message_end event
     let completionResolve: (value: {
-      usage?: any;
-      metadata?: Record<string, any>;
-      retrieverResources?: any[];
+      usage?: DifyUsage;
+      metadata?: Record<string, unknown>;
+      retrieverResources?: DifyRetrieverResource[];
     }) => void;
-    let completionReject: (reason?: any) => void;
+    let completionReject: (reason?: Error) => void;
     let completionResolved = false;
 
     const completionPromise = new Promise<{
-      usage?: any;
-      metadata?: Record<string, any>;
-      retrieverResources?: any[];
+      usage?: DifyUsage;
+      metadata?: Record<string, unknown>;
+      retrieverResources?: DifyRetrieverResource[];
     }>((resolve, reject) => {
       completionResolve = resolve;
       completionReject = reject;
@@ -213,7 +215,7 @@ export async function streamDifyChat(
               console.log('[Dify Service] Iteration started:', event.data);
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseIterationStartedEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (iteration_started):',
@@ -226,7 +228,7 @@ export async function streamDifyChat(
               console.log('[Dify Service] Iteration next:', event.data);
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseIterationNextEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (iteration_next):',
@@ -239,7 +241,7 @@ export async function streamDifyChat(
               console.log('[Dify Service] Iteration completed:', event.data);
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseIterationCompletedEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (iteration_completed):',
@@ -255,7 +257,7 @@ export async function streamDifyChat(
               );
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseParallelBranchStartedEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (parallel_branch_started):',
@@ -271,7 +273,7 @@ export async function streamDifyChat(
               );
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseParallelBranchFinishedEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (parallel_branch_finished):',
@@ -284,7 +286,7 @@ export async function streamDifyChat(
               console.log('[Dify Service] Loop started:', event.data);
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseLoopStartedEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (loop_started):',
@@ -297,7 +299,7 @@ export async function streamDifyChat(
               console.log('[Dify Service] Loop next:', event.data);
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseLoopNextEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (loop_next):',
@@ -310,7 +312,7 @@ export async function streamDifyChat(
               console.log('[Dify Service] Loop completed:', event.data);
               if (onNodeEvent) {
                 try {
-                  onNodeEvent(event as any);
+                  onNodeEvent(event as DifySseLoopCompletedEvent);
                 } catch (callbackError) {
                   console.error(
                     '[Dify Service] Error in onNodeEvent callback (loop_completed):',
@@ -360,10 +362,22 @@ export async function streamDifyChat(
                 );
               }
 
+              // Safely extract usage data with type checking
+              const extractUsage = (usage: unknown): DifyUsage | undefined => {
+                if (
+                  usage &&
+                  typeof usage === 'object' &&
+                  'total_tokens' in usage
+                ) {
+                  return usage as DifyUsage;
+                }
+                return undefined;
+              };
+
               const completionData = {
-                usage: event.metadata?.usage || event.usage,
+                usage: extractUsage(event.metadata?.usage || event.usage),
                 metadata: event.metadata || {},
-                retrieverResources: event.metadata?.retriever_resources || [],
+                retrieverResources: event.retriever_resources || [],
               };
 
               console.log(
@@ -404,7 +418,9 @@ export async function streamDifyChat(
       } catch (error) {
         console.error('[Dify Service] Error in processStream:', error);
         if (completionReject) {
-          completionReject(error);
+          completionReject(
+            error instanceof Error ? error : new Error(String(error))
+          );
         }
         throw error;
       }

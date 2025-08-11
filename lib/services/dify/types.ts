@@ -40,7 +40,7 @@ export interface DifyChatRequestPayload {
   /** User input content */
   query: string;
   /** App input variables, defaults to empty object */
-  inputs?: Record<string, any>;
+  inputs?: Record<string, unknown>;
   /** Response mode */
   response_mode: 'streaming' | 'blocking';
   /** Unique user identifier */
@@ -107,7 +107,7 @@ export interface DifySseMessageEndEvent extends DifySseBaseEvent {
   /** Message ID */
   id: string;
   /** Metadata */
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   /** Model usage information */
   usage: DifyUsage;
   /** Reference and attribution resources */
@@ -188,7 +188,7 @@ export interface DifySseNodeStartedEvent extends DifySseBaseEvent {
     title: string;
     index: number;
     predecessor_node_id?: string;
-    inputs: Record<string, any>;
+    inputs: Record<string, unknown>;
     created_at: number;
   };
 }
@@ -207,13 +207,13 @@ export interface DifySseNodeFinishedEvent extends DifySseBaseEvent {
     node_id: string;
     index: number;
     predecessor_node_id?: string;
-    inputs?: Record<string, any>;
-    process_data?: any;
-    outputs?: any;
+    inputs?: Record<string, unknown>;
+    process_data?: unknown;
+    outputs?: unknown;
     status: 'running' | 'succeeded' | 'failed' | 'stopped';
     error?: string;
     elapsed_time?: number;
-    execution_metadata?: any;
+    execution_metadata?: unknown;
     total_tokens?: number;
     total_price?: string;
     currency?: string;
@@ -234,7 +234,7 @@ export interface DifySseWorkflowFinishedEvent extends DifySseBaseEvent {
     id: string;
     workflow_id: string;
     status: 'running' | 'succeeded' | 'failed' | 'stopped';
-    outputs?: any;
+    outputs?: unknown;
     error?: string;
     elapsed_time?: number;
     total_tokens?: number;
@@ -287,11 +287,11 @@ export interface DifySseAgentThoughtEvent extends DifySseBaseEvent {
   /** The tool being used */
   tool: string;
   /** Tool labels */
-  tool_labels: Record<string, any>;
+  tool_labels: Record<string, unknown>;
   /** Tool input */
   tool_input: string;
   /** Message files */
-  message_files: any[];
+  message_files: DifyMessageFile[];
   /** Creation timestamp */
   created_at: number;
 }
@@ -380,7 +380,7 @@ export interface DifySseIterationStartedEvent extends DifySseBaseEvent {
     iteration_id: string;
     iteration_index: number;
     total_iterations?: number;
-    inputs: Record<string, any>;
+    inputs: Record<string, unknown>;
     created_at: number;
   };
 }
@@ -399,7 +399,7 @@ export interface DifySseIterationNextEvent extends DifySseBaseEvent {
     node_id: string;
     iteration_id: string;
     iteration_index: number;
-    outputs?: Record<string, any>;
+    outputs?: Record<string, unknown>;
     created_at: number;
   };
 }
@@ -418,7 +418,7 @@ export interface DifySseIterationCompletedEvent extends DifySseBaseEvent {
     node_id: string;
     iteration_id: string;
     total_iterations: number;
-    outputs: Record<string, any>;
+    outputs: Record<string, unknown>;
     elapsed_time: number;
     created_at: number;
   };
@@ -439,7 +439,7 @@ export interface DifySseParallelBranchStartedEvent extends DifySseBaseEvent {
     branch_id: string;
     branch_index: number;
     total_branches?: number;
-    inputs: Record<string, any>;
+    inputs: Record<string, unknown>;
     created_at: number;
   };
 }
@@ -459,7 +459,7 @@ export interface DifySseParallelBranchFinishedEvent extends DifySseBaseEvent {
     branch_id: string;
     branch_index: number;
     status: 'succeeded' | 'failed' | 'stopped';
-    outputs?: Record<string, any>;
+    outputs?: Record<string, unknown>;
     error?: string;
     elapsed_time: number;
     created_at: number;
@@ -484,7 +484,7 @@ export interface DifySseLoopStartedEvent extends DifySseBaseEvent {
     node_id: string;
     node_type: string;
     title: string;
-    inputs: Record<string, any>;
+    inputs: Record<string, unknown>;
     metadata?: { loop_length?: number }; // Loop limit information
     created_at: number;
   };
@@ -505,7 +505,7 @@ export interface DifySseLoopNextEvent extends DifySseBaseEvent {
     node_type: string;
     title: string;
     index: number;
-    pre_loop_output?: Record<string, any>;
+    pre_loop_output?: Record<string, unknown>;
     created_at: number;
   };
 }
@@ -523,7 +523,7 @@ export interface DifySseLoopCompletedEvent extends DifySseBaseEvent {
     id: string;
     node_id: string;
     // 🎯 Fix: The actual data does not contain the total_loops field, it needs to be inferred from elsewhere.
-    outputs?: Record<string, any>;
+    outputs?: Record<string, unknown>;
     elapsed_time?: number;
     created_at: number;
   };
@@ -547,7 +547,7 @@ export interface DifyStreamResponse {
   // carrying the final usage, metadata, etc., for scenarios that require the complete response.
   completionPromise?: Promise<{
     usage?: DifyUsage;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     retrieverResources?: DifyRetrieverResource[];
   }>;
 
@@ -630,6 +630,7 @@ export interface DifyApiError {
   status: number; // HTTP status code
   code: string; // Dify internal error code or HTTP status code string
   message: string; // Error description
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Allow other possible error fields like validation_errors from Dify
 }
 
@@ -651,7 +652,7 @@ export interface DifyMessageFeedback {
 export interface ConversationMessage {
   id: string; // Unique ID of the message
   conversation_id: string; // ID of the conversation this message belongs to
-  inputs: Record<string, any>; // User-provided parameters, content depends on the application design
+  inputs: Record<string, unknown>; // User-provided parameters, content depends on the application design
   query: string; // The original query content sent by the user
   answer: string; // The AI assistant's response content
   message_files: DifyMessageFile[]; // List of files included in the message
@@ -690,7 +691,7 @@ export interface GetConversationsParams {
 export interface Conversation {
   id: string; // Conversation ID
   name: string; // Conversation name, generated by the large language model by default
-  inputs: Record<string, any>; // User input parameters
+  inputs: Record<string, unknown>; // User input parameters
   status: string; // Conversation status
   introduction: string; // Opening remark
   created_at: number; // Creation time (timestamp)
@@ -721,9 +722,7 @@ export interface RenameConversationRequestPayload {
 }
 
 // /conversations API - Response body structure for renaming a conversation, returns the updated conversation info
-export interface RenameConversationResponse extends Conversation {
-  // Inherits all fields from the Conversation interface
-}
+export type RenameConversationResponse = Conversation;
 
 // /conversations API - Request parameters for getting conversation variables
 export interface GetConversationVariablesParams {
@@ -991,7 +990,7 @@ export interface DifyWorkflowInputFile {
  * @description Describes the structure of a workflow request
  */
 export interface DifyWorkflowRequestPayload {
-  inputs: Record<string, any>; // Structured input parameters, supporting string, number, boolean, object, file array
+  inputs: Record<string, unknown>; // Structured input parameters, supporting string, number, boolean, object, file array
   response_mode: 'streaming' | 'blocking';
   user: string;
   // Note: Workflow does not have the concept of a conversation_id
@@ -1015,7 +1014,7 @@ export interface DifyWorkflowFinishedData {
   id: string; // Workflow execution ID (UUID)
   workflow_id: string; // Associated Workflow ID (UUID)
   status: 'running' | 'succeeded' | 'failed' | 'stopped';
-  outputs?: Record<string, any> | null; // Structured output (JSON)
+  outputs?: Record<string, unknown> | null; // Structured output (JSON)
   error?: string | null;
   elapsed_time?: number | null; // Time elapsed (seconds)
   total_tokens?: number | null;
@@ -1066,7 +1065,7 @@ export interface DifyWorkflowSseNodeStartedEvent {
     title: string;
     index: number;
     predecessor_node_id?: string;
-    inputs: Record<string, any>;
+    inputs: Record<string, unknown>;
     created_at: number;
   };
 }
@@ -1084,13 +1083,13 @@ export interface DifyWorkflowSseNodeFinishedEvent {
     node_id: string;
     index: number;
     predecessor_node_id?: string;
-    inputs?: Record<string, any>;
-    process_data?: any;
-    outputs?: any;
+    inputs?: Record<string, unknown>;
+    process_data?: unknown;
+    outputs?: unknown;
     status: 'running' | 'succeeded' | 'failed' | 'stopped';
     error?: string;
     elapsed_time?: number;
-    execution_metadata?: any;
+    execution_metadata?: unknown;
     total_tokens?: number;
     total_price?: string;
     currency?: string;
@@ -1216,7 +1215,7 @@ export interface DifyAudioToTextResponse {
  * @description Describes the structure of a text generation request
  */
 export interface DifyCompletionRequestPayload {
-  inputs: Record<string, any>; // Input parameters
+  inputs: Record<string, unknown>; // Input parameters
   response_mode: 'streaming' | 'blocking'; // Response mode
   user: string; // User identifier
   files?: DifyFile[]; // List of files (optional)
@@ -1230,7 +1229,7 @@ export interface DifyCompletionResponse {
   message_id: string; // Message ID
   mode: string; // App mode, always "completion"
   answer: string; // The generated text
-  metadata: Record<string, any>; // Metadata
+  metadata: Record<string, unknown>; // Metadata
   usage: DifyUsage; // Usage information
   created_at: number; // Creation timestamp
 }
@@ -1252,7 +1251,7 @@ export interface DifyCompletionStreamResponse {
   // Promise that resolves on completion
   completionPromise: Promise<{
     usage?: DifyUsage;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }>;
 }
 
@@ -1307,7 +1306,7 @@ export interface DifyWorkflowRunDetailResponse {
   workflow_id: string; // Associated Workflow ID (UUID)
   status: 'running' | 'succeeded' | 'failed' | 'stopped'; // Execution status
   inputs: string; // JSON string of the task input content
-  outputs: Record<string, any> | null; // JSON object of the task output content
+  outputs: Record<string, unknown> | null; // JSON object of the task output content
   error: string | null; // Reason for error
   total_steps: number; // Total steps in the task execution
   total_tokens: number; // Total tokens used in the task execution
@@ -1348,7 +1347,7 @@ export interface DifyWorkflowLogEntry {
   workflow_id: string; // Associated Workflow ID (UUID)
   status: DifyWorkflowLogStatus; // Execution status
   inputs: string; // JSON string of the task input content
-  outputs: Record<string, any> | null; // JSON object of the task output content
+  outputs: Record<string, unknown> | null; // JSON object of the task output content
   error: string | null; // Reason for error
   total_steps: number; // Total steps in the task execution
   total_tokens: number; // Total tokens used in the task execution
@@ -1419,9 +1418,7 @@ export interface CreateDifyAnnotationRequest {
  * Create Annotation Response (returns the created annotation item)
  * @description Describes the structure of a create annotation response
  */
-export interface CreateDifyAnnotationResponse extends DifyAnnotationItem {
-  // Inherits all fields from DifyAnnotationItem
-}
+export type CreateDifyAnnotationResponse = DifyAnnotationItem;
 
 // Update Annotation API Type Definitions
 // PUT /apps/annotations/{annotation_id}
@@ -1438,9 +1435,7 @@ export interface UpdateDifyAnnotationRequest {
  * Update Annotation Response (returns the updated annotation item)
  * @description Describes the structure of an update annotation response
  */
-export interface UpdateDifyAnnotationResponse extends DifyAnnotationItem {
-  // Inherits all fields from DifyAnnotationItem
-}
+export type UpdateDifyAnnotationResponse = DifyAnnotationItem;
 
 // Delete Annotation API Type Definitions
 // DELETE /apps/annotations/{annotation_id}
@@ -1449,9 +1444,7 @@ export interface UpdateDifyAnnotationResponse extends DifyAnnotationItem {
  * Delete Annotation Response (204 status code, no content)
  * @description Describes the structure of a delete annotation response
  */
-export interface DeleteDifyAnnotationResponse {
-  // Empty interface, indicates no response body
-}
+export type DeleteDifyAnnotationResponse = void;
 
 // Annotation Reply Initial Settings API Type Definitions
 // POST /apps/annotation-reply/{action}

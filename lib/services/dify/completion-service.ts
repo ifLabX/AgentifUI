@@ -131,13 +131,13 @@ export async function streamDifyCompletion(
     // Create completion Promise
     let completionResolve: (value: {
       usage?: DifyUsage;
-      metadata?: Record<string, any>;
+      metadata?: Record<string, unknown>;
     }) => void;
-    let completionReject: (reason: any) => void;
+    let completionReject: (reason: Error) => void;
 
     const completionPromise = new Promise<{
       usage?: DifyUsage;
-      metadata?: Record<string, any>;
+      metadata?: Record<string, unknown>;
     }>((resolve, reject) => {
       completionResolve = resolve;
       completionReject = reject;
@@ -290,7 +290,9 @@ export async function streamDifyCompletion(
           error
         );
         if (!completionResolved) {
-          completionReject(error);
+          completionReject(
+            error instanceof Error ? error : new Error(String(error))
+          );
           completionResolved = true;
         }
         throw error;

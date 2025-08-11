@@ -24,6 +24,7 @@ import {
 } from '@lib/services/dify/chat-service';
 // Use new hook
 import type {
+  ChatUploadFile,
   DifyChatRequestPayload,
   DifyRetrieverResource,
   DifySseIterationCompletedEvent,
@@ -249,8 +250,11 @@ export function useChatInterface(
   }, [currentPathname]);
 
   const handleSubmit = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (message: string, files?: any[], inputs?: Record<string, any>) => {
+    async (
+      message: string,
+      files?: unknown[],
+      inputs?: Record<string, unknown>
+    ) => {
       if (isSubmittingRef.current) {
         console.warn('[handleSubmit] Submission blocked: already submitting.');
         return;
@@ -323,13 +327,14 @@ export function useChatInterface(
 
       const messageAttachments =
         Array.isArray(files) && files.length > 0
-          ? files.map(file => {
+          ? files.map((file: unknown) => {
+              const uploadFile = file as ChatUploadFile;
               return {
-                id: file.upload_file_id,
-                name: file.name,
-                size: file.size,
-                type: file.mime_type,
-                upload_file_id: file.upload_file_id,
+                id: uploadFile.upload_file_id,
+                name: uploadFile.name,
+                size: uploadFile.size,
+                type: uploadFile.mime_type,
+                upload_file_id: uploadFile.upload_file_id,
               };
             })
           : undefined;
@@ -389,14 +394,13 @@ export function useChatInterface(
       let completionPromise:
         | Promise<{
             usage?: DifyUsage;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            metadata?: Record<string, any>;
+            metadata?: Record<string, unknown>;
             retrieverResources?: DifyRetrieverResource[];
           }>
         | undefined;
 
       try {
-        // Convert messageAttachments (any[]) to DifyFile[]
+        // Convert messageAttachments to DifyFile[]
         // Assume DifyFile needs type and upload_file_id
         // Note: type should be inferred from mime_type, or let Dify handle it.
         // DifyFile type is 'image' | 'document', not mime_type.
@@ -410,11 +414,14 @@ export function useChatInterface(
             }[]
           | undefined =
           Array.isArray(files) && files.length > 0
-            ? files.map(file => ({
-                type: 'document' as const,
-                transfer_method: 'local_file' as const,
-                upload_file_id: file.upload_file_id,
-              }))
+            ? files.map((file: unknown) => {
+                const uploadFile = file as ChatUploadFile;
+                return {
+                  type: 'document' as const,
+                  transfer_method: 'local_file' as const,
+                  upload_file_id: uploadFile.upload_file_id,
+                };
+              })
             : undefined;
 
         const basePayloadForNewConversation = {
@@ -1296,8 +1303,7 @@ export function useChatInterface(
   // Equivalent to entering message in input box and clicking send
   // Fully reuses existing handleSubmit logic, including validation and state management
   const sendDirectMessage = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async (messageText: string, files?: any[]) => {
+    async (messageText: string, files?: unknown[]) => {
       if (!messageText.trim()) {
         console.warn(
           '[sendDirectMessage] Message content is empty, skip sending'

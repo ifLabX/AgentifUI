@@ -16,11 +16,13 @@
  * - Favorite apps management
  */
 import { createConversation } from '@lib/db';
+import { updateConversation } from '@lib/db/conversations';
 import { streamDifyChat } from '@lib/services/dify/chat-service';
 import { renameConversation } from '@lib/services/dify/conversation-service';
 import { DifyStreamResponse } from '@lib/services/dify/types';
 import type {
   DifyChatRequestPayload,
+  DifyRetrieverResource,
   DifySseIterationCompletedEvent,
   DifySseIterationNextEvent,
   DifySseIterationStartedEvent,
@@ -31,10 +33,12 @@ import type {
   DifySseNodeStartedEvent,
   DifySseParallelBranchFinishedEvent,
   DifySseParallelBranchStartedEvent,
+  DifyUsage,
 } from '@lib/services/dify/types';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useAutoAddFavoriteApp } from '@lib/stores/favorite-apps-store';
 import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
+import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 
 import { useCallback, useState } from 'react';
@@ -69,22 +73,21 @@ interface UseCreateConversationReturn {
     taskId?: string;
     answerStream?: AsyncGenerator<string, void, undefined>;
     completionPromise?: Promise<{
-      usage?: any;
-      metadata?: Record<string, any>;
-      retrieverResources?: any[];
+      usage?: DifyUsage;
+      metadata?: Record<string, unknown>;
+      retrieverResources?: DifyRetrieverResource[];
     }>;
-    error?: any;
+    error?: Error;
   }>;
   isLoading: boolean;
-  error: any;
+  error: Error | null;
 }
 
 export function useCreateConversation(): UseCreateConversationReturn {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<Error | null>(null);
   const t = useTranslations('sidebar');
 
-  const addPending = usePendingConversationStore(state => state.addPending);
   const addPendingWithLimit = usePendingConversationStore(
     state => state.addPendingWithLimit
   );
@@ -97,19 +100,10 @@ export function useCreateConversation(): UseCreateConversationReturn {
   const updateStatusInPendingStore = usePendingConversationStore(
     state => state.updateStatus
   );
-  const markAsOptimistic = usePendingConversationStore(
-    state => state.markAsOptimistic
-  );
-  const setSupabasePKInPendingStore = usePendingConversationStore(
-    state => state.setSupabasePK
-  );
 
   // 🎯 New: Actions related to typewriter effect
   const startTitleTypewriter = usePendingConversationStore(
     state => state.startTitleTypewriter
-  );
-  const completeTitleTypewriter = usePendingConversationStore(
-    state => state.completeTitleTypewriter
   );
 
   const { session } = useSupabaseAuth();
@@ -149,11 +143,11 @@ export function useCreateConversation(): UseCreateConversationReturn {
       taskId?: string;
       answerStream?: AsyncGenerator<string, void, undefined>;
       completionPromise?: Promise<{
-        usage?: any;
-        metadata?: Record<string, any>;
-        retrieverResources?: any[];
+        usage?: DifyUsage;
+        metadata?: Record<string, unknown>;
+        retrieverResources?: DifyRetrieverResource[];
       }>;
-      error?: any;
+      error?: Error;
     }> => {
       setIsLoading(true);
       setError(null);
@@ -189,8 +183,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
         );
         setCurrentChatConversationId(tempConvId);
 
-        const { selectItem } =
-          require('@lib/stores/sidebar-store').useSidebarStore.getState();
+        const { selectItem } = useSidebarStore.getState();
         console.log(
           `[useCreateConversation] Early highlight: Selecting item in SidebarStore: ${tempConvId}`
         );
@@ -246,8 +239,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
               }
 
               try {
-                const chatStoreState =
-                  require('@lib/stores/chat-store').useChatStore.getState();
+                const chatStoreState = useChatStore.getState();
                 if (
                   chatStoreState.currentConversationId === tempConvId ||
                   chatStoreState.currentConversationId === null
@@ -255,8 +247,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                   chatStoreState.setCurrentConversationId(id);
                 }
 
-                const sidebarStoreState =
-                  require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                const sidebarStoreState = useSidebarStore.getState();
                 if (
                   sidebarStoreState.selectedId === tempConvId ||
                   sidebarStoreState.selectedId === null
@@ -401,9 +392,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     // Update the title in the database
                     if (dbId && finalTitle !== tempTitle) {
                       try {
-                        const {
-                          updateConversation,
-                        } = require('@lib/db/conversations');
+                        // Use imported updateConversation
                         await updateConversation(dbId, { title: finalTitle });
                         console.log(
                           `[useCreateConversation] Database title update successful: ${finalTitle}`
@@ -420,8 +409,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     try {
                       const currentPath = window.location.pathname;
                       if (currentPath === `/chat/${id}`) {
-                        const { selectItem } =
-                          require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                        const { selectItem } = useSidebarStore.getState();
                         selectItem('chat', id, true); // Keep current expanded state
                       }
                     } catch (error) {
@@ -444,9 +432,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     // Update the title in the database
                     if (dbId) {
                       try {
-                        const {
-                          updateConversation,
-                        } = require('@lib/db/conversations');
+                        // Use imported updateConversation
                         await updateConversation(dbId, {
                           title: fallbackTitle,
                         });
@@ -465,8 +451,7 @@ export function useCreateConversation(): UseCreateConversationReturn {
                     try {
                       const currentPath = window.location.pathname;
                       if (currentPath === `/chat/${id}`) {
-                        const { selectItem } =
-                          require('@lib/stores/sidebar-store').useSidebarStore.getState();
+                        const { selectItem } = useSidebarStore.getState();
                         selectItem('chat', id, true); // Keep current expanded state
                       }
                     } catch (error) {
@@ -536,25 +521,26 @@ export function useCreateConversation(): UseCreateConversationReturn {
           '[useCreateConversation] Error initiating new conversation:',
           e
         );
-        setError(e);
+        setError(e instanceof Error ? e : new Error(String(e)));
         setIsLoading(false);
         updateStatusInPendingStore(tempConvId, 'failed');
         updateTitleInPendingStore(tempConvId, t('createFailed'), true);
-        return { tempConvId, error: e };
+        return {
+          tempConvId,
+          error: e instanceof Error ? e : new Error(String(e)),
+        };
       }
     },
     [
-      addPending,
+      addPendingWithLimit,
       setRealIdAndStatus,
       updateTitleInPendingStore,
       updateStatusInPendingStore,
-      markAsOptimistic,
-      setSupabasePKInPendingStore,
       startTitleTypewriter,
-      completeTitleTypewriter,
       currentUserId,
       setCurrentChatConversationId,
       addToFavorites,
+      t,
     ]
   );
 
