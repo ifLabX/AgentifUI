@@ -630,7 +630,7 @@ export interface DifyApiError {
   status: number; // HTTP status code
   code: string; // Dify internal error code or HTTP status code string
   message: string; // Error description
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Allow dynamic error fields from external Dify API (e.g., validation_errors)
   [key: string]: any; // Allow other possible error fields like validation_errors from Dify
 }
 
