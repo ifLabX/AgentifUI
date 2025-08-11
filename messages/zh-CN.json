@@ -2338,6 +2338,7 @@
     "retryButton": "重试",
     "dismissButton": "关闭",
     "downloadButton": "下载文件",
+    "closeButton": "关闭预览",
     "noFileSelected": "未选择文件",
     "previewNotSupported": "不支持预览此文件类型。您可以下载查看内容。",
     "textPreview": {

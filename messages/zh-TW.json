@@ -1063,7 +1063,8 @@
             "buttons": {
               "cancel": "取消",
               "save": "儲存",
-              "saving": "儲存中..."
+              "saving": "儲存中...",
+              "delete": "刪除"
             }
           }
         },
@@ -1527,7 +1528,8 @@
           "phoneIcon": "📱",
           "moreGroups": "+{count} 個群組",
           "notInGroup": "未加入群組",
-          "moreGroupsTooltip": "還有 {count} 個群組：{names}"
+          "moreGroupsTooltip": "還有 {count} 個群組：{names}",
+          "confirm": "確認"
         },
         "pagination": {
           "showing": "顯示第 {start} - {end} 筆，共 {total} 筆記錄",
@@ -1556,7 +1558,11 @@
             "active": "活躍",
             "suspended": "已暫停",
             "pending": "待啟用"
-          }
+          },
+          "roleChangeConfirm": "要將{name}的角色變更為{role}嗎？",
+          "statusChangeConfirm": "要將{name}的狀態變更為{status}嗎？",
+          "batchRoleChangeConfirm": "將{count}個用戶的角色更改為{role} ？",
+          "batchStatusChangeConfirm": "要將{count}位使用者的狀態變更為{status}嗎？"
         }
       },
       "ssoProviders": {
@@ -2385,6 +2391,7 @@
       "name": "名稱：",
       "type": "類型：",
       "size": "大小："
-    }
+    },
+    "closeButton": "關閉預覽"
   }
 }

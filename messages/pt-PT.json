@@ -1063,7 +1063,8 @@
             "buttons": {
               "cancel": "Cancelar",
               "save": "Guardar",
-              "saving": "A guardar..."
+              "saving": "A guardar...",
+              "delete": "Excluir"
             }
           }
         },
@@ -1527,7 +1528,8 @@
           "phoneIcon": "📱",
           "moreGroups": "+{count} grupos",
           "notInGroup": "Não está em nenhum grupo",
-          "moreGroupsTooltip": "{count} mais grupos: {names}"
+          "moreGroupsTooltip": "{count} mais grupos: {names}",
+          "confirm": "Confirmar"
         },
         "pagination": {
           "showing": "A mostrar {start} - {end} de {total} registos",
@@ -1556,7 +1558,11 @@
             "active": "Ativo",
             "suspended": "Suspenso",
             "pending": "Pendente"
-          }
+          },
+          "roleChangeConfirm": "Alterar a função de {name} para {role}?",
+          "statusChangeConfirm": "Alterar o estado de {name} para {status}?",
+          "batchRoleChangeConfirm": "Alterar as funções de {count} utilizadores para {role}?",
+          "batchStatusChangeConfirm": "Alterar o estado de {count} utilizadores para {status}?"
         }
       },
       "ssoProviders": {
@@ -2385,6 +2391,7 @@
       "name": "Nome:",
       "type": "Tipo:",
       "size": "Tamanho:"
-    }
+    },
+    "closeButton": "Fechar pré-visualização"
   }
 }
