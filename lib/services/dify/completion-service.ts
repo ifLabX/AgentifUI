@@ -133,7 +133,7 @@ export async function streamDifyCompletion(
       usage?: DifyUsage;
       metadata?: Record<string, unknown>;
     }) => void;
-    let completionReject: (reason: Error) => void;
+    let completionReject: (reason: unknown) => void;
 
     const completionPromise = new Promise<{
       usage?: DifyUsage;
