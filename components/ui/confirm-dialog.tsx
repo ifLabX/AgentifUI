@@ -164,8 +164,8 @@ export function ConfirmDialog({
   };
 
   // Get icon component
-  const getIcon = () => {
-    const iconClass = 'w-6 h-6';
+  const getIcon = (size: 'sm' | 'lg' = 'sm') => {
+    const iconClass = size === 'lg' ? 'w-8 h-8' : 'w-5 h-5';
 
     switch (icon) {
       case 'edit':
@@ -231,7 +231,7 @@ export function ConfirmDialog({
                 isDark ? 'ring-stone-600/50' : 'ring-stone-200/60'
               )}
             >
-              <div className="h-5 w-5">{getIcon()}</div>
+              {getIcon('sm')}
             </div>
 
             <div className="min-w-0 flex-1">
@@ -359,7 +359,7 @@ export function ConfirmDialog({
               isDark ? 'ring-stone-700/50' : 'ring-stone-200/50'
             )}
           >
-            <div className="h-8 w-8">{getIcon()}</div>
+            {getIcon('lg')}
           </div>
 
           <h3
