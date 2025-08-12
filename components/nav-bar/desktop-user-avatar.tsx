@@ -119,7 +119,7 @@ export function DesktopUserAvatar() {
         <button
           ref={triggerRef}
           onClick={toggleDropdown}
-          className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full p-0 transition-all duration-200 hover:ring-2 hover:ring-stone-400/50 focus:ring-2 focus:ring-stone-400/50 focus:outline-none"
+          className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:ring-2 hover:ring-stone-400/50 focus:ring-2 focus:ring-stone-400/50 focus:outline-none"
           aria-label={isLoggedIn ? t('userMenu') : t('login')}
         >
           {isLoggedIn ? (
