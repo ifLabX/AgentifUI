@@ -119,15 +119,7 @@ export function DesktopUserAvatar() {
         <button
           ref={triggerRef}
           onClick={toggleDropdown}
-          className="relative cursor-pointer rounded-full transition-all duration-200 hover:ring-2 hover:ring-gray-400/50 focus:outline-none"
-          style={{
-            padding: 0,
-            width: '36px',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full p-0 transition-all duration-200 hover:ring-2 hover:ring-stone-400/50 focus:ring-2 focus:ring-stone-400/50 focus:outline-none"
           aria-label={isLoggedIn ? t('userMenu') : t('login')}
         >
           {isLoggedIn ? (
@@ -139,18 +131,12 @@ export function DesktopUserAvatar() {
             />
           ) : (
             <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: isDark ? '#57534e' : '#f5f5f4',
-                color: isDark ? '#e7e5e4' : '#57534e',
-                border: `2px solid ${isDark ? '#44403c' : '#d6d3d1'}`,
-                transition: 'all 0.2s',
-              }}
+              className={cn(
+                'flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all duration-200',
+                isDark
+                  ? 'border-stone-600 bg-stone-700 text-stone-200'
+                  : 'border-stone-300 bg-stone-100 text-stone-600'
+              )}
             >
               <UserCircle size={18} />
             </div>
@@ -162,8 +148,8 @@ export function DesktopUserAvatar() {
             className={cn(
               'animate-slide-in-down absolute top-12 -right-2 z-50 w-64 rounded-xl border p-2 shadow-xl',
               isDark
-                ? 'border-[#44403c] bg-[#18130f]'
-                : 'border-[#e7e5e4] bg-[#f5f5f4]'
+                ? 'border-stone-600 bg-stone-800'
+                : 'border-stone-200 bg-stone-50'
             )}
           >
             {isLoggedIn ? (
@@ -171,9 +157,7 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'mb-2 rounded-lg p-3',
-                    isDark
-                      ? 'bg-[rgba(120,113,108,0.3)]'
-                      : 'bg-[rgba(231,229,228,0.8)]'
+                    isDark ? 'bg-stone-700/50' : 'bg-stone-200/80'
                   )}
                 >
                   <div className="flex items-center">
@@ -181,7 +165,7 @@ export function DesktopUserAvatar() {
                       <p
                         className={cn(
                           'truncate font-serif text-sm font-semibold',
-                          isDark ? 'text-[#f5f5f4]' : 'text-[#1c1917]'
+                          isDark ? 'text-stone-100' : 'text-stone-900'
                         )}
                       >
                         {userName}
@@ -189,7 +173,7 @@ export function DesktopUserAvatar() {
                       <p
                         className={cn(
                           'truncate font-serif text-xs',
-                          isDark ? 'text-[#a8a29e]' : 'text-[#78716c]'
+                          isDark ? 'text-stone-300' : 'text-stone-600'
                         )}
                       >
                         {userRole}
@@ -201,7 +185,7 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'mb-2 h-px w-full',
-                    isDark ? 'bg-[#44403c]' : 'bg-[#e7e5e4]'
+                    isDark ? 'bg-stone-600' : 'bg-stone-200'
                   )}
                 />
 
@@ -218,11 +202,11 @@ export function DesktopUserAvatar() {
                           'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 focus:outline-none',
                           isDark
                             ? isHovered
-                              ? 'bg-[#44403c]/50 text-[#d6d3d1]'
-                              : 'bg-transparent text-[#d6d3d1]'
+                              ? 'bg-stone-700 text-stone-200'
+                              : 'bg-transparent text-stone-200'
                             : isHovered
-                              ? 'bg-[#e7e5e4] text-[#44403c]'
-                              : 'bg-transparent text-[#44403c]'
+                              ? 'bg-stone-200 text-stone-800'
+                              : 'bg-transparent text-stone-700'
                         )}
                         onMouseEnter={() => setHoveredItem(itemKey)}
                         onMouseLeave={() => setHoveredItem(null)}
@@ -230,13 +214,13 @@ export function DesktopUserAvatar() {
                         <item.icon
                           className={cn(
                             'h-4 w-4',
-                            isDark ? 'text-[#a8a29e]' : 'text-[#57534e]'
+                            isDark ? 'text-stone-400' : 'text-stone-500'
                           )}
                         />
                         <span
                           className={cn(
                             'flex-1 font-serif text-sm',
-                            isDark ? 'text-[#d6d3d1]' : 'text-[#44403c]'
+                            isDark ? 'text-stone-200' : 'text-stone-700'
                           )}
                         >
                           {item.label}
@@ -254,7 +238,7 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'my-2 h-px w-full',
-                    isDark ? 'bg-[#44403c]' : 'bg-[#e7e5e4]'
+                    isDark ? 'bg-stone-600' : 'bg-stone-200'
                   )}
                 />
 
@@ -262,11 +246,11 @@ export function DesktopUserAvatar() {
                   onClick={handleLogout}
                   className={cn(
                     'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left font-serif text-sm transition-colors duration-150 focus:outline-none',
-                    'text-[#dc2626]',
+                    'text-red-600',
                     hoveredItem === 'logout'
                       ? isDark
-                        ? 'bg-[rgba(153,27,27,0.2)]'
-                        : 'bg-[rgba(254,226,226,1)]'
+                        ? 'bg-red-900/20'
+                        : 'bg-red-50'
                       : 'bg-transparent'
                   )}
                   onMouseEnter={() => setHoveredItem('logout')}
@@ -282,15 +266,15 @@ export function DesktopUserAvatar() {
                   className={cn(
                     'mb-6 rounded-xl px-4 py-6 text-center',
                     isDark
-                      ? 'bg-[rgba(120,113,108,0.3)] text-[#d6d3d1]'
-                      : 'bg-[rgba(231,229,228,0.8)] text-[#57534e]'
+                      ? 'bg-stone-700/50 text-stone-200'
+                      : 'bg-stone-200/80 text-stone-600'
                   )}
                 >
                   <UserCircle
-                    className="mx-auto mb-3 h-16 w-16"
-                    style={{
-                      color: isDark ? '#a8a29e' : '#78716c',
-                    }}
+                    className={cn(
+                      'mx-auto mb-3 h-16 w-16',
+                      isDark ? 'text-stone-400' : 'text-stone-500'
+                    )}
                   />
                   <p className="font-serif font-medium">{t('loginPrompt')}</p>
                   <p className="mt-1 font-serif text-sm opacity-75">
@@ -305,7 +289,7 @@ export function DesktopUserAvatar() {
                     }
                     className={cn(
                       'w-full transform rounded-xl px-4 py-3 text-center font-serif font-semibold text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-xl',
-                      hoveredItem === 'login' ? 'bg-[#44403c]' : 'bg-[#57534e]'
+                      hoveredItem === 'login' ? 'bg-stone-700' : 'bg-stone-600'
                     )}
                     onMouseEnter={() => setHoveredItem('login')}
                     onMouseLeave={() => setHoveredItem(null)}
@@ -321,11 +305,11 @@ export function DesktopUserAvatar() {
                       'w-full transform rounded-xl border px-4 py-3 text-center font-serif font-medium shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md',
                       hoveredItem === 'register'
                         ? isDark
-                          ? 'border-[#57534e] bg-[#57534e] text-[#e7e5e4]'
-                          : 'border-[#d6d3d1] bg-[#d6d3d1] text-[#44403c]'
+                          ? 'border-stone-600 bg-stone-600 text-stone-100'
+                          : 'border-stone-300 bg-stone-300 text-stone-800'
                         : isDark
-                          ? 'border-[#57534e] bg-[#44403c] text-[#e7e5e4]'
-                          : 'border-[#d6d3d1] bg-[#f5f5f4] text-[#44403c]'
+                          ? 'border-stone-600 bg-stone-700 text-stone-200'
+                          : 'border-stone-300 bg-stone-100 text-stone-700'
                     )}
                     onMouseEnter={() => setHoveredItem('register')}
                     onMouseLeave={() => setHoveredItem(null)}
