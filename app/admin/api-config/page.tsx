@@ -12,8 +12,8 @@ import {
   handleCreateInstance,
   handleUpdateInstance,
 } from '@components/admin/api-config/instance-save-handlers';
+import { ProviderManagementModal } from '@components/admin/api-config/provider-management';
 import { ProviderManagementButton } from '@components/admin/api-config/provider-management-button';
-import { ProviderManagementModal } from '@components/admin/api-config/provider-management-modal';
 import { TagsSelector } from '@components/admin/api-config/tags-selector';
 import { useApiConfigEvents } from '@components/admin/api-config/use-api-config-events';
 import { useTheme } from '@lib/hooks/use-theme';
