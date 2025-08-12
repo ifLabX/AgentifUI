@@ -58,7 +58,7 @@ const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
       <button
         ref={ref}
         className={cn(
-          'inline-flex items-center justify-center font-serif focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center font-serif select-none focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none disabled:opacity-50',
           isDark
             ? 'focus:ring-stone-500 focus:ring-offset-stone-900'
             : 'focus:ring-stone-500 focus:ring-offset-white',

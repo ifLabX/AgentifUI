@@ -16,7 +16,7 @@ const Switch = React.forwardRef<
   return (
     <SwitchPrimitives.Root
       className={cn(
-        'peer inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+        'peer inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-all duration-200 select-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
         isDark
           ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-stone-900 data-[state=checked]:bg-stone-600 data-[state=unchecked]:bg-stone-700'
           : 'focus-visible:ring-stone-500 focus-visible:ring-offset-white data-[state=checked]:bg-stone-800 data-[state=unchecked]:bg-stone-300',
