@@ -122,7 +122,7 @@ export function ProviderManagementModal({
   };
 
   const handleDeleteProvider = async (provider: Provider) => {
-    const confirmMessage = t('deleteMessage', { name: provider.name });
+    const confirmMessage = t('deleteConfirm', { name: provider.name });
     if (window.confirm(confirmMessage)) {
       try {
         const result = await deleteProvider(provider.id);
