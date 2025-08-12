@@ -1275,8 +1275,6 @@ export default function ApiConfigPage() {
     updateAppInstance: updateInstance,
   } = useApiConfigStore();
 
-  // translation function
-  const t = useTranslations('pages.admin.apiConfig.page');
   const tInstanceSaveHandlers = useTranslations(
     'pages.admin.apiConfig.instanceSaveHandlers'
   );
@@ -1317,7 +1315,7 @@ export default function ApiConfigPage() {
   const handleProviderChange = () => {
     // reload providers data
     window.dispatchEvent(new CustomEvent('reloadProviders'));
-    toast.success(t('provider.configUpdated'));
+    // Note: Toast will be shown by the specific operation (create/update/delete) in the modal
   };
 
   useEffect(() => {

@@ -1314,8 +1314,7 @@
             "current": "Current application service provider (cannot be modified)",
             "select": "Select service provider",
             "unknown": "Unknown Provider",
-            "selectPlaceholder": "Please select provider",
-            "configUpdated": "Provider configuration updated"
+            "selectPlaceholder": "Please select provider"
           },
           "fields": {
             "instanceId": {
