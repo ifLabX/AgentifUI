@@ -1313,8 +1313,7 @@
             "current": "Aktueller Anwendungsservice-Anbieter (kann nicht geändert werden)",
             "select": "Service-Anbieter auswählen",
             "unknown": "Unbekannter Anbieter",
-            "selectPlaceholder": "Bitte Anbieter auswählen",
-            "configUpdated": "Anbieter-Konfiguration aktualisiert"
+            "selectPlaceholder": "Bitte Anbieter auswählen"
           },
           "fields": {
             "instanceId": {

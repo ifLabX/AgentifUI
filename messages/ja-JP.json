@@ -1313,8 +1313,7 @@
             "current": "現在のアプリケーションサービスプロバイダー（変更不可）",
             "select": "サービスプロバイダーを選択",
             "unknown": "不明なプロバイダー",
-            "selectPlaceholder": "プロバイダーを選択してください",
-            "configUpdated": "プロバイダー設定が更新されました"
+            "selectPlaceholder": "プロバイダーを選択してください"
           },
           "fields": {
             "instanceId": {

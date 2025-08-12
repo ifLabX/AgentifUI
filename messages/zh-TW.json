@@ -1313,8 +1313,7 @@
             "current": "目前應用的服務提供商（不可修改）",
             "select": "選擇服務提供商",
             "unknown": "未知提供商",
-            "selectPlaceholder": "請選擇提供商",
-            "configUpdated": "提供商配置已更新"
+            "selectPlaceholder": "請選擇提供商"
           },
           "fields": {
             "instanceId": {

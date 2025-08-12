@@ -1313,8 +1313,7 @@
             "current": "Fournisseur de services de l'application actuel (ne peut pas être modifié)",
             "select": "Sélectionner un fournisseur de services",
             "unknown": "Fournisseur inconnu",
-            "selectPlaceholder": "Veuillez sélectionner un fournisseur",
-            "configUpdated": "Configuration du fournisseur mise à jour"
+            "selectPlaceholder": "Veuillez sélectionner un fournisseur"
           },
           "fields": {
             "instanceId": {
