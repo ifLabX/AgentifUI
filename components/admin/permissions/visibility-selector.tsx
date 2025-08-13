@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import {
   type AppWithPermissions,
   usePermissionManagementStore,
@@ -17,7 +16,6 @@ interface VisibilitySelectorProps {
 }
 
 export function VisibilitySelector({ app }: VisibilitySelectorProps) {
-  const { isDark } = useTheme();
   const { updateAppVisibility, loading } = usePermissionManagementStore();
   const t = useTranslations(
     'pages.admin.permissions.permissionPanel.visibilitySettings'
@@ -83,52 +81,26 @@ export function VisibilitySelector({ app }: VisibilitySelectorProps) {
               'w-full rounded-lg border p-4 text-left transition-all duration-200',
               'disabled:cursor-not-allowed disabled:opacity-50',
               isSelected
-                ? isDark
-                  ? 'border-stone-500 bg-stone-700 shadow-md'
-                  : 'border-stone-300 bg-stone-50 shadow-md'
-                : isDark
-                  ? 'border-stone-700 bg-stone-800 hover:border-stone-600 hover:bg-stone-700'
-                  : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
+                ? 'border-stone-300 bg-stone-50 shadow-md dark:border-stone-500 dark:bg-stone-700'
+                : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:hover:border-stone-600 dark:hover:bg-stone-700'
             )}
           >
             <div className="flex items-start gap-3">
-              <div
-                className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-lg',
-                  isDark ? 'bg-stone-700' : 'bg-stone-100'
-                )}
-              >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-700">
                 <Icon className={cn('h-4 w-4', option.color)} />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h4
-                    className={cn(
-                      'font-serif text-sm font-semibold',
-                      isDark ? 'text-stone-100' : 'text-stone-900'
-                    )}
-                  >
+                  <h4 className="font-serif text-sm font-semibold text-stone-900 dark:text-stone-100">
                     {option.label}
                   </h4>
                   {isSelected && (
-                    <div
-                      className={cn(
-                        'rounded-full px-2 py-0.5 text-xs font-medium',
-                        isDark
-                          ? 'bg-stone-600 text-stone-300'
-                          : 'bg-stone-200 text-stone-700'
-                      )}
-                    >
+                    <div className="rounded-full bg-stone-200 px-2 py-0.5 text-xs font-medium text-stone-700 dark:bg-stone-600 dark:text-stone-300">
                       {t('currentSetting')}
                     </div>
                   )}
                 </div>
-                <p
-                  className={cn(
-                    'mt-1 font-serif text-xs',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
-                  )}
-                >
+                <p className="mt-1 font-serif text-xs text-stone-600 dark:text-stone-400">
                   {option.description}
                 </p>
               </div>
