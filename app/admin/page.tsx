@@ -41,16 +41,10 @@ function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
         <div className="flex-1">
           <div className="mb-3 flex items-center gap-3">
             <div
-              className={cn(
-                'rounded-lg p-2',
-                'bg-stone-100 dark:bg-stone-700'
-              )}
+              className={cn('rounded-lg p-2', 'bg-stone-100 dark:bg-stone-700')}
             >
               <Icon
-                className={cn(
-                  'h-5 w-5',
-                  'text-stone-600 dark:text-stone-300'
-                )}
+                className={cn('h-5 w-5', 'text-stone-600 dark:text-stone-300')}
               />
             </div>
             <h3
@@ -144,12 +138,7 @@ export default function AdminPage() {
           >
             {t('title')}
           </h1>
-          <p
-            className={cn(
-              'text-base',
-              'text-stone-600 dark:text-stone-400'
-            )}
-          >
+          <p className={cn('text-base', 'text-stone-600 dark:text-stone-400')}>
             {t('subtitle')}
           </p>
         </div>

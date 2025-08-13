@@ -365,12 +365,7 @@ export default function AppDetailPage() {
               'text-stone-500 dark:text-stone-400'
             )}
           />
-          <p
-            className={cn(
-              'font-serif',
-              'text-stone-500 dark:text-stone-400'
-            )}
-          >
+          <p className={cn('font-serif', 'text-stone-500 dark:text-stone-400')}>
             {isInitializing
               ? t('status.loadingApp')
               : isValidating && !isValidatingForMessage

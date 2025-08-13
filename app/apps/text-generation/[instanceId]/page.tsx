@@ -35,7 +35,7 @@ export default function TextGenerationPage({
 }: TextGenerationPageProps) {
   const { instanceId } = React.use(params);
   const router = useRouter();
-  const { colors, isDark } = useThemeColors();
+  const { colors } = useThemeColors();
   const t = useTranslations('pages.apps');
 
   // --- app related state ---
@@ -225,12 +225,7 @@ export default function TextGenerationPage({
               'text-stone-500 dark:text-stone-400'
             )}
           />
-          <p
-            className={cn(
-              'font-serif',
-              'text-stone-500 dark:text-stone-400'
-            )}
-          >
+          <p className={cn('font-serif', 'text-stone-500 dark:text-stone-400')}>
             {isInitializing
               ? t('status.loadingApp')
               : isValidating

@@ -261,9 +261,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       // Light mode styles
                       'text-stone-600 hover:bg-stone-300 hover:shadow-md',
                       isActive && 'border-stone-400/80 bg-stone-300 shadow-sm',
-                      // Dark mode styles  
+                      // Dark mode styles
                       'dark:text-gray-200 dark:hover:border-stone-500/50 dark:hover:bg-stone-600 dark:hover:shadow-md',
-                      isActive && 'dark:border-stone-500 dark:bg-stone-600 dark:shadow-sm',
+                      isActive &&
+                        'dark:border-stone-500 dark:bg-stone-600 dark:shadow-sm',
                       isExpanded ? 'w-full' : 'w-10 justify-center'
                     )}
                   >

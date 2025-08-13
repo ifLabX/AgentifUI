@@ -348,9 +348,7 @@ export default function ContentManagementPage() {
         'bg-stone-100 dark:bg-stone-950'
       )}
     >
-      <div
-        className={cn('flex-shrink-0', 'bg-stone-50 dark:bg-stone-900')}
-      >
+      <div className={cn('flex-shrink-0', 'bg-stone-50 dark:bg-stone-900')}>
         <div className="w-full px-4 py-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -485,12 +483,7 @@ export default function ContentManagementPage() {
             }
           />
         ) : (
-          <div
-            className={cn(
-              'relative flex-1',
-              'bg-white dark:bg-stone-900'
-            )}
-          >
+          <div className={cn('relative flex-1', 'bg-white dark:bg-stone-900')}>
             <div className="h-full overflow-auto p-6">{renderEditor()}</div>
             <div
               className={cn(
