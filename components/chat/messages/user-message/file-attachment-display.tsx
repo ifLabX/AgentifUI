@@ -137,7 +137,7 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
               <p
                 className={cn(
                   'truncate text-sm font-medium',
-                  isDark ? 'text-stone-100' : 'text-stone-900'
+                  'text-stone-900 dark:text-stone-100'
                 )}
               >
                 {attachment.name}
@@ -146,7 +146,7 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
                 className={cn(
                   'text-xs',
                   'whitespace-nowrap',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {formatBytes(attachment.size)}

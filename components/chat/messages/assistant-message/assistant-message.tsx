@@ -404,7 +404,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <td
             className={cn(
               'border px-4 py-2',
-              isDark ? 'border-gray-600' : 'border-gray-300'
+              'border-gray-300 dark:border-gray-600'
             )}
             {...props}
           >
@@ -656,7 +656,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <div
             className={cn(
               'markdown-body main-content-area assistant-message-content w-full text-base',
-              isDark ? 'text-stone-200' : 'text-stone-800', // Set text color based on theme
+              'text-stone-800 dark:text-stone-200', // Set text color based on theme
               !hasThinkBlock ? 'py-2' : 'pt-1 pb-2' // Adjust vertical spacing if think block is present
             )}
           >

@@ -292,7 +292,7 @@ export function SidebarFavoriteApps({
               <span
                 className={cn(
                   'font-serif text-xs leading-none font-medium',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
+                  'text-stone-500 dark:text-stone-400'
                 )}
               >
                 {t('favoriteApps')}

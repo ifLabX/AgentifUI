@@ -52,7 +52,7 @@ export const ScrollToBottomButton = () => {
         // Color theme
         colors.userMessageBackground.tailwind,
         colors.buttonHover.tailwind,
-        isDark ? 'text-stone-300' : 'text-stone-700',
+        'text-stone-700 dark:text-stone-300',
 
         // Interaction effects
         'hover:scale-110 active:scale-95'

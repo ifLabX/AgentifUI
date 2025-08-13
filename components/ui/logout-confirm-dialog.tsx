@@ -186,7 +186,7 @@ export function LogoutConfirmDialog({
               <h3
                 className={cn(
                   'mb-2 font-serif text-lg font-semibold',
-                  isDark ? 'text-stone-100' : 'text-stone-900'
+                  'text-stone-900 dark:text-stone-100'
                 )}
               >
                 {t('title')}
@@ -195,7 +195,7 @@ export function LogoutConfirmDialog({
               <p
                 className={cn(
                   'font-serif text-sm leading-relaxed',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {t('message')}
@@ -307,7 +307,7 @@ export function LogoutConfirmDialog({
           <h3
             className={cn(
               'mb-4 text-center font-serif text-xl font-semibold',
-              isDark ? 'text-stone-100' : 'text-stone-900'
+              'text-stone-900 dark:text-stone-100'
             )}
           >
             {t('title')}
@@ -316,7 +316,7 @@ export function LogoutConfirmDialog({
           <p
             className={cn(
               'mb-8 max-w-sm text-center font-serif text-base leading-relaxed',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {t('message')}

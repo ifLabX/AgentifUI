@@ -147,7 +147,7 @@ export const ExportButton: React.FC<ExportButtonProps> = React.memo(
           className={cn(
             'flex items-center justify-center rounded-md p-1.5',
             // Base text color - matches stone theme, consistent with CopyButton
-            isDark ? 'text-stone-400' : 'text-stone-500',
+            'text-stone-500 dark:text-stone-400',
             // Hover text color - darker in light mode, lighter in dark mode
             isDark ? 'hover:text-stone-300' : 'hover:text-stone-700',
             // Hover background color - uses semi-transparent mid-tone, suitable for both modes
