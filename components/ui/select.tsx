@@ -1,4 +1,3 @@
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -16,29 +15,23 @@ const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => {
-  const { isDark } = useTheme();
-
   return (
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
         'flex h-11 w-full items-center justify-between rounded-lg border-2 px-4 py-2 font-serif text-sm transition-all duration-200',
         'select-none focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
-        isDark
-          ? 'border-stone-600 bg-stone-800/50 text-stone-100 placeholder:text-stone-400 focus:border-stone-500 focus:ring-stone-500/20'
-          : 'border-stone-300 bg-white text-stone-900 placeholder:text-stone-500 focus:border-stone-500 focus:ring-stone-500/20',
+        // Light mode styles
+        'border-stone-300 bg-white text-stone-900 placeholder:text-stone-500 focus:border-stone-500 focus:ring-stone-500/20',
+        // Dark mode styles  
+        'dark:border-stone-600 dark:bg-stone-800/50 dark:text-stone-100 dark:placeholder:text-stone-400 dark:focus:border-stone-500 dark:focus:ring-stone-500/20',
         className
       )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown
-          className={cn(
-            'h-4 w-4 transition-transform',
-            isDark ? 'text-stone-400' : 'text-stone-500'
-          )}
-        />
+        <ChevronDown className="h-4 w-4 transition-transform text-stone-500 dark:text-stone-400" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -84,17 +77,16 @@ const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
 >(({ className, children, position = 'popper', ...props }, ref) => {
-  const { isDark } = useTheme();
-
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         ref={ref}
         className={cn(
           'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg border-2 font-serif shadow-lg',
-          isDark
-            ? 'border-stone-600 bg-stone-800 text-stone-100'
-            : 'border-stone-300 bg-white text-stone-900',
+          // Light mode styles
+          'border-stone-300 bg-white text-stone-900',
+          // Dark mode styles
+          'dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100',
           position === 'popper' &&
             'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
           className
@@ -138,16 +130,15 @@ const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
 >(({ className, children, ...props }, ref) => {
-  const { isDark } = useTheme();
-
   return (
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
         'relative flex w-full cursor-pointer items-center rounded-lg py-3 pr-3 pl-10 font-serif text-sm transition-colors duration-150 outline-none select-none',
-        isDark
-          ? 'text-stone-200 focus:bg-stone-700 focus:text-stone-100'
-          : 'text-stone-700 focus:bg-stone-100 focus:text-stone-900',
+        // Light mode styles
+        'text-stone-700 focus:bg-stone-100 focus:text-stone-900',
+        // Dark mode styles
+        'dark:text-stone-200 dark:focus:bg-stone-700 dark:focus:text-stone-100',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         className
       )}
