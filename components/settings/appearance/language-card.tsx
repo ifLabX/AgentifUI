@@ -1,7 +1,6 @@
 'use client';
 
 import { SupportedLocale, getLanguageInfo } from '@lib/config/language-config';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Check, Globe2 } from 'lucide-react';
 
@@ -19,7 +18,6 @@ export function LanguageCard({
   currentLanguage,
   onClick,
 }: LanguageCardProps) {
-  const { isDark } = useTheme();
   const isActive = currentLanguage === language;
   const languageInfo = getLanguageInfo(language);
 
@@ -31,13 +29,9 @@ export function LanguageCard({
         'hover:-translate-y-0.5 hover:shadow-lg',
         isActive
           ? // Selected state - stone style
-            isDark
-            ? 'border-stone-400 bg-stone-800/50 shadow-md ring-2 ring-stone-400/30'
-            : 'border-stone-600 bg-stone-50 shadow-md ring-2 ring-stone-600/20'
+            'border-stone-600 bg-stone-50 shadow-md ring-2 ring-stone-600/20 dark:border-stone-400 dark:bg-stone-800/50 dark:ring-stone-400/30'
           : // Unselected state
-            isDark
-            ? 'border-stone-700 bg-stone-900/30 hover:border-stone-600 hover:bg-stone-800/50'
-            : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
+            'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900/30 dark:hover:border-stone-600 dark:hover:bg-stone-800/50'
       )}
     >
       {/* Selected state indicator */}
@@ -46,7 +40,7 @@ export function LanguageCard({
           <div
             className={cn(
               'flex h-5 w-5 items-center justify-center rounded-full',
-              isDark ? 'bg-stone-400 text-stone-900' : 'bg-stone-600 text-white'
+              'bg-stone-600 text-white dark:bg-stone-400 dark:text-stone-900'
             )}
           >
             <Check className="h-3 w-3" />
@@ -61,12 +55,8 @@ export function LanguageCard({
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg',
             isActive
-              ? isDark
-                ? 'bg-stone-700 text-stone-300'
-                : 'bg-stone-200 text-stone-700'
-              : isDark
-                ? 'bg-stone-800 text-stone-400'
-                : 'bg-stone-100 text-stone-600'
+              ? 'bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300'
+              : 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
           )}
         >
           <Globe2 className="h-5 w-5" />
@@ -79,12 +69,8 @@ export function LanguageCard({
             className={cn(
               'font-serif text-base leading-tight font-semibold',
               isActive
-                ? isDark
-                  ? 'text-stone-100'
-                  : 'text-stone-900'
-                : isDark
-                  ? 'text-stone-200'
-                  : 'text-stone-800'
+                ? 'text-stone-900 dark:text-stone-100'
+                : 'text-stone-800 dark:text-stone-200'
             )}
           >
             {languageInfo.nativeName}
@@ -95,12 +81,8 @@ export function LanguageCard({
             className={cn(
               'mt-0.5 font-serif text-sm',
               isActive
-                ? isDark
-                  ? 'text-stone-300'
-                  : 'text-stone-600'
-                : isDark
-                  ? 'text-stone-400'
-                  : 'text-stone-500'
+                ? 'text-stone-600 dark:text-stone-300'
+                : 'text-stone-500 dark:text-stone-400'
             )}
           >
             {languageInfo.name}

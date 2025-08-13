@@ -2,7 +2,6 @@
 
 import { useLogout } from '@lib/hooks/use-logout';
 import { useSettingsColors } from '@lib/hooks/use-settings-colors';
-import { useTheme } from '@lib/hooks/use-theme';
 import { createClient } from '@lib/supabase/client';
 import { cn } from '@lib/utils';
 import { motion } from 'framer-motion';
@@ -17,7 +16,6 @@ import { useRouter } from 'next/navigation';
 // Includes all account-related logic: data loading, state management, logout, etc.
 export function AccountSettings() {
   const { colors } = useSettingsColors();
-  const { isDark } = useTheme();
   const { logout } = useLogout();
   const t = useTranslations('pages.settings.accountSettings');
   const tCommon = useTranslations('common.ui');
@@ -94,15 +92,13 @@ export function AccountSettings() {
         <div
           className={cn(
             'mb-6 rounded-lg p-6',
-            isDark
-              ? 'border border-red-800 bg-red-900/20 text-red-300'
-              : 'border border-red-200 bg-red-50 text-red-700'
+            'border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300'
           )}
         >
           <h2
             className={cn(
               'mb-4 font-serif text-lg font-medium',
-              isDark ? 'text-red-200' : 'text-red-800'
+              'text-red-800 dark:text-red-200'
             )}
           >
             {t('loadAccountError')}
@@ -112,9 +108,7 @@ export function AccountSettings() {
             onClick={() => window.location.reload()}
             className={cn(
               'rounded-md px-4 py-2 font-serif transition-colors',
-              isDark
-                ? 'bg-red-800/50 text-red-200 hover:bg-red-700/50'
-                : 'bg-red-100 text-red-800 hover:bg-red-200'
+              'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-800/50 dark:text-red-200 dark:hover:bg-red-700/50'
             )}
           >
             {t('retry')}
@@ -292,9 +286,7 @@ export function AccountSettings() {
                 animate={{ opacity: 1, y: 0 }}
                 className={cn(
                   'flex items-center rounded-lg border p-4',
-                  isDark
-                    ? 'border-red-800 bg-red-900/20 text-red-300'
-                    : 'border-red-200 bg-red-50 text-red-700'
+                  'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300'
                 )}
               >
                 <AlertCircle className="mr-2 h-5 w-5 flex-shrink-0" />
@@ -343,9 +335,7 @@ export function AccountSettings() {
                     'cursor-pointer',
                     'font-serif text-sm',
                     showConfirm
-                      ? isDark
-                        ? 'bg-red-600 text-white hover:bg-red-700'
-                        : 'bg-red-600 text-white hover:bg-red-700'
+                      ? 'bg-red-600 text-white hover:bg-red-700'
                       : `${colors.primaryButtonBackground.tailwind} ${colors.primaryButtonHover.tailwind} ${colors.primaryButtonText.tailwind}`
                   )}
                 >

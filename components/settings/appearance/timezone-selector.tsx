@@ -4,7 +4,6 @@ import {
   DateFormatPresets,
   useDateFormatter,
 } from '@lib/hooks/use-date-formatter';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronRight, MapPin, Timer, X } from 'lucide-react';
@@ -213,7 +212,6 @@ export function TimezoneSelector({
   className,
 }: TimezoneSelectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { isDark } = useTheme();
   const t = useTranslations('pages.settings.appearanceSettings');
   const { formatDate } = useDateFormatter();
 
@@ -286,18 +284,16 @@ export function TimezoneSelector({
         className={cn(
           'flex w-full items-center justify-between rounded-xl border-2 p-4 transition-all duration-200',
           'group hover:-translate-y-0.5 hover:shadow-lg',
-          isDark
-            ? 'border-stone-700 bg-stone-800/60 hover:border-stone-600'
-            : 'border-stone-200 bg-white hover:border-stone-300'
+          'border-stone-200 bg-white hover:border-stone-300',
+          'dark:border-stone-700 dark:bg-stone-800/60 dark:hover:border-stone-600'
         )}
       >
         <div className="flex items-center space-x-3">
           <div
             className={cn(
               'flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-200',
-              isDark
-                ? 'bg-stone-700 text-stone-400'
-                : 'bg-stone-100 text-stone-600'
+              'bg-stone-100 text-stone-600',
+              'dark:bg-stone-700 dark:text-stone-400'
             )}
           >
             <Timer className="h-5 w-5" />
@@ -306,7 +302,7 @@ export function TimezoneSelector({
             <p
               className={cn(
                 'font-serif text-sm font-semibold',
-                isDark ? 'text-stone-200' : 'text-stone-800'
+                'text-stone-800 dark:text-stone-200'
               )}
             >
               {selectedTimezone
@@ -316,7 +312,7 @@ export function TimezoneSelector({
             <p
               className={cn(
                 'font-serif text-xs',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             >
               {currentTime}
@@ -326,7 +322,7 @@ export function TimezoneSelector({
         <ChevronRight
           className={cn(
             'h-5 w-5 transition-transform duration-200 group-hover:translate-x-1',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         />
       </button>
@@ -350,25 +346,23 @@ export function TimezoneSelector({
               onClick={e => e.stopPropagation()}
               className={cn(
                 'w-full max-w-lg overflow-hidden rounded-xl border shadow-2xl',
-                isDark
-                  ? 'border-stone-700 bg-stone-800'
-                  : 'border-stone-200 bg-white'
+                'border-stone-200 bg-white',
+                'dark:border-stone-700 dark:bg-stone-800'
               )}
             >
               {/* Modal header - simplified design */}
               <div
                 className={cn(
                   'flex items-center justify-between border-b px-6 py-4',
-                  isDark ? 'border-stone-700' : 'border-stone-200'
+                  'border-stone-200 dark:border-stone-700'
                 )}
               >
                 <div className="flex items-center space-x-3">
                   <div
                     className={cn(
                       'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg',
-                      isDark
-                        ? 'bg-stone-700 text-stone-300'
-                        : 'bg-stone-100 text-stone-700'
+                      'bg-stone-100 text-stone-700',
+                      'dark:bg-stone-700 dark:text-stone-300'
                     )}
                   >
                     <MapPin className="h-5 w-5" />
@@ -377,7 +371,7 @@ export function TimezoneSelector({
                     <h2
                       className={cn(
                         'font-serif text-lg font-bold',
-                        isDark ? 'text-stone-100' : 'text-stone-900'
+                        'text-stone-900 dark:text-stone-100'
                       )}
                     >
                       {t('timezone')}
@@ -385,7 +379,7 @@ export function TimezoneSelector({
                     <p
                       className={cn(
                         'font-serif text-sm',
-                        isDark ? 'text-stone-400' : 'text-stone-600'
+                        'text-stone-600 dark:text-stone-400'
                       )}
                     >
                       {t('timezoneDescription')}
@@ -397,9 +391,8 @@ export function TimezoneSelector({
                   onClick={() => setIsModalOpen(false)}
                   className={cn(
                     'rounded-lg p-2 transition-colors duration-200',
-                    isDark
-                      ? 'text-stone-400 hover:bg-stone-700 hover:text-stone-300'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+                    'dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300'
                   )}
                 >
                   <X className="h-5 w-5" />
@@ -416,28 +409,22 @@ export function TimezoneSelector({
                         'sticky top-0 z-20',
                         // Glass effect
                         'backdrop-blur-xl backdrop-saturate-150',
-                        // Gradient background - dark mode
-                        isDark
-                          ? [
-                              'via-stone-750/95 bg-gradient-to-r from-stone-800/90 to-stone-800/90',
-                              'border-b border-stone-700/60',
-                              'shadow-lg shadow-stone-900/40',
-                            ]
-                          : [
-                              // Light mode
-                              'bg-gradient-to-r from-stone-50/90 via-white/95 to-stone-50/90',
-                              'border-b border-stone-200/60',
-                              'shadow-lg shadow-stone-300/20',
-                            ]
+                        // Light mode gradient
+                        'bg-gradient-to-r from-stone-50/90 via-white/95 to-stone-50/90',
+                        'border-b border-stone-200/60',
+                        'shadow-lg shadow-stone-300/20',
+                        // Dark mode gradient
+                        'dark:via-stone-750/95 dark:from-stone-800/90 dark:to-stone-800/90',
+                        'dark:border-stone-700/60',
+                        'dark:shadow-stone-900/40'
                       )}
                     >
                       {/* Decorative top border */}
                       <div
                         className={cn(
                           'absolute inset-x-0 top-0 h-px',
-                          isDark
-                            ? 'bg-gradient-to-r from-transparent via-stone-500/50 to-transparent'
-                            : 'bg-gradient-to-r from-transparent via-stone-400/40 to-transparent'
+                          'bg-gradient-to-r from-transparent via-stone-400/40 to-transparent',
+                          'dark:via-stone-500/50'
                         )}
                       />
 
@@ -448,13 +435,13 @@ export function TimezoneSelector({
                             <div
                               className={cn(
                                 'h-2 w-2 rounded-full',
-                                isDark ? 'bg-stone-400' : 'bg-stone-600'
+                                'bg-stone-600 dark:bg-stone-400'
                               )}
                             />
                             <div
                               className={cn(
                                 'absolute inset-0 h-2 w-2 animate-pulse rounded-full',
-                                isDark ? 'bg-stone-400/30' : 'bg-stone-600/30'
+                                'bg-stone-600/30 dark:bg-stone-400/30'
                               )}
                             />
                           </div>
@@ -463,9 +450,8 @@ export function TimezoneSelector({
                             className={cn(
                               'font-serif text-sm font-bold tracking-wider uppercase',
                               'bg-gradient-to-r bg-clip-text text-transparent',
-                              isDark
-                                ? 'from-stone-100 to-stone-300'
-                                : 'from-stone-700 to-stone-900'
+                              'from-stone-700 to-stone-900',
+                              'dark:from-stone-100 dark:to-stone-300'
                             )}
                           >
                             {t(`timezoneRegions.${region}`)}
@@ -480,9 +466,8 @@ export function TimezoneSelector({
                       <div
                         className={cn(
                           'absolute inset-x-0 bottom-0 h-px',
-                          isDark
-                            ? 'bg-gradient-to-r from-transparent via-stone-600/30 to-transparent'
-                            : 'bg-gradient-to-r from-transparent via-stone-300/40 to-transparent'
+                          'bg-gradient-to-r from-transparent via-stone-300/40 to-transparent',
+                          'dark:via-stone-600/30'
                         )}
                       />
                     </div>
@@ -492,9 +477,8 @@ export function TimezoneSelector({
                       className={cn(
                         'relative space-y-2 p-4',
                         // Subtle background gradient
-                        isDark
-                          ? 'bg-gradient-to-b from-transparent to-stone-800/20'
-                          : 'bg-gradient-to-b from-transparent to-stone-50/30'
+                        'bg-gradient-to-b from-transparent to-stone-50/30',
+                        'dark:to-stone-800/20'
                       )}
                     >
                       {timezones.map(timezone => {
@@ -511,21 +495,16 @@ export function TimezoneSelector({
                               'flex w-full items-center justify-between rounded-lg p-3 transition-all duration-200',
                               'group relative overflow-hidden border hover:shadow-lg',
                               isSelected
-                                ? isDark
-                                  ? 'border-stone-500 bg-stone-600/60 shadow-md ring-1 ring-stone-500/30'
-                                  : 'border-stone-400 bg-stone-100/80 shadow-md ring-1 ring-stone-400/30'
-                                : isDark
-                                  ? 'hover:bg-stone-750/30 border-stone-700 hover:border-stone-600'
-                                  : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50/50'
+                                ? 'border-stone-400 bg-stone-100/80 shadow-md ring-1 ring-stone-400/30 dark:border-stone-500 dark:bg-stone-600/60 dark:ring-stone-500/30'
+                                : 'dark:hover:bg-stone-750/30 border-stone-200 hover:border-stone-300 hover:bg-stone-50/50 dark:border-stone-700 dark:hover:border-stone-600'
                             )}
                           >
                             {/* Subtle hover gradient effect */}
                             <div
                               className={cn(
                                 'absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100',
-                                isDark
-                                  ? 'bg-gradient-to-r from-stone-700/20 to-stone-600/10'
-                                  : 'bg-gradient-to-r from-stone-100/40 to-stone-200/20'
+                                'bg-gradient-to-r from-stone-100/40 to-stone-200/20',
+                                'dark:from-stone-700/20 dark:to-stone-600/10'
                               )}
                             />
 
@@ -535,12 +514,8 @@ export function TimezoneSelector({
                                   className={cn(
                                     'font-serif text-sm font-semibold',
                                     isSelected
-                                      ? isDark
-                                        ? 'text-stone-100'
-                                        : 'text-stone-900'
-                                      : isDark
-                                        ? 'text-stone-200'
-                                        : 'text-stone-800'
+                                      ? 'text-stone-900 dark:text-stone-100'
+                                      : 'text-stone-800 dark:text-stone-200'
                                   )}
                                 >
                                   {cityName}
@@ -549,12 +524,8 @@ export function TimezoneSelector({
                                   className={cn(
                                     'mt-0.5 flex items-center space-x-1 font-serif text-xs',
                                     isSelected
-                                      ? isDark
-                                        ? 'text-stone-300'
-                                        : 'text-stone-600'
-                                      : isDark
-                                        ? 'text-stone-400'
-                                        : 'text-stone-500'
+                                      ? 'text-stone-600 dark:text-stone-300'
+                                      : 'text-stone-500 dark:text-stone-400'
                                   )}
                                 >
                                   <span className="font-medium">
@@ -572,9 +543,8 @@ export function TimezoneSelector({
                                   className={cn(
                                     'flex h-6 w-6 items-center justify-center rounded-full',
                                     'bg-gradient-to-r shadow-sm',
-                                    isDark
-                                      ? 'from-stone-500 to-stone-600 text-white shadow-stone-900/50'
-                                      : 'from-stone-600 to-stone-700 text-white shadow-stone-300/30'
+                                    'from-stone-600 to-stone-700 text-white shadow-stone-300/30',
+                                    'dark:from-stone-500 dark:to-stone-600 dark:shadow-stone-900/50'
                                   )}
                                 >
                                   <Check className="h-3 w-3" />

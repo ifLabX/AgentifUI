@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { ArrowUpIcon, Paperclip } from 'lucide-react';
 
@@ -20,7 +19,6 @@ export function ThemeCard({
   currentTheme,
   onClick,
 }: ThemeCardProps) {
-  const { isDark } = useTheme();
   const isActive = currentTheme === theme;
 
   // Get preview style configuration based on theme type
@@ -105,9 +103,7 @@ export function ThemeCard({
         isActive
           ? // Use deep blue selected state, thinner line
             'border-blue-800 shadow-md ring-1 ring-blue-800/20'
-          : isDark
-            ? 'border-stone-700 hover:border-stone-600'
-            : 'border-stone-200 hover:border-stone-300'
+          : 'border-stone-200 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600'
       )}
     >
       {/* Chat interface preview simulation */}
@@ -224,12 +220,8 @@ export function ThemeCard({
           className={cn(
             'text-center text-sm font-medium',
             isActive
-              ? isDark
-                ? 'text-stone-300'
-                : 'text-stone-700'
-              : isDark
-                ? 'text-stone-200'
-                : 'text-stone-900'
+              ? 'text-stone-700 dark:text-stone-300'
+              : 'text-stone-900 dark:text-stone-200'
           )}
         >
           {title}

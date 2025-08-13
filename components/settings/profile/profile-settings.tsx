@@ -1,8 +1,8 @@
 'use client';
 
-import { useProfile } from '@lib/hooks/use-profile';
+import { Profile as ExtendedProfile, useProfile } from '@lib/hooks/use-profile';
 import { useSettingsColors } from '@lib/hooks/use-settings-colors';
-import { useTheme } from '@lib/hooks/use-theme';
+import { Profile as DatabaseProfile } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { motion } from 'framer-motion';
 
@@ -14,7 +14,6 @@ import { ProfileForm } from './profile-form';
 // Contains all data loading, state management, and UI logic
 export function ProfileSettings() {
   const { colors } = useSettingsColors();
-  const { isDark } = useTheme();
   const t = useTranslations('pages.settings.profileSettings');
   const tCommon = useTranslations('common.ui');
 
@@ -40,15 +39,13 @@ export function ProfileSettings() {
         <div
           className={cn(
             'mb-6 rounded-lg p-6',
-            isDark
-              ? 'border border-red-800 bg-red-900/20 text-red-300'
-              : 'border border-red-200 bg-red-50 text-red-700'
+            'border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300'
           )}
         >
           <h2
             className={cn(
               'mb-4 font-serif text-lg font-medium',
-              isDark ? 'text-red-200' : 'text-red-800'
+              'text-red-800 dark:text-red-200'
             )}
           >
             {t('loadProfileError')}
@@ -58,9 +55,7 @@ export function ProfileSettings() {
             onClick={() => window.location.reload()}
             className={cn(
               'rounded-md px-4 py-2 font-serif transition-colors',
-              isDark
-                ? 'bg-red-800/50 text-red-200 hover:bg-red-700/50'
-                : 'bg-red-100 text-red-800 hover:bg-red-200'
+              'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-800/50 dark:text-red-200 dark:hover:bg-red-700/50'
             )}
           >
             {tCommon('retry')}
@@ -237,7 +232,10 @@ export function ProfileSettings() {
 
       {profile && (
         <ProfileForm
-          profile={profile as any}
+          profile={
+            profile as DatabaseProfile &
+              ExtendedProfile & { auth_last_sign_in_at?: string }
+          }
           onSuccess={handleProfileUpdateSuccess}
         />
       )}
