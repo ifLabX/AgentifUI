@@ -22,7 +22,8 @@ export function AdminButton() {
     return null;
   }
 
-  const buttonColors = 'bg-stone-200/50 hover:bg-stone-300/80 text-stone-600 border-stone-400/30 dark:bg-stone-800/50 dark:hover:bg-stone-600/60 dark:text-gray-200 dark:border-stone-600/30';
+  const buttonColors =
+    'bg-stone-200/50 hover:bg-stone-300/80 text-stone-600 border-stone-400/30 dark:bg-stone-800/50 dark:hover:bg-stone-600/60 dark:text-gray-200 dark:border-stone-600/30';
 
   return (
     <motion.div

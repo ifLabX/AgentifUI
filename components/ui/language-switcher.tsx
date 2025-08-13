@@ -55,10 +55,12 @@ export function LanguageSwitcher({
   }, []);
 
   // Button styles: reference the hover effect of the sidebar button
-  const buttonColors = 'bg-stone-200/50 hover:bg-stone-300/80 text-stone-600 border-stone-400/30 dark:bg-stone-800/50 dark:hover:bg-stone-600/60 dark:text-gray-200 dark:border-stone-600/30';
+  const buttonColors =
+    'bg-stone-200/50 hover:bg-stone-300/80 text-stone-600 border-stone-400/30 dark:bg-stone-800/50 dark:hover:bg-stone-600/60 dark:text-gray-200 dark:border-stone-600/30';
 
   // Dropdown menu styles
-  const dropdownColors = 'bg-white/95 border-stone-400/30 text-stone-600 dark:bg-stone-900/95 dark:border-stone-600/30 dark:text-gray-200';
+  const dropdownColors =
+    'bg-white/95 border-stone-400/30 text-stone-600 dark:bg-stone-900/95 dark:border-stone-600/30 dark:text-gray-200';
 
   // Selected indicator colors - use the primary color of the stone style
   const indicatorColors = 'bg-stone-700 dark:bg-stone-300';
@@ -100,9 +102,7 @@ export function LanguageSwitcher({
           <p
             className={cn(
               'text-center font-serif text-sm font-medium',
-              isOpen
-                ? 'text-primary'
-                : 'text-stone-900 dark:text-stone-200'
+              isOpen ? 'text-primary' : 'text-stone-900 dark:text-stone-200'
             )}
           >
             {t('currentLanguage')}
@@ -140,19 +140,14 @@ export function LanguageSwitcher({
                   <div className="flex-1">
                     <div className="text-sm font-medium">{info.nativeName}</div>
                     <div
-                      className={cn(
-                        'text-xs text-gray-500 dark:text-gray-400'
-                      )}
+                      className={cn('text-xs text-gray-500 dark:text-gray-400')}
                     >
                       {info.name}
                     </div>
                   </div>
                   {currentLocale === locale && (
                     <div
-                      className={cn(
-                        'h-2 w-2 rounded-full',
-                        indicatorColors
-                      )}
+                      className={cn('h-2 w-2 rounded-full', indicatorColors)}
                     />
                   )}
                 </button>

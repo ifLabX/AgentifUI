@@ -7,7 +7,7 @@ import { cn } from '@lib/utils';
 
 export function MessageSkeleton() {
   return (
-    <div className="relative flex w-full animate-pulse flex-col gap-8 px-4 py-6 bg-gradient-to-b from-stone-100 to-stone-100/30 dark:from-stone-800 dark:to-stone-800/30">
+    <div className="relative flex w-full animate-pulse flex-col gap-8 bg-gradient-to-b from-stone-100 to-stone-100/30 px-4 py-6 dark:from-stone-800 dark:to-stone-800/30">
       {/* User message skeleton */}
       <div className="flex justify-end">
         <div className="w-3/4 max-w-[600px] rounded-xl bg-stone-300/60 px-4 py-3 dark:bg-stone-700">

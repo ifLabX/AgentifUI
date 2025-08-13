@@ -72,7 +72,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md space-y-6 rounded-xl border border-stone-200 bg-stone-50 p-6 font-serif shadow-lg transition-all dark:border-stone-800 dark:bg-stone-900 sm:space-y-8 sm:p-8">
+    <div className="w-full max-w-md space-y-6 rounded-xl border border-stone-200 bg-stone-50 p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8 dark:border-stone-800 dark:bg-stone-900">
       <div className="text-center">
         <h2 className="bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text py-1 font-serif text-3xl leading-normal font-bold text-transparent">
           {t('title')}
