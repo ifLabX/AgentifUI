@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
 
@@ -29,7 +28,6 @@ export function SidebarButton({
   ...props
 }: SidebarButtonProps) {
   const { isExpanded } = useSidebarStore();
-  const { isDark } = useTheme();
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDisabled) return;
@@ -64,31 +62,20 @@ export function SidebarButton({
         'transition-all duration-150 ease-in-out',
         'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         'select-none', // Prevent text selection
-        isDark
-          ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
-          : 'focus-visible:ring-primary focus-visible:ring-offset-background',
+        'focus-visible:ring-primary focus-visible:ring-offset-background dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900',
         'h-10',
         // Restore cursor-pointer, now the parent container uses cursor-e-resize will not conflict
         // When disabled, use cursor-not-allowed
         isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-        !isDark &&
-          !isDisabled && [
-            'text-stone-600',
-            variant === 'transparent'
-              ? 'hover:bg-stone-300/80'
-              : 'hover:bg-stone-300/80',
-            active && 'bg-stone-300/90',
-          ],
-        !isDark && isDisabled && ['text-stone-400'],
-        isDark &&
-          !isDisabled && [
-            'text-gray-200',
-            variant === 'transparent'
-              ? 'hover:bg-stone-600/60'
-              : 'hover:bg-stone-600/60',
-            active && 'bg-stone-600/80',
-          ],
-        isDark && isDisabled && ['text-gray-500'],
+        // Light mode styles
+        !isDisabled && [
+          'text-stone-600 dark:text-gray-200',
+          variant === 'transparent'
+            ? 'hover:bg-stone-300/80 dark:hover:bg-stone-600/60'
+            : 'hover:bg-stone-300/80 dark:hover:bg-stone-600/60',
+          active && 'bg-stone-300/90 dark:bg-stone-600/80',
+        ],
+        isDisabled && 'text-stone-400 dark:text-gray-500',
         isExpanded ? 'w-full' : 'w-10 justify-center',
         className
       )}
@@ -103,21 +90,10 @@ export function SidebarButton({
               'flex h-5 w-5 flex-shrink-0 items-center justify-center'
             )}
           >
-            <div
-              className={cn(
-                'h-4 w-4 animate-pulse rounded-full',
-                isDark ? 'bg-stone-600' : 'bg-stone-400',
-                'opacity-80'
-              )}
-            />
+            <div className="h-4 w-4 animate-pulse rounded-full bg-stone-400 opacity-80 dark:bg-stone-600" />
           </span>
         ) : (
-          <span
-            className={cn(
-              '-ml-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center',
-              isDark ? 'text-gray-400' : 'text-gray-500'
-            )}
-          >
+          <span className="-ml-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
             {icon}
           </span>
         )}
