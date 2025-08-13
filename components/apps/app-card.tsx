@@ -87,39 +87,23 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
       if (difyTypeInfo) {
         switch (difyAppType) {
           case 'chatbot':
-            return isDark
-              ? 'bg-gradient-to-br from-blue-500 to-blue-600'
-              : 'bg-gradient-to-br from-blue-400 to-blue-500';
+            return 'bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-500 dark:to-blue-600';
           case 'agent':
-            return isDark
-              ? 'bg-gradient-to-br from-purple-500 to-purple-600'
-              : 'bg-gradient-to-br from-purple-400 to-purple-500';
+            return 'bg-gradient-to-br from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-600';
           case 'workflow':
-            return isDark
-              ? 'bg-gradient-to-br from-green-500 to-green-600'
-              : 'bg-gradient-to-br from-green-400 to-green-500';
+            return 'bg-gradient-to-br from-green-400 to-green-500 dark:from-green-500 dark:to-green-600';
           case 'text-generation':
-            return isDark
-              ? 'bg-gradient-to-br from-orange-500 to-orange-600'
-              : 'bg-gradient-to-br from-orange-400 to-orange-500';
+            return 'bg-gradient-to-br from-orange-400 to-orange-500 dark:from-orange-500 dark:to-orange-600';
           case 'chatflow':
-            return isDark
-              ? 'bg-gradient-to-br from-teal-500 to-teal-600'
-              : 'bg-gradient-to-br from-teal-400 to-teal-500';
+            return 'bg-gradient-to-br from-teal-400 to-teal-500 dark:from-teal-500 dark:to-teal-600';
           default:
-            return isDark
-              ? 'bg-gradient-to-br from-stone-600 to-stone-700'
-              : 'bg-gradient-to-br from-stone-400 to-stone-500';
+            return 'bg-gradient-to-br from-stone-400 to-stone-500 dark:from-stone-600 dark:to-stone-700';
         }
       }
 
       return app.appType === 'model'
-        ? isDark
-          ? 'bg-gradient-to-br from-stone-600 to-stone-700'
-          : 'bg-gradient-to-br from-stone-400 to-stone-500'
-        : isDark
-          ? 'bg-gradient-to-br from-stone-500 to-stone-600'
-          : 'bg-gradient-to-br from-stone-300 to-stone-400';
+        ? 'bg-gradient-to-br from-stone-400 to-stone-500 dark:from-stone-600 dark:to-stone-700'
+        : 'bg-gradient-to-br from-stone-300 to-stone-400 dark:from-stone-500 dark:to-stone-600';
     };
 
     return (

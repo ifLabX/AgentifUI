@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 interface SkeletonProps {
@@ -11,8 +10,6 @@ interface SkeletonProps {
 
 // Basic skeleton component
 export function Skeleton({ className, width, height }: SkeletonProps) {
-  const { isDark } = useTheme();
-
   const style = {
     width: width
       ? typeof width === 'number'
@@ -29,8 +26,7 @@ export function Skeleton({ className, width, height }: SkeletonProps) {
   return (
     <div
       className={cn(
-        'animate-pulse rounded-md',
-        isDark ? 'bg-stone-700/50' : 'bg-gray-200',
+        'animate-pulse rounded-md bg-gray-200 dark:bg-stone-700/50',
         className
       )}
       style={style}
@@ -146,8 +142,6 @@ export function TableSkeleton({
 
 // API configuration page skeleton
 export function ApiConfigSkeleton() {
-  const { isDark } = useTheme();
-
   return (
     <div className="space-y-8">
       {/* Title area */}
@@ -157,48 +151,16 @@ export function ApiConfigSkeleton() {
       </div>
 
       {/* API key management prompt area */}
-      <div
-        className={cn(
-          'rounded-lg border p-4',
-          isDark
-            ? 'border-blue-800/30 bg-blue-900/20'
-            : 'border-blue-100 bg-blue-50/80'
-        )}
-      >
-        <Skeleton
-          className={cn(
-            'mb-2 h-6 w-1/4',
-            isDark ? 'bg-blue-700/30' : 'bg-blue-200/50'
-          )}
-        />
-        <Skeleton
-          className={cn(
-            'mb-1 h-4 w-full',
-            isDark ? 'bg-blue-700/30' : 'bg-blue-200/50'
-          )}
-        />
-        <Skeleton
-          className={cn(
-            'mb-1 h-4 w-full',
-            isDark ? 'bg-blue-700/30' : 'bg-blue-200/50'
-          )}
-        />
-        <Skeleton
-          className={cn(
-            'h-4 w-3/4',
-            isDark ? 'bg-blue-700/30' : 'bg-blue-200/50'
-          )}
-        />
+      <div className="rounded-lg border p-4 border-blue-100 bg-blue-50/80 dark:border-blue-800/30 dark:bg-blue-900/20">
+        <Skeleton className="mb-2 h-6 w-1/4 bg-blue-200/50 dark:bg-blue-700/30" />
+        <Skeleton className="mb-1 h-4 w-full bg-blue-200/50 dark:bg-blue-700/30" />
+        <Skeleton className="mb-1 h-4 w-full bg-blue-200/50 dark:bg-blue-700/30" />
+        <Skeleton className="h-4 w-3/4 bg-blue-200/50 dark:bg-blue-700/30" />
       </div>
 
       {/* Tab area */}
       <div>
-        <div
-          className={cn(
-            'mb-6 flex border-b pb-2',
-            isDark ? 'border-stone-700/50' : 'border-stone-200/50'
-          )}
-        >
+        <div className="mb-6 flex border-b pb-2 border-stone-200/50 dark:border-stone-700/50">
           <Skeleton className="mr-4 h-10 w-24" />
           <Skeleton className="h-10 w-24" />
         </div>
@@ -211,21 +173,9 @@ export function ApiConfigSkeleton() {
           </div>
 
           {/* Table - use card wrapper */}
-          <div
-            className={cn(
-              'overflow-hidden rounded-lg border',
-              isDark
-                ? 'border-stone-700/30 bg-stone-800'
-                : 'border-stone-300/50 bg-white'
-            )}
-          >
+          <div className="overflow-hidden rounded-lg border border-stone-300/50 bg-white dark:border-stone-700/30 dark:bg-stone-800">
             {/* Table header */}
-            <div
-              className={cn(
-                'flex p-4',
-                isDark ? 'bg-stone-800/60' : 'bg-stone-100/80'
-              )}
-            >
+            <div className="flex p-4 bg-stone-100/80 dark:bg-stone-800/60">
               <Skeleton className="mr-4 h-6 w-1/5" />
               <Skeleton className="mr-4 h-6 w-1/5" />
               <Skeleton className="mr-4 h-6 w-1/5" />
@@ -237,10 +187,7 @@ export function ApiConfigSkeleton() {
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className={cn(
-                  'flex border-t p-4',
-                  isDark ? 'border-stone-700/20' : 'border-stone-200/50'
-                )}
+                className="flex border-t p-4 border-stone-200/50 dark:border-stone-700/20"
               >
                 <Skeleton className="mr-4 h-6 w-1/5" />
                 <Skeleton className="mr-4 h-6 w-1/5" />

@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { type VariantProps, cva } from 'class-variance-authority';
 
 import * as React from 'react';
@@ -13,8 +12,10 @@ const alertVariants = cva(
     variants: {
       variant: {
         default: 'bg-background text-foreground',
-        destructive: '',
-        success: '',
+        destructive: 
+          'border-destructive/50 text-destructive [&>svg]:text-destructive dark:border-destructive',
+        success: 
+          'border-green-200 text-green-700 [&>svg]:text-green-600 bg-green-50 dark:border-green-800 dark:bg-green-950 dark:text-green-300',
       },
     },
     defaultVariants: {
@@ -27,32 +28,11 @@ const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
 >(({ className, variant, ...props }, ref) => {
-  const { isDark } = useTheme();
-
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'destructive':
-        return cn(
-          'border-destructive/50 text-destructive [&>svg]:text-destructive',
-          isDark ? 'border-destructive' : ''
-        );
-      case 'success':
-        return cn(
-          'border-green-200 text-green-700 [&>svg]:text-green-600',
-          isDark
-            ? 'border-green-800 bg-green-950 text-green-300'
-            : 'bg-green-50'
-        );
-      default:
-        return '';
-    }
-  };
-
   return (
     <div
       ref={ref}
       role="alert"
-      className={cn(alertVariants({ variant }), getVariantStyles(), className)}
+      className={cn(alertVariants({ variant }), className)}
       {...props}
     />
   );
