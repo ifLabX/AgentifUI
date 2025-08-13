@@ -26,14 +26,12 @@ interface RetrieverResource {
 
 interface ReferenceSourcesProps {
   retrieverResources?: RetrieverResource[];
-  isDark?: boolean;
   className?: string;
   animationDelay?: number;
 }
 
 export function ReferenceSources({
   retrieverResources,
-  isDark = false,
   className,
   animationDelay = 0,
 }: ReferenceSourcesProps) {
@@ -89,9 +87,7 @@ export function ReferenceSources({
           'rounded border transition-colors duration-150',
           'focus:outline-none',
           'animate-fade-in opacity-0',
-          isDark
-            ? 'border-stone-700/60 bg-stone-800/80 text-stone-100 hover:bg-stone-700/80'
-            : 'border-stone-300/70 bg-stone-100/90 text-stone-800 hover:bg-stone-200/90'
+          'border-stone-300/70 bg-stone-100/90 text-stone-800 hover:bg-stone-200/90 dark:border-stone-700/60 dark:bg-stone-800/80 dark:text-stone-100 dark:hover:bg-stone-700/80'
         )}
         style={{
           animationDelay: `${animationDelay}ms`,
@@ -103,14 +99,14 @@ export function ReferenceSources({
             <ChevronUpIcon
               className={cn(
                 'h-3.5 w-3.5',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             />
           ) : (
             <ChevronDownIcon
               className={cn(
                 'h-3.5 w-3.5',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             />
           )}
@@ -122,9 +118,7 @@ export function ReferenceSources({
         <span
           className={cn(
             'rounded-full px-2 py-0.5 font-serif text-xs',
-            isDark
-              ? 'bg-stone-600/80 text-stone-100'
-              : 'bg-stone-300/80 text-stone-700'
+            'bg-stone-300/80 text-stone-700 dark:bg-stone-600/80 dark:text-stone-100'
           )}
         >
           {retrieverResources[0]?.dataset_name || t('knowledgeBase')}
@@ -137,15 +131,13 @@ export function ReferenceSources({
           className={cn(
             'mt-2 overflow-hidden rounded-lg border',
             'animate-fade-in',
-            isDark
-              ? 'border-stone-700/50 bg-stone-800/50 backdrop-blur-sm'
-              : 'border-stone-300/60 bg-stone-100/60 backdrop-blur-sm'
+            'border-stone-300/60 bg-stone-100/60 backdrop-blur-sm dark:border-stone-700/50 dark:bg-stone-800/50'
           )}
         >
           <div
             className={cn(
               'divide-y',
-              isDark ? 'divide-stone-700/30' : 'divide-stone-200/30'
+              'divide-stone-200/30 dark:divide-stone-700/30'
             )}
           >
             {retrieverResources.map((resource, index) => (
@@ -153,7 +145,7 @@ export function ReferenceSources({
                 key={`${resource.dataset_id}-${resource.segment_id}-${index}`}
                 className={cn(
                   'p-4 transition-all duration-200',
-                  isDark ? 'hover:bg-stone-800/60' : 'hover:bg-stone-200/70'
+                  'hover:bg-stone-200/70 dark:hover:bg-stone-800/60'
                 )}
               >
                 {/* Header row */}

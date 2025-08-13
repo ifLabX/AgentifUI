@@ -35,7 +35,6 @@ import {
 } from '@components/chat/markdown-block/think-block-header';
 import { AssistantMessageActions } from '@components/chat/message-actions';
 import { ReferenceSources } from '@components/chat/reference-sources';
-import { useTheme } from '@lib/hooks';
 import { cn } from '@lib/utils';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
@@ -238,7 +237,6 @@ interface AssistantMessageProps {
  */
 export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
   ({ id, content, isStreaming, wasManuallyStopped, metadata, className }) => {
-    const { isDark } = useTheme();
     const t = useTranslations('pages.chat');
 
     // Extract think block and main content from message
@@ -389,9 +387,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <th
             className={cn(
               'border px-4 py-2 text-left font-medium',
-              isDark
-                ? 'border-gray-600 bg-gray-700'
-                : 'border-gray-300 bg-gray-100'
+              'border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-700'
             )}
             {...props}
           >
@@ -444,7 +440,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <h1
             className={cn(
               'mt-6 mb-4 text-3xl font-bold',
-              isDark ? 'text-gray-100' : 'text-gray-900'
+              'text-gray-900 dark:text-gray-100'
             )}
             {...props}
           >
@@ -457,7 +453,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <h2
             className={cn(
               'mt-5 mb-3 text-2xl font-semibold',
-              isDark ? 'text-gray-100' : 'text-gray-900'
+              'text-gray-900 dark:text-gray-100'
             )}
             {...props}
           >
@@ -470,7 +466,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <h3
             className={cn(
               'mt-4 mb-2 text-xl font-medium',
-              isDark ? 'text-gray-100' : 'text-gray-900'
+              'text-gray-900 dark:text-gray-100'
             )}
             {...props}
           >
@@ -483,7 +479,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <h4
             className={cn(
               'mt-3 mb-2 text-lg font-medium',
-              isDark ? 'text-gray-100' : 'text-gray-900'
+              'text-gray-900 dark:text-gray-100'
             )}
             {...props}
           >
@@ -517,9 +513,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
               href={linkUrl}
               className={cn(
                 'inline-flex items-center gap-1 rounded border px-2 py-1 text-sm',
-                isDark
-                  ? 'border-gray-600 bg-gray-800 text-sky-400 hover:border-gray-500 hover:text-sky-300'
-                  : 'border-gray-300 bg-gray-50 text-sky-600 hover:border-gray-400 hover:text-sky-700'
+                'border-gray-300 bg-gray-50 text-sky-600 hover:border-gray-400 hover:text-sky-700 dark:border-gray-600 dark:bg-gray-800 dark:text-sky-400 dark:hover:border-gray-500 dark:hover:text-sky-300'
               )}
               target="_blank"
               rel="noopener noreferrer"
@@ -550,9 +544,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
             href={href}
             className={cn(
               'underline',
-              isDark
-                ? 'text-sky-400 hover:text-sky-300'
-                : 'text-sky-600 hover:text-sky-700'
+              'text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300'
             )}
             target="_blank"
             rel="noopener noreferrer"
@@ -567,7 +559,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           <hr
             className={cn(
               'my-4 border-t',
-              isDark ? 'border-gray-700' : 'border-gray-300'
+              'border-gray-300 dark:border-gray-700'
             )}
             {...props}
           />
@@ -592,9 +584,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
             href={imageUrl}
             className={cn(
               'inline-flex items-center gap-1 rounded border px-2 py-1 text-sm',
-              isDark
-                ? 'border-gray-600 bg-gray-800 text-sky-400 hover:border-gray-500 hover:text-sky-300'
-                : 'border-gray-300 bg-gray-50 text-sky-600 hover:border-gray-400 hover:text-sky-700'
+              'border-gray-300 bg-gray-50 text-sky-600 hover:border-gray-400 hover:text-sky-700 dark:border-gray-600 dark:bg-gray-800 dark:text-sky-400 dark:hover:border-gray-500 dark:hover:text-sky-300'
             )}
             target="_blank"
             rel="noopener noreferrer"
@@ -683,7 +673,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
                 metadata?.dify_retriever_resources ||
                 metadata?.dify_metadata?.retriever_resources
               }
-              isDark={isDark}
               className="mt-4 mb-2"
               animationDelay={isStreaming ? 0 : 300} // Delay 300ms after streaming ends
             />

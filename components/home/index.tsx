@@ -5,7 +5,6 @@ import { Button } from '@components/ui/button';
 import { LanguageSwitcher } from '@components/ui/language-switcher';
 import { PageLoader } from '@components/ui/page-loader';
 import { useDynamicTranslations } from '@lib/hooks/use-dynamic-translations';
-import { useTheme } from '@lib/hooks/use-theme';
 import { createClient } from '@lib/supabase/client';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -16,7 +15,6 @@ import { useRouter } from 'next/navigation';
 
 export function Home() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const supabase = createClient();
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
@@ -71,40 +69,10 @@ export function Home() {
     }
   };
 
+  // Get colors based on theme
   const handleLearnMoreClick = () => {
     router.push('/about');
   };
-
-  // Get colors based on theme
-  const getColors = () => {
-    if (isDark) {
-      return {
-        titleGradient: 'from-stone-300 to-stone-500',
-        textColor: 'text-gray-300',
-        cardBg: 'bg-stone-700',
-        cardBorder: 'border-stone-600',
-        cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.3)]',
-        primaryButton: 'bg-stone-600 hover:bg-stone-500 text-gray-100',
-        secondaryButton: 'border-stone-500 text-gray-200 hover:bg-stone-600',
-        featureIconBg: 'bg-stone-600',
-        featureTextColor: 'text-gray-300',
-      };
-    } else {
-      return {
-        titleGradient: 'from-stone-700 to-stone-900',
-        textColor: 'text-stone-700',
-        cardBg: 'bg-stone-100',
-        cardBorder: 'border-stone-200',
-        cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1)]',
-        primaryButton: 'bg-stone-800 hover:bg-stone-700 text-gray-100',
-        secondaryButton: 'border-stone-400 text-stone-800 hover:bg-stone-200',
-        featureIconBg: 'bg-stone-200',
-        featureTextColor: 'text-stone-700',
-      };
-    }
-  };
-
-  const colors = getColors();
 
   // Show loading state while mounting or dynamic translations load
   if (!mounted || isLoading) {
@@ -134,7 +102,7 @@ export function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className={`bg-gradient-to-r text-5xl font-bold md:text-6xl ${colors.titleGradient} mb-6 bg-clip-text py-2 leading-normal text-transparent`}
+              className="bg-gradient-to-r from-stone-700 to-stone-900 dark:from-stone-300 dark:to-stone-500 text-5xl font-bold md:text-6xl mb-6 bg-clip-text py-2 leading-normal text-transparent"
             >
               {t('title')}
             </motion.h1>
@@ -143,7 +111,7 @@ export function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className={`text-xl md:text-2xl ${colors.textColor} mx-auto max-w-3xl font-light`}
+              className="text-xl md:text-2xl text-stone-700 dark:text-gray-300 mx-auto max-w-3xl font-light"
             >
               {t('subtitle')}
             </motion.p>
@@ -162,15 +130,15 @@ export function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                className={`${colors.cardBg} ${colors.cardShadow} border ${colors.cardBorder} flex flex-col items-center rounded-xl p-6 text-center`}
+                className="bg-stone-100 dark:bg-stone-700 shadow-[0_4px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-stone-200 dark:border-stone-600 flex flex-col items-center rounded-xl p-6 text-center"
               >
                 <div
-                  className={`${colors.featureIconBg} mb-4 flex h-12 w-12 items-center justify-center rounded-full`}
+                  className="bg-stone-200 dark:bg-stone-600 mb-4 flex h-12 w-12 items-center justify-center rounded-full"
                 >
                   <span className="text-xl">#{index + 1}</span>
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-                <p className={`${colors.featureTextColor} text-sm`}>
+                <p className="text-stone-700 dark:text-gray-300 text-sm">
                   {feature.description}
                 </p>
               </motion.div>
@@ -186,7 +154,7 @@ export function Home() {
           >
             <Button
               size="lg"
-              className={`${colors.primaryButton} h-auto cursor-pointer rounded-lg px-8 py-3 text-base font-medium transition-all duration-200 hover:scale-105`}
+              className="bg-stone-800 hover:bg-stone-700 text-gray-100 h-auto cursor-pointer rounded-lg px-8 py-3 text-base font-medium transition-all duration-200 hover:scale-105"
               onClick={handleStartClick}
             >
               {t('getStarted')}
@@ -194,7 +162,7 @@ export function Home() {
             <Button
               size="lg"
               variant="outline"
-              className={`${colors.secondaryButton} h-auto cursor-pointer rounded-lg px-8 py-3 text-base font-medium transition-all duration-200 hover:scale-105`}
+              className="border-stone-400 text-stone-800 hover:bg-stone-200 dark:border-stone-500 dark:text-gray-200 dark:hover:bg-stone-600 h-auto cursor-pointer rounded-lg px-8 py-3 text-base font-medium transition-all duration-200 hover:scale-105"
               onClick={handleLearnMoreClick}
             >
               {t('learnMore')}
@@ -206,7 +174,7 @@ export function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className={`text-center ${colors.textColor} text-sm`}
+            className="text-center text-stone-700 dark:text-gray-300 text-sm"
           >
             <p>
               {t('copyright.prefix', { year: new Date().getFullYear() })}
