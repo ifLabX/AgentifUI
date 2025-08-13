@@ -2,6 +2,9 @@
 @import '../styles/markdown.css';
 @import '../styles/markdown-variables.css';
 
+/* Tailwind v4 dark mode configuration */
+@variant dark (&:where(.dark, .dark *));
+
 /* Add base style to prevent flicker */
 html {
   transition: background-color 0ms ease-out;
