@@ -151,7 +151,7 @@ export function ApiConfigSkeleton() {
       </div>
 
       {/* API key management prompt area */}
-      <div className="rounded-lg border p-4 border-blue-100 bg-blue-50/80 dark:border-blue-800/30 dark:bg-blue-900/20">
+      <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-4 dark:border-blue-800/30 dark:bg-blue-900/20">
         <Skeleton className="mb-2 h-6 w-1/4 bg-blue-200/50 dark:bg-blue-700/30" />
         <Skeleton className="mb-1 h-4 w-full bg-blue-200/50 dark:bg-blue-700/30" />
         <Skeleton className="mb-1 h-4 w-full bg-blue-200/50 dark:bg-blue-700/30" />
@@ -160,7 +160,7 @@ export function ApiConfigSkeleton() {
 
       {/* Tab area */}
       <div>
-        <div className="mb-6 flex border-b pb-2 border-stone-200/50 dark:border-stone-700/50">
+        <div className="mb-6 flex border-b border-stone-200/50 pb-2 dark:border-stone-700/50">
           <Skeleton className="mr-4 h-10 w-24" />
           <Skeleton className="h-10 w-24" />
         </div>
@@ -175,7 +175,7 @@ export function ApiConfigSkeleton() {
           {/* Table - use card wrapper */}
           <div className="overflow-hidden rounded-lg border border-stone-300/50 bg-white dark:border-stone-700/30 dark:bg-stone-800">
             {/* Table header */}
-            <div className="flex p-4 bg-stone-100/80 dark:bg-stone-800/60">
+            <div className="flex bg-stone-100/80 p-4 dark:bg-stone-800/60">
               <Skeleton className="mr-4 h-6 w-1/5" />
               <Skeleton className="mr-4 h-6 w-1/5" />
               <Skeleton className="mr-4 h-6 w-1/5" />
@@ -187,7 +187,7 @@ export function ApiConfigSkeleton() {
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="flex border-t p-4 border-stone-200/50 dark:border-stone-700/20"
+                className="flex border-t border-stone-200/50 p-4 dark:border-stone-700/20"
               >
                 <Skeleton className="mr-4 h-6 w-1/5" />
                 <Skeleton className="mr-4 h-6 w-1/5" />

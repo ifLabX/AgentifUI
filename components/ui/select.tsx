@@ -23,7 +23,7 @@ const SelectTrigger = React.forwardRef<
         'select-none focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
         // Light mode styles
         'border-stone-300 bg-white text-stone-900 placeholder:text-stone-500 focus:border-stone-500 focus:ring-stone-500/20',
-        // Dark mode styles  
+        // Dark mode styles
         'dark:border-stone-600 dark:bg-stone-800/50 dark:text-stone-100 dark:placeholder:text-stone-400 dark:focus:border-stone-500 dark:focus:ring-stone-500/20',
         className
       )}
@@ -31,7 +31,7 @@ const SelectTrigger = React.forwardRef<
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="h-4 w-4 transition-transform text-stone-500 dark:text-stone-400" />
+        <ChevronDown className="h-4 w-4 text-stone-500 transition-transform dark:text-stone-400" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
