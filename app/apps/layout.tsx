@@ -2,7 +2,6 @@
 
 import { MobileNavButton } from '@components/mobile';
 import { useMobile } from '@lib/hooks';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
 
@@ -13,7 +12,6 @@ interface AppsLayoutProps {
 export default function AppsLayout({ children }: AppsLayoutProps) {
   const { isExpanded, isMounted } = useSidebarStore();
   const isMobile = useMobile();
-  const { isDark } = useTheme();
 
   const getMainMarginLeft = () => {
     if (isMobile) return 'ml-0';
@@ -24,7 +22,7 @@ export default function AppsLayout({ children }: AppsLayoutProps) {
     <div
       className={cn(
         'flex h-full min-h-screen',
-        isDark ? 'bg-stone-800' : 'bg-stone-100'
+        'bg-stone-100 dark:bg-stone-800'
       )}
     >
       {/* mobile navigation button - only display after client mount */}

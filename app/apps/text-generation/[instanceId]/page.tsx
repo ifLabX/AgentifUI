@@ -174,13 +174,13 @@ export default function TextGenerationPage({
           <FileText
             className={cn(
               'mx-auto mb-4 h-16 w-16',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           />
           <h2
             className={cn(
               'mb-2 font-serif text-xl font-semibold',
-              isDark ? 'text-stone-300' : 'text-stone-700'
+              'text-stone-700 dark:text-stone-300'
             )}
           >
             {t('errors.appLoadFailed')}
@@ -188,7 +188,7 @@ export default function TextGenerationPage({
           <p
             className={cn(
               'mb-4 font-serif',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           >
             {initError}
@@ -197,9 +197,8 @@ export default function TextGenerationPage({
             onClick={() => router.push('/apps')}
             className={cn(
               'rounded-lg px-4 py-2 font-serif transition-colors',
-              isDark
-                ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-                : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+              'bg-stone-200 text-stone-800 hover:bg-stone-300',
+              'dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600'
             )}
           >
             {t('buttons.backToMarket')}
@@ -223,13 +222,13 @@ export default function TextGenerationPage({
           <Loader2
             className={cn(
               'mx-auto mb-4 h-8 w-8 animate-spin',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           />
           <p
             className={cn(
               'font-serif',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           >
             {isInitializing

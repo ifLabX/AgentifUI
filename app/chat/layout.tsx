@@ -2,7 +2,6 @@
 
 import { MobileNavButton } from '@components/mobile';
 import { useMobile } from '@lib/hooks';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
 
@@ -13,7 +12,6 @@ interface ChatLayoutProps {
 export default function ChatLayout({ children }: ChatLayoutProps) {
   const { isExpanded, isMounted } = useSidebarStore();
   const isMobile = useMobile();
-  const { isDark } = useTheme();
 
   // Remove duplicate setMounted calls, now managed by global ClientLayout
   // Calculate the left margin of the main content area
@@ -27,7 +25,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
     <div
       className={cn(
         'flex h-full min-h-screen',
-        isDark ? 'bg-stone-800' : 'bg-stone-100'
+        'bg-stone-100 dark:bg-stone-800'
       )}
     >
       {/* 
