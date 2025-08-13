@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import React from 'react';
@@ -13,7 +12,6 @@ interface SpinnerProps {
 }
 
 export function Spinner({ size = 'md', className }: SpinnerProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('loading');
 
   const sizeClasses = {
@@ -27,9 +25,10 @@ export function Spinner({ size = 'md', className }: SpinnerProps) {
       className={cn(
         'animate-spin rounded-full border-solid',
         sizeClasses[size],
-        isDark
-          ? 'border-gray-600 border-t-gray-200'
-          : 'border-gray-200 border-t-gray-600',
+        // Light mode: gray border with darker top
+        'border-gray-200 border-t-gray-600',
+        // Dark mode: darker border with lighter top
+        'dark:border-gray-600 dark:border-t-gray-200',
         className
       )}
       aria-label={t('spinner')}

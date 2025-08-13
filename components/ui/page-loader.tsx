@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import React from 'react';
@@ -20,7 +19,6 @@ interface PageLoaderProps {
  * @description Displays a centered loading spinner with internationalized loading messages
  */
 export function PageLoader({ className }: PageLoaderProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('loading.pageLoader');
 
   return (
@@ -56,12 +54,7 @@ export function PageLoader({ className }: PageLoaderProps) {
         </div>
 
         {/* Loading text content */}
-        <h3
-          className={cn(
-            'text-lg font-medium',
-            isDark ? 'text-gray-100' : 'text-gray-900'
-          )}
-        >
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
           {t('title')}
         </h3>
       </div>
