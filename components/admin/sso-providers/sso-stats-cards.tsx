@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { useSsoProvidersStore } from '@lib/stores/sso-providers-store';
 import { cn } from '@lib/utils';
 import { TrendingDown, TrendingUp } from 'lucide-react';
@@ -25,48 +24,44 @@ interface SsoStatsCardsProps {
 }
 
 export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.admin.ssoProviders.stats');
   const { stats, loading } = useSsoProvidersStore();
 
   // Use provided isLoading prop or store loading state
   const shouldShowLoading = isLoading || loading.stats;
 
-  // Get color classes for stat cards
-  const getColorClasses = (color: StatCard['color']) => {
-    const colorMap = {
-      blue: {
-        bg: isDark ? 'bg-blue-500/10' : 'bg-blue-50',
-        border: isDark ? 'border-blue-500/20' : 'border-blue-200',
-        text: isDark ? 'text-blue-400' : 'text-blue-600',
-      },
-      green: {
-        bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-50',
-        border: isDark ? 'border-emerald-500/20' : 'border-emerald-200',
-        text: isDark ? 'text-emerald-400' : 'text-emerald-600',
-      },
-      red: {
-        bg: isDark ? 'bg-red-500/10' : 'bg-red-50',
-        border: isDark ? 'border-red-500/20' : 'border-red-200',
-        text: isDark ? 'text-red-400' : 'text-red-600',
-      },
-      purple: {
-        bg: isDark ? 'bg-purple-500/10' : 'bg-purple-50',
-        border: isDark ? 'border-purple-500/20' : 'border-purple-200',
-        text: isDark ? 'text-purple-400' : 'text-purple-600',
-      },
-      amber: {
-        bg: isDark ? 'bg-amber-500/10' : 'bg-amber-50',
-        border: isDark ? 'border-amber-500/20' : 'border-amber-200',
-        text: isDark ? 'text-amber-400' : 'text-amber-600',
-      },
-      stone: {
-        bg: isDark ? 'bg-stone-500/10' : 'bg-stone-50',
-        border: isDark ? 'border-stone-500/20' : 'border-stone-200',
-        text: isDark ? 'text-stone-400' : 'text-stone-600',
-      },
-    };
-    return colorMap[color];
+  // Static color classes for stat cards
+  const colorClasses = {
+    blue: {
+      bg: 'bg-blue-50 dark:bg-blue-500/10',
+      border: 'border-blue-200 dark:border-blue-500/20',
+      text: 'text-blue-600 dark:text-blue-400',
+    },
+    green: {
+      bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+      border: 'border-emerald-200 dark:border-emerald-500/20',
+      text: 'text-emerald-600 dark:text-emerald-400',
+    },
+    red: {
+      bg: 'bg-red-50 dark:bg-red-500/10',
+      border: 'border-red-200 dark:border-red-500/20',
+      text: 'text-red-600 dark:text-red-400',
+    },
+    purple: {
+      bg: 'bg-purple-50 dark:bg-purple-500/10',
+      border: 'border-purple-200 dark:border-purple-500/20',
+      text: 'text-purple-600 dark:text-purple-400',
+    },
+    amber: {
+      bg: 'bg-amber-50 dark:bg-amber-500/10',
+      border: 'border-amber-200 dark:border-amber-500/20',
+      text: 'text-amber-600 dark:text-amber-400',
+    },
+    stone: {
+      bg: 'bg-stone-50 dark:bg-stone-500/10',
+      border: 'border-stone-200 dark:border-stone-500/20',
+      text: 'text-stone-600 dark:text-stone-400',
+    },
   };
 
   // Generate protocol-based stat cards data
@@ -100,12 +95,7 @@ export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
           {[...Array(4)].map((_, index) => (
             <div
               key={index}
-              className={cn(
-                'animate-pulse rounded-xl border p-6 backdrop-blur-sm',
-                isDark
-                  ? 'border-stone-700/50 bg-stone-800/50'
-                  : 'border-stone-200/50 bg-white/50'
-              )}
+              className="animate-pulse rounded-xl border border-stone-200/50 bg-white/50 p-6 backdrop-blur-sm dark:border-stone-700/50 dark:bg-stone-800/50"
               style={{
                 animationDelay: `${index * 150}ms`,
                 animationFillMode: 'both',
@@ -113,32 +103,12 @@ export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div
-                    className={cn(
-                      'h-4 w-16 rounded',
-                      isDark ? 'bg-stone-700/50' : 'bg-stone-200'
-                    )}
-                  />
-                  <div
-                    className={cn(
-                      'h-2 w-2 rounded-full',
-                      isDark ? 'bg-stone-700/50' : 'bg-stone-200'
-                    )}
-                  />
+                  <div className="h-4 w-16 rounded bg-stone-200 dark:bg-stone-700/50" />
+                  <div className="h-2 w-2 rounded-full bg-stone-200 dark:bg-stone-700/50" />
                 </div>
                 <div>
-                  <div
-                    className={cn(
-                      'mb-2 h-8 w-12 rounded',
-                      isDark ? 'bg-stone-700/50' : 'bg-stone-200'
-                    )}
-                  />
-                  <div
-                    className={cn(
-                      'h-3 w-20 rounded',
-                      isDark ? 'bg-stone-700/50' : 'bg-stone-200'
-                    )}
-                  />
+                  <div className="mb-2 h-8 w-12 rounded bg-stone-200 dark:bg-stone-700/50" />
+                  <div className="h-3 w-20 rounded bg-stone-200 dark:bg-stone-700/50" />
                 </div>
               </div>
             </div>
@@ -153,7 +123,7 @@ export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
       {/* Protocol Statistics Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((card, index) => {
-          const colors = getColorClasses(card.color);
+          const colors = colorClasses[card.color];
 
           return (
             <div
@@ -172,12 +142,7 @@ export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p
-                    className={cn(
-                      'font-serif text-sm font-medium',
-                      isDark ? 'text-stone-300' : 'text-stone-600'
-                    )}
-                  >
+                  <p className="font-serif text-sm font-medium text-stone-600 dark:text-stone-300">
                     {card.title}
                   </p>
                   <div
@@ -189,12 +154,7 @@ export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
                 </div>
 
                 <div>
-                  <p
-                    className={cn(
-                      'font-serif text-2xl font-bold',
-                      isDark ? 'text-stone-100' : 'text-stone-900'
-                    )}
-                  >
+                  <p className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">
                     {card.value}
                   </p>
                   {card.trend && (
@@ -214,12 +174,7 @@ export function SsoStatsCards({ isLoading = false }: SsoStatsCardsProps) {
                       >
                         {card.trend.value}%
                       </span>
-                      <span
-                        className={cn(
-                          'font-serif text-xs',
-                          isDark ? 'text-stone-400' : 'text-stone-500'
-                        )}
-                      >
+                      <span className="font-serif text-xs text-stone-500 dark:text-stone-400">
                         {card.trend.label}
                       </span>
                     </div>
