@@ -2,7 +2,6 @@
 
 import { ReturnToChatButton } from '@components/admin/return-to-chat-button';
 import { LanguageSwitcher } from '@components/ui/language-switcher';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import {
@@ -35,7 +34,6 @@ interface MenuItem {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const { isDark } = useTheme();
   const { colors } = useThemeColors();
   const t = useTranslations('pages.admin.layout');
 
@@ -176,7 +174,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         className={cn(
           'fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md',
           colors.sidebarBackground.tailwind,
-          isDark ? 'border-b-stone-700/50' : 'border-b-stone-300/60'
+          'border-b-stone-300/60 dark:border-b-stone-700/50'
         )}
       >
         <div className="flex items-center justify-between px-6 py-2">
@@ -203,9 +201,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           'transition-colors hover:underline',
                           index === getBreadcrumbs().length - 1
                             ? colors.mainText.tailwind + ' font-medium'
-                            : isDark
-                              ? 'text-stone-400 hover:text-stone-200'
-                              : 'text-stone-500 hover:text-stone-700'
+                            : 'text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200'
                         )}
                       >
                         {crumb.text}
@@ -232,9 +228,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           'z-45',
           colors.sidebarBackground.tailwind,
           'backdrop-blur-sm',
-          isDark
-            ? 'border-r-stone-700/50 text-stone-300 shadow-xl shadow-black/40'
-            : 'border-r-stone-300/60 text-stone-700 shadow-xl shadow-stone-300/60'
+          'border-r-stone-300/60 text-stone-700 shadow-xl shadow-stone-300/60',
+          'dark:border-r-stone-700/50 dark:text-stone-300 dark:shadow-xl dark:shadow-black/40'
         )}
         onMouseEnter={() => handleSetHovering(true)}
         onMouseLeave={() => handleSetHovering(false)}
@@ -260,21 +255,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       'relative flex items-center rounded-lg px-3 py-2 text-sm font-medium',
                       'transition-all duration-200 ease-in-out',
                       'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                      isDark
-                        ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
-                        : 'focus-visible:ring-primary focus-visible:ring-offset-background',
+                      'focus-visible:ring-primary focus-visible:ring-offset-background',
+                      'dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900',
                       'h-10 min-h-[2.5rem] border border-transparent',
-                      !isDark && [
-                        'text-stone-600',
-                        'hover:bg-stone-300 hover:shadow-md',
-                        isActive &&
-                          'border-stone-400/80 bg-stone-300 shadow-sm',
-                      ],
-                      isDark && [
-                        'text-gray-200',
-                        'hover:border-stone-500/50 hover:bg-stone-600 hover:shadow-md',
-                        isActive && 'border-stone-500 bg-stone-600 shadow-sm',
-                      ],
+                      // Light mode styles
+                      'text-stone-600 hover:bg-stone-300 hover:shadow-md',
+                      isActive && 'border-stone-400/80 bg-stone-300 shadow-sm',
+                      // Dark mode styles  
+                      'dark:text-gray-200 dark:hover:border-stone-500/50 dark:hover:bg-stone-600 dark:hover:shadow-md',
+                      isActive && 'dark:border-stone-500 dark:bg-stone-600 dark:shadow-sm',
                       isExpanded ? 'w-full' : 'w-10 justify-center'
                     )}
                   >
@@ -282,7 +271,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       <span
                         className={cn(
                           '-ml-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center',
-                          isDark ? 'text-gray-400' : 'text-gray-500'
+                          'text-gray-500 dark:text-gray-400'
                         )}
                       >
                         <Icon className="h-5 w-5" />

@@ -345,11 +345,11 @@ export default function ContentManagementPage() {
     <div
       className={cn(
         'flex h-screen flex-col overflow-hidden',
-        isDark ? 'bg-stone-950' : 'bg-stone-100'
+        'bg-stone-100 dark:bg-stone-950'
       )}
     >
       <div
-        className={cn('flex-shrink-0', isDark ? 'bg-stone-900' : 'bg-stone-50')}
+        className={cn('flex-shrink-0', 'bg-stone-50 dark:bg-stone-900')}
       >
         <div className="w-full px-4 py-2.5">
           <div className="flex items-center justify-between">
@@ -357,7 +357,7 @@ export default function ContentManagementPage() {
               <h1
                 className={cn(
                   'text-xl font-semibold',
-                  isDark ? 'text-stone-100' : 'text-stone-900'
+                  'text-stone-900 dark:text-stone-100'
                 )}
               >
                 {t('title')}
@@ -365,7 +365,7 @@ export default function ContentManagementPage() {
               <p
                 className={cn(
                   'hidden text-sm md:block',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {t('subtitle')}
@@ -406,14 +406,14 @@ export default function ContentManagementPage() {
               <div
                 className={cn(
                   'flex h-full flex-col',
-                  isDark ? 'bg-stone-900' : 'bg-white'
+                  'bg-white dark:bg-stone-900'
                 )}
               >
                 <div className="flex-1 overflow-auto p-6">{renderEditor()}</div>
                 <div
                   className={cn(
                     'flex-shrink-0 p-4',
-                    isDark ? 'bg-stone-900' : 'bg-white'
+                    'bg-white dark:bg-stone-900'
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -422,7 +422,7 @@ export default function ContentManagementPage() {
                         <div
                           className={cn(
                             'flex items-center gap-2 text-sm',
-                            isDark ? 'text-stone-400' : 'text-stone-500'
+                            'text-stone-500 dark:text-stone-400'
                           )}
                         >
                           <div className="h-2 w-2 rounded-full bg-orange-500" />
@@ -488,14 +488,14 @@ export default function ContentManagementPage() {
           <div
             className={cn(
               'relative flex-1',
-              isDark ? 'bg-stone-900' : 'bg-white'
+              'bg-white dark:bg-stone-900'
             )}
           >
             <div className="h-full overflow-auto p-6">{renderEditor()}</div>
             <div
               className={cn(
                 'absolute right-0 bottom-0 left-0 p-4',
-                isDark ? 'bg-stone-900/80' : 'bg-white/80',
+                'bg-white/80 dark:bg-stone-900/80',
                 'backdrop-blur-sm'
               )}
             >
@@ -505,7 +505,7 @@ export default function ContentManagementPage() {
                     <div
                       className={cn(
                         'flex items-center gap-2 text-sm',
-                        isDark ? 'text-stone-400' : 'text-stone-500'
+                        'text-stone-500 dark:text-stone-400'
                       )}
                     >
                       <div className="h-2 w-2 rounded-full bg-orange-500" />
@@ -559,20 +559,20 @@ export default function ContentManagementPage() {
             <div
               className={cn(
                 'flex flex-shrink-0 items-center justify-between px-4 py-3',
-                isDark ? 'bg-stone-800/50' : 'bg-white/50'
+                'bg-white/50 dark:bg-stone-800/50'
               )}
             >
               <div className="flex items-center gap-3">
                 <div
                   className={cn(
                     'h-3 w-3 rounded-full',
-                    isDark ? 'bg-stone-600' : 'bg-stone-400'
+                    'bg-stone-400 dark:bg-stone-600'
                   )}
                 />
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    isDark ? 'text-stone-300' : 'text-stone-700'
+                    'text-stone-700 dark:text-stone-300'
                   )}
                 >
                   {t('fullscreenPreview')} -

@@ -43,20 +43,20 @@ function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
             <div
               className={cn(
                 'rounded-lg p-2',
-                isDark ? 'bg-stone-700' : 'bg-stone-100'
+                'bg-stone-100 dark:bg-stone-700'
               )}
             >
               <Icon
                 className={cn(
                   'h-5 w-5',
-                  isDark ? 'text-stone-300' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-300'
                 )}
               />
             </div>
             <h3
               className={cn(
                 'text-lg font-semibold',
-                isDark ? 'text-stone-100' : 'text-stone-900'
+                'text-stone-900 dark:text-stone-100'
               )}
             >
               {title}
@@ -66,7 +66,7 @@ function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
           <p
             className={cn(
               'text-sm leading-relaxed',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {description}
@@ -76,7 +76,7 @@ function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
         <ArrowRight
           className={cn(
             'h-5 w-5 transition-transform group-hover:translate-x-1',
-            isDark ? 'text-stone-400' : 'text-stone-400'
+            'text-stone-400'
           )}
         />
       </div>
@@ -147,7 +147,7 @@ export default function AdminPage() {
           <p
             className={cn(
               'text-base',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {t('subtitle')}

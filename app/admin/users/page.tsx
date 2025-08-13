@@ -335,7 +335,7 @@ export default function UsersManagementPage() {
         <div
           className={cn(
             'font-serif text-sm',
-            isDark ? 'text-stone-400' : 'text-stone-600'
+            'text-stone-600 dark:text-stone-400'
           )}
         >
           {t('pagination.showing', {
@@ -367,7 +367,7 @@ export default function UsersManagementPage() {
           <span
             className={cn(
               'px-3 py-1.5 font-serif text-sm',
-              isDark ? 'text-stone-300' : 'text-stone-700'
+              'text-stone-700 dark:text-stone-300'
             )}
           >
             {pagination.page} / {pagination.totalPages}
@@ -418,7 +418,7 @@ export default function UsersManagementPage() {
             <p
               className={cn(
                 'flex items-center gap-2 font-serif text-base',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             >
               <Users className="h-4 w-4" />
@@ -506,7 +506,7 @@ export default function UsersManagementPage() {
                   <span
                     className={cn(
                       'font-serif text-sm font-semibold',
-                      isDark ? 'text-stone-200' : 'text-stone-800'
+                      'text-stone-800 dark:text-stone-200'
                     )}
                   >
                     {t('batchOperations.selected', {

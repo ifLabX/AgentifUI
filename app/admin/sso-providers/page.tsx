@@ -101,7 +101,7 @@ export default function SsoProvidersPage() {
             <p
               className={cn(
                 'flex items-center gap-2 font-serif text-base',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             >
               <Shield className="h-4 w-4" />
@@ -235,7 +235,7 @@ export default function SsoProvidersPage() {
                   <h3
                     className={cn(
                       'font-serif text-lg font-semibold',
-                      isDark ? 'text-stone-100' : 'text-stone-900'
+                      'text-stone-900 dark:text-stone-100'
                     )}
                   >
                     {t('deleteDialog.title')}
@@ -243,7 +243,7 @@ export default function SsoProvidersPage() {
                   <p
                     className={cn(
                       'font-serif text-sm',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   >
                     {t('deleteDialog.message', {

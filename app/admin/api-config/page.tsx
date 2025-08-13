@@ -612,7 +612,7 @@ const InstanceForm = ({
       <div
         className={cn(
           'mb-6 rounded-xl border p-6',
-          isDark ? 'border-stone-600 bg-stone-800' : 'border-stone-200 bg-white'
+          'border-stone-200 bg-white dark:border-stone-600 dark:bg-stone-800'
         )}
       >
         <div className="mb-6 flex items-center justify-between">
@@ -620,7 +620,7 @@ const InstanceForm = ({
             <h3
               className={cn(
                 'font-serif text-lg font-bold',
-                isDark ? 'text-stone-100' : 'text-stone-900'
+                'text-stone-900 dark:text-stone-100'
               )}
             >
               {isEditing ? t('title.edit') : t('title.add')}
@@ -641,7 +641,7 @@ const InstanceForm = ({
                 <div
                   className={cn(
                     'h-2 w-2 rounded-full',
-                    isDark ? 'bg-amber-400' : 'bg-amber-500'
+                    'bg-amber-500 dark:bg-amber-400'
                   )}
                 />
                 {t('unsavedChanges')}
@@ -746,7 +746,7 @@ const InstanceForm = ({
             <div
               className={cn(
                 'flex gap-2 rounded-lg p-2',
-                isDark ? 'bg-stone-800/50' : 'bg-stone-100/50'
+                'bg-stone-100/50 dark:bg-stone-800/50'
               )}
             >
               <button
@@ -822,7 +822,7 @@ const InstanceForm = ({
               <h3
                 className={cn(
                   'font-serif text-sm font-medium',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {t('provider.title')}
@@ -830,7 +830,7 @@ const InstanceForm = ({
               <p
                 className={cn(
                   'mt-1 font-serif text-xs',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {isEditing ? t('provider.current') : t('provider.select')}
@@ -876,7 +876,7 @@ const InstanceForm = ({
               <label
                 className={cn(
                   'mb-2 block font-serif text-sm font-medium',
-                  isDark ? 'text-stone-300' : 'text-stone-700'
+                  'text-stone-700 dark:text-stone-300'
                 )}
               >
                 {t('fields.instanceId.label')}
@@ -938,7 +938,7 @@ const InstanceForm = ({
                 <p
                   className={cn(
                     'mt-1 font-serif text-xs',
-                    isDark ? 'text-stone-400' : 'text-stone-500'
+                    'text-stone-500 dark:text-stone-400'
                   )}
                 >
                   {t('validation.instanceId.notModifiable')}
@@ -949,7 +949,7 @@ const InstanceForm = ({
                 <p
                   className={cn(
                     'mt-1 font-serif text-xs',
-                    isDark ? 'text-stone-400' : 'text-stone-500'
+                    'text-stone-500 dark:text-stone-400'
                   )}
                 >
                   {t('validation.instanceId.formatDescription')}
@@ -973,7 +973,7 @@ const InstanceForm = ({
               <label
                 className={cn(
                   'mb-2 block font-serif text-sm font-medium',
-                  isDark ? 'text-stone-300' : 'text-stone-700'
+                  'text-stone-700 dark:text-stone-300'
                 )}
               >
                 {t('fields.displayName.label')}
@@ -1043,7 +1043,7 @@ const InstanceForm = ({
             <label
               className={cn(
                 'mb-2 block font-serif text-sm font-medium',
-                isDark ? 'text-stone-300' : 'text-stone-700'
+                'text-stone-700 dark:text-stone-300'
               )}
             >
               {t('fields.description.label')}
@@ -1068,7 +1068,7 @@ const InstanceForm = ({
             <label
               className={cn(
                 'mb-3 block font-serif text-sm font-medium',
-                isDark ? 'text-stone-300' : 'text-stone-700'
+                'text-stone-700 dark:text-stone-300'
               )}
             >
               {t('appType.label')}
@@ -1115,7 +1115,7 @@ const InstanceForm = ({
                     <div
                       className={cn(
                         'h-2 w-2 rounded-full',
-                        isDark ? 'bg-stone-800' : 'bg-white'
+                        'bg-white dark:bg-stone-800'
                       )}
                     />
                   )}
@@ -1124,7 +1124,7 @@ const InstanceForm = ({
                   <div
                     className={cn(
                       'font-serif text-sm font-medium',
-                      isDark ? 'text-stone-100' : 'text-stone-900'
+                      'text-stone-900 dark:text-stone-100'
                     )}
                   >
                     {t('appType.model.title')}
@@ -1132,7 +1132,7 @@ const InstanceForm = ({
                   <div
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   >
                     {t('appType.model.description')}
@@ -1181,7 +1181,7 @@ const InstanceForm = ({
                     <div
                       className={cn(
                         'h-2 w-2 rounded-full',
-                        isDark ? 'bg-stone-800' : 'bg-white'
+                        'bg-white dark:bg-stone-800'
                       )}
                     />
                   )}
@@ -1190,7 +1190,7 @@ const InstanceForm = ({
                   <div
                     className={cn(
                       'font-serif text-sm font-medium',
-                      isDark ? 'text-stone-100' : 'text-stone-900'
+                      'text-stone-900 dark:text-stone-100'
                     )}
                   >
                     {t('appType.marketplace.title')}
@@ -1198,7 +1198,7 @@ const InstanceForm = ({
                   <div
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   >
                     {t('appType.marketplace.description')}
@@ -1209,7 +1209,7 @@ const InstanceForm = ({
             <p
               className={cn(
                 'mt-2 font-serif text-xs',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             >
               {t('appType.note')}
