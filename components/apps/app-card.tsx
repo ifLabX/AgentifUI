@@ -8,6 +8,7 @@ import { ArrowRight, Blocks, Cpu, Heart } from 'lucide-react';
 import React from 'react';
 
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 
 interface AppInstance {
   instanceId: string;
@@ -74,9 +75,11 @@ export function AppCard({ app, viewMode, onClick }: AppCardProps) {
   const getAppIcon = (app: AppInstance) => {
     if (app.iconUrl) {
       return (
-        <img
+        <Image
           src={app.iconUrl}
           alt={app.displayName}
+          width={32}
+          height={32}
           className="h-8 w-8 rounded-full object-cover"
         />
       );
