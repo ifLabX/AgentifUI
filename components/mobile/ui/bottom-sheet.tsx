@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -26,7 +25,6 @@ export function BottomSheet({
   children,
   title,
 }: BottomSheetProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const sheetRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = React.useState(false);
@@ -129,9 +127,7 @@ export function BottomSheet({
         className={cn(
           'w-full max-w-md rounded-t-2xl',
           'transform transition-transform duration-300 ease-in-out',
-          isDark
-            ? 'border-t border-stone-700 bg-stone-800'
-            : 'border-t border-stone-200 bg-white',
+          'bg-white border-t border-stone-200 dark:bg-stone-800 dark:border-stone-700',
           isOpen ? 'translate-y-0' : 'translate-y-full',
           'shadow-2xl'
         )}
@@ -139,40 +135,18 @@ export function BottomSheet({
       >
         {/* Top drag bar */}
         <div className="flex items-center justify-center pt-3 pb-2">
-          <div
-            className={cn(
-              'h-1 w-12 rounded-full',
-              isDark ? 'bg-stone-600' : 'bg-stone-300'
-            )}
-          ></div>
+          <div className="h-1 w-12 rounded-full bg-stone-300 dark:bg-stone-600"></div>
         </div>
 
         {/* Title and close button */}
         {title && (
-          <div
-            className={cn(
-              'flex items-center justify-between px-4 py-3',
-              'border-b',
-              isDark ? 'border-stone-700' : 'border-stone-200'
-            )}
-          >
-            <h3
-              className={cn(
-                'text-lg font-medium',
-                isDark ? 'text-white' : 'text-stone-800'
-              )}
-            >
+          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-stone-700">
+            <h3 className="text-lg font-medium text-stone-800 dark:text-white">
               {title}
             </h3>
             <button
               onClick={onClose}
-              className={cn(
-                'rounded-full p-1.5',
-                isDark
-                  ? 'text-stone-400 hover:bg-stone-700 hover:text-white'
-                  : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900',
-                'transition-colors duration-200'
-              )}
+              className="rounded-full p-1.5 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-white transition-colors duration-200"
             >
               <X className="h-5 w-5" />
             </button>
