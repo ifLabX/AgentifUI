@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useChatScrollStore } from '@lib/stores/chat-scroll-store';
 import { cn } from '@lib/utils';
 import { ChevronDown } from 'lucide-react';
@@ -16,7 +15,6 @@ import { usePathname } from 'next/navigation';
  */
 export const ScrollToBottomButton = () => {
   const { isAtBottom } = useChatScrollStore();
-  const { colors } = useThemeColors();
   const resetScrollState = useChatScrollStore(state => state.resetScrollState);
   const pathname = usePathname();
   const t = useTranslations('pages.chat.input');
@@ -50,8 +48,8 @@ export const ScrollToBottomButton = () => {
         'cursor-pointer rounded-full p-1.5 shadow-md transition-transform duration-150 ease-in-out',
 
         // Color theme
-        colors.userMessageBackground.tailwind,
-        colors.buttonHover.tailwind,
+        'bg-stone-200 dark:bg-stone-700',
+        'hover:bg-stone-300 dark:hover:bg-stone-600',
         'text-stone-700 dark:text-stone-300',
 
         // Interaction effects
