@@ -1,7 +1,7 @@
 'use client';
 
 import { UserMessageActions } from '@components/chat/message-actions';
-import { useMobile, useMounted, useTheme } from '@lib/hooks';
+import { useMobile, useMounted } from '@lib/hooks';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
 import { MessageAttachment } from '@lib/stores/chat-store';
 import { cn } from '@lib/utils';
@@ -26,7 +26,6 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   className,
   onEdit = () => console.log('Edit message', id),
 }) => {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const isMounted = useMounted();
   const { currentAppId } = useCurrentApp();
@@ -59,11 +58,10 @@ export const UserMessage: React.FC<UserMessageProps> = ({
           className={cn(
             'max-w-full rounded-2xl px-4 py-3 text-base leading-relaxed',
             'markdown-body assistant-message-content shadow-sm',
-            isDark
-              ? 'bg-stone-700/70 text-stone-100'
-              : 'bg-stone-200/80 text-stone-800',
+            'bg-stone-200/80 text-stone-800',
+            'dark:bg-stone-700/70 dark:text-stone-100',
             'border',
-            isDark ? 'border-stone-600/30' : 'border-stone-300/80',
+            'border-stone-300/80 dark:border-stone-600/30',
             isMobile ? 'max-w-[85%]' : 'max-w-[75%]',
             className
           )}
