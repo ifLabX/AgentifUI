@@ -67,7 +67,7 @@ export function SocialAuthButtons({
   return (
     <div className={cn('space-y-3', className)}>
       {error && (
-        <div className="rounded-lg border-l-4 border-red-500 p-3 font-serif text-sm bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+        <div className="rounded-lg border-l-4 border-red-500 bg-red-50 p-3 font-serif text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">
           {error}
         </div>
       )}
@@ -76,7 +76,7 @@ export function SocialAuthButtons({
         type="button"
         variant="outline"
         size="lg"
-        className="relative flex h-12 w-full cursor-pointer items-center justify-center gap-3 font-serif border-stone-300 bg-white text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:hover:bg-stone-700"
+        className="relative flex h-12 w-full cursor-pointer items-center justify-center gap-3 border-stone-300 bg-white font-serif text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:hover:bg-stone-700"
         onClick={() => handleSocialAuth('github')}
         disabled={isLoading.github}
         isLoading={isLoading.github}

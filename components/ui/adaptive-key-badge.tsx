@@ -117,11 +117,7 @@ export function KeyCombination({
   return (
     <div className={cn('flex items-center', gapClass, className)}>
       {keys.map((key, index) => (
-        <AdaptiveKeyBadge
-          key={index}
-          keyText={key}
-          size={size}
-        />
+        <AdaptiveKeyBadge key={index} keyText={key} size={size} />
       ))}
     </div>
   );

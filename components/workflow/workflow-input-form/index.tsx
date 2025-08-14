@@ -45,7 +45,9 @@ export const WorkflowInputForm = React.forwardRef<
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [appConfig, setAppConfig] = useState<Record<string, unknown> | null>(null);
+  const [appConfig, setAppConfig] = useState<Record<string, unknown> | null>(
+    null
+  );
   const [initialFormData, setInitialFormData] = useState<Record<string, any>>(
     {}
   );

@@ -31,7 +31,7 @@ export function MobileNavButton() {
         'select-none',
         'border border-transparent',
         'cursor-e-resize',
-        'text-gray-200 focus-visible:ring-primary focus-visible:ring-offset-background dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900'
+        'focus-visible:ring-primary focus-visible:ring-offset-background text-gray-200 dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900'
       )}
     >
       {/* Hover background */}

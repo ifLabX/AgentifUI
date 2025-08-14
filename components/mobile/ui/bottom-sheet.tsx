@@ -127,7 +127,7 @@ export function BottomSheet({
         className={cn(
           'w-full max-w-md rounded-t-2xl',
           'transform transition-transform duration-300 ease-in-out',
-          'bg-white border-t border-stone-200 dark:bg-stone-800 dark:border-stone-700',
+          'border-t border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800',
           isOpen ? 'translate-y-0' : 'translate-y-full',
           'shadow-2xl'
         )}
@@ -140,13 +140,13 @@ export function BottomSheet({
 
         {/* Title and close button */}
         {title && (
-          <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 dark:border-stone-700">
+          <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
             <h3 className="text-lg font-medium text-stone-800 dark:text-white">
               {title}
             </h3>
             <button
               onClick={onClose}
-              className="rounded-full p-1.5 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-white transition-colors duration-200"
+              className="rounded-full p-1.5 text-stone-500 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-white"
             >
               <X className="h-5 w-5" />
             </button>

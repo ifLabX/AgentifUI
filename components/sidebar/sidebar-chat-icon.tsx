@@ -52,19 +52,19 @@ export function SidebarChatIcon({
       <div
         className={cn(
           line1,
-          'rounded-full bg-current transition-all duration-150 group-hover:w-full opacity-70 dark:opacity-80'
+          'rounded-full bg-current opacity-70 transition-all duration-150 group-hover:w-full dark:opacity-80'
         )}
       />
       <div
         className={cn(
           line2,
-          'rounded-full bg-current transition-all duration-150 group-hover:w-4/5 opacity-70 dark:opacity-80'
+          'rounded-full bg-current opacity-70 transition-all duration-150 group-hover:w-4/5 dark:opacity-80'
         )}
       />
       <div
         className={cn(
           line3,
-          'rounded-full bg-current transition-all duration-150 group-hover:w-3/5 opacity-70 dark:opacity-80'
+          'rounded-full bg-current opacity-70 transition-all duration-150 group-hover:w-3/5 dark:opacity-80'
         )}
       />
     </div>

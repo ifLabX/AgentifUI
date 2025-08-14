@@ -333,10 +333,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'ml-auto'
             )}
           >
-            <KeyCombination
-              keys={newChatShortcut.symbols}
-              size="md"
-            />
+            <KeyCombination keys={newChatShortcut.symbols} size="md" />
           </div>
         </SidebarButton>
       ) : (
@@ -409,10 +406,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'ml-auto'
             )}
           >
-            <KeyCombination
-              keys={recentChatsShortcut.symbols}
-              size="md"
-            />
+            <KeyCombination keys={recentChatsShortcut.symbols} size="md" />
           </div>
         </SidebarButton>
       ) : (
@@ -487,10 +481,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'ml-auto'
             )}
           >
-            <KeyCombination
-              keys={appsMarketShortcut.symbols}
-              size="md"
-            />
+            <KeyCombination keys={appsMarketShortcut.symbols} size="md" />
           </div>
         </SidebarButton>
       ) : (

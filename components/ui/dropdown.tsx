@@ -90,7 +90,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       {/* Dropdown menu - uses fixed positioning based on entire page */}
       {isOpen && (
         <div
-          className="fixed z-[9999] max-w-[240px] min-w-[200px] rounded-lg border shadow-xl bg-white border-stone-200 dark:bg-stone-800 dark:border-stone-700"
+          className="fixed z-[9999] max-w-[240px] min-w-[200px] rounded-lg border border-stone-200 bg-white shadow-xl dark:border-stone-700 dark:bg-stone-800"
           style={{
             top:
               typeof position.top === 'number' ? `${position.top}px` : 'auto',

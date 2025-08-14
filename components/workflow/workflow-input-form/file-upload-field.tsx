@@ -6,13 +6,7 @@ import { useCurrentApp } from '@lib/hooks/use-current-app';
 import { uploadDifyFile } from '@lib/services/dify/file-service';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 import { cn, formatBytes } from '@lib/utils';
-import {
-  CheckCircle2Icon,
-  File,
-  RotateCcw,
-  Upload,
-  X,
-} from 'lucide-react';
+import { CheckCircle2Icon, File, RotateCcw, Upload, X } from 'lucide-react';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
