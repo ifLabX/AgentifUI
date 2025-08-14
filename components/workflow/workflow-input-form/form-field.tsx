@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import type {
   DifyFileInputControl,
   DifyNumberInputControl,
@@ -49,7 +48,6 @@ export function FormField({
   error,
   instanceId,
 }: FormFieldProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.form');
 
   const baseInputClasses = cn(
@@ -57,21 +55,18 @@ export function FormField({
     'focus:border-stone-500 focus:ring-4 focus:ring-stone-500/20 focus:outline-none',
     'backdrop-blur-sm focus:shadow-lg focus:shadow-stone-500/25',
     error
-      ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' +
-          (isDark ? ' bg-red-900/10' : ' bg-red-50/50')
-      : isDark
-        ? 'border-stone-600 bg-stone-800/90 text-stone-100 placeholder-stone-400 hover:border-stone-500'
-        : 'border-stone-300 bg-white/90 text-stone-900 placeholder-stone-500 hover:border-stone-400'
+      ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50 dark:bg-red-900/10'
+      : 'border-stone-300 bg-white/90 text-stone-900 placeholder-stone-500 hover:border-stone-400 dark:border-stone-600 dark:bg-stone-800/90 dark:text-stone-100 dark:placeholder-stone-400 dark:hover:border-stone-500'
   );
 
   const labelClasses = cn(
     'mb-3 flex items-center gap-2 font-serif text-sm font-semibold',
-    isDark ? 'text-stone-200' : 'text-stone-800'
+    'text-stone-800 dark:text-stone-200'
   );
 
   const errorClasses = cn(
     'mt-2 flex items-center gap-2',
-    isDark ? 'text-red-400' : 'text-red-600'
+    'text-red-600 dark:text-red-400'
   );
 
   const renderInput = () => {
@@ -269,7 +264,7 @@ export function FormField({
             <div
               className={cn(
                 'absolute right-4 bottom-3 font-mono text-xs transition-opacity duration-200',
-                isDark ? 'text-stone-500' : 'text-stone-400',
+                'text-stone-400 dark:text-stone-500',
                 (value || '').length > 0 ? 'opacity-100' : 'opacity-0'
               )}
             >
@@ -283,7 +278,7 @@ export function FormField({
         <div
           className={cn(
             'font-serif text-xs',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         >
           {getNumberHint()}
