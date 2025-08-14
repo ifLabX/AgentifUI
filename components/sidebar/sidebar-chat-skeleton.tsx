@@ -5,16 +5,12 @@ import { MessageSquare } from 'lucide-react';
 
 import * as React from 'react';
 
-interface SidebarChatSkeletonProps {
-  // Props for future extensibility if needed
-}
-
 /**
  * Sidebar chat item skeleton screen group
  *
  * Used to display a placeholder for a new conversation being created
  */
-export function SidebarChatSkeleton({}: SidebarChatSkeletonProps) {
+export function SidebarChatSkeleton() {
   // Skeleton screen component, display the loading state of the conversation creation
   // Style consistent with SidebarButton, ensure size and appearance consistency
   return (

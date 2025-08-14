@@ -23,11 +23,7 @@ export function ChatSkeleton({ count = 5 }: ChatSkeletonProps) {
   );
 }
 
-interface ChatSkeletonItemProps {
-  // Props for future extensibility if needed
-}
-
-export function ChatSkeletonItem({}: ChatSkeletonItemProps) {
+export function ChatSkeletonItem() {
   // Skeleton screen project, simulating the appearance of the chat project
   // Do not use outer frame background color, only display the animation effect of internal elements
   return (
