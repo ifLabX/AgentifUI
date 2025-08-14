@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import React from 'react';
@@ -18,8 +17,6 @@ export function NavButton({
   className,
   ...props
 }: NavButtonProps) {
-  const { isDark } = useTheme();
-
   return (
     <button
       className={cn(
@@ -30,9 +27,8 @@ export function NavButton({
         // Responsive adjustment (if needed)
         // "sm:px-4 sm:py-2",
         // Theme-aware hover effect
-        isDark
-          ? 'text-gray-300 hover:bg-gray-700/50 hover:text-gray-100'
-          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+        'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+        'dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-gray-100',
         // Disabled state
         'disabled:pointer-events-none disabled:opacity-50',
         // External class name passed in

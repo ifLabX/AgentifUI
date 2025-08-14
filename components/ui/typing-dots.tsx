@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import React from 'react';
@@ -35,8 +34,6 @@ const sizeClasses = {
  * Supports three sizes: sm, md, lg.
  */
 export function TypingDots({ className, size = 'md' }: TypingDotsProps) {
-  const { isDark } = useTheme();
-
   // Get the corresponding style class based on the incoming size
   const currentSizeClasses = sizeClasses[size];
 
@@ -59,7 +56,7 @@ export function TypingDots({ className, size = 'md' }: TypingDotsProps) {
             // Size style
             currentSizeClasses.dot,
             // Color changes based on theme
-            isDark ? 'bg-gray-400' : 'bg-gray-700',
+            'bg-gray-700 dark:bg-gray-400',
             // Apply pulse animation
             'animate-pulse'
             // Apply different animation delays, achieve staggered effect (Tailwind class way)

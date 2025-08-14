@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { cn } from '@lib/utils';
 import { MoreHorizontal } from 'lucide-react';
@@ -17,7 +16,6 @@ interface MoreButtonProps {
 }
 
 export function MoreButton({ id, className, tooltipText }: MoreButtonProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const { toggleDropdown, isOpen, activeDropdownId } = useDropdownStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -53,15 +51,11 @@ export function MoreButton({ id, className, tooltipText }: MoreButtonProps) {
           : 'opacity-0 group-hover:opacity-100',
         // Show when active
         isActive && 'opacity-100',
-        isDark
-          ? [
-              'text-gray-400 hover:bg-stone-600/60 hover:text-gray-200 active:bg-stone-600/80',
-              isActive && 'bg-stone-600/60 text-gray-200',
-            ]
-          : [
-              'text-gray-500 hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200',
-              isActive && 'bg-gray-100 text-gray-700',
-            ],
+        // Base theme styles
+        'text-gray-500 hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200',
+        'dark:text-gray-400 dark:hover:bg-stone-600/60 dark:hover:text-gray-200 dark:active:bg-stone-600/80',
+        // Active state styles
+        isActive && 'bg-gray-100 text-gray-700 dark:bg-stone-600/60 dark:text-gray-200',
         className
       )}
       onClick={handleClick}

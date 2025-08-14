@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Search } from 'lucide-react';
 
@@ -31,8 +30,6 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
     },
     ref
   ) => {
-    const { isDark } = useTheme();
-
     return (
       <div className={cn('relative', containerClassName)}>
         <Search
@@ -50,9 +47,8 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           className={cn(
             'w-full rounded-lg border py-2.5 pr-4 pl-10 font-serif text-sm transition-all duration-200',
             'focus:ring-2 focus:ring-offset-2 focus:outline-none',
-            isDark
-              ? 'border-stone-600 bg-stone-700 text-stone-200 placeholder-stone-400 focus:border-stone-500 focus:ring-stone-500 focus:ring-offset-stone-800'
-              : 'border-stone-300 bg-stone-50 text-stone-900 placeholder-stone-500 focus:border-stone-400 focus:ring-stone-400 focus:ring-offset-white',
+            'border-stone-300 bg-stone-50 text-stone-900 placeholder-stone-500 focus:border-stone-400 focus:ring-stone-400 focus:ring-offset-white',
+            'dark:border-stone-600 dark:bg-stone-700 dark:text-stone-200 dark:placeholder-stone-400 dark:focus:border-stone-500 dark:focus:ring-stone-500 dark:focus:ring-offset-stone-800',
             className
           )}
           ref={ref}
