@@ -51,7 +51,6 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               app_id: att.app_id || currentAppId || undefined, // Preserve app_id or use current app ID
             }))}
             appId={currentAppId || undefined} // Pass current app ID for file preview
-            isDark={isDark}
             className={cn('mb-2 w-full')}
           />
         )}

@@ -19,7 +19,6 @@ import React from 'react';
 interface FileAttachmentDisplayProps {
   attachments: MessageAttachment[];
   appId?: string; // Dify application ID for preview functionality
-  isDark?: boolean;
   className?: string;
 }
 
@@ -61,7 +60,6 @@ const getFileIcon = (mimeType: string | undefined) => {
 export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
   attachments,
   appId,
-  isDark = false,
   className,
 }) => {
   const openPreview = useFilePreviewStore(state => state.openPreview);
@@ -118,9 +116,8 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
             className={cn(
               'relative flex max-w-[180px] flex-shrink basis-[calc((100%-1rem)/3)] items-center gap-2 rounded-md py-1 pr-1 pl-2 sm:max-w-[200px]',
               'text-left',
-              isDark
-                ? 'border border-stone-700/80 bg-stone-800/90 hover:bg-stone-700/90'
-                : 'border border-stone-300 bg-stone-200 hover:bg-stone-300'
+              'border border-stone-300 bg-stone-200 hover:bg-stone-300',
+              'dark:border-stone-700/80 dark:bg-stone-800/90 dark:hover:bg-stone-700/90'
             )}
             title={`Preview ${attachment.name}`}
             aria-label={`Preview file ${attachment.name}`}
@@ -128,7 +125,7 @@ export const FileAttachmentDisplay: React.FC<FileAttachmentDisplayProps> = ({
             <div
               className={cn(
                 'relative flex h-5 w-5 flex-shrink-0 items-center justify-center',
-                isDark ? 'text-stone-200' : 'text-stone-700'
+                'text-stone-700 dark:text-stone-200'
               )}
             >
               <IconComponent className="h-4 w-4" />
