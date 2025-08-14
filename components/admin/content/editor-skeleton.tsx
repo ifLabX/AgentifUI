@@ -1,16 +1,12 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 export function EditorSkeleton() {
-  const { isDark } = useTheme();
-
   const SkeletonBlock = ({ className }: { className?: string }) => (
     <div
       className={cn(
-        'animate-pulse rounded-lg',
-        isDark ? 'bg-stone-800' : 'bg-stone-200',
+        'animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800',
         className
       )}
     />

@@ -683,7 +683,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
                 metadata?.dify_retriever_resources ||
                 metadata?.dify_metadata?.retriever_resources
               }
-              isDark={isDark}
               className="mt-4 mb-2"
               animationDelay={isStreaming ? 0 : 300} // Delay 300ms after streaming ends
             />

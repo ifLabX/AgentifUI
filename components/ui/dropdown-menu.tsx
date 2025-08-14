@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { cn } from '@lib/utils';
 
@@ -21,7 +20,6 @@ function DropdownItem({
   className,
   danger = false,
 }: DropdownItemProps) {
-  const { isDark } = useTheme();
   const { closeDropdown } = useDropdownStore();
 
   const handleClick = (e: React.MouseEvent) => {
@@ -36,17 +34,9 @@ function DropdownItem({
       className={cn(
         'flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm',
         'transition-all duration-200',
-        isDark
-          ? [
-              danger
-                ? 'text-red-300 hover:bg-red-900/40 active:bg-red-900/60'
-                : 'text-gray-200 hover:bg-stone-600/60 active:bg-stone-600/80',
-            ]
-          : [
-              danger
-                ? 'text-red-600 hover:bg-red-50 active:bg-red-100'
-                : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200',
-            ],
+        danger
+          ? 'text-red-600 hover:bg-red-50 active:bg-red-100 dark:text-red-300 dark:hover:bg-red-900/40 dark:active:bg-red-900/60'
+          : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-200 dark:hover:bg-stone-600/60 dark:active:bg-stone-600/80',
         className
       )}
       onClick={handleClick}
@@ -62,13 +52,10 @@ interface DropdownDividerProps {
 }
 
 function DropdownDivider({ className }: DropdownDividerProps) {
-  const { isDark } = useTheme();
-
   return (
     <div
       className={cn(
-        'mx-3 my-1.5 h-px',
-        isDark ? 'bg-stone-600/80' : 'bg-gray-200/80',
+        'mx-3 my-1.5 h-px bg-gray-200/80 dark:bg-stone-600/80',
         className
       )}
     />
@@ -89,7 +76,6 @@ export function DropdownMenu({
   children,
   minWidth = 180,
 }: DropdownMenuProps) {
-  const { isDark } = useTheme();
   const { isOpen, activeDropdownId, position, closeDropdown } =
     useDropdownStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -173,9 +159,8 @@ export function DropdownMenu({
         'animate-fade-in fixed z-50',
         'rounded-xl py-2 shadow-lg backdrop-blur-sm',
         'overflow-hidden',
-        isDark
-          ? 'border border-stone-600/80 bg-stone-800/95 shadow-black/20'
-          : 'border border-gray-200/80 bg-white/95 shadow-gray-200/40',
+        'border border-gray-200/80 bg-white/95 shadow-gray-200/40',
+        'dark:border-stone-600/80 dark:bg-stone-800/95 dark:shadow-black/20',
         className
       )}
       style={{

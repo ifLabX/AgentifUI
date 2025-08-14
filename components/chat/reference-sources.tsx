@@ -26,14 +26,12 @@ interface RetrieverResource {
 
 interface ReferenceSourcesProps {
   retrieverResources?: RetrieverResource[];
-  isDark?: boolean;
   className?: string;
   animationDelay?: number;
 }
 
 export function ReferenceSources({
   retrieverResources,
-  isDark = false,
   className,
   animationDelay = 0,
 }: ReferenceSourcesProps) {
@@ -89,9 +87,8 @@ export function ReferenceSources({
           'rounded border transition-colors duration-150',
           'focus:outline-none',
           'animate-fade-in opacity-0',
-          isDark
-            ? 'border-stone-700/60 bg-stone-800/80 text-stone-100 hover:bg-stone-700/80'
-            : 'border-stone-300/70 bg-stone-100/90 text-stone-800 hover:bg-stone-200/90'
+          'border-stone-300/70 bg-stone-100/90 text-stone-800 hover:bg-stone-200/90',
+          'dark:border-stone-700/60 dark:bg-stone-800/80 dark:text-stone-100 dark:hover:bg-stone-700/80'
         )}
         style={{
           animationDelay: `${animationDelay}ms`,
@@ -101,17 +98,11 @@ export function ReferenceSources({
         <div className="flex items-center space-x-2">
           {isExpanded ? (
             <ChevronUpIcon
-              className={cn(
-                'h-3.5 w-3.5',
-                isDark ? 'text-stone-400' : 'text-stone-600'
-              )}
+              className="h-3.5 w-3.5 text-stone-600 dark:text-stone-400"
             />
           ) : (
             <ChevronDownIcon
-              className={cn(
-                'h-3.5 w-3.5',
-                isDark ? 'text-stone-400' : 'text-stone-600'
-              )}
+              className="h-3.5 w-3.5 text-stone-600 dark:text-stone-400"
             />
           )}
           <span className="font-serif text-sm font-medium">
@@ -122,9 +113,7 @@ export function ReferenceSources({
         <span
           className={cn(
             'rounded-full px-2 py-0.5 font-serif text-xs',
-            isDark
-              ? 'bg-stone-600/80 text-stone-100'
-              : 'bg-stone-300/80 text-stone-700'
+            'bg-stone-300/80 text-stone-700 dark:bg-stone-600/80 dark:text-stone-100'
           )}
         >
           {retrieverResources[0]?.dataset_name || t('knowledgeBase')}
@@ -137,23 +126,17 @@ export function ReferenceSources({
           className={cn(
             'mt-2 overflow-hidden rounded-lg border',
             'animate-fade-in',
-            isDark
-              ? 'border-stone-700/50 bg-stone-800/50 backdrop-blur-sm'
-              : 'border-stone-300/60 bg-stone-100/60 backdrop-blur-sm'
+            'border-stone-300/60 bg-stone-100/60 backdrop-blur-sm',
+            'dark:border-stone-700/50 dark:bg-stone-800/50'
           )}
         >
-          <div
-            className={cn(
-              'divide-y',
-              isDark ? 'divide-stone-700/30' : 'divide-stone-200/30'
-            )}
-          >
+          <div className="divide-y divide-stone-200/30 dark:divide-stone-700/30">
             {retrieverResources.map((resource, index) => (
               <div
                 key={`${resource.dataset_id}-${resource.segment_id}-${index}`}
                 className={cn(
                   'p-4 transition-all duration-200',
-                  isDark ? 'hover:bg-stone-800/60' : 'hover:bg-stone-200/70'
+                  'hover:bg-stone-200/70 dark:hover:bg-stone-800/60'
                 )}
               >
                 {/* Header row */}
@@ -163,9 +146,7 @@ export function ReferenceSources({
                     <div
                       className={cn(
                         'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-medium',
-                        isDark
-                          ? 'bg-stone-600 text-stone-200'
-                          : 'bg-stone-300 text-stone-700'
+                        'bg-stone-300 text-stone-700 dark:bg-stone-600 dark:text-stone-200'
                       )}
                     >
                       {index + 1}
@@ -176,7 +157,7 @@ export function ReferenceSources({
                       <h4
                         className={cn(
                           'truncate font-serif text-sm font-semibold',
-                          isDark ? 'text-stone-100' : 'text-stone-900'
+                          'text-stone-900 dark:text-stone-100'
                         )}
                       >
                         {resource.document_name}
@@ -185,9 +166,7 @@ export function ReferenceSources({
                         <span
                           className={cn(
                             'rounded px-1.5 py-0.5 font-serif text-xs',
-                            isDark
-                              ? 'bg-stone-600/50 text-stone-300'
-                              : 'bg-stone-300/70 text-stone-600'
+                            'bg-stone-300/70 text-stone-600 dark:bg-stone-600/50 dark:text-stone-300'
                           )}
                         >
                           {resource.dataset_name}
@@ -196,7 +175,7 @@ export function ReferenceSources({
                           <span
                             className={cn(
                               'font-serif text-xs',
-                              isDark ? 'text-stone-400' : 'text-stone-600'
+                              'text-stone-600 dark:text-stone-400'
                             )}
                           >
                             {t('wordCount', {
@@ -212,9 +191,7 @@ export function ReferenceSources({
                   <div
                     className={cn(
                       'flex-shrink-0 rounded-full px-2 py-1 font-serif text-xs font-bold',
-                      isDark
-                        ? 'bg-stone-600 text-stone-200'
-                        : 'bg-stone-300 text-stone-700'
+                      'bg-stone-300 text-stone-700 dark:bg-stone-600 dark:text-stone-200'
                     )}
                   >
                     {formatScore(resource.score)}
@@ -225,15 +202,14 @@ export function ReferenceSources({
                 <div
                   className={cn(
                     'mb-3 rounded-lg p-3',
-                    isDark
-                      ? 'border border-stone-700/30 bg-stone-900/50'
-                      : 'border border-stone-300/60 bg-white/80'
+                    'border border-stone-300/60 bg-white/80',
+                    'dark:border-stone-700/30 dark:bg-stone-900/50'
                   )}
                 >
                   <div
                     className={cn(
                       'font-serif text-sm leading-relaxed',
-                      isDark ? 'text-stone-300' : 'text-stone-700'
+                      'text-stone-700 dark:text-stone-300'
                     )}
                   >
                     {expandedIndex === index ? (
@@ -258,9 +234,8 @@ export function ReferenceSources({
                         className={cn(
                           'inline-flex items-center space-x-1 rounded px-2 py-1 font-serif text-xs font-medium',
                           'transition-colors duration-150 focus:outline-none',
-                          isDark
-                            ? 'text-stone-400 hover:bg-stone-700/50 hover:text-stone-200'
-                            : 'text-stone-600 hover:bg-stone-200/50 hover:text-stone-800'
+                          'text-stone-600 hover:bg-stone-200/50 hover:text-stone-800',
+                          'dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-200'
                         )}
                       >
                         <DocumentTextIcon className="h-3 w-3" />
@@ -277,9 +252,8 @@ export function ReferenceSources({
                       onClick={() => handleCopy(resource.content, index)}
                       className={cn(
                         'flex items-center space-x-1 rounded px-2 py-1 font-serif text-xs font-medium transition-colors',
-                        isDark
-                          ? 'text-stone-400 hover:bg-stone-700 hover:text-stone-200'
-                          : 'text-stone-500 hover:bg-stone-100 hover:text-stone-700'
+                        'text-stone-500 hover:bg-stone-100 hover:text-stone-700',
+                        'dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-200'
                       )}
                     >
                       <ClipboardDocumentIcon className="h-3 w-3" />
@@ -294,7 +268,7 @@ export function ReferenceSources({
                     <span
                       className={cn(
                         'font-serif text-xs',
-                        isDark ? 'text-stone-500' : 'text-stone-400'
+                        'text-stone-400 dark:text-stone-500'
                       )}
                     >
                       {t('page', { page: resource.page })}
