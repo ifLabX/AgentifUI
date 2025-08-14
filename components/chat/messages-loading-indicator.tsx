@@ -2,7 +2,6 @@
  * Message loading indicator component
  */
 import { LoadingState } from '@lib/hooks/use-conversation-messages';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 
 import { useEffect, useRef, useState } from 'react';
@@ -24,7 +23,6 @@ export function MessagesLoadingIndicator({
   error,
   onRetry,
 }: MessagesLoadingIndicatorProps) {
-  const { colors } = useThemeColors();
   const t = useTranslations('loading');
   const [isAtTop, setIsAtTop] = useState(false);
 
@@ -96,8 +94,8 @@ export function MessagesLoadingIndicator({
           onClick={onRetry}
           className={cn(
             'rounded-full px-4 py-2 text-sm',
-            colors.sidebarBackground.tailwind,
-            colors.buttonHover.tailwind
+            'bg-stone-100 text-stone-700 hover:bg-stone-200',
+            'dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700'
           )}
         >
           {t('retry')}
@@ -113,7 +111,7 @@ export function MessagesLoadingIndicator({
         <div
           className={cn(
             'flex items-center space-x-2 rounded-full px-4 py-2',
-            colors.sidebarBackground.tailwind
+            'bg-stone-100 dark:bg-stone-800'
           )}
         >
           <LoadingSpinner />
@@ -131,8 +129,8 @@ export function MessagesLoadingIndicator({
           onClick={onRetry}
           className={cn(
             'rounded-full px-4 py-2 text-sm',
-            colors.sidebarBackground.tailwind,
-            colors.buttonHover.tailwind,
+            'bg-stone-100 text-stone-700 hover:bg-stone-200',
+            'dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700',
             'transition-colors duration-200'
           )}
         >

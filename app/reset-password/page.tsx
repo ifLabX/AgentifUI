@@ -28,7 +28,8 @@ export default function ResetPasswordPage() {
             <div
               className={cn(
                 'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-                'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900'
+                'border-stone-200 bg-stone-50',
+                'dark:border-stone-800 dark:bg-stone-900'
               )}
             >
               <div className="text-center">

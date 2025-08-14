@@ -95,8 +95,6 @@ export function Tooltip({
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Component state setup
-
   // Get the style based on the size
   const getSizeStyles = () => {
     switch (size) {
@@ -242,11 +240,7 @@ export function Tooltip({
       hideTimeoutRef.current = null;
     }
 
-    // Add debug information
-    // console.log(`Mouse enter on tooltip ${id}, setting timeout to show`)
-
     showTimeoutRef.current = setTimeout(() => {
-      // console.log(`Showing tooltip ${id}`)
       tooltipState.showTooltip(id);
     }, delayShow);
   };
@@ -257,21 +251,14 @@ export function Tooltip({
       showTimeoutRef.current = null;
     }
 
-    // Add debug information
-    // console.log(`Mouse leave on tooltip ${id}, setting timeout to hide`)
-
     hideTimeoutRef.current = setTimeout(() => {
-      // console.log(`Hiding tooltip ${id}`)
       tooltipState.hideTooltip();
     }, delayHide);
   };
 
   // When the tooltip visibility changes, update its position
   useEffect(() => {
-    // console.log(`Tooltip ${id} visibility changed to: ${isVisible}`)
-
     if (isVisible) {
-      // console.log(`Updating position for tooltip ${id}`)
       requestAnimationFrame(updatePosition);
     }
   }, [isVisible, id]);
