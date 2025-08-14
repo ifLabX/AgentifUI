@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks';
 import type { MessageAttachment } from '@lib/stores/chat-store';
 import { useFilePreviewStore } from '@lib/stores/ui/file-preview-store';
 import { cn, formatBytes } from '@lib/utils';
@@ -28,49 +27,31 @@ import { VideoPreview } from './previews/video-preview';
 /**
  * Loading skeleton component
  */
-const LoadingSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => {
+const LoadingSkeleton: React.FC = () => {
   const t = useTranslations('filePreview');
   return (
     <div className="animate-pulse space-y-4">
       <div className="flex items-center space-x-2">
         <RefreshCwIcon
-          className={cn(
-            'h-4 w-4 animate-spin',
-            isDark ? 'text-stone-400' : 'text-stone-600'
-          )}
+          className="h-4 w-4 animate-spin text-stone-600 dark:text-stone-400"
         />
         <span
-          className={cn(
-            'text-sm',
-            isDark ? 'text-stone-400' : 'text-stone-600'
-          )}
+          className="text-sm text-stone-600 dark:text-stone-400"
         >
           {t('loading')}
         </span>
       </div>
       <div
-        className={cn(
-          'space-y-3 rounded-md p-4',
-          isDark ? 'bg-stone-800' : 'bg-stone-100'
-        )}
+        className="space-y-3 rounded-md p-4 bg-stone-100 dark:bg-stone-800"
       >
         <div
-          className={cn(
-            'h-4 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-200'
-          )}
+          className="h-4 rounded bg-stone-200 dark:bg-stone-700"
         />
         <div
-          className={cn(
-            'h-4 w-3/4 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-200'
-          )}
+          className="h-4 w-3/4 rounded bg-stone-200 dark:bg-stone-700"
         />
         <div
-          className={cn(
-            'h-4 w-1/2 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-200'
-          )}
+          className="h-4 w-1/2 rounded bg-stone-200 dark:bg-stone-700"
         />
       </div>
     </div>
@@ -84,17 +65,11 @@ const ErrorDisplay: React.FC<{
   error: string;
   onRetry: () => void;
   onClearError: () => void;
-  isDark: boolean;
-}> = ({ error, onRetry, onClearError, isDark }) => {
+}> = ({ error, onRetry, onClearError }) => {
   const t = useTranslations('filePreview');
   return (
     <div
-      className={cn(
-        'space-y-4 rounded-md border p-4',
-        isDark
-          ? 'border-red-800 bg-red-900/20 text-red-200'
-          : 'border-red-300 bg-red-50 text-red-800'
-      )}
+      className="space-y-4 rounded-md border p-4 border-red-300 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200"
     >
       <div className="flex items-start space-x-2">
         <AlertCircleIcon className="mt-0.5 h-5 w-5 flex-shrink-0" />
@@ -106,24 +81,14 @@ const ErrorDisplay: React.FC<{
       <div className="flex space-x-2">
         <button
           onClick={onRetry}
-          className={cn(
-            'inline-flex items-center space-x-1 rounded px-3 py-1.5 text-sm font-medium transition-colors',
-            isDark
-              ? 'bg-red-800 text-red-100 hover:bg-red-700'
-              : 'bg-red-600 text-white hover:bg-red-700'
-          )}
+          className="inline-flex items-center space-x-1 rounded px-3 py-1.5 text-sm font-medium transition-colors bg-red-600 text-white hover:bg-red-700 dark:bg-red-800 dark:text-red-100 dark:hover:bg-red-700"
         >
           <RefreshCwIcon className="h-3 w-3" />
           <span>{t('retryButton')}</span>
         </button>
         <button
           onClick={onClearError}
-          className={cn(
-            'inline-flex items-center rounded px-3 py-1.5 text-sm font-medium transition-colors',
-            isDark
-              ? 'text-red-200 hover:bg-red-800/50'
-              : 'text-red-700 hover:bg-red-100'
-          )}
+          className="inline-flex items-center rounded px-3 py-1.5 text-sm font-medium transition-colors text-red-700 hover:bg-red-100 dark:text-red-200 dark:hover:bg-red-800/50"
         >
           {t('dismissButton')}
         </button>
@@ -138,19 +103,13 @@ const ErrorDisplay: React.FC<{
 const FileInfoFallback: React.FC<{
   file: MessageAttachment;
   onDownload: () => void;
-  isDark: boolean;
-}> = ({ file, onDownload, isDark }) => {
+}> = ({ file, onDownload }) => {
   const t = useTranslations('filePreview');
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{t('fileInfo.title')}</h3>
       <div
-        className={cn(
-          'space-y-3 rounded-md border p-4',
-          isDark
-            ? 'border-stone-700 bg-stone-800'
-            : 'border-stone-200 bg-stone-50'
-        )}
+        className="space-y-3 rounded-md border p-4 border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800"
       >
         <div className="space-y-1 text-sm">
           <p>
@@ -167,19 +126,14 @@ const FileInfoFallback: React.FC<{
       <div className="flex space-x-2">
         <button
           onClick={onDownload}
-          className={cn(
-            'inline-flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            isDark
-              ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-              : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
-          )}
+          className="inline-flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-colors bg-stone-200 text-stone-800 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600"
         >
           <DownloadIcon className="h-4 w-4" />
           <span>{t('downloadButton')}</span>
         </button>
       </div>
       <p
-        className={cn('text-xs', isDark ? 'text-stone-400' : 'text-stone-500')}
+        className="text-xs text-stone-500 dark:text-stone-400"
       >
         {t('previewNotSupported')}
       </p>
@@ -192,8 +146,7 @@ const FileInfoFallback: React.FC<{
  */
 const FileContentViewer: React.FC<{
   file: MessageAttachment | null;
-  isDark: boolean;
-}> = ({ file, isDark }) => {
+}> = ({ file }) => {
   const {
     previewContent,
     contentHeaders,
@@ -209,10 +162,7 @@ const FileContentViewer: React.FC<{
   if (!file) {
     return (
       <div
-        className={cn(
-          'py-8 text-center',
-          isDark ? 'text-stone-400' : 'text-stone-600'
-        )}
+        className="py-8 text-center text-stone-600 dark:text-stone-400"
       >
         {t('noFileSelected')}
       </div>
@@ -228,7 +178,7 @@ const FileContentViewer: React.FC<{
 
   // Show loading state
   if (isLoading) {
-    return <LoadingSkeleton isDark={isDark} />;
+    return <LoadingSkeleton />;
   }
 
   // Show error state
@@ -238,7 +188,6 @@ const FileContentViewer: React.FC<{
         error={error}
         onRetry={handleRetry}
         onClearError={clearError}
-        isDark={isDark}
       />
     );
   }
@@ -246,7 +195,7 @@ const FileContentViewer: React.FC<{
   // Show fallback if no content available
   if (!previewContent || !contentHeaders) {
     return (
-      <FileInfoFallback file={file} onDownload={downloadFile} isDark={isDark} />
+      <FileInfoFallback file={file} onDownload={downloadFile} />
     );
   }
 
@@ -325,14 +274,13 @@ const FileContentViewer: React.FC<{
 
   // Fallback for unsupported types
   return (
-    <FileInfoFallback file={file} onDownload={downloadFile} isDark={isDark} />
+    <FileInfoFallback file={file} onDownload={downloadFile} />
   );
 };
 
 export const FilePreviewCanvas = () => {
   const { isPreviewOpen, currentPreviewFile, closePreview } =
     useFilePreviewStore();
-  const { isDark } = useTheme();
   const pathname = usePathname();
   const t = useTranslations('filePreview');
 
@@ -367,9 +315,8 @@ export const FilePreviewCanvas = () => {
               'fixed top-0 right-0 z-50 h-full',
               'flex flex-col',
               'w-[85%] md:w-[60%] lg:w-[50%] xl:w-[40%]',
-              isDark
-                ? 'border-l border-stone-700 bg-stone-800 text-stone-100'
-                : 'border-l border-stone-200 bg-white text-stone-900'
+              'border-l border-stone-200 bg-white text-stone-900',
+              'dark:border-l dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100'
             )}
             variants={panelVariants}
             initial="hidden"
@@ -380,7 +327,7 @@ export const FilePreviewCanvas = () => {
             <div
               className={cn(
                 'flex flex-shrink-0 items-center justify-between border-b p-4',
-                isDark ? 'border-stone-700' : 'border-stone-200'
+                'border-stone-200 dark:border-stone-700'
               )}
             >
               <h2
@@ -393,9 +340,8 @@ export const FilePreviewCanvas = () => {
                 onClick={closePreview}
                 className={cn(
                   'rounded-full p-1',
-                  isDark
-                    ? 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
-                    : 'text-stone-600 hover:bg-stone-200 hover:text-stone-800'
+                  'text-stone-600 hover:bg-stone-200 hover:text-stone-800',
+                  'dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-200'
                 )}
                 aria-label={t('closeButton')}
               >
@@ -405,7 +351,6 @@ export const FilePreviewCanvas = () => {
             <div className="flex flex-1 flex-col overflow-y-auto p-6">
               <FileContentViewer
                 file={currentPreviewFile}
-                isDark={isDark ?? false}
               />
             </div>
           </motion.div>

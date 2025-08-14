@@ -6,7 +6,7 @@ import { MessageSquare } from 'lucide-react';
 import * as React from 'react';
 
 interface SidebarChatSkeletonProps {
-  isDark: boolean;
+  // Props for future extensibility if needed
 }
 
 /**
@@ -14,7 +14,7 @@ interface SidebarChatSkeletonProps {
  *
  * Used to display a placeholder for a new conversation being created
  */
-export function SidebarChatSkeleton({ isDark }: SidebarChatSkeletonProps) {
+export function SidebarChatSkeleton({}: SidebarChatSkeletonProps) {
   // Skeleton screen component, display the loading state of the conversation creation
   // Style consistent with SidebarButton, ensure size and appearance consistency
   return (
@@ -22,7 +22,7 @@ export function SidebarChatSkeleton({ isDark }: SidebarChatSkeletonProps) {
       className={cn(
         'flex w-full items-center rounded-lg px-3 py-2',
         'animate-pulse',
-        isDark ? 'bg-stone-800/50' : 'bg-stone-100/70',
+        'bg-stone-100/70 dark:bg-stone-800/50',
         'h-10' // Height consistent with SidebarButton
       )}
     >
@@ -30,12 +30,12 @@ export function SidebarChatSkeleton({ isDark }: SidebarChatSkeletonProps) {
       <div
         className={cn(
           'flex h-6 w-6 flex-none items-center justify-center rounded-full',
-          isDark ? 'bg-stone-700' : 'bg-stone-300'
+          'bg-stone-300 dark:bg-stone-700'
         )}
       >
         <MessageSquare
           size={14}
-          className={cn(isDark ? 'text-stone-500' : 'text-stone-400')}
+          className="text-stone-400 dark:text-stone-500"
         />
       </div>
 
@@ -44,7 +44,7 @@ export function SidebarChatSkeleton({ isDark }: SidebarChatSkeletonProps) {
         <div
           className={cn(
             'h-4 w-32 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-300'
+            'bg-stone-300 dark:bg-stone-700'
           )}
         />
       </div>
