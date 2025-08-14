@@ -1,7 +1,6 @@
 'use client';
 
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { FiCheck, FiCopy } from 'react-icons/fi';
 
@@ -36,7 +35,6 @@ export const CopyButton: React.FC<CopyButtonProps> = React.memo(
     showTooltipArrow = false,
     onCopy,
   }) => {
-    const { isDark } = useTheme();
     const t = useTranslations('components.ui.copyButton');
 
     // State for copy status
@@ -85,9 +83,9 @@ export const CopyButton: React.FC<CopyButtonProps> = React.memo(
             // Base text color - matches stone theme
             'text-stone-500 dark:text-stone-400',
             // Hover text color - darker in light mode, lighter in dark mode
-            isDark ? 'hover:text-stone-300' : 'hover:text-stone-700',
+            'hover:text-stone-700 dark:hover:text-stone-300',
             // Hover background color - uses semi-transparent mid-tone, suitable for both modes
-            isDark ? 'hover:bg-stone-600/40' : 'hover:bg-stone-300/40',
+            'hover:bg-stone-300/40 dark:hover:bg-stone-600/40',
             'focus:outline-none',
             className
           )}
