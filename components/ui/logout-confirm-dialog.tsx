@@ -2,7 +2,6 @@
 
 import { useLogout } from '@lib/hooks/use-logout';
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { LogOut, X } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -26,7 +25,6 @@ export function LogoutConfirmDialog({
   isOpen,
   onClose,
 }: LogoutConfirmDialogProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const { logout } = useLogout();
   const t = useTranslations('common.ui.logoutDialog');
@@ -160,9 +158,8 @@ export function LogoutConfirmDialog({
         className={cn(
           'mx-auto w-full max-w-md rounded-xl shadow-2xl',
           'transform transition-all duration-300 ease-out',
-          isDark
-            ? 'border border-stone-600/60 bg-stone-800/95 shadow-black/50'
-            : 'border border-stone-300/60 bg-white/95 shadow-stone-800/15',
+          'border border-stone-300/60 bg-white/95 shadow-stone-800/15',
+          'dark:border-stone-600/60 dark:bg-stone-800/95 dark:shadow-black/50',
           'backdrop-blur-sm',
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         )}
@@ -174,9 +171,8 @@ export function LogoutConfirmDialog({
               className={cn(
                 'mr-4 flex h-10 w-10 items-center justify-center rounded-lg',
                 'ring-1 ring-inset',
-                isDark
-                  ? 'bg-red-900/20 text-red-400 ring-stone-600/50'
-                  : 'bg-red-50 text-red-500 ring-stone-200/60'
+                'bg-red-50 text-red-500 ring-stone-200/60',
+                'dark:bg-red-900/20 dark:text-red-400 dark:ring-stone-600/50'
               )}
             >
               <LogOut className="h-5 w-5" />
@@ -214,9 +210,8 @@ export function LogoutConfirmDialog({
               'border transition-all duration-200',
               'disabled:cursor-not-allowed disabled:opacity-50',
               'focus:ring-2 focus:ring-offset-1 focus:outline-none',
-              isDark
-                ? 'border-stone-600 text-stone-300 hover:bg-stone-700/50 focus:ring-stone-500/40 focus:ring-offset-stone-800'
-                : 'border-stone-300 text-stone-700 hover:bg-stone-100 focus:ring-stone-500/40 focus:ring-offset-white'
+              'border-stone-300 text-stone-700 hover:bg-stone-100 focus:ring-stone-500/40 focus:ring-offset-white',
+              'dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50 dark:focus:ring-stone-500/40 dark:focus:ring-offset-stone-800'
             )}
           >
             {t('cancel')}
@@ -230,7 +225,7 @@ export function LogoutConfirmDialog({
               'disabled:cursor-not-allowed disabled:opacity-50',
               'focus:ring-2 focus:ring-offset-1 focus:outline-none',
               'bg-red-600 text-white shadow-md shadow-red-900/20 hover:bg-red-700 focus:ring-red-500/40',
-              isDark ? 'focus:ring-offset-stone-800' : 'focus:ring-offset-white'
+              'focus:ring-offset-white dark:focus:ring-offset-stone-800'
             )}
           >
             {isLoggingOut ? t('loggingOut') : t('confirm')}
@@ -245,9 +240,8 @@ export function LogoutConfirmDialog({
             'absolute top-3 right-3 rounded-md p-1.5',
             'disabled:cursor-not-allowed disabled:opacity-50',
             'transition-colors duration-200',
-            isDark
-              ? 'text-stone-500 hover:bg-stone-700/60 hover:text-stone-300'
-              : 'text-stone-400 hover:bg-stone-100 hover:text-stone-600'
+            'text-stone-400 hover:bg-stone-100 hover:text-stone-600',
+            'dark:text-stone-500 dark:hover:bg-stone-700/60 dark:hover:text-stone-300'
           )}
         >
           <X className="h-4 w-4" />
@@ -272,9 +266,8 @@ export function LogoutConfirmDialog({
         className={cn(
           'w-full max-w-lg rounded-t-3xl',
           'transform transition-transform duration-300 ease-out',
-          isDark
-            ? 'border-t border-stone-700/50 bg-stone-900/95 shadow-black/40'
-            : 'border-t border-stone-200/50 bg-white/95 shadow-stone-900/20',
+          'border-t border-stone-200/50 bg-white/95 shadow-stone-900/20',
+          'dark:border-t-stone-700/50 dark:bg-stone-900/95 dark:shadow-black/40',
           'shadow-2xl backdrop-blur-sm',
           isOpen ? 'translate-y-0' : 'translate-y-full'
         )}
@@ -285,7 +278,7 @@ export function LogoutConfirmDialog({
           <div
             className={cn(
               'h-1.5 w-16 rounded-full',
-              isDark ? 'bg-stone-600' : 'bg-stone-300'
+              'bg-stone-300 dark:bg-stone-600'
             )}
           ></div>
         </div>
@@ -296,9 +289,8 @@ export function LogoutConfirmDialog({
             className={cn(
               'mb-6 flex h-20 w-20 items-center justify-center rounded-full',
               'ring-1 ring-inset',
-              isDark
-                ? 'bg-red-900/20 text-red-400 ring-stone-700/50'
-                : 'bg-red-50 text-red-500 ring-stone-200/50'
+              'bg-red-50 text-red-500 ring-stone-200/50',
+              'dark:bg-red-900/20 dark:text-red-400 dark:ring-stone-700/50'
             )}
           >
             <LogOut className="h-8 w-8" />
@@ -333,9 +325,7 @@ export function LogoutConfirmDialog({
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'focus:ring-2 focus:ring-offset-2 focus:outline-none',
                 'bg-red-600 text-white shadow-lg shadow-red-900/30 hover:bg-red-700 focus:ring-red-500/40',
-                isDark
-                  ? 'focus:ring-offset-stone-900'
-                  : 'focus:ring-offset-white'
+                'focus:ring-offset-white dark:focus:ring-offset-stone-900'
               )}
             >
               {isLoggingOut ? t('loggingOut') : t('confirm')}
@@ -348,9 +338,8 @@ export function LogoutConfirmDialog({
                 'border transition-all duration-200',
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'focus:ring-2 focus:ring-offset-2 focus:outline-none',
-                isDark
-                  ? 'border-stone-600 text-stone-300 hover:bg-stone-700/50 focus:ring-stone-500/40 focus:ring-offset-stone-900'
-                  : 'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/40 focus:ring-offset-white'
+                'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/40 focus:ring-offset-white',
+                'dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50 dark:focus:ring-stone-500/40 dark:focus:ring-offset-stone-900'
               )}
             >
               {t('cancel')}
