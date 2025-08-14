@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks';
 import { cn } from '@lib/utils';
 
 import React from 'react';
@@ -25,7 +24,6 @@ export const SuggestedQuestionButton = ({
   className,
   animationDelay = 0,
 }: SuggestedQuestionButtonProps) => {
-  const { isDark } = useTheme();
   const t = useTranslations('components.ui.suggestedQuestionButton');
 
   const handleClick = () => {
@@ -69,9 +67,8 @@ export const SuggestedQuestionButton = ({
         'animate-fade-in opacity-0',
 
         // --- Theme style: use main color background, simplify hover effect, add back border ---
-        isDark
-          ? 'border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-600 hover:bg-stone-700' // Dark: main background + border -> hover slightly brighter
-          : 'border-stone-300 bg-stone-100 text-stone-700 hover:border-stone-400 hover:bg-stone-200', // Light: main background + border -> hover slightly darker
+        'border-stone-300 bg-stone-100 text-stone-700 hover:border-stone-400 hover:bg-stone-200', // Light: main background + border -> hover slightly darker
+        'dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-600 dark:hover:bg-stone-700', // Dark: main background + border -> hover slightly brighter
 
         className
       )}

@@ -95,8 +95,7 @@ export function Tooltip({
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Detect if it is dark mode (simplified version)
-  const isDark = false; // Default use light mode
+  // Component state setup
 
   // Get the style based on the size
   const getSizeStyles = () => {
@@ -343,9 +342,7 @@ export function Tooltip({
                 'pointer-events-auto relative max-w-sm break-words',
                 'bg-opacity-95 border border-gray-200/10 shadow-md backdrop-blur-sm',
                 sizeStyles.container,
-                isDark
-                  ? 'bg-gray-800 text-gray-100'
-                  : 'bg-gray-800 text-gray-100',
+                'bg-gray-800 text-gray-100',
                 className
               )}
               onMouseEnter={handleMouseEnter}

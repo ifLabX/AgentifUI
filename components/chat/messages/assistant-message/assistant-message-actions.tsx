@@ -2,7 +2,6 @@
 
 import { MessageActionButton } from '@components/ui/message-action-button';
 import { MessageActionsContainer } from '@components/ui/message-actions-container';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import {
   FiCheck,
@@ -39,7 +38,6 @@ export const AssistantMessageActions: React.FC<
   className,
   isRegenerating = false,
 }) => {
-  const { isDark } = useTheme();
   const t = useTranslations('components.chat.messageActions');
 
   return (
@@ -69,8 +67,7 @@ export const AssistantMessageActions: React.FC<
       {/* Divider between main actions and feedback */}
       <div
         className={cn(
-          'mx-1 self-stretch border-r',
-          isDark ? 'border-gray-700' : 'border-gray-300'
+          'mx-1 self-stretch border-r border-gray-300 dark:border-gray-700'
         )}
       />
       {/* Thumbs up feedback button */}
