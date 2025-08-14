@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { AlertTriangle, Edit, Trash, X } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -40,7 +39,6 @@ export function ConfirmDialog({
   isLoading = false,
   icon = 'warning',
 }: ConfirmDialogProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const t = useTranslations('common.ui');
   const finalCancelText = cancelText || t('cancel');
@@ -181,14 +179,14 @@ export function ConfirmDialog({
   const getVariantStyles = () => {
     if (variant === 'danger') {
       return {
-        iconColor: isDark ? 'text-red-400' : 'text-red-500',
-        iconBg: isDark ? 'bg-red-900/20' : 'bg-red-50',
+        iconColor: 'text-red-500 dark:text-red-400',
+        iconBg: 'bg-red-50 dark:bg-red-900/20',
       };
     }
 
     return {
       iconColor: 'text-stone-500 dark:text-stone-400',
-      iconBg: isDark ? 'bg-stone-700/60' : 'bg-stone-100',
+      iconBg: 'bg-stone-100 dark:bg-stone-700/60',
     };
   };
 
@@ -212,9 +210,8 @@ export function ConfirmDialog({
         className={cn(
           'mx-auto w-full max-w-md rounded-xl shadow-2xl',
           'transform transition-all duration-300 ease-out',
-          isDark
-            ? 'border border-stone-600/60 bg-stone-800/95 shadow-black/50'
-            : 'border border-stone-300/60 bg-white/95 shadow-stone-800/15',
+          'border border-stone-300/60 bg-white/95 shadow-stone-800/15',
+          'dark:border-stone-600/60 dark:bg-stone-800/95 dark:shadow-black/50',
           'backdrop-blur-sm',
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         )}
@@ -228,7 +225,7 @@ export function ConfirmDialog({
                 'ring-1 ring-inset',
                 variantStyles.iconBg,
                 variantStyles.iconColor,
-                isDark ? 'ring-stone-600/50' : 'ring-stone-200/60'
+                'ring-stone-200/60 dark:ring-stone-600/50'
               )}
             >
               {getIcon('sm')}
@@ -266,9 +263,8 @@ export function ConfirmDialog({
               'border transition-all duration-200',
               'disabled:cursor-not-allowed disabled:opacity-50',
               'focus:ring-2 focus:ring-offset-1 focus:outline-none',
-              isDark
-                ? 'border-stone-600 text-stone-300 hover:bg-stone-700/50 focus:ring-stone-500/40 focus:ring-offset-stone-800'
-                : 'border-stone-300 text-stone-700 hover:bg-stone-100 focus:ring-stone-500/40 focus:ring-offset-white'
+              'border-stone-300 text-stone-700 hover:bg-stone-100 focus:ring-stone-500/40 focus:ring-offset-white',
+              'dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50 dark:focus:ring-stone-500/40 dark:focus:ring-offset-stone-800'
             )}
           >
             {finalCancelText}
@@ -283,12 +279,8 @@ export function ConfirmDialog({
               'focus:ring-2 focus:ring-offset-1 focus:outline-none',
               // Enhanced styling for the confirm button with better contrast
               variant === 'danger'
-                ? isDark
-                  ? 'bg-red-600 text-white shadow-md shadow-red-900/30 hover:bg-red-700 focus:ring-red-500/40 focus:ring-offset-stone-800'
-                  : 'bg-red-600 text-white shadow-md shadow-red-900/15 hover:bg-red-700 focus:ring-red-500/40 focus:ring-offset-white'
-                : isDark
-                  ? 'bg-stone-600 text-white shadow-md shadow-stone-900/30 hover:bg-stone-700 focus:ring-stone-500/40 focus:ring-offset-stone-800'
-                  : 'bg-stone-700 text-white shadow-md shadow-stone-900/15 hover:bg-stone-800 focus:ring-stone-500/40 focus:ring-offset-white'
+                ? 'bg-red-600 text-white shadow-md shadow-red-900/15 hover:bg-red-700 focus:ring-red-500/40 focus:ring-offset-white dark:shadow-red-900/30 dark:focus:ring-offset-stone-800'
+                : 'bg-stone-700 text-white shadow-md shadow-stone-900/15 hover:bg-stone-800 focus:ring-stone-500/40 focus:ring-offset-white dark:bg-stone-600 dark:shadow-stone-900/30 dark:hover:bg-stone-700 dark:focus:ring-offset-stone-800'
             )}
           >
             {isLoading ? t('loading') : confirmText}
@@ -303,9 +295,8 @@ export function ConfirmDialog({
             'absolute top-3 right-3 rounded-md p-1.5',
             'disabled:cursor-not-allowed disabled:opacity-50',
             'transition-colors duration-200',
-            isDark
-              ? 'text-stone-500 hover:bg-stone-700/60 hover:text-stone-300'
-              : 'text-stone-400 hover:bg-stone-100 hover:text-stone-600'
+            'text-stone-400 hover:bg-stone-100 hover:text-stone-600',
+            'dark:text-stone-500 dark:hover:bg-stone-700/60 dark:hover:text-stone-300'
           )}
         >
           <X className="h-4 w-4" />
@@ -330,9 +321,8 @@ export function ConfirmDialog({
         className={cn(
           'w-full max-w-lg rounded-t-3xl',
           'transform transition-transform duration-300 ease-out',
-          isDark
-            ? 'border-t border-stone-700/50 bg-stone-900/95 shadow-black/40'
-            : 'border-t border-stone-200/50 bg-white/95 shadow-stone-900/20',
+          'border-t border-stone-200/50 bg-white/95 shadow-stone-900/20',
+          'dark:border-t-stone-700/50 dark:bg-stone-900/95 dark:shadow-black/40',
           'shadow-2xl backdrop-blur-sm',
           isOpen ? 'translate-y-0' : 'translate-y-full'
         )}
@@ -343,7 +333,7 @@ export function ConfirmDialog({
           <div
             className={cn(
               'h-1.5 w-16 rounded-full',
-              isDark ? 'bg-stone-600' : 'bg-stone-300'
+              'bg-stone-300 dark:bg-stone-600'
             )}
           ></div>
         </div>
@@ -356,7 +346,7 @@ export function ConfirmDialog({
               'ring-1 ring-inset',
               variantStyles.iconBg,
               variantStyles.iconColor,
-              isDark ? 'ring-stone-700/50' : 'ring-stone-200/50'
+              'ring-stone-200/50 dark:ring-stone-700/50'
             )}
           >
             {getIcon('lg')}
@@ -392,12 +382,8 @@ export function ConfirmDialog({
                 'focus:ring-2 focus:ring-offset-2 focus:outline-none',
                 // Mobile confirm button styling with proper variant handling
                 variant === 'danger'
-                  ? isDark
-                    ? 'bg-red-600 text-white shadow-lg shadow-red-900/30 hover:bg-red-700 focus:ring-red-500/40 focus:ring-offset-stone-900'
-                    : 'bg-red-600 text-white shadow-lg shadow-red-900/15 hover:bg-red-700 focus:ring-red-500/40 focus:ring-offset-white'
-                  : isDark
-                    ? 'bg-stone-600 text-white shadow-lg shadow-stone-900/30 hover:bg-stone-700 focus:ring-stone-500/40 focus:ring-offset-stone-900'
-                    : 'bg-stone-700 text-white shadow-lg shadow-stone-900/15 hover:bg-stone-800 focus:ring-stone-500/40 focus:ring-offset-white'
+                  ? 'bg-red-600 text-white shadow-lg shadow-red-900/15 hover:bg-red-700 focus:ring-red-500/40 focus:ring-offset-white dark:shadow-red-900/30 dark:focus:ring-offset-stone-900'
+                  : 'bg-stone-700 text-white shadow-lg shadow-stone-900/15 hover:bg-stone-800 focus:ring-stone-500/40 focus:ring-offset-white dark:bg-stone-600 dark:shadow-stone-900/30 dark:hover:bg-stone-700 dark:focus:ring-offset-stone-900'
               )}
             >
               {isLoading ? t('loading') : confirmText}
@@ -410,9 +396,8 @@ export function ConfirmDialog({
                 'border transition-all duration-200',
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'focus:ring-2 focus:ring-offset-2 focus:outline-none',
-                isDark
-                  ? 'border-stone-600 text-stone-300 hover:bg-stone-700/50 focus:ring-stone-500/30 focus:ring-offset-stone-900'
-                  : 'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/30 focus:ring-offset-white'
+                'border-stone-300 text-stone-700 hover:bg-stone-50 focus:ring-stone-500/30 focus:ring-offset-white',
+                'dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50 dark:focus:ring-stone-500/30 dark:focus:ring-offset-stone-900'
               )}
             >
               {finalCancelText}
