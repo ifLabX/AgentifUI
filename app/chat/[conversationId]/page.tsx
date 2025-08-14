@@ -19,7 +19,6 @@ import { useChatflowDetection } from '@lib/hooks/use-chatflow-detection';
 import { useChatflowState } from '@lib/hooks/use-chatflow-state';
 import { useConversationMessages } from '@lib/hooks/use-conversation-messages';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useChatflowExecutionStore } from '@lib/stores/chatflow-execution-store';
@@ -52,7 +51,6 @@ export default function ChatPage() {
 
   const { inputHeight } = useChatLayoutStore();
   const isPreviewOpen = useFilePreviewStore(state => state.isPreviewOpen);
-  const { colors } = useThemeColors();
 
   // Use the wrapped hook to detect chatflow apps
   const { isChatflowApp } = useChatflowDetection();
@@ -124,8 +122,8 @@ export default function ChatPage() {
     <div
       className={cn(
         'relative flex h-full w-full flex-col',
-        colors.mainBackground.tailwind,
-        colors.mainText.tailwind
+        'bg-stone-100 dark:bg-stone-800',
+        'text-stone-900 dark:text-gray-100'
       )}
     >
       <div

@@ -2,7 +2,6 @@
 
 import { AppFilters, AppHeader, AppList, AppLoading } from '@components/apps';
 import type { AppInstance } from '@components/apps/types';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useFavoriteAppsStore } from '@lib/stores/favorite-apps-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
@@ -16,7 +15,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 export default function AppsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { colors } = useThemeColors();
   const { favoriteApps } = useFavoriteAppsStore();
   const { selectItem } = useSidebarStore();
   const t = useTranslations('pages.apps.market');
@@ -248,7 +246,7 @@ export default function AppsPage() {
     <>
       <div
         className={cn(
-          colors.mainBackground.tailwind,
+          'bg-stone-100 dark:bg-stone-800',
           'min-h-screen',
           'pt-16 md:pt-12'
         )}

@@ -2,7 +2,6 @@
 
 import { WorkflowLayout } from '@components/workflow/workflow-layout';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
@@ -34,7 +33,6 @@ interface WorkflowPageProps {
 export default function WorkflowPage({ params }: WorkflowPageProps) {
   const { instanceId } = React.use(params);
   const router = useRouter();
-  const { colors } = useThemeColors();
   const t = useTranslations('pages.apps');
 
   // --- app related state ---
@@ -158,7 +156,7 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
       <div
         className={cn(
           'relative flex h-full w-full flex-col',
-          colors.mainBackground.tailwind,
+          'bg-stone-100 dark:bg-stone-800',
           'items-center justify-center'
         )}
       >
@@ -206,7 +204,7 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
       <div
         className={cn(
           'relative flex h-full w-full flex-col',
-          colors.mainBackground.tailwind,
+          'bg-stone-100 dark:bg-stone-800',
           'items-center justify-center'
         )}
       >
@@ -233,8 +231,8 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
     <div
       className={cn(
         'relative h-screen w-full overflow-hidden',
-        colors.mainBackground.tailwind,
-        colors.mainText.tailwind
+        'bg-stone-100 dark:bg-stone-800',
+        'text-stone-900 dark:text-gray-100'
       )}
     >
       <div className="h-full overflow-hidden pt-12">
