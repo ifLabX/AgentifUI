@@ -106,7 +106,6 @@ export function SidebarContent() {
         {/* Chat list area: adds top spacing, separated from favorite apps */}
         <div className="mt-4 min-h-0 flex-1">
           <SidebarChatList
-            isDark={isDark ?? false}
             contentVisible={contentVisible}
             selectedId={selectedType === 'chat' ? String(selectedId) : null}
             onSelectChat={handleSelectChat}

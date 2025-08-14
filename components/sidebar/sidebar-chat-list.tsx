@@ -9,7 +9,6 @@ import {
   conversationEvents,
   useCombinedConversations,
 } from '@lib/hooks/use-combined-conversations';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { usePendingConversationStore } from '@lib/stores/pending-conversation-store';
 import { cn } from '@lib/utils';
 import { Pen, Trash } from 'lucide-react';
@@ -22,19 +21,16 @@ import { useTranslations } from 'next-intl';
 import { SidebarListButton } from './sidebar-list-button';
 
 interface SidebarChatListProps {
-  isDark: boolean;
   contentVisible: boolean;
   selectedId: string | null;
   onSelectChat: (chatId: string) => void;
 }
 
 export function SidebarChatList({
-  isDark,
   contentVisible,
   selectedId,
   onSelectChat,
 }: SidebarChatListProps) {
-  const { colors } = useThemeColors();
   const t = useTranslations('sidebar');
   const {
     conversations,
@@ -284,7 +280,7 @@ export function SidebarChatList({
           <div
             className={cn(
               'h-4 w-[85%] animate-pulse rounded-md',
-              isDark ? 'bg-stone-600' : 'bg-stone-400',
+              'bg-stone-400 dark:bg-stone-600',
               'opacity-80'
             )}
           />
@@ -293,7 +289,7 @@ export function SidebarChatList({
           <h4
             className={cn(
               'w-full truncate font-serif text-xs leading-4 font-medium',
-              isDark ? 'text-gray-200' : 'text-stone-700'
+              'text-stone-700 dark:text-gray-200'
             )}
           >
             <TypeWriter
@@ -312,7 +308,7 @@ export function SidebarChatList({
           <h4
             className={cn(
               'w-full truncate font-serif text-xs leading-4 font-medium',
-              isDark ? 'text-gray-200' : 'text-stone-700'
+              'text-stone-700 dark:text-gray-200'
             )}
           >
             {title}
@@ -399,7 +395,7 @@ export function SidebarChatList({
               'sticky top-0 z-40 ml-[6px] flex items-center px-2 py-1 font-serif text-xs font-medium',
               // Use the same background color as the sidebar, ensure the sticky effect is perfect
               // Ensure z-index is high enough to completely cover the content below
-              colors.sidebarBackground.tailwind
+              'bg-stone-200 dark:bg-stone-700'
             )}
           >
             <span
