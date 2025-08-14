@@ -3,7 +3,6 @@
  *
  * Used to display a fullscreen loading state
  */
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 
 import React, { useEffect, useState } from 'react';
@@ -17,7 +16,6 @@ interface PageLoadingSpinnerProps {
  * @description Shows a fullscreen loading spinner with a fade-in delay to prevent flicker.
  */
 export function PageLoadingSpinner({ isLoading }: PageLoadingSpinnerProps) {
-  const { colors } = useThemeColors();
   const [visible, setVisible] = useState(false);
 
   // Add a delay before showing the spinner to avoid flicker
@@ -37,7 +35,7 @@ export function PageLoadingSpinner({ isLoading }: PageLoadingSpinnerProps) {
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
         'transition-opacity duration-300',
-        colors.mainBackground.tailwind,
+        'bg-stone-100 dark:bg-stone-800',
         'bg-opacity-80',
         'backdrop-blur-sm'
       )}
