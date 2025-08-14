@@ -101,10 +101,7 @@ export function SidebarContent() {
         )}
       >
         {/* Favorite apps area: directly placed without extra wrapping, supports sticky scrolling */}
-        <SidebarFavoriteApps
-          isDark={isDark ?? false}
-          contentVisible={contentVisible}
-        />
+        <SidebarFavoriteApps contentVisible={contentVisible} />
 
         {/* Chat list area: adds top spacing, separated from favorite apps */}
         <div className="mt-4 min-h-0 flex-1">

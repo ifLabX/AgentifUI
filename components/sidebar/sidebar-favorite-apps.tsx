@@ -2,7 +2,6 @@
 
 import { DropdownMenuV2 } from '@components/ui/dropdown-menu-v2';
 import { MoreButtonV2 } from '@components/ui/more-button-v2';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useFavoriteAppsStore } from '@lib/stores/favorite-apps-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
@@ -31,18 +30,15 @@ interface FavoriteApp {
 }
 
 interface SidebarFavoriteAppsProps {
-  isDark: boolean;
   contentVisible: boolean;
 }
 
 export function SidebarFavoriteApps({
-  isDark,
   contentVisible,
 }: SidebarFavoriteAppsProps) {
   const router = useRouter();
   const { isExpanded, selectItem, selectedType, selectedId } =
     useSidebarStore();
-  const { colors } = useThemeColors();
   const t = useTranslations('sidebar');
   const {
     favoriteApps,
@@ -280,7 +276,7 @@ export function SidebarFavoriteApps({
             'group sticky top-0 z-40 ml-[6px] px-2 py-1',
             // Use same background as sidebar for perfect sticky effect
             // Ensure high z-index to cover content below
-            colors.sidebarBackground.tailwind,
+            'bg-stone-200 dark:bg-stone-700',
             favoriteApps.length > 3 &&
               'cursor-pointer rounded-md transition-all duration-300 ease-out'
           )}
@@ -305,7 +301,7 @@ export function SidebarFavoriteApps({
                     'ml-1.5 h-3 w-3 transition-all duration-300 ease-out',
                     'transform-gpu will-change-transform',
                     isAppsExpanded && 'rotate-90',
-                    isDark ? 'text-stone-400/80' : 'text-stone-500/80'
+                    'text-stone-500/80 dark:text-stone-400/80'
                   )}
                 />
               )}
@@ -319,7 +315,7 @@ export function SidebarFavoriteApps({
         <div
           className={cn(
             'px-3 py-1 font-serif text-xs',
-            isDark ? 'text-gray-500' : 'text-gray-400'
+            'text-gray-400 dark:text-gray-500'
           )}
         >
           {t('loading')}
@@ -391,9 +387,8 @@ export function SidebarFavoriteApps({
                     // Special styling when clicking
                     // Unified hover effect: keep completely consistent with header
                     // Use same stone-300/80 and stone-600/60 as header
-                    isDark
-                      ? 'text-gray-300 hover:bg-stone-600/60 hover:text-gray-100'
-                      : 'text-gray-700 hover:bg-stone-300/80 hover:text-gray-900'
+                    'text-gray-700 hover:bg-stone-300/80 hover:text-gray-900',
+                    'dark:text-gray-300 dark:hover:bg-stone-600/60 dark:hover:text-gray-100'
                   )}
                 >
                   <div className="flex min-w-0 flex-1 items-center">
