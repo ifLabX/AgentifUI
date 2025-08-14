@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Activity, FileText, History } from 'lucide-react';
 
@@ -26,7 +25,6 @@ export function MobileTabSwitcher({
   onTabChange,
   hasHistory,
 }: MobileTabSwitcherProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.tabs');
 
   const tabs = [
@@ -48,12 +46,7 @@ export function MobileTabSwitcher({
   ];
 
   return (
-    <div
-      className={cn(
-        'flex border-b',
-        isDark ? 'border-stone-700 bg-stone-900' : 'border-stone-200 bg-white'
-      )}
-    >
+    <div className="flex border-b border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
       {tabs.map(tab => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
@@ -65,12 +58,8 @@ export function MobileTabSwitcher({
             className={cn(
               'flex flex-1 items-center justify-center gap-2 px-4 py-3 font-serif text-sm transition-colors',
               isActive
-                ? isDark
-                  ? 'border-b-2 border-stone-400 text-stone-100'
-                  : 'border-b-2 border-stone-600 text-stone-900'
-                : isDark
-                  ? 'text-stone-400 hover:text-stone-300'
-                  : 'text-stone-600 hover:text-stone-700'
+                ? 'border-b-2 border-stone-600 text-stone-900 dark:border-stone-400 dark:text-stone-100'
+                : 'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
             )}
           >
             <Icon className="h-4 w-4" />
