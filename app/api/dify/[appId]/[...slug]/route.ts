@@ -84,9 +84,6 @@ async function proxyToDify(
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    console.log(
-      `[Dify API] Unauthorized access attempt to appId: ${(await context.params).appId}`
-    );
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -114,27 +111,18 @@ async function proxyToDify(
         body._temp_config.apiKey
       ) {
         tempConfig = body._temp_config;
-        console.log(
-          `[App: ${appId}] [${req.method}] temporary configuration detected, using form provided configuration`
-        );
 
         // Remove temporary configuration fields to avoid passing to Dify API
         requestBody = body;
       }
     } catch {
       // if parsing the request body fails, continue using normal process
-      console.log(
-        `[App: ${appId}] [${req.method}] Failed to parse request body, using normal configuration process`
-      );
       requestBody = null;
     }
   }
 
   // validate slug to prevent constructing invalid target URLs
   if (!slug || slug.length === 0) {
-    console.error(
-      `[App: ${appId}] [${req.method}] Invalid request: Slug path is missing.`
-    );
     const baseResponse = new Response(
       JSON.stringify({ error: 'Invalid request: slug path is missing.' }),
       {
@@ -154,21 +142,14 @@ async function proxyToDify(
 
   if (tempConfig) {
     // use temporary configuration
-    console.log(
-      `[App: ${appId}] [${req.method}] Using temporary configuration`
-    );
     difyApiKey = tempConfig.apiKey;
     difyApiUrl = tempConfig.apiUrl;
   } else {
     // get configuration from database
-    console.log(
-      `[App: ${appId}] [${req.method}] Getting configuration from database...`
-    );
     difyConfig = await getDifyAppConfig(appId);
 
     // validate database configuration
     if (!difyConfig) {
-      console.error(`[App: ${appId}] [${req.method}] Configuration not found.`);
       // return 400 Bad Request, indicating that the provided appId is invalid or not configured
       const baseResponse = NextResponse.json(
         { error: `Configuration for Dify app '${appId}' not found.` },
@@ -184,9 +165,6 @@ async function proxyToDify(
 
   // check if the obtained key and url are valid again
   if (!difyApiKey || !difyApiUrl) {
-    console.error(
-      `[App: ${appId}] [${req.method}] Invalid configuration loaded (missing key or URL).`
-    );
     // return 500 Internal Server Error, indicating server-side configuration issues
     const baseResponse = NextResponse.json(
       { error: `Server configuration error for app '${appId}'.` },
@@ -195,17 +173,11 @@ async function proxyToDify(
 
     return baseResponse;
   }
-  console.log(
-    `[App: ${appId}] [${req.method}] Configuration loaded successfully.`
-  );
 
   try {
     // construct target Dify URL
     const slugPath = adjustApiPathByAppType(slug, difyConfig?.appType);
     const targetUrl = `${difyApiUrl}/${slugPath}${req.nextUrl.search}`;
-    console.log(
-      `[App: ${appId}] [${req.method}] Proxying request to target URL: ${targetUrl}`
-    );
 
     // prepare forwarding request headers
     const headers = new Headers();
@@ -246,9 +218,6 @@ async function proxyToDify(
       (slugPath === 'files/upload' || slugPath === 'audio-to-text') &&
       originalContentType?.includes('multipart/form-data')
     ) {
-      console.log(
-        `[App: ${appId}] [${req.method}] Handling multipart/form-data for ${slugPath}`
-      );
       try {
         // parse form data
         const formData = await req.formData();
@@ -256,10 +225,6 @@ async function proxyToDify(
         // important: remove Content-Type, let fetch automatically set multipart/form-data with correct boundary
         finalHeaders.delete('Content-Type');
       } catch (formError) {
-        console.error(
-          `[App: ${appId}] [${req.method}] Error parsing FormData:`,
-          formError
-        );
         return NextResponse.json(
           {
             error: 'Failed to parse multipart form data',
@@ -286,15 +251,9 @@ async function proxyToDify(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await fetch(targetUrl, fetchOptions as any);
-    console.log(
-      `[App: ${appId}] [${req.method}] Dify response status: ${response.status}`
-    );
 
     // handle successful 204 No Content responses directly
     if (response.status === 204) {
-      console.log(
-        `[App: ${appId}] [${req.method}] Received 204 No Content, forwarding response directly.`
-      );
       // forward 204 status and necessary response headers, ensure body is null
       // clone headers to forward
       const headersToForward = new Headers();
@@ -325,10 +284,6 @@ async function proxyToDify(
 
       // handle streaming responses (SSE) - use manual read/write for enhanced robustness
       if (responseContentType?.includes('text/event-stream')) {
-        console.log(
-          `[App: ${appId}] [${req.method}] Streaming response detected. Applying robust handling.`
-        );
-
         // keep SSE headers returned by Dify, and supplement our standard CORS headers
         const sseHeaders = createMinimalHeaders(); // start with minimal CORS headers
         response.headers.forEach((value, key) => {
@@ -345,16 +300,10 @@ async function proxyToDify(
         // create a new readable stream, used to manually push data blocks to the client
         const stream = new ReadableStream({
           async start(controller) {
-            console.log(
-              `[App: ${appId}] [${req.method}] SSE Stream: Starting to read from Dify.`
-            );
             const reader = response.body!.getReader(); // ensure response.body exists
 
             // handle client disconnection
             req.signal.addEventListener('abort', () => {
-              console.log(
-                `[App: ${appId}] [${req.method}] SSE Stream: Client disconnected, cancelling Dify read.`
-              );
               reader.cancel('Client disconnected');
               // note: controller may already be closed, trying to close here may cause an error, but is usually harmless
               try {
@@ -368,9 +317,6 @@ async function proxyToDify(
               while (true) {
                 // check if the client has disconnected
                 if (req.signal.aborted) {
-                  console.log(
-                    `[App: ${appId}] [${req.method}] SSE Stream: Abort signal detected before read, stopping.`
-                  );
                   // no need to manually cancel reader, cancel in addEventListener will handle it
                   break;
                 }
@@ -378,9 +324,6 @@ async function proxyToDify(
                 const { done, value } = await reader.read();
 
                 if (done) {
-                  console.log(
-                    `[App: ${appId}] [${req.method}] SSE Stream: Dify stream finished.`
-                  );
                   break; // dify stream finished, exit loop
                 }
 
@@ -391,16 +334,9 @@ async function proxyToDify(
               }
             } catch (error) {
               // if an error occurs while reading the Dify stream (e.g. Dify server disconnected)
-              console.error(
-                `[App: ${appId}] [${req.method}] SSE Stream: Error reading from Dify stream:`,
-                error
-              );
               // trigger an error on the stream we created, notify downstream consumers
               controller.error(error);
             } finally {
-              console.log(
-                `[App: ${appId}] [${req.method}] SSE Stream: Finalizing stream controller.`
-              );
               // ensure the controller is closed regardless (if not already closed or errored)
               try {
                 controller.close();
@@ -411,11 +347,7 @@ async function proxyToDify(
               // reader.releaseLock(); // reader will automatically release after done=true or error
             }
           },
-          cancel(reason) {
-            console.log(
-              `[App: ${appId}] [${req.method}] SSE Stream: Our stream was cancelled. Reason:`,
-              reason
-            );
+          cancel() {
             // if the stream we created is cancelled (e.g. cancel() is called on the Response object)
             // if needed, additional cleanup logic can be added here.
           },
@@ -448,9 +380,6 @@ async function proxyToDify(
         const responseData = await response.text();
         try {
           const jsonData = JSON.parse(responseData);
-          console.log(
-            `[App: ${appId}] [${req.method}] Returning native Response with minimal headers for success JSON.`
-          );
           // use minimal header helper
           const baseResponse = new Response(JSON.stringify(jsonData), {
             status: response.status,
@@ -461,9 +390,6 @@ async function proxyToDify(
           return baseResponse;
         } catch {
           // not JSON, return text
-          console.log(
-            `[App: ${appId}] [${req.method}] JSON parse failed, returning plain text with minimal headers.`
-          );
           // use minimal header helper
           const originalDifyContentType =
             response.headers.get('content-type') || 'text/plain';
@@ -479,18 +405,13 @@ async function proxyToDify(
     } else {
       // handle cases with no response body or failure
       if (!response.body) {
-        console.log(
-          `[App: ${appId}] [${req.method}] Empty response body with status: ${response.status}`
-        );
+        // Empty response body case
       }
       // try to read error information
       try {
         const errorText = await response.text();
         try {
           const errorJson = JSON.parse(errorText);
-          console.log(
-            `[App: ${appId}] [${req.method}] Returning native Response with minimal headers for error JSON.`
-          );
           // use minimal header helper
           const baseResponse = new Response(JSON.stringify(errorJson), {
             status: response.status,
@@ -501,9 +422,6 @@ async function proxyToDify(
           return baseResponse;
         } catch {
           // error response is not JSON, return text
-          console.log(
-            `[App: ${appId}] [${req.method}] Error response is not JSON, returning plain text with minimal headers.`
-          );
           // use minimal header helper
           const originalDifyErrorContentType =
             response.headers.get('content-type') || 'text/plain';
@@ -515,12 +433,8 @@ async function proxyToDify(
 
           return baseResponse;
         }
-      } catch (readError) {
+      } catch {
         // if even reading the error response fails
-        console.error(
-          `[App: ${appId}] [${req.method}] Failed to read Dify error response body:`,
-          readError
-        );
         const finalErrorHeaders = createMinimalHeaders('application/json'); // use helper function
         const baseResponse = new Response(
           JSON.stringify({
@@ -537,10 +451,6 @@ async function proxyToDify(
     }
   } catch (error) {
     // catch errors in fetch or response processing
-    console.error(
-      `[App: ${appId}] [${req.method}] Dify proxy fetch/processing error:`,
-      error
-    );
     const baseResponse = NextResponse.json(
       {
         error: `Failed to connect or process response from Dify service for app '${appId}' during ${req.method}.`,
@@ -596,7 +506,6 @@ export async function PATCH(
  * @description add explicit OPTIONS request handler to ensure CORS preflight requests respond correctly in various deployment environments
  */
 export async function OPTIONS() {
-  console.log('[OPTIONS Request] Responding to preflight request.');
   const baseResponse = new Response(null, {
     status: 204, // no content for preflight
     headers: createMinimalHeaders(),

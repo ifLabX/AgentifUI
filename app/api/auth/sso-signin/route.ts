@@ -67,21 +67,11 @@ export async function POST(request: NextRequest) {
 
     // check if there is a request being processed for the same user
     if (processingRequests.has(requestKey)) {
-      console.log(
-        `Duplicate SSO signin request detected for user: ${userId}, waiting for existing request...`
-      );
-
       try {
         // wait for existing request to complete
         const existingResponse = await processingRequests.get(requestKey);
-        console.log(
-          `Returning result from existing request for user: ${userId}`
-        );
         return existingResponse;
       } catch {
-        console.log(
-          `Existing request failed for user: ${userId}, proceeding with new request`
-        );
         // if existing request fails, clean up cache and continue processing new request
         processingRequests.delete(requestKey);
       }
@@ -106,7 +96,6 @@ export async function POST(request: NextRequest) {
           await adminSupabase.auth.admin.getUserById(userId);
 
         if (userError || !user) {
-          console.error('SSO user not found in Supabase:', userError);
           return NextResponse.json(
             { message: 'User not found' },
             { status: 404 }
@@ -117,21 +106,15 @@ export async function POST(request: NextRequest) {
         // this solves the authentication failure problem caused by email mismatch
         const actualUserEmail = user.user.email || userEmail;
         if (!actualUserEmail) {
-          console.error('No email found for user:', userId);
           return NextResponse.json(
             { message: 'User email information is missing' },
             { status: 400 }
           );
         }
-        console.log(
-          `Creating session for SSO user: ${userId}, URL email: ${userEmail}, actual email: ${actualUserEmail}`
-        );
 
         // use optimized temporary password method to create session
         // this is the most reliable and simple method
         try {
-          console.log('Creating session using temporary password method...');
-
           // generate stronger temporary password
           const tempPassword = `SSO_${Date.now()}_${Math.random().toString(36).substring(2, 15)}_${Math.random().toString(36).substring(2, 15)}`;
 
@@ -142,7 +125,6 @@ export async function POST(request: NextRequest) {
             });
 
           if (updateError) {
-            console.error('Failed to set temporary password:', updateError);
             return NextResponse.json(
               { message: 'Failed to set temporary password' },
               { status: 500 }
@@ -160,10 +142,6 @@ export async function POST(request: NextRequest) {
             });
 
           if (signInError || !signInData.session) {
-            console.error(
-              'Failed to sign in with temporary password:',
-              signInError
-            );
             return NextResponse.json(
               { message: 'Session creation failed' },
               { status: 500 }
@@ -175,14 +153,11 @@ export async function POST(request: NextRequest) {
             await adminSupabase.auth.admin.updateUserById(userId, {
               password: undefined,
             });
-          } catch (cleanupError) {
-            console.warn('Failed to cleanup temporary password:', cleanupError);
+          } catch {
+            // Failed to cleanup temporary password
           }
 
-          const processingTime = Date.now() - startTime;
-          console.log(
-            `[SSO authentication] SSO signin successful for user: ${userId} (processing time: ${processingTime}ms)`
-          );
+          // SSO login successful, return result
 
           // SSO login successful, return result
           // note: frontend cache cleanup is handled in SSO button component
@@ -192,7 +167,6 @@ export async function POST(request: NextRequest) {
             message: 'SSO login successful',
           });
         } catch (authError) {
-          console.error('Authentication error:', authError);
           return NextResponse.json(
             {
               message: `Authentication failed: ${authError instanceof Error ? authError.message : 'Unknown error'}`,
@@ -214,8 +188,6 @@ export async function POST(request: NextRequest) {
 
     return await requestPromise;
   } catch (error) {
-    console.error('SSO signin failed:', error);
-
     // clean up possible cache entries when error occurs
     // Note: Error handling may not have access to sensitiveData, so we try to construct the key from cookie
     try {
@@ -226,11 +198,8 @@ export async function POST(request: NextRequest) {
         const requestKey = `sso-signin-${sensitiveData.userId}-${sensitiveData.loginTime}`;
         processingRequests.delete(requestKey);
       }
-    } catch (cleanupError) {
-      console.warn(
-        'Failed to cleanup processing cache on error:',
-        cleanupError
-      );
+    } catch {
+      // Failed to cleanup processing cache on error
     }
 
     return NextResponse.json(

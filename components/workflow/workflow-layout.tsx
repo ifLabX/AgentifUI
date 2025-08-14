@@ -3,7 +3,6 @@
 import { ResizableSplitPane } from '@components/ui/resizable-split-pane';
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher';
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useWorkflowExecution } from '@lib/hooks/use-workflow-execution';
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store';
 import { cn } from '@lib/utils';
@@ -34,7 +33,6 @@ type MobileTab = 'form' | 'tracker' | 'history';
  * - Unified status management and data flow
  */
 export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const t = useTranslations('pages.workflow.buttons');
 
@@ -69,15 +67,10 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
   const handleExecuteWorkflow = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (formData: Record<string, any>) => {
-      console.log(
-        '[Workflow layout] Start executing workflow, input data:',
-        formData
-      );
-
       try {
         await executeWorkflow(formData);
-      } catch (error) {
-        console.error('[Workflow layout] Execution failed:', error);
+      } catch {
+        // Execution failed
       }
     },
     [executeWorkflow]
@@ -85,35 +78,30 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
 
   // --- Node status update callback ---
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleNodeUpdate = useCallback((event: any) => {
-    console.log('[Node update]', event);
+  const handleNodeUpdate = useCallback((_event: any) => {
     // Note: Node status is now automatically managed through the hook, no need to manually update
   }, []);
 
   // --- Stop execution ---
   const handleStopExecution = useCallback(async () => {
-    console.log('[Workflow layout] Stop execution');
     try {
       await stopWorkflowExecution();
-    } catch (error) {
-      console.error('[Workflow layout] Stop execution failed:', error);
+    } catch {
+      // Stop execution failed
     }
   }, [stopWorkflowExecution]);
 
   // --- Retry execution ---
   const handleRetryExecution = useCallback(async () => {
-    console.log('[Workflow layout] Retry execution');
     try {
       await retryExecution();
-    } catch (error) {
-      console.error('[Workflow layout] Retry execution failed:', error);
+    } catch {
+      // Retry execution failed
     }
   }, [retryExecution]);
 
   // --- Complete reset (including form) ---
   const handleCompleteReset = useCallback(() => {
-    console.log('[Workflow layout] Complete reset');
-
     // Reset execution state (keep history)
     resetExecution();
 
@@ -125,14 +113,12 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
 
   // --- Clear error ---
   const handleClearError = useCallback(() => {
-    console.log('[Workflow layout] Clear error');
     clearExecutionState();
   }, [clearExecutionState]);
 
   // --- Handle view result ---
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleViewResult = useCallback((result: any, execution: any) => {
-    console.log('[Workflow layout] View execution result:', execution);
     setExecutionResult(result);
     setSelectedExecution(execution);
     setShowResultViewer(true);
@@ -153,7 +139,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     <div
       className={cn(
         'flex items-center gap-3 border-l-4 border-red-500 px-4 py-3',
-        isDark ? 'bg-red-900/20 text-red-200' : 'bg-red-50 text-red-800'
+        'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
       )}
     >
       <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
@@ -166,9 +152,8 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
             onClick={onRetry}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              isDark
-                ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
-                : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
+              'text-red-700 hover:bg-red-200/50 hover:text-red-800',
+              'dark:text-red-300 dark:hover:bg-red-800/50 dark:hover:text-red-200'
             )}
             title={t('retry')}
           >
@@ -179,9 +164,8 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
           onClick={onDismiss}
           className={cn(
             'rounded-md p-1.5 transition-colors',
-            isDark
-              ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
-              : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
+            'text-red-700 hover:bg-red-200/50 hover:text-red-800',
+            'dark:text-red-300 dark:hover:bg-red-800/50 dark:hover:text-red-200'
           )}
           title={t('close')}
         >
@@ -317,7 +301,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
               'w-80 min-w-72 overflow-hidden border-l',
               'transition-all duration-300 ease-in-out',
               'transform-gpu', // Use GPU acceleration
-              isDark ? 'border-stone-700' : 'border-stone-200'
+              'border-stone-200 dark:border-stone-700'
             )}
           >
             <ExecutionHistory

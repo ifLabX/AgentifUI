@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Check, ChevronDown } from 'lucide-react';
 
@@ -32,7 +31,6 @@ export function CustomSelect({
   error,
   className,
 }: CustomSelectProps) {
-  const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -114,11 +112,8 @@ export function CustomSelect({
     'backdrop-blur-sm focus:shadow-lg focus:shadow-stone-500/25',
     'flex cursor-pointer items-center justify-between select-none',
     error
-      ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' +
-          (isDark ? ' bg-red-900/10' : ' bg-red-50/50')
-      : isDark
-        ? 'border-stone-600 bg-stone-800/90 text-stone-100 hover:border-stone-500'
-        : 'border-stone-300 bg-white/90 text-stone-900 hover:border-stone-400',
+      ? 'border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/20 dark:bg-red-900/10'
+      : 'border-stone-300 bg-white/90 text-stone-900 hover:border-stone-400 dark:border-stone-600 dark:bg-stone-800/90 dark:text-stone-100 dark:hover:border-stone-500',
     className
   );
 
@@ -130,7 +125,7 @@ export function CustomSelect({
     isOpen
       ? 'translate-y-0 scale-100 opacity-100'
       : 'pointer-events-none -translate-y-2 scale-95 opacity-0',
-    isDark ? 'border-stone-600 bg-stone-800/95' : 'border-stone-300 bg-white/95'
+    'border-stone-300 bg-white/95 dark:border-stone-600 dark:bg-stone-800/95'
   );
 
   const optionClasses = (index: number, isSelected: boolean) =>
@@ -139,16 +134,10 @@ export function CustomSelect({
       'flex items-center justify-between font-serif',
       'first:rounded-t-xl last:rounded-b-xl',
       index === highlightedIndex
-        ? isDark
-          ? 'bg-stone-700 text-stone-100 shadow-sm'
-          : 'bg-stone-100 text-stone-900 shadow-sm'
+        ? 'bg-stone-100 text-stone-900 shadow-sm dark:bg-stone-700 dark:text-stone-100'
         : isSelected
-          ? isDark
-            ? 'bg-stone-700/50 text-stone-200'
-            : 'bg-stone-50 text-stone-800'
-          : isDark
-            ? 'text-stone-300 hover:bg-stone-700/30'
-            : 'text-stone-700 hover:bg-stone-50'
+          ? 'bg-stone-50 text-stone-800 dark:bg-stone-700/50 dark:text-stone-200'
+          : 'text-stone-700 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-stone-700/30'
     );
 
   return (
@@ -159,11 +148,12 @@ export function CustomSelect({
         tabIndex={0}
         role="combobox"
         aria-expanded={isOpen}
+        aria-controls="dropdown-options"
         aria-haspopup="listbox"
       >
         <span
           className={cn(
-            selectedOption ? '' : isDark ? 'text-stone-500' : 'text-stone-400'
+            selectedOption ? '' : 'text-stone-400 dark:text-stone-500'
           )}
         >
           {selectedOption || placeholder}
@@ -173,13 +163,13 @@ export function CustomSelect({
           className={cn(
             'h-4 w-4 transition-transform duration-200',
             isOpen ? 'rotate-180' : 'rotate-0',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         />
       </div>
 
       <div className={dropdownClasses}>
-        <div ref={optionsRef} role="listbox">
+        <div ref={optionsRef} role="listbox" id="dropdown-options">
           {options.map((option, index) => {
             const isSelected = option === value;
             return (
@@ -200,7 +190,7 @@ export function CustomSelect({
                   <Check
                     className={cn(
                       'ml-2 h-4 w-4',
-                      isDark ? 'text-stone-300' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-300'
                     )}
                   />
                 )}

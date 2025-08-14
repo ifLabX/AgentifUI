@@ -3,13 +3,10 @@
 import { Spinner } from '@components/ui/spinner';
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
-import { useTheme } from '@lib/hooks/use-theme';
 import { uploadDifyFile } from '@lib/services/dify/file-service';
-import type { DifyFileUploadResponse } from '@lib/services/dify/types';
 import { useSupabaseAuth } from '@lib/supabase/hooks';
 import { cn, formatBytes } from '@lib/utils';
 import {
-  AlertCircle,
   CheckCircle2Icon,
   File,
   RotateCcw,
@@ -35,9 +32,9 @@ interface UploadFile {
 }
 
 interface FileUploadFieldProps {
-  config: any;
-  value: any[] | any; // Support single file object or file array
-  onChange: (files: any[] | any) => void; // Return Dify-formatted file object or array
+  config: Record<string, unknown>;
+  value: unknown[] | unknown; // Support single file object or file array
+  onChange: (files: unknown[] | unknown) => void; // Return Dify-formatted file object or array
   error?: string;
   label?: string;
   instanceId: string; // Add instanceId for Dify API call
@@ -63,7 +60,6 @@ export function FileUploadField({
   instanceId,
   isSingleFileMode = false,
 }: FileUploadFieldProps) {
-  const { isDark } = useTheme();
   const { session } = useSupabaseAuth();
   const { currentAppId } = useCurrentApp();
   const t = useTranslations('pages.workflow.fileUpload');
@@ -144,7 +140,7 @@ export function FileUploadField({
         onChange(successfulFiles);
       }
     }
-  }, [uploadFiles, isSingleFileMode]); // Add isSingleFileMode dependency
+  }, [value, onChange, isSingleFileMode]); // Add dependencies
 
   // Infer the Dify file type field based on the file type
   const getDifyFileType = (
@@ -223,13 +219,9 @@ export function FileUploadField({
       } catch (error) {
         const errorMessage = (error as Error).message || t('uploadFailed');
         updateFileStatus(uploadFile.id, 'error', undefined, errorMessage);
-        console.error(
-          `[Workflow file upload] Upload failed: ${uploadFile.name}`,
-          error
-        );
       }
     },
-    [currentAppId, instanceId, session?.user?.id, updateFileStatus]
+    [currentAppId, instanceId, session?.user?.id, updateFileStatus, t]
   );
 
   // Handle file selection
@@ -300,7 +292,6 @@ export function FileUploadField({
 
   // Calculate status statistics
   const isUploading = uploadFiles.some(f => f.status === 'uploading');
-  const hasError = uploadFiles.some(f => f.status === 'error');
   const successCount = uploadFiles.filter(f => f.status === 'success').length;
   // Determine the maximum number of files based on isSingleFileMode and configuration
   // file-list type uses the max_length field, file type uses the number_limits field
@@ -382,7 +373,7 @@ export function FileUploadField({
           <label
             className={cn(
               'font-serif text-sm font-semibold',
-              isDark ? 'text-stone-200' : 'text-stone-800'
+              'text-stone-800 dark:text-stone-200'
             )}
           >
             {label}
@@ -390,9 +381,7 @@ export function FileUploadField({
               <span
                 className={cn(
                   'ml-2 rounded-full px-2 py-1 text-xs',
-                  isDark
-                    ? 'bg-stone-700 text-stone-400'
-                    : 'bg-stone-100 text-stone-600'
+                  'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-400'
                 )}
               >
                 {successCount}/{maxFiles} {t('uploaded')}
@@ -411,15 +400,10 @@ export function FileUploadField({
             'group relative cursor-pointer rounded-xl border-2 border-dashed p-8 text-center',
             'backdrop-blur-sm transition-all duration-300 ease-in-out',
             'hover:scale-[1.01] hover:shadow-lg',
-            isDark
-              ? 'bg-gradient-to-br from-stone-800/80 to-stone-700/80'
-              : 'bg-gradient-to-br from-white/80 to-stone-50/80',
+            'bg-gradient-to-br from-white/80 to-stone-50/80 dark:from-stone-800/80 dark:to-stone-700/80',
             error
-              ? 'border-red-400 hover:border-red-300' +
-                  (isDark ? ' bg-red-900/10' : ' bg-red-50/50')
-              : isDark
-                ? 'border-stone-600 hover:border-stone-500'
-                : 'border-stone-300 hover:border-stone-400',
+              ? 'border-red-400 bg-red-50/50 hover:border-red-300 dark:bg-red-900/10'
+              : 'border-stone-300 hover:border-stone-400 dark:border-stone-600 dark:hover:border-stone-500',
             isUploading && 'cursor-not-allowed opacity-75'
           )}
           onClick={() => !isUploading && fileInputRef.current?.click()}
@@ -429,9 +413,7 @@ export function FileUploadField({
             className={cn(
               'absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100',
               'transition-opacity duration-300',
-              isDark
-                ? 'bg-gradient-to-br from-stone-700/50 to-stone-600/50'
-                : 'bg-gradient-to-br from-stone-100/50 to-stone-200/50'
+              'bg-gradient-to-br from-stone-100/50 to-stone-200/50 dark:from-stone-700/50 dark:to-stone-600/50'
             )}
           />
 
@@ -440,16 +422,12 @@ export function FileUploadField({
               className={cn(
                 'inline-flex h-16 w-16 items-center justify-center rounded-2xl',
                 'shadow-lg transition-transform duration-300 group-hover:scale-110',
-                isDark
-                  ? 'border border-stone-600/50 bg-gradient-to-br from-stone-700 to-stone-600 shadow-stone-900/50'
-                  : 'border border-stone-300/50 bg-gradient-to-br from-stone-100 to-stone-200 shadow-stone-200/50'
+                'border border-stone-300/50 bg-gradient-to-br from-stone-100 to-stone-200 shadow-stone-200/50',
+                'dark:border-stone-600/50 dark:bg-gradient-to-br dark:from-stone-700 dark:to-stone-600 dark:shadow-stone-900/50'
               )}
             >
               <Upload
-                className={cn(
-                  'h-7 w-7',
-                  isDark ? 'text-stone-300' : 'text-stone-600'
-                )}
+                className={cn('h-7 w-7', 'text-stone-600 dark:text-stone-300')}
               />
             </div>
 
@@ -457,7 +435,7 @@ export function FileUploadField({
               <p
                 className={cn(
                   'font-serif text-base font-semibold',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {isUploading ? t('uploading') : t('dropOrClick')}
@@ -466,7 +444,7 @@ export function FileUploadField({
               <div
                 className={cn(
                   'space-y-1 font-serif text-sm',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 <p>
@@ -488,16 +466,15 @@ export function FileUploadField({
         <div
           className={cn(
             'flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg',
-            isDark
-              ? 'border-amber-700/50 bg-gradient-to-r from-amber-900/20 to-amber-800/20 shadow-amber-900/20'
-              : 'border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100/50 shadow-amber-100/50'
+            'border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100/50 shadow-amber-100/50',
+            'dark:border-amber-700/50 dark:bg-gradient-to-r dark:from-amber-900/20 dark:to-amber-800/20 dark:shadow-amber-900/20'
           )}
         >
           <div className="h-2 w-2 rounded-full bg-amber-500" />
           <p
             className={cn(
               'font-serif text-sm',
-              isDark ? 'text-amber-300' : 'text-amber-700'
+              'text-amber-700 dark:text-amber-300'
             )}
           >
             {t('maxFilesReached', {
@@ -526,15 +503,14 @@ export function FileUploadField({
             <div
               className={cn(
                 'h-px flex-1 bg-gradient-to-r from-transparent to-transparent',
-                isDark ? 'via-stone-600' : 'via-stone-300'
+                'via-stone-300 dark:via-stone-600'
               )}
             />
             <span
               className={cn(
                 'rounded-full border px-3 py-1 font-serif text-xs',
-                isDark
-                  ? 'border-stone-700 bg-stone-800 text-stone-400'
-                  : 'border-stone-200 bg-stone-100 text-stone-600'
+                'border-stone-200 bg-stone-100 text-stone-600',
+                'dark:border-stone-700 dark:bg-stone-800 dark:text-stone-400'
               )}
             >
               {t('selectedFiles')}
@@ -542,7 +518,7 @@ export function FileUploadField({
             <div
               className={cn(
                 'h-px flex-1 bg-gradient-to-r from-transparent to-transparent',
-                isDark ? 'via-stone-600' : 'via-stone-300'
+                'via-stone-300 dark:via-stone-600'
               )}
             />
           </div>
@@ -555,17 +531,15 @@ export function FileUploadField({
                   'group relative flex items-center gap-4 rounded-xl border p-4',
                   'backdrop-blur-sm transition-all duration-300 ease-in-out hover:shadow-lg',
                   'animate-in slide-in-from-top-2 fade-in duration-300',
-                  isDark
-                    ? 'bg-gradient-to-r from-stone-800/90 to-stone-700/90'
-                    : 'bg-gradient-to-r from-white/90 to-stone-50/90',
+                  'bg-gradient-to-r from-white/90 to-stone-50/90 dark:from-stone-800/90 dark:to-stone-700/90',
                   uploadFile.status === 'success' &&
-                    (isDark ? 'border-stone-500/50' : 'border-stone-400'),
+                    'border-stone-400 dark:border-stone-500/50',
                   uploadFile.status === 'error' &&
-                    (isDark ? 'border-red-700/50' : 'border-red-200'),
+                    'border-red-200 dark:border-red-700/50',
                   uploadFile.status === 'uploading' &&
-                    (isDark ? 'border-stone-500/50' : 'border-stone-400'),
+                    'border-stone-400 dark:border-stone-500/50',
                   uploadFile.status === 'pending' &&
-                    (isDark ? 'border-stone-600' : 'border-stone-200')
+                    'border-stone-200 dark:border-stone-600'
                 )}
               >
                 {/* Status indicator */}
@@ -574,13 +548,13 @@ export function FileUploadField({
                     className={cn(
                       'flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300',
                       uploadFile.status === 'success' &&
-                        (isDark ? 'bg-stone-700/50' : 'bg-stone-200'),
+                        'bg-stone-200 dark:bg-stone-700/50',
                       uploadFile.status === 'error' &&
-                        (isDark ? 'bg-red-900/30' : 'bg-red-100'),
+                        'bg-red-100 dark:bg-red-900/30',
                       uploadFile.status === 'uploading' &&
-                        (isDark ? 'bg-stone-700/50' : 'bg-stone-200'),
+                        'bg-stone-200 dark:bg-stone-700/50',
                       uploadFile.status === 'pending' &&
-                        (isDark ? 'bg-stone-700' : 'bg-stone-100')
+                        'bg-stone-100 dark:bg-stone-700'
                     )}
                   >
                     {uploadFile.status === 'uploading' && <Spinner size="sm" />}
@@ -588,7 +562,7 @@ export function FileUploadField({
                       <CheckCircle2Icon
                         className={cn(
                           'h-5 w-5',
-                          isDark ? 'text-stone-300' : 'text-stone-600'
+                          'text-stone-600 dark:text-stone-300'
                         )}
                       />
                     )}
@@ -606,9 +580,7 @@ export function FileUploadField({
                           className={cn(
                             'flex h-full w-full items-center justify-center rounded-xl',
                             'transition-colors duration-200 focus:outline-none',
-                            isDark
-                              ? 'text-red-400 hover:bg-red-800/50'
-                              : 'text-red-600 hover:bg-red-200'
+                            'text-red-600 hover:bg-red-200 dark:text-red-400 dark:hover:bg-red-800/50'
                           )}
                           aria-label={t('retryUpload')}
                         >
@@ -620,7 +592,7 @@ export function FileUploadField({
                       <File
                         className={cn(
                           'h-5 w-5',
-                          isDark ? 'text-stone-400' : 'text-stone-600'
+                          'text-stone-600 dark:text-stone-400'
                         )}
                       />
                     )}
@@ -637,7 +609,7 @@ export function FileUploadField({
                   <p
                     className={cn(
                       'truncate font-serif text-sm font-semibold',
-                      isDark ? 'text-stone-200' : 'text-stone-800'
+                      'text-stone-800 dark:text-stone-200'
                     )}
                   >
                     {uploadFile.name}
@@ -646,9 +618,7 @@ export function FileUploadField({
                     <span
                       className={cn(
                         'rounded-full px-2 py-1 font-mono text-xs',
-                        isDark
-                          ? 'bg-stone-700 text-stone-400'
-                          : 'bg-stone-100 text-stone-600'
+                        'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-400'
                       )}
                     >
                       {formatBytes(uploadFile.size)}
@@ -658,7 +628,7 @@ export function FileUploadField({
                       <span
                         className={cn(
                           'font-serif text-xs',
-                          isDark ? 'text-red-400' : 'text-red-600'
+                          'text-red-600 dark:text-red-400'
                         )}
                       >
                         {uploadFile.error}
@@ -680,9 +650,8 @@ export function FileUploadField({
                     onClick={() => handleRemoveFile(uploadFile.id)}
                     className={cn(
                       'rounded-xl p-2 opacity-0 transition-all duration-200 group-hover:opacity-100',
-                      isDark
-                        ? 'text-stone-400 hover:bg-stone-600 hover:text-stone-200'
-                        : 'text-stone-500 hover:bg-stone-200 hover:text-stone-700'
+                      'text-stone-500 hover:bg-stone-200 hover:text-stone-700',
+                      'dark:text-stone-400 dark:hover:bg-stone-600 dark:hover:text-stone-200'
                     )}
                   >
                     <X className="h-4 w-4" />
@@ -699,16 +668,15 @@ export function FileUploadField({
         <div
           className={cn(
             'flex items-center gap-3 rounded-xl border p-4 shadow-lg',
-            isDark
-              ? 'border-red-700/50 bg-gradient-to-r from-red-900/20 to-red-800/20 shadow-red-900/20'
-              : 'border-red-200 bg-gradient-to-r from-red-50 to-red-100/50 shadow-red-100/50'
+            'border-red-200 bg-gradient-to-r from-red-50 to-red-100/50 shadow-red-100/50',
+            'dark:border-red-700/50 dark:bg-gradient-to-r dark:from-red-900/20 dark:to-red-800/20 dark:shadow-red-900/20'
           )}
         >
           <div className="h-2 w-2 rounded-full bg-red-500" />
           <p
             className={cn(
               'font-serif text-sm',
-              isDark ? 'text-red-300' : 'text-red-700'
+              'text-red-700 dark:text-red-300'
             )}
           >
             {error}
