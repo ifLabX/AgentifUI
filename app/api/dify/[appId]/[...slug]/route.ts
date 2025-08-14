@@ -123,6 +123,9 @@ async function proxyToDify(
 
   // validate slug to prevent constructing invalid target URLs
   if (!slug || slug.length === 0) {
+    console.error(
+      `[App: ${appId}] [${req.method}] Invalid request: Slug path is missing.`
+    );
     const baseResponse = new Response(
       JSON.stringify({ error: 'Invalid request: slug path is missing.' }),
       {
@@ -150,6 +153,7 @@ async function proxyToDify(
 
     // validate database configuration
     if (!difyConfig) {
+      console.error(`[App: ${appId}] [${req.method}] Configuration not found.`);
       // return 400 Bad Request, indicating that the provided appId is invalid or not configured
       const baseResponse = NextResponse.json(
         { error: `Configuration for Dify app '${appId}' not found.` },
@@ -165,6 +169,9 @@ async function proxyToDify(
 
   // check if the obtained key and url are valid again
   if (!difyApiKey || !difyApiUrl) {
+    console.error(
+      `[App: ${appId}] [${req.method}] Invalid configuration loaded (missing key or URL).`
+    );
     // return 500 Internal Server Error, indicating server-side configuration issues
     const baseResponse = NextResponse.json(
       { error: `Server configuration error for app '${appId}'.` },
@@ -225,6 +232,10 @@ async function proxyToDify(
         // important: remove Content-Type, let fetch automatically set multipart/form-data with correct boundary
         finalHeaders.delete('Content-Type');
       } catch (formError) {
+        console.error(
+          `[App: ${appId}] [${req.method}] Error parsing FormData:`,
+          formError
+        );
         return NextResponse.json(
           {
             error: 'Failed to parse multipart form data',
@@ -329,11 +340,13 @@ async function proxyToDify(
 
                 // push the data block read from Dify to the stream we created
                 controller.enqueue(value);
-                // optional: print decoded data blocks for debugging
-                // console.log(`[App: ${appId}] [${req.method}] SSE Chunk:`, decoder.decode(value, { stream: true }));
               }
             } catch (error) {
               // if an error occurs while reading the Dify stream (e.g. Dify server disconnected)
+              console.error(
+                `[App: ${appId}] [${req.method}] SSE Stream: Error reading from Dify stream:`,
+                error
+              );
               // trigger an error on the stream we created, notify downstream consumers
               controller.error(error);
             } finally {

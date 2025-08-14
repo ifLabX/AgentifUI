@@ -1,6 +1,6 @@
 'use client';
 
-import { WorkflowLayout } from '@components/workflow/workflow-layout';
+import { WorkflowInputForm } from '@components/workflow/workflow-input-form';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
@@ -236,7 +236,7 @@ export default function WorkflowPage({ params }: WorkflowPageProps) {
       )}
     >
       <div className="h-full overflow-hidden pt-12">
-        <WorkflowLayout instanceId={instanceId} />
+        <WorkflowInputForm instanceId={instanceId} />
       </div>
     </div>
   );

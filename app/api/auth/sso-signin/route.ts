@@ -11,7 +11,6 @@ import { NextRequest, NextResponse } from 'next/server';
 const processingRequests = new Map<string, Promise<NextResponse>>();
 
 export async function POST(request: NextRequest) {
-  const startTime = Date.now();
   let requestData;
 
   try {
@@ -96,6 +95,7 @@ export async function POST(request: NextRequest) {
           await adminSupabase.auth.admin.getUserById(userId);
 
         if (userError || !user) {
+          console.error('SSO user not found in Supabase:', userError);
           return NextResponse.json(
             { message: 'User not found' },
             { status: 404 }
@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
         // this solves the authentication failure problem caused by email mismatch
         const actualUserEmail = user.user.email || userEmail;
         if (!actualUserEmail) {
+          console.error('No email found for user:', userId);
           return NextResponse.json(
             { message: 'User email information is missing' },
             { status: 400 }
@@ -125,6 +126,7 @@ export async function POST(request: NextRequest) {
             });
 
           if (updateError) {
+            console.error('Failed to set temporary password:', updateError);
             return NextResponse.json(
               { message: 'Failed to set temporary password' },
               { status: 500 }
@@ -142,6 +144,10 @@ export async function POST(request: NextRequest) {
             });
 
           if (signInError || !signInData.session) {
+            console.error(
+              'Failed to sign in with temporary password:',
+              signInError
+            );
             return NextResponse.json(
               { message: 'Session creation failed' },
               { status: 500 }
@@ -153,8 +159,11 @@ export async function POST(request: NextRequest) {
             await adminSupabase.auth.admin.updateUserById(userId, {
               password: undefined,
             });
-          } catch {
-            // Failed to cleanup temporary password
+          } catch (cleanupError) {
+            console.error(
+              'Failed to cleanup temporary password:',
+              cleanupError
+            );
           }
 
           // SSO login successful, return result
@@ -167,6 +176,7 @@ export async function POST(request: NextRequest) {
             message: 'SSO login successful',
           });
         } catch (authError) {
+          console.error('Authentication error:', authError);
           return NextResponse.json(
             {
               message: `Authentication failed: ${authError instanceof Error ? authError.message : 'Unknown error'}`,
@@ -188,6 +198,8 @@ export async function POST(request: NextRequest) {
 
     return await requestPromise;
   } catch (error) {
+    console.error('SSO signin failed:', error);
+
     // clean up possible cache entries when error occurs
     // Note: Error handling may not have access to sensitiveData, so we try to construct the key from cookie
     try {
