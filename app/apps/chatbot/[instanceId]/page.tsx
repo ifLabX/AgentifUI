@@ -32,7 +32,7 @@ import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export default function AppDetailPage() {
-  const { colors, isDark } = useThemeColors();
+  const { isDark } = useThemeColors();
   const { widthClass, paddingClass } = useChatWidth();
   const router = useRouter();
   const params = useParams();
@@ -274,7 +274,7 @@ export default function AppDetailPage() {
       <div
         className={cn(
           'relative flex h-full w-full flex-col',
-          colors.mainBackground.tailwind,
+          'bg-stone-100 dark:bg-stone-800',
           'items-center justify-center'
         )}
       >
@@ -327,7 +327,7 @@ export default function AppDetailPage() {
       <div
         className={cn(
           'relative flex h-full w-full flex-col',
-          colors.mainBackground.tailwind,
+          'bg-stone-100 dark:bg-stone-800',
           'items-center justify-center'
         )}
       >
@@ -354,8 +354,8 @@ export default function AppDetailPage() {
     <div
       className={cn(
         'relative flex h-full w-full flex-col',
-        colors.mainBackground.tailwind,
-        colors.mainText.tailwind
+        'bg-stone-100 dark:bg-stone-800',
+        'text-stone-900 dark:text-gray-100'
       )}
     >
       {/* Main content area with simplified layout */}
