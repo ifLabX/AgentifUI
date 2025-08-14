@@ -16,10 +16,9 @@ import {
 } from '@lib/hooks';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
+
 import type { ChatUploadFile } from '@lib/services/dify/types';
 import { useAppListStore } from '@lib/stores/app-list-store';
-import { useChatInputStore } from '@lib/stores/chat-input-store';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
@@ -32,7 +31,6 @@ import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export default function AppDetailPage() {
-  const { isDark } = useThemeColors();
   const { widthClass, paddingClass } = useChatWidth();
   const router = useRouter();
   const params = useParams();
@@ -99,12 +97,6 @@ export default function AppDetailPage() {
 
   // get current app instance data
   const currentApp = apps.find(app => app.instance_id === instanceId);
-
-  // theme sync: ensure input box style follows theme change
-  const setDarkMode = useChatInputStore(state => state.setDarkMode);
-  useEffect(() => {
-    setDarkMode(isDark);
-  }, [isDark, setDarkMode]);
 
   const { clearConversationState } = useChatInterface();
 
