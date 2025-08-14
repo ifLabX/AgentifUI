@@ -58,10 +58,7 @@ interface SpinnerIconProps {
 function SpinnerIcon({ size = 24 }: SpinnerIconProps) {
   return (
     <svg
-      className={cn(
-        'animate-spin',
-        'text-stone-600 dark:text-stone-300'
-      )}
+      className={cn('animate-spin', 'text-stone-600 dark:text-stone-300')}
       width={size}
       height={size}
       xmlns="http://www.w3.org/2000/svg"

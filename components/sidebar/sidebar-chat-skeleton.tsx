@@ -38,10 +38,7 @@ export function SidebarChatSkeleton() {
       {/* Title skeleton screen - only display one line of title */}
       <div className="ml-3 flex min-w-0 flex-1 items-center">
         <div
-          className={cn(
-            'h-4 w-32 rounded',
-            'bg-stone-300 dark:bg-stone-700'
-          )}
+          className={cn('h-4 w-32 rounded', 'bg-stone-300 dark:bg-stone-700')}
         />
       </div>
     </div>

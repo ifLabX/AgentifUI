@@ -55,7 +55,8 @@ export function MoreButton({ id, className, tooltipText }: MoreButtonProps) {
         'text-gray-500 hover:bg-gray-100 hover:text-gray-700 active:bg-gray-200',
         'dark:text-gray-400 dark:hover:bg-stone-600/60 dark:hover:text-gray-200 dark:active:bg-stone-600/80',
         // Active state styles
-        isActive && 'bg-gray-100 text-gray-700 dark:bg-stone-600/60 dark:text-gray-200',
+        isActive &&
+          'bg-gray-100 text-gray-700 dark:bg-stone-600/60 dark:text-gray-200',
         className
       )}
       onClick={handleClick}

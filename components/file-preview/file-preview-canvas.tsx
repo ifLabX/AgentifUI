@@ -32,27 +32,15 @@ const LoadingSkeleton: React.FC = () => {
   return (
     <div className="animate-pulse space-y-4">
       <div className="flex items-center space-x-2">
-        <RefreshCwIcon
-          className="h-4 w-4 animate-spin text-stone-600 dark:text-stone-400"
-        />
-        <span
-          className="text-sm text-stone-600 dark:text-stone-400"
-        >
+        <RefreshCwIcon className="h-4 w-4 animate-spin text-stone-600 dark:text-stone-400" />
+        <span className="text-sm text-stone-600 dark:text-stone-400">
           {t('loading')}
         </span>
       </div>
-      <div
-        className="space-y-3 rounded-md p-4 bg-stone-100 dark:bg-stone-800"
-      >
-        <div
-          className="h-4 rounded bg-stone-200 dark:bg-stone-700"
-        />
-        <div
-          className="h-4 w-3/4 rounded bg-stone-200 dark:bg-stone-700"
-        />
-        <div
-          className="h-4 w-1/2 rounded bg-stone-200 dark:bg-stone-700"
-        />
+      <div className="space-y-3 rounded-md bg-stone-100 p-4 dark:bg-stone-800">
+        <div className="h-4 rounded bg-stone-200 dark:bg-stone-700" />
+        <div className="h-4 w-3/4 rounded bg-stone-200 dark:bg-stone-700" />
+        <div className="h-4 w-1/2 rounded bg-stone-200 dark:bg-stone-700" />
       </div>
     </div>
   );
@@ -68,9 +56,7 @@ const ErrorDisplay: React.FC<{
 }> = ({ error, onRetry, onClearError }) => {
   const t = useTranslations('filePreview');
   return (
-    <div
-      className="space-y-4 rounded-md border p-4 border-red-300 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200"
-    >
+    <div className="space-y-4 rounded-md border border-red-300 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
       <div className="flex items-start space-x-2">
         <AlertCircleIcon className="mt-0.5 h-5 w-5 flex-shrink-0" />
         <div className="flex-1">
@@ -81,14 +67,14 @@ const ErrorDisplay: React.FC<{
       <div className="flex space-x-2">
         <button
           onClick={onRetry}
-          className="inline-flex items-center space-x-1 rounded px-3 py-1.5 text-sm font-medium transition-colors bg-red-600 text-white hover:bg-red-700 dark:bg-red-800 dark:text-red-100 dark:hover:bg-red-700"
+          className="inline-flex items-center space-x-1 rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700 dark:bg-red-800 dark:text-red-100 dark:hover:bg-red-700"
         >
           <RefreshCwIcon className="h-3 w-3" />
           <span>{t('retryButton')}</span>
         </button>
         <button
           onClick={onClearError}
-          className="inline-flex items-center rounded px-3 py-1.5 text-sm font-medium transition-colors text-red-700 hover:bg-red-100 dark:text-red-200 dark:hover:bg-red-800/50"
+          className="inline-flex items-center rounded px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 dark:text-red-200 dark:hover:bg-red-800/50"
         >
           {t('dismissButton')}
         </button>
@@ -108,9 +94,7 @@ const FileInfoFallback: React.FC<{
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{t('fileInfo.title')}</h3>
-      <div
-        className="space-y-3 rounded-md border p-4 border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800"
-      >
+      <div className="space-y-3 rounded-md border border-stone-200 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-800">
         <div className="space-y-1 text-sm">
           <p>
             <strong>{t('fileInfo.name')}</strong> {file.name}
@@ -126,15 +110,13 @@ const FileInfoFallback: React.FC<{
       <div className="flex space-x-2">
         <button
           onClick={onDownload}
-          className="inline-flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-colors bg-stone-200 text-stone-800 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600"
+          className="inline-flex items-center space-x-2 rounded-md bg-stone-200 px-4 py-2 text-sm font-medium text-stone-800 transition-colors hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600"
         >
           <DownloadIcon className="h-4 w-4" />
           <span>{t('downloadButton')}</span>
         </button>
       </div>
-      <p
-        className="text-xs text-stone-500 dark:text-stone-400"
-      >
+      <p className="text-xs text-stone-500 dark:text-stone-400">
         {t('previewNotSupported')}
       </p>
     </div>
@@ -161,9 +143,7 @@ const FileContentViewer: React.FC<{
 
   if (!file) {
     return (
-      <div
-        className="py-8 text-center text-stone-600 dark:text-stone-400"
-      >
+      <div className="py-8 text-center text-stone-600 dark:text-stone-400">
         {t('noFileSelected')}
       </div>
     );
@@ -194,9 +174,7 @@ const FileContentViewer: React.FC<{
 
   // Show fallback if no content available
   if (!previewContent || !contentHeaders) {
-    return (
-      <FileInfoFallback file={file} onDownload={downloadFile} />
-    );
+    return <FileInfoFallback file={file} onDownload={downloadFile} />;
   }
 
   // Route to appropriate preview component based on content type
@@ -273,9 +251,7 @@ const FileContentViewer: React.FC<{
   }
 
   // Fallback for unsupported types
-  return (
-    <FileInfoFallback file={file} onDownload={downloadFile} />
-  );
+  return <FileInfoFallback file={file} onDownload={downloadFile} />;
 };
 
 export const FilePreviewCanvas = () => {
@@ -349,9 +325,7 @@ export const FilePreviewCanvas = () => {
               </button>
             </div>
             <div className="flex flex-1 flex-col overflow-y-auto p-6">
-              <FileContentViewer
-                file={currentPreviewFile}
-              />
+              <FileContentViewer file={currentPreviewFile} />
             </div>
           </motion.div>
         )}

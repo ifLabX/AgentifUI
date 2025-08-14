@@ -227,10 +227,14 @@ export const UserTable: React.FC<UserTableProps> = ({
     variant: 'success' | 'warning' | 'danger' | 'neutral'
   ) => {
     const variantMap = {
-      success: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700',
-      warning: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700',
-      danger: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700',
-      neutral: 'bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-700/50 dark:text-stone-300 dark:border-stone-600',
+      success:
+        'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700',
+      warning:
+        'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700',
+      danger:
+        'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700',
+      neutral:
+        'bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-700/50 dark:text-stone-300 dark:border-stone-600',
     };
     return variantMap[variant];
   };
@@ -250,14 +254,10 @@ export const UserTable: React.FC<UserTableProps> = ({
       >
         <div className="p-12 text-center">
           <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-b-2 border-stone-400"></div>
-          <p
-            className="font-serif text-lg text-stone-600 dark:text-stone-400"
-          >
+          <p className="font-serif text-lg text-stone-600 dark:text-stone-400">
             {t('table.loading')}
           </p>
-          <p
-            className="mt-2 font-serif text-sm text-stone-500"
-          >
+          <p className="mt-2 font-serif text-sm text-stone-500">
             {t('table.loadingSubtext')}
           </p>
         </div>
@@ -280,10 +280,7 @@ export const UserTable: React.FC<UserTableProps> = ({
           )}
         >
           <UserIcon
-            className={cn(
-              'h-8 w-8',
-              'text-stone-400 dark:text-stone-500'
-            )}
+            className={cn('h-8 w-8', 'text-stone-400 dark:text-stone-500')}
           />
         </div>
         <h3
@@ -294,12 +291,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         >
           {t('table.noData')}
         </h3>
-        <p
-          className={cn(
-            'mb-4 font-serif text-base',
-            'text-stone-500'
-          )}
-        >
+        <p className={cn('mb-4 font-serif text-base', 'text-stone-500')}>
           {t('table.noDataSubtext')}
         </p>
         <p
