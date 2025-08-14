@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useChatInputStore } from '@lib/stores/chat-input-store';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
@@ -30,7 +29,6 @@ export function SidebarContent() {
     updateContentVisibility,
     showContent,
   } = useSidebarStore();
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const router = useRouter();
 
@@ -83,7 +81,7 @@ export function SidebarContent() {
         className={cn(
           'absolute inset-0 flex flex-col overflow-y-auto pb-4',
           'scrollbar-thin scrollbar-track-transparent',
-          isDark ? 'scrollbar-thumb-gray-600' : 'scrollbar-thumb-accent',
+          'scrollbar-thumb-accent dark:scrollbar-thumb-gray-600',
           // On mobile, do not apply animation effect, display directly
           !isMobile &&
             isExpanded &&
