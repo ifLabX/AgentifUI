@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import {
   ArrowRight,
@@ -25,16 +24,12 @@ interface AdminCardProps {
 }
 
 function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
-  const { isDark } = useTheme();
-
   return (
     <Link
       href={href}
       className={cn(
         'group block rounded-xl border p-6 transition-all duration-200 hover:shadow-lg',
-        isDark
-          ? 'hover:bg-stone-750 border-stone-700 bg-stone-800 hover:border-stone-600'
-          : 'border-stone-200 bg-white hover:border-stone-300 hover:shadow-stone-200/50'
+        'dark:hover:bg-stone-750 border-stone-200 bg-white hover:border-stone-300 hover:shadow-stone-200/50 dark:border-stone-700 dark:bg-stone-800 dark:hover:border-stone-600'
       )}
     >
       <div className="flex items-start justify-between">
@@ -79,11 +74,9 @@ function AdminCard({ title, description, icon: Icon, href }: AdminCardProps) {
 }
 
 export default function AdminPage() {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.admin.main');
   const tLayout = useTranslations('pages.admin.layout');
 
-  // Admin function card configuration
   const adminCards: AdminCardProps[] = [
     {
       title: tLayout('menuItems.apiConfig.text'),
@@ -126,14 +119,11 @@ export default function AdminPage() {
   return (
     <div className="min-h-full">
       <div className="mx-auto max-w-7xl p-6">
-        {/* Page title and description - left-aligned layout, consistent with project style */}
         <div className="mb-8">
           <h1
             className={cn(
               'mb-3 bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent',
-              isDark
-                ? 'from-stone-100 to-stone-300'
-                : 'from-stone-800 to-stone-600'
+              'from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300'
             )}
           >
             {t('title')}
@@ -143,7 +133,6 @@ export default function AdminPage() {
           </p>
         </div>
 
-        {/* Admin function card grid - optimized layout and spacing */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {adminCards.map(card => (
             <AdminCard
