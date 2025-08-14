@@ -13,7 +13,6 @@ import { useChatInterface, useChatScroll, useWelcomeScreen } from '@lib/hooks';
 import { useChatflowInterface } from '@lib/hooks/use-chatflow-interface';
 import { useChatflowState } from '@lib/hooks/use-chatflow-state';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
-
 import type { ChatUploadFile } from '@lib/services/dify/types';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';

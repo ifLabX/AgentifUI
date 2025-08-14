@@ -16,7 +16,6 @@ import {
 } from '@lib/hooks';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
 import { useProfile } from '@lib/hooks/use-profile';
-
 import type { ChatUploadFile } from '@lib/services/dify/types';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useChatLayoutStore } from '@lib/stores/chat-layout-store';
