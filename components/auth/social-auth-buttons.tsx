@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@components/ui/button';
-import { useTheme } from '@lib/hooks/use-theme';
 import { createClient } from '@lib/supabase/client';
 import { cn } from '@lib/utils';
 
@@ -26,7 +25,6 @@ export function SocialAuthButtons({
   redirectTo = '/chat',
   className,
 }: SocialAuthButtonsProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.auth.social.github');
 
   const [isLoading, setIsLoading] = useState({
@@ -72,7 +70,7 @@ export function SocialAuthButtons({
         <div
           className={cn(
             'rounded-lg border-l-4 border-red-500 p-3 font-serif text-sm',
-            isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-700'
+            'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
           )}
         >
           {error}
@@ -85,9 +83,7 @@ export function SocialAuthButtons({
         size="lg"
         className={cn(
           'relative flex h-12 w-full cursor-pointer items-center justify-center gap-3 font-serif',
-          isDark
-            ? 'border-stone-700 bg-stone-800 text-white hover:bg-stone-700'
-            : 'border-stone-300 bg-white text-stone-700 hover:bg-stone-50'
+          'border-stone-300 bg-white text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:hover:bg-stone-700'
         )}
         onClick={() => handleSocialAuth('github')}
         disabled={isLoading.github}

@@ -5,7 +5,6 @@ import { hideActiveTooltip } from '@components/ui/tooltip';
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper';
 import { useFileTypes } from '@lib/hooks/use-file-types';
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useAttachmentStore } from '@lib/stores/attachment-store';
 import { cn } from '@lib/utils';
 import { Loader2, Paperclip } from 'lucide-react';
@@ -36,7 +35,6 @@ export const FileTypeSelector = ({
   className,
 }: FileTypeSelectorProps) => {
   const { fileTypes, uploadConfig, isLoading, error } = useFileTypes();
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const [isOpen, setIsOpen] = useState(false);
   const attachmentFiles = useAttachmentStore(state => state.files);
@@ -128,7 +126,6 @@ export const FileTypeSelector = ({
             <Paperclip className="h-4 w-4" />
           )
         }
-        isDark={isDark}
         ariaLabel={ariaLabel || t('fileTypeSelector.ariaLabel')}
         disabled={isDisabled}
         className={cn(
@@ -168,7 +165,7 @@ export const FileTypeSelector = ({
           <div
             className={cn(
               'flex items-center justify-center py-4 font-serif',
-              isDark ? 'text-gray-400' : 'text-gray-500'
+              'text-gray-500 dark:text-gray-400'
             )}
           >
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -178,7 +175,7 @@ export const FileTypeSelector = ({
           <div
             className={cn(
               'px-3 py-2 font-serif text-sm',
-              isDark ? 'text-red-300' : 'text-red-500'
+              'text-red-500 dark:text-red-300'
             )}
           >
             {t('fileTypeSelector.loadError')}
@@ -187,7 +184,7 @@ export const FileTypeSelector = ({
           <div
             className={cn(
               'px-3 py-2 text-center font-serif text-sm',
-              isDark ? 'text-gray-400' : 'text-gray-500'
+              'text-gray-500 dark:text-gray-400'
             )}
           >
             {t('fileTypeSelector.noTypesConfigured')}
@@ -198,9 +195,7 @@ export const FileTypeSelector = ({
             <div
               className={cn(
                 'mb-1 border-b px-3 py-1 font-serif text-xs',
-                isDark
-                  ? 'border-gray-600 text-gray-400'
-                  : 'border-gray-200 text-gray-500'
+                'border-gray-200 text-gray-500 dark:border-gray-600 dark:text-gray-400'
               )}
             >
               {uploadConfig.maxFiles > 0 ? (
@@ -216,7 +211,7 @@ export const FileTypeSelector = ({
                 <div
                   className={cn(
                     'mt-1 text-xs',
-                    isDark ? 'text-orange-400' : 'text-orange-600'
+                    'text-orange-600 dark:text-orange-400'
                   )}
                 >
                   {t('fileTypeSelector.reachedLimit', {
@@ -242,7 +237,7 @@ export const FileTypeSelector = ({
                   <span
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-gray-400' : 'text-gray-500'
+                      'text-gray-500 dark:text-gray-400'
                     )}
                   >
                     {type.maxSize}

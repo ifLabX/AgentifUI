@@ -2,7 +2,6 @@
 
 import { Button as UIButton } from '@components/ui/button';
 import { useMounted } from '@lib/hooks';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 
 import type React from 'react';
@@ -13,7 +12,6 @@ interface ChatButtonProps {
   disabled?: boolean;
   className?: string;
   variant?: 'function' | 'submit';
-  isDark?: boolean;
   ariaLabel: string;
   forceActiveStyle?: boolean;
 }
@@ -24,19 +22,15 @@ export const ChatButton = ({
   disabled = false,
   className,
   variant = 'function',
-  isDark = false,
   ariaLabel,
   forceActiveStyle = false,
 }: ChatButtonProps) => {
   const isMounted = useMounted();
-  // Get theme colors
-  const { colors } = useThemeColors();
 
   if (!isMounted) {
     return null;
   }
 
-  // Function button - with subtle gray border
   if (variant === 'function') {
     return (
       <UIButton
@@ -47,9 +41,7 @@ export const ChatButton = ({
         disabled={disabled}
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-lg',
-          isDark
-            ? `border border-stone-600 bg-stone-600/30 ${colors.mainText.tailwind} ${colors.buttonHover.tailwind}`
-            : 'border border-gray-200 text-gray-600 hover:bg-gray-50',
+          'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-stone-600 dark:bg-stone-600/30 dark:text-stone-300 dark:hover:bg-stone-700/50',
           'bg-transparent',
           'cursor-pointer',
           className
@@ -61,7 +53,6 @@ export const ChatButton = ({
     );
   }
 
-  // Submit/upload button - empty state is dark gray
   return (
     <UIButton
       type="button"
@@ -71,12 +62,8 @@ export const ChatButton = ({
       className={cn(
         'flex h-8 w-8 items-center justify-center rounded-full',
         forceActiveStyle || !disabled
-          ? isDark
-            ? 'bg-stone-900 text-white hover:bg-stone-800'
-            : 'bg-black text-white hover:bg-gray-800'
-          : isDark
-            ? 'bg-stone-600 text-stone-300'
-            : 'bg-gray-200 text-gray-400',
+          ? 'bg-black text-white hover:bg-gray-800 dark:bg-stone-900 dark:hover:bg-stone-800'
+          : 'bg-gray-200 text-gray-400 dark:bg-stone-600 dark:text-stone-300',
         'cursor-pointer shadow-sm',
         className
       )}
