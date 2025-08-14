@@ -93,12 +93,7 @@ export default function PhoneLoginPage() {
         </div>
 
         {/* --- bottom description --- */}
-        <p
-          className={cn(
-            'text-center font-serif text-xs',
-            'text-gray-500'
-          )}
-        >
+        <p className={cn('text-center font-serif text-xs', 'text-gray-500')}>
           {t('termsText')}{' '}
           <Link
             href="/terms"
