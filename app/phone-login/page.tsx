@@ -1,23 +1,19 @@
 'use client';
 
 import PhoneAuth from '@components/auth/phone-auth';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function PhoneLoginPage() {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.auth.phoneLoginPage');
 
   return (
     <div
       className={cn(
         'flex min-h-screen items-center justify-center p-4',
-        isDark
-          ? 'bg-gradient-to-br from-stone-900 via-gray-900 to-stone-900'
-          : 'bg-gradient-to-br from-stone-50 via-stone-100 to-stone-50'
+        'bg-gradient-to-br from-stone-50 via-stone-100 to-stone-50 dark:from-stone-900 dark:via-gray-900 dark:to-stone-900'
       )}
     >
       <div className="w-full max-w-md space-y-6">
@@ -26,7 +22,7 @@ export default function PhoneLoginPage() {
           <h1
             className={cn(
               'font-serif text-3xl font-bold tracking-tight',
-              isDark ? 'text-gray-100' : 'text-gray-900'
+              'text-gray-900 dark:text-gray-100'
             )}
           >
             {t('title')}
@@ -34,7 +30,7 @@ export default function PhoneLoginPage() {
           <p
             className={cn(
               'font-serif text-sm',
-              isDark ? 'text-gray-400' : 'text-gray-600'
+              'text-gray-600 dark:text-gray-400'
             )}
           >
             {t('subtitle')}
@@ -48,9 +44,7 @@ export default function PhoneLoginPage() {
         <div
           className={cn(
             'rounded-xl border p-6 font-serif shadow-lg transition-all',
-            isDark
-              ? 'border-stone-800 bg-stone-900'
-              : 'border-stone-200 bg-stone-50'
+            'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900'
           )}
         >
           <div className="space-y-4 text-center">
@@ -59,7 +53,7 @@ export default function PhoneLoginPage() {
                 <span
                   className={cn(
                     'w-full border-t',
-                    isDark ? 'border-stone-700' : 'border-stone-300'
+                    'border-stone-300 dark:border-stone-700'
                   )}
                 />
               </div>
@@ -67,9 +61,7 @@ export default function PhoneLoginPage() {
                 <span
                   className={cn(
                     'px-2 font-serif',
-                    isDark
-                      ? 'bg-stone-900 text-gray-400'
-                      : 'bg-stone-50 text-gray-500'
+                    'bg-stone-50 text-gray-500 dark:bg-stone-900 dark:text-gray-400'
                   )}
                 >
                   {t('orSeparator')}
@@ -82,9 +74,7 @@ export default function PhoneLoginPage() {
                 href="/login"
                 className={cn(
                   'font-serif text-sm hover:underline',
-                  isDark
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-600 hover:text-stone-700'
+                  'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
                 )}
               >
                 {t('emailLoginLink')}
@@ -93,9 +83,7 @@ export default function PhoneLoginPage() {
                 href="/register"
                 className={cn(
                   'font-serif text-sm hover:underline',
-                  isDark
-                    ? 'text-gray-400 hover:text-gray-300'
-                    : 'text-gray-600 hover:text-gray-700'
+                  'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 )}
               >
                 {t('registerLink')}
@@ -108,7 +96,7 @@ export default function PhoneLoginPage() {
         <p
           className={cn(
             'text-center font-serif text-xs',
-            isDark ? 'text-gray-500' : 'text-gray-500'
+            'text-gray-500'
           )}
         >
           {t('termsText')}{' '}
@@ -116,7 +104,7 @@ export default function PhoneLoginPage() {
             href="/terms"
             className={cn(
               'underline',
-              isDark ? 'hover:text-gray-400' : 'hover:text-gray-700'
+              'hover:text-gray-700 dark:hover:text-gray-400'
             )}
           >
             {t('termsLink')}
@@ -126,7 +114,7 @@ export default function PhoneLoginPage() {
             href="/privacy"
             className={cn(
               'underline',
-              isDark ? 'hover:text-gray-400' : 'hover:text-gray-700'
+              'hover:text-gray-700 dark:hover:text-gray-400'
             )}
           >
             {t('privacyLink')}
