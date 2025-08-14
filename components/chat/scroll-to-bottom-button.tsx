@@ -16,7 +16,7 @@ import { usePathname } from 'next/navigation';
  */
 export const ScrollToBottomButton = () => {
   const { isAtBottom } = useChatScrollStore();
-  const { colors, isDark } = useThemeColors();
+  const { colors } = useThemeColors();
   const resetScrollState = useChatScrollStore(state => state.resetScrollState);
   const pathname = usePathname();
   const t = useTranslations('pages.chat.input');

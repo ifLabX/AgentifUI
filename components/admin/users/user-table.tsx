@@ -227,18 +227,10 @@ export const UserTable: React.FC<UserTableProps> = ({
     variant: 'success' | 'warning' | 'danger' | 'neutral'
   ) => {
     const variantMap = {
-      success: isDark
-        ? 'bg-emerald-900/30 text-emerald-300 border-emerald-700'
-        : 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      warning: isDark
-        ? 'bg-amber-900/30 text-amber-300 border-amber-700'
-        : 'bg-amber-50 text-amber-700 border-amber-200',
-      danger: isDark
-        ? 'bg-red-900/30 text-red-300 border-red-700'
-        : 'bg-red-50 text-red-700 border-red-200',
-      neutral: isDark
-        ? 'bg-stone-700/50 text-stone-300 border-stone-600'
-        : 'bg-stone-100 text-stone-700 border-stone-300',
+      success: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700',
+      warning: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700',
+      danger: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700',
+      neutral: 'bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-700/50 dark:text-stone-300 dark:border-stone-600',
     };
     return variantMap[variant];
   };
@@ -253,26 +245,18 @@ export const UserTable: React.FC<UserTableProps> = ({
       <div
         className={cn(
           'overflow-hidden rounded-xl border shadow-sm',
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50'
-            : 'border-stone-200/50 bg-white'
+          'border-stone-200/50 bg-white dark:border-stone-700/50 dark:bg-stone-800/50'
         )}
       >
         <div className="p-12 text-center">
           <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-b-2 border-stone-400"></div>
           <p
-            className={cn(
-              'font-serif text-lg',
-              isDark ? 'text-stone-400' : 'text-stone-600'
-            )}
+            className="font-serif text-lg text-stone-600 dark:text-stone-400"
           >
             {t('table.loading')}
           </p>
           <p
-            className={cn(
-              'mt-2 font-serif text-sm',
-              isDark ? 'text-stone-500' : 'text-stone-500'
-            )}
+            className="mt-2 font-serif text-sm text-stone-500"
           >
             {t('table.loadingSubtext')}
           </p>
@@ -286,28 +270,26 @@ export const UserTable: React.FC<UserTableProps> = ({
       <div
         className={cn(
           'rounded-xl border p-12 text-center shadow-sm',
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50'
-            : 'border-stone-200/50 bg-white'
+          'border-stone-200/50 bg-white dark:border-stone-700/50 dark:bg-stone-800/50'
         )}
       >
         <div
           className={cn(
             'mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full',
-            isDark ? 'bg-stone-700/50' : 'bg-stone-100'
+            'bg-stone-100 dark:bg-stone-700/50'
           )}
         >
           <UserIcon
             className={cn(
               'h-8 w-8',
-              isDark ? 'text-stone-500' : 'text-stone-400'
+              'text-stone-400 dark:text-stone-500'
             )}
           />
         </div>
         <h3
           className={cn(
             'mb-3 font-serif text-xl font-semibold',
-            isDark ? 'text-stone-300' : 'text-stone-700'
+            'text-stone-700 dark:text-stone-300'
           )}
         >
           {t('table.noData')}
@@ -315,7 +297,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         <p
           className={cn(
             'mb-4 font-serif text-base',
-            isDark ? 'text-stone-500' : 'text-stone-500'
+            'text-stone-500'
           )}
         >
           {t('table.noDataSubtext')}
@@ -323,7 +305,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         <p
           className={cn(
             'font-serif text-sm',
-            isDark ? 'text-stone-600' : 'text-stone-400'
+            'text-stone-400 dark:text-stone-600'
           )}
         >
           {t('table.noDataHint')}

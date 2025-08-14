@@ -56,13 +56,11 @@ interface SpinnerIconProps {
  * @description SVG spinner icon for loading indication
  */
 function SpinnerIcon({ size = 24 }: SpinnerIconProps) {
-  const { isDark } = useThemeColors();
-
   return (
     <svg
       className={cn(
         'animate-spin',
-        isDark ? 'text-stone-300' : 'text-stone-600'
+        'text-stone-600 dark:text-stone-300'
       )}
       width={size}
       height={size}
