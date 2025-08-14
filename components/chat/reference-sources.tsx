@@ -97,13 +97,9 @@ export function ReferenceSources({
       >
         <div className="flex items-center space-x-2">
           {isExpanded ? (
-            <ChevronUpIcon
-              className="h-3.5 w-3.5 text-stone-600 dark:text-stone-400"
-            />
+            <ChevronUpIcon className="h-3.5 w-3.5 text-stone-600 dark:text-stone-400" />
           ) : (
-            <ChevronDownIcon
-              className="h-3.5 w-3.5 text-stone-600 dark:text-stone-400"
-            />
+            <ChevronDownIcon className="h-3.5 w-3.5 text-stone-600 dark:text-stone-400" />
           )}
           <span className="font-serif text-sm font-medium">
             📚 {t('title', { count: retrieverResources.length })}

@@ -75,13 +75,17 @@ export function Home() {
 
   // Static color classes for both light and dark themes
   const colors = {
-    titleGradient: 'from-stone-700 to-stone-900 dark:from-stone-300 dark:to-stone-500',
+    titleGradient:
+      'from-stone-700 to-stone-900 dark:from-stone-300 dark:to-stone-500',
     textColor: 'text-stone-700 dark:text-gray-300',
     cardBg: 'bg-stone-100 dark:bg-stone-700',
     cardBorder: 'border-stone-200 dark:border-stone-600',
-    cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]',
-    primaryButton: 'bg-stone-800 hover:bg-stone-700 text-gray-100 dark:bg-stone-600 dark:hover:bg-stone-500',
-    secondaryButton: 'border-stone-400 text-stone-800 hover:bg-stone-200 dark:border-stone-500 dark:text-gray-200 dark:hover:bg-stone-600',
+    cardShadow:
+      'shadow-[0_4px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]',
+    primaryButton:
+      'bg-stone-800 hover:bg-stone-700 text-gray-100 dark:bg-stone-600 dark:hover:bg-stone-500',
+    secondaryButton:
+      'border-stone-400 text-stone-800 hover:bg-stone-200 dark:border-stone-500 dark:text-gray-200 dark:hover:bg-stone-600',
     featureIconBg: 'bg-stone-200 dark:bg-stone-600',
     featureTextColor: 'text-stone-700 dark:text-gray-300',
   };
