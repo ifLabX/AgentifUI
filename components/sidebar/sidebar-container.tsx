@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
 
@@ -14,7 +13,6 @@ import { SidebarHeader } from './sidebar-header';
 export function SidebarContainer() {
   const { isExpanded, toggleSidebar, isAnimating, hideMobileNav } =
     useSidebarStore();
-  const { colors, isDark } = useThemeColors();
   const isMobile = useMobile();
 
   // Hover state management - for background effects only, does not trigger expansion
@@ -24,7 +22,6 @@ export function SidebarContainer() {
   const handleMouseEnter = () => {
     if (!isMobile) {
       setIsHovering(true);
-      // Ensure any residual focus state is removed
       const activeElement = document.activeElement as HTMLElement;
       activeElement?.blur?.();
     }
@@ -33,7 +30,6 @@ export function SidebarContainer() {
   const handleMouseLeave = () => {
     if (!isMobile) {
       setIsHovering(false);
-      // Ensure any residual focus state is removed
       const activeElement = document.activeElement as HTMLElement;
       activeElement?.blur?.();
     }
@@ -69,61 +65,32 @@ export function SidebarContainer() {
     }
   };
 
-  // Get sidebar styles based on the theme
-  const getSidebarStyles = () => {
-    if (isDark) {
-      return {
-        border: 'border-r-stone-700/50',
-        text: 'text-stone-300',
-        hoverBg: 'hover:bg-stone-700', // Use expanded state background color on hover
-      };
-    } else {
-      return {
-        border: 'border-r-stone-300/60',
-        text: 'text-stone-700',
-        hoverBg: 'hover:bg-stone-200', // Use expanded state background color on hover
-      };
-    }
-  };
-
-  const styles = getSidebarStyles();
-
   return (
     <aside
       className={cn(
         'fixed top-0 left-0 flex h-full flex-col border-r',
-        // Transition effect - use transform for mobile, width for desktop, faster speed
         isMobile
           ? 'transition-transform duration-150 ease-in-out'
           : 'transition-[width,background-color] duration-150 ease-in-out',
 
-        // Width setting - always maintain a fixed width
         isExpanded ? 'w-64' : 'w-16',
 
-        // Mobile show/hide logic
         isMobile && !isExpanded && '-translate-x-full',
         isMobile && isExpanded && 'translate-x-0',
 
-        // Desktop is always visible
         !isMobile && 'translate-x-0',
 
-        // Simplified Z-index setting
         isMobile ? 'z-50' : 'z-30',
 
-        // Theme styles - use sidebar background when expanded, main background when collapsed
         isExpanded
-          ? colors.sidebarBackground.tailwind
-          : colors.mainBackground.tailwind,
+          ? 'bg-stone-100/80 dark:bg-stone-800/80'
+          : 'bg-stone-50/80 dark:bg-stone-900/80',
         'backdrop-blur-sm',
-        styles.border,
-        styles.text,
-
-        // Hover background effect - only on collapsed state and non-mobile, uses expanded state color
-        !isExpanded && !isMobile && styles.hoverBg,
-
-        // Click area hint - show cursor-e-resize only in collapsed state to indicate it can be expanded
-        // Prevent text selection on click
-        // Maintain cursor state during animation to avoid flickering
+        'border-r-stone-300/60 dark:border-r-stone-700/50',
+        'text-stone-700 dark:text-stone-300',
+        !isExpanded &&
+          !isMobile &&
+          'hover:bg-stone-200 dark:hover:bg-stone-700',
         'select-none',
         (!isExpanded && !isMobile) || (isAnimating && !isMobile)
           ? 'cursor-e-resize'

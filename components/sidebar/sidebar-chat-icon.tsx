@@ -3,18 +3,14 @@
 import { cn } from '@lib/utils';
 
 interface SidebarChatIconProps {
-  // Allow custom class name and size
   className?: string;
   size?: 'sm' | 'md' | 'lg';
-  isDark?: boolean;
 }
 
 export function SidebarChatIcon({
   className,
   size = 'md',
-  isDark,
 }: SidebarChatIconProps) {
-  // Determine size based on size attribute
   const sizeClasses = {
     sm: {
       container: 'w-3',
@@ -55,21 +51,21 @@ export function SidebarChatIcon({
         className={cn(
           line1,
           'rounded-full bg-current transition-all duration-150 group-hover:w-full',
-          isDark ? 'opacity-80' : 'opacity-70'
+          'opacity-70 dark:opacity-80'
         )}
       />
       <div
         className={cn(
           line2,
           'rounded-full bg-current transition-all duration-150 group-hover:w-4/5',
-          isDark ? 'opacity-80' : 'opacity-70'
+          'opacity-70 dark:opacity-80'
         )}
       />
       <div
         className={cn(
           line3,
           'rounded-full bg-current transition-all duration-150 group-hover:w-3/5',
-          isDark ? 'opacity-80' : 'opacity-70'
+          'opacity-70 dark:opacity-80'
         )}
       />
     </div>
