@@ -72,8 +72,7 @@ export const AssistantMessageActions: React.FC<
       {/* Divider - uses a deeper color, less visible in dark mode */}
       <div
         className={cn(
-          'mx-1 self-stretch border-r',
-          'border-gray-200/50 dark:border-gray-800/50'
+          'mx-1 self-stretch border-r border-gray-200/50 dark:border-gray-800/50'
         )}
       />
 

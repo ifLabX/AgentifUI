@@ -13,8 +13,7 @@ export default function PhoneLoginPage() {
     <div
       className={cn(
         'flex min-h-screen items-center justify-center p-4',
-        'bg-gradient-to-br from-stone-50 via-stone-100 to-stone-50',
-        'dark:bg-gradient-to-br dark:from-stone-900 dark:via-gray-900 dark:to-stone-900'
+        'bg-gradient-to-br from-stone-50 via-stone-100 to-stone-50 dark:from-stone-900 dark:via-gray-900 dark:to-stone-900'
       )}
     >
       <div className="w-full max-w-md space-y-6">
@@ -45,8 +44,7 @@ export default function PhoneLoginPage() {
         <div
           className={cn(
             'rounded-xl border p-6 font-serif shadow-lg transition-all',
-            'border-stone-200 bg-stone-50',
-            'dark:border-stone-800 dark:bg-stone-900'
+            'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900'
           )}
         >
           <div className="space-y-4 text-center">
@@ -63,8 +61,7 @@ export default function PhoneLoginPage() {
                 <span
                   className={cn(
                     'px-2 font-serif',
-                    'bg-stone-50 text-gray-500',
-                    'dark:bg-stone-900 dark:text-gray-400'
+                    'bg-stone-50 text-gray-500 dark:bg-stone-900 dark:text-gray-400'
                   )}
                 >
                   {t('orSeparator')}
@@ -77,8 +74,7 @@ export default function PhoneLoginPage() {
                 href="/login"
                 className={cn(
                   'font-serif text-sm hover:underline',
-                  'text-stone-600 hover:text-stone-700',
-                  'dark:text-stone-400 dark:hover:text-stone-300'
+                  'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
                 )}
               >
                 {t('emailLoginLink')}
@@ -87,8 +83,7 @@ export default function PhoneLoginPage() {
                 href="/register"
                 className={cn(
                   'font-serif text-sm hover:underline',
-                  'text-gray-600 hover:text-gray-700',
-                  'dark:text-gray-400 dark:hover:text-gray-300'
+                  'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 )}
               >
                 {t('registerLink')}

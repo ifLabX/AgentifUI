@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import {
   type DifyAppType,
   getAllDifyAppTypes,
@@ -37,7 +36,6 @@ export function DifyAppTypeSelector({
   onChange,
   className,
 }: DifyAppTypeSelectorProps) {
-  const { isDark } = useThemeColors();
   const allTypes = getAllDifyAppTypes();
   const tSelector = useTranslations(
     'pages.admin.apiConfig.page.difyAppTypeSelector'
@@ -51,7 +49,7 @@ export function DifyAppTypeSelector({
         <label
           className={cn(
             'mb-3 block font-serif text-sm font-medium',
-            isDark ? 'text-stone-300' : 'text-stone-700'
+            'text-stone-700 dark:text-stone-300'
           )}
         >
           {tSelector('title')}
@@ -68,12 +66,8 @@ export function DifyAppTypeSelector({
                 'flex cursor-pointer flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors',
                 'hover:shadow-sm active:scale-[0.98]',
                 value === typeInfo.key
-                  ? isDark
-                    ? 'border-stone-500 bg-stone-700/50'
-                    : 'border-stone-400 bg-stone-100'
-                  : isDark
-                    ? 'border-stone-600 hover:border-stone-500'
-                    : 'border-stone-300 hover:border-stone-400'
+                  ? 'border-stone-400 bg-stone-100 dark:border-stone-500 dark:bg-stone-700/50'
+                  : 'border-stone-300 hover:border-stone-400 dark:border-stone-600 dark:hover:border-stone-500'
               )}
             >
               {/* --- Top: icon, title and selection indicator --- */}
@@ -83,7 +77,7 @@ export function DifyAppTypeSelector({
                   <div
                     className={cn(
                       'font-serif text-sm font-medium',
-                      isDark ? 'text-stone-100' : 'text-stone-900'
+                      'text-stone-900 dark:text-stone-100'
                     )}
                   >
                     {tDifyTypes(`${typeInfo.key}.label`)}
@@ -91,7 +85,7 @@ export function DifyAppTypeSelector({
                   <div
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   >
                     {tDifyTypes(`${typeInfo.key}.description`)}
@@ -103,19 +97,15 @@ export function DifyAppTypeSelector({
                   className={cn(
                     'flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border-2',
                     value === typeInfo.key
-                      ? isDark
-                        ? 'border-stone-400 bg-stone-400'
-                        : 'border-stone-600 bg-stone-600'
-                      : isDark
-                        ? 'border-stone-500'
-                        : 'border-stone-400'
+                      ? 'border-stone-600 bg-stone-600 dark:border-stone-400 dark:bg-stone-400'
+                      : 'border-stone-400 dark:border-stone-500'
                   )}
                 >
                   {value === typeInfo.key && (
                     <div
                       className={cn(
                         'h-2 w-2 rounded-full',
-                        isDark ? 'bg-stone-800' : 'bg-white'
+                        'bg-white dark:bg-stone-800'
                       )}
                     />
                   )}
@@ -129,9 +119,7 @@ export function DifyAppTypeSelector({
                     key={featureKey}
                     className={cn(
                       'rounded px-2 py-0.5 font-serif text-xs',
-                      isDark
-                        ? 'bg-stone-600 text-stone-300'
-                        : 'bg-stone-200 text-stone-600'
+                      'bg-stone-200 text-stone-600 dark:bg-stone-600 dark:text-stone-300'
                     )}
                   >
                     {tDifyTypes(`${typeInfo.key}.features.${featureKey}`)}
@@ -146,7 +134,7 @@ export function DifyAppTypeSelector({
         <p
           className={cn(
             'mt-3 font-serif text-xs',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         >
           {tSelector('description')}
@@ -165,7 +153,6 @@ export function DifyAppTypeSelectorCompact({
   onChange,
   className,
 }: DifyAppTypeSelectorProps) {
-  const { isDark } = useThemeColors();
   const allTypes = getAllDifyAppTypes();
   const tSelector = useTranslations(
     'pages.admin.apiConfig.page.difyAppTypeSelector'
@@ -177,7 +164,7 @@ export function DifyAppTypeSelectorCompact({
       <label
         className={cn(
           'mb-2 block font-serif text-sm font-medium',
-          isDark ? 'text-stone-300' : 'text-stone-700'
+          'text-stone-700 dark:text-stone-300'
         )}
       >
         {tSelector('titleCompact')}
@@ -188,9 +175,7 @@ export function DifyAppTypeSelectorCompact({
         onChange={e => onChange(e.target.value as DifyAppType)}
         className={cn(
           'w-full rounded-md border px-3 py-2 font-serif text-sm',
-          isDark
-            ? 'border-stone-600 bg-stone-700 text-stone-200'
-            : 'border-stone-300 bg-white text-stone-900'
+          'border-stone-300 bg-white text-stone-900 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-200'
         )}
       >
         {allTypes.map(typeInfo => (
