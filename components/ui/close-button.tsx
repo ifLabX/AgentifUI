@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { X } from 'lucide-react';
 
@@ -14,8 +13,6 @@ export interface CloseButtonProps
 
 const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
   ({ className, size = 'md', variant = 'ghost', ...props }, ref) => {
-    const { isDark } = useTheme();
-
     const sizeStyles = {
       sm: 'h-6 w-6 p-1',
       md: 'h-8 w-8 p-1.5',
@@ -33,23 +30,20 @@ const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
         case 'subtle':
           return cn(
             'rounded-lg transition-all duration-200 hover:scale-105',
-            isDark
-              ? 'bg-stone-800/50 text-stone-400 hover:bg-stone-700 hover:text-stone-200'
-              : 'bg-stone-100/80 text-stone-500 hover:bg-stone-200 hover:text-stone-700'
+            'bg-stone-100/80 text-stone-500 hover:bg-stone-200 hover:text-stone-700',
+            'dark:bg-stone-800/50 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-200'
           );
         case 'outline':
           return cn(
             'rounded-lg border-2 transition-all duration-200 hover:scale-105',
-            isDark
-              ? 'border-stone-600 text-stone-400 hover:border-stone-500 hover:bg-stone-700 hover:text-stone-200'
-              : 'border-stone-300 text-stone-500 hover:border-stone-400 hover:bg-stone-100 hover:text-stone-700'
+            'border-stone-300 text-stone-500 hover:border-stone-400 hover:bg-stone-100 hover:text-stone-700',
+            'dark:border-stone-600 dark:text-stone-400 dark:hover:border-stone-500 dark:hover:bg-stone-700 dark:hover:text-stone-200'
           );
         default:
           return cn(
             'rounded-lg transition-all duration-200 hover:scale-105',
-            isDark
-              ? 'text-stone-400 hover:bg-stone-700/50 hover:text-stone-200'
-              : 'text-stone-500 hover:bg-stone-200/70 hover:text-stone-700'
+            'text-stone-500 hover:bg-stone-200/70 hover:text-stone-700',
+            'dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-200'
           );
       }
     };
@@ -59,9 +53,7 @@ const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
         ref={ref}
         className={cn(
           'inline-flex items-center justify-center font-serif select-none focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none disabled:opacity-50',
-          isDark
-            ? 'focus:ring-stone-500 focus:ring-offset-stone-900'
-            : 'focus:ring-stone-500 focus:ring-offset-white',
+          'focus:ring-stone-500 focus:ring-offset-white dark:focus:ring-stone-500 dark:focus:ring-offset-stone-900',
           sizeStyles[size],
           getVariantStyles(),
           className
