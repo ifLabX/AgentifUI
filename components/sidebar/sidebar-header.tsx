@@ -336,7 +336,6 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <KeyCombination
               keys={newChatShortcut.symbols}
               size="md"
-              isDark={isDark}
             />
           </div>
         </SidebarButton>
@@ -413,7 +412,6 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <KeyCombination
               keys={recentChatsShortcut.symbols}
               size="md"
-              isDark={isDark}
             />
           </div>
         </SidebarButton>
@@ -492,7 +490,6 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <KeyCombination
               keys={appsMarketShortcut.symbols}
               size="md"
-              isDark={isDark}
             />
           </div>
         </SidebarButton>

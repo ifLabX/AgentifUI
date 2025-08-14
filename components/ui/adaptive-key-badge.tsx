@@ -9,8 +9,6 @@ interface AdaptiveKeyBadgeProps {
   keyText: string;
   /** size mode */
   size?: 'sm' | 'md';
-  /** is dark theme */
-  isDark?: boolean;
   /** extra css class name */
   className?: string;
 }
@@ -28,7 +26,6 @@ interface AdaptiveKeyBadgeProps {
 export function AdaptiveKeyBadge({
   keyText,
   size = 'md',
-  isDark = false,
   className,
 }: AdaptiveKeyBadgeProps) {
   const isLongText = keyText.length > 2;
@@ -67,9 +64,7 @@ export function AdaptiveKeyBadge({
   const themeClasses =
     size === 'sm'
       ? 'bg-black/10 text-white/70 border-white/10' // tooltip styles
-      : isDark
-        ? 'bg-stone-800/90 text-stone-200 border-stone-500/60 shadow-sm backdrop-blur-sm'
-        : 'bg-white/90 text-stone-700 border-stone-300/70 shadow-sm backdrop-blur-sm';
+      : 'bg-white/90 text-stone-700 border-stone-300/70 shadow-sm backdrop-blur-sm dark:bg-stone-800/90 dark:text-stone-200 dark:border-stone-500/60';
 
   // width styles
   const widthClasses = isLongText ? config.adaptiveWidth : config.fixedWidth;
@@ -108,8 +103,6 @@ interface KeyCombinationProps {
   keys: string[];
   /** size mode */
   size?: 'sm' | 'md';
-  /** is dark theme */
-  isDark?: boolean;
   /** extra css class name */
   className?: string;
 }
@@ -117,7 +110,6 @@ interface KeyCombinationProps {
 export function KeyCombination({
   keys,
   size = 'md',
-  isDark = false,
   className,
 }: KeyCombinationProps) {
   const gapClass = size === 'sm' ? 'gap-0.5' : 'gap-1';
@@ -129,7 +121,6 @@ export function KeyCombination({
           key={index}
           keyText={key}
           size={size}
-          isDark={isDark}
         />
       ))}
     </div>
