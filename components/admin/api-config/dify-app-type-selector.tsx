@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import {
   type DifyAppType,
   getAllDifyAppTypes,
