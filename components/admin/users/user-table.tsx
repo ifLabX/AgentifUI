@@ -8,7 +8,6 @@ import {
   useDateFormatter,
 } from '@lib/hooks/use-date-formatter';
 import { useProfile } from '@lib/hooks/use-profile';
-
 import { cn } from '@lib/utils';
 import {
   CheckSquare,
@@ -549,10 +548,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                         </>
                       ) : (
                         <p
-                          className={cn(
-                            'font-serif text-sm',
-                            'text-stone-500'
-                          )}
+                          className={cn('font-serif text-sm', 'text-stone-500')}
                         >
                           {t('actions.notInGroup')}
                         </p>
