@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { MoreHorizontal } from 'lucide-react';
 
@@ -33,7 +32,6 @@ export const MoreButtonV2 = React.forwardRef<
     ref
   ) => {
     const isMobile = useMobile();
-    const { isDark } = useTheme();
     const t = useTranslations('common.ui.moreButton');
 
     // Responsive display logic: mobile devices always display, desktop devices display based on hover state
@@ -52,9 +50,9 @@ export const MoreButtonV2 = React.forwardRef<
           // Dynamic cursor: do not show pointer when dropdown menu is open
           !isMenuOpen ? 'cursor-pointer' : '',
           // Hover effect: rounded rectangle background
-          disableHover ? '' : isDark ? 'hover:bg-white/12' : 'hover:bg-black/8',
+          disableHover ? '' : 'hover:bg-black/8 dark:hover:bg-white/12',
           // Selected state: background effect when dropdown menu is open
-          isMenuOpen && (isDark ? 'bg-white/15' : 'bg-black/10'),
+          isMenuOpen && 'bg-black/10 dark:bg-white/15',
           // Focus state
           'focus-visible:ring-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
           className

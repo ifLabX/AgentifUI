@@ -28,7 +28,6 @@ interface AdaptiveKeyBadgeProps {
 export function AdaptiveKeyBadge({
   keyText,
   size = 'md',
-  isDark = false,
   className,
 }: AdaptiveKeyBadgeProps) {
   const isLongText = keyText.length > 2;
@@ -66,10 +65,8 @@ export function AdaptiveKeyBadge({
   // theme styles - consistent with sidebar styles
   const themeClasses =
     size === 'sm'
-      ? 'bg-black/10 text-white/70 border-white/10' // tooltip styles
-      : isDark
-        ? 'bg-stone-800/90 text-stone-200 border-stone-500/60 shadow-sm backdrop-blur-sm'
-        : 'bg-white/90 text-stone-700 border-stone-300/70 shadow-sm backdrop-blur-sm';
+      ? 'bg-black/10 text-white/70 border-white/10' // tooltip styles - keeping as is for small size
+      : 'bg-white/90 text-stone-700 border-stone-300/70 shadow-sm backdrop-blur-sm dark:bg-stone-800/90 dark:text-stone-200 dark:border-stone-500/60';
 
   // width styles
   const widthClasses = isLongText ? config.adaptiveWidth : config.fixedWidth;
@@ -117,7 +114,6 @@ interface KeyCombinationProps {
 export function KeyCombination({
   keys,
   size = 'md',
-  isDark = false,
   className,
 }: KeyCombinationProps) {
   const gapClass = size === 'sm' ? 'gap-0.5' : 'gap-1';
@@ -125,12 +121,7 @@ export function KeyCombination({
   return (
     <div className={cn('flex items-center', gapClass, className)}>
       {keys.map((key, index) => (
-        <AdaptiveKeyBadge
-          key={index}
-          keyText={key}
-          size={size}
-          isDark={isDark}
-        />
+        <AdaptiveKeyBadge key={index} keyText={key} size={size} />
       ))}
     </div>
   );

@@ -1,11 +1,10 @@
 'use client';
 
 import { ResetPasswordForm } from '@components/auth/reset-password-form';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { motion } from 'framer-motion';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -14,38 +13,10 @@ function ResetPasswordContent() {
 }
 
 export default function ResetPasswordPage() {
-  const { isDark } = useTheme();
   const t = useTranslations('loading');
-  const [mounted, setMounted] = useState(false);
-
-  // ensure client-side rendering consistency
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // get colors based on theme
-  const getColors = () => {
-    if (isDark) {
-      return {
-        bgColor: 'bg-stone-800',
-      };
-    } else {
-      return {
-        bgColor: 'bg-stone-100',
-      };
-    }
-  };
-
-  const colors = mounted
-    ? getColors()
-    : {
-        bgColor: '',
-      };
 
   return (
-    <main
-      className={`flex min-h-screen w-full flex-col items-center justify-center gap-4 px-4 py-12 sm:px-6 lg:px-8 ${colors.bgColor} font-serif`}
-    >
+    <main className="flex min-h-screen w-full flex-col items-center justify-center gap-4 bg-stone-100 px-4 py-12 font-serif sm:px-6 lg:px-8 dark:bg-stone-800">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -57,22 +28,20 @@ export default function ResetPasswordPage() {
             <div
               className={cn(
                 'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-                isDark
-                  ? 'border-stone-800 bg-stone-900'
-                  : 'border-stone-200 bg-stone-50'
+                'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900'
               )}
             >
               <div className="text-center">
                 <div
                   className={cn(
                     'mx-auto mb-4 flex h-16 w-16 animate-pulse items-center justify-center rounded-full',
-                    isDark ? 'bg-stone-800' : 'bg-stone-100'
+                    'bg-stone-100 dark:bg-stone-800'
                   )}
                 >
                   <div
                     className={cn(
                       'h-8 w-8 rounded-full',
-                      isDark ? 'bg-stone-600' : 'bg-stone-300'
+                      'bg-stone-300 dark:bg-stone-600'
                     )}
                   ></div>
                 </div>
