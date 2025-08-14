@@ -1,6 +1,7 @@
 'use client';
 
 import { MessageActionsContainer } from '@components/ui/message-actions-container';
+import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import React from 'react';
@@ -42,6 +43,8 @@ export const AssistantMessageActions: React.FC<
   tooltipSize = 'sm',
   showTooltipArrow = false,
 }) => {
+  const { isDark } = useTheme();
+
   // Use feedback manager hook for exclusive feedback selection
   const { selectedFeedback, handleFeedback, shouldShowButton } =
     useFeedbackManager(onFeedback);
@@ -72,7 +75,8 @@ export const AssistantMessageActions: React.FC<
       {/* Divider - uses a deeper color, less visible in dark mode */}
       <div
         className={cn(
-          'mx-1 self-stretch border-r border-gray-200/50 dark:border-gray-800/50'
+          'mx-1 self-stretch border-r',
+          isDark ? 'border-gray-800/50' : 'border-gray-200/50'
         )}
       />
 

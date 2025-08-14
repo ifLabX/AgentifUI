@@ -9,6 +9,7 @@ import {
 } from '@components/workflow/workflow-input-form';
 import { useMobile } from '@lib/hooks/use-mobile';
 import { useTextGenerationExecution } from '@lib/hooks/use-text-generation-execution';
+import { useTheme } from '@lib/hooks/use-theme';
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store';
 import { cn } from '@lib/utils';
 import { AlertCircle, RefreshCw, X } from 'lucide-react';
@@ -37,6 +38,7 @@ interface TextGenerationLayoutProps {
 export function TextGenerationLayout({
   instanceId,
 }: TextGenerationLayoutProps) {
+  const { isDark } = useTheme();
   const isMobile = useMobile();
   const t = useTranslations('pages.textGeneration.buttons');
 
@@ -159,7 +161,7 @@ export function TextGenerationLayout({
     <div
       className={cn(
         'flex items-center gap-3 border-l-4 border-red-500 px-4 py-3',
-        'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+        isDark ? 'bg-red-900/20 text-red-200' : 'bg-red-50 text-red-800'
       )}
     >
       <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
@@ -172,7 +174,9 @@ export function TextGenerationLayout({
             onClick={onRetry}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              'text-red-700 hover:bg-red-200/50 hover:text-red-800 dark:text-red-300 dark:hover:bg-red-800/50 dark:hover:text-red-200'
+              isDark
+                ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
+                : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
             )}
             title={t('retry')}
           >
@@ -183,7 +187,9 @@ export function TextGenerationLayout({
           onClick={onDismiss}
           className={cn(
             'rounded-md p-1.5 transition-colors',
-            'text-red-700 hover:bg-red-200/50 hover:text-red-800 dark:text-red-300 dark:hover:bg-red-800/50 dark:hover:text-red-200'
+            isDark
+              ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
+              : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
           )}
           title={t('close')}
         >
@@ -328,7 +334,7 @@ export function TextGenerationLayout({
               'w-80 min-w-72 overflow-hidden border-l',
               'transition-all duration-300 ease-in-out',
               'transform-gpu', // Use GPU acceleration
-              'border-stone-200 dark:border-stone-700'
+              isDark ? 'border-stone-700' : 'border-stone-200'
             )}
           >
             <ExecutionHistory

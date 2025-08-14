@@ -24,7 +24,7 @@ export function MessagesLoadingIndicator({
   error,
   onRetry,
 }: MessagesLoadingIndicatorProps) {
-  const { colors } = useThemeColors();
+  const { colors, isDark } = useThemeColors();
   const t = useTranslations('loading');
   const [isAtTop, setIsAtTop] = useState(false);
 
@@ -86,7 +86,7 @@ export function MessagesLoadingIndicator({
         <div
           className={cn(
             'rounded-lg px-4 py-3 text-sm',
-            'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+            isDark ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800',
             'mb-3'
           )}
         >

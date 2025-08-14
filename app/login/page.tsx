@@ -1,11 +1,8 @@
 'use client';
 
 import { LoginForm } from '@components/auth/login-form';
-import { useTheme } from '@lib/hooks/use-theme';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
-
-import { useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
@@ -17,57 +14,7 @@ export default function LoginPage() {
   const registered = searchParams.get('registered');
   const resetSuccess = searchParams.get('reset');
   const oauthError = searchParams.get('error');
-  const { isDark } = useTheme();
   const t = useTranslations('pages.auth.login');
-  const [mounted, setMounted] = useState(false);
-
-  // ensure client-side rendering consistency
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // get colors based on theme
-  const getColors = () => {
-    if (isDark) {
-      return {
-        bgColor: 'bg-stone-800',
-        alertBg: 'bg-stone-800/50',
-        alertBorder: 'border-stone-600',
-        alertText: 'text-stone-300',
-        iconColor: 'text-stone-400',
-        errorAlertBg: 'bg-red-900/30',
-        errorAlertBorder: 'border-red-500',
-        errorAlertText: 'text-red-400',
-        errorIconColor: 'text-red-400',
-      };
-    } else {
-      return {
-        bgColor: 'bg-stone-100',
-        alertBg: 'bg-stone-50',
-        alertBorder: 'border-stone-300',
-        alertText: 'text-stone-700',
-        iconColor: 'text-stone-600',
-        errorAlertBg: 'bg-red-50',
-        errorAlertBorder: 'border-red-500',
-        errorAlertText: 'text-red-700',
-        errorIconColor: 'text-red-500',
-      };
-    }
-  };
-
-  const colors = mounted
-    ? getColors()
-    : {
-        bgColor: '',
-        alertBg: '',
-        alertBorder: '',
-        alertText: '',
-        iconColor: '',
-        errorAlertBg: '',
-        errorAlertBorder: '',
-        errorAlertText: '',
-        errorIconColor: '',
-      };
 
   // get error message
   const getErrorMessage = (error: string) => {
@@ -96,20 +43,16 @@ export default function LoginPage() {
   };
 
   return (
-    <main
-      className={`flex min-h-screen w-full flex-col items-center justify-center gap-4 px-4 py-12 sm:px-6 lg:px-8 ${colors.bgColor} font-serif`}
-    >
+    <main className="flex min-h-screen w-full flex-col items-center justify-center gap-4 bg-stone-100 px-4 py-12 font-serif sm:px-6 lg:px-8 dark:bg-stone-800">
       {registered && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Alert
-            className={`max-w-md border-l-4 ${colors.alertBg} ${colors.alertBorder}`}
-          >
-            <CheckCircle className={`h-4 w-4 ${colors.iconColor}`} />
-            <AlertDescription className={`${colors.alertText} font-serif`}>
+          <Alert className="max-w-md border-l-4 border-stone-300 bg-stone-50 dark:border-stone-600 dark:bg-stone-800/50">
+            <CheckCircle className="h-4 w-4 text-stone-600 dark:text-stone-400" />
+            <AlertDescription className="font-serif text-stone-700 dark:text-stone-300">
               {t('alerts.registered')}
             </AlertDescription>
           </Alert>
@@ -121,11 +64,9 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Alert
-            className={`max-w-md border-l-4 ${colors.alertBg} ${colors.alertBorder}`}
-          >
-            <CheckCircle className={`h-4 w-4 ${colors.iconColor}`} />
-            <AlertDescription className={`${colors.alertText} font-serif`}>
+          <Alert className="max-w-md border-l-4 border-stone-300 bg-stone-50 dark:border-stone-600 dark:bg-stone-800/50">
+            <CheckCircle className="h-4 w-4 text-stone-600 dark:text-stone-400" />
+            <AlertDescription className="font-serif text-stone-700 dark:text-stone-300">
               {t('alerts.resetSuccess')}
             </AlertDescription>
           </Alert>
@@ -137,11 +78,9 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Alert
-            className={`max-w-md border-l-4 ${colors.errorAlertBg} ${colors.errorAlertBorder}`}
-          >
-            <AlertTriangle className={`h-4 w-4 ${colors.errorIconColor}`} />
-            <AlertDescription className={`${colors.errorAlertText} font-serif`}>
+          <Alert className="max-w-md border-l-4 border-red-500 bg-red-50 dark:border-red-500 dark:bg-red-900/30">
+            <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-400" />
+            <AlertDescription className="font-serif text-red-700 dark:text-red-400">
               {getErrorMessage(oauthError)}
             </AlertDescription>
           </Alert>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from '@lib/hooks/use-theme';
 import type {
   DifyFileInputControl,
   DifyNumberInputControl,
@@ -16,22 +17,16 @@ import { useTranslations } from 'next-intl';
 import { CustomSelect } from './custom-select';
 import { FileUploadField } from './file-upload-field';
 
-// Union type for all possible form field values
-type FormFieldValue = string | number | string[] | File[];
-
-// Union type for all possible config types
-type FormFieldConfig =
-  | DifyTextInputControl
-  | DifyNumberInputControl
-  | DifyParagraphControl
-  | DifySelectControl
-  | DifyFileInputControl;
-
 interface FormFieldProps {
   type: 'text-input' | 'number' | 'paragraph' | 'select' | 'file' | 'file-list';
-  config: FormFieldConfig;
-  value: FormFieldValue;
-  onChange: (value: FormFieldValue) => void;
+  config:
+    | DifyTextInputControl
+    | DifyNumberInputControl
+    | DifyParagraphControl
+    | DifySelectControl
+    | DifyFileInputControl;
+  value: any;
+  onChange: (value: any) => void;
   error?: string;
   instanceId?: string; // Add instanceId for file upload
 }
@@ -54,6 +49,7 @@ export function FormField({
   error,
   instanceId,
 }: FormFieldProps) {
+  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.form');
 
   const baseInputClasses = cn(
@@ -61,18 +57,21 @@ export function FormField({
     'focus:border-stone-500 focus:ring-4 focus:ring-stone-500/20 focus:outline-none',
     'backdrop-blur-sm focus:shadow-lg focus:shadow-stone-500/25',
     error
-      ? 'border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/20 dark:bg-red-900/10'
-      : 'border-stone-300 bg-white/90 text-stone-900 placeholder-stone-500 hover:border-stone-400 dark:border-stone-600 dark:bg-stone-800/90 dark:text-stone-100 dark:placeholder-stone-400 dark:hover:border-stone-500'
+      ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' +
+          (isDark ? ' bg-red-900/10' : ' bg-red-50/50')
+      : isDark
+        ? 'border-stone-600 bg-stone-800/90 text-stone-100 placeholder-stone-400 hover:border-stone-500'
+        : 'border-stone-300 bg-white/90 text-stone-900 placeholder-stone-500 hover:border-stone-400'
   );
 
   const labelClasses = cn(
     'mb-3 flex items-center gap-2 font-serif text-sm font-semibold',
-    'text-stone-800 dark:text-stone-200'
+    isDark ? 'text-stone-200' : 'text-stone-800'
   );
 
   const errorClasses = cn(
     'mt-2 flex items-center gap-2',
-    'text-red-600 dark:text-red-400'
+    isDark ? 'text-red-400' : 'text-red-600'
   );
 
   const renderInput = () => {
@@ -82,7 +81,7 @@ export function FormField({
         return (
           <input
             type="text"
-            value={value as string}
+            value={value}
             onChange={e => onChange(e.target.value)}
             placeholder={t('inputPlaceholder', { label: config.label })}
             maxLength={textConfig.max_length || undefined}
@@ -95,12 +94,22 @@ export function FormField({
         return (
           <input
             type="number"
-            value={value as string | number}
+            value={value}
             onChange={e => {
               const inputValue = e.target.value;
+              console.log(
+                `[FormField-${config.variable}] User input:`,
+                inputValue,
+                '(type:',
+                typeof inputValue,
+                ')'
+              );
 
               // If the input is empty, pass an empty string
               if (inputValue === '') {
+                console.log(
+                  `[FormField-${config.variable}] Input is empty, pass an empty string`
+                );
                 onChange('');
                 return;
               }
@@ -109,9 +118,17 @@ export function FormField({
               const numValue = parseFloat(inputValue);
 
               if (!isNaN(numValue)) {
+                console.log(
+                  `[FormField-${config.variable}] Pass number value:`,
+                  numValue
+                );
                 onChange(numValue);
               } else {
                 // If conversion fails, keep the original string (for validation)
+                console.log(
+                  `[FormField-${config.variable}] Conversion failed, keep string:`,
+                  inputValue
+                );
                 onChange(inputValue);
               }
             }}
@@ -125,12 +142,10 @@ export function FormField({
 
       case 'paragraph':
         const paragraphConfig = config as DifyParagraphControl;
-        const hasMaxLength = (
-          paragraphConfig as DifyParagraphControl & { max_length?: number }
-        ).max_length;
+        const hasMaxLength = (paragraphConfig as any).max_length;
         return (
           <textarea
-            value={value as string}
+            value={value}
             onChange={e => onChange(e.target.value)}
             placeholder={t('inputPlaceholder', { label: config.label })}
             rows={6}
@@ -147,7 +162,7 @@ export function FormField({
         const selectConfig = config as DifySelectControl;
         return (
           <CustomSelect
-            value={value as string}
+            value={value}
             onChange={onChange}
             options={selectConfig.options}
             placeholder={t('selectPlaceholder', { label: config.label })}
@@ -156,7 +171,7 @@ export function FormField({
         );
 
       case 'file':
-        const fileConfig = config as DifyFileInputControl;
+        const fileConfig = config as any;
         if (!instanceId) {
           console.warn(
             '[FormField] file type field requires instanceId parameter'
@@ -178,7 +193,7 @@ export function FormField({
         );
 
       case 'file-list':
-        const fileListConfig = config as DifyFileInputControl;
+        const fileListConfig = config as any;
         if (!instanceId) {
           console.warn(
             '[FormField] file-list type field requires instanceId parameter'
@@ -250,26 +265,15 @@ export function FormField({
 
         {/* Character count (only display for fields with length limit) */}
         {(type === 'text-input' || type === 'paragraph') &&
-          (
-            config as DifyTextInputControl &
-              DifyParagraphControl & { max_length?: number }
-          ).max_length && (
+          (config as any).max_length && (
             <div
               className={cn(
                 'absolute right-4 bottom-3 font-mono text-xs transition-opacity duration-200',
-                'text-stone-400 dark:text-stone-500',
-                ((value as string) || '').length > 0
-                  ? 'opacity-100'
-                  : 'opacity-0'
+                isDark ? 'text-stone-500' : 'text-stone-400',
+                (value || '').length > 0 ? 'opacity-100' : 'opacity-0'
               )}
             >
-              {((value as string) || '').length} /{' '}
-              {
-                (
-                  config as DifyTextInputControl &
-                    DifyParagraphControl & { max_length?: number }
-                ).max_length
-              }
+              {(value || '').length} / {(config as any).max_length}
             </div>
           )}
       </div>
@@ -279,7 +283,7 @@ export function FormField({
         <div
           className={cn(
             'font-serif text-xs',
-            'text-stone-500 dark:text-stone-400'
+            isDark ? 'text-stone-400' : 'text-stone-500'
           )}
         >
           {getNumberHint()}

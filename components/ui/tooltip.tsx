@@ -95,8 +95,6 @@ export function Tooltip({
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Component state setup
-
   // Get the style based on the size
   const getSizeStyles = () => {
     switch (size) {
