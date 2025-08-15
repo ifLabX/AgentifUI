@@ -62,7 +62,7 @@ export const ChatContainer = ({
       <div
         className={cn(
           'flex flex-col rounded-2xl',
-          'bg-white dark:bg-stone-800',
+          'bg-white dark:bg-stone-700',
           'shadow-[0_0_15px_rgba(0,0,0,0.1)]'
         )}
       >

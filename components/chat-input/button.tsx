@@ -41,7 +41,7 @@ export const ChatButton = ({
         disabled={disabled}
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-lg',
-          'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-stone-600 dark:bg-stone-600/30 dark:text-stone-300 dark:hover:bg-stone-700/50',
+          'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-stone-600 dark:bg-stone-600/30 dark:text-gray-100 dark:hover:bg-stone-600',
           'bg-transparent',
           'cursor-pointer',
           className
@@ -63,7 +63,7 @@ export const ChatButton = ({
         'flex h-8 w-8 items-center justify-center rounded-full',
         forceActiveStyle || !disabled
           ? 'bg-black text-white hover:bg-gray-800 dark:bg-stone-900 dark:hover:bg-stone-800'
-          : 'bg-gray-200 text-gray-400 dark:bg-stone-600 dark:text-stone-300',
+          : 'bg-gray-200 text-gray-400 dark:bg-stone-600 dark:text-gray-100',
         'cursor-pointer shadow-sm',
         className
       )}
