@@ -210,7 +210,6 @@ export function TextGenerationLayout({
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
           onTabChange={setMobileActiveTab}
-          hasHistory={showHistory}
         />
 
         {/* Content area */}

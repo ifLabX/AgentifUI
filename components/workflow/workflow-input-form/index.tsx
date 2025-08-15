@@ -1,13 +1,11 @@
 'use client';
 
-import { useCurrentApp } from '@lib/hooks/use-current-app';
-import { useTheme } from '@lib/hooks/use-theme';
 import type { DifyUserInputFormItem } from '@lib/services/dify/types';
 import type { DifyParametersSimplifiedConfig } from '@lib/types/dify-parameters';
 import { cn } from '@lib/utils';
 import { AlertCircle, Loader2, Play } from 'lucide-react';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -17,6 +15,7 @@ import { validateFormData } from './validation';
 
 interface WorkflowInputFormProps {
   instanceId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic form data structure
   onExecute: (formData: Record<string, any>) => Promise<void>;
   isExecuting: boolean;
 }
@@ -39,15 +38,16 @@ export const WorkflowInputForm = React.forwardRef<
   WorkflowInputFormRef,
   WorkflowInputFormProps
 >(({ instanceId, onExecute, isExecuting }, ref) => {
-  const { isDark } = useTheme();
-  const { currentAppInstance, ensureAppReady } = useCurrentApp();
   const t = useTranslations('pages.workflow.form');
 
   // --- State management ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic form data structure
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic app config from API
   const [appConfig, setAppConfig] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic form data structure
   const [initialFormData, setInitialFormData] = useState<Record<string, any>>(
     {}
   );
@@ -85,6 +85,7 @@ export const WorkflowInputForm = React.forwardRef<
           const difyParams = serviceInstance.config
             ?.dify_parameters as DifyParametersSimplifiedConfig;
           const userInputForm = difyParams?.user_input_form || [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic form data structure
           const initialData: Record<string, any> = {};
 
           userInputForm.forEach((formItem: DifyUserInputFormItem) => {
@@ -97,6 +98,7 @@ export const WorkflowInputForm = React.forwardRef<
                 initialData[fieldConfig.variable] = fieldConfig.default || [];
               } else if (fieldType === 'number') {
                 // Handle default value for number type
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic field config structure
                 const numberConfig = fieldConfig as any;
                 initialData[fieldConfig.variable] =
                   numberConfig.default !== undefined
@@ -169,9 +171,10 @@ export const WorkflowInputForm = React.forwardRef<
     };
 
     initializeApp();
-  }, [instanceId]);
+  }, [instanceId, t]);
 
   // --- Form field update ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic form field value
   const handleFieldChange = (variable: string, value: any) => {
     setFormData(prev => ({
       ...prev,
@@ -189,10 +192,10 @@ export const WorkflowInputForm = React.forwardRef<
   };
 
   // --- Form reset ---
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setFormData({ ...initialFormData });
     setErrors({});
-  };
+  }, [initialFormData]);
 
   // --- Form submission ---
   const handleSubmit = async (e: React.FormEvent) => {
@@ -231,13 +234,13 @@ export const WorkflowInputForm = React.forwardRef<
           <Loader2
             className={cn(
               'mx-auto h-8 w-8 animate-spin',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           />
           <p
             className={cn(
               'font-serif text-sm',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {t('loading')}
@@ -257,13 +260,13 @@ export const WorkflowInputForm = React.forwardRef<
           <AlertCircle
             className={cn(
               'mx-auto h-8 w-8',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           />
           <p
             className={cn(
               'font-serif text-sm',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {t('noFormConfig')}
@@ -333,7 +336,7 @@ export const WorkflowInputForm = React.forwardRef<
         <div
           className={cn(
             'mt-4 flex-shrink-0 border-t bg-gradient-to-t pt-6',
-            isDark ? 'border-stone-700' : 'border-stone-200'
+            'border-stone-200 dark:border-stone-700'
           )}
         >
           <div className="flex gap-3">
@@ -346,9 +349,7 @@ export const WorkflowInputForm = React.forwardRef<
                 'rounded-lg px-4 py-2 font-serif text-sm transition-colors',
                 'border',
                 isExecuting ? 'cursor-not-allowed opacity-50' : '',
-                isDark
-                  ? 'border-stone-600 text-stone-300 hover:bg-stone-700 hover:text-stone-200'
-                  : 'border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-stone-800'
+                'border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-stone-800 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-200'
               )}
             >
               {t('reset')}
@@ -364,9 +365,7 @@ export const WorkflowInputForm = React.forwardRef<
                 isExecuting
                   ? 'cursor-not-allowed opacity-50'
                   : 'hover:shadow-lg',
-                isDark
-                  ? 'bg-stone-700 text-stone-100 hover:bg-stone-600'
-                  : 'bg-stone-800 text-white hover:bg-stone-700'
+                'bg-stone-800 text-white hover:bg-stone-700 dark:bg-stone-700 dark:text-stone-100 dark:hover:bg-stone-600'
               )}
             >
               {isExecuting ? (

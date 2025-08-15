@@ -11,7 +11,6 @@ import {
   DateFormatPresets,
   useDateFormatter,
 } from '@lib/hooks/use-date-formatter';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import 'katex/dist/katex.min.css';
 import { Check, Copy, Download, X } from 'lucide-react';
@@ -26,7 +25,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface TextGenerationResultViewerProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic result data structure from API
   result: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic execution data structure from API
   execution: any;
   onClose: () => void;
 }
@@ -42,7 +43,6 @@ export function TextGenerationResultViewer({
   execution,
   onClose,
 }: TextGenerationResultViewerProps) {
-  const { isDark } = useTheme();
   const { formatDate } = useDateFormatter();
   const t = useTranslations('components.text-generation.resultViewer');
   const [isVisible, setIsVisible] = useState(false);
@@ -56,6 +56,7 @@ export function TextGenerationResultViewer({
 
   // --- Reuse the Markdown component configuration of the assistant message ---
   const markdownComponents: Components = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars -- React markdown component props pattern
     code({ node, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
@@ -70,12 +71,15 @@ export function TextGenerationResultViewer({
 
       return <InlineCode {...props}>{children}</InlineCode>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars -- React markdown component props pattern
     table({ children, ...props }: any) {
       return <MarkdownTableContainer>{children}</MarkdownTableContainer>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars -- React markdown component props pattern
     blockquote({ children, ...props }: any) {
       return <MarkdownBlockquote>{children}</MarkdownBlockquote>;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     p({ children, ...props }: any) {
       return (
         <p className="font-serif" {...props}>
@@ -83,6 +87,7 @@ export function TextGenerationResultViewer({
         </p>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     h1({ children, ...props }: any) {
       return (
         <h1 className="font-serif" {...props}>
@@ -90,6 +95,7 @@ export function TextGenerationResultViewer({
         </h1>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     h2({ children, ...props }: any) {
       return (
         <h2 className="font-serif" {...props}>
@@ -97,6 +103,7 @@ export function TextGenerationResultViewer({
         </h2>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     h3({ children, ...props }: any) {
       return (
         <h3 className="font-serif" {...props}>
@@ -104,6 +111,7 @@ export function TextGenerationResultViewer({
         </h3>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     h4({ children, ...props }: any) {
       return (
         <h4 className="font-serif" {...props}>
@@ -111,6 +119,7 @@ export function TextGenerationResultViewer({
         </h4>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     ul({ children, ...props }: any) {
       return (
         <ul className="font-serif" {...props}>
@@ -118,6 +127,7 @@ export function TextGenerationResultViewer({
         </ul>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     ol({ children, ...props }: any) {
       return (
         <ol className="font-serif" {...props}>
@@ -125,6 +135,7 @@ export function TextGenerationResultViewer({
         </ol>
       );
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- React markdown component props pattern
     li({ children, ...props }: any) {
       return (
         <li className="font-serif" {...props}>
@@ -135,6 +146,7 @@ export function TextGenerationResultViewer({
   };
 
   // --- Format content ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic API response structure
   const formatContent = (data: any): string => {
     // If the result contains the generated text content
     if (typeof data === 'string') {
@@ -159,6 +171,7 @@ export function TextGenerationResultViewer({
   };
 
   // --- Extract text content from an object ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic API response object structure
   const extractTextFromObject = (obj: any): string => {
     // First look for the generated_text field (the main output of text generation)
     if (obj.generated_text && typeof obj.generated_text === 'string') {
@@ -251,9 +264,7 @@ export function TextGenerationResultViewer({
         <div
           className={cn(
             'max-h-full w-full max-w-4xl overflow-hidden rounded-2xl shadow-2xl transition-all duration-300',
-            isDark
-              ? 'border border-stone-700 bg-stone-900'
-              : 'border border-stone-200 bg-white',
+            'border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900',
             isVisible ? 'animate-scale-in' : 'scale-95 opacity-0'
           )}
         >
@@ -261,14 +272,14 @@ export function TextGenerationResultViewer({
           <div
             className={cn(
               'flex items-center justify-between border-b p-6',
-              isDark ? 'border-stone-700' : 'border-stone-200'
+              'border-stone-200 dark:border-stone-700'
             )}
           >
             <div>
               <h2
                 className={cn(
                   'font-serif text-xl font-bold',
-                  isDark ? 'text-stone-100' : 'text-stone-900'
+                  'text-stone-900 dark:text-stone-100'
                 )}
               >
                 {t('title')}
@@ -276,7 +287,7 @@ export function TextGenerationResultViewer({
               <p
                 className={cn(
                   'mt-1 font-serif text-sm',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {execution?.title || t('defaultTitle')}
@@ -297,9 +308,7 @@ export function TextGenerationResultViewer({
                   onClick={handleCopy}
                   className={cn(
                     'flex items-center justify-center rounded-lg p-2 transition-colors',
-                    isDark ? 'text-stone-400' : 'text-stone-500',
-                    isDark ? 'hover:text-stone-300' : 'hover:text-stone-700',
-                    isDark ? 'hover:bg-stone-600/40' : 'hover:bg-stone-300/40',
+                    'text-stone-500 hover:bg-stone-300/40 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-600/40 dark:hover:text-stone-300',
                     'focus:outline-none'
                   )}
                   style={{ transform: 'translateZ(0)' }}
@@ -328,9 +337,7 @@ export function TextGenerationResultViewer({
                   onClick={handleDownload}
                   className={cn(
                     'rounded-lg p-2 transition-colors',
-                    isDark
-                      ? 'text-stone-400 hover:bg-stone-700 hover:text-stone-300'
-                      : 'text-stone-600 hover:bg-stone-100 hover:text-stone-700'
+                    'text-stone-600 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300'
                   )}
                   aria-label={t('actions.download')}
                 >
@@ -343,9 +350,7 @@ export function TextGenerationResultViewer({
                 onClick={onClose}
                 className={cn(
                   'rounded-lg p-2 transition-colors',
-                  isDark
-                    ? 'text-stone-400 hover:bg-stone-700 hover:text-stone-300'
-                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-700'
+                  'text-stone-600 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300'
                 )}
               >
                 <X className="h-4 w-4" />
@@ -361,15 +366,13 @@ export function TextGenerationResultViewer({
                 <div
                   className={cn(
                     'rounded-lg border p-4',
-                    isDark
-                      ? 'border-stone-700 bg-stone-800/50'
-                      : 'border-stone-200 bg-stone-50'
+                    'border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800/50'
                   )}
                 >
                   <h3
                     className={cn(
                       'mb-2 font-serif text-sm font-semibold',
-                      isDark ? 'text-stone-200' : 'text-stone-800'
+                      'text-stone-800 dark:text-stone-200'
                     )}
                   >
                     {t('executionInfo.title')}
@@ -379,7 +382,7 @@ export function TextGenerationResultViewer({
                       <span
                         className={cn(
                           'font-medium',
-                          isDark ? 'text-stone-300' : 'text-stone-700'
+                          'text-stone-700 dark:text-stone-300'
                         )}
                       >
                         {t('executionInfo.status')}
@@ -388,11 +391,11 @@ export function TextGenerationResultViewer({
                         className={cn(
                           'ml-2',
                           execution.status === 'completed' &&
-                            (isDark ? 'text-green-400' : 'text-green-600'),
+                            'text-green-600 dark:text-green-400',
                           execution.status === 'failed' &&
-                            (isDark ? 'text-red-400' : 'text-red-600'),
+                            'text-red-600 dark:text-red-400',
                           execution.status === 'stopped' &&
-                            (isDark ? 'text-yellow-400' : 'text-yellow-600')
+                            'text-yellow-600 dark:text-yellow-400'
                         )}
                       >
                         {execution.status === 'completed'
@@ -409,7 +412,7 @@ export function TextGenerationResultViewer({
                         <span
                           className={cn(
                             'font-medium',
-                            isDark ? 'text-stone-300' : 'text-stone-700'
+                            'text-stone-700 dark:text-stone-300'
                           )}
                         >
                           {t('executionInfo.createdAt')}
@@ -417,7 +420,7 @@ export function TextGenerationResultViewer({
                         <span
                           className={cn(
                             'ml-2',
-                            isDark ? 'text-stone-400' : 'text-stone-600'
+                            'text-stone-600 dark:text-stone-400'
                           )}
                         >
                           {formatDate(
@@ -432,7 +435,7 @@ export function TextGenerationResultViewer({
                         <span
                           className={cn(
                             'font-medium',
-                            isDark ? 'text-stone-300' : 'text-stone-700'
+                            'text-stone-700 dark:text-stone-300'
                           )}
                         >
                           {t('executionInfo.elapsedTime')}
@@ -440,7 +443,7 @@ export function TextGenerationResultViewer({
                         <span
                           className={cn(
                             'ml-2',
-                            isDark ? 'text-stone-400' : 'text-stone-600'
+                            'text-stone-600 dark:text-stone-400'
                           )}
                         >
                           {execution.elapsed_time}s
@@ -456,7 +459,7 @@ export function TextGenerationResultViewer({
                 <h3
                   className={cn(
                     'mb-3 font-serif text-sm font-semibold',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {t('content.title')}
@@ -464,9 +467,7 @@ export function TextGenerationResultViewer({
                 <div
                   className={cn(
                     'assistant-message-content rounded-lg border p-4 font-serif',
-                    isDark
-                      ? 'border-stone-700 bg-stone-800 text-stone-200'
-                      : 'border-stone-200 bg-white text-stone-900'
+                    'border-stone-200 bg-white text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200'
                   )}
                 >
                   <ReactMarkdown

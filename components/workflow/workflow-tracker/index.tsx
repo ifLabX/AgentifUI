@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 // --- Integrate real node status ---
 import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store';
 import { cn } from '@lib/utils';
@@ -16,9 +15,10 @@ import { UnifiedStatusPanel } from './unified-status-panel';
 
 interface WorkflowTrackerProps {
   isExecuting: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic execution result structure
   executionResult: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic execution object structure
   currentExecution: any;
-  onNodeUpdate: (event: any) => void;
   onStop?: () => void;
   onRetry?: () => void;
   onReset?: () => void;
@@ -38,12 +38,10 @@ export function WorkflowTracker({
   isExecuting,
   executionResult,
   currentExecution,
-  onNodeUpdate,
   onStop,
   onRetry,
   onReset,
 }: WorkflowTrackerProps) {
-  const { isDark } = useTheme();
   const tStatus = useTranslations('pages.workflow.status');
   const tForm = useTranslations('pages.workflow.form');
   const tNodeStatus = useTranslations('pages.workflow.nodeStatus');
@@ -51,7 +49,6 @@ export function WorkflowTracker({
 
   // --- Get real node status from store ---
   const nodes = useWorkflowExecutionStore(state => state.nodes);
-  const currentNodeId = useWorkflowExecutionStore(state => state.currentNodeId);
   const progress = useWorkflowExecutionStore(state => state.executionProgress);
   const error = useWorkflowExecutionStore(state => state.error);
   const canRetry = useWorkflowExecutionStore(state => state.canRetry);
@@ -165,13 +162,13 @@ export function WorkflowTracker({
               <div
                 className={cn(
                   'mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed',
-                  isDark ? 'border-stone-600' : 'border-stone-300'
+                  'border-stone-300 dark:border-stone-600'
                 )}
               >
                 <Play
                   className={cn(
                     'h-6 w-6',
-                    isDark ? 'text-stone-400' : 'text-stone-500'
+                    'text-stone-500 dark:text-stone-400'
                   )}
                 />
               </div>
@@ -179,7 +176,7 @@ export function WorkflowTracker({
                 <h3
                   className={cn(
                     'font-serif text-lg font-semibold',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {tStatus('pending')}
@@ -187,7 +184,7 @@ export function WorkflowTracker({
                 <p
                   className={cn(
                     'font-serif text-sm',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {tForm('startExecution')}
@@ -202,7 +199,7 @@ export function WorkflowTracker({
               <h3
                 className={cn(
                   'font-serif text-lg font-semibold',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {tForm('executing')}
@@ -214,23 +211,21 @@ export function WorkflowTracker({
               <div
                 className={cn(
                   'rounded-lg border-2 border-dashed p-4',
-                  isDark
-                    ? 'border-stone-600 bg-stone-800/50'
-                    : 'border-stone-300 bg-stone-50'
+                  'border-stone-300 bg-stone-50 dark:border-stone-600 dark:bg-stone-800/50'
                 )}
               >
                 <div className="flex items-center gap-3">
                   <Loader2
                     className={cn(
                       'h-5 w-5 animate-spin',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                   <div>
                     <div
                       className={cn(
                         'font-serif font-medium',
-                        isDark ? 'text-stone-200' : 'text-stone-800'
+                        'text-stone-800 dark:text-stone-200'
                       )}
                     >
                       {tStatus('running')}
@@ -238,7 +233,7 @@ export function WorkflowTracker({
                     <div
                       className={cn(
                         'font-serif text-sm',
-                        isDark ? 'text-stone-400' : 'text-stone-600'
+                        'text-stone-600 dark:text-stone-400'
                       )}
                     >
                       {tNodeStatus('waitingParallel')}

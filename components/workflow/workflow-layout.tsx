@@ -3,7 +3,6 @@
 import { ResizableSplitPane } from '@components/ui/resizable-split-pane';
 import { MobileTabSwitcher } from '@components/workflow/mobile-tab-switcher';
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useWorkflowExecution } from '@lib/hooks/use-workflow-execution';
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store';
 import { cn } from '@lib/utils';
@@ -34,7 +33,6 @@ type MobileTab = 'form' | 'tracker' | 'history';
  * - Unified status management and data flow
  */
 export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const t = useTranslations('pages.workflow.buttons');
 
@@ -82,13 +80,6 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     },
     [executeWorkflow]
   );
-
-  // --- Node status update callback ---
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleNodeUpdate = useCallback((event: any) => {
-    console.log('[Node update]', event);
-    // Note: Node status is now automatically managed through the hook, no need to manually update
-  }, []);
 
   // --- Stop execution ---
   const handleStopExecution = useCallback(async () => {
@@ -153,7 +144,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
     <div
       className={cn(
         'flex items-center gap-3 border-l-4 border-red-500 px-4 py-3',
-        isDark ? 'bg-red-900/20 text-red-200' : 'bg-red-50 text-red-800'
+        'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
       )}
     >
       <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-500" />
@@ -166,9 +157,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
             onClick={onRetry}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              isDark
-                ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
-                : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
+              'text-red-700 hover:bg-red-200/50 hover:text-red-800 dark:text-red-300 dark:hover:bg-red-800/50 dark:hover:text-red-200'
             )}
             title={t('retry')}
           >
@@ -179,9 +168,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
           onClick={onDismiss}
           className={cn(
             'rounded-md p-1.5 transition-colors',
-            isDark
-              ? 'text-red-300 hover:bg-red-800/50 hover:text-red-200'
-              : 'text-red-700 hover:bg-red-200/50 hover:text-red-800'
+            'text-red-700 hover:bg-red-200/50 hover:text-red-800 dark:text-red-300 dark:hover:bg-red-800/50 dark:hover:text-red-200'
           )}
           title={t('close')}
         >
@@ -209,7 +196,6 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
           onTabChange={setMobileActiveTab}
-          hasHistory={showHistory}
         />
 
         {/* Content area */}
@@ -231,7 +217,6 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
                 isExecuting={isExecuting}
                 executionResult={currentExecution?.outputs || null}
                 currentExecution={currentExecution}
-                onNodeUpdate={handleNodeUpdate}
                 onStop={handleStopExecution}
                 onRetry={handleRetryExecution}
                 onReset={handleCompleteReset}
@@ -299,7 +284,6 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
                     isExecuting={isExecuting}
                     executionResult={currentExecution?.outputs || null}
                     currentExecution={currentExecution}
-                    onNodeUpdate={handleNodeUpdate}
                     onStop={handleStopExecution}
                     onRetry={handleRetryExecution}
                     onReset={handleCompleteReset}
@@ -317,7 +301,7 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
               'w-80 min-w-72 overflow-hidden border-l',
               'transition-all duration-300 ease-in-out',
               'transform-gpu', // Use GPU acceleration
-              isDark ? 'border-stone-700' : 'border-stone-200'
+              'border-stone-200 dark:border-stone-700'
             )}
           >
             <ExecutionHistory
