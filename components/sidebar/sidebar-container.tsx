@@ -85,7 +85,6 @@ export function SidebarContainer() {
         isExpanded
           ? 'bg-stone-200 dark:bg-stone-700'
           : 'bg-stone-100 dark:bg-stone-800',
-        'backdrop-blur-sm',
         'border-r-stone-300/60 dark:border-r-stone-700/50',
         'text-stone-700 dark:text-stone-300',
         !isExpanded &&
