@@ -10,6 +10,7 @@ import {
 import { useMobile } from '@lib/hooks/use-mobile';
 import { useTextGenerationExecution } from '@lib/hooks/use-text-generation-execution';
 import { useWorkflowHistoryStore } from '@lib/stores/workflow-history-store';
+import type { AppExecution } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { AlertCircle, RefreshCw, X } from 'lucide-react';
 
@@ -62,23 +63,21 @@ export function TextGenerationLayout({
 
   // --- Result viewer state ---
   const [showResultViewer, setShowResultViewer] = useState(false);
-  const [viewerResult, setViewerResult] = useState<any>(null);
-  const [viewerExecution, setViewerExecution] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic result data structure
+  const [viewerResult, setViewerResult] = useState<Record<string, any> | null>(null);
+  const [viewerExecution, setViewerExecution] = useState<AppExecution | null>(null);
 
   // --- Form reset reference ---
   const formResetRef = useRef<WorkflowInputFormRef>(null);
 
   // --- Text generation execution callback ---
   const handleExecuteTextGeneration = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic form data structure
     async (formData: Record<string, any>) => {
-      console.log(
-        '[Text generation layout] Start executing text generation, input data:',
-        formData
-      );
 
       try {
         await executeTextGeneration(formData);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('[Text generation layout] Execution failed:', error);
       }
     },
@@ -120,18 +119,13 @@ export function TextGenerationLayout({
 
   // --- Clear error ---
   const handleClearError = useCallback(() => {
-    console.log('[Text generation layout] Clear error');
     // Here you can add the logic to clear the error
   }, []);
 
-  // --- Node status update callback (text generation does not need it, but keep the interface consistent) ---
-  const handleNodeUpdate = useCallback((event: any) => {
-    console.log('[Text generation layout] Node update:', event);
-  }, []);
 
   // --- View result callback ---
-  const handleViewResult = useCallback((result: any, execution: any) => {
-    console.log('[Text generation layout] View result:', result, execution);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic result data structure
+  const handleViewResult = useCallback((result: Record<string, any>, execution: AppExecution) => {
     setViewerResult(result);
     setViewerExecution(execution);
     setShowResultViewer(true);
@@ -211,7 +205,6 @@ export function TextGenerationLayout({
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
           onTabChange={setMobileActiveTab}
-          hasHistory={showHistory}
         />
 
         {/* Content area */}

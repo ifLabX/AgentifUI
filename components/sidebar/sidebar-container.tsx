@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
 
@@ -14,7 +13,6 @@ import { SidebarHeader } from './sidebar-header';
 export function SidebarContainer() {
   const { isExpanded, toggleSidebar, isAnimating, hideMobileNav } =
     useSidebarStore();
-  const { colors, isDark } = useThemeColors();
   const isMobile = useMobile();
 
   // Hover state management - for background effects only, does not trigger expansion
@@ -69,25 +67,6 @@ export function SidebarContainer() {
     }
   };
 
-  // Get sidebar styles based on the theme
-  const getSidebarStyles = () => {
-    if (isDark) {
-      return {
-        border: 'border-r-stone-700/50',
-        text: 'text-stone-300',
-        hoverBg: 'hover:bg-stone-700', // Use expanded state background color on hover
-      };
-    } else {
-      return {
-        border: 'border-r-stone-300/60',
-        text: 'text-stone-700',
-        hoverBg: 'hover:bg-stone-200', // Use expanded state background color on hover
-      };
-    }
-  };
-
-  const styles = getSidebarStyles();
-
   return (
     <aside
       className={cn(
@@ -112,14 +91,16 @@ export function SidebarContainer() {
 
         // Theme styles - use sidebar background when expanded, main background when collapsed
         isExpanded
-          ? colors.sidebarBackground.tailwind
-          : colors.mainBackground.tailwind,
+          ? 'bg-stone-200 dark:bg-stone-700'
+          : 'bg-stone-100 dark:bg-stone-800',
         'backdrop-blur-sm',
-        styles.border,
-        styles.text,
+        'border-r-stone-300/60 dark:border-r-stone-700/50',
+        'text-stone-700 dark:text-stone-300',
 
         // Hover background effect - only on collapsed state and non-mobile, uses expanded state color
-        !isExpanded && !isMobile && styles.hoverBg,
+        !isExpanded &&
+          !isMobile &&
+          'hover:bg-stone-200 dark:hover:bg-stone-700',
 
         // Click area hint - show cursor-e-resize only in collapsed state to indicate it can be expanded
         // Prevent text selection on click

@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { History } from 'lucide-react';
 
@@ -24,7 +23,6 @@ export function HistoryButton({
   isActive,
   className,
 }: HistoryButtonProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.history');
 
   return (
@@ -34,12 +32,8 @@ export function HistoryButton({
         'rounded-full p-3 shadow-lg transition-all duration-200',
         'hover:scale-105 hover:shadow-xl',
         isActive
-          ? isDark
-            ? 'bg-stone-600 text-stone-100'
-            : 'bg-stone-700 text-white'
-          : isDark
-            ? 'bg-stone-800 text-stone-300 hover:bg-stone-700'
-            : 'bg-white text-stone-600 hover:bg-stone-50',
+          ? 'bg-stone-700 text-white dark:bg-stone-600 dark:text-stone-100'
+          : 'bg-white text-stone-600 hover:bg-stone-50 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700',
         className
       )}
       title={isActive ? t('hideHistory') : t('showHistory')}

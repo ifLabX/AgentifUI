@@ -209,7 +209,6 @@ export function WorkflowLayout({ instanceId }: WorkflowLayoutProps) {
         <MobileTabSwitcher
           activeTab={mobileActiveTab}
           onTabChange={setMobileActiveTab}
-          hasHistory={showHistory}
         />
 
         {/* Content area */}
