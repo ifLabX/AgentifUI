@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -27,7 +26,6 @@ export const Dropdown: React.FC<DropdownProps> = ({
   children,
   className,
 }) => {
-  const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState<{
     top: number | 'auto';
@@ -94,9 +92,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <div
           className={cn(
             'fixed z-[9999] max-w-[240px] min-w-[200px] rounded-lg border shadow-xl',
-            isDark
-              ? 'border-stone-700 bg-stone-800'
-              : 'border-stone-200 bg-white'
+            'border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800'
           )}
           style={{
             top:
@@ -124,7 +120,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                       key={index}
                       className={cn(
                         'mx-2 my-1 h-px',
-                        isDark ? 'bg-stone-700' : 'bg-stone-200'
+                        'bg-stone-200 dark:bg-stone-700'
                       )}
                     />
                   );
@@ -144,9 +140,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                       'flex w-full items-center gap-2 px-3 py-2 text-left font-serif text-sm transition-colors',
                       item.disabled
                         ? 'cursor-not-allowed opacity-50'
-                        : isDark
-                          ? 'text-stone-300 hover:bg-stone-700'
-                          : 'text-stone-700 hover:bg-stone-100',
+                        : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-700',
                       item.className
                     )}
                   >

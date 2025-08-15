@@ -103,7 +103,6 @@ export const ChatInput = ({
     isComposing,
     setIsComposing,
     isWelcomeScreen,
-    isDark,
   } = useChatInputStore();
 
   // 🎯 New: Local submission state to prevent duplicate clicks
@@ -577,14 +576,12 @@ export const ChatInput = ({
   return (
     <ChatContainer
       isWelcomeScreen={effectiveIsWelcomeScreen}
-      isDark={isDark}
       className={className}
       widthClass={widthClass}
       isTransitioningToWelcome={isTransitioningToWelcome}
     >
       {/* Attachment preview bar, only show when there are attachments */}
       <AttachmentPreviewBar
-        isDark={isDark}
         onHeightChange={handleAttachmentBarHeightChange}
         onRetryUpload={handleRetryUpload}
       />
@@ -598,7 +595,6 @@ export const ChatInput = ({
           onKeyDown={handleKeyDown}
           placeholder={defaultPlaceholder}
           maxHeight={maxHeight}
-          isDark={isDark}
           onCompositionStart={handleCompositionStart}
           onCompositionEnd={handleCompositionEnd}
           onHeightChange={handleTextHeightChange}
@@ -673,7 +669,6 @@ export const ChatInput = ({
                   (!isProcessing && !message.trim()) ||
                   !canSubmitWithModel
                 }
-                isDark={isDark}
                 ariaLabel={
                   isLocalSubmitting
                     ? t('input.sending')

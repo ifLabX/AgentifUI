@@ -5,7 +5,6 @@ import { KeyCombination } from '@components/ui/adaptive-key-badge';
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper';
 import { useChatInterface } from '@lib/hooks/use-chat-interface';
 import { useFormattedShortcut } from '@lib/hooks/use-platform-keys';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useChatInputStore } from '@lib/stores/chat-input-store';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useChatTransitionStore } from '@lib/stores/chat-transition-store';
@@ -32,7 +31,6 @@ interface SidebarHeaderProps {
 
 export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
   const { isExpanded, toggleSidebar } = useSidebarStore();
-  const { isDark } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('sidebar');
@@ -140,9 +138,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
                 'transition-all duration-150 ease-in-out',
                 'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                 'select-none', // Prevent text selection
-                isDark
-                  ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
-                  : 'focus-visible:ring-primary focus-visible:ring-offset-background',
+                'focus-visible:ring-primary focus-visible:ring-offset-background dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900',
                 'border border-transparent',
                 'h-10 w-10', // Fixed square size
                 'text-gray-200', // Basic text color
@@ -153,9 +149,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               <div
                 className={cn(
                   'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
-                  isDark
-                    ? 'group-hover:bg-stone-600/60'
-                    : 'group-hover:bg-stone-300/80'
+                  'group-hover:bg-stone-300/80 dark:group-hover:bg-stone-600/60'
                 )}
               />
 
@@ -163,9 +157,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               <span
                 className={cn(
                   'relative z-10 flex h-5 w-5 flex-shrink-0 items-center justify-center',
-                  isDark
-                    ? 'text-gray-400 group-hover:text-white'
-                    : 'text-gray-500 group-hover:text-stone-800'
+                  'text-gray-500 group-hover:text-stone-800 dark:text-gray-400 dark:group-hover:text-white'
                 )}
               >
                 {/* Default icon - wide panel window icon, only displayed when not hovering and not clicking */}
@@ -226,9 +218,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'transition-all duration-150 ease-in-out',
               'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
               'select-none', // Prevent text selection
-              isDark
-                ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
-                : 'focus-visible:ring-primary focus-visible:ring-offset-background',
+              'focus-visible:ring-primary focus-visible:ring-offset-background dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900',
               'border border-transparent',
               'h-10 w-10', // Fixed square size
               '[margin-left:1px]' // Move the entire button a little to the right
@@ -239,9 +229,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               className={cn(
                 'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
                 // Expanded state: default has background color, enhanced when hovering
-                isDark
-                  ? 'bg-stone-600/50 group-hover:bg-stone-600/70'
-                  : 'bg-stone-300/50 group-hover:bg-stone-300/80'
+                'bg-stone-300/50 group-hover:bg-stone-300/80 dark:bg-stone-600/50 dark:group-hover:bg-stone-600/70'
               )}
             />
 
@@ -249,9 +237,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <span
               className={cn(
                 'relative z-10 flex h-5 w-5 flex-shrink-0 items-center justify-center',
-                isDark
-                  ? 'text-gray-400 group-hover:text-white'
-                  : 'text-gray-500 group-hover:text-stone-800'
+                'text-gray-500 group-hover:text-stone-800 dark:text-gray-400 dark:group-hover:text-white'
               )}
             >
               {/* Default icon - wide panel window icon, only displayed when not hovering and not clicking */}
@@ -286,15 +272,13 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'flex items-center leading-none',
               'font-display text-base font-bold tracking-wide',
               '-mt-0.5 -ml-1', // Fine-tune: move up a little, move right to align with the button
-              isDark ? 'text-gray-100' : 'text-stone-700'
+              'text-stone-700 dark:text-gray-100'
             )}
           >
             <span
               className={cn(
                 'bg-gradient-to-r bg-clip-text text-transparent',
-                isDark
-                  ? ['from-gray-100 via-gray-200 to-gray-300']
-                  : ['from-stone-700 via-stone-800 to-stone-900']
+                'from-stone-700 via-stone-800 to-stone-900 dark:from-gray-100 dark:via-gray-200 dark:to-gray-300'
               )}
             >
               {t('appName')}
@@ -310,9 +294,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <Edit
               className={cn(
                 'h-5 w-5 transition-all duration-150 ease-out',
-                isDark
-                  ? 'text-gray-300 group-hover:text-white'
-                  : 'text-stone-600 group-hover:text-stone-800'
+                'text-stone-600 group-hover:text-stone-800 dark:text-gray-300 dark:group-hover:text-white'
               )}
             />
           }
@@ -333,11 +315,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'ml-auto'
             )}
           >
-            <KeyCombination
-              keys={newChatShortcut.symbols}
-              size="md"
-              isDark={isDark}
-            />
+            <KeyCombination keys={newChatShortcut.symbols} size="md" />
           </div>
         </SidebarButton>
       ) : (
@@ -358,9 +336,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               <Edit
                 className={cn(
                   'h-5 w-5 transition-all duration-150 ease-out',
-                  isDark
-                    ? 'text-gray-300 group-hover:text-white'
-                    : 'text-stone-600 group-hover:text-stone-800'
+                  'text-stone-600 group-hover:text-stone-800 dark:text-gray-300 dark:group-hover:text-white'
                 )}
               />
             }
@@ -384,9 +360,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <Clock
               className={cn(
                 'h-5 w-5 transition-all duration-150 ease-out',
-                isDark
-                  ? 'text-gray-300 group-hover:text-white'
-                  : 'text-stone-600 group-hover:text-stone-800'
+                'text-stone-600 group-hover:text-stone-800 dark:text-gray-300 dark:group-hover:text-white'
               )}
             />
           }
@@ -410,11 +384,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'ml-auto'
             )}
           >
-            <KeyCombination
-              keys={recentChatsShortcut.symbols}
-              size="md"
-              isDark={isDark}
-            />
+            <KeyCombination keys={recentChatsShortcut.symbols} size="md" />
           </div>
         </SidebarButton>
       ) : (
@@ -435,9 +405,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               <Clock
                 className={cn(
                   'h-5 w-5 transition-all duration-150 ease-out',
-                  isDark
-                    ? 'text-gray-300 group-hover:text-white'
-                    : 'text-stone-600 group-hover:text-stone-800'
+                  'text-stone-600 group-hover:text-stone-800 dark:text-gray-300 dark:group-hover:text-white'
                 )}
               />
             }
@@ -464,9 +432,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
             <LayoutGrid
               className={cn(
                 'h-5 w-5 transition-all duration-150 ease-out',
-                isDark
-                  ? 'text-gray-300 group-hover:text-white'
-                  : 'text-stone-600 group-hover:text-stone-800'
+                'text-stone-600 group-hover:text-stone-800 dark:text-gray-300 dark:group-hover:text-white'
               )}
             />
           }
@@ -489,11 +455,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               'ml-auto'
             )}
           >
-            <KeyCombination
-              keys={appsMarketShortcut.symbols}
-              size="md"
-              isDark={isDark}
-            />
+            <KeyCombination keys={appsMarketShortcut.symbols} size="md" />
           </div>
         </SidebarButton>
       ) : (
@@ -514,9 +476,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               <LayoutGrid
                 className={cn(
                   'h-5 w-5 transition-all duration-150 ease-out',
-                  isDark
-                    ? 'text-gray-300 group-hover:text-white'
-                    : 'text-stone-600 group-hover:text-stone-800'
+                  'text-stone-600 group-hover:text-stone-800 dark:text-gray-300 dark:group-hover:text-white'
                 )}
               />
             }

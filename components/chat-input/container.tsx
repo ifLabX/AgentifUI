@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useWelcomeLayout } from '@lib/hooks/use-welcome-layout';
 import { cn } from '@lib/utils';
 
@@ -8,7 +7,6 @@ import { cn } from '@lib/utils';
 interface ChatContainerProps {
   children: React.ReactNode;
   isWelcomeScreen?: boolean;
-  isDark?: boolean;
   className?: string;
   widthClass: string;
   // Whether transitioning from conversation interface to welcome interface
@@ -23,13 +21,10 @@ const INPUT_BOTTOM_MARGIN = '1rem';
 export const ChatContainer = ({
   children,
   isWelcomeScreen = false,
-  isDark = false,
   className,
   widthClass,
-  isTransitioningToWelcome = false,
 }: ChatContainerProps) => {
-  // Get theme colors and intelligent layout position
-  const { colors } = useThemeColors();
+  // Get intelligent layout position
   const { input: inputPosition } = useWelcomeLayout();
 
   // Base styles including absolute positioning and width
@@ -67,7 +62,7 @@ export const ChatContainer = ({
       <div
         className={cn(
           'flex flex-col rounded-2xl',
-          isDark ? colors.sidebarBackground.tailwind : 'bg-white',
+          'bg-white dark:bg-stone-700',
           'shadow-[0_0_15px_rgba(0,0,0,0.1)]'
         )}
       >
