@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { GripVertical } from 'lucide-react';
 
@@ -38,7 +37,6 @@ export function ResizableSplitPane({
   className,
   storageKey = 'resizable-split-pane',
 }: ResizableSplitPaneProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const t = useTranslations('components.ui.resizableSplitPane');
@@ -162,8 +160,8 @@ export function ResizableSplitPane({
         <div
           className={cn(
             'h-full w-px transition-all duration-200',
-            isDark ? 'bg-stone-600' : 'bg-stone-300',
-            isDragging && (isDark ? 'bg-stone-500' : 'bg-stone-400')
+            'bg-stone-300 dark:bg-stone-600',
+            isDragging && 'bg-stone-400 dark:bg-stone-500'
           )}
         />
 
@@ -186,19 +184,15 @@ export function ResizableSplitPane({
               'h-8 w-4 rounded-full border transition-all duration-150',
               'shadow-sm',
               // Default state
-              isDark
-                ? 'border-stone-600/50 bg-stone-800/80 text-stone-400'
-                : 'border-stone-300/50 bg-white/80 text-stone-500',
+              'border-stone-300/50 bg-white/80 text-stone-500',
+              'dark:border-stone-600/50 dark:bg-stone-800/80 dark:text-stone-400',
               // Hover state
               'group-hover:scale-105',
-              isDark
-                ? 'group-hover:border-stone-500/70 group-hover:bg-stone-700/90 group-hover:text-stone-300'
-                : 'group-hover:border-stone-400/70 group-hover:bg-white/90 group-hover:text-stone-600',
+              'group-hover:border-stone-400/70 group-hover:bg-white/90 group-hover:text-stone-600',
+              'dark:group-hover:border-stone-500/70 dark:group-hover:bg-stone-700/90 dark:group-hover:text-stone-300',
               // Dragging state
-              isDragging &&
-                (isDark
-                  ? 'scale-105 border-stone-500/80 bg-stone-700/95 text-stone-200'
-                  : 'scale-105 border-stone-400/80 bg-white/95 text-stone-700')
+              isDragging && 'scale-105 border-stone-400/80 bg-white/95 text-stone-700',
+              isDragging && 'dark:border-stone-500/80 dark:bg-stone-700/95 dark:text-stone-200'
             )}
           >
             <GripVertical className="h-3 w-3" />

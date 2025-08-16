@@ -9,8 +9,6 @@ interface AdaptiveKeyBadgeProps {
   keyText: string;
   /** size mode */
   size?: 'sm' | 'md';
-  /** is dark theme */
-  isDark?: boolean;
   /** extra css class name */
   className?: string;
 }
@@ -105,8 +103,6 @@ interface KeyCombinationProps {
   keys: string[];
   /** size mode */
   size?: 'sm' | 'md';
-  /** is dark theme */
-  isDark?: boolean;
   /** extra css class name */
   className?: string;
 }
