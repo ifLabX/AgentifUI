@@ -53,10 +53,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
       case 'success':
         return (
           <CheckCircle2Icon
-            className={cn(
-              'h-4 w-4',
-              'text-stone-500 dark:text-stone-400'
-            )}
+            className={cn('h-4 w-4', 'text-stone-500 dark:text-stone-400')}
           />
         );
       case 'error':
@@ -88,10 +85,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
       default:
         return (
           <FileTextIcon
-            className={cn(
-              'h-4 w-4',
-              'text-stone-500 dark:text-stone-400'
-            )}
+            className={cn('h-4 w-4', 'text-stone-500 dark:text-stone-400')}
           />
         );
     }

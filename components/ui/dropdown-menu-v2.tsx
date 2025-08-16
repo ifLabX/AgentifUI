@@ -78,12 +78,7 @@ const Item: React.FC<DropdownMenuV2ItemProps> = ({
 // Divider component
 const Divider: React.FC = () => {
   return (
-    <div
-      className={cn(
-        'my-1 h-px',
-        'bg-stone-300/40 dark:bg-stone-500/40'
-      )}
-    />
+    <div className={cn('my-1 h-px', 'bg-stone-300/40 dark:bg-stone-500/40')} />
   );
 };
 

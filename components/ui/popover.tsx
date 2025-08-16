@@ -225,7 +225,7 @@ export function Popover({
         'rounded-xl py-2 shadow-lg backdrop-blur-sm',
         'overflow-hidden',
         'border border-gray-200/80 bg-white/95 shadow-gray-200/40',
-        'dark:bg-stone-700 dark:border-stone-600/80 dark:shadow-black/20',
+        'dark:border-stone-600/80 dark:bg-stone-700 dark:shadow-black/20',
         contentClassName
       )}
       style={{

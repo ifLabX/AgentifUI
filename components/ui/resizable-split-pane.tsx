@@ -191,8 +191,10 @@ export function ResizableSplitPane({
               'group-hover:border-stone-400/70 group-hover:bg-white/90 group-hover:text-stone-600',
               'dark:group-hover:border-stone-500/70 dark:group-hover:bg-stone-700/90 dark:group-hover:text-stone-300',
               // Dragging state
-              isDragging && 'scale-105 border-stone-400/80 bg-white/95 text-stone-700',
-              isDragging && 'dark:border-stone-500/80 dark:bg-stone-700/95 dark:text-stone-200'
+              isDragging &&
+                'scale-105 border-stone-400/80 bg-white/95 text-stone-700',
+              isDragging &&
+                'dark:border-stone-500/80 dark:bg-stone-700/95 dark:text-stone-200'
             )}
           >
             <GripVertical className="h-3 w-3" />
