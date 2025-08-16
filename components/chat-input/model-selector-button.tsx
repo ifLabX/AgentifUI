@@ -1,7 +1,6 @@
 'use client';
 
 import { useCurrentApp } from '@lib/hooks/use-current-app';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useChatStore } from '@lib/stores/chat-store';
 import { cn } from '@lib/utils';
@@ -25,7 +24,6 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
   const { currentAppId, switchToSpecificApp, isValidating } = useCurrentApp();
   const { apps, fetchApps, isLoading } = useAppListStore();
   const { clearMessages } = useChatStore();
-  const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isOptimisticSwitching, setIsOptimisticSwitching] = useState(false);
 
@@ -252,7 +250,7 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
           className={cn(
             'h-4 animate-pulse rounded',
             'w-16 sm:w-20 md:w-24', // Responsive width
-            isDark ? 'bg-stone-500/60' : 'bg-stone-300/60' // 🎯 Fix: dark mode uses brighter stone-500
+            'bg-stone-300/60 dark:bg-stone-500/60' // 🎯 Fix: dark mode uses brighter stone-500
           )}
         />
       </div>
@@ -275,9 +273,8 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
           // Cursor control: only show pointer when dropdown is closed
           'h-8 min-h-[2rem]',
           !isOpen ? 'cursor-pointer' : '',
-          isDark
-            ? 'text-stone-300 hover:bg-stone-800/50'
-            : 'text-stone-600 hover:bg-stone-100'
+          'text-stone-600 hover:bg-stone-100',
+          'dark:text-stone-300 dark:hover:bg-stone-800/50'
         )}
       >
         {/* App name: remove width restrictions and truncate, allow full name display */}
@@ -317,16 +314,15 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
               'absolute bottom-full left-0 mb-1 max-w-[16rem] min-w-[8rem]',
               'z-20 max-h-48 overflow-y-auto rounded-md shadow-lg',
               'border',
-              isDark
-                ? 'border-stone-600/80 bg-stone-700/95 backdrop-blur-sm'
-                : 'border-stone-300/80 bg-stone-50/95 backdrop-blur-sm'
+              'border-stone-300/80 bg-stone-50/95 backdrop-blur-sm',
+              'dark:border-stone-600/80 dark:bg-stone-700/95'
             )}
           >
             {modelApps.length === 0 ? (
               <div
                 className={cn(
                   'px-3 py-2 font-serif text-sm',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
+                  'text-stone-500 dark:text-stone-400'
                 )}
               >
                 {t('noModelsAvailable')}
@@ -345,13 +341,11 @@ export function ModelSelectorButton({ className }: ModelSelectorButtonProps) {
                     // Use whitespace-nowrap to prevent line breaks, but allow horizontal scrolling
                     // Add cursor pointer
                     'cursor-pointer whitespace-nowrap',
-                    isDark ? 'hover:bg-stone-600/60' : 'hover:bg-stone-200/60',
+                    'hover:bg-stone-200/60 dark:hover:bg-stone-600/60',
                     app.instance_id === currentAppId &&
-                      (isDark
-                        ? 'bg-stone-600/80 font-medium text-stone-100'
-                        : 'bg-stone-200/80 font-medium text-stone-800'),
+                      'bg-stone-200/80 font-medium text-stone-800 dark:bg-stone-600/80 dark:text-stone-100',
                     app.instance_id !== currentAppId &&
-                      (isDark ? 'text-stone-300' : 'text-stone-600')
+                      'text-stone-600 dark:text-stone-300'
                   )}
                 >
                   {app.display_name || app.instance_id}
