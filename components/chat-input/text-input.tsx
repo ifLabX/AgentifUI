@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { INITIAL_INPUT_HEIGHT } from '@lib/stores/chat-layout-store';
 import { cn } from '@lib/utils';
 
@@ -14,7 +13,6 @@ interface ChatTextInputProps {
   onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   maxHeight?: number;
-  isDark?: boolean;
   className?: string;
   onCompositionStart?: (e: React.CompositionEvent<HTMLTextAreaElement>) => void;
   onCompositionEnd?: (e: React.CompositionEvent<HTMLTextAreaElement>) => void;
@@ -34,7 +32,6 @@ export const ChatTextInput = forwardRef<
       onKeyDown,
       placeholder,
       maxHeight = 180,
-      isDark = false,
       className,
       onCompositionStart,
       onCompositionEnd,
@@ -46,9 +43,6 @@ export const ChatTextInput = forwardRef<
   ) => {
     const t = useTranslations('pages.chat');
     const defaultPlaceholder = placeholder || t('input.placeholder');
-
-    // Get theme colors
-    const { colors } = useThemeColors();
 
     // Internal reference, used when no external ref is provided
     const internalRef = useRef<HTMLTextAreaElement>(null);
@@ -126,9 +120,8 @@ export const ChatTextInput = forwardRef<
           'w-full resize-none border-0 bg-transparent focus:ring-0 focus:outline-none',
           'min-h-[48px] overflow-y-auto',
           'font-serif',
-          isDark
-            ? `${colors.mainText.tailwind} placeholder:text-stone-400`
-            : 'text-gray-900 placeholder:text-gray-500',
+          'text-gray-900 placeholder:text-gray-500',
+          'dark:text-gray-100 dark:placeholder:text-stone-400',
           className
         )}
         style={{ maxHeight: `${maxHeight}px` }}

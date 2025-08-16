@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Check, ChevronDown } from 'lucide-react';
 
@@ -28,7 +27,6 @@ export function CustomSelect({
   placeholder,
   className,
 }: CustomSelectProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('common.ui.customSelect');
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -58,10 +56,9 @@ export function CustomSelect({
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           'flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition-colors',
-          isDark
-            ? 'border-stone-600 bg-stone-700 text-stone-100 hover:border-stone-500'
-            : 'border-stone-300 bg-white text-stone-900 hover:border-stone-400',
-          isOpen && (isDark ? 'border-stone-500' : 'border-stone-400')
+          'border-stone-300 bg-white text-stone-900 hover:border-stone-400',
+          'dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:hover:border-stone-500',
+          isOpen && 'border-stone-400 dark:border-stone-500'
         )}
       >
         <span
@@ -75,7 +72,7 @@ export function CustomSelect({
           className={cn(
             'h-4 w-4 transition-transform',
             isOpen && 'rotate-180',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         />
       </button>
@@ -85,9 +82,7 @@ export function CustomSelect({
         <div
           className={cn(
             'absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-lg border shadow-lg',
-            isDark
-              ? 'border-stone-600 bg-stone-700'
-              : 'border-stone-300 bg-white'
+            'border-stone-300 bg-white dark:border-stone-600 dark:bg-stone-700'
           )}
         >
           {options.map(option => (
@@ -102,12 +97,8 @@ export function CustomSelect({
                 'flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors',
                 'first:rounded-t-lg last:rounded-b-lg',
                 value === option.value
-                  ? isDark
-                    ? 'bg-stone-600 text-stone-100'
-                    : 'bg-stone-100 text-stone-900'
-                  : isDark
-                    ? 'text-stone-200 hover:bg-stone-600'
-                    : 'text-stone-700 hover:bg-stone-50'
+                  ? 'bg-stone-100 text-stone-900 dark:bg-stone-600 dark:text-stone-100'
+                  : 'text-stone-700 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-600'
               )}
             >
               <span>{option.label}</span>
@@ -115,7 +106,7 @@ export function CustomSelect({
                 <Check
                   className={cn(
                     'h-4 w-4',
-                    isDark ? 'text-stone-300' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-300'
                   )}
                 />
               )}
