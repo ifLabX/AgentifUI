@@ -1,8 +1,6 @@
 'use client';
 
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import ReactDOM from 'react-dom';
@@ -36,8 +34,6 @@ export function Popover({
   offsetX, // New prop to control horizontal offset
   offsetY, // New prop to control vertical offset
 }: PopoverProps) {
-  const { isDark } = useTheme();
-  const { colors } = useThemeColors();
   const isMobile = useMobile();
   const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -228,9 +224,8 @@ export function Popover({
         'fixed z-50',
         'rounded-xl py-2 shadow-lg backdrop-blur-sm',
         'overflow-hidden',
-        isDark
-          ? `${colors.sidebarBackground.tailwind} border border-stone-600/80 shadow-black/20`
-          : 'border border-gray-200/80 bg-white/95 shadow-gray-200/40',
+        'border border-gray-200/80 bg-white/95 shadow-gray-200/40',
+        'dark:bg-stone-700 dark:border-stone-600/80 dark:shadow-black/20',
         contentClassName
       )}
       style={{
@@ -280,23 +275,14 @@ export function PopoverItem({
   danger = false,
   disabled = false,
 }: PopoverItemProps) {
-  const { isDark } = useTheme();
   return (
     <button
       className={cn(
         'flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm',
         'transition-all duration-200',
-        isDark
-          ? [
-              danger
-                ? 'text-red-300 hover:bg-red-900/40 active:bg-red-900/60'
-                : 'text-gray-200 hover:bg-stone-600/60 active:bg-stone-600/80',
-            ]
-          : [
-              danger
-                ? 'text-red-600 hover:bg-red-50 active:bg-red-100'
-                : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200',
-            ],
+        danger
+          ? 'text-red-600 hover:bg-red-50 active:bg-red-100 dark:text-red-300 dark:hover:bg-red-900/40 dark:active:bg-red-900/60'
+          : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-200 dark:hover:bg-stone-600/60 dark:active:bg-stone-600/80',
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}
@@ -320,12 +306,11 @@ interface PopoverDividerProps {
 }
 
 export function PopoverDivider({ className }: PopoverDividerProps) {
-  const { isDark } = useTheme();
   return (
     <div
       className={cn(
         'mx-3 my-1.5 h-px',
-        isDark ? 'bg-stone-600/80' : 'bg-gray-200/80',
+        'bg-gray-200/80 dark:bg-stone-600/80',
         className
       )}
     />

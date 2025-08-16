@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { createPortal } from 'react-dom';
 
@@ -39,7 +38,6 @@ const Item: React.FC<DropdownMenuV2ItemProps> = ({
   className,
 }) => {
   const context = useContext(DropdownMenuV2Context);
-  const { isDark } = useTheme();
 
   const handleItemClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,15 +62,10 @@ const Item: React.FC<DropdownMenuV2ItemProps> = ({
         'flex w-full items-center gap-2 px-3 py-2 text-left font-serif text-sm',
         'transition-colors duration-150',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        !disabled &&
-          (isDark ? 'hover:bg-stone-600/40' : 'hover:bg-stone-100/80'),
+        !disabled && 'hover:bg-stone-100/80 dark:hover:bg-stone-600/40',
         danger
-          ? isDark
-            ? 'text-red-400 hover:bg-red-900/20'
-            : 'text-red-600 hover:bg-red-50'
-          : isDark
-            ? 'text-stone-300'
-            : 'text-stone-600',
+          ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20'
+          : 'text-stone-600 dark:text-stone-300',
         className
       )}
     >
@@ -84,12 +77,11 @@ const Item: React.FC<DropdownMenuV2ItemProps> = ({
 
 // Divider component
 const Divider: React.FC = () => {
-  const { isDark } = useTheme();
   return (
     <div
       className={cn(
         'my-1 h-px',
-        isDark ? 'bg-stone-500/40' : 'bg-stone-300/40'
+        'bg-stone-300/40 dark:bg-stone-500/40'
       )}
     />
   );
@@ -125,7 +117,6 @@ export function DropdownMenuV2({
   const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
-  const { isDark } = useTheme();
 
   // use external state or internal state
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -262,9 +253,7 @@ export function DropdownMenuV2({
         className={cn(
           'rounded-md border shadow-lg backdrop-blur-sm',
           // 🎯 use darker colors to distinguish from sidebar background
-          isDark
-            ? 'border-stone-600/80 bg-stone-800/95'
-            : 'border-stone-300/80 bg-white/95',
+          'border-stone-300/80 bg-white/95 dark:border-stone-600/80 dark:bg-stone-800/95',
           'py-1',
           contentClassName
         )}
