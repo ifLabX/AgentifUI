@@ -19,7 +19,6 @@ import { useTranslations } from 'next-intl';
  */
 interface AttachmentPreviewItemProps {
   attachment: AttachmentFile;
-  isDark?: boolean;
   onRetry: (id: string) => void;
 }
 
@@ -29,7 +28,6 @@ interface AttachmentPreviewItemProps {
  */
 export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
   attachment,
-  isDark = false,
   onRetry,
 }) => {
   const removeFile = useAttachmentStore(state => state.removeFile);
@@ -57,7 +55,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
           <CheckCircle2Icon
             className={cn(
               'h-4 w-4',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           />
         );
@@ -75,9 +73,8 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
               onClick={handleRetryClick}
               className={cn(
                 'flex h-full w-full items-center justify-center rounded-full',
-                isDark
-                  ? 'text-stone-400 hover:bg-stone-800/50'
-                  : 'text-stone-500 hover:bg-stone-100/50',
+                'text-stone-500 hover:bg-stone-100/50',
+                'dark:text-stone-400 dark:hover:bg-stone-800/50',
                 'focus:outline-none',
                 'transition-colors duration-150'
               )}
@@ -93,7 +90,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
           <FileTextIcon
             className={cn(
               'h-4 w-4',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           />
         );
@@ -106,11 +103,10 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
         'relative flex items-center gap-2 rounded-md py-1 pr-1 pl-2',
         'flex-shrink basis-[calc((100%-1.5rem)/3)] sm:basis-[calc((100%-1rem)/2)]',
         'max-w-[180px] sm:max-w-[200px]',
-        isDark
-          ? 'border border-stone-700/80 bg-stone-800/90'
-          : 'border border-stone-200 bg-stone-100',
+        'border border-stone-200 bg-stone-100',
+        'dark:border-stone-700/80 dark:bg-stone-800/90',
         attachment.status === 'error' &&
-          (isDark ? 'border-red-500/30' : 'border-red-400/30')
+          'border-red-400/30 dark:border-red-500/30'
       )}
       title={
         attachment.error
@@ -126,7 +122,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
         <p
           className={cn(
             'truncate font-serif text-sm font-medium',
-            isDark ? 'text-stone-100' : 'text-stone-900'
+            'text-stone-900 dark:text-stone-100'
           )}
         >
           {attachment.name}
@@ -134,7 +130,7 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
         <p
           className={cn(
             'font-serif text-xs',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         >
           {formatBytes(attachment.size)}
@@ -153,9 +149,8 @@ export const AttachmentPreviewItem: React.FC<AttachmentPreviewItemProps> = ({
           onClick={handleRemove}
           className={cn(
             'ml-auto flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full transition-colors',
-            isDark
-              ? 'bg-stone-700/80 text-stone-300 hover:bg-stone-600/80 hover:text-white'
-              : 'bg-stone-300/50 text-stone-600 hover:bg-stone-400/70 hover:text-black'
+            'bg-stone-300/50 text-stone-600 hover:bg-stone-400/70 hover:text-black',
+            'dark:bg-stone-700/80 dark:text-stone-300 dark:hover:bg-stone-600/80 dark:hover:text-white'
           )}
           aria-label={t('remove')}
         >

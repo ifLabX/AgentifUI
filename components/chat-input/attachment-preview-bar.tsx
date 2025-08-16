@@ -14,8 +14,6 @@ import { AttachmentPreviewItem } from './attachment-preview-item';
  * Attachment preview bar component properties
  */
 interface AttachmentPreviewBarProps {
-  /** Dark mode flag */
-  isDark?: boolean;
   /** Callback function to notify parent component of height changes */
   onHeightChange: (height: number) => void;
   /** Retry upload callback */
@@ -33,7 +31,6 @@ interface AttachmentPreviewBarProps {
  * - Upload retry functionality
  */
 export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({
-  isDark = false,
   onHeightChange,
   onRetryUpload,
 }) => {
@@ -102,7 +99,7 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({
     <div
       ref={containerRef}
       className={cn(
-        isDark ? 'border-gray-700' : 'border-gray-200', // This class no longer has effect but kept for potential future use
+        'border-gray-200 dark:border-gray-700', // Theme-aware border
         'overflow-hidden',
         'transition-[height] duration-300 ease-in-out'
       )}
@@ -117,9 +114,8 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({
             <div
               className={cn(
                 'mb-2 rounded-lg px-3 py-2 font-serif text-sm',
-                isDark
-                  ? 'border border-orange-500/30 bg-orange-900/30 text-orange-300'
-                  : 'border border-orange-300 bg-orange-100 text-orange-700'
+                'border border-orange-300 bg-orange-100 text-orange-700',
+                'dark:border-orange-500/30 dark:bg-orange-900/30 dark:text-orange-300'
               )}
             >
               {t('fileLimitExceeded', {
@@ -135,7 +131,6 @@ export const AttachmentPreviewBar: React.FC<AttachmentPreviewBarProps> = ({
             <AttachmentPreviewItem
               key={file.id}
               attachment={file}
-              isDark={isDark}
               onRetry={onRetryUpload}
             />
           ))}

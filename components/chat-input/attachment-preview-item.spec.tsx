@@ -71,7 +71,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -86,7 +86,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -104,7 +104,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -118,7 +118,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -134,7 +134,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -153,7 +153,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -174,7 +174,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -191,7 +191,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -210,7 +210,7 @@ describe('AttachmentPreviewItem', () => {
           <AttachmentPreviewItem
             attachment={attachment}
             onRetry={mockOnRetry}
-            isDark={false}
+  
           />
         </div>
       );
@@ -231,7 +231,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={true}
+
         />
       );
 
@@ -247,7 +247,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -268,7 +268,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={false}
+
         />
       );
 
@@ -287,7 +287,7 @@ describe('AttachmentPreviewItem', () => {
         <AttachmentPreviewItem
           attachment={attachment}
           onRetry={mockOnRetry}
-          isDark={true}
+
         />
       );
 
