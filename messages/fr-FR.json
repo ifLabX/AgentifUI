@@ -45,28 +45,109 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "Explorez les possibilités infinies de l'IA et créez de nouvelles expériences intelligentes",
-      "getStarted": "Commencer",
-      "learnMore": "En savoir plus",
-      "features": [
+      "sections": [
         {
-          "title": "Intégration de grands modèles",
-          "description": "Prise en charge de plusieurs fournisseurs de modèles, y compris OpenAI, Anthropic, Dify, etc., pour répondre aux différents besoins des entreprises"
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "Explorez les possibilités infinies de l'IA et créez de nouvelles expériences intelligentes",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "Amélioration des connaissances RAG",
-          "description": "Intégrez la technologie de génération augmentée par récupération (RAG) pour permettre des bases de connaissances privées et une conscience contextuelle"
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Intégration de grands modèles",
+                      "description": "Prise en charge de plusieurs fournisseurs de modèles, y compris OpenAI, Anthropic, Dify, etc., pour répondre aux différents besoins des entreprises"
+                    },
+                    {
+                      "title": "Amélioration des connaissances RAG",
+                      "description": "Intégrez la technologie de génération augmentée par récupération (RAG) pour permettre des bases de connaissances privées et une conscience contextuelle"
+                    },
+                    {
+                      "title": "Déploiement en entreprise",
+                      "description": "Prise en charge du déploiement privé, garantissant la sécurité des données, fournissant des services stables et fiables basés sur le backend Dify"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "Déploiement en entreprise",
-          "description": "Prise en charge du déploiement privé, garantissant la sécurité des données, fournissant des services stables et fiables basés sur le backend Dify"
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "Commencer",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "En savoir plus",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Explorez les possibilités infinies de l'IA.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         }
       ],
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": ". Explorez les possibilités infinies de l'IA."
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "fr-FR"
       }
     },
     "chat": {
@@ -1926,39 +2007,142 @@
       }
     },
     "about": {
-      "title": "À propos d'AgentifUI",
-      "subtitle": "Connecter l'IA aux entreprises, créer de nouvelles expériences avec les grands modèles de langage",
-      "loading": "Chargement...",
-      "mission": {
-        "title": "Notre mission",
-        "description": "AgentifUI s'engage à exploiter la puissance des grands modèles de langage pour fournir des solutions applicatives innovantes aux entreprises. Nous intégrons les capacités de plusieurs fournisseurs de modèles et fournissons des services stables et fiables basés sur le backend Dify, aidant les organisations à utiliser pleinement la valeur de la technologie IA."
-      },
-      "values": {
-        "title": "Nos valeurs",
-        "items": [
-          {
-            "title": "Innovation technique",
-            "description": "Intégrer en continu les technologies de pointe des grands modèles pour fournir des solutions IA de premier plan aux entreprises"
-          },
-          {
-            "title": "Sécurité des données",
-            "description": "Soutenir le déploiement privé et des mesures strictes de protection des données pour garantir la sécurité et la confidentialité des données de l'entreprise"
-          },
-          {
-            "title": "Personnalisation flexible",
-            "description": "Fournir des solutions hautement personnalisables pour répondre aux besoins spécifiques des différentes industries et scénarios"
-          },
-          {
-            "title": "Amélioration des connaissances",
-            "description": "Intégrer des bases de connaissances privées via la technologie RAG pour améliorer les capacités de conscience contextuelle du modèle"
-          }
-        ]
-      },
-      "buttonText": "Commencer à explorer",
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": ". Explorez l'avenir des applications de grands modèles."
+      "sections": [
+        {
+          "id": "section-1754655785527-9372afg5u",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785527-r5env4t5w",
+                "type": "heading",
+                "props": {
+                  "content": "À propos d'AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785527-l8xn5ixxl",
+                "type": "paragraph",
+                "props": {
+                  "content": "Connecter l'IA aux entreprises, créer de nouvelles expériences avec les grands modèles de langage",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785527-3m5genq0l",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785527-r4aulvhjk",
+                "type": "heading",
+                "props": {
+                  "content": "Notre mission",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785527-uo6h0hoog",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUI s'engage à exploiter la puissance des grands modèles de langage pour fournir des solutions applicatives innovantes aux entreprises. Nous intégrons les capacités de plusieurs fournisseurs de modèles et fournissons des services stables et fiables basés sur le backend Dify, aidant les organisations à utiliser pleinement la valeur de la technologie IA.",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785527-zm5tcp7tt",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785527-vvejqx8sf",
+                "type": "heading",
+                "props": {
+                  "content": "Nos valeurs",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785527-ex4409e7y",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Innovation technique",
+                      "description": "Intégrer en continu les technologies de pointe des grands modèles pour fournir des solutions IA de premier plan aux entreprises"
+                    },
+                    {
+                      "title": "Sécurité des données",
+                      "description": "Soutenir le déploiement privé et des mesures strictes de protection des données pour garantir la sécurité et la confidentialité des données de l'entreprise"
+                    },
+                    {
+                      "title": "Personnalisation flexible",
+                      "description": "Fournir des solutions hautement personnalisables pour répondre aux besoins spécifiques des différentes industries et scénarios"
+                    },
+                    {
+                      "title": "Amélioration des connaissances",
+                      "description": "Intégrer des bases de connaissances privées via la technologie RAG pour améliorer les capacités de conscience contextuelle du modèle"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785527-y4yiipyyk",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785527-1r3lxt6xc",
+                "type": "button",
+                "props": {
+                  "text": "Commencer à explorer",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "#",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785527-i2m407ojn",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785527-m8l8x5hm2",
+                "type": "paragraph",
+                "props": {
+                  "content": "© 2025 AgentifUI. Explorez l'avenir des applications de grands modèles.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.527Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.527Z",
+        "locale": "fr-FR"
       }
     }
   },

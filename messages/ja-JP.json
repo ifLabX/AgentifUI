@@ -45,28 +45,110 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "AIの無限の可能性を探求し、インテリジェントな新体験を創造",
-      "getStarted": "始める",
-      "learnMore": "詳しく見る",
-      "features": [
+      "sections": [
         {
-          "title": "大規模モデル統合",
-          "description": "OpenAI、Anthropic、Difyなど複数のモデルプロバイダーをサポートし、様々な企業ニーズに対応"
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "AIの無限の可能性を探求し、インテリジェントな新体験を創造",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "RAG知識強化",
-          "description": "検索拡張生成（RAG）技術を統合し、プライベート知識ベースとコンテキスト認識を実現"
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "大規模モデル統合",
+                      "description": "OpenAI、Anthropic、Difyなど複数のモデルプロバイダーをサポートし、様々な企業ニーズに対応"
+                    },
+                    {
+                      "title": "RAG知識強化",
+                      "description": "検索拡張生成（RAG）技術を統合し、プライベート知識ベースとコンテキスト認識を実現"
+                    },
+                    {
+                      "title": "エンタープライズ展開",
+                      "description": "プライベート展開をサポートし、データセキュリティを保証、Difyバックエンドに基づく安定した信頼性の高いサービスを提供"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "エンタープライズ展開",
-          "description": "プライベート展開をサポートし、データセキュリティを保証、Difyバックエンドに基づく安定した信頼性の高いサービスを提供"
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "始める",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "詳しく見る",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI。AIの無限の可能性を探求。",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         }
       ],
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": "。AIの無限の可能性を探求。"
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "ja-JP"
       }
     },
     "chat": {
@@ -1926,39 +2008,142 @@
       }
     },
     "about": {
-      "title": "AgentifUIについて",
-      "subtitle": "AIと企業を繋ぎ、大規模言語モデルで新しい体験を創造",
-      "loading": "読み込み中...",
-      "mission": {
-        "title": "私たちの使命",
-        "description": "AgentifUIは大規模言語モデルの力を活用し、企業に革新的なアプリケーションソリューションを提供することに取り組んでいます。複数のモデルプロバイダーの能力を統合し、Difyバックエンドに基づく安定した信頼性の高いサービスを提供し、組織がAI技術の価値を最大限に活用できるよう支援します。"
-      },
-      "values": {
-        "title": "私たちの価値観",
-        "items": [
-          {
-            "title": "技術革新",
-            "description": "最先端の大規模モデル技術を継続的に統合し、企業に最先端のAIソリューションを提供"
-          },
-          {
-            "title": "データセキュリティ",
-            "description": "プライベート展開と厳格なデータ保護措置をサポートし、企業データのセキュリティとプライバシーを保証"
-          },
-          {
-            "title": "柔軟なカスタマイズ",
-            "description": "高度にカスタマイズ可能なソリューションを提供し、異なる業界とシナリオの特定のニーズに対応"
-          },
-          {
-            "title": "知識強化",
-            "description": "RAG技術を通じてプライベート知識ベースを統合し、モデルのコンテキスト認識能力を強化"
-          }
-        ]
-      },
-      "buttonText": "探索を始める",
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": "。大規模モデルアプリケーションの未来を探求。"
+      "sections": [
+        {
+          "id": "section-1754655785520-817etyg0d",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-22626u94f",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUIについて",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785520-9e9qre6gq",
+                "type": "paragraph",
+                "props": {
+                  "content": "AIと企業を繋ぎ、大規模言語モデルで新しい体験を創造",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-lt84rggrn",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-tdp6yjlmz",
+                "type": "heading",
+                "props": {
+                  "content": "私たちの使命",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785520-9vsha3qtk",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUIは大規模言語モデルの力を活用し、企業に革新的なアプリケーションソリューションを提供することに取り組んでいます。複数のモデルプロバイダーの能力を統合し、Difyバックエンドに基づく安定した信頼性の高いサービスを提供し、組織がAI技術の価値を最大限に活用できるよう支援します。",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-rp9u08tjy",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-yldbhhn6i",
+                "type": "heading",
+                "props": {
+                  "content": "私たちの価値観",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785520-9lcaoqkek",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "技術革新",
+                      "description": "最先端の大規模モデル技術を継続的に統合し、企業に最先端のAIソリューションを提供"
+                    },
+                    {
+                      "title": "データセキュリティ",
+                      "description": "プライベート展開と厳格なデータ保護措置をサポートし、企業データのセキュリティとプライバシーを保証"
+                    },
+                    {
+                      "title": "柔軟なカスタマイズ",
+                      "description": "高度にカスタマイズ可能なソリューションを提供し、異なる業界とシナリオの特定のニーズに対応"
+                    },
+                    {
+                      "title": "知識強化",
+                      "description": "RAG技術を通じてプライベート知識ベースを統合し、モデルのコンテキスト認識能力を強化"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-3s050qgmy",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-a3uo1m6lo",
+                "type": "button",
+                "props": {
+                  "text": "探索を始める",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "#",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-sfsoc34ab",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-sukotrhas",
+                "type": "paragraph",
+                "props": {
+                  "content": "© 2025 AgentifUI。大規模モデルアプリケーションの未来を探求。",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.520Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.520Z",
+        "locale": "ja-JP"
       }
     }
   },

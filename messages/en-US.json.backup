@@ -45,110 +45,28 @@
   },
   "pages": {
     "home": {
-      "sections": [
+      "title": "AgentifUI",
+      "subtitle": "Explore the infinite possibilities of AI and create intelligent new experiences",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "features": [
         {
-          "id": "section-home-hero",
-          "layout": "single-column",
-          "columns": [
-            [
-              {
-                "id": "comp-home-title",
-                "type": "heading",
-                "props": {
-                  "content": "AgentifUI",
-                  "level": 1,
-                  "textAlign": "center"
-                }
-              },
-              {
-                "id": "comp-home-subtitle",
-                "type": "paragraph",
-                "props": {
-                  "content": "Explore the infinite possibilities of AI and create intelligent new experiences",
-                  "textAlign": "center"
-                }
-              }
-            ]
-          ]
+          "title": "Large Model Integration",
+          "description": "Support for multiple model providers including OpenAI, Anthropic, Dify, etc., meeting different enterprise needs"
         },
         {
-          "id": "section-home-features",
-          "layout": "single-column",
-          "columns": [
-            [
-              {
-                "id": "comp-home-features",
-                "type": "cards",
-                "props": {
-                  "layout": "grid",
-                  "items": [
-                    {
-                      "title": "Large Model Integration",
-                      "description": "Support for multiple model providers including OpenAI, Anthropic, Dify, etc., meeting different enterprise needs"
-                    },
-                    {
-                      "title": "RAG Knowledge Enhancement",
-                      "description": "Integrate Retrieval-Augmented Generation (RAG) technology to enable private knowledge bases and context awareness"
-                    },
-                    {
-                      "title": "Enterprise Deployment",
-                      "description": "Support for private deployment, ensuring data security, providing stable and reliable services based on Dify backend"
-                    }
-                  ]
-                }
-              }
-            ]
-          ]
+          "title": "RAG Knowledge Enhancement",
+          "description": "Integrate Retrieval-Augmented Generation (RAG) technology to enable private knowledge bases and context awareness"
         },
         {
-          "id": "section-home-buttons",
-          "layout": "single-column",
-          "columns": [
-            [
-              {
-                "id": "comp-home-button-primary",
-                "type": "button",
-                "props": {
-                  "text": "Get Started",
-                  "variant": "solid",
-                  "action": "link",
-                  "url": "/chat",
-                  "textAlign": "center",
-                  "secondaryButton": {
-                    "text": "Learn More",
-                    "variant": "outline",
-                    "action": "link",
-                    "url": "/about"
-                  }
-                }
-              }
-            ]
-          ]
-        },
-        {
-          "id": "section-home-footer",
-          "layout": "single-column",
-          "columns": [
-            [
-              {
-                "id": "comp-home-copyright",
-                "type": "paragraph",
-                "props": {
-                  "content": "© {year} AgentifUI. Explore the infinite possibilities of AI.",
-                  "textAlign": "center"
-                }
-              }
-            ]
-          ]
+          "title": "Enterprise Deployment",
+          "description": "Support for private deployment, ensuring data security, providing stable and reliable services based on Dify backend"
         }
       ],
-      "metadata": {
-        "version": "1.0.0",
-        "lastModified": "2025-08-12T12:00:00.000Z",
-        "author": "system-migration",
-        "migratedFrom": "legacy-format",
-        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
-        "locale": "en-US"
+      "copyright": {
+        "prefix": "© {year} ",
+        "linkText": "AgentifUI",
+        "suffix": ". Explore the infinite possibilities of AI."
       }
     },
     "chat": {
@@ -1395,7 +1313,8 @@
             "current": "Current application service provider (cannot be modified)",
             "select": "Select service provider",
             "unknown": "Unknown Provider",
-            "selectPlaceholder": "Please select provider"
+            "selectPlaceholder": "Please select provider",
+            "configUpdated": "Provider configuration updated"
           },
           "fields": {
             "instanceId": {

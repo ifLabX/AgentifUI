@@ -45,28 +45,109 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "Entdecken Sie die unendlichen Möglichkeiten der KI und schaffen Sie intelligente neue Erfahrungen",
-      "getStarted": "Loslegen",
-      "learnMore": "Mehr erfahren",
-      "features": [
+      "sections": [
         {
-          "title": "Integration großer Modelle",
-          "description": "Unterstützung für mehrere Modellanbieter wie OpenAI, Anthropic, Dify usw., um verschiedene Unternehmensanforderungen zu erfüllen"
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "Entdecken Sie die unendlichen Möglichkeiten der KI und schaffen Sie intelligente neue Erfahrungen",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "RAG-Wissenserweiterung",
-          "description": "Integration der Retrieval-Augmented Generation (RAG) Technologie für private Wissensdatenbanken und Kontextbewusstsein"
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Integration großer Modelle",
+                      "description": "Unterstützung für mehrere Modellanbieter wie OpenAI, Anthropic, Dify usw., um verschiedene Unternehmensanforderungen zu erfüllen"
+                    },
+                    {
+                      "title": "RAG-Wissenserweiterung",
+                      "description": "Integration der Retrieval-Augmented Generation (RAG) Technologie für private Wissensdatenbanken und Kontextbewusstsein"
+                    },
+                    {
+                      "title": "Unternehmensbereitstellung",
+                      "description": "Unterstützung für private Bereitstellung, Gewährleistung der Datensicherheit, Bereitstellung stabiler und zuverlässiger Dienste basierend auf Dify-Backend"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "Unternehmensbereitstellung",
-          "description": "Unterstützung für private Bereitstellung, Gewährleistung der Datensicherheit, Bereitstellung stabiler und zuverlässiger Dienste basierend auf Dify-Backend"
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "Loslegen",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "Mehr erfahren",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Entdecken Sie die unendlichen Möglichkeiten der KI.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         }
       ],
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": ". Entdecken Sie die unendlichen Möglichkeiten der KI."
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "de-DE"
       }
     },
     "chat": {
@@ -1926,39 +2007,142 @@
       }
     },
     "about": {
-      "title": "Über AgentifUI",
-      "subtitle": "KI mit Unternehmen verbinden, neue Erfahrungen mit großen Sprachmodellen schaffen",
-      "loading": "Laden...",
-      "mission": {
-        "title": "Unsere Mission",
-        "description": "AgentifUI ist bestrebt, die Kraft großer Sprachmodelle zu nutzen, um innovative Anwendungslösungen für Unternehmen bereitzustellen. Wir integrieren Fähigkeiten von mehreren Modellanbietern und bieten stabile, zuverlässige Dienste basierend auf Dify-Backend, um Organisationen dabei zu helfen, den Wert der KI-Technologie voll auszuschöpfen."
-      },
-      "values": {
-        "title": "Unsere Werte",
-        "items": [
-          {
-            "title": "Technische Innovation",
-            "description": "Kontinuierliche Integration von Spitzentechnologien großer Modelle, um führende KI-Lösungen für Unternehmen bereitzustellen"
-          },
-          {
-            "title": "Datensicherheit",
-            "description": "Unterstützung für private Bereitstellung und strenge Datenschutzmaßnahmen, um die Sicherheit und Privatsphäre von Unternehmensdaten zu gewährleisten"
-          },
-          {
-            "title": "Flexible Anpassung",
-            "description": "Bereitstellung hochgradig anpassbarer Lösungen, um spezifische Anforderungen verschiedener Branchen und Szenarien zu erfüllen"
-          },
-          {
-            "title": "Wissenserweiterung",
-            "description": "Integration privater Wissensdatenbanken durch RAG-Technologie, um die kontextuelle Wahrnehmungsfähigkeiten des Modells zu verbessern"
-          }
-        ]
-      },
-      "buttonText": "Entdeckung beginnen",
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": ". Die Zukunft großer Modellanwendungen erkunden."
+      "sections": [
+        {
+          "id": "section-1754655785523-melks92kj",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785523-1mt7ry2h1",
+                "type": "heading",
+                "props": {
+                  "content": "Über AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785523-bsuhbox61",
+                "type": "paragraph",
+                "props": {
+                  "content": "KI mit Unternehmen verbinden, neue Erfahrungen mit großen Sprachmodellen schaffen",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785523-ryaz5ht6j",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785523-6gq22iobt",
+                "type": "heading",
+                "props": {
+                  "content": "Unsere Mission",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785523-c0x35q9wh",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUI ist bestrebt, die Kraft großer Sprachmodelle zu nutzen, um innovative Anwendungslösungen für Unternehmen bereitzustellen. Wir integrieren Fähigkeiten von mehreren Modellanbietern und bieten stabile, zuverlässige Dienste basierend auf Dify-Backend, um Organisationen dabei zu helfen, den Wert der KI-Technologie voll auszuschöpfen.",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785523-8ohef4opd",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785523-kvs53j5t5",
+                "type": "heading",
+                "props": {
+                  "content": "Unsere Werte",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785523-w07dgvlu8",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Technische Innovation",
+                      "description": "Kontinuierliche Integration von Spitzentechnologien großer Modelle, um führende KI-Lösungen für Unternehmen bereitzustellen"
+                    },
+                    {
+                      "title": "Datensicherheit",
+                      "description": "Unterstützung für private Bereitstellung und strenge Datenschutzmaßnahmen, um die Sicherheit und Privatsphäre von Unternehmensdaten zu gewährleisten"
+                    },
+                    {
+                      "title": "Flexible Anpassung",
+                      "description": "Bereitstellung hochgradig anpassbarer Lösungen, um spezifische Anforderungen verschiedener Branchen und Szenarien zu erfüllen"
+                    },
+                    {
+                      "title": "Wissenserweiterung",
+                      "description": "Integration privater Wissensdatenbanken durch RAG-Technologie, um die kontextuelle Wahrnehmungsfähigkeiten des Modells zu verbessern"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785523-cpif88jjm",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785523-vzki74h7g",
+                "type": "button",
+                "props": {
+                  "text": "Entdeckung beginnen",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "#",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785523-gdsjspvrz",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785523-yqfx2g011",
+                "type": "paragraph",
+                "props": {
+                  "content": "© 2025 AgentifUI. Die Zukunft großer Modellanwendungen erkunden.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.523Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.523Z",
+        "locale": "de-DE"
       }
     }
   },

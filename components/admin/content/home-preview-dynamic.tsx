@@ -1,25 +1,25 @@
 'use client';
 
 import { useTheme } from '@lib/hooks/use-theme';
-import {
-  AboutTranslationData,
-  PageContent,
-  isDynamicFormat,
-  migrateAboutTranslationData,
-} from '@lib/types/about-page-components';
+import { PageContent } from '@lib/types/about-page-components';
 import { cn } from '@lib/utils';
+import type { HomeTranslationData } from '@lib/utils/data-migration';
+import {
+  isHomeDynamicFormat,
+  migrateHomeTranslationData,
+} from '@lib/utils/data-migration';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import React from 'react';
 
 import ComponentRenderer from './component-renderer';
 
-interface AboutPreviewProps {
+interface HomePreviewDynamicProps {
   /**
-   * Translation data for the about page
+   * Translation data for the home page
    * Can be either legacy or dynamic format
    */
-  translation: AboutTranslationData;
+  translation: HomeTranslationData;
   /**
    * Preview device type for responsive preview
    */
@@ -27,21 +27,21 @@ interface AboutPreviewProps {
 }
 
 /**
- * About Page Preview Component
+ * Home Page Preview Component (Dynamic)
  *
- * Displays a preview of the about page with homepage-style visual effects
- * Unified styling with stone color system, animations, and shadows
+ * Displays a preview of the home page using the dynamic component system
+ * Reuses the same ComponentRenderer as AboutPreview for consistency
  */
-export function AboutPreview({
+export function HomePreviewDynamic({
   translation,
   previewDevice,
-}: AboutPreviewProps) {
+}: HomePreviewDynamicProps) {
   const { isDark } = useTheme();
 
   // Ensure translation is in dynamic format
   const dynamicTranslation = React.useMemo(() => {
-    if (!isDynamicFormat(translation)) {
-      return migrateAboutTranslationData(translation);
+    if (!isHomeDynamicFormat(translation)) {
+      return migrateHomeTranslationData(translation);
     }
     return translation;
   }, [translation]);
@@ -205,62 +205,5 @@ export function AboutPreview({
         </div>
       </div>
     </div>
-  );
-}
-
-/**
- * Legacy interface for backward compatibility
- * This is for existing components that still use the old preview format
- */
-export interface ValueCard {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export interface AboutPageConfig {
-  title: string;
-  subtitle: string;
-  mission: string;
-  valueCards: ValueCard[];
-  buttonText: string;
-  copyrightText: string;
-}
-
-/**
- * Legacy preview component for backward compatibility
- * @deprecated Use AboutPreview with dynamic translation data instead
- */
-export function LegacyAboutPreview({
-  config,
-  previewDevice,
-}: {
-  config: AboutPageConfig;
-  previewDevice: 'desktop' | 'tablet' | 'mobile';
-}) {
-  // Convert legacy config to new format
-  const legacyTranslation: AboutTranslationData = {
-    title: config.title,
-    subtitle: config.subtitle,
-    mission: { description: config.mission },
-    values: {
-      items: config.valueCards.map(card => ({
-        title: card.title,
-        description: card.description,
-      })),
-    },
-    buttonText: config.buttonText,
-    copyright: {
-      prefix: config.copyrightText,
-      linkText: '',
-      suffix: '',
-    },
-  };
-
-  return (
-    <AboutPreview
-      translation={legacyTranslation}
-      previewDevice={previewDevice}
-    />
   );
 }

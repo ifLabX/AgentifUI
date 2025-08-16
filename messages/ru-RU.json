@@ -45,28 +45,109 @@
   },
   "pages": {
     "home": {
-      "title": "AgentifUI",
-      "subtitle": "Исследуйте безграничные возможности ИИ и создавайте новые интеллектуальные решения",
-      "getStarted": "Начать",
-      "learnMore": "Узнать больше",
-      "features": [
+      "sections": [
         {
-          "title": "Интеграция больших моделей",
-          "description": "Поддержка нескольких поставщиков моделей, включая OpenAI, Anthropic, Dify и т.д., для удовлетворения различных потребностей предприятий"
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "Исследуйте безграничные возможности ИИ и создавайте новые интеллектуальные решения",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "Улучшение знаний с помощью RAG",
-          "description": "Интеграция технологии Retrieval-Augmented Generation (RAG) для использования частных баз знаний и контекстной осведомленности"
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Интеграция больших моделей",
+                      "description": "Поддержка нескольких поставщиков моделей, включая OpenAI, Anthropic, Dify и т.д., для удовлетворения различных потребностей предприятий"
+                    },
+                    {
+                      "title": "Улучшение знаний с помощью RAG",
+                      "description": "Интеграция технологии Retrieval-Augmented Generation (RAG) для использования частных баз знаний и контекстной осведомленности"
+                    },
+                    {
+                      "title": "Развертывание на предприятии",
+                      "description": "Поддержка частного развертывания, обеспечивающая безопасность данных и предоставляющая стабильные и надежные услуги на базе бэкенда Dify"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
         },
         {
-          "title": "Развертывание на предприятии",
-          "description": "Поддержка частного развертывания, обеспечивающая безопасность данных и предоставляющая стабильные и надежные услуги на базе бэкенда Dify"
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "Начать",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "Узнать больше",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Исследуйте безграничные возможности ИИ.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
         }
       ],
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": ". Исследуйте безграничные возможности ИИ."
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "ru-RU"
       }
     },
     "chat": {
@@ -1926,39 +2007,142 @@
       }
     },
     "about": {
-      "title": "О AgentifUI",
-      "subtitle": "Соединяем ИИ с предприятиями, создаем новые впечатления с помощью больших языковых моделей",
-      "loading": "Загрузка...",
-      "mission": {
-        "title": "Наша миссия",
-        "description": "AgentifUI стремится использовать мощь больших языковых моделей для предоставления инновационных прикладных решений для предприятий. Мы интегрируем возможности нескольких поставщиков моделей и предоставляем стабильные, надежные услуги на базе бэкенда Dify, помогая организациям в полной мере использовать ценность технологий ИИ."
-      },
-      "values": {
-        "title": "Наши ценности",
-        "items": [
-          {
-            "title": "Технологические инновации",
-            "description": "Постоянно интегрируем передовые технологии больших моделей, чтобы предоставлять ведущие ИИ-решения для предприятий"
-          },
-          {
-            "title": "Безопасность данных",
-            "description": "Поддерживаем частное развертывание и строгие меры защиты данных для обеспечения безопасности и конфиденциальности данных предприятия"
-          },
-          {
-            "title": "Гибкая настройка",
-            "description": "Предоставляем высоко настраиваемые решения для удовлетворения конкретных потребностей различных отраслей и сценариев"
-          },
-          {
-            "title": "Улучшение знаний",
-            "description": "Интегрируем частные базы знаний с помощью технологии RAG для улучшения контекстной осведомленности модели"
-          }
-        ]
-      },
-      "buttonText": "Начать исследование",
-      "copyright": {
-        "prefix": "© {year} ",
-        "linkText": "AgentifUI",
-        "suffix": ". Исследуйте будущее приложений больших моделей."
+      "sections": [
+        {
+          "id": "section-1754655785530-fmrppai9k",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785530-zy13p3of7",
+                "type": "heading",
+                "props": {
+                  "content": "О AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785530-zm2ujx2vd",
+                "type": "paragraph",
+                "props": {
+                  "content": "Соединяем ИИ с предприятиями, создаем новые впечатления с помощью больших языковых моделей",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785530-918ad1vth",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785530-mp1j070s1",
+                "type": "heading",
+                "props": {
+                  "content": "Наша миссия",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785530-zyx3fzq2n",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUI стремится использовать мощь больших языковых моделей для предоставления инновационных прикладных решений для предприятий. Мы интегрируем возможности нескольких поставщиков моделей и предоставляем стабильные, надежные услуги на базе бэкенда Dify, помогая организациям в полной мере использовать ценность технологий ИИ.",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785530-7kef2520w",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785530-bd5nzxcyi",
+                "type": "heading",
+                "props": {
+                  "content": "Наши ценности",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785530-fegb2e1cp",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Технологические инновации",
+                      "description": "Постоянно интегрируем передовые технологии больших моделей, чтобы предоставлять ведущие ИИ-решения для предприятий"
+                    },
+                    {
+                      "title": "Безопасность данных",
+                      "description": "Поддерживаем частное развертывание и строгие меры защиты данных для обеспечения безопасности и конфиденциальности данных предприятия"
+                    },
+                    {
+                      "title": "Гибкая настройка",
+                      "description": "Предоставляем высоко настраиваемые решения для удовлетворения конкретных потребностей различных отраслей и сценариев"
+                    },
+                    {
+                      "title": "Улучшение знаний",
+                      "description": "Интегрируем частные базы знаний с помощью технологии RAG для улучшения контекстной осведомленности модели"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785530-3x3l6zpn1",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785530-t40laywew",
+                "type": "button",
+                "props": {
+                  "text": "Начать исследование",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "#",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785530-jumlsf7aa",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785530-ewyln1yz7",
+                "type": "paragraph",
+                "props": {
+                  "content": "© 2025 AgentifUI. Исследуйте будущее приложений больших моделей.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.530Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.530Z",
+        "locale": "ru-RU"
       }
     }
   },
