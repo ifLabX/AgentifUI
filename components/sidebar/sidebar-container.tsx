@@ -83,7 +83,7 @@ export function SidebarContainer() {
         isMobile ? 'z-50' : 'z-30',
 
         isExpanded
-          ? 'bg-stone-100/80 dark:bg-stone-800/80'
+          ? 'bg-stone-200 dark:bg-stone-700'
           : 'bg-stone-50/80 dark:bg-stone-900/80',
         'backdrop-blur-sm',
         'border-r-stone-300/60 dark:border-r-stone-700/50',
