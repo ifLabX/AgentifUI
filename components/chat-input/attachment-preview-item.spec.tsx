@@ -210,7 +210,10 @@ describe('AttachmentPreviewItem', () => {
       );
 
       const container = screen.getByTitle('test-file.txt');
-      expect(container).toHaveClass('dark:border-stone-700/80', 'dark:bg-stone-800/90');
+      expect(container).toHaveClass(
+        'dark:border-stone-700/80',
+        'dark:bg-stone-800/90'
+      );
     });
   });
 
