@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { ArrowLeft } from 'lucide-react';
 
@@ -12,7 +11,6 @@ import { useRouter } from 'next/navigation';
 // History conversation page header component
 // Contains title and return button
 export function HistoryHeader() {
-  const { isDark } = useTheme();
   const router = useRouter();
   const t = useTranslations();
 
@@ -20,7 +18,7 @@ export function HistoryHeader() {
     <header
       className={cn(
         'flex items-center justify-between border-b px-4 py-4 md:px-8 lg:px-12',
-        isDark ? 'border-stone-800 bg-stone-900' : 'border-stone-200 bg-white'
+        'border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900'
       )}
     >
       <div className="flex items-center">
@@ -29,9 +27,8 @@ export function HistoryHeader() {
           className={cn(
             'mr-4 rounded-full p-2',
             'transition-colors duration-200',
-            isDark
-              ? 'text-stone-400 hover:bg-stone-800 hover:text-stone-300'
-              : 'text-stone-500 hover:bg-stone-100 hover:text-stone-700'
+            'text-stone-500 hover:bg-stone-100 hover:text-stone-700',
+            'dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-300'
           )}
           aria-label={t('common.ui.back')}
         >
@@ -41,7 +38,7 @@ export function HistoryHeader() {
         <h1
           className={cn(
             'font-serif text-xl font-medium',
-            isDark ? 'text-stone-100' : 'text-stone-800'
+            'text-stone-800 dark:text-stone-100'
           )}
         >
           {t('history.title')}
