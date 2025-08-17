@@ -190,20 +190,8 @@ describe('AttachmentPreviewItem', () => {
     });
   });
 
-  describe('Dark Mode Support', () => {
-    it('applies dark mode classes when isDark is true', () => {
-      const attachment = { ...baseAttachment, status: 'success' as const };
-
-      render(
-        <AttachmentPreviewItem attachment={attachment} onRetry={mockOnRetry} />
-      );
-
-      // Check if dark mode classes are applied (the component uses cn() utility)
-      const container = screen.getByTitle('test-file.txt');
-      expect(container).toHaveClass('border-stone-700/80', 'bg-stone-800/90');
-    });
-
-    it('applies light mode classes when isDark is false', () => {
+  describe('Theme Support', () => {
+    it('applies light mode classes by default', () => {
       const attachment = { ...baseAttachment, status: 'success' as const };
 
       render(
@@ -213,10 +201,21 @@ describe('AttachmentPreviewItem', () => {
       const container = screen.getByTitle('test-file.txt');
       expect(container).toHaveClass('border-stone-200', 'bg-stone-100');
     });
+
+    it('includes dark mode classes with dark: prefix', () => {
+      const attachment = { ...baseAttachment, status: 'success' as const };
+
+      render(
+        <AttachmentPreviewItem attachment={attachment} onRetry={mockOnRetry} />
+      );
+
+      const container = screen.getByTitle('test-file.txt');
+      expect(container).toHaveClass('dark:border-stone-700/80', 'dark:bg-stone-800/90');
+    });
   });
 
   describe('Error State Styling', () => {
-    it('applies error border when status is error', () => {
+    it('applies light error border when status is error', () => {
       const attachment = {
         ...baseAttachment,
         status: 'error' as const,
@@ -231,7 +230,7 @@ describe('AttachmentPreviewItem', () => {
       expect(container).toHaveClass('border-red-400/30');
     });
 
-    it('applies error border with dark mode when status is error and isDark is true', () => {
+    it('includes dark error border classes with dark: prefix', () => {
       const attachment = {
         ...baseAttachment,
         status: 'error' as const,
@@ -243,7 +242,7 @@ describe('AttachmentPreviewItem', () => {
       );
 
       const container = screen.getByTitle('error: Upload failed');
-      expect(container).toHaveClass('border-red-500/30');
+      expect(container).toHaveClass('dark:border-red-500/30');
     });
   });
 });
