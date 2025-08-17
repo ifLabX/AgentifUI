@@ -3,6 +3,7 @@
 import { InstanceFilterSelector } from '@components/admin/api-config/instance-filter-selector';
 import { SearchInput } from '@components/ui';
 import { ConfirmDialog } from '@components/ui/confirm-dialog';
+import { useTheme } from '@lib/hooks/use-theme';
 import { useApiConfigStore } from '@lib/stores/api-config-store';
 import { ServiceInstance } from '@lib/types/database';
 import { cn } from '@lib/utils';
@@ -55,6 +56,7 @@ const getAppTypeIcon = (difyAppType?: string) => {
 };
 
 export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
+  const { isDark } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -330,7 +332,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         <div
           className={cn(
             'flex-shrink-0 border-b p-2',
-            'border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800'
+            isDark
+              ? 'border-stone-700 bg-stone-800'
+              : 'border-stone-200 bg-stone-100'
           )}
         >
           <div className="mb-2 flex items-center justify-between">
@@ -351,8 +355,12 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                 'cursor-pointer rounded-lg p-1.5 transition-all duration-200',
                 'focus:ring-2 focus:ring-offset-2 focus:outline-none',
                 showAddForm
-                  ? 'bg-stone-400 text-white focus:ring-stone-300 dark:bg-stone-500 dark:text-stone-100 dark:focus:ring-stone-400'
-                  : 'bg-stone-200 text-stone-700 hover:bg-stone-300 hover:text-stone-900 focus:ring-stone-400 dark:bg-stone-600 dark:text-stone-200 dark:hover:bg-stone-500 dark:hover:text-stone-100 dark:focus:ring-stone-500'
+                  ? isDark
+                    ? 'bg-stone-500 text-stone-100 focus:ring-stone-400'
+                    : 'bg-stone-400 text-white focus:ring-stone-300'
+                  : isDark
+                    ? 'bg-stone-600 text-stone-200 hover:bg-stone-500 hover:text-stone-100 focus:ring-stone-500'
+                    : 'bg-stone-200 text-stone-700 hover:bg-stone-300 hover:text-stone-900 focus:ring-stone-400'
               )}
             >
               <Plus
@@ -376,7 +384,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         <div
           className={cn(
             'min-h-0 flex-1 overflow-y-auto',
-            'bg-stone-100 dark:bg-stone-800'
+            isDark ? 'bg-stone-800' : 'bg-stone-100'
           )}
         >
           {!hasInitiallyLoaded && instancesLoading ? (
@@ -385,7 +393,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
               <p
                 className={cn(
                   'font-serif text-sm',
-                  'text-stone-600 dark:text-stone-400'
+                  isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
                 {t('loading')}
@@ -397,7 +405,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
               <p
                 className={cn(
                   'font-serif text-sm',
-                  'text-stone-600 dark:text-stone-400'
+                  isDark ? 'text-stone-400' : 'text-stone-600'
                 )}
               >
                 {filterProviderId
@@ -410,7 +418,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                 }}
                 className={cn(
                   'mt-2 cursor-pointer font-serif text-sm transition-colors',
-                  'text-stone-600 hover:text-stone-800 dark:text-stone-300 dark:hover:text-stone-100'
+                  isDark
+                    ? 'text-stone-300 hover:text-stone-100'
+                    : 'text-stone-600 hover:text-stone-800'
                 )}
               >
                 {t('addFirstApp')}
@@ -436,8 +446,12 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                       // fixed height to keep consistency
                       'flex h-20 flex-col justify-between',
                       selectedInstanceId === instance.instance_id
-                        ? 'border-stone-400 bg-white shadow-lg focus:ring-stone-300 dark:border-stone-400 dark:bg-stone-700/80 dark:shadow-xl dark:focus:ring-stone-400'
-                        : 'border-stone-300/80 bg-white/90 hover:border-stone-400 hover:bg-white hover:shadow-md focus:ring-stone-300 dark:border-stone-600/70 dark:bg-stone-800/70 dark:hover:border-stone-500 dark:hover:bg-stone-700/80 dark:hover:shadow-lg dark:focus:ring-stone-500'
+                        ? isDark
+                          ? 'border-stone-400 bg-stone-700/80 shadow-xl focus:ring-stone-400'
+                          : 'border-stone-400 bg-white shadow-lg focus:ring-stone-300'
+                        : isDark
+                          ? 'border-stone-600/70 bg-stone-800/70 hover:border-stone-500 hover:bg-stone-700/80 hover:shadow-lg focus:ring-stone-500'
+                          : 'border-stone-300/80 bg-white/90 hover:border-stone-400 hover:bg-white hover:shadow-md focus:ring-stone-300'
                     )}
                     onClick={() => {
                       window.dispatchEvent(
@@ -456,13 +470,13 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                           <AppIcon
                             className={cn(
                               'h-4 w-4 flex-shrink-0',
-                              'text-stone-600 dark:text-stone-300'
+                              isDark ? 'text-stone-300' : 'text-stone-600'
                             )}
                           />
                           <h3
                             className={cn(
                               'truncate font-serif text-sm font-medium',
-                              'text-stone-900 dark:text-stone-100'
+                              isDark ? 'text-stone-100' : 'text-stone-900'
                             )}
                           >
                             {instance.display_name}
@@ -473,7 +487,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                             <span
                               className={cn(
                                 'inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-serif text-xs font-medium',
-                                'border border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/30 dark:text-amber-300'
+                                isDark
+                                  ? 'border border-amber-800/40 bg-amber-900/30 text-amber-300'
+                                  : 'border border-amber-200 bg-amber-100 text-amber-800'
                               )}
                             >
                               <Star className="h-2.5 w-2.5" />
@@ -489,7 +505,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                             <span
                               className={cn(
                                 'font-serif',
-                                'text-stone-500'
+                                isDark ? 'text-stone-500' : 'text-stone-500'
                               )}
                             >
                               {difyAppType}
@@ -506,7 +522,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                             <span
                               className={cn(
                                 'font-serif',
-                                'text-stone-500'
+                                isDark ? 'text-stone-500' : 'text-stone-500'
                               )}
                             >
                               {provider.name}
@@ -528,7 +544,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                             className={cn(
                               'cursor-pointer rounded-lg p-1.5 transition-colors',
                               'focus:ring-2 focus:ring-offset-1 focus:outline-none',
-                              'text-stone-500 hover:bg-amber-100 hover:text-amber-700 focus:ring-amber-300 dark:text-stone-400 dark:hover:bg-stone-600 dark:hover:text-amber-300 dark:focus:ring-amber-500',
+                              isDark
+                                ? 'text-stone-400 hover:bg-stone-600 hover:text-amber-300 focus:ring-amber-500'
+                                : 'text-stone-500 hover:bg-amber-100 hover:text-amber-700 focus:ring-amber-300',
                               isProcessing && 'cursor-not-allowed opacity-50'
                             )}
                             title={t('setAsDefault')}
@@ -551,7 +569,9 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                               ? 'cursor-not-allowed text-stone-400 opacity-30'
                               : cn(
                                   'cursor-pointer',
-                                  'text-stone-500 hover:bg-red-100 hover:text-red-700 focus:ring-red-300 dark:text-stone-400 dark:hover:bg-red-900/40 dark:hover:text-red-300 dark:focus:ring-red-500'
+                                  isDark
+                                    ? 'text-stone-400 hover:bg-red-900/40 hover:text-red-300 focus:ring-red-500'
+                                    : 'text-stone-500 hover:bg-red-100 hover:text-red-700 focus:ring-red-300'
                                 ),
                             isProcessing &&
                               !instance.is_default &&
@@ -580,7 +600,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         className={cn(
           'fixed left-96 z-40 w-px',
           'top-12 bottom-0',
-          'bg-stone-200 dark:bg-stone-700'
+          isDark ? 'bg-stone-700' : 'bg-stone-200'
         )}
       ></div>
 
