@@ -84,10 +84,7 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
           {/* Connection line */}
           {!isLast && (
             <div
-              className={cn(
-                'mt-2 h-8 w-0.5',
-                'bg-stone-200 dark:bg-stone-600'
-              )}
+              className={cn('mt-2 h-8 w-0.5', 'bg-stone-200 dark:bg-stone-600')}
             />
           )}
         </div>
@@ -119,8 +116,10 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
           <p
             className={cn(
               'font-serif text-sm',
-              node.status === 'running' && 'text-yellow-600 dark:text-yellow-400',
-              node.status === 'completed' && 'text-green-600 dark:text-green-400',
+              node.status === 'running' &&
+                'text-yellow-600 dark:text-yellow-400',
+              node.status === 'completed' &&
+                'text-green-600 dark:text-green-400',
               node.status === 'failed' && 'text-red-600 dark:text-red-400',
               node.status === 'pending' && 'text-stone-500 dark:text-stone-400'
             )}

@@ -409,7 +409,7 @@ export function FileUploadField({
             'hover:scale-[1.01] hover:shadow-lg',
             'bg-gradient-to-br from-white/80 to-stone-50/80 dark:from-stone-800/80 dark:to-stone-700/80',
             error
-              ? 'border-red-400 hover:border-red-300 bg-red-50/50 dark:bg-red-900/10'
+              ? 'border-red-400 bg-red-50/50 hover:border-red-300 dark:bg-red-900/10'
               : 'border-stone-300 hover:border-stone-400 dark:border-stone-600 dark:hover:border-stone-500',
             isUploading && 'cursor-not-allowed opacity-75'
           )}
@@ -433,10 +433,7 @@ export function FileUploadField({
               )}
             >
               <Upload
-                className={cn(
-                  'h-7 w-7',
-                  'text-stone-600 dark:text-stone-300'
-                )}
+                className={cn('h-7 w-7', 'text-stone-600 dark:text-stone-300')}
               />
             </div>
 
