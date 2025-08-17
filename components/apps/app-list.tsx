@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import { Blocks } from 'lucide-react';
 
@@ -35,39 +34,18 @@ interface AppListProps {
 }
 
 export function AppList({ apps, viewMode, onAppClick }: AppListProps) {
-  const { colors, isDark } = useThemeColors();
   const t = useTranslations('pages.apps');
 
   if (apps.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div
-          className={cn(
-            'mb-3 flex h-12 w-12 items-center justify-center rounded-lg',
-            isDark ? 'bg-stone-800' : 'bg-stone-100'
-          )}
-        >
-          <Blocks
-            className={cn(
-              'h-6 w-6',
-              isDark ? 'text-stone-400' : 'text-stone-500'
-            )}
-          />
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800">
+          <Blocks className="h-6 w-6 text-stone-500 dark:text-stone-400" />
         </div>
-        <h3
-          className={cn(
-            'mb-1 font-serif text-base font-semibold',
-            colors.mainText.tailwind
-          )}
-        >
+        <h3 className="mb-1 font-serif text-base font-semibold text-stone-900 dark:text-gray-100">
           {t('errors.appNotFound')}
         </h3>
-        <p
-          className={cn(
-            'font-serif text-sm',
-            isDark ? 'text-stone-400' : 'text-stone-600'
-          )}
-        >
+        <p className="font-serif text-sm text-stone-600 dark:text-stone-400">
           {t('market.tryAdjustSearch')}
         </p>
       </div>
