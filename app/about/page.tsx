@@ -3,7 +3,6 @@
 import { Button } from '@components/ui/button';
 import { PageLoader } from '@components/ui/page-loader';
 import { useDynamicTranslations } from '@lib/hooks/use-dynamic-translations';
-import { useTheme } from '@lib/hooks/use-theme';
 import { createClient } from '@lib/supabase/client';
 import { cn } from '@lib/utils';
 import { motion } from 'framer-motion';
@@ -15,7 +14,6 @@ import { useRouter } from 'next/navigation';
 
 export default function AboutPage() {
   const router = useRouter();
-  const { isDark } = useTheme();
   const staticT = useTranslations('pages.about');
   const { t: dynamicT, isLoading } = useDynamicTranslations({
     sections: ['pages.about'],
@@ -32,54 +30,6 @@ export default function AboutPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // get colors based on theme
-  const getColors = () => {
-    if (isDark) {
-      return {
-        titleGradient: 'from-stone-300 to-stone-500',
-        textColor: 'text-gray-300',
-        headingColor: 'text-gray-100',
-        paragraphColor: 'text-gray-400',
-        cardBg: 'bg-stone-700',
-        cardBorder: 'border-stone-600',
-        cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.3)]',
-        cardHeadingColor: 'text-stone-300',
-        cardTextColor: 'text-gray-400',
-        buttonClass:
-          'bg-stone-600 hover:bg-stone-500 text-gray-100 cursor-pointer hover:scale-105',
-      };
-    } else {
-      return {
-        titleGradient: 'from-stone-700 to-stone-900',
-        textColor: 'text-stone-700',
-        headingColor: 'text-stone-800',
-        paragraphColor: 'text-stone-600',
-        cardBg: 'bg-stone-100',
-        cardBorder: 'border-stone-200',
-        cardShadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.1)]',
-        cardHeadingColor: 'text-stone-700',
-        cardTextColor: 'text-stone-600',
-        buttonClass:
-          'bg-stone-800 hover:bg-stone-700 text-gray-100 cursor-pointer hover:scale-105',
-      };
-    }
-  };
-
-  const colors = mounted
-    ? getColors()
-    : {
-        titleGradient: '',
-        textColor: '',
-        headingColor: '',
-        paragraphColor: '',
-        cardBg: '',
-        cardBorder: '',
-        cardShadow: '',
-        cardHeadingColor: '',
-        cardTextColor: '',
-        buttonClass: '',
-      };
 
   // handle "start exploring" button click
   const handleExploreClick = async () => {
@@ -132,7 +82,7 @@ export default function AboutPage() {
             className={cn(
               'bg-gradient-to-r bg-clip-text py-2 leading-tight font-bold text-transparent',
               'mb-4 text-3xl sm:mb-6 sm:text-4xl md:text-5xl',
-              `${colors.titleGradient}`
+              'from-stone-700 to-stone-900 dark:from-stone-300 dark:to-stone-500'
             )}
           >
             {t('title')}
@@ -144,7 +94,7 @@ export default function AboutPage() {
             className={cn(
               'mx-auto max-w-3xl font-light',
               'text-base sm:text-lg lg:text-xl',
-              colors.textColor
+              'text-stone-700 dark:text-gray-300'
             )}
           >
             {t('subtitle')}
@@ -162,7 +112,7 @@ export default function AboutPage() {
             className={cn(
               'mb-4 font-bold sm:mb-6',
               'text-xl sm:text-2xl',
-              colors.headingColor
+              'text-stone-800 dark:text-gray-100'
             )}
           >
             {t('mission.title')}
@@ -170,7 +120,7 @@ export default function AboutPage() {
           <p
             className={cn(
               'text-sm leading-relaxed sm:text-base lg:text-lg',
-              colors.paragraphColor
+              'text-stone-600 dark:text-gray-400'
             )}
           >
             {t('mission.description')}
@@ -188,7 +138,7 @@ export default function AboutPage() {
             className={cn(
               'mb-4 font-bold sm:mb-6',
               'text-xl sm:text-2xl',
-              colors.headingColor
+              'text-stone-800 dark:text-gray-100'
             )}
           >
             {t('values.title')}
@@ -203,16 +153,16 @@ export default function AboutPage() {
                 className={cn(
                   'rounded-xl border',
                   'p-4 sm:p-6',
-                  colors.cardBg,
-                  colors.cardShadow,
-                  colors.cardBorder
+                  'bg-stone-100 dark:bg-stone-700',
+                  'shadow-[0_4px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]',
+                  'border-stone-200 dark:border-stone-600'
                 )}
               >
                 <h3
                   className={cn(
                     'mb-2 font-semibold',
                     'text-base sm:text-lg',
-                    colors.cardHeadingColor
+                    'text-stone-700 dark:text-stone-300'
                   )}
                 >
                   {value.title}
@@ -220,7 +170,7 @@ export default function AboutPage() {
                 <p
                   className={cn(
                     'text-sm leading-relaxed sm:text-base',
-                    colors.cardTextColor
+                    'text-stone-600 dark:text-gray-400'
                   )}
                 >
                   {value.description}
@@ -242,7 +192,7 @@ export default function AboutPage() {
             className={cn(
               'h-auto rounded-lg font-medium transition-all duration-200',
               'px-6 py-2 text-sm sm:px-8 sm:py-3 sm:text-base',
-              colors.buttonClass
+              'bg-stone-800 hover:bg-stone-700 text-gray-100 cursor-pointer hover:scale-105 dark:bg-stone-600 dark:hover:bg-stone-500'
             )}
             onClick={handleExploreClick}
           >
@@ -255,7 +205,7 @@ export default function AboutPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className={cn('text-center', 'text-xs sm:text-sm', colors.textColor)}
+          className={cn('text-center', 'text-xs sm:text-sm', 'text-stone-700 dark:text-gray-300')}
         >
           <p>
             {t('copyright.prefix', { year: new Date().getFullYear() })}

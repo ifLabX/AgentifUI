@@ -194,13 +194,9 @@ export function DesktopUserAvatar() {
                         onClick={() => handleMenuItemClick(item.action)}
                         className={cn(
                           'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 focus:outline-none',
-                          isDark
-                            ? isHovered
-                              ? 'bg-stone-700 text-stone-200'
-                              : 'bg-transparent text-stone-200'
-                            : isHovered
-                              ? 'bg-stone-200 text-stone-800'
-                              : 'bg-transparent text-stone-700'
+                          isHovered
+                            ? 'bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-200'
+                            : 'bg-transparent text-stone-700 dark:text-stone-200'
                         )}
                         onMouseEnter={() => setHoveredItem(itemKey)}
                         onMouseLeave={() => setHoveredItem(null)}
@@ -208,13 +204,13 @@ export function DesktopUserAvatar() {
                         <item.icon
                           className={cn(
                             'h-4 w-4',
-                            isDark ? 'text-stone-400' : 'text-stone-500'
+                            'text-stone-500 dark:text-stone-400'
                           )}
                         />
                         <span
                           className={cn(
                             'flex-1 font-serif text-sm',
-                            isDark ? 'text-stone-200' : 'text-stone-700'
+                            'text-stone-700 dark:text-stone-200'
                           )}
                         >
                           {item.label}
@@ -232,7 +228,7 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'my-2 h-px w-full',
-                    isDark ? 'bg-stone-600' : 'bg-stone-200'
+                    'bg-stone-200 dark:bg-stone-600'
                   )}
                 />
 
@@ -242,9 +238,7 @@ export function DesktopUserAvatar() {
                     'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left font-serif text-sm transition-colors duration-150 focus:outline-none',
                     'text-red-600',
                     hoveredItem === 'logout'
-                      ? isDark
-                        ? 'bg-red-900/20'
-                        : 'bg-red-50'
+                      ? 'bg-red-50 dark:bg-red-900/20'
                       : 'bg-transparent'
                   )}
                   onMouseEnter={() => setHoveredItem('logout')}
@@ -259,15 +253,13 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'mb-6 rounded-xl px-4 py-6 text-center',
-                    isDark
-                      ? 'bg-stone-700/50 text-stone-200'
-                      : 'bg-stone-200/80 text-stone-600'
+                    'bg-stone-200/80 text-stone-600 dark:bg-stone-700/50 dark:text-stone-200'
                   )}
                 >
                   <UserCircle
                     className={cn(
                       'mx-auto mb-3 h-16 w-16',
-                      isDark ? 'text-stone-400' : 'text-stone-500'
+                      'text-stone-500 dark:text-stone-400'
                     )}
                   />
                   <p className="font-serif font-medium">{t('loginPrompt')}</p>
@@ -298,12 +290,8 @@ export function DesktopUserAvatar() {
                     className={cn(
                       'w-full transform rounded-xl border px-4 py-3 text-center font-serif font-medium shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md',
                       hoveredItem === 'register'
-                        ? isDark
-                          ? 'border-stone-600 bg-stone-600 text-stone-100'
-                          : 'border-stone-300 bg-stone-300 text-stone-800'
-                        : isDark
-                          ? 'border-stone-600 bg-stone-700 text-stone-200'
-                          : 'border-stone-300 bg-stone-100 text-stone-700'
+                        ? 'border-stone-300 bg-stone-300 text-stone-800 dark:border-stone-600 dark:bg-stone-600 dark:text-stone-100'
+                        : 'border-stone-300 bg-stone-100 text-stone-700 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-200'
                     )}
                     onMouseEnter={() => setHoveredItem('register')}
                     onMouseLeave={() => setHoveredItem(null)}

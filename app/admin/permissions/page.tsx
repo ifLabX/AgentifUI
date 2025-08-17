@@ -2,14 +2,12 @@
 
 import { PermissionHeader } from '@components/admin/permissions/permission-header';
 import { PermissionLayout } from '@components/admin/permissions/permission-layout';
-import { useTheme } from '@lib/hooks/use-theme';
 import { usePermissionManagementStore } from '@lib/stores/permission-management-store';
 import { cn } from '@lib/utils';
 
 import { useEffect } from 'react';
 
 export default function PermissionsPage() {
-  const { isDark } = useTheme();
   const { loadApps, loadGroups, error } = usePermissionManagementStore();
 
   // initialize data
@@ -28,9 +26,7 @@ export default function PermissionsPage() {
         <div
           className={cn(
             'mb-6 rounded-lg border p-4',
-            isDark
-              ? 'border-red-800 bg-red-900/20 text-red-400'
-              : 'border-red-200 bg-red-50 text-red-600'
+            'border-red-200 bg-red-50 text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400'
           )}
         >
           <p className="font-serif text-sm">{error}</p>
