@@ -1,7 +1,6 @@
 'use client';
 
 import type { UserStats } from '@lib/db/users';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import {
   Calendar,
@@ -42,7 +41,6 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
   stats,
   isLoading,
 }) => {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.admin.users.stats');
 
   // Generate statistics card data
@@ -120,46 +118,46 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
   const getColorClasses = (color: StatCard['color']) => {
     const colorMap = {
       blue: {
-        bg: isDark ? 'bg-blue-500/10' : 'bg-blue-50',
-        border: isDark ? 'border-blue-500/20' : 'border-blue-200',
-        icon: isDark ? 'text-blue-400' : 'text-blue-600',
-        iconBg: isDark ? 'bg-blue-500/20' : 'bg-blue-100',
+        bg: 'bg-blue-50 dark:bg-blue-500/10',
+        border: 'border-blue-200 dark:border-blue-500/20',
+        icon: 'text-blue-600 dark:text-blue-400',
+        iconBg: 'bg-blue-100 dark:bg-blue-500/20',
       },
       green: {
-        bg: isDark ? 'bg-green-500/10' : 'bg-green-50',
-        border: isDark ? 'border-green-500/20' : 'border-green-200',
-        icon: isDark ? 'text-green-400' : 'text-green-600',
-        iconBg: isDark ? 'bg-green-500/20' : 'bg-green-100',
+        bg: 'bg-green-50 dark:bg-green-500/10',
+        border: 'border-green-200 dark:border-green-500/20',
+        icon: 'text-green-600 dark:text-green-400',
+        iconBg: 'bg-green-100 dark:bg-green-500/20',
       },
       red: {
-        bg: isDark ? 'bg-red-500/10' : 'bg-red-50',
-        border: isDark ? 'border-red-500/20' : 'border-red-200',
-        icon: isDark ? 'text-red-400' : 'text-red-600',
-        iconBg: isDark ? 'bg-red-500/20' : 'bg-red-100',
+        bg: 'bg-red-50 dark:bg-red-500/10',
+        border: 'border-red-200 dark:border-red-500/20',
+        icon: 'text-red-600 dark:text-red-400',
+        iconBg: 'bg-red-100 dark:bg-red-500/20',
       },
       yellow: {
-        bg: isDark ? 'bg-yellow-500/10' : 'bg-yellow-50',
-        border: isDark ? 'border-yellow-500/20' : 'border-yellow-200',
-        icon: isDark ? 'text-yellow-400' : 'text-yellow-600',
-        iconBg: isDark ? 'bg-yellow-500/20' : 'bg-yellow-100',
+        bg: 'bg-yellow-50 dark:bg-yellow-500/10',
+        border: 'border-yellow-200 dark:border-yellow-500/20',
+        icon: 'text-yellow-600 dark:text-yellow-400',
+        iconBg: 'bg-yellow-100 dark:bg-yellow-500/20',
       },
       purple: {
-        bg: isDark ? 'bg-purple-500/10' : 'bg-purple-50',
-        border: isDark ? 'border-purple-500/20' : 'border-purple-200',
-        icon: isDark ? 'text-purple-400' : 'text-purple-600',
-        iconBg: isDark ? 'bg-purple-500/20' : 'bg-purple-100',
+        bg: 'bg-purple-50 dark:bg-purple-500/10',
+        border: 'border-purple-200 dark:border-purple-500/20',
+        icon: 'text-purple-600 dark:text-purple-400',
+        iconBg: 'bg-purple-100 dark:bg-purple-500/20',
       },
       indigo: {
-        bg: isDark ? 'bg-indigo-500/10' : 'bg-indigo-50',
-        border: isDark ? 'border-indigo-500/20' : 'border-indigo-200',
-        icon: isDark ? 'text-indigo-400' : 'text-indigo-600',
-        iconBg: isDark ? 'bg-indigo-500/20' : 'bg-indigo-100',
+        bg: 'bg-indigo-50 dark:bg-indigo-500/10',
+        border: 'border-indigo-200 dark:border-indigo-500/20',
+        icon: 'text-indigo-600 dark:text-indigo-400',
+        iconBg: 'bg-indigo-100 dark:bg-indigo-500/20',
       },
       gray: {
-        bg: isDark ? 'bg-stone-500/10' : 'bg-stone-50',
-        border: isDark ? 'border-stone-500/20' : 'border-stone-200',
-        icon: isDark ? 'text-stone-400' : 'text-stone-600',
-        iconBg: isDark ? 'bg-stone-500/20' : 'bg-stone-100',
+        bg: 'bg-stone-50 dark:bg-stone-500/10',
+        border: 'border-stone-200 dark:border-stone-500/20',
+        icon: 'text-stone-600 dark:text-stone-400',
+        iconBg: 'bg-stone-100 dark:bg-stone-500/20',
       },
     };
     return colorMap[color];
@@ -173,29 +171,27 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
             key={index}
             className={cn(
               'animate-pulse rounded-xl border p-4 backdrop-blur-sm',
-              isDark
-                ? 'border-stone-700/50 bg-stone-800/50'
-                : 'border-stone-200/50 bg-white/50'
+              'border-stone-200/50 bg-white/50 dark:border-stone-700/50 dark:bg-stone-800/50'
             )}
           >
             <div className="flex flex-col space-y-3">
               <div
                 className={cn(
                   'h-8 w-8 rounded-lg',
-                  isDark ? 'bg-stone-700/50' : 'bg-stone-100'
+                  'bg-stone-100 dark:bg-stone-700/50'
                 )}
               />
               <div>
                 <div
                   className={cn(
                     'mb-2 h-3 w-16 rounded',
-                    isDark ? 'bg-stone-700/50' : 'bg-stone-200'
+                    'bg-stone-200 dark:bg-stone-700/50'
                   )}
                 />
                 <div
                   className={cn(
                     'h-5 w-12 rounded',
-                    isDark ? 'bg-stone-700/50' : 'bg-stone-200'
+                    'bg-stone-200 dark:bg-stone-700/50'
                   )}
                 />
               </div>
@@ -242,7 +238,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
                 <p
                   className={cn(
                     'mb-1 truncate font-serif text-xs font-medium',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {card.title}
@@ -250,7 +246,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({
                 <p
                   className={cn(
                     'font-serif text-lg font-bold',
-                    isDark ? 'text-stone-100' : 'text-stone-900'
+                    'text-stone-900 dark:text-stone-100'
                   )}
                 >
                   {card.value}

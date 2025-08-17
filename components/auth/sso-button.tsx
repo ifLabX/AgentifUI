@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@components/ui/button';
-import { useTheme } from '@lib/hooks/use-theme';
 import { createClient } from '@lib/supabase/client';
 import type { PublicSsoProvider } from '@lib/types/database';
 import { cn } from '@lib/utils';
@@ -102,7 +101,6 @@ export function SSOCard({
   const [providers, setProviders] = useState<PublicSsoProvider[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isDark } = useTheme();
   const t = useTranslations('pages.auth.sso');
 
   useEffect(() => {
@@ -147,9 +145,7 @@ export function SSOCard({
         className={cn(
           'rounded-lg border p-6 shadow-sm',
           'font-serif transition-shadow hover:shadow-md',
-          isDark
-            ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
-            : 'border-gray-200 bg-white',
+          'border-gray-200 bg-white dark:border-stone-700 dark:bg-stone-800 dark:shadow-stone-900/30',
           className
         )}
       >
@@ -184,9 +180,7 @@ export function SSOCard({
         className={cn(
           'rounded-lg border p-6 shadow-sm',
           'font-serif transition-shadow hover:shadow-md',
-          isDark
-            ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
-            : 'border-gray-200 bg-white',
+          'border-gray-200 bg-white dark:border-stone-700 dark:bg-stone-800 dark:shadow-stone-900/30',
           className
         )}
       >
@@ -203,9 +197,7 @@ export function SSOCard({
         className={cn(
           'rounded-lg border p-6 shadow-sm',
           'font-serif transition-shadow hover:shadow-md',
-          isDark
-            ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
-            : 'border-gray-200 bg-white',
+          'border-gray-200 bg-white dark:border-stone-700 dark:bg-stone-800 dark:shadow-stone-900/30',
           className
         )}
       >
@@ -213,7 +205,7 @@ export function SSOCard({
           <div
             className={cn(
               'text-sm',
-              isDark ? 'text-stone-400' : 'text-gray-500'
+              'text-gray-500 dark:text-stone-400'
             )}
           >
             {t('noProvider')}
@@ -228,9 +220,7 @@ export function SSOCard({
       className={cn(
         'rounded-lg border p-6 shadow-sm',
         'font-serif transition-shadow hover:shadow-md',
-        isDark
-          ? 'border-stone-700 bg-stone-800 shadow-stone-900/30'
-          : 'border-gray-200 bg-white',
+        'border-gray-200 bg-white dark:border-stone-700 dark:bg-stone-800 dark:shadow-stone-900/30',
         className
       )}
     >
@@ -239,7 +229,7 @@ export function SSOCard({
           <h3
             className={cn(
               'font-serif text-lg font-semibold',
-              isDark ? 'text-stone-100' : 'text-gray-900'
+              'text-gray-900 dark:text-stone-100'
             )}
           >
             {t('title')}
@@ -247,7 +237,7 @@ export function SSOCard({
           <p
             className={cn(
               'mt-1 font-serif text-sm',
-              isDark ? 'text-stone-300' : 'text-gray-600'
+              'text-gray-600 dark:text-stone-300'
             )}
           >
             {t('subtitle')}
@@ -284,7 +274,7 @@ export function SSOCard({
         <div
           className={cn(
             'font-serif text-xs',
-            isDark ? 'text-stone-400' : 'text-gray-500'
+            'text-gray-500 dark:text-stone-400'
           )}
         >
           <p>{t('helpText')}</p>

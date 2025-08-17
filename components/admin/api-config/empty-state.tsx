@@ -1,13 +1,11 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Settings } from 'lucide-react';
 
 import { useTranslations } from 'next-intl';
 
 export const EmptyState = () => {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.admin.apiConfig.emptyState');
 
   return (
@@ -17,7 +15,7 @@ export const EmptyState = () => {
         <h3
           className={cn(
             'mb-2 font-serif text-lg font-medium',
-            isDark ? 'text-stone-300' : 'text-stone-700'
+            'text-stone-700 dark:text-stone-300'
           )}
         >
           {t('title')}
@@ -25,7 +23,7 @@ export const EmptyState = () => {
         <p
           className={cn(
             'font-serif text-sm',
-            isDark ? 'text-stone-400' : 'text-stone-600'
+            'text-stone-600 dark:text-stone-400'
           )}
         >
           {t('description')}

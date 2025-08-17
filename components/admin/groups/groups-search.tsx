@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Search, X } from 'lucide-react';
 
@@ -15,7 +14,6 @@ export function GroupsSearch({
   searchTerm,
   onSearchChange,
 }: GroupsSearchProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.admin.groups.search');
 
   const handleClear = () => {
@@ -27,9 +25,7 @@ export function GroupsSearch({
       <div
         className={cn(
           'rounded-xl border p-4 shadow-lg backdrop-blur-sm',
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/60 shadow-stone-900/20'
-            : 'border-stone-200/50 bg-white/80 shadow-stone-200/50'
+          'border-stone-200/50 bg-white/80 shadow-stone-200/50 dark:border-stone-700/50 dark:bg-stone-800/60 dark:shadow-stone-900/20'
         )}
       >
         <div className="relative">
@@ -37,7 +33,7 @@ export function GroupsSearch({
             <Search
               className={cn(
                 'h-4 w-4',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             />
           </div>
@@ -49,9 +45,8 @@ export function GroupsSearch({
             className={cn(
               'w-full rounded-lg border py-3 pr-10 pl-10 font-serif text-sm transition-all duration-200',
               'focus:ring-2 focus:ring-offset-2 focus:outline-none',
-              isDark
-                ? 'border-stone-600/50 bg-stone-700/50 text-stone-200 placeholder-stone-400 focus:border-stone-500 focus:bg-stone-700 focus:ring-stone-500 focus:ring-offset-stone-800'
-                : 'border-stone-300/50 bg-stone-50/50 text-stone-900 placeholder-stone-500 focus:border-stone-400 focus:bg-white focus:ring-stone-400 focus:ring-offset-white'
+              'border-stone-300/50 bg-stone-50/50 text-stone-900 placeholder-stone-500 focus:border-stone-400 focus:bg-white focus:ring-stone-400 focus:ring-offset-white',
+              'dark:border-stone-600/50 dark:bg-stone-700/50 dark:text-stone-200 dark:placeholder-stone-400 dark:focus:border-stone-500 dark:focus:bg-stone-700 dark:focus:ring-stone-500 dark:focus:ring-offset-stone-800'
             )}
           />
           {searchTerm && (
@@ -59,9 +54,7 @@ export function GroupsSearch({
               onClick={handleClear}
               className={cn(
                 'absolute inset-y-0 right-0 flex items-center pr-3 transition-colors',
-                isDark
-                  ? 'text-stone-400 hover:text-stone-300'
-                  : 'text-stone-500 hover:text-stone-700'
+                'text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
               )}
             >
               <X className="h-4 w-4" />
@@ -74,7 +67,7 @@ export function GroupsSearch({
             <span
               className={cn(
                 'font-serif text-xs',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             >
               {t('searchResults')}
@@ -82,9 +75,7 @@ export function GroupsSearch({
             <div
               className={cn(
                 'rounded-full px-2 py-1 font-serif text-xs',
-                isDark
-                  ? 'bg-stone-700 text-stone-300'
-                  : 'bg-stone-100 text-stone-700'
+                'bg-stone-100 text-stone-700 dark:bg-stone-700 dark:text-stone-300'
               )}
             >
               {t('keyword')}: {searchTerm}
