@@ -2,7 +2,6 @@
 
 import { LogoutConfirmDialog, UserAvatar, VersionTag } from '@components/ui';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import { Clock, Info, LogOut, Sliders, UserCircle, Wrench } from 'lucide-react';
 
@@ -12,7 +11,6 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 export function DesktopUserAvatar() {
-  const { isDark } = useThemeColors();
   const router = useRouter();
   const t = useTranslations('navbar.user');
   const tRoles = useTranslations('pages.settings.profileSettings.roles');
@@ -133,9 +131,7 @@ export function DesktopUserAvatar() {
             <div
               className={cn(
                 'flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all duration-200',
-                isDark
-                  ? 'border-stone-600 bg-stone-700 text-stone-200'
-                  : 'border-stone-300 bg-stone-100 text-stone-600'
+                'border-stone-300 bg-stone-100 text-stone-600 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-200'
               )}
             >
               <UserCircle size={18} />
@@ -147,9 +143,7 @@ export function DesktopUserAvatar() {
             ref={dropdownRef}
             className={cn(
               'animate-slide-in-down absolute top-12 -right-2 z-50 w-64 rounded-xl border p-2 shadow-xl',
-              isDark
-                ? 'border-stone-600 bg-stone-800'
-                : 'border-stone-200 bg-stone-50'
+              'border-stone-200 bg-stone-50 dark:border-stone-600 dark:bg-stone-800'
             )}
           >
             {isLoggedIn ? (
@@ -157,7 +151,7 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'mb-2 rounded-lg p-3',
-                    isDark ? 'bg-stone-700/50' : 'bg-stone-200/80'
+                    'bg-stone-200/80 dark:bg-stone-700/50'
                   )}
                 >
                   <div className="flex items-center">
@@ -165,7 +159,7 @@ export function DesktopUserAvatar() {
                       <p
                         className={cn(
                           'truncate font-serif text-sm font-semibold',
-                          isDark ? 'text-stone-100' : 'text-stone-900'
+                          'text-stone-900 dark:text-stone-100'
                         )}
                       >
                         {userName}
@@ -173,7 +167,7 @@ export function DesktopUserAvatar() {
                       <p
                         className={cn(
                           'truncate font-serif text-xs',
-                          isDark ? 'text-stone-300' : 'text-stone-600'
+                          'text-stone-600 dark:text-stone-300'
                         )}
                       >
                         {userRole}
@@ -185,7 +179,7 @@ export function DesktopUserAvatar() {
                 <div
                   className={cn(
                     'mb-2 h-px w-full',
-                    isDark ? 'bg-stone-600' : 'bg-stone-200'
+                    'bg-stone-200 dark:bg-stone-600'
                   )}
                 />
 

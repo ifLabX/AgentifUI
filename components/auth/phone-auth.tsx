@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { createClient } from '@lib/supabase/client';
 import { cn } from '@lib/utils';
 import { Loader2, MessageSquare, Phone } from 'lucide-react';
@@ -15,7 +14,6 @@ export default function PhoneAuth() {
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [loading, setLoading] = useState(false);
-  const { isDark } = useTheme();
   const supabase = createClient();
   const t = useTranslations('pages.auth.phoneLogin');
 
@@ -97,9 +95,7 @@ export default function PhoneAuth() {
     <div
       className={cn(
         'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-        isDark
-          ? 'border-stone-800 bg-stone-900'
-          : 'border-stone-200 bg-stone-50'
+        'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900'
       )}
     >
       <div className="text-center">
@@ -110,7 +106,7 @@ export default function PhoneAuth() {
         <p
           className={cn(
             'mt-2 font-serif text-sm',
-            isDark ? 'text-gray-400' : 'text-gray-600'
+            'text-gray-600 dark:text-gray-400'
           )}
         >
           {step === 'phone' ? t('subtitle') : t('otpSubtitle')}
@@ -125,7 +121,7 @@ export default function PhoneAuth() {
                 htmlFor="phone"
                 className={cn(
                   'mb-1 block font-serif text-sm font-medium',
-                  isDark ? 'text-gray-300' : 'text-gray-700'
+                  'text-gray-700 dark:text-gray-300'
                 )}
               >
                 {t('phoneLabel')}
@@ -134,9 +130,7 @@ export default function PhoneAuth() {
                 <span
                   className={cn(
                     'inline-flex items-center rounded-l-lg border border-r-0 px-3 font-serif text-sm',
-                    isDark
-                      ? 'border-stone-700 bg-stone-800 text-gray-300'
-                      : 'border-stone-300 bg-stone-100 text-gray-600'
+                    'border-stone-300 bg-stone-100 text-gray-600 dark:border-stone-700 dark:bg-stone-800 dark:text-gray-300'
                   )}
                 >
                   +86
@@ -151,9 +145,7 @@ export default function PhoneAuth() {
                   }
                   className={cn(
                     'block w-full rounded-r-lg border px-4 py-3 font-serif placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                    isDark
-                      ? 'border-stone-700 bg-stone-800 text-white'
-                      : 'border-stone-300 bg-white'
+                    'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
                   )}
                   disabled={loading}
                 />
@@ -188,7 +180,7 @@ export default function PhoneAuth() {
                 htmlFor="otp"
                 className={cn(
                   'mb-1 block font-serif text-sm font-medium',
-                  isDark ? 'text-gray-300' : 'text-gray-700'
+                  'text-gray-700 dark:text-gray-300'
                 )}
               >
                 {t('otpLabel')}
@@ -203,9 +195,7 @@ export default function PhoneAuth() {
                 }
                 className={cn(
                   'block w-full rounded-lg border px-4 py-3 text-center font-serif text-lg tracking-widest placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                  isDark
-                    ? 'border-stone-700 bg-stone-800 text-white'
-                    : 'border-stone-300 bg-white'
+                  'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
                 )}
                 disabled={loading}
                 maxLength={6}
@@ -213,7 +203,7 @@ export default function PhoneAuth() {
               <p
                 className={cn(
                   'mt-1 font-serif text-sm',
-                  isDark ? 'text-gray-400' : 'text-gray-600'
+                  'text-gray-600 dark:text-gray-400'
                 )}
               >
                 {t('otpSentTo', { phone })}
@@ -243,9 +233,7 @@ export default function PhoneAuth() {
               disabled={loading}
               className={cn(
                 'h-10 w-full rounded-lg border font-serif text-sm transition-all disabled:cursor-not-allowed disabled:opacity-50',
-                isDark
-                  ? 'border-stone-700 text-gray-300 hover:bg-stone-800'
-                  : 'border-stone-300 text-gray-700 hover:bg-stone-50'
+                'border-stone-300 text-gray-700 hover:bg-stone-50 dark:border-stone-700 dark:text-gray-300 dark:hover:bg-stone-800'
               )}
             >
               {t('resendButton')}
@@ -256,9 +244,7 @@ export default function PhoneAuth() {
               disabled={loading}
               className={cn(
                 'h-10 w-full rounded-lg font-serif text-sm transition-all disabled:cursor-not-allowed disabled:opacity-50',
-                isDark
-                  ? 'text-gray-400 hover:bg-stone-800 hover:text-gray-300'
-                  : 'text-gray-600 hover:bg-stone-50 hover:text-gray-700'
+                'text-gray-600 hover:bg-stone-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-stone-800 dark:hover:text-gray-300'
               )}
             >
               {t('changePhoneButton')}
