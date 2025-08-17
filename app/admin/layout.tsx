@@ -162,8 +162,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [pathname, navigatingTo]);
 
   return (
-    <div className="relative min-h-screen font-serif bg-stone-100 dark:bg-stone-800">
-      <header className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md bg-stone-200 border-b-stone-300/60 dark:bg-stone-700 dark:border-b-stone-700/50">
+    <div className="relative min-h-screen bg-stone-100 font-serif dark:bg-stone-800">
+      <header className="fixed top-0 right-0 left-0 z-50 border-b border-b-stone-300/60 bg-stone-200 backdrop-blur-md dark:border-b-stone-700/50 dark:bg-stone-700">
         <div className="flex items-center justify-between px-6 py-2">
           <div className="flex items-center gap-4">
             <h1 className="text-base font-semibold text-stone-900 dark:text-gray-100">
@@ -182,7 +182,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         className={cn(
                           'transition-colors hover:underline',
                           index === getBreadcrumbs().length - 1
-                            ? 'text-stone-900 dark:text-gray-100 font-medium'
+                            ? 'font-medium text-stone-900 dark:text-gray-100'
                             : 'text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200'
                         )}
                       >

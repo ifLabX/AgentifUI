@@ -119,9 +119,7 @@ export function ExecutionItem({
             </span>
 
             {execution.elapsed_time && (
-              <span className="text-stone-500">
-                {execution.elapsed_time}s
-              </span>
+              <span className="text-stone-500">{execution.elapsed_time}s</span>
             )}
           </div>
 

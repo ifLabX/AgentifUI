@@ -112,7 +112,7 @@ export function CustomSelect({
     'backdrop-blur-sm focus:shadow-lg focus:shadow-stone-500/25',
     'flex cursor-pointer items-center justify-between select-none',
     error
-      ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50 dark:bg-red-900/10'
+      ? 'border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/20 dark:bg-red-900/10'
       : 'border-stone-300 bg-white/90 text-stone-900 hover:border-stone-400 dark:border-stone-600 dark:bg-stone-800/90 dark:text-stone-100 dark:hover:border-stone-500',
     className
   );

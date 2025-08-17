@@ -202,12 +202,7 @@ export function SSOCard({
         )}
       >
         <div className="space-y-4 text-center">
-          <div
-            className={cn(
-              'text-sm',
-              'text-gray-500 dark:text-stone-400'
-            )}
-          >
+          <div className={cn('text-sm', 'text-gray-500 dark:text-stone-400')}>
             {t('noProvider')}
           </div>
         </div>

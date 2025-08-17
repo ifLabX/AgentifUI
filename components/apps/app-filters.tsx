@@ -160,8 +160,8 @@ export function AppFilters({
             onClick={() => scrollCategories('left')}
             className={cn(
               'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-colors',
-              'bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-700 border border-stone-200 shadow-sm',
-              'dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300 dark:border-stone-700'
+              'border border-stone-200 bg-white text-stone-600 shadow-sm hover:bg-stone-50 hover:text-stone-700',
+              'dark:border-stone-700 dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300'
             )}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -187,7 +187,7 @@ export function AppFilters({
                     'flex-shrink-0 whitespace-nowrap', // Prevent shrink and line break
                     isSelected
                       ? 'bg-stone-900 text-white ring-1 ring-stone-300 dark:bg-stone-700 dark:text-stone-100 dark:ring-stone-600'
-                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200 hover:border-stone-300 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 dark:border-stone-700 dark:hover:border-stone-600'
+                      : 'border border-stone-200 bg-stone-100 text-stone-700 hover:border-stone-300 hover:bg-stone-200 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-600 dark:hover:bg-stone-700'
                   )}
                 >
                   <span className="text-sm">{icon}</span>
@@ -204,8 +204,8 @@ export function AppFilters({
             onClick={() => scrollCategories('right')}
             className={cn(
               'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-colors',
-              'bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-700 border border-stone-200 shadow-sm',
-              'dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300 dark:border-stone-700'
+              'border border-stone-200 bg-white text-stone-600 shadow-sm hover:bg-stone-50 hover:text-stone-700',
+              'dark:border-stone-700 dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300'
             )}
           >
             <ChevronRight className="h-4 w-4" />

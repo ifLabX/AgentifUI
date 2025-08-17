@@ -31,10 +31,7 @@ export function GroupsSearch({
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3">
             <Search
-              className={cn(
-                'h-4 w-4',
-                'text-stone-500 dark:text-stone-400'
-              )}
+              className={cn('h-4 w-4', 'text-stone-500 dark:text-stone-400')}
             />
           </div>
           <input

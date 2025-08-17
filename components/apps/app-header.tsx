@@ -48,7 +48,7 @@ export function AppHeader({
         </span>
         {selectedCategory !== t('categoryKeys.all') &&
           filteredApps !== totalApps && (
-            <span className="rounded px-2 py-0.5 text-xs bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400">
+            <span className="rounded bg-stone-100 px-2 py-0.5 text-xs text-stone-600 dark:bg-stone-800 dark:text-stone-400">
               {t('header.totalLabel', { count: totalApps })}
             </span>
           )}
