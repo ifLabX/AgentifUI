@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import {
   CheckCircle,
@@ -51,7 +50,6 @@ export function UnifiedStatusPanel({
   onShowResult,
   showResultButton = true,
 }: UnifiedStatusPanelProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.status');
   const tButtons = useTranslations('pages.workflow.buttons');
 
@@ -77,7 +75,7 @@ export function UnifiedStatusPanel({
         return {
           icon: <CheckCircle className="h-5 w-5" />,
           text: t('completed'),
-          color: isDark ? 'text-stone-300' : 'text-stone-600',
+          color: 'text-stone-600 dark:text-stone-300',
         };
       case 'failed':
         return {
@@ -134,9 +132,7 @@ export function UnifiedStatusPanel({
                     onClick={onShowResult}
                     className={cn(
                       'flex items-center gap-2 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors',
-                      isDark
-                        ? 'border border-stone-600 bg-stone-700 text-stone-200 hover:bg-stone-600'
-                        : 'border border-stone-300 bg-stone-100 text-stone-700 hover:bg-stone-200'
+                      'border border-stone-300 bg-stone-100 text-stone-700 hover:bg-stone-200 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600'
                     )}
                   >
                     <Eye className="h-4 w-4" />
@@ -151,9 +147,7 @@ export function UnifiedStatusPanel({
                   className={cn(
                     'rounded-md px-3 py-1.5 font-serif text-sm transition-colors',
                     'flex items-center gap-1.5',
-                    isDark
-                      ? 'border border-red-600/50 bg-red-600/20 text-red-300 hover:bg-red-600/30'
-                      : 'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
+                    'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-600/50 dark:bg-red-600/20 dark:text-red-300 dark:hover:bg-red-600/30'
                   )}
                 >
                   <Square className="h-3.5 w-3.5" />
@@ -168,9 +162,7 @@ export function UnifiedStatusPanel({
                   className={cn(
                     'rounded-md px-3 py-1.5 font-serif text-sm transition-colors',
                     'flex items-center gap-1.5',
-                    isDark
-                      ? 'border border-yellow-600/50 bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30'
-                      : 'border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
+                    'border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 dark:border-yellow-600/50 dark:bg-yellow-600/20 dark:text-yellow-300 dark:hover:bg-yellow-600/30'
                   )}
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
@@ -185,9 +177,7 @@ export function UnifiedStatusPanel({
                   className={cn(
                     'rounded-md px-3 py-1.5 font-serif text-sm transition-colors',
                     'flex items-center gap-1.5',
-                    isDark
-                      ? 'border border-stone-600/50 bg-stone-600/20 text-stone-300 hover:bg-stone-600/30'
-                      : 'border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    'border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-stone-600/50 dark:bg-stone-600/20 dark:text-stone-300 dark:hover:bg-stone-600/30'
                   )}
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
@@ -206,9 +196,7 @@ export function UnifiedStatusPanel({
               <div
                 className={cn(
                   'inline-flex items-center gap-2 rounded-lg px-3 py-1.5 font-serif text-sm',
-                  isDark
-                    ? 'bg-stone-700 text-stone-300'
-                    : 'bg-stone-100 text-stone-700'
+                  'bg-stone-100 text-stone-700 dark:bg-stone-700 dark:text-stone-300'
                 )}
               >
                 <Clock className="h-4 w-4" />
@@ -223,9 +211,7 @@ export function UnifiedStatusPanel({
               <div
                 className={cn(
                   'inline-flex items-center gap-2 rounded-lg px-3 py-1.5 font-serif text-sm',
-                  isDark
-                    ? 'bg-red-900/30 text-red-400'
-                    : 'bg-red-50 text-red-700'
+                  'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                 )}
               >
                 <XCircle className="h-4 w-4" />

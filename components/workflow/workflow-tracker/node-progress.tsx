@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { CheckCircle, Circle, Clock, Loader2, XCircle } from 'lucide-react';
 
@@ -27,7 +26,6 @@ interface NodeProgressProps {
  * Support fade-in animation effect
  */
 export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.nodeStatus');
 
   const getStatusIcon = () => {
@@ -46,21 +44,13 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
   const getStatusColor = () => {
     switch (node.status) {
       case 'running':
-        return isDark
-          ? 'border-yellow-500 bg-yellow-900/20'
-          : 'border-yellow-500 bg-yellow-50';
+        return 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
       case 'completed':
-        return isDark
-          ? 'border-green-500 bg-green-900/20'
-          : 'border-green-500 bg-green-50';
+        return 'border-green-500 bg-green-50 dark:bg-green-900/20';
       case 'failed':
-        return isDark
-          ? 'border-red-500 bg-red-900/20'
-          : 'border-red-500 bg-red-50';
+        return 'border-red-500 bg-red-50 dark:bg-red-900/20';
       default:
-        return isDark
-          ? 'border-stone-600 bg-stone-700'
-          : 'border-stone-200 bg-stone-50';
+        return 'border-stone-200 bg-stone-50 dark:border-stone-600 dark:bg-stone-700';
     }
   };
 
@@ -96,7 +86,7 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
             <div
               className={cn(
                 'mt-2 h-8 w-0.5',
-                isDark ? 'bg-stone-600' : 'bg-stone-200'
+                'bg-stone-200 dark:bg-stone-600'
               )}
             />
           )}
@@ -108,7 +98,7 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
             <h4
               className={cn(
                 'font-serif font-medium',
-                isDark ? 'text-stone-200' : 'text-stone-800'
+                'text-stone-800 dark:text-stone-200'
               )}
             >
               {node.title}
@@ -118,9 +108,7 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
               <span
                 className={cn(
                   'rounded px-2 py-1 font-serif text-xs',
-                  isDark
-                    ? 'bg-stone-700 text-stone-300'
-                    : 'bg-stone-100 text-stone-600'
+                  'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'
                 )}
               >
                 {getElapsedTime()}
@@ -131,21 +119,10 @@ export function NodeProgress({ node, index, isLast }: NodeProgressProps) {
           <p
             className={cn(
               'font-serif text-sm',
-              node.status === 'running'
-                ? isDark
-                  ? 'text-yellow-400'
-                  : 'text-yellow-600'
-                : node.status === 'completed'
-                  ? isDark
-                    ? 'text-green-400'
-                    : 'text-green-600'
-                  : node.status === 'failed'
-                    ? isDark
-                      ? 'text-red-400'
-                      : 'text-red-600'
-                    : isDark
-                      ? 'text-stone-400'
-                      : 'text-stone-500'
+              node.status === 'running' && 'text-yellow-600 dark:text-yellow-400',
+              node.status === 'completed' && 'text-green-600 dark:text-green-400',
+              node.status === 'failed' && 'text-red-600 dark:text-red-400',
+              node.status === 'pending' && 'text-stone-500 dark:text-stone-400'
             )}
           >
             {node.status === 'running' && t('executing')}
