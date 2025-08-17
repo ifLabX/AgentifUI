@@ -11,7 +11,6 @@ import { ThinkBlockContent } from '@components/chat/markdown-block/think-block-c
 // --- Import ThinkBlock components ---
 import { ThinkBlockHeader } from '@components/chat/markdown-block/think-block-header';
 import { useMobile } from '@lib/hooks/use-mobile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import 'katex/dist/katex.min.css';
 import { Copy, Download, X } from 'lucide-react';
@@ -95,7 +94,6 @@ export function ResultViewer({
   execution,
   onClose,
 }: ResultViewerProps) {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const t = useTranslations('pages.workflow.resultViewer');
 
@@ -279,7 +277,7 @@ export function ResultViewer({
         <h1
           className={cn(
             'mt-4 mb-2 border-b pb-1 font-serif text-2xl font-semibold',
-            isDark ? 'border-gray-700' : 'border-gray-300'
+            'border-gray-300 dark:border-gray-700'
           )}
           {...props}
         >
@@ -292,7 +290,7 @@ export function ResultViewer({
         <h2
           className={cn(
             'mt-3.5 mb-1.5 border-b pb-1 font-serif text-xl font-semibold',
-            isDark ? 'border-gray-700' : 'border-gray-300'
+            'border-gray-300 dark:border-gray-700'
           )}
           {...props}
         >
@@ -323,9 +321,7 @@ export function ResultViewer({
           href={href}
           className={cn(
             'font-serif underline',
-            isDark
-              ? 'text-sky-400 hover:text-sky-300'
-              : 'text-sky-600 hover:text-sky-700'
+            'text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300'
           )}
           target="_blank"
           rel="noopener noreferrer"
@@ -340,7 +336,7 @@ export function ResultViewer({
         <hr
           className={cn(
             'my-4 border-t',
-            isDark ? 'border-gray-700' : 'border-gray-300'
+            'border-gray-300 dark:border-gray-700'
           )}
           {...props}
         />
@@ -401,20 +397,20 @@ export function ResultViewer({
       <div
         className={cn(
           'relative mx-4 flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-lg border shadow-2xl',
-          isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'
+          'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
         )}
       >
         {/* Header area */}
         <div
           className={cn(
             'flex items-center justify-between border-b px-6 py-4',
-            isDark ? 'border-gray-700' : 'border-gray-200'
+            'border-gray-200 dark:border-gray-700'
           )}
         >
           <h2
             className={cn(
               'text-lg font-semibold',
-              isDark ? 'text-white' : 'text-gray-900'
+              'text-gray-900 dark:text-white'
             )}
           >
             {t('title')}
@@ -424,9 +420,7 @@ export function ResultViewer({
               onClick={handleCopy}
               className={cn(
                 'rounded-md p-2 transition-colors',
-                isDark
-                  ? 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
               )}
               title={t('copyButton')}
             >
@@ -436,9 +430,7 @@ export function ResultViewer({
               onClick={handleDownload}
               className={cn(
                 'rounded-md p-2 transition-colors',
-                isDark
-                  ? 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
               )}
               title={t('downloadButton')}
             >
@@ -448,9 +440,7 @@ export function ResultViewer({
               onClick={onClose}
               className={cn(
                 'rounded-md p-2 transition-colors',
-                isDark
-                  ? 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
               )}
               title={t('closeButton')}
             >
@@ -463,7 +453,7 @@ export function ResultViewer({
         <div
           className={cn(
             'flex-1 overflow-y-auto p-6',
-            isDark ? 'bg-gray-900' : 'bg-white'
+            'bg-white dark:bg-gray-900'
           )}
         >
           {/* 🎯 Think Block area */}
@@ -488,7 +478,7 @@ export function ResultViewer({
             <div
               className={cn(
                 'markdown-body w-full',
-                isDark ? 'text-gray-100' : 'text-gray-900'
+                'text-gray-900 dark:text-gray-100'
               )}
             >
               {isMarkdown ? (
@@ -503,7 +493,7 @@ export function ResultViewer({
                 <pre
                   className={cn(
                     'font-mono text-sm break-words whitespace-pre-wrap',
-                    isDark ? 'text-gray-300' : 'text-gray-700'
+                    'text-gray-700 dark:text-gray-300'
                   )}
                 >
                   {hasThinkBlock ? mainContent : formattedContent}
