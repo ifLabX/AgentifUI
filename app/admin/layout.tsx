@@ -2,7 +2,6 @@
 
 import { ReturnToChatButton } from '@components/admin/return-to-chat-button';
 import { LanguageSwitcher } from '@components/ui/language-switcher';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import {
   Bell,
@@ -34,7 +33,6 @@ interface MenuItem {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const { colors } = useThemeColors();
   const t = useTranslations('pages.admin.layout');
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -164,27 +162,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [pathname, navigatingTo]);
 
   return (
-    <div
-      className={cn(
-        'relative min-h-screen font-serif',
-        colors.mainBackground.tailwind
-      )}
-    >
-      <header
-        className={cn(
-          'fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md',
-          colors.sidebarBackground.tailwind,
-          'border-b-stone-300/60 dark:border-b-stone-700/50'
-        )}
-      >
+    <div className="relative min-h-screen font-serif bg-stone-100 dark:bg-stone-800">
+      <header className="fixed top-0 right-0 left-0 z-50 border-b backdrop-blur-md bg-stone-200 border-b-stone-300/60 dark:bg-stone-700 dark:border-b-stone-700/50">
         <div className="flex items-center justify-between px-6 py-2">
           <div className="flex items-center gap-4">
-            <h1
-              className={cn(
-                'text-base font-semibold',
-                colors.mainText.tailwind
-              )}
-            >
+            <h1 className="text-base font-semibold text-stone-900 dark:text-gray-100">
               {t('headerTitle')}
             </h1>
             {getBreadcrumbs().length > 1 && (
@@ -200,7 +182,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         className={cn(
                           'transition-colors hover:underline',
                           index === getBreadcrumbs().length - 1
-                            ? colors.mainText.tailwind + ' font-medium'
+                            ? 'text-stone-900 dark:text-gray-100 font-medium'
                             : 'text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200'
                         )}
                       >
@@ -226,7 +208,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           isExpanded ? 'w-72' : 'w-16',
           !isMounted && 'opacity-0',
           'z-45',
-          colors.sidebarBackground.tailwind,
+          'bg-stone-200 dark:bg-stone-700',
           'backdrop-blur-sm',
           'border-r-stone-300/60 text-stone-700 shadow-xl shadow-stone-300/60',
           'dark:border-r-stone-700/50 dark:text-stone-300 dark:shadow-xl dark:shadow-black/40'

@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { createClient } from '@lib/supabase/client';
 import { cn } from '@lib/utils';
 
@@ -19,7 +18,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 export default function SSOProcessingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { colors, isDark } = useThemeColors();
   const t = useTranslations('pages.auth.sso.processing');
 
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>(
@@ -169,20 +167,8 @@ export default function SSOProcessingPage() {
   }, [searchParams, router, t]);
 
   return (
-    <div
-      className={cn(
-        'flex min-h-screen items-center justify-center',
-        colors.mainBackground.tailwind
-      )}
-    >
-      <div
-        className={cn(
-          'mx-4 w-full max-w-md space-y-6 rounded-xl border p-8 text-center shadow-lg',
-          isDark
-            ? 'border-stone-800 bg-stone-900'
-            : 'border-stone-200 bg-stone-50'
-        )}
-      >
+    <div className="flex min-h-screen items-center justify-center bg-stone-100 dark:bg-stone-800">
+      <div className="mx-4 w-full max-w-md space-y-6 rounded-xl border border-stone-200 bg-stone-50 p-8 text-center shadow-lg dark:border-stone-800 dark:bg-stone-900">
         {/* --- title --- */}
         <div className="space-y-2">
           <h1 className="bg-gradient-to-r from-stone-700 to-stone-500 bg-clip-text py-1 text-2xl leading-normal font-bold text-transparent">
@@ -244,32 +230,20 @@ export default function SSOProcessingPage() {
                 ? 'text-stone-600'
                 : status === 'error'
                   ? 'text-stone-600'
-                  : isDark
-                    ? 'text-stone-300'
-                    : 'text-stone-700'
+                  : 'text-stone-700 dark:text-stone-300'
             )}
           >
             {message}
           </p>
 
           {error && (
-            <p
-              className={cn(
-                'text-sm',
-                isDark ? 'text-red-400' : 'text-red-600'
-              )}
-            >
+            <p className="text-sm text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
 
           {status === 'error' && (
-            <p
-              className={cn(
-                'mt-4 text-xs',
-                isDark ? 'text-stone-400' : 'text-stone-600'
-              )}
-            >
+            <p className="mt-4 text-xs text-stone-600 dark:text-stone-400">
               {t('redirecting')}
             </p>
           )}
@@ -284,14 +258,9 @@ interface SpinnerIconProps {
 }
 
 function SpinnerIcon({ size = 24 }: SpinnerIconProps) {
-  const { isDark } = useThemeColors();
-
   return (
     <svg
-      className={cn(
-        'animate-spin',
-        isDark ? 'text-stone-300' : 'text-stone-600'
-      )}
+      className="animate-spin text-stone-600 dark:text-stone-300"
       width={size}
       height={size}
       xmlns="http://www.w3.org/2000/svg"

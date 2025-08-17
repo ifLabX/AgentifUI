@@ -2,7 +2,6 @@
 
 import { TextGenerationLayout } from '@components/text-generation/text-generation-layout';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
@@ -35,7 +34,6 @@ export default function TextGenerationPage({
 }: TextGenerationPageProps) {
   const { instanceId } = React.use(params);
   const router = useRouter();
-  const { colors } = useThemeColors();
   const t = useTranslations('pages.apps');
 
   // --- app related state ---
@@ -163,13 +161,7 @@ export default function TextGenerationPage({
   // --- error state ---
   if (initError) {
     return (
-      <div
-        className={cn(
-          'relative flex h-full w-full flex-col',
-          colors.mainBackground.tailwind,
-          'items-center justify-center'
-        )}
-      >
+      <div className="relative flex h-full w-full flex-col bg-stone-100 dark:bg-stone-800 items-center justify-center">
         <div className="text-center">
           <FileText
             className={cn(
@@ -211,13 +203,7 @@ export default function TextGenerationPage({
   // --- loading state ---
   if (isInitializing || isValidating || !currentApp) {
     return (
-      <div
-        className={cn(
-          'relative flex h-full w-full flex-col',
-          colors.mainBackground.tailwind,
-          'items-center justify-center'
-        )}
-      >
+      <div className="relative flex h-full w-full flex-col bg-stone-100 dark:bg-stone-800 items-center justify-center">
         <div className="text-center">
           <Loader2
             className={cn(
@@ -238,13 +224,7 @@ export default function TextGenerationPage({
   }
 
   return (
-    <div
-      className={cn(
-        'relative flex h-full w-full flex-col',
-        colors.mainBackground.tailwind,
-        colors.mainText.tailwind
-      )}
-    >
+    <div className="relative flex h-full w-full flex-col bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-gray-100">
       <div className="min-h-0 flex-1 pt-12">
         <TextGenerationLayout instanceId={instanceId} />
       </div>

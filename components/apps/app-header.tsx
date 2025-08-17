@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import { Package } from 'lucide-react';
 
@@ -17,7 +16,6 @@ export function AppHeader({
   filteredApps,
   selectedCategory,
 }: AppHeaderProps) {
-  const { colors, isDark } = useThemeColors();
   const t = useTranslations('pages.apps.market');
 
   return (
@@ -33,23 +31,13 @@ export function AppHeader({
         </div>
 
         <div>
-          <h1
-            className={cn(
-              'font-serif text-2xl font-bold',
-              colors.mainText.tailwind
-            )}
-          >
+          <h1 className="font-serif text-2xl font-bold text-stone-900 dark:text-gray-100">
             {t('header.title')}
           </h1>
         </div>
       </div>
 
-      <div
-        className={cn(
-          'flex items-center gap-4 font-serif text-sm',
-          isDark ? 'text-stone-400' : 'text-stone-600'
-        )}
-      >
+      <div className="flex items-center gap-4 font-serif text-sm text-stone-600 dark:text-stone-400">
         <span>
           {selectedCategory === t('categoryKeys.all')
             ? t('header.totalApps', { count: totalApps })
@@ -60,14 +48,7 @@ export function AppHeader({
         </span>
         {selectedCategory !== t('categoryKeys.all') &&
           filteredApps !== totalApps && (
-            <span
-              className={cn(
-                'rounded px-2 py-0.5 text-xs',
-                isDark
-                  ? 'bg-stone-800 text-stone-400'
-                  : 'bg-stone-100 text-stone-600'
-              )}
-            >
+            <span className="rounded px-2 py-0.5 text-xs bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400">
               {t('header.totalLabel', { count: totalApps })}
             </span>
           )}

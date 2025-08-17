@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { cn } from '@lib/utils';
 import { ChevronLeft, ChevronRight, Grid3x3, List, Search } from 'lucide-react';
 
@@ -27,7 +26,6 @@ export function AppFilters({
   viewMode,
   onViewModeChange,
 }: AppFiltersProps) {
-  const { isDark } = useThemeColors();
   const t = useTranslations('pages.apps.market');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -140,12 +138,7 @@ export function AppFilters({
   return (
     <div className="mb-6 space-y-4">
       <div className="relative">
-        <Search
-          className={cn(
-            'absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform',
-            isDark ? 'text-stone-400' : 'text-stone-500'
-          )}
-        />
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-stone-500 dark:text-stone-400" />
         <input
           type="text"
           placeholder={t('search.placeholder')}
@@ -155,15 +148,8 @@ export function AppFilters({
             'w-full rounded-lg border py-2.5 pr-4 pl-10 font-serif',
             'focus:border-stone-400 focus:ring-2 focus:ring-stone-500/20 focus:outline-none',
             'transition-all duration-200',
-            isDark
-              ? [
-                  'border-stone-700 bg-stone-800 text-stone-100',
-                  'placeholder:text-stone-400',
-                ]
-              : [
-                  'border-stone-200 bg-white text-stone-900',
-                  'placeholder:text-stone-500',
-                ]
+            'border-stone-200 bg-white text-stone-900 placeholder:text-stone-500',
+            'dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:placeholder:text-stone-400'
           )}
         />
       </div>
@@ -174,15 +160,8 @@ export function AppFilters({
             onClick={() => scrollCategories('left')}
             className={cn(
               'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-colors',
-              isDark
-                ? [
-                    'bg-stone-800 text-stone-400 hover:bg-stone-700 hover:text-stone-300',
-                    'border border-stone-700',
-                  ]
-                : [
-                    'bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-700',
-                    'border border-stone-200 shadow-sm',
-                  ]
+              'bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-700 border border-stone-200 shadow-sm',
+              'dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300 dark:border-stone-700'
             )}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -207,28 +186,8 @@ export function AppFilters({
                     'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm font-medium transition-all duration-200',
                     'flex-shrink-0 whitespace-nowrap', // Prevent shrink and line break
                     isSelected
-                      ? [
-                          isDark
-                            ? [
-                                'bg-stone-700 text-stone-100',
-                                'ring-1 ring-stone-600',
-                              ]
-                            : [
-                                'bg-stone-900 text-white',
-                                'ring-1 ring-stone-300',
-                              ],
-                        ]
-                      : [
-                          isDark
-                            ? [
-                                'bg-stone-800 text-stone-300 hover:bg-stone-700',
-                                'border border-stone-700 hover:border-stone-600',
-                              ]
-                            : [
-                                'bg-stone-100 text-stone-700 hover:bg-stone-200',
-                                'border border-stone-200 hover:border-stone-300',
-                              ],
-                        ]
+                      ? 'bg-stone-900 text-white ring-1 ring-stone-300 dark:bg-stone-700 dark:text-stone-100 dark:ring-stone-600'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200 hover:border-stone-300 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 dark:border-stone-700 dark:hover:border-stone-600'
                   )}
                 >
                   <span className="text-sm">{icon}</span>
@@ -245,44 +204,22 @@ export function AppFilters({
             onClick={() => scrollCategories('right')}
             className={cn(
               'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-colors',
-              isDark
-                ? [
-                    'bg-stone-800 text-stone-400 hover:bg-stone-700 hover:text-stone-300',
-                    'border border-stone-700',
-                  ]
-                : [
-                    'bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-700',
-                    'border border-stone-200 shadow-sm',
-                  ]
+              'bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-700 border border-stone-200 shadow-sm',
+              'dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300 dark:border-stone-700'
             )}
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         )}
 
-        <div
-          className={cn(
-            'flex flex-shrink-0 rounded-lg border p-1',
-            isDark
-              ? 'border-stone-700 bg-stone-800'
-              : 'border-stone-200 bg-stone-100'
-          )}
-        >
+        <div className="flex flex-shrink-0 rounded-lg border border-stone-200 bg-stone-100 p-1 dark:border-stone-700 dark:bg-stone-800">
           <button
             onClick={() => onViewModeChange('grid')}
             className={cn(
               'flex items-center gap-1.5 rounded-md px-3 py-1.5 font-serif text-sm font-medium transition-all duration-200',
               viewMode === 'grid'
-                ? [
-                    isDark
-                      ? 'bg-stone-700 text-stone-100'
-                      : 'bg-white text-stone-900 shadow-sm',
-                  ]
-                : [
-                    isDark
-                      ? 'text-stone-400 hover:text-stone-300'
-                      : 'text-stone-600 hover:text-stone-700',
-                  ]
+                ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-700 dark:text-stone-100'
+                : 'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
             )}
           >
             <Grid3x3 className="h-4 w-4" />
@@ -293,16 +230,8 @@ export function AppFilters({
             className={cn(
               'flex items-center gap-1.5 rounded-md px-3 py-1.5 font-serif text-sm font-medium transition-all duration-200',
               viewMode === 'list'
-                ? [
-                    isDark
-                      ? 'bg-stone-700 text-stone-100'
-                      : 'bg-white text-stone-900 shadow-sm',
-                  ]
-                : [
-                    isDark
-                      ? 'text-stone-400 hover:text-stone-300'
-                      : 'text-stone-600 hover:text-stone-700',
-                  ]
+                ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-700 dark:text-stone-100'
+                : 'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
             )}
           >
             <List className="h-4 w-4" />
