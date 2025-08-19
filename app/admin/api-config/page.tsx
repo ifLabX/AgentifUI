@@ -741,9 +741,7 @@ const InstanceForm = ({
                 onClick={() => setShowDifyPanel(true)}
                 className={cn(
                   'flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 transition-all',
-                  false
-                    ? 'bg-stone-700/50 text-stone-300 hover:bg-stone-700 hover:text-stone-200'
-                    : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-800'
+                  'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-800 dark:bg-stone-700/50 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-200'
                 )}
               >
                 <Sliders className="h-4 w-4" />
@@ -765,12 +763,8 @@ const InstanceForm = ({
                   isSyncing ||
                     (!isEditing &&
                       (!formData.config.api_url || !formData.apiKey))
-                    ? false
-                      ? 'cursor-not-allowed bg-stone-800/50 text-stone-500'
-                      : 'cursor-not-allowed border border-stone-200 bg-stone-200/50 text-stone-400'
-                    : false
-                      ? 'bg-stone-700/50 text-stone-300 hover:bg-stone-700 hover:text-stone-200'
-                      : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-800'
+                    ? 'cursor-not-allowed border border-stone-200 bg-stone-200/50 text-stone-400 dark:bg-stone-800/50 dark:text-stone-500'
+                    : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-800 dark:bg-stone-700/50 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-200'
                 )}
                 title={
                   isEditing
@@ -799,9 +793,7 @@ const InstanceForm = ({
         <div
           className={cn(
             'mb-6 rounded-lg border p-4',
-            false
-              ? 'border-stone-600 bg-stone-700/50'
-              : 'border-stone-200 bg-stone-50'
+            'border-stone-200 bg-stone-50 dark:border-stone-600 dark:bg-stone-700/50'
           )}
         >
           <div className="flex items-center justify-between">
@@ -829,9 +821,7 @@ const InstanceForm = ({
               <div
                 className={cn(
                   'rounded-md px-3 py-1.5 font-serif text-sm',
-                  false
-                    ? 'bg-stone-600 text-stone-200'
-                    : 'bg-stone-200 text-stone-700'
+                  'bg-stone-200 text-stone-700 dark:bg-stone-600 dark:text-stone-200'
                 )}
               >
                 {(() => {
@@ -882,13 +872,9 @@ const InstanceForm = ({
                   className={cn(
                     'w-full rounded-lg border px-3 py-2 font-serif',
                     !isEditing && 'pr-20', // add mode: leave space for button
-                    false
-                      ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
-                      : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500',
+                    'border-stone-300 bg-white text-stone-900 placeholder-stone-500 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:placeholder-stone-400',
                     isEditing &&
-                      (false
-                        ? 'cursor-not-allowed bg-stone-800'
-                        : 'cursor-not-allowed bg-stone-100'),
+                      'cursor-not-allowed bg-stone-100 dark:bg-stone-800',
                     instanceIdError && 'border-red-500'
                   )}
                   placeholder={t('fields.instanceId.placeholder')}
@@ -910,9 +896,7 @@ const InstanceForm = ({
                       'flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-all',
                       'border shadow-sm hover:scale-105 hover:shadow-md',
                       'font-serif font-medium',
-                      false
-                        ? 'border-stone-500 bg-gradient-to-r from-stone-600 to-stone-700 text-stone-200 hover:from-stone-500 hover:to-stone-600 hover:text-white'
-                        : 'border-stone-300 bg-gradient-to-r from-stone-100 to-stone-200 text-stone-700 hover:from-stone-200 hover:to-stone-300 hover:text-stone-800'
+                      'border-stone-300 bg-gradient-to-r from-stone-100 to-stone-200 text-stone-700 hover:from-stone-200 hover:to-stone-300 hover:text-stone-800 dark:border-stone-500 dark:bg-gradient-to-r dark:from-stone-600 dark:to-stone-700 dark:text-stone-200 dark:hover:from-stone-500 dark:hover:to-stone-600 dark:hover:text-white'
                     )}
                     title={t('fields.instanceId.generateTooltip')}
                   >
@@ -976,9 +960,7 @@ const InstanceForm = ({
                 }
                 className={cn(
                   'w-full rounded-lg border px-3 py-2 font-serif',
-                  false
-                    ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
-                    : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
+                  'border-stone-300 bg-white text-stone-900 placeholder-stone-500 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:placeholder-stone-400'
                 )}
                 placeholder={t('fields.displayName.placeholder')}
                 required
@@ -1011,9 +993,7 @@ const InstanceForm = ({
                   isSyncing || !formData.config.api_url || !formData.apiKey
                     ? 'cursor-not-allowed opacity-50'
                     : 'cursor-pointer',
-                  false
-                    ? 'bg-stone-600 text-white hover:bg-stone-500'
-                    : 'bg-stone-800 text-white hover:bg-stone-700'
+                  'bg-stone-800 text-white hover:bg-stone-700 dark:bg-stone-600 dark:text-white dark:hover:bg-stone-500'
                 )}
               >
                 {isSyncing ? (
@@ -1042,9 +1022,7 @@ const InstanceForm = ({
               }
               className={cn(
                 'w-full rounded-lg border px-3 py-2 font-serif',
-                false
-                  ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
-                  : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
+                'border-stone-300 bg-white text-stone-900 placeholder-stone-500 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:placeholder-stone-400'
               )}
               placeholder={t('fields.description.placeholder')}
               rows={3}
@@ -1078,24 +1056,16 @@ const InstanceForm = ({
                 className={cn(
                   'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                   formData.config.app_metadata.app_type === 'model'
-                    ? false
-                      ? 'border-stone-500 bg-stone-700/50'
-                      : 'border-stone-400 bg-stone-100'
-                    : false
-                      ? 'border-stone-600 hover:border-stone-500'
-                      : 'border-stone-300 hover:border-stone-400'
+                    ? 'border-stone-400 bg-stone-100 dark:border-stone-500 dark:bg-stone-700/50'
+                    : 'border-stone-300 hover:border-stone-400 dark:border-stone-600 dark:hover:border-stone-500'
                 )}
               >
                 <div
                   className={cn(
                     'flex h-4 w-4 items-center justify-center rounded-full border-2',
                     formData.config.app_metadata.app_type === 'model'
-                      ? false
-                        ? 'border-stone-400 bg-stone-400'
-                        : 'border-stone-600 bg-stone-600'
-                      : false
-                        ? 'border-stone-500'
-                        : 'border-stone-400'
+                      ? 'border-stone-600 bg-stone-600 dark:border-stone-400 dark:bg-stone-400'
+                      : 'border-stone-400 dark:border-stone-500'
                   )}
                 >
                   {formData.config.app_metadata.app_type === 'model' && (
@@ -1144,24 +1114,16 @@ const InstanceForm = ({
                 className={cn(
                   'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                   formData.config.app_metadata.app_type === 'marketplace'
-                    ? false
-                      ? 'border-stone-500 bg-stone-700/50'
-                      : 'border-stone-400 bg-stone-100'
-                    : false
-                      ? 'border-stone-600 hover:border-stone-500'
-                      : 'border-stone-300 hover:border-stone-400'
+                    ? 'border-stone-400 bg-stone-100 dark:border-stone-500 dark:bg-stone-700/50'
+                    : 'border-stone-300 hover:border-stone-400 dark:border-stone-600 dark:hover:border-stone-500'
                 )}
               >
                 <div
                   className={cn(
                     'flex h-4 w-4 items-center justify-center rounded-full border-2',
                     formData.config.app_metadata.app_type === 'marketplace'
-                      ? false
-                        ? 'border-stone-400 bg-stone-400'
-                        : 'border-stone-600 bg-stone-600'
-                      : false
-                        ? 'border-stone-500'
-                        : 'border-stone-400'
+                      ? 'border-stone-600 bg-stone-600 dark:border-stone-400 dark:bg-stone-400'
+                      : 'border-stone-400 dark:border-stone-500'
                   )}
                 >
                   {formData.config.app_metadata.app_type === 'marketplace' && (
