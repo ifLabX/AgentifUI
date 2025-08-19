@@ -10,7 +10,6 @@ import {
   conversationEvents,
   useCombinedConversations,
 } from '@lib/hooks/use-combined-conversations';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useAppListStore } from '@lib/stores/app-list-store';
 import { useChatStore } from '@lib/stores/chat-store';
 import { useFavoriteAppsStore } from '@lib/stores/favorite-apps-store';
@@ -39,7 +38,6 @@ export function ConversationTitleButton({
   const t = useTranslations('navbar.conversation');
   // 🎯 Add: get full conversation list, used to find historical conversation titles
   const { conversations: allConversations } = useAllConversations();
-  const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isOperating, setIsOperating] = useState(false);
 
@@ -314,7 +312,7 @@ export function ConversationTitleButton({
           <h1
             className={cn(
               'truncate font-serif text-sm font-medium',
-              isDark ? 'text-stone-100' : 'text-stone-900'
+              'text-stone-900 dark:text-stone-100'
             )}
           >
             {currentApp.display_name || currentApp.instance_id}
@@ -323,7 +321,7 @@ export function ConversationTitleButton({
             <p
               className={cn(
                 'truncate font-serif text-xs',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             >
               {appMetadata.brief_description}
@@ -339,9 +337,7 @@ export function ConversationTitleButton({
                 key={index}
                 className={cn(
                   'rounded-full px-2 py-0.5 font-serif text-xs',
-                  isDark
-                    ? 'bg-stone-700 text-stone-300'
-                    : 'bg-stone-200 text-stone-700'
+                  'bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300'
                 )}
               >
                 {tag}
@@ -358,14 +354,8 @@ export function ConversationTitleButton({
             'transition-all duration-200',
             'hover:scale-110',
             isFavorite(instanceId)
-              ? [
-                  'bg-red-100 text-red-500',
-                  isDark && 'bg-red-900/30 text-red-400',
-                ]
-              : [
-                  'bg-stone-100 text-stone-400 hover:bg-stone-200',
-                  isDark && 'bg-stone-800 text-stone-500 hover:bg-stone-700',
-                ]
+              ? 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400'
+              : 'bg-stone-100 text-stone-400 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-500 dark:hover:bg-stone-700'
           )}
         >
           <Heart
@@ -381,9 +371,7 @@ export function ConversationTitleButton({
           onClick={() => router.push('/apps')}
           className={cn(
             'flex-shrink-0 rounded-md px-2 py-1 font-serif text-xs transition-colors',
-            isDark
-              ? 'text-stone-400 hover:bg-stone-700 hover:text-stone-200'
-              : 'text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+            'text-stone-600 hover:bg-stone-200 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-200'
           )}
         >
           {t('appsMarket')}
@@ -427,9 +415,7 @@ export function ConversationTitleButton({
             !isOpen && !isOperating && finalConversation
               ? 'cursor-pointer'
               : '',
-            isDark
-              ? 'text-stone-300 hover:bg-stone-700/50 hover:shadow-sm hover:shadow-stone-800/20 active:bg-stone-600/50'
-              : 'text-stone-600 hover:bg-stone-200/80 hover:shadow-sm hover:shadow-stone-300/50 active:bg-stone-300/50'
+            'text-stone-600 hover:bg-stone-200/80 hover:shadow-sm hover:shadow-stone-300/50 active:bg-stone-300/50 dark:text-stone-300 dark:hover:bg-stone-700/50 dark:hover:shadow-sm dark:hover:shadow-stone-800/20 dark:active:bg-stone-600/50'
           )}
         >
           {/* Conversation title: display title text, only show loading state when operating */}
@@ -444,7 +430,7 @@ export function ConversationTitleButton({
                 <div
                   className={cn(
                     'mr-2 inline-block h-3 w-3 animate-pulse rounded-full',
-                    isDark ? 'bg-stone-500' : 'bg-stone-400'
+                    'bg-stone-400 dark:bg-stone-500'
                   )}
                 />
                 {t('loading')}
@@ -470,9 +456,7 @@ export function ConversationTitleButton({
             className={cn(
               'flex-shrink-0 rounded-full px-2 py-0.5 font-serif text-xs',
               'transition-colors duration-200',
-              isDark
-                ? 'border border-stone-600/50 bg-stone-700/80 text-stone-300'
-                : 'border border-stone-300/50 bg-stone-200/80 text-stone-700'
+              'border border-stone-300/50 bg-stone-200/80 text-stone-700 dark:border dark:border-stone-600/50 dark:bg-stone-700/80 dark:text-stone-300'
             )}
           >
             {currentConversationApp.display_name ||
@@ -495,9 +479,7 @@ export function ConversationTitleButton({
                 'absolute top-full left-0 mt-1 max-w-[12rem] min-w-[8rem]',
                 'z-[95] overflow-hidden rounded-md shadow-lg',
                 'border',
-                isDark
-                  ? 'border-stone-600/80 bg-stone-700/95 backdrop-blur-sm'
-                  : 'border-stone-300/80 bg-stone-50/95 backdrop-blur-sm'
+                'border-stone-300/80 bg-stone-50/95 backdrop-blur-sm dark:border-stone-600/80 dark:bg-stone-700/95 dark:backdrop-blur-sm'
               )}
             >
               {/* Rename option */}
@@ -511,9 +493,7 @@ export function ConversationTitleButton({
                   'disabled:cursor-not-allowed disabled:opacity-50',
                   // Add cursor pointer control
                   !isOperating ? 'cursor-pointer' : '',
-                  isDark
-                    ? 'text-stone-300 hover:bg-stone-600/60'
-                    : 'text-stone-600 hover:bg-stone-200/60'
+                  'text-stone-600 hover:bg-stone-200/60 dark:text-stone-300 dark:hover:bg-stone-600/60'
                 )}
               >
                 <Pen className="h-4 w-4 flex-shrink-0" />
@@ -532,9 +512,7 @@ export function ConversationTitleButton({
                   // Add cursor pointer control
                   !isOperating ? 'cursor-pointer' : '',
                   'mb-1',
-                  isDark
-                    ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300'
-                    : 'text-red-600 hover:bg-red-50 hover:text-red-700'
+                  'text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:text-red-300'
                 )}
               >
                 <Trash className="h-4 w-4 flex-shrink-0" />

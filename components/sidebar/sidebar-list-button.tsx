@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 
 import type * as React from 'react';
@@ -34,8 +33,6 @@ export function SidebarListButton({
   children,
   ...props
 }: SidebarListButtonProps) {
-  const { isDark } = useTheme();
-
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isDisabled) return;
     onClick?.(e);
@@ -73,40 +70,25 @@ export function SidebarListButton({
 
         // Focus state style
         'outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-        isDark
-          ? 'focus-visible:ring-stone-500 focus-visible:ring-offset-gray-900'
-          : 'focus-visible:ring-primary focus-visible:ring-offset-background',
+        'focus-visible:ring-primary focus-visible:ring-offset-background dark:focus-visible:ring-stone-500 dark:focus-visible:ring-offset-gray-900',
 
         // Disabled state styling
         isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
 
-        // Light theme minimalist styles - remove borders, keep selected and hover consistent
-        !isDark &&
-          !isDisabled && [
-            'text-stone-600',
-            // Selected state: use same background as hover, slightly deeper
-            active ? 'bg-stone-300/90' : '',
-            // Hover effect: only show when not selected and no dropdown is open
-            !active &&
-              !hasOpenDropdown &&
-              !disableHover &&
-              'hover:bg-stone-300/80',
-          ],
-        !isDark && isDisabled && ['text-stone-400'],
+        // Base text color - handles both themes
+        !isDisabled
+          ? 'text-stone-600 dark:text-gray-200'
+          : 'text-stone-400 dark:text-gray-500',
 
-        // Dark theme minimalist styles - remove borders, keep selected and hover consistent
-        isDark &&
-          !isDisabled && [
-            'text-gray-200',
-            // Selected state: use same background as hover, slightly deeper
-            active ? 'bg-stone-600/80' : '',
-            // Hover effect: only show when not selected and no dropdown is open
-            !active &&
-              !hasOpenDropdown &&
-              !disableHover &&
-              'hover:bg-stone-600/60',
-          ],
-        isDark && isDisabled && ['text-gray-500'],
+        // Selected state styling
+        active && !isDisabled && 'bg-stone-300/90 dark:bg-stone-600/80',
+
+        // Hover effect: only show when not selected, not disabled, no dropdown is open
+        !active &&
+          !isDisabled &&
+          !hasOpenDropdown &&
+          !disableHover &&
+          'hover:bg-stone-300/80 dark:hover:bg-stone-600/60',
 
         // Responsive width styling
         'w-full', // Default width 100%
@@ -131,7 +113,7 @@ export function SidebarListButton({
             <div
               className={cn(
                 'h-3 w-3 animate-pulse rounded-full',
-                isDark ? 'bg-stone-600' : 'bg-stone-400',
+                'bg-stone-400 dark:bg-stone-600',
                 'opacity-80'
               )}
             />
@@ -141,7 +123,7 @@ export function SidebarListButton({
             <span
               className={cn(
                 '-ml-0.5 flex h-4 w-4 items-center justify-center',
-                isDark ? 'text-gray-400' : 'text-gray-500'
+                'text-gray-500 dark:text-gray-400'
               )}
             >
               {icon}
