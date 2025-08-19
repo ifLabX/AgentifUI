@@ -329,7 +329,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
         {/* header: no extra top spacing, because it starts from the correct position */}
         <div
           className={cn(
-            'flex-shrink-0 border-b p-2 border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800'
+            'flex-shrink-0 border-b border-stone-200 bg-stone-100 p-2 dark:border-stone-700 dark:bg-stone-800'
           )}
         >
           <div className="mb-2 flex items-center justify-between">
@@ -408,7 +408,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                   window.dispatchEvent(new CustomEvent('toggleAddForm'));
                 }}
                 className={cn(
-                  'mt-2 cursor-pointer font-serif text-sm transition-colors text-stone-600 hover:text-stone-800 dark:text-stone-300 dark:hover:text-stone-100'
+                  'mt-2 cursor-pointer font-serif text-sm text-stone-600 transition-colors hover:text-stone-800 dark:text-stone-300 dark:hover:text-stone-100'
                 )}
               >
                 {t('addFirstApp')}
@@ -470,7 +470,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                           {instance.is_default && (
                             <span
                               className={cn(
-                                'inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-serif text-xs font-medium border border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/30 dark:text-amber-300'
+                                'inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-100 px-1.5 py-0.5 font-serif text-xs font-medium text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/30 dark:text-amber-300'
                               )}
                             >
                               <Star className="h-2.5 w-2.5" />
@@ -484,10 +484,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                           {/* app type original value */}
                           {difyAppType && (
                             <span
-                              className={cn(
-                                'font-serif',
-                                'text-stone-500'
-                              )}
+                              className={cn('font-serif', 'text-stone-500')}
                             >
                               {difyAppType}
                             </span>
@@ -501,10 +498,7 @@ export default function ApiConfigLayout({ children }: ApiConfigLayoutProps) {
                           {/* provider info */}
                           {provider && (
                             <span
-                              className={cn(
-                                'font-serif',
-                                'text-stone-500'
-                              )}
+                              className={cn('font-serif', 'text-stone-500')}
                             >
                               {provider.name}
                             </span>

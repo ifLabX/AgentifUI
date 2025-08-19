@@ -398,7 +398,7 @@ export default function UsersManagementPage() {
           <div>
             <h1
               className={cn(
-                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300'
+                'mb-3 bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent dark:from-stone-100 dark:to-stone-300'
               )}
             >
               {t('title')}
@@ -444,7 +444,7 @@ export default function UsersManagementPage() {
             <button
               onClick={() => toast.success(t('actions.addUserInDevelopment'))}
               className={cn(
-                'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-r from-stone-700 to-stone-800 text-white hover:from-stone-600 hover:to-stone-700 dark:from-stone-600 dark:to-stone-700 dark:hover:from-stone-500 dark:hover:to-stone-600'
+                'flex items-center gap-2 rounded-xl bg-gradient-to-r from-stone-700 to-stone-800 px-4 py-2.5 font-serif text-white shadow-sm transition-all duration-200 hover:from-stone-600 hover:to-stone-700 hover:shadow-md dark:from-stone-600 dark:to-stone-700 dark:hover:from-stone-500 dark:hover:to-stone-600'
               )}
             >
               <Plus className="h-4 w-4" />
@@ -467,7 +467,7 @@ export default function UsersManagementPage() {
         {selectedUserIds.length > 0 && (
           <div
             className={cn(
-              'mb-6 rounded-xl border p-5 shadow-lg backdrop-blur-sm border-stone-200/50 bg-white/80 shadow-stone-200/50 dark:border-stone-700/50 dark:bg-stone-800/60 dark:shadow-stone-900/20'
+              'mb-6 rounded-xl border border-stone-200/50 bg-white/80 p-5 shadow-lg shadow-stone-200/50 backdrop-blur-sm dark:border-stone-700/50 dark:bg-stone-800/60 dark:shadow-stone-900/20'
             )}
           >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -493,7 +493,7 @@ export default function UsersManagementPage() {
                   <button
                     onClick={clearSelection}
                     className={cn(
-                      'ml-3 rounded-lg px-2 py-1 font-serif text-xs transition-colors text-stone-600 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-300'
+                      'ml-3 rounded-lg px-2 py-1 font-serif text-xs text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-300'
                     )}
                   >
                     {t('batchOperations.cancelSelection')}
@@ -507,7 +507,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeRole('admin')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-purple-600 text-white hover:bg-purple-700'
+                    'flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 font-serif text-sm text-white transition-colors hover:bg-purple-700'
                   )}
                 >
                   <Shield className="h-3 w-3" />
@@ -518,7 +518,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeRole('manager')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-amber-600 text-white hover:bg-amber-700'
+                    'flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-1.5 font-serif text-sm text-white transition-colors hover:bg-amber-700'
                   )}
                 >
                   <Crown className="h-3 w-3" />
@@ -529,7 +529,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeRole('user')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-stone-600 text-white hover:bg-stone-700'
+                    'flex items-center gap-1.5 rounded-lg bg-stone-600 px-3 py-1.5 font-serif text-sm text-white transition-colors hover:bg-stone-700'
                   )}
                 >
                   <UserIcon className="h-3 w-3" />
@@ -541,7 +541,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeStatus('active')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-green-600 text-white hover:bg-green-700'
+                    'flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 font-serif text-sm text-white transition-colors hover:bg-green-700'
                   )}
                 >
                   <UserCheck className="h-3 w-3" />
@@ -552,7 +552,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeStatus('suspended')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-red-600 text-white hover:bg-red-700'
+                    'flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 font-serif text-sm text-white transition-colors hover:bg-red-700'
                   )}
                 >
                   <UserX className="h-3 w-3" />

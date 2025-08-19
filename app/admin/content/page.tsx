@@ -11,6 +11,7 @@ import { ResizableSplitPane } from '@components/ui/resizable-split-pane';
 import type { SupportedLocale } from '@lib/config/language-config';
 import { getCurrentLocaleFromCookie } from '@lib/config/language-config';
 import { clearTranslationCache } from '@lib/hooks/use-dynamic-translations';
+import { useTheme } from '@lib/hooks/use-theme';
 import { TranslationService } from '@lib/services/admin/content/translation-service';
 import { cn } from '@lib/utils';
 import { Eye } from 'lucide-react';
@@ -55,6 +56,7 @@ interface HomePageConfig {
 }
 
 export default function ContentManagementPage() {
+  const { isDark } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
   const t = useTranslations('pages.admin.content.page');
@@ -372,7 +374,10 @@ export default function ContentManagementPage() {
                 <button
                   onClick={() => setShowPreview(true)}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium shadow-sm transition-colors border border-stone-200 bg-white text-stone-600 hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700'
+                    'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium shadow-sm transition-colors',
+                    isDark
+                      ? 'border border-stone-700 bg-stone-800 text-stone-300 hover:bg-stone-700'
+                      : 'border border-stone-200 bg-white text-stone-600 hover:bg-stone-100'
                   )}
                 >
                   <Eye className="h-4 w-4" />
@@ -430,7 +435,9 @@ export default function ContentManagementPage() {
                         className={cn(
                           'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
                           hasChanges && !isSaving
-                            ? 'text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800'
+                            ? isDark
+                              ? 'text-stone-300 hover:bg-stone-800'
+                              : 'text-stone-600 hover:bg-stone-100'
                             : 'cursor-not-allowed text-stone-500'
                         )}
                       >
@@ -442,8 +449,12 @@ export default function ContentManagementPage() {
                         className={cn(
                           'rounded-lg px-6 py-2 text-sm font-medium shadow-sm transition-colors',
                           hasChanges && !isSaving
-                            ? 'bg-stone-900 text-white hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white'
-                            : 'cursor-not-allowed bg-stone-300 text-stone-500 dark:bg-stone-700 dark:text-stone-400'
+                            ? isDark
+                              ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                              : 'bg-stone-900 text-white hover:bg-stone-800'
+                            : isDark
+                              ? 'cursor-not-allowed bg-stone-700 text-stone-400'
+                              : 'cursor-not-allowed bg-stone-300 text-stone-500'
                         )}
                       >
                         {isSaving
@@ -503,7 +514,9 @@ export default function ContentManagementPage() {
                       'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
                       !hasChanges || isSaving
                         ? 'cursor-not-allowed text-stone-500'
-                        : 'text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800'
+                        : isDark
+                          ? 'text-stone-300 hover:bg-stone-800'
+                          : 'text-stone-600 hover:bg-stone-100'
                     )}
                   >
                     {t('saveActions.reset')}
@@ -514,8 +527,12 @@ export default function ContentManagementPage() {
                     className={cn(
                       'rounded-lg px-6 py-2 text-sm font-medium shadow-sm transition-colors',
                       !hasChanges || isSaving
-                        ? 'cursor-not-allowed bg-stone-300 text-stone-500 dark:bg-stone-700 dark:text-stone-400'
-                        : 'bg-stone-900 text-white hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white'
+                        ? isDark
+                          ? 'cursor-not-allowed bg-stone-700 text-stone-400'
+                          : 'cursor-not-allowed bg-stone-300 text-stone-500'
+                        : isDark
+                          ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                          : 'bg-stone-900 text-white hover:bg-stone-800'
                     )}
                   >
                     {isSaving
@@ -560,7 +577,10 @@ export default function ContentManagementPage() {
               <button
                 onClick={handleCloseFullscreenPreview}
                 className={cn(
-                  'rounded-lg px-4 py-2 text-sm font-medium transition-colors bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-700 dark:text-stone-300 dark:hover:bg-stone-600'
+                  'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                  isDark
+                    ? 'bg-stone-700 text-stone-300 hover:bg-stone-600'
+                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                 )}
               >
                 {t('closePreview')}

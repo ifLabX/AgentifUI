@@ -85,7 +85,7 @@ export default function SsoProvidersPage() {
           <div>
             <h1
               className={cn(
-                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300'
+                'mb-3 bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent dark:from-stone-100 dark:to-stone-300'
               )}
             >
               {t('title')}
@@ -130,7 +130,7 @@ export default function SsoProvidersPage() {
               onClick={showCreateProviderForm}
               disabled={loading.providers}
               className={cn(
-                'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-r from-stone-700 to-stone-800 text-white hover:from-stone-600 hover:to-stone-700 dark:from-stone-600 dark:to-stone-700 dark:hover:from-stone-500 dark:hover:to-stone-600'
+                'flex items-center gap-2 rounded-xl bg-gradient-to-r from-stone-700 to-stone-800 px-4 py-2.5 font-serif text-white shadow-sm transition-all duration-200 hover:from-stone-600 hover:to-stone-700 hover:shadow-md dark:from-stone-600 dark:to-stone-700 dark:hover:from-stone-500 dark:hover:to-stone-600'
               )}
             >
               <Plus className="h-4 w-4" />
@@ -143,7 +143,7 @@ export default function SsoProvidersPage() {
         {error && (
           <div
             className={cn(
-              'mb-6 rounded-xl border p-4 shadow-sm border-red-200 bg-red-50 text-red-800 dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-200'
+              'mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-200'
             )}
           >
             <div className="flex items-start gap-3">
@@ -157,7 +157,7 @@ export default function SsoProvidersPage() {
               <button
                 onClick={handleDismissError}
                 className={cn(
-                  'rounded-lg p-1 transition-colors text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-800/30'
+                  'rounded-lg p-1 text-red-600 transition-colors hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-800/30'
                 )}
               >
                 <X className="h-4 w-4" />
@@ -195,7 +195,7 @@ export default function SsoProvidersPage() {
             />
             <div
               className={cn(
-                'relative rounded-xl border p-6 shadow-xl border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800'
+                'relative rounded-xl border border-stone-200 bg-white p-6 shadow-xl dark:border-stone-700 dark:bg-stone-800'
               )}
             >
               <div className="mb-4 flex items-center gap-3">
@@ -231,7 +231,7 @@ export default function SsoProvidersPage() {
                 <button
                   onClick={hideDeleteConfirm}
                   className={cn(
-                    'rounded-lg border px-4 py-2 font-serif text-sm transition-colors border-stone-300 text-stone-700 hover:bg-stone-50 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50'
+                    'rounded-lg border border-stone-300 px-4 py-2 font-serif text-sm text-stone-700 transition-colors hover:bg-stone-50 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50'
                   )}
                 >
                   {t('deleteDialog.cancel')}
