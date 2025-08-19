@@ -17,7 +17,6 @@ interface AvatarUploadAreaProps {
   isUploading: boolean;
   hasCurrentAvatar: boolean;
   progress: number;
-  isDark?: boolean;
   colors: any;
 }
 
@@ -30,7 +29,6 @@ export function AvatarUploadArea({
   isUploading,
   hasCurrentAvatar,
   progress,
-  isDark = false,
   colors,
 }: AvatarUploadAreaProps) {
   const t = useTranslations('pages.settings.avatarModal');
@@ -59,9 +57,7 @@ export function AvatarUploadArea({
       className={cn(
         'relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors duration-150',
         isDragOver
-          ? isDark
-            ? 'border-stone-400 bg-stone-800/50'
-            : 'border-stone-400 bg-stone-50'
+          ? 'border-stone-400 bg-stone-50 dark:border-stone-400 dark:bg-stone-800/50'
           : colors.borderColor.tailwind,
         isUploading && 'cursor-not-allowed opacity-75',
         colors.cardBackground.tailwind
@@ -81,7 +77,7 @@ export function AvatarUploadArea({
         <div
           className={cn(
             'inline-flex h-12 w-12 items-center justify-center rounded-full',
-            isDark ? 'bg-stone-700' : 'bg-stone-100'
+            'bg-stone-100 dark:bg-stone-700'
           )}
         >
           {isUploading ? (

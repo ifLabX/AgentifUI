@@ -43,7 +43,7 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
-  const { colors, isDark } = useSettingsColors();
+  const { colors } = useSettingsColors();
   const t = useTranslations('pages.settings.profileSettings');
   const format = useFormatter();
   const { mutate: refreshProfile } = useProfile(); // Add refresh profile function
@@ -172,12 +172,8 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
           className={cn(
             'flex items-center rounded-lg p-3',
             message.type === 'success'
-              ? isDark
-                ? 'border border-green-800 bg-green-900/20 text-green-300'
-                : 'border border-green-200 bg-green-50 text-green-700'
-              : isDark
-                ? 'border border-red-800 bg-red-900/20 text-red-300'
-                : 'border border-red-200 bg-red-50 text-red-700'
+              ? 'border border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300'
+              : 'border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300'
           )}
         >
           {message.type === 'success' ? (
@@ -230,9 +226,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               <div
                 className={cn(
                   'absolute right-0 bottom-0 flex h-5 w-5 items-center justify-center rounded-full border shadow-sm transition-all duration-300 group-hover:scale-105',
-                  isDark
-                    ? 'border-stone-700 bg-stone-600 text-stone-200 group-hover:bg-stone-500'
-                    : 'border-white bg-stone-200 text-stone-600 group-hover:bg-stone-300'
+                  'border-white bg-stone-200 text-stone-600 group-hover:bg-stone-300 dark:border-stone-700 dark:bg-stone-600 dark:text-stone-200 dark:group-hover:bg-stone-500'
                 )}
               >
                 <Camera className="h-2.5 w-2.5" />
@@ -371,7 +365,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                 className={cn(
                   'flex items-center space-x-2 rounded-lg border p-3',
                   colors.borderColor.tailwind,
-                  isDark ? 'bg-gray-800/30' : 'bg-gray-50/50'
+                  'bg-gray-50/50 dark:bg-gray-800/30'
                 )}
               >
                 <User
