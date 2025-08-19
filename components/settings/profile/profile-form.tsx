@@ -9,7 +9,6 @@ import {
 import { Profile as ExtendedProfile } from '@lib/hooks/use-profile';
 import { updateProfileCache } from '@lib/hooks/use-profile';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { Profile as DatabaseProfile } from '@lib/types/database';
 import { cn } from '@lib/utils';
 import { motion } from 'framer-motion';
@@ -43,7 +42,6 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
-  const { colors } = useSettingsColors();
   const t = useTranslations('pages.settings.profileSettings');
   const format = useFormatter();
   const { mutate: refreshProfile } = useProfile(); // Add refresh profile function

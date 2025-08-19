@@ -2,7 +2,6 @@
 
 import { useAvatarUpload } from '@lib/hooks/use-avatar-upload';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { cn } from '@lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Camera, Check, Trash2, X } from 'lucide-react';
@@ -44,7 +43,6 @@ export function AvatarModal({
   userName,
   onAvatarUpdate,
 }: AvatarModalProps) {
-  const { colors } = useSettingsColors();
   const { profile } = useProfile();
   const t = useTranslations('pages.settings.avatarModal');
   const avatarUpload = useAvatarUpload();
@@ -275,18 +273,15 @@ export function AvatarModal({
           onClick={e => e.stopPropagation()}
           className={cn(
             'w-full max-w-md rounded-xl shadow-xl',
-            colors.cardBackground.tailwind,
-            colors.borderColor.tailwind,
-            'overflow-hidden border',
-            'bg-white/98 dark:bg-stone-900/98'
+            'bg-white/98 border border-stone-200 dark:bg-stone-900/98 dark:border-stone-800',
+            'overflow-hidden'
           )}
         >
           {/* Modal header */}
           <div
             className={cn(
               'flex items-center justify-between border-b px-5 py-4',
-              colors.borderColor.tailwind,
-              'bg-stone-50/50 dark:bg-stone-800/30'
+              'border-stone-200 bg-stone-50/50 dark:border-stone-800 dark:bg-stone-800/30'
             )}
           >
             <div className="flex items-center space-x-3">
@@ -297,14 +292,14 @@ export function AvatarModal({
                 )}
               >
                 <Camera
-                  className={cn('h-5 w-5', colors.secondaryTextColor.tailwind)}
+                  className={cn('h-5 w-5', 'text-stone-600 dark:text-stone-400')}
                 />
               </div>
               <div>
                 <h2
                   className={cn(
                     'font-serif text-lg font-semibold',
-                    colors.textColor.tailwind
+                    'text-stone-900 dark:text-stone-100'
                   )}
                 >
                   {t('title')}
@@ -312,7 +307,7 @@ export function AvatarModal({
                 <p
                   className={cn(
                     'font-serif text-sm',
-                    colors.secondaryTextColor.tailwind
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {t('subtitle')}
@@ -341,7 +336,6 @@ export function AvatarModal({
                 onConfirm={handleCropConfirm}
                 onCancel={handleCropCancel}
                 isUploading={isProcessing}
-                colors={colors}
               />
             )}
 
@@ -354,7 +348,6 @@ export function AvatarModal({
                   userName={userName}
                   isUploading={isProcessing}
                   progress={currentProgress}
-                  colors={colors}
                 />
 
                 {/* Status message */}
@@ -367,7 +360,7 @@ export function AvatarModal({
                       transition={{ duration: 0.15 }}
                       className={cn(
                         'flex items-center rounded-lg p-3',
-                        'border border-red-200 border-red-800 bg-red-50 bg-red-900/20 text-red-300 text-red-700 dark:border'
+                        'border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300'
                       )}
                     >
                       <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
@@ -383,7 +376,7 @@ export function AvatarModal({
                       transition={{ duration: 0.15 }}
                       className={cn(
                         'flex items-center rounded-lg p-3',
-                        'border border-green-200 border-green-800 bg-green-50 bg-green-900/20 text-green-300 text-green-700 dark:border'
+                        'border border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300'
                       )}
                     >
                       <Check className="mr-2 h-4 w-4 flex-shrink-0" />
@@ -404,7 +397,6 @@ export function AvatarModal({
                   isUploading={isProcessing}
                   hasCurrentAvatar={!!currentAvatarUrl}
                   progress={currentProgress}
-                  colors={colors}
                 />
 
                 {/* Operation button */}
@@ -416,7 +408,7 @@ export function AvatarModal({
                       className={cn(
                         'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-serif text-sm transition-colors duration-150',
                         'border disabled:cursor-not-allowed disabled:opacity-50',
-                        'border-red-200 bg-red-50 bg-red-900/20 text-red-300 text-red-700 hover:bg-red-100 hover:bg-red-900/30 dark:border-red-800'
+                        'border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30'
                       )}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -429,11 +421,8 @@ export function AvatarModal({
                     disabled={isProcessing}
                     className={cn(
                       'flex-1 rounded-lg px-4 py-2.5 font-serif text-sm transition-colors duration-150',
-                      colors.buttonBackground.tailwind,
-                      colors.buttonBorder.tailwind,
-                      colors.buttonText.tailwind,
-                      colors.buttonHover.tailwind,
-                      'border disabled:cursor-not-allowed disabled:opacity-50'
+                      'bg-white border border-stone-200 text-stone-800 hover:bg-stone-100 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-100 dark:hover:bg-stone-700',
+                      'disabled:cursor-not-allowed disabled:opacity-50'
                     )}
                   >
                     {isProcessing
@@ -463,9 +452,7 @@ export function AvatarModal({
                     onClick={e => e.stopPropagation()}
                     className={cn(
                       'mx-4 w-full max-w-sm rounded-lg p-5 shadow-xl',
-                      colors.cardBackground.tailwind,
-                      colors.borderColor.tailwind,
-                      'border'
+                      'bg-white border border-stone-200 dark:bg-stone-900 dark:border-stone-800'
                     )}
                   >
                     <div className="space-y-4">
@@ -486,7 +473,7 @@ export function AvatarModal({
                         <h3
                           className={cn(
                             'mt-3 font-serif text-base font-medium',
-                            colors.textColor.tailwind
+                            'text-stone-900 dark:text-stone-100'
                           )}
                         >
                           {t('deleteConfirm.title')}
@@ -494,7 +481,7 @@ export function AvatarModal({
                         <p
                           className={cn(
                             'mt-2 font-serif text-sm',
-                            colors.secondaryTextColor.tailwind
+                            'text-stone-600 dark:text-stone-400'
                           )}
                         >
                           {t('deleteConfirm.message')}
@@ -506,11 +493,7 @@ export function AvatarModal({
                           onClick={() => setShowDeleteConfirm(false)}
                           className={cn(
                             'flex-1 rounded-lg px-4 py-2 font-serif text-sm transition-colors duration-150',
-                            colors.buttonBackground.tailwind,
-                            colors.buttonBorder.tailwind,
-                            colors.buttonText.tailwind,
-                            colors.buttonHover.tailwind,
-                            'border'
+                            'bg-white border border-stone-200 text-stone-800 hover:bg-stone-100 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-100 dark:hover:bg-stone-700'
                           )}
                         >
                           {t('buttons.cancel')}
@@ -521,7 +504,7 @@ export function AvatarModal({
                           className={cn(
                             'flex-1 rounded-lg px-4 py-2 font-serif text-sm transition-colors duration-150',
                             'border disabled:cursor-not-allowed disabled:opacity-50',
-                            'border-red-200 bg-red-50 bg-red-900/20 text-red-300 text-red-700 hover:bg-red-100 hover:bg-red-900/30 dark:border-red-800'
+                            'border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30'
                           )}
                         >
                           {isProcessing

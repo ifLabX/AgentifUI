@@ -66,7 +66,7 @@ export function ForgotPasswordForm() {
       <div
         className={cn(
           'flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 px-4 sm:px-6 lg:px-8',
-          'dark:bg-stone-900'
+          'dark:from-stone-800 dark:to-stone-900'
         )}
       >
         <div
@@ -135,7 +135,7 @@ export function ForgotPasswordForm() {
     <div
       className={cn(
         'flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 px-4 sm:px-6 lg:px-8',
-        'dark:bg-stone-900'
+        'dark:from-stone-800 dark:to-stone-900'
       )}
     >
       <div

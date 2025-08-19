@@ -15,8 +15,6 @@ interface AvatarCropperProps {
   onConfirm: (croppedFile: File) => void;
   onCancel: () => void;
   isUploading?: boolean;
-  isDark?: boolean;
-  colors: any;
 }
 
 // Crop state interface
@@ -31,8 +29,6 @@ export function AvatarCropper({
   onConfirm,
   onCancel,
   isUploading = false,
-  isDark = false,
-  colors,
 }: AvatarCropperProps) {
   const t = useTranslations('pages.settings.avatarModal');
 
@@ -50,7 +46,7 @@ export function AvatarCropper({
       width: 100%;
       height: 4px;
       border-radius: 2px;
-      background: ${isDark ? '#44403c' : '#d6d3d1'};
+      background: #d6d3d1;
       outline: none;
       cursor: pointer;
     }
@@ -61,14 +57,14 @@ export function AvatarCropper({
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: ${isDark ? '#78716c' : '#57534e'};
+      background: #57534e;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     .custom-slider::-webkit-slider-thumb:hover {
-      background: ${isDark ? '#a8a29e' : '#44403c'};
+      background: #44403c;
       transform: scale(1.1);
     }
     
@@ -76,7 +72,7 @@ export function AvatarCropper({
       width: 100%;
       height: 4px;
       cursor: pointer;
-      background: ${isDark ? '#44403c' : '#d6d3d1'};
+      background: #d6d3d1;
       border-radius: 2px;
       border: none;
     }
@@ -85,7 +81,7 @@ export function AvatarCropper({
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: ${isDark ? '#78716c' : '#57534e'};
+      background: #57534e;
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -93,8 +89,33 @@ export function AvatarCropper({
     }
     
     .custom-slider::-moz-range-thumb:hover {
-      background: ${isDark ? '#a8a29e' : '#44403c'};
+      background: #44403c;
       transform: scale(1.1);
+    }
+    
+    /* Dark mode styles */
+    .dark .custom-slider {
+      background: #44403c;
+    }
+    
+    .dark .custom-slider::-webkit-slider-thumb {
+      background: #78716c;
+    }
+    
+    .dark .custom-slider::-webkit-slider-thumb:hover {
+      background: #a8a29e;
+    }
+    
+    .dark .custom-slider::-moz-range-track {
+      background: #44403c;
+    }
+    
+    .dark .custom-slider::-moz-range-thumb {
+      background: #78716c;
+    }
+    
+    .dark .custom-slider::-moz-range-thumb:hover {
+      background: #a8a29e;
     }
   `;
 
@@ -148,7 +169,7 @@ export function AvatarCropper({
         {/* Zoom control */}
         <div className="space-y-2">
           <label
-            className={cn('text-sm font-medium', colors.textColor.tailwind)}
+            className={cn('text-sm font-medium', 'text-stone-900 dark:text-stone-100')}
           >
             {t('crop.zoom')}
           </label>
@@ -173,10 +194,7 @@ export function AvatarCropper({
             className={cn(
               'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-serif text-sm transition-colors duration-150',
               'border disabled:cursor-not-allowed disabled:opacity-50',
-              colors.buttonBackground.tailwind,
-              colors.buttonBorder.tailwind,
-              colors.buttonText.tailwind,
-              colors.buttonHover.tailwind
+              'bg-white border-stone-200 text-stone-800 hover:bg-stone-100 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-100 dark:hover:bg-stone-700'
             )}
           >
             <RotateCcw className="h-4 w-4" />
@@ -189,9 +207,7 @@ export function AvatarCropper({
             className={cn(
               'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-serif text-sm transition-colors duration-150',
               'border disabled:cursor-not-allowed disabled:opacity-50',
-              isDark
-                ? 'border-stone-600 bg-stone-700 text-stone-100 hover:border-stone-500 hover:bg-stone-600'
-                : 'border-stone-400 bg-stone-600 text-white hover:border-stone-500 hover:bg-stone-700'
+              'border-stone-400 bg-stone-600 text-white hover:border-stone-500 hover:bg-stone-700 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:hover:border-stone-500 dark:hover:bg-stone-600'
             )}
           >
             {isUploading ? (

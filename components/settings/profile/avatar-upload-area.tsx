@@ -17,7 +17,6 @@ interface AvatarUploadAreaProps {
   isUploading: boolean;
   hasCurrentAvatar: boolean;
   progress: number;
-  colors: any;
 }
 
 export function AvatarUploadArea({
@@ -29,7 +28,6 @@ export function AvatarUploadArea({
   isUploading,
   hasCurrentAvatar,
   progress,
-  colors,
 }: AvatarUploadAreaProps) {
   const t = useTranslations('pages.settings.avatarModal');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,9 +56,9 @@ export function AvatarUploadArea({
         'relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors duration-150',
         isDragOver
           ? 'border-stone-400 bg-stone-50 dark:border-stone-400 dark:bg-stone-800/50'
-          : colors.borderColor.tailwind,
+          : 'border-stone-200 dark:border-stone-800',
         isUploading && 'cursor-not-allowed opacity-75',
-        colors.cardBackground.tailwind
+        'bg-white dark:bg-stone-900'
       )}
     >
       <input
@@ -84,12 +82,12 @@ export function AvatarUploadArea({
             <Loader2
               className={cn(
                 'h-6 w-6 animate-spin',
-                colors.secondaryTextColor.tailwind
+                'text-stone-600 dark:text-stone-400'
               )}
             />
           ) : (
             <Upload
-              className={cn('h-6 w-6', colors.secondaryTextColor.tailwind)}
+              className={cn('h-6 w-6', 'text-stone-600 dark:text-stone-400')}
             />
           )}
         </div>
@@ -99,7 +97,7 @@ export function AvatarUploadArea({
           <p
             className={cn(
               'font-serif text-sm font-medium',
-              colors.textColor.tailwind
+              'text-stone-900 dark:text-stone-100'
             )}
           >
             {isUploading
@@ -111,7 +109,7 @@ export function AvatarUploadArea({
           <p
             className={cn(
               'font-serif text-xs',
-              colors.secondaryTextColor.tailwind
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {isUploading

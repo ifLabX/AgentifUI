@@ -12,7 +12,6 @@ interface AvatarPreviewProps {
   userName: string;
   isUploading?: boolean;
   progress?: number;
-  colors: any;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -21,7 +20,6 @@ export function AvatarPreview({
   userName,
   isUploading = false,
   progress = 0,
-  colors,
   size = 'md',
 }: AvatarPreviewProps) {
   const t = useTranslations('pages.settings.avatarModal');
@@ -62,7 +60,7 @@ export function AvatarPreview({
         <h3
           className={cn(
             'font-serif text-sm font-medium',
-            colors.textColor.tailwind
+            'text-stone-900 dark:text-stone-100'
           )}
         >
           {userName}
@@ -70,7 +68,7 @@ export function AvatarPreview({
         <p
           className={cn(
             'font-serif text-xs',
-            colors.secondaryTextColor.tailwind
+            'text-stone-600 dark:text-stone-400'
           )}
         >
           {t('supportedFormats')}
