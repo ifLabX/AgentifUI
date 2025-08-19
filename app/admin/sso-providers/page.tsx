@@ -4,7 +4,6 @@ import { SsoFilters } from '@components/admin/sso-providers/sso-filters';
 import { SsoProviderForm } from '@components/admin/sso-providers/sso-provider-form';
 import { SsoStatsCards } from '@components/admin/sso-providers/sso-stats-cards';
 import { SsoTable } from '@components/admin/sso-providers/sso-table';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useSsoProvidersStore } from '@lib/stores/sso-providers-store';
 import { type SsoProvider } from '@lib/types/database';
 import { cn } from '@lib/utils';
@@ -23,7 +22,6 @@ import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
 export default function SsoProvidersPage() {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.admin.ssoProviders');
   const {
     loading,
@@ -78,10 +76,7 @@ export default function SsoProvidersPage() {
   return (
     <div
       className={cn(
-        'min-h-screen',
-        isDark
-          ? 'bg-gradient-to-br from-stone-950 via-stone-900 to-stone-800'
-          : 'bg-gradient-to-br from-stone-50 via-white to-stone-100'
+        'min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-100 dark:from-stone-950 dark:via-stone-900 dark:to-stone-800'
       )}
     >
       <div className="mx-auto max-w-7xl p-6">
@@ -90,10 +85,7 @@ export default function SsoProvidersPage() {
           <div>
             <h1
               className={cn(
-                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent',
-                isDark
-                  ? 'from-stone-100 to-stone-300'
-                  : 'from-stone-800 to-stone-600'
+                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300'
               )}
             >
               {t('title')}
@@ -121,9 +113,7 @@ export default function SsoProvidersPage() {
                 'flex items-center gap-2 rounded-xl border px-4 py-2.5 font-serif shadow-sm transition-all duration-200',
                 loading.providers || loading.stats
                   ? 'cursor-not-allowed opacity-50'
-                  : isDark
-                    ? 'border-stone-600/50 text-stone-300 hover:border-stone-500 hover:bg-stone-700/50 hover:shadow-md'
-                    : 'border-stone-300/50 text-stone-700 backdrop-blur-sm hover:border-stone-400 hover:bg-stone-50/80 hover:shadow-md'
+                  : 'border-stone-300/50 text-stone-700 backdrop-blur-sm hover:border-stone-400 hover:bg-stone-50/80 hover:shadow-md dark:border-stone-600/50 dark:text-stone-300 dark:hover:border-stone-500 dark:hover:bg-stone-700/50 dark:hover:shadow-md'
               )}
             >
               <RefreshCw
@@ -140,10 +130,7 @@ export default function SsoProvidersPage() {
               onClick={showCreateProviderForm}
               disabled={loading.providers}
               className={cn(
-                'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md',
-                isDark
-                  ? 'bg-gradient-to-r from-stone-600 to-stone-700 text-white hover:from-stone-500 hover:to-stone-600'
-                  : 'bg-gradient-to-r from-stone-700 to-stone-800 text-white hover:from-stone-600 hover:to-stone-700'
+                'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-r from-stone-700 to-stone-800 text-white hover:from-stone-600 hover:to-stone-700 dark:from-stone-600 dark:to-stone-700 dark:hover:from-stone-500 dark:hover:to-stone-600'
               )}
             >
               <Plus className="h-4 w-4" />
@@ -156,10 +143,7 @@ export default function SsoProvidersPage() {
         {error && (
           <div
             className={cn(
-              'mb-6 rounded-xl border p-4 shadow-sm',
-              isDark
-                ? 'border-red-800/50 bg-red-900/20 text-red-200'
-                : 'border-red-200 bg-red-50 text-red-800'
+              'mb-6 rounded-xl border p-4 shadow-sm border-red-200 bg-red-50 text-red-800 dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-200'
             )}
           >
             <div className="flex items-start gap-3">
@@ -173,10 +157,7 @@ export default function SsoProvidersPage() {
               <button
                 onClick={handleDismissError}
                 className={cn(
-                  'rounded-lg p-1 transition-colors',
-                  isDark
-                    ? 'text-red-400 hover:bg-red-800/30'
-                    : 'text-red-600 hover:bg-red-100'
+                  'rounded-lg p-1 transition-colors text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-800/30'
                 )}
               >
                 <X className="h-4 w-4" />
@@ -214,19 +195,13 @@ export default function SsoProvidersPage() {
             />
             <div
               className={cn(
-                'relative rounded-xl border p-6 shadow-xl',
-                isDark
-                  ? 'border-stone-700 bg-stone-800'
-                  : 'border-stone-200 bg-white'
+                'relative rounded-xl border p-6 shadow-xl border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800'
               )}
             >
               <div className="mb-4 flex items-center gap-3">
                 <div
                   className={cn(
-                    'flex h-12 w-12 items-center justify-center rounded-full',
-                    isDark
-                      ? 'bg-red-900/30 text-red-400'
-                      : 'bg-red-100 text-red-600'
+                    'flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
                   )}
                 >
                   <Trash2 className="h-6 w-6" />
@@ -256,10 +231,7 @@ export default function SsoProvidersPage() {
                 <button
                   onClick={hideDeleteConfirm}
                   className={cn(
-                    'rounded-lg border px-4 py-2 font-serif text-sm transition-colors',
-                    isDark
-                      ? 'border-stone-600 text-stone-300 hover:bg-stone-700/50'
-                      : 'border-stone-300 text-stone-700 hover:bg-stone-50'
+                    'rounded-lg border px-4 py-2 font-serif text-sm transition-colors border-stone-300 text-stone-700 hover:bg-stone-50 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700/50'
                   )}
                 >
                   {t('deleteDialog.cancel')}
