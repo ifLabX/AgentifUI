@@ -16,7 +16,6 @@ import { ProviderManagementModal } from '@components/admin/api-config/provider-m
 import { ProviderManagementButton } from '@components/admin/api-config/provider-management-button';
 import { TagsSelector } from '@components/admin/api-config/tags-selector';
 import { useApiConfigEvents } from '@components/admin/api-config/use-api-config-events';
-import { useTheme } from '@lib/hooks/use-theme';
 import type { DifyAppParametersResponse } from '@lib/services/dify/types';
 import { validateDifyFormData } from '@lib/services/dify/validation';
 import {
@@ -80,7 +79,6 @@ const InstanceForm = ({
   isProcessing: boolean;
   defaultProviderId?: string | null;
 }) => {
-  const { isDark } = useTheme();
   const { serviceInstances, apiKeys, providers } = useApiConfigStore();
   const t = useTranslations('pages.admin.apiConfig.page');
   const tDifyParametersPanel = useTranslations(
@@ -632,10 +630,7 @@ const InstanceForm = ({
               <div
                 className={cn(
                   'flex items-center gap-2 rounded-full px-3 py-1.5 font-serif text-xs font-medium',
-                  'animate-pulse border border-dashed',
-                  isDark
-                    ? 'border-amber-700/40 bg-amber-900/20 text-amber-300'
-                    : 'border-amber-300/60 bg-amber-50 text-amber-700'
+                  'animate-pulse border border-dashed border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300'
                 )}
               >
                 <div
@@ -693,12 +688,8 @@ const InstanceForm = ({
                       ? 'cursor-not-allowed opacity-60'
                       : 'cursor-pointer hover:scale-105',
                     isCurrentDefault
-                      ? isDark
-                        ? 'border-stone-600/50 bg-stone-700/30 text-stone-400'
-                        : 'border-stone-300/50 bg-stone-100/50 text-stone-500'
-                      : isDark
-                        ? 'border-stone-600 bg-stone-700 text-stone-300 hover:bg-stone-600'
-                        : 'border-stone-300 bg-stone-100 text-stone-700 hover:bg-stone-200'
+                      ? 'border-stone-300/50 bg-stone-100/50 text-stone-500 dark:border-stone-600/50 dark:bg-stone-700/30 dark:text-stone-400'
+                      : 'border-stone-300 bg-stone-100 text-stone-700 hover:bg-stone-200 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-300 dark:hover:bg-stone-600'
                   )}
                 >
                   <Star
@@ -723,12 +714,8 @@ const InstanceForm = ({
                   'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-all',
                   'border hover:scale-105',
                   setAsDefault
-                    ? isDark
-                      ? 'border-stone-500 bg-stone-600 text-stone-200'
-                      : 'border-stone-400 bg-stone-200 text-stone-800'
-                    : isDark
-                      ? 'border-stone-600 bg-stone-700 text-stone-300 hover:bg-stone-600'
-                      : 'border-stone-300 bg-stone-100 text-stone-700 hover:bg-stone-200'
+                    ? 'border-stone-400 bg-stone-200 text-stone-800 dark:border-stone-500 dark:bg-stone-600 dark:text-stone-200'
+                    : 'border-stone-300 bg-stone-100 text-stone-700 hover:bg-stone-200 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-300 dark:hover:bg-stone-600'
                 )}
               >
                 <Star
@@ -754,7 +741,7 @@ const InstanceForm = ({
                 onClick={() => setShowDifyPanel(true)}
                 className={cn(
                   'flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 transition-all',
-                  isDark
+                  false
                     ? 'bg-stone-700/50 text-stone-300 hover:bg-stone-700 hover:text-stone-200'
                     : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-800'
                 )}
@@ -778,10 +765,10 @@ const InstanceForm = ({
                   isSyncing ||
                     (!isEditing &&
                       (!formData.config.api_url || !formData.apiKey))
-                    ? isDark
+                    ? false
                       ? 'cursor-not-allowed bg-stone-800/50 text-stone-500'
                       : 'cursor-not-allowed border border-stone-200 bg-stone-200/50 text-stone-400'
-                    : isDark
+                    : false
                       ? 'bg-stone-700/50 text-stone-300 hover:bg-stone-700 hover:text-stone-200'
                       : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-800'
                 )}
@@ -812,7 +799,7 @@ const InstanceForm = ({
         <div
           className={cn(
             'mb-6 rounded-lg border p-4',
-            isDark
+            false
               ? 'border-stone-600 bg-stone-700/50'
               : 'border-stone-200 bg-stone-50'
           )}
@@ -842,7 +829,7 @@ const InstanceForm = ({
               <div
                 className={cn(
                   'rounded-md px-3 py-1.5 font-serif text-sm',
-                  isDark
+                  false
                     ? 'bg-stone-600 text-stone-200'
                     : 'bg-stone-200 text-stone-700'
                 )}
@@ -895,11 +882,11 @@ const InstanceForm = ({
                   className={cn(
                     'w-full rounded-lg border px-3 py-2 font-serif',
                     !isEditing && 'pr-20', // add mode: leave space for button
-                    isDark
+                    false
                       ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                       : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500',
                     isEditing &&
-                      (isDark
+                      (false
                         ? 'cursor-not-allowed bg-stone-800'
                         : 'cursor-not-allowed bg-stone-100'),
                     instanceIdError && 'border-red-500'
@@ -923,7 +910,7 @@ const InstanceForm = ({
                       'flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-all',
                       'border shadow-sm hover:scale-105 hover:shadow-md',
                       'font-serif font-medium',
-                      isDark
+                      false
                         ? 'border-stone-500 bg-gradient-to-r from-stone-600 to-stone-700 text-stone-200 hover:from-stone-500 hover:to-stone-600 hover:text-white'
                         : 'border-stone-300 bg-gradient-to-r from-stone-100 to-stone-200 text-stone-700 hover:from-stone-200 hover:to-stone-300 hover:text-stone-800'
                     )}
@@ -989,7 +976,7 @@ const InstanceForm = ({
                 }
                 className={cn(
                   'w-full rounded-lg border px-3 py-2 font-serif',
-                  isDark
+                  false
                     ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                     : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
                 )}
@@ -1024,7 +1011,7 @@ const InstanceForm = ({
                   isSyncing || !formData.config.api_url || !formData.apiKey
                     ? 'cursor-not-allowed opacity-50'
                     : 'cursor-pointer',
-                  isDark
+                  false
                     ? 'bg-stone-600 text-white hover:bg-stone-500'
                     : 'bg-stone-800 text-white hover:bg-stone-700'
                 )}
@@ -1055,7 +1042,7 @@ const InstanceForm = ({
               }
               className={cn(
                 'w-full rounded-lg border px-3 py-2 font-serif',
-                isDark
+                false
                   ? 'border-stone-600 bg-stone-700 text-stone-100 placeholder-stone-400'
                   : 'border-stone-300 bg-white text-stone-900 placeholder-stone-500'
               )}
@@ -1091,10 +1078,10 @@ const InstanceForm = ({
                 className={cn(
                   'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                   formData.config.app_metadata.app_type === 'model'
-                    ? isDark
+                    ? false
                       ? 'border-stone-500 bg-stone-700/50'
                       : 'border-stone-400 bg-stone-100'
-                    : isDark
+                    : false
                       ? 'border-stone-600 hover:border-stone-500'
                       : 'border-stone-300 hover:border-stone-400'
                 )}
@@ -1103,10 +1090,10 @@ const InstanceForm = ({
                   className={cn(
                     'flex h-4 w-4 items-center justify-center rounded-full border-2',
                     formData.config.app_metadata.app_type === 'model'
-                      ? isDark
+                      ? false
                         ? 'border-stone-400 bg-stone-400'
                         : 'border-stone-600 bg-stone-600'
-                      : isDark
+                      : false
                         ? 'border-stone-500'
                         : 'border-stone-400'
                   )}
@@ -1157,10 +1144,10 @@ const InstanceForm = ({
                 className={cn(
                   'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                   formData.config.app_metadata.app_type === 'marketplace'
-                    ? isDark
+                    ? false
                       ? 'border-stone-500 bg-stone-700/50'
                       : 'border-stone-400 bg-stone-100'
-                    : isDark
+                    : false
                       ? 'border-stone-600 hover:border-stone-500'
                       : 'border-stone-300 hover:border-stone-400'
                 )}
@@ -1169,10 +1156,10 @@ const InstanceForm = ({
                   className={cn(
                     'flex h-4 w-4 items-center justify-center rounded-full border-2',
                     formData.config.app_metadata.app_type === 'marketplace'
-                      ? isDark
+                      ? false
                         ? 'border-stone-400 bg-stone-400'
                         : 'border-stone-600 bg-stone-600'
-                      : isDark
+                      : false
                         ? 'border-stone-500'
                         : 'border-stone-400'
                   )}
