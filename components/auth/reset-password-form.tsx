@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { AlertCircle, ArrowLeft, CheckCircle, Eye, EyeOff } from 'lucide-react';
 
@@ -27,8 +26,6 @@ export function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
-  const { isDark } = useTheme();
-
   useEffect(() => {
     const checkUserSession = async () => {
       try {
@@ -164,22 +161,20 @@ export function ResetPasswordForm() {
         <div
           className={cn(
             'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-            isDark
-              ? 'border-stone-800 bg-stone-900'
-              : 'border-stone-200 bg-stone-50'
+            'border-stone-200 bg-stone-50 bg-stone-900 dark:border-stone-800'
           )}
         >
           <div className="text-center">
             <div
               className={cn(
                 'mx-auto mb-4 flex h-16 w-16 animate-pulse items-center justify-center rounded-full',
-                isDark ? 'bg-stone-800' : 'bg-stone-100'
+                'bg-stone-100 dark:bg-stone-800'
               )}
             >
               <div
                 className={cn(
                   'h-8 w-8 rounded-full',
-                  isDark ? 'bg-stone-600' : 'bg-stone-300'
+                  'bg-stone-300 dark:bg-stone-600'
                 )}
               ></div>
             </div>
@@ -189,7 +184,7 @@ export function ResetPasswordForm() {
             <p
               className={cn(
                 'mt-2 font-serif text-sm',
-                isDark ? 'text-gray-400' : 'text-gray-600'
+                'text-gray-600 dark:text-gray-400'
               )}
             >
               {t('verifyingSubtitle')}
@@ -206,23 +201,18 @@ export function ResetPasswordForm() {
         <div
           className={cn(
             'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-            isDark
-              ? 'border-stone-800 bg-stone-900'
-              : 'border-stone-200 bg-stone-50'
+            'border-stone-200 bg-stone-50 bg-stone-900 dark:border-stone-800'
           )}
         >
           <div className="text-center">
             <div
               className={cn(
                 'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full',
-                isDark ? 'bg-stone-800' : 'bg-stone-100'
+                'bg-stone-100 dark:bg-stone-800'
               )}
             >
               <AlertCircle
-                className={cn(
-                  'h-8 w-8',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
-                )}
+                className={cn('h-8 w-8', 'text-stone-600 dark:text-stone-400')}
               />
             </div>
             <h2 className="py-1 font-serif text-xl leading-normal font-bold text-stone-900 sm:text-2xl">
@@ -231,7 +221,7 @@ export function ResetPasswordForm() {
             <p
               className={cn(
                 'mt-2 font-serif text-sm',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             >
               {t('invalidSubtitle')}
@@ -242,9 +232,7 @@ export function ResetPasswordForm() {
             <div
               className={cn(
                 'rounded-lg border-l-4 p-4 font-serif text-sm',
-                isDark
-                  ? 'border-red-500 bg-red-900/30 text-red-400'
-                  : 'border-red-500 bg-red-50 text-red-700'
+                'border-red-500 bg-red-50 bg-red-900/30 text-red-400 text-red-700 dark:border-red-500'
               )}
             >
               {error}
@@ -256,9 +244,7 @@ export function ResetPasswordForm() {
               href="/forgot-password"
               className={cn(
                 'inline-flex items-center font-serif text-sm text-stone-700 transition-colors hover:text-stone-600',
-                isDark
-                  ? 'text-stone-400 hover:text-stone-300'
-                  : 'text-stone-700 hover:text-stone-600'
+                'text-stone-700 hover:text-stone-300 hover:text-stone-600 dark:text-stone-400'
               )}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -276,23 +262,18 @@ export function ResetPasswordForm() {
         <div
           className={cn(
             'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-            isDark
-              ? 'border-stone-800 bg-stone-900'
-              : 'border-stone-200 bg-stone-50'
+            'border-stone-200 bg-stone-50 bg-stone-900 dark:border-stone-800'
           )}
         >
           <div className="text-center">
             <div
               className={cn(
                 'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full',
-                isDark ? 'bg-stone-800' : 'bg-stone-100'
+                'bg-stone-100 dark:bg-stone-800'
               )}
             >
               <CheckCircle
-                className={cn(
-                  'h-8 w-8',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
-                )}
+                className={cn('h-8 w-8', 'text-stone-600 dark:text-stone-400')}
               />
             </div>
             <h2 className="py-1 font-serif text-xl leading-normal font-bold text-stone-900 sm:text-2xl">
@@ -301,7 +282,7 @@ export function ResetPasswordForm() {
             <p
               className={cn(
                 'mt-2 font-serif text-sm',
-                isDark ? 'text-stone-400' : 'text-stone-600'
+                'text-stone-600 dark:text-stone-400'
               )}
             >
               {t('successSubtitle')}
@@ -311,9 +292,7 @@ export function ResetPasswordForm() {
           <div
             className={cn(
               'rounded-lg border-l-4 p-4 font-serif text-sm',
-              isDark
-                ? 'border-stone-600 bg-stone-800/50 text-stone-300'
-                : 'border-stone-400 bg-stone-50 text-stone-700'
+              'border-stone-400 bg-stone-50 bg-stone-800/50 text-stone-300 text-stone-700 dark:border-stone-600'
             )}
           >
             <p>{t('successMessage')}</p>
@@ -324,9 +303,7 @@ export function ResetPasswordForm() {
               href="/login"
               className={cn(
                 'inline-flex items-center font-serif text-sm text-stone-700 transition-colors hover:text-stone-600',
-                isDark
-                  ? 'text-stone-400 hover:text-stone-300'
-                  : 'text-stone-700 hover:text-stone-600'
+                'text-stone-700 hover:text-stone-300 hover:text-stone-600 dark:text-stone-400'
               )}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -343,9 +320,7 @@ export function ResetPasswordForm() {
       <div
         className={cn(
           'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-          isDark
-            ? 'border-stone-800 bg-stone-900'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50 bg-stone-900 dark:border-stone-800'
         )}
       >
         <div className="text-center">
@@ -355,7 +330,7 @@ export function ResetPasswordForm() {
           <p
             className={cn(
               'mt-2 font-serif text-sm',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {t('subtitle')}
@@ -366,9 +341,7 @@ export function ResetPasswordForm() {
           <div
             className={cn(
               'rounded-lg border-l-4 p-4 font-serif text-sm',
-              isDark
-                ? 'border-red-500 bg-red-900/30 text-red-400'
-                : 'border-red-500 bg-red-50 text-red-700'
+              'border-red-500 bg-red-50 bg-red-900/30 text-red-400 text-red-700 dark:border-red-500'
             )}
           >
             {error}
@@ -381,7 +354,7 @@ export function ResetPasswordForm() {
               htmlFor="password"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-stone-300' : 'text-stone-700'
+                'text-stone-700 dark:text-stone-300'
               )}
             >
               {t('passwordLabel')}
@@ -397,9 +370,7 @@ export function ResetPasswordForm() {
                 onChange={handleChange}
                 className={cn(
                   'relative block w-full appearance-none rounded-lg border px-3 py-2 pr-12 font-serif placeholder-gray-500 transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                  isDark
-                    ? 'border-stone-700 bg-stone-800 text-white'
-                    : 'border-gray-300 text-gray-900'
+                  'border-gray-300 bg-stone-800 text-gray-900 text-white dark:border-stone-700'
                 )}
                 placeholder={t('passwordPlaceholder')}
               />
@@ -408,9 +379,7 @@ export function ResetPasswordForm() {
                 onClick={() => setShowPassword(!showPassword)}
                 className={cn(
                   'absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5 transition-colors focus:outline-none',
-                  isDark
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-500 hover:text-stone-600'
+                  'text-stone-500 hover:text-stone-300 hover:text-stone-600 dark:text-stone-400'
                 )}
                 aria-label={
                   showPassword ? t('hidePassword') : t('showPassword')
@@ -427,7 +396,7 @@ export function ResetPasswordForm() {
               <p
                 className={cn(
                   'mt-1 font-serif text-xs',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
+                  'text-stone-500 dark:text-stone-400'
                 )}
               >
                 {t('passwordHint')}
@@ -440,7 +409,7 @@ export function ResetPasswordForm() {
               htmlFor="confirmPassword"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-stone-300' : 'text-stone-700'
+                'text-stone-700 dark:text-stone-300'
               )}
             >
               {t('confirmPasswordLabel')}
@@ -456,9 +425,7 @@ export function ResetPasswordForm() {
                 onChange={handleChange}
                 className={cn(
                   'relative block w-full appearance-none rounded-lg border px-3 py-2 pr-12 font-serif placeholder-gray-500 transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                  isDark
-                    ? 'border-stone-700 bg-stone-800 text-white'
-                    : 'border-gray-300 text-gray-900'
+                  'border-gray-300 bg-stone-800 text-gray-900 text-white dark:border-stone-700'
                 )}
                 placeholder={t('confirmPasswordPlaceholder')}
               />
@@ -467,9 +434,7 @@ export function ResetPasswordForm() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className={cn(
                   'absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5 transition-colors focus:outline-none',
-                  isDark
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-500 hover:text-stone-600'
+                  'text-stone-500 hover:text-stone-300 hover:text-stone-600 dark:text-stone-400'
                 )}
                 aria-label={
                   showConfirmPassword
@@ -505,9 +470,7 @@ export function ResetPasswordForm() {
             href="/login"
             className={cn(
               'font-serif text-sm transition-colors',
-              isDark
-                ? 'text-stone-400 hover:text-stone-300'
-                : 'text-stone-700 hover:text-stone-600'
+              'text-stone-700 hover:text-stone-300 hover:text-stone-600 dark:text-stone-400'
             )}
           >
             {t('backToLogin')}

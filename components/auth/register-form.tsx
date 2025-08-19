@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@components/ui/button';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -17,7 +16,6 @@ import { SocialAuthButtons } from './social-auth-buttons';
 export function RegisterForm() {
   const router = useRouter();
   const supabase = createClient();
-  const { isDark } = useTheme();
   const t = useTranslations('pages.auth.register');
 
   const [formData, setFormData] = useState({
@@ -115,9 +113,7 @@ export function RegisterForm() {
     <div
       className={cn(
         'w-full max-w-md space-y-6 rounded-xl border p-6 font-serif shadow-lg transition-all sm:space-y-8 sm:p-8',
-        isDark
-          ? 'border-stone-800 bg-stone-900'
-          : 'border-stone-200 bg-stone-50'
+        'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900'
       )}
     >
       <div className="text-center">
@@ -127,7 +123,7 @@ export function RegisterForm() {
         <p
           className={cn(
             'mt-2 font-serif text-sm',
-            isDark ? 'text-gray-400' : 'text-gray-600'
+            'text-gray-600 dark:text-gray-400'
           )}
         >
           {t('subtitle')}
@@ -138,9 +134,7 @@ export function RegisterForm() {
         <div
           className={cn(
             'rounded-lg border-l-4 p-4 font-serif text-sm',
-            isDark
-              ? 'border-red-500 bg-red-900/30 text-red-400'
-              : 'border-red-500 bg-red-50 text-red-700'
+            'border-red-500 bg-red-50 text-red-700 dark:border-red-500 dark:bg-red-900/30 dark:text-red-400'
           )}
         >
           {error}
@@ -154,7 +148,7 @@ export function RegisterForm() {
           <div
             className={cn(
               'w-full border-t',
-              isDark ? 'border-stone-700' : 'border-stone-300'
+              'border-stone-300 dark:border-stone-700'
             )}
           />
         </div>
@@ -162,9 +156,7 @@ export function RegisterForm() {
           <span
             className={cn(
               'px-2 font-serif',
-              isDark
-                ? 'bg-stone-900 text-gray-400'
-                : 'bg-stone-50 text-gray-500'
+              'bg-stone-50 text-gray-500 dark:bg-stone-900 dark:text-gray-400'
             )}
           >
             {t('orSeparator')}
@@ -179,7 +171,7 @@ export function RegisterForm() {
               htmlFor="name"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-gray-300' : 'text-gray-700'
+                'text-gray-700 dark:text-gray-300'
               )}
             >
               {t('nameLabel')}
@@ -194,9 +186,7 @@ export function RegisterForm() {
               onChange={handleChange}
               className={cn(
                 'block w-full rounded-lg border px-4 py-3 font-serif placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                isDark
-                  ? 'border-stone-700 bg-stone-800 text-white'
-                  : 'border-stone-300 bg-white'
+                'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
               )}
               placeholder={t('namePlaceholder')}
             />
@@ -207,7 +197,7 @@ export function RegisterForm() {
               htmlFor="username"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-gray-300' : 'text-gray-700'
+                'text-gray-700 dark:text-gray-300'
               )}
             >
               {t('usernameLabel')}{' '}
@@ -224,9 +214,7 @@ export function RegisterForm() {
               onChange={handleChange}
               className={cn(
                 'block w-full rounded-lg border px-4 py-3 font-serif placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                isDark
-                  ? 'border-stone-700 bg-stone-800 text-white'
-                  : 'border-stone-300 bg-white'
+                'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
               )}
               placeholder={t('usernamePlaceholder')}
             />
@@ -237,7 +225,7 @@ export function RegisterForm() {
               htmlFor="email"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-gray-300' : 'text-gray-700'
+                'text-gray-700 dark:text-gray-300'
               )}
             >
               {t('emailLabel')}
@@ -252,9 +240,7 @@ export function RegisterForm() {
               onChange={handleChange}
               className={cn(
                 'block w-full rounded-lg border px-4 py-3 font-serif placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                isDark
-                  ? 'border-stone-700 bg-stone-800 text-white'
-                  : 'border-stone-300 bg-white'
+                'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
               )}
               placeholder={t('emailPlaceholder')}
             />
@@ -265,7 +251,7 @@ export function RegisterForm() {
               htmlFor="password"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-gray-300' : 'text-gray-700'
+                'text-gray-700 dark:text-gray-300'
               )}
             >
               {t('passwordLabel')}
@@ -281,9 +267,7 @@ export function RegisterForm() {
                 onChange={handleChange}
                 className={cn(
                   'block w-full rounded-lg border px-4 py-3 pr-12 font-serif placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                  isDark
-                    ? 'border-stone-700 bg-stone-800 text-white'
-                    : 'border-stone-300 bg-white'
+                  'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
                 )}
                 placeholder={t('passwordPlaceholder')}
               />
@@ -292,9 +276,7 @@ export function RegisterForm() {
                 onClick={() => setShowPassword(!showPassword)}
                 className={cn(
                   'absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5 transition-colors focus:outline-none',
-                  isDark
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-500 hover:text-stone-600'
+                  'text-stone-500 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300'
                 )}
                 aria-label={
                   showPassword ? t('hidePassword') : t('showPassword')
@@ -314,7 +296,7 @@ export function RegisterForm() {
               htmlFor="confirmPassword"
               className={cn(
                 'mb-1 block font-serif text-sm font-medium',
-                isDark ? 'text-gray-300' : 'text-gray-700'
+                'text-gray-700 dark:text-gray-300'
               )}
             >
               {t('confirmPasswordLabel')}
@@ -330,9 +312,7 @@ export function RegisterForm() {
                 onChange={handleChange}
                 className={cn(
                   'block w-full rounded-lg border px-4 py-3 pr-12 font-serif placeholder-stone-400 shadow-sm transition-all focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
-                  isDark
-                    ? 'border-stone-700 bg-stone-800 text-white'
-                    : 'border-stone-300 bg-white'
+                  'border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white'
                 )}
                 placeholder={t('passwordPlaceholder')}
               />
@@ -341,9 +321,7 @@ export function RegisterForm() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className={cn(
                   'absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5 transition-colors focus:outline-none',
-                  isDark
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-500 hover:text-stone-600'
+                  'text-stone-500 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300'
                 )}
                 aria-label={
                   showConfirmPassword
@@ -380,9 +358,7 @@ export function RegisterForm() {
             href="/phone-login"
             className={cn(
               'font-serif text-sm font-medium hover:underline',
-              isDark
-                ? 'text-stone-400 hover:text-stone-300'
-                : 'text-stone-600 hover:text-stone-700'
+              'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
             )}
           >
             {t('phoneLoginLink')}
@@ -392,7 +368,7 @@ export function RegisterForm() {
         <p
           className={cn(
             'font-serif text-sm',
-            isDark ? 'text-gray-400' : 'text-gray-600'
+            'text-gray-600 dark:text-gray-400'
           )}
         >
           {t('hasAccountText')}{' '}
@@ -400,9 +376,7 @@ export function RegisterForm() {
             href="/login"
             className={cn(
               'font-serif font-medium',
-              isDark
-                ? 'text-stone-400 hover:text-stone-300'
-                : 'text-stone-700 hover:text-stone-600'
+              'text-stone-700 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300'
             )}
           >
             {t('loginLink')}
