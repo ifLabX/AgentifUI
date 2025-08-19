@@ -5,7 +5,6 @@ import { UserStatsCards } from '@components/admin/users/user-stats-cards';
 import { UserTable } from '@components/admin/users/user-table';
 import { ConfirmDialog } from '@components/ui';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useUserManagementStore } from '@lib/stores/user-management-store';
 import { cn } from '@lib/utils';
 import {
@@ -33,7 +32,6 @@ interface User {
 }
 
 export default function UsersManagementPage() {
-  const { isDark } = useTheme();
   const { profile: currentUserProfile } = useProfile();
   const t = useTranslations('pages.admin.users');
 
@@ -356,9 +354,7 @@ export default function UsersManagementPage() {
               'rounded-lg border px-3 py-1.5 font-serif text-sm transition-colors',
               pagination.page <= 1
                 ? 'cursor-not-allowed opacity-50'
-                : isDark
-                  ? 'border-stone-600 text-stone-300 hover:bg-stone-700'
-                  : 'border-stone-300 text-stone-700 hover:bg-stone-50'
+                : 'border-stone-300 text-stone-700 hover:bg-stone-50 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700'
             )}
           >
             {t('pagination.previous')}
@@ -380,9 +376,7 @@ export default function UsersManagementPage() {
               'rounded-lg border px-3 py-1.5 font-serif text-sm transition-colors',
               pagination.page >= pagination.totalPages
                 ? 'cursor-not-allowed opacity-50'
-                : isDark
-                  ? 'border-stone-600 text-stone-300 hover:bg-stone-700'
-                  : 'border-stone-300 text-stone-700 hover:bg-stone-50'
+                : 'border-stone-300 text-stone-700 hover:bg-stone-50 dark:border-stone-600 dark:text-stone-300 dark:hover:bg-stone-700'
             )}
           >
             {t('pagination.next')}
@@ -395,10 +389,7 @@ export default function UsersManagementPage() {
   return (
     <div
       className={cn(
-        'min-h-screen',
-        isDark
-          ? 'bg-gradient-to-br from-stone-950 via-stone-900 to-stone-800'
-          : 'bg-gradient-to-br from-stone-50 via-white to-stone-100'
+        'min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-100 dark:from-stone-950 dark:via-stone-900 dark:to-stone-800'
       )}
     >
       <div className="mx-auto max-w-7xl p-6">
@@ -407,10 +398,7 @@ export default function UsersManagementPage() {
           <div>
             <h1
               className={cn(
-                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent',
-                isDark
-                  ? 'from-stone-100 to-stone-300'
-                  : 'from-stone-800 to-stone-600'
+                'mb-3 bg-gradient-to-r bg-clip-text font-serif text-4xl leading-relaxed font-bold text-transparent from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300'
               )}
             >
               {t('title')}
@@ -438,9 +426,7 @@ export default function UsersManagementPage() {
                 'flex items-center gap-2 rounded-xl border px-4 py-2.5 font-serif shadow-sm transition-all duration-200',
                 loading.users || loading.stats
                   ? 'cursor-not-allowed opacity-50'
-                  : isDark
-                    ? 'border-stone-600/50 text-stone-300 hover:border-stone-500 hover:bg-stone-700/50 hover:shadow-md'
-                    : 'border-stone-300/50 text-stone-700 backdrop-blur-sm hover:border-stone-400 hover:bg-stone-50/80 hover:shadow-md'
+                  : 'border-stone-300/50 text-stone-700 backdrop-blur-sm hover:border-stone-400 hover:bg-stone-50/80 hover:shadow-md dark:border-stone-600/50 dark:text-stone-300 dark:hover:border-stone-500 dark:hover:bg-stone-700/50 dark:hover:shadow-md'
               )}
             >
               <RefreshCw
@@ -458,10 +444,7 @@ export default function UsersManagementPage() {
             <button
               onClick={() => toast.success(t('actions.addUserInDevelopment'))}
               className={cn(
-                'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md',
-                isDark
-                  ? 'bg-gradient-to-r from-stone-600 to-stone-700 text-white hover:from-stone-500 hover:to-stone-600'
-                  : 'bg-gradient-to-r from-stone-700 to-stone-800 text-white hover:from-stone-600 hover:to-stone-700'
+                'flex items-center gap-2 rounded-xl px-4 py-2.5 font-serif shadow-sm transition-all duration-200 hover:shadow-md bg-gradient-to-r from-stone-700 to-stone-800 text-white hover:from-stone-600 hover:to-stone-700 dark:from-stone-600 dark:to-stone-700 dark:hover:from-stone-500 dark:hover:to-stone-600'
               )}
             >
               <Plus className="h-4 w-4" />
@@ -484,20 +467,14 @@ export default function UsersManagementPage() {
         {selectedUserIds.length > 0 && (
           <div
             className={cn(
-              'mb-6 rounded-xl border p-5 shadow-lg backdrop-blur-sm',
-              isDark
-                ? 'border-stone-700/50 bg-stone-800/60 shadow-stone-900/20'
-                : 'border-stone-200/50 bg-white/80 shadow-stone-200/50'
+              'mb-6 rounded-xl border p-5 shadow-lg backdrop-blur-sm border-stone-200/50 bg-white/80 shadow-stone-200/50 dark:border-stone-700/50 dark:bg-stone-800/60 dark:shadow-stone-900/20'
             )}
           >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div
                   className={cn(
-                    'flex h-8 w-8 items-center justify-center rounded-full',
-                    isDark
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : 'bg-blue-100 text-blue-600'
+                    'flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
                   )}
                 >
                   <CheckSquare className="h-4 w-4" />
@@ -516,10 +493,7 @@ export default function UsersManagementPage() {
                   <button
                     onClick={clearSelection}
                     className={cn(
-                      'ml-3 rounded-lg px-2 py-1 font-serif text-xs transition-colors',
-                      isDark
-                        ? 'text-stone-400 hover:bg-stone-700/50 hover:text-stone-300'
-                        : 'text-stone-600 hover:bg-stone-100 hover:text-stone-700'
+                      'ml-3 rounded-lg px-2 py-1 font-serif text-xs transition-colors text-stone-600 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-300'
                     )}
                   >
                     {t('batchOperations.cancelSelection')}
@@ -533,10 +507,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeRole('admin')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors',
-                    isDark
-                      ? 'bg-purple-600 text-white hover:bg-purple-700'
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-purple-600 text-white hover:bg-purple-700'
                   )}
                 >
                   <Shield className="h-3 w-3" />
@@ -547,10 +518,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeRole('manager')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors',
-                    isDark
-                      ? 'bg-amber-600 text-white hover:bg-amber-700'
-                      : 'bg-amber-600 text-white hover:bg-amber-700'
+                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-amber-600 text-white hover:bg-amber-700'
                   )}
                 >
                   <Crown className="h-3 w-3" />
@@ -561,10 +529,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeRole('user')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors',
-                    isDark
-                      ? 'bg-stone-600 text-white hover:bg-stone-700'
-                      : 'bg-stone-600 text-white hover:bg-stone-700'
+                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-stone-600 text-white hover:bg-stone-700'
                   )}
                 >
                   <UserIcon className="h-3 w-3" />
@@ -576,10 +541,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeStatus('active')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors',
-                    isDark
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-green-600 text-white hover:bg-green-700'
+                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-green-600 text-white hover:bg-green-700'
                   )}
                 >
                   <UserCheck className="h-3 w-3" />
@@ -590,10 +552,7 @@ export default function UsersManagementPage() {
                   onClick={() => handleBatchChangeStatus('suspended')}
                   disabled={loading.batchOperating}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors',
-                    isDark
-                      ? 'bg-red-600 text-white hover:bg-red-700'
-                      : 'bg-red-600 text-white hover:bg-red-700'
+                    'flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-serif text-sm transition-colors bg-red-600 text-white hover:bg-red-700'
                   )}
                 >
                   <UserX className="h-3 w-3" />
