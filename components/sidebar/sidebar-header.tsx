@@ -138,7 +138,7 @@ export function SidebarHeader({ isHovering = false }: SidebarHeaderProps) {
               <div
                 className={cn(
                   'absolute inset-0 rounded-lg transition-all duration-150 ease-in-out',
-                  'group-hover:bg-stone-300/80 dark:group-hover:bg-stone-600/60'
+                  'group-hover:bg-stone-200/70 dark:group-hover:bg-stone-700/60'
                 )}
               />
 
