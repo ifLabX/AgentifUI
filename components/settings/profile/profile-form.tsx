@@ -187,8 +187,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       <div
         className={cn(
           'rounded-lg border p-4',
-          colors.borderColor.tailwind,
-          colors.cardBackground.tailwind
+          'border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900'
         )}
       >
         <div className="flex items-center space-x-4">
@@ -237,14 +236,17 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             <h3
               className={cn(
                 'mb-1 font-serif text-lg font-medium',
-                colors.textColor.tailwind
+                'text-stone-900 dark:text-stone-100'
               )}
             >
               {profile.full_name || profile.username || t('status.notSet')}
             </h3>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               <span
-                className={cn('font-serif', colors.secondaryTextColor.tailwind)}
+                className={cn(
+                  'font-serif',
+                  'text-stone-600 dark:text-stone-400'
+                )}
               >
                 {profile.role === 'admin'
                   ? t('roles.admin')
@@ -261,14 +263,13 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       <div
         className={cn(
           'rounded-lg border p-4',
-          colors.borderColor.tailwind,
-          colors.cardBackground.tailwind
+          'border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900'
         )}
       >
         <h3
           className={cn(
             'mb-3 font-serif text-base font-medium',
-            colors.textColor.tailwind
+            'text-stone-900 dark:text-stone-100'
           )}
         >
           {t('accountInfo')}
@@ -277,19 +278,22 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div className="flex items-center space-x-2">
             <Calendar
-              className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}
+              className={cn('h-4 w-4', 'text-stone-600 dark:text-stone-400')}
             />
             <div>
               <p
                 className={cn(
                   'font-serif text-xs',
-                  colors.secondaryTextColor.tailwind
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {t('registrationTime')}
               </p>
               <p
-                className={cn('font-serif text-sm', colors.textColor.tailwind)}
+                className={cn(
+                  'font-serif text-sm',
+                  'text-stone-900 dark:text-stone-100'
+                )}
               >
                 {formatDate(profile.created_at, DateFormatPresets.mediumDate)}
               </p>
@@ -298,19 +302,22 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
 
           <div className="flex items-center space-x-2">
             <Calendar
-              className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}
+              className={cn('h-4 w-4', 'text-stone-600 dark:text-stone-400')}
             />
             <div>
               <p
                 className={cn(
                   'font-serif text-xs',
-                  colors.secondaryTextColor.tailwind
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {t('lastLogin')}
               </p>
               <p
-                className={cn('font-serif text-sm', colors.textColor.tailwind)}
+                className={cn(
+                  'font-serif text-sm',
+                  'text-stone-900 dark:text-stone-100'
+                )}
               >
                 {profile.auth_last_sign_in_at
                   ? formatDate(
@@ -328,18 +335,17 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
       <div
         className={cn(
           'rounded-lg border p-4',
-          colors.borderColor.tailwind,
-          colors.cardBackground.tailwind
+          'border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900'
         )}
       >
         <div className="mb-4 flex items-center">
           <Edit3
-            className={cn('mr-2 h-4 w-4', colors.secondaryTextColor.tailwind)}
+            className={cn('mr-2 h-4 w-4', 'text-stone-600 dark:text-stone-400')}
           />
           <h3
             className={cn(
               'font-serif text-base font-medium',
-              colors.textColor.tailwind
+              'text-stone-900 dark:text-stone-100'
             )}
           >
             {isSSOOnlyMode ? t('title') : t('editProfile')}
@@ -353,7 +359,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               htmlFor="full_name"
               className={cn(
                 'block font-serif text-sm font-medium',
-                colors.textColor.tailwind
+                'text-stone-900 dark:text-stone-100'
               )}
             >
               {t('name')}
@@ -362,17 +368,20 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               <div
                 className={cn(
                   'flex items-center space-x-2 rounded-lg border p-3',
-                  colors.borderColor.tailwind,
+                  'border-stone-200 dark:border-stone-800',
                   'bg-gray-50/50 dark:bg-gray-800/30'
                 )}
               >
                 <User
-                  className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}
+                  className={cn(
+                    'h-4 w-4',
+                    'text-stone-600 dark:text-stone-400'
+                  )}
                 />
                 <span
                   className={cn(
                     'font-serif text-sm',
-                    colors.textColor.tailwind
+                    'text-stone-900 dark:text-stone-100'
                   )}
                 >
                   {profile.full_name || t('status.notSet')}
@@ -382,13 +391,15 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               <div
                 className={cn(
                   'flex items-center space-x-2 rounded-lg border p-3 transition-all duration-200',
-                  colors.buttonBackground.tailwind,
-                  colors.buttonBorder.tailwind,
+                  'border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800',
                   'focus-within:ring-1 focus-within:ring-stone-500/30'
                 )}
               >
                 <User
-                  className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}
+                  className={cn(
+                    'h-4 w-4',
+                    'text-stone-600 dark:text-stone-400'
+                  )}
                 />
                 <input
                   id="full_name"
@@ -398,7 +409,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                   onChange={handleChange}
                   className={cn(
                     'w-full bg-transparent font-serif text-sm outline-none',
-                    colors.textColor.tailwind
+                    'text-stone-900 dark:text-stone-100'
                   )}
                   placeholder={t('namePlaceholder')}
                 />
@@ -412,7 +423,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
               htmlFor="username"
               className={cn(
                 'block font-serif text-sm font-medium',
-                colors.textColor.tailwind
+                'text-stone-900 dark:text-stone-100'
               )}
             >
               {t('nickname')}
@@ -420,13 +431,12 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             <div
               className={cn(
                 'flex items-center space-x-2 rounded-lg border p-3 transition-all duration-200',
-                colors.buttonBackground.tailwind,
-                colors.buttonBorder.tailwind,
+                'border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800',
                 'focus-within:ring-1 focus-within:ring-stone-500/30'
               )}
             >
               <AtSign
-                className={cn('h-4 w-4', colors.secondaryTextColor.tailwind)}
+                className={cn('h-4 w-4', 'text-stone-600 dark:text-stone-400')}
               />
               <input
                 id="username"
@@ -436,7 +446,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
                 onChange={handleChange}
                 className={cn(
                   'w-full bg-transparent font-serif text-sm outline-none',
-                  colors.textColor.tailwind
+                  'text-stone-900 dark:text-stone-100'
                 )}
                 placeholder={t('usernamePlaceholder')}
               />
@@ -449,9 +459,7 @@ export function ProfileForm({ profile, onSuccess }: ProfileFormProps) {
             disabled={isSubmitting}
             className={cn(
               'w-full rounded-lg px-4 py-2.5 font-serif text-sm transition-all duration-200',
-              colors.primaryButtonBackground.tailwind,
-              colors.primaryButtonText.tailwind,
-              colors.primaryButtonHover.tailwind,
+              'bg-stone-800 text-white hover:bg-stone-900 dark:bg-stone-600 dark:hover:bg-stone-700',
               'disabled:cursor-not-allowed disabled:opacity-50'
             )}
           >

@@ -273,7 +273,7 @@ export function AvatarModal({
           onClick={e => e.stopPropagation()}
           className={cn(
             'w-full max-w-md rounded-xl shadow-xl',
-            'bg-white/98 border border-stone-200 dark:bg-stone-900/98 dark:border-stone-800',
+            'border border-stone-200 bg-white/98 dark:border-stone-800 dark:bg-stone-900/98',
             'overflow-hidden'
           )}
         >
@@ -292,7 +292,10 @@ export function AvatarModal({
                 )}
               >
                 <Camera
-                  className={cn('h-5 w-5', 'text-stone-600 dark:text-stone-400')}
+                  className={cn(
+                    'h-5 w-5',
+                    'text-stone-600 dark:text-stone-400'
+                  )}
                 />
               </div>
               <div>
@@ -421,7 +424,7 @@ export function AvatarModal({
                     disabled={isProcessing}
                     className={cn(
                       'flex-1 rounded-lg px-4 py-2.5 font-serif text-sm transition-colors duration-150',
-                      'bg-white border border-stone-200 text-stone-800 hover:bg-stone-100 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-100 dark:hover:bg-stone-700',
+                      'border border-stone-200 bg-white text-stone-800 hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700',
                       'disabled:cursor-not-allowed disabled:opacity-50'
                     )}
                   >
@@ -452,7 +455,7 @@ export function AvatarModal({
                     onClick={e => e.stopPropagation()}
                     className={cn(
                       'mx-4 w-full max-w-sm rounded-lg p-5 shadow-xl',
-                      'bg-white border border-stone-200 dark:bg-stone-900 dark:border-stone-800'
+                      'border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900'
                     )}
                   >
                     <div className="space-y-4">
@@ -493,7 +496,7 @@ export function AvatarModal({
                           onClick={() => setShowDeleteConfirm(false)}
                           className={cn(
                             'flex-1 rounded-lg px-4 py-2 font-serif text-sm transition-colors duration-150',
-                            'bg-white border border-stone-200 text-stone-800 hover:bg-stone-100 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-100 dark:hover:bg-stone-700'
+                            'border border-stone-200 bg-white text-stone-800 hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700'
                           )}
                         >
                           {t('buttons.cancel')}
