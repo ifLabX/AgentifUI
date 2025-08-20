@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import type {
   WorkflowIteration,
   WorkflowLoop,
@@ -34,7 +33,6 @@ interface ExecutionBarProps {
  * - Hover effect and interaction
  */
 export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.workflow.nodeStatus');
   const tTypes = useTranslations('pages.workflow.nodeTypes');
   const tDetails = useTranslations('pages.workflow.iterationDetails');
@@ -96,18 +94,12 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
     // Set color based on status
     const colorClass =
       node.status === 'running'
-        ? isDark
-          ? 'text-stone-400'
-          : 'text-stone-600'
+        ? 'text-stone-600 dark:text-stone-400'
         : node.status === 'completed'
-          ? isDark
-            ? 'text-stone-400'
-            : 'text-stone-600'
+          ? 'text-stone-600 dark:text-stone-400'
           : node.status === 'failed'
             ? 'text-red-500'
-            : isDark
-              ? 'text-stone-500'
-              : 'text-stone-400';
+            : 'text-stone-400 dark:text-stone-500';
 
     return <div className={cn(colorClass)}>{icon}</div>;
   };
@@ -226,7 +218,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
             // Use the corresponding indicator bar style
             node.isInIteration ? 'iteration-node' : 'loop-node',
             // Slight background color distinction
-            isDark ? 'bg-stone-800/20' : 'bg-stone-50/40'
+            'bg-stone-50/40 dark:bg-stone-800/20'
           )
         : '';
 
@@ -236,37 +228,27 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
       case 'running':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-600 bg-stone-700/50 shadow-lg shadow-stone-900/30'
-            : 'border-stone-300 bg-stone-200/50 shadow-lg shadow-stone-200/50'
+          'border-stone-300 bg-stone-200/50 shadow-lg shadow-stone-200/50 dark:border-stone-600 dark:bg-stone-700/50 dark:shadow-stone-900/30'
         );
       case 'completed':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-500 bg-stone-600/30'
-            : 'border-stone-300 bg-stone-100'
+          'border-stone-300 bg-stone-100 dark:border-stone-500 dark:bg-stone-600/30'
         );
       case 'failed':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-red-700/50 bg-red-900/20'
-            : 'border-red-200 bg-red-50'
+          'border-red-200 bg-red-50 dark:border-red-700/50 dark:bg-red-900/20'
         );
       case 'pending':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50 dark:border-stone-700/50 dark:bg-stone-800/50'
         );
       default:
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50 dark:border-stone-700/50 dark:bg-stone-800/50'
         );
     }
   };
@@ -306,7 +288,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
               <span
                 className={cn(
                   'truncate font-serif text-sm font-medium',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {getNodeTitle()}
@@ -320,7 +302,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 <span
                   className={cn(
                     'rounded-full bg-stone-200 px-2 py-0.5 font-serif text-xs text-stone-700',
-                    isDark && 'bg-stone-700/50 text-stone-300'
+                    'dark:bg-stone-700/50 dark:text-stone-300'
                   )}
                 >
                   {(node.currentIteration || 0) + 1}/{node.totalIterations}
@@ -332,7 +314,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 <span
                   className={cn(
                     'rounded-full bg-stone-200 px-2 py-0.5 font-serif text-xs text-stone-700',
-                    isDark && 'bg-stone-700/50 text-stone-300'
+                    'dark:bg-stone-700/50 dark:text-stone-300'
                   )}
                 >
                   {(node.currentLoop || 0) + 1}/{node.maxLoops}
@@ -344,7 +326,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 <span
                   className={cn(
                     'rounded-full bg-stone-200 px-2 py-0.5 font-serif text-xs text-stone-700',
-                    isDark && 'bg-stone-700/50 text-stone-300'
+                    'dark:bg-stone-700/50 dark:text-stone-300'
                   )}
                 >
                   {node.completedBranches || 0}/{node.totalBranches}
@@ -355,20 +337,12 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 className={cn(
                   'rounded-full px-2 py-0.5 font-serif text-xs',
                   node.status === 'running'
-                    ? isDark
-                      ? 'bg-stone-600/40 text-stone-200'
-                      : 'bg-stone-300/60 text-stone-700'
+                    ? 'bg-stone-300/60 text-stone-700 dark:bg-stone-600/40 dark:text-stone-200'
                     : node.status === 'completed'
-                      ? isDark
-                        ? 'bg-stone-500/40 text-stone-100'
-                        : 'bg-stone-200 text-stone-800'
+                      ? 'bg-stone-200 text-stone-800 dark:bg-stone-500/40 dark:text-stone-100'
                       : node.status === 'failed'
-                        ? isDark
-                          ? 'bg-red-700/30 text-red-200'
-                          : 'bg-red-100 text-red-700'
-                        : isDark
-                          ? 'bg-stone-700/50 text-stone-400'
-                          : 'bg-stone-200/80 text-stone-600'
+                        ? 'bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-200'
+                        : 'bg-stone-200/80 text-stone-600 dark:bg-stone-700/50 dark:text-stone-400'
                 )}
               >
                 {getStatusText()}
@@ -384,7 +358,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
               <div
                 className={cn(
                   'font-serif text-xs',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
+                  'text-stone-500 dark:text-stone-400'
                 )}
               >
                 {formatTime(elapsedTime)}
@@ -401,15 +375,11 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
               key={iteration.id}
               className={cn(
                 'iteration-node relative ml-6 pl-4',
-                isDark ? 'bg-stone-800/30' : 'bg-stone-50/30',
+                'bg-stone-50/30 dark:bg-stone-800/30',
                 'flex items-center gap-3 rounded-md border px-3 py-2 font-serif transition-all duration-300',
                 iteration.status === 'running'
-                  ? isDark
-                    ? 'border-stone-600 bg-stone-700/50'
-                    : 'border-stone-300 bg-stone-200/50'
-                  : isDark
-                    ? 'border-stone-500 bg-stone-600/30'
-                    : 'border-stone-300 bg-stone-100'
+                  ? 'border-stone-300 bg-stone-200/50 dark:border-stone-600 dark:bg-stone-700/50'
+                  : 'border-stone-300 bg-stone-100 dark:border-stone-500 dark:bg-stone-600/30'
               )}
             >
               <div className="flex-shrink-0">
@@ -417,14 +387,14 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                   <Loader2
                     className={cn(
                       'h-3 w-3 animate-spin',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                 ) : iteration.status === 'completed' ? (
                   <CheckCircle
                     className={cn(
                       'h-3 w-3',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                 ) : (
@@ -436,7 +406,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 <span
                   className={cn(
                     'font-serif text-sm',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {tDetails('roundIteration', { round: iteration.index + 1 })}
@@ -448,7 +418,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                   <span
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-stone-400' : 'text-stone-500'
+                      'text-stone-500 dark:text-stone-400'
                     )}
                   >
                     {formatTime(iteration.endTime - iteration.startTime)}
@@ -468,15 +438,11 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
               key={loop.id}
               className={cn(
                 'loop-node relative ml-6 pl-4',
-                isDark ? 'bg-stone-800/30' : 'bg-stone-50/30',
+                'bg-stone-50/30 dark:bg-stone-800/30',
                 'flex items-center gap-3 rounded-md border px-3 py-2 font-serif transition-all duration-300',
                 loop.status === 'running'
-                  ? isDark
-                    ? 'border-stone-600 bg-stone-700/50'
-                    : 'border-stone-300 bg-stone-200/50'
-                  : isDark
-                    ? 'border-stone-500 bg-stone-600/30'
-                    : 'border-stone-300 bg-stone-100'
+                  ? 'border-stone-300 bg-stone-200/50 dark:border-stone-600 dark:bg-stone-700/50'
+                  : 'border-stone-300 bg-stone-100 dark:border-stone-500 dark:bg-stone-600/30'
               )}
             >
               <div className="flex-shrink-0">
@@ -484,14 +450,14 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                   <Loader2
                     className={cn(
                       'h-3 w-3 animate-spin',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                 ) : loop.status === 'completed' ? (
                   <CheckCircle
                     className={cn(
                       'h-3 w-3',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                 ) : (
@@ -503,7 +469,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 <span
                   className={cn(
                     'font-serif text-sm',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {tDetails('roundLoop', { round: loop.index + 1 })}
@@ -515,7 +481,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                   <span
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-stone-400' : 'text-stone-500'
+                      'text-stone-500 dark:text-stone-400'
                     )}
                   >
                     {formatTime(loop.endTime - loop.startTime)}
@@ -535,15 +501,11 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
               key={branch.id}
               className={cn(
                 'iteration-node relative ml-6 pl-4',
-                isDark ? 'bg-stone-800/30' : 'bg-stone-50/30',
+                'bg-stone-50/30 dark:bg-stone-800/30',
                 'flex items-center gap-3 rounded-md border px-3 py-2 font-serif transition-all duration-300',
                 branch.status === 'running'
-                  ? isDark
-                    ? 'border-stone-600 bg-stone-700/50'
-                    : 'border-stone-300 bg-stone-200/50'
-                  : isDark
-                    ? 'border-stone-500 bg-stone-600/30'
-                    : 'border-stone-300 bg-stone-100'
+                  ? 'border-stone-300 bg-stone-200/50 dark:border-stone-600 dark:bg-stone-700/50'
+                  : 'border-stone-300 bg-stone-100 dark:border-stone-500 dark:bg-stone-600/30'
               )}
             >
               <div className="flex-shrink-0">
@@ -551,14 +513,14 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                   <Loader2
                     className={cn(
                       'h-3 w-3 animate-spin',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                 ) : branch.status === 'completed' ? (
                   <CheckCircle
                     className={cn(
                       'h-3 w-3',
-                      isDark ? 'text-stone-400' : 'text-stone-600'
+                      'text-stone-600 dark:text-stone-400'
                     )}
                   />
                 ) : (
@@ -570,7 +532,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                 <span
                   className={cn(
                     'font-serif text-sm',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {branch.name}
@@ -582,7 +544,7 @@ export function ExecutionBar({ node, index, delay = 0 }: ExecutionBarProps) {
                   <span
                     className={cn(
                       'font-serif text-xs',
-                      isDark ? 'text-stone-400' : 'text-stone-500'
+                      'text-stone-500 dark:text-stone-400'
                     )}
                   >
                     {formatTime(branch.endTime - branch.startTime)}
