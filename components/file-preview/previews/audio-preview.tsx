@@ -80,10 +80,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
         {/* Filename Display */}
         <div className="mb-4 flex items-center space-x-3">
           <MusicIcon
-            className={cn(
-              'h-8 w-8',
-              'text-stone-500 dark:text-stone-400'
-            )}
+            className={cn('h-8 w-8', 'text-stone-500 dark:text-stone-400')}
           />
           <div>
             <p
@@ -97,10 +94,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
             </p>
             {duration > 0 && (
               <p
-                className={cn(
-                  'text-sm',
-                  'text-stone-500 dark:text-stone-400'
-                )}
+                className={cn('text-sm', 'text-stone-500 dark:text-stone-400')}
               >
                 {formatTime(duration)}
               </p>
@@ -114,10 +108,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
             <div className="flex items-center space-x-2">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
               <span
-                className={cn(
-                  'text-sm',
-                  'text-stone-500 dark:text-stone-400'
-                )}
+                className={cn('text-sm', 'text-stone-500 dark:text-stone-400')}
               >
                 {t('loading')}
               </span>
@@ -128,12 +119,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
         {/* Error State */}
         {hasError && (
           <div className="flex items-center justify-center py-8">
-            <p
-              className={cn(
-                'text-sm',
-                'text-red-600 dark:text-red-400'
-              )}
-            >
+            <p className={cn('text-sm', 'text-red-600 dark:text-red-400')}>
               {t('audio.loadError')}
             </p>
           </div>

@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks';
 import { cn } from '@lib/utils';
 import { CodeIcon, DownloadIcon, EyeIcon } from 'lucide-react';
 
@@ -19,7 +18,6 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   filename,
   onDownload,
 }) => {
-  const { isDark } = useTheme();
   const t = useTranslations('filePreview.markdownPreview');
   const [markdown, setMarkdown] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -44,21 +42,18 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
     return (
       <div className="animate-pulse space-y-3">
         <div
-          className={cn(
-            'h-4 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-200'
-          )}
+          className={cn('h-4 rounded', false ? 'bg-stone-700' : 'bg-stone-200')}
         />
         <div
           className={cn(
             'h-4 w-3/4 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-200'
+            false ? 'bg-stone-700' : 'bg-stone-200'
           )}
         />
         <div
           className={cn(
             'h-4 w-1/2 rounded',
-            isDark ? 'bg-stone-700' : 'bg-stone-200'
+            false ? 'bg-stone-700' : 'bg-stone-200'
           )}
         />
       </div>
@@ -95,7 +90,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
           <div
             className={cn(
               'inline-flex rounded-md',
-              isDark ? 'bg-stone-800' : 'bg-stone-100'
+              false ? 'bg-stone-800' : 'bg-stone-100'
             )}
           >
             <button
@@ -103,10 +98,10 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
               className={cn(
                 'inline-flex items-center space-x-1 rounded-l-md px-2 py-1 text-xs font-medium transition-colors',
                 viewMode === 'rendered'
-                  ? isDark
+                  ? false
                     ? 'bg-stone-600 text-stone-200'
                     : 'bg-stone-300 text-stone-800'
-                  : isDark
+                  : false
                     ? 'text-stone-400 hover:text-stone-300'
                     : 'text-stone-600 hover:text-stone-700'
               )}
@@ -119,10 +114,10 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
               className={cn(
                 'inline-flex items-center space-x-1 rounded-r-md px-2 py-1 text-xs font-medium transition-colors',
                 viewMode === 'raw'
-                  ? isDark
+                  ? false
                     ? 'bg-stone-600 text-stone-200'
                     : 'bg-stone-300 text-stone-800'
-                  : isDark
+                  : false
                     ? 'text-stone-400 hover:text-stone-300'
                     : 'text-stone-600 hover:text-stone-700'
               )}
@@ -135,7 +130,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
             onClick={onDownload}
             className={cn(
               'inline-flex items-center space-x-1 rounded px-2 py-1 text-xs font-medium transition-colors',
-              isDark
+              false
                 ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
                 : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
             )}
@@ -151,7 +146,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
       <div
         className={cn(
           'min-h-[60vh] flex-1 overflow-auto rounded-md border p-4',
-          isDark
+          false
             ? 'border-stone-700 bg-stone-800'
             : 'border-stone-200 bg-stone-50'
         )}
@@ -160,7 +155,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
           <div
             className={cn(
               'prose prose-sm max-w-none',
-              isDark ? 'prose-invert' : ''
+              false ? 'prose-invert' : ''
             )}
             dangerouslySetInnerHTML={{
               __html: renderMarkdown(markdown),
@@ -170,7 +165,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
           <pre
             className={cn(
               'font-mono text-sm break-words whitespace-pre-wrap',
-              isDark ? 'text-stone-200' : 'text-stone-800'
+              false ? 'text-stone-200' : 'text-stone-800'
             )}
           >
             {markdown}
@@ -182,7 +177,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
       <div
         className={cn(
           'flex-shrink-0 text-xs',
-          isDark ? 'text-stone-400' : 'text-stone-500'
+          'text-stone-500 dark:text-stone-400'
         )}
       >
         {filename} • Markdown Document •{' '}

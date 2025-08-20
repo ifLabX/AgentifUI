@@ -123,10 +123,7 @@ export function ChatflowNodeTracker({
           )}
         >
           <Workflow
-            className={cn(
-              'h-4 w-4',
-              'text-stone-600 dark:text-stone-400'
-            )}
+            className={cn('h-4 w-4', 'text-stone-600 dark:text-stone-400')}
           />
           <span
             className={cn(

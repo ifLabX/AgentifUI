@@ -267,7 +267,7 @@ export function TextGenerationTracker({
                       onClick={handleCopyText}
                       className={cn(
                         'flex items-center justify-center rounded-lg p-2 transition-colors',
-                        'text-stone-500 hover:text-stone-700 hover:bg-stone-300/40 dark:text-stone-400 dark:hover:text-stone-300 dark:hover:bg-stone-600/40',
+                        'text-stone-500 hover:bg-stone-300/40 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-600/40 dark:hover:text-stone-300',
                         'focus:outline-none'
                       )}
                       style={{ transform: 'translateZ(0)' }}
@@ -296,7 +296,7 @@ export function TextGenerationTracker({
                       onClick={handleDownloadText}
                       className={cn(
                         'flex items-center justify-center rounded-lg p-2 transition-colors',
-                        'text-stone-500 hover:text-stone-700 hover:bg-stone-300/40 dark:text-stone-400 dark:hover:text-stone-300 dark:hover:bg-stone-600/40',
+                        'text-stone-500 hover:bg-stone-300/40 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-600/40 dark:hover:text-stone-300',
                         'focus:outline-none'
                       )}
                       style={{ transform: 'translateZ(0)' }}

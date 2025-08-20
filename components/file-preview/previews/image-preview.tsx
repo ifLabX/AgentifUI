@@ -49,10 +49,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       <div className="animate-pulse space-y-4">
         <div className="flex items-center space-x-2">
           <ImageIcon
-            className={cn(
-              'h-5 w-5',
-              'text-stone-600 dark:text-stone-400'
-            )}
+            className={cn('h-5 w-5', 'text-stone-600 dark:text-stone-400')}
           />
           <h3 className="text-lg font-semibold">{t('title')}</h3>
         </div>
@@ -71,10 +68,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <ImageIcon
-            className={cn(
-              'h-5 w-5',
-              'text-stone-600 dark:text-stone-400'
-            )}
+            className={cn('h-5 w-5', 'text-stone-600 dark:text-stone-400')}
           />
           <h3 className="text-lg font-semibold">{t('title')}</h3>
         </div>

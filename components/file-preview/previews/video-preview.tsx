@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks';
 import { cn, formatBytes } from '@lib/utils';
 import { DownloadIcon, VideoIcon } from 'lucide-react';
 
@@ -19,7 +18,6 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
   filename,
   onDownload,
 }) => {
-  const { isDark } = useTheme();
   const t = useTranslations('filePreview');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -77,9 +75,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
           onClick={onDownload}
           className={cn(
             'inline-flex items-center space-x-2 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            isDark
-              ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-              : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+            'bg-stone-200 text-stone-800 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600'
           )}
         >
           <DownloadIcon className="h-4 w-4" />
@@ -91,28 +87,22 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
       <div
         className={cn(
           'overflow-hidden rounded-lg border',
-          isDark ? 'border-stone-700' : 'border-stone-200'
+          'border-stone-200 dark:border-stone-700'
         )}
       >
         {isLoading && (
           <div
             className={cn(
               'flex h-64 items-center justify-center',
-              isDark ? 'bg-stone-800' : 'bg-stone-100'
+              'bg-stone-100 dark:bg-stone-800'
             )}
           >
             <div className="flex items-center space-x-2">
               <VideoIcon
-                className={cn(
-                  'h-6 w-6',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
-                )}
+                className={cn('h-6 w-6', 'text-stone-500 dark:text-stone-400')}
               />
               <span
-                className={cn(
-                  'text-sm',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
-                )}
+                className={cn('text-sm', 'text-stone-500 dark:text-stone-400')}
               >
                 {t('loading')}
               </span>
@@ -124,21 +114,13 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
           <div
             className={cn(
               'flex h-64 flex-col items-center justify-center space-y-2',
-              isDark ? 'bg-stone-800' : 'bg-stone-100'
+              'bg-stone-100 dark:bg-stone-800'
             )}
           >
             <VideoIcon
-              className={cn(
-                'h-12 w-12',
-                isDark ? 'text-stone-500' : 'text-stone-400'
-              )}
+              className={cn('h-12 w-12', 'text-stone-400 dark:text-stone-500')}
             />
-            <p
-              className={cn(
-                'text-sm',
-                isDark ? 'text-stone-400' : 'text-stone-500'
-              )}
-            >
+            <p className={cn('text-sm', 'text-stone-500 dark:text-stone-400')}>
               {t('video.loadError')}
             </p>
           </div>
@@ -153,7 +135,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
             onError={handleVideoError}
             className={cn(
               'max-h-96 w-full object-contain',
-              isDark ? 'bg-stone-900' : 'bg-stone-50',
+              'bg-stone-50 dark:bg-stone-900',
               isLoading || hasError ? 'hidden' : 'block'
             )}
             preload="metadata"
@@ -167,9 +149,7 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
       <div
         className={cn(
           'rounded-md border p-4 text-sm',
-          isDark
-            ? 'border-stone-700 bg-stone-800'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800'
         )}
       >
         <div className="space-y-1">
