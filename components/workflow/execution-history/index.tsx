@@ -1,7 +1,6 @@
 'use client';
 
 import { useProfile } from '@lib/hooks/use-profile';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import { useWorkflowExecutionStore } from '@lib/stores/workflow-execution-store';
 import type { AppExecution } from '@lib/types/database';
 import { cn } from '@lib/utils';
@@ -41,7 +40,6 @@ export function ExecutionHistory({
 }: ExecutionHistoryProps) {
   const { profile } = useProfile();
   const userId = profile?.id;
-  const { colors, isDark } = useThemeColors();
   const t = useTranslations('pages.workflow.history');
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
@@ -345,7 +343,7 @@ export function ExecutionHistory({
       className={cn(
         'relative flex h-full flex-col overflow-hidden',
         // --- Use the same background color as the page ---
-        isDark ? 'bg-stone-950' : 'bg-stone-50',
+        'bg-stone-50 dark:bg-stone-950',
         // --- Animation effect ---
         'transition-all duration-300 ease-in-out',
         isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0',
@@ -358,7 +356,7 @@ export function ExecutionHistory({
         <div
           className={cn(
             'flex-shrink-0 border-b p-3',
-            isDark ? 'border-stone-700/50' : 'border-stone-300/50',
+            'border-stone-300/50 dark:border-stone-700/50',
             // --- Header animation: slide in from above ---
             'transition-all delay-100 duration-300 ease-out',
             isVisible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
@@ -369,14 +367,14 @@ export function ExecutionHistory({
               <History
                 className={cn(
                   'h-4 w-4 transition-transform duration-300',
-                  isDark ? 'text-stone-400' : 'text-stone-600',
+                  'text-stone-600 dark:text-stone-400',
                   isVisible ? 'rotate-0' : 'rotate-180'
                 )}
               />
               <h2
                 className={cn(
                   'font-serif text-base font-semibold',
-                  colors.mainText.tailwind
+                  'text-stone-900 dark:text-gray-100'
                 )}
               >
                 {t('title')}
@@ -386,9 +384,7 @@ export function ExecutionHistory({
                 <span
                   className={cn(
                     'rounded-md px-2 py-1 font-serif text-sm',
-                    isDark
-                      ? 'bg-stone-700 text-stone-300'
-                      : 'bg-stone-100 text-stone-600'
+                    'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'
                   )}
                 >
                   {t('selected', { count: selectedIds.size })}
@@ -404,9 +400,7 @@ export function ExecutionHistory({
                   className={cn(
                     'rounded-md p-1.5 transition-all duration-200',
                     'hover:scale-110 active:scale-95',
-                    isDark
-                      ? 'text-stone-400 hover:bg-stone-700/50 hover:text-stone-300'
-                      : 'text-stone-600 hover:bg-stone-200/50 hover:text-stone-700'
+                    'text-stone-600 hover:bg-stone-200/50 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-300'
                   )}
                   title={t('batchDelete')}
                 >
@@ -423,9 +417,7 @@ export function ExecutionHistory({
                       'hover:scale-110 active:scale-95',
                       selectedIds.size === 0 || isDeleting
                         ? 'cursor-not-allowed opacity-50'
-                        : isDark
-                          ? 'text-red-400 hover:bg-red-700/50 hover:text-red-300'
-                          : 'text-red-600 hover:bg-red-100/50 hover:text-red-700'
+                        : 'text-red-600 hover:bg-red-100/50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-700/50 dark:hover:text-red-300'
                     )}
                     title={t('deleteSelected', { count: selectedIds.size })}
                   >
@@ -445,9 +437,7 @@ export function ExecutionHistory({
                     className={cn(
                       'rounded-md p-1.5 transition-all duration-200',
                       'hover:scale-110 active:scale-95',
-                      isDark
-                        ? 'text-stone-400 hover:bg-stone-700/50 hover:text-stone-300'
-                        : 'text-stone-600 hover:bg-stone-200/50 hover:text-stone-700'
+                      'text-stone-600 hover:bg-stone-200/50 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-300'
                     )}
                     title={t('cancelSelection')}
                   >
@@ -463,9 +453,7 @@ export function ExecutionHistory({
                   className={cn(
                     'rounded-md p-1.5 transition-all duration-200',
                     'hover:scale-110 active:scale-95',
-                    isDark
-                      ? 'text-stone-400 hover:bg-stone-700/50 hover:text-stone-300'
-                      : 'text-stone-600 hover:bg-stone-200/50 hover:text-stone-700'
+                    'text-stone-600 hover:bg-stone-200/50 hover:text-stone-700 dark:text-stone-400 dark:hover:bg-stone-700/50 dark:hover:text-stone-300'
                   )}
                 >
                   <X className="h-4 w-4" />
@@ -481,9 +469,7 @@ export function ExecutionHistory({
             'flex-1 overflow-x-hidden overflow-y-auto',
             // --- Custom scrollbar style ---
             'scrollbar-thin',
-            isDark
-              ? 'scrollbar-track-stone-800 scrollbar-thumb-stone-600 hover:scrollbar-thumb-stone-500'
-              : 'scrollbar-track-stone-100 scrollbar-thumb-stone-300 hover:scrollbar-thumb-stone-400',
+            'scrollbar-track-stone-100 scrollbar-thumb-stone-300 hover:scrollbar-thumb-stone-400 dark:scrollbar-track-stone-800 dark:scrollbar-thumb-stone-600 dark:hover:scrollbar-thumb-stone-500',
             // --- List animation: slide in from below ---
             'transition-all delay-200 duration-300 ease-out',
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
@@ -495,14 +481,14 @@ export function ExecutionHistory({
                 <Loader2
                   className={cn(
                     'h-4 w-4 animate-spin transition-all duration-300',
-                    isDark ? 'text-stone-500' : 'text-stone-500',
+                    'text-stone-500',
                     isVisible ? 'scale-100' : 'scale-75'
                   )}
                 />
                 <div
                   className={cn(
                     'font-serif text-sm transition-all duration-300',
-                    isDark ? 'text-stone-500' : 'text-stone-500',
+                    'text-stone-500',
                     isVisible ? 'opacity-100' : 'opacity-0'
                   )}
                 >
@@ -515,7 +501,7 @@ export function ExecutionHistory({
               <div
                 className={cn(
                   'font-serif text-sm transition-all duration-300',
-                  isDark ? 'text-stone-500' : 'text-stone-500',
+                  'text-stone-500',
                   isVisible
                     ? 'translate-y-0 opacity-100'
                     : 'translate-y-2 opacity-0'
