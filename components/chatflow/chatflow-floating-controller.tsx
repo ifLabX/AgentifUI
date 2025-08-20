@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { useChatflowExecutionStore } from '@lib/stores/chatflow-execution-store';
 import { cn } from '@lib/utils';
 import { Workflow } from 'lucide-react';
@@ -30,7 +29,6 @@ export function ChatflowFloatingController({
   onToggleTracker,
   className,
 }: ChatflowFloatingControllerProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.chatflow.floatingController');
 
   // Get execution status from store
@@ -61,9 +59,7 @@ export function ChatflowFloatingController({
           'h-12 w-12 rounded-full shadow-lg transition-all duration-200',
           'flex items-center justify-center',
           'hover:scale-105 hover:shadow-xl active:scale-95',
-          isDark
-            ? 'border border-stone-700 bg-stone-800 text-stone-200 hover:bg-stone-700'
-            : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+          'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700'
         )}
         title={isTrackerVisible ? t('hideTracker') : t('showTracker')}
       >

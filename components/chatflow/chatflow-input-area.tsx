@@ -5,7 +5,6 @@ import { FormField } from '@components/workflow/workflow-input-form/form-field';
 import { validateFormData } from '@components/workflow/workflow-input-form/validation';
 import { useChatWidth } from '@lib/hooks/use-chat-width';
 import { useCurrentApp } from '@lib/hooks/use-current-app';
-import { useThemeColors } from '@lib/hooks/use-theme-colors';
 import type { DifyUserInputFormItem } from '@lib/services/dify/types';
 import { cn } from '@lib/utils';
 import { Loader2, RotateCcw, Send, Workflow } from 'lucide-react';
@@ -44,7 +43,6 @@ export function ChatflowInputArea({
   className,
   onFormConfigChange,
 }: ChatflowInputAreaProps) {
-  const { isDark } = useThemeColors();
   const { widthClass, paddingClass } = useChatWidth();
   const { currentAppInstance } = useCurrentApp();
   const t = useTranslations('pages.chatflow');
@@ -308,13 +306,13 @@ export function ChatflowInputArea({
             <Loader2
               className={cn(
                 'mx-auto h-6 w-6 animate-spin',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             />
             <p
               className={cn(
                 'font-serif text-sm',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             >
               {t('loading.inputConfig')}
@@ -340,16 +338,14 @@ export function ChatflowInputArea({
         className={cn(
           'mx-auto max-w-2xl',
           'rounded-2xl shadow-xl backdrop-blur-xl transition-all duration-300',
-          isDark
-            ? 'border border-stone-700/60 bg-gradient-to-br from-stone-900/95 to-stone-800/95 shadow-stone-900/40 hover:shadow-stone-900/60'
-            : 'border border-stone-200/60 bg-gradient-to-br from-white/95 to-stone-50/95 shadow-stone-200/40 hover:shadow-2xl hover:shadow-stone-300/50'
+          'border border-stone-200/60 bg-gradient-to-br from-white/95 to-stone-50/95 shadow-stone-200/40 hover:shadow-2xl hover:shadow-stone-300/50 dark:border-stone-700/60 dark:bg-gradient-to-br dark:from-stone-900/95 dark:to-stone-800/95 dark:shadow-stone-900/40 dark:hover:shadow-stone-900/60'
         )}
       >
         {/* --- Form header --- */}
         <div
           className={cn(
             'border-b p-8 pb-6',
-            isDark ? 'border-stone-700/50' : 'border-stone-200/50'
+            'border-stone-200/50 dark:border-stone-700/50'
           )}
         >
           <div className="space-y-4 text-center">
@@ -357,16 +353,11 @@ export function ChatflowInputArea({
               className={cn(
                 'inline-flex h-16 w-16 items-center justify-center rounded-2xl',
                 'shadow-lg',
-                isDark
-                  ? 'border border-stone-600/50 bg-gradient-to-br from-stone-800 to-stone-700 shadow-stone-900/50'
-                  : 'border border-stone-300/50 bg-gradient-to-br from-stone-100 to-stone-200 shadow-stone-200/50'
+                'border border-stone-300/50 bg-gradient-to-br from-stone-100 to-stone-200 shadow-stone-200/50 dark:border-stone-600/50 dark:bg-gradient-to-br dark:from-stone-800 dark:to-stone-700 dark:shadow-stone-900/50'
               )}
             >
               <Workflow
-                className={cn(
-                  'h-7 w-7',
-                  isDark ? 'text-stone-300' : 'text-stone-600'
-                )}
+                className={cn('h-7 w-7', 'text-stone-600 dark:text-stone-300')}
               />
             </div>
 
@@ -374,7 +365,7 @@ export function ChatflowInputArea({
               <h1
                 className={cn(
                   'font-serif text-2xl font-bold',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {currentAppInstance?.display_name || t('form.defaultAppName')}
@@ -382,7 +373,7 @@ export function ChatflowInputArea({
               <p
                 className={cn(
                   'mx-auto max-w-md font-serif leading-relaxed',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {currentAppInstance?.description ||
@@ -406,7 +397,7 @@ export function ChatflowInputArea({
               <label
                 className={cn(
                   'font-serif text-base font-semibold',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {t('form.question.label')}{' '}
@@ -430,9 +421,7 @@ export function ChatflowInputArea({
                   'focus:shadow-lg focus:shadow-stone-500/25',
                   errors.query
                     ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20'
-                    : isDark
-                      ? 'border-stone-600 bg-stone-800/80 text-stone-100 group-hover:border-stone-500 placeholder:text-stone-400 focus:bg-stone-800'
-                      : 'border-stone-300 bg-white/80 text-stone-900 group-hover:border-stone-400 placeholder:text-stone-500 focus:bg-white'
+                    : 'border-stone-300 bg-white/80 text-stone-900 group-hover:border-stone-400 placeholder:text-stone-500 focus:bg-white dark:border-stone-600 dark:bg-stone-800/80 dark:text-stone-100 dark:group-hover:border-stone-500 dark:placeholder:text-stone-400 dark:focus:bg-stone-800'
                 )}
                 disabled={isProcessing || isWaiting}
               />
@@ -441,7 +430,7 @@ export function ChatflowInputArea({
                 <div
                   className={cn(
                     'mt-3 flex items-center gap-2',
-                    isDark ? 'text-red-400' : 'text-red-600'
+                    'text-red-600 dark:text-red-400'
                   )}
                 >
                   <div className="h-1 w-1 rounded-full bg-red-500" />
@@ -459,15 +448,13 @@ export function ChatflowInputArea({
                 <div
                   className={cn(
                     'h-px flex-1 bg-gradient-to-r from-transparent to-transparent',
-                    isDark ? 'via-stone-600' : 'via-stone-300'
+                    'via-stone-300 dark:via-stone-600'
                   )}
                 />
                 <span
                   className={cn(
                     'rounded-full border px-4 py-2 font-serif text-sm',
-                    isDark
-                      ? 'border-stone-700 bg-stone-800 text-stone-400'
-                      : 'border-stone-200 bg-stone-100 text-stone-600'
+                    'border-stone-200 bg-stone-100 text-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-400'
                   )}
                 >
                   {t('form.additionalInfo')}
@@ -475,7 +462,7 @@ export function ChatflowInputArea({
                 <div
                   className={cn(
                     'h-px flex-1 bg-gradient-to-r from-transparent to-transparent',
-                    isDark ? 'via-stone-600' : 'via-stone-300'
+                    'via-stone-300 dark:via-stone-600'
                   )}
                 />
               </div>
@@ -495,18 +482,14 @@ export function ChatflowInputArea({
                         key={`${fieldConfig.variable}-${index}`}
                         className={cn(
                           'group relative rounded-xl p-6 transition-all duration-300',
-                          isDark
-                            ? 'border border-stone-600/60 bg-gradient-to-br from-stone-800/80 to-stone-700/80 hover:border-stone-500 hover:shadow-lg hover:shadow-stone-900/50'
-                            : 'border border-stone-200/60 bg-gradient-to-br from-stone-50/80 to-white/80 hover:border-stone-300 hover:shadow-lg hover:shadow-stone-200/50'
+                          'border border-stone-200/60 bg-gradient-to-br from-stone-50/80 to-white/80 hover:border-stone-300 hover:shadow-lg hover:shadow-stone-200/50 dark:border-stone-600/60 dark:bg-gradient-to-br dark:from-stone-800/80 dark:to-stone-700/80 dark:hover:border-stone-500 dark:hover:shadow-lg dark:hover:shadow-stone-900/50'
                         )}
                       >
                         {/* Field decoration line */}
                         <div
                           className={cn(
                             'absolute top-0 left-6 h-1 w-12 rounded-full transition-all duration-300 group-hover:w-16',
-                            isDark
-                              ? 'bg-gradient-to-r from-stone-500 to-stone-600'
-                              : 'bg-gradient-to-r from-stone-400 to-stone-300'
+                            'bg-gradient-to-r from-stone-400 to-stone-300 dark:bg-gradient-to-r dark:from-stone-500 dark:to-stone-600'
                           )}
                         />
 
@@ -552,7 +535,7 @@ export function ChatflowInputArea({
           <div
             className={cn(
               'border-t pt-6',
-              isDark ? 'border-stone-700/50' : 'border-stone-200/50'
+              'border-stone-200/50 dark:border-stone-700/50'
             )}
           >
             <div className="flex flex-col gap-4 sm:flex-row">
@@ -571,9 +554,7 @@ export function ChatflowInputArea({
                 className={cn(
                   'flex items-center justify-center gap-3 rounded-xl px-6 py-3',
                   'border-2 font-serif text-sm font-medium backdrop-blur-sm transition-all duration-300',
-                  isDark
-                    ? 'border-stone-600 bg-stone-800/80 text-stone-300'
-                    : 'border-stone-300 bg-white/80 text-stone-700',
+                  'border-stone-300 bg-white/80 text-stone-700 dark:border-stone-600 dark:bg-stone-800/80 dark:text-stone-300',
                   isProcessing ||
                     isWaiting ||
                     (!query &&
@@ -583,9 +564,7 @@ export function ChatflowInputArea({
                     ? 'cursor-not-allowed opacity-50'
                     : cn(
                         'transform active:scale-[0.98]',
-                        isDark
-                          ? 'hover:border-stone-500 hover:bg-stone-700 hover:shadow-lg hover:shadow-stone-900/50'
-                          : 'hover:border-stone-400 hover:bg-stone-50 hover:shadow-lg hover:shadow-stone-200/50'
+                        'hover:border-stone-400 hover:bg-stone-50 hover:shadow-lg hover:shadow-stone-200/50 dark:hover:border-stone-500 dark:hover:bg-stone-700 dark:hover:shadow-lg dark:hover:shadow-stone-900/50'
                       )
                 )}
               >
@@ -600,16 +579,12 @@ export function ChatflowInputArea({
                 className={cn(
                   'flex flex-1 items-center justify-center gap-3 rounded-xl px-8 py-4',
                   'font-serif text-base font-semibold text-white shadow-lg transition-all duration-300',
-                  isDark
-                    ? 'bg-gradient-to-r from-stone-700 to-stone-600 shadow-stone-900/50'
-                    : 'bg-gradient-to-r from-stone-800 to-stone-700 shadow-stone-800/25',
+                  'bg-gradient-to-r from-stone-800 to-stone-700 shadow-stone-800/25 dark:bg-gradient-to-r dark:from-stone-700 dark:to-stone-600 dark:shadow-stone-900/50',
                   isProcessing || isWaiting || !canSubmit()
                     ? 'cursor-not-allowed opacity-50'
                     : cn(
                         'transform hover:scale-[1.02] active:scale-[0.98]',
-                        isDark
-                          ? 'hover:from-stone-600 hover:to-stone-500 hover:shadow-xl hover:shadow-stone-900/60'
-                          : 'hover:from-stone-700 hover:to-stone-600 hover:shadow-xl hover:shadow-stone-800/30'
+                        'hover:from-stone-700 hover:to-stone-600 hover:shadow-xl hover:shadow-stone-800/30 dark:hover:from-stone-600 dark:hover:to-stone-500 dark:hover:shadow-xl dark:hover:shadow-stone-900/60'
                       )
                 )}
               >
@@ -632,9 +607,7 @@ export function ChatflowInputArea({
               <div
                 className={cn(
                   'mt-6 rounded-xl border p-4 shadow-lg',
-                  isDark
-                    ? 'border-red-700/50 bg-gradient-to-r from-red-900/20 to-red-800/20 shadow-red-900/20'
-                    : 'border-red-200 bg-gradient-to-r from-red-50 to-red-100/50 shadow-red-100/50'
+                  'border-red-200 bg-gradient-to-r from-red-50 to-red-100/50 shadow-red-100/50 dark:border-red-700/50 dark:bg-gradient-to-r dark:from-red-900/20 dark:to-red-800/20 dark:shadow-red-900/20'
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -642,7 +615,7 @@ export function ChatflowInputArea({
                   <p
                     className={cn(
                       'font-serif text-sm',
-                      isDark ? 'text-red-300' : 'text-red-700'
+                      'text-red-700 dark:text-red-300'
                     )}
                   >
                     {t('form.checkAndCorrectErrors')}
