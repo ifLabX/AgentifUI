@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { useChatflowExecutionStore } from '@lib/stores/chatflow-execution-store';
 import { cn } from '@lib/utils';
 import { Loader2, Workflow } from 'lucide-react';
@@ -30,7 +29,6 @@ export function ChatflowNodeTracker({
   isVisible,
   className,
 }: ChatflowNodeTrackerProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.chatflow.nodeTracker');
 
   // Get node status from store
@@ -114,28 +112,26 @@ export function ChatflowNodeTracker({
           'space-y-3 rounded-lg border p-4',
           // Limit actual width to avoid conflict with chat content
           'max-w-[320px] min-w-[280px]',
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50 backdrop-blur-sm'
-            : 'border-stone-200 bg-white/80 backdrop-blur-sm'
+          'border-stone-200 bg-white/80 backdrop-blur-sm dark:border-stone-700/50 dark:bg-stone-800/50'
         )}
       >
         {/* Title bar */}
         <div
           className={cn(
             'flex items-center gap-2 border-b pb-2',
-            isDark ? 'border-stone-700/50' : 'border-stone-200/50'
+            'border-stone-200/50 dark:border-stone-700/50'
           )}
         >
           <Workflow
             className={cn(
               'h-4 w-4',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           />
           <span
             className={cn(
               'font-serif text-sm font-medium',
-              isDark ? 'text-stone-200' : 'text-stone-800'
+              'text-stone-800 dark:text-stone-200'
             )}
           >
             {t('title')}
@@ -151,23 +147,21 @@ export function ChatflowNodeTracker({
             <div
               className={cn(
                 'flex items-center gap-3 rounded-lg border-2 border-dashed px-4 py-3',
-                isDark
-                  ? 'border-stone-600 bg-stone-800/30'
-                  : 'border-stone-300 bg-stone-50'
+                'border-stone-300 bg-stone-50 dark:border-stone-600 dark:bg-stone-800/30'
               )}
             >
               {isExecuting ? (
                 <Loader2
                   className={cn(
                     'h-4 w-4 animate-spin',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 />
               ) : (
                 <Workflow
                   className={cn(
                     'h-4 w-4',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 />
               )}
@@ -175,7 +169,7 @@ export function ChatflowNodeTracker({
                 <div
                   className={cn(
                     'font-serif text-sm font-medium',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {isExecuting ? t('starting') : t('noRecords')}
@@ -183,7 +177,7 @@ export function ChatflowNodeTracker({
                 <div
                   className={cn(
                     'font-serif text-xs',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {isExecuting ? t('waitingUpdate') : t('showProgress')}
@@ -208,9 +202,7 @@ export function ChatflowNodeTracker({
           <div
             className={cn(
               'mt-3 rounded-lg border p-3',
-              isDark
-                ? 'border-red-700/50 bg-red-900/20 text-red-200'
-                : 'border-red-200 bg-red-50 text-red-700'
+              'border-red-200 bg-red-50 text-red-700 dark:border-red-700/50 dark:bg-red-900/20 dark:text-red-200'
             )}
           >
             <div className="font-serif text-sm">

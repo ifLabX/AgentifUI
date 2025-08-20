@@ -8,7 +8,6 @@ import {
 } from '@components/chat/markdown-block';
 import { TooltipWrapper } from '@components/ui/tooltip-wrapper';
 import { UnifiedStatusPanel } from '@components/workflow/workflow-tracker/unified-status-panel';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import 'katex/dist/katex.min.css';
 import { Check, Copy, Download, FileText, Loader2 } from 'lucide-react';
@@ -51,7 +50,6 @@ export function TextGenerationTracker({
   onRetry,
   onReset,
 }: TextGenerationTrackerProps) {
-  const { isDark } = useTheme();
   const markdownContainerRef = useRef<HTMLDivElement>(null);
   const [isCopied, setIsCopied] = useState(false);
   const t = useTranslations('pages.textGeneration');
@@ -205,13 +203,13 @@ export function TextGenerationTracker({
               <div
                 className={cn(
                   'mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed',
-                  isDark ? 'border-stone-600' : 'border-stone-300'
+                  'border-stone-300 dark:border-stone-600'
                 )}
               >
                 <FileText
                   className={cn(
                     'h-6 w-6',
-                    isDark ? 'text-stone-400' : 'text-stone-500'
+                    'text-stone-500 dark:text-stone-400'
                   )}
                 />
               </div>
@@ -219,7 +217,7 @@ export function TextGenerationTracker({
                 <h3
                   className={cn(
                     'font-serif text-lg font-semibold',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {t('emptyState.title')}
@@ -227,7 +225,7 @@ export function TextGenerationTracker({
                 <p
                   className={cn(
                     'font-serif text-sm',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {t('emptyState.description')}
@@ -244,7 +242,7 @@ export function TextGenerationTracker({
                 <h3
                   className={cn(
                     'font-serif text-lg font-semibold',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {isExecuting || isStreaming
@@ -269,13 +267,7 @@ export function TextGenerationTracker({
                       onClick={handleCopyText}
                       className={cn(
                         'flex items-center justify-center rounded-lg p-2 transition-colors',
-                        isDark ? 'text-stone-400' : 'text-stone-500',
-                        isDark
-                          ? 'hover:text-stone-300'
-                          : 'hover:text-stone-700',
-                        isDark
-                          ? 'hover:bg-stone-600/40'
-                          : 'hover:bg-stone-300/40',
+                        'text-stone-500 hover:text-stone-700 hover:bg-stone-300/40 dark:text-stone-400 dark:hover:text-stone-300 dark:hover:bg-stone-600/40',
                         'focus:outline-none'
                       )}
                       style={{ transform: 'translateZ(0)' }}
@@ -304,13 +296,7 @@ export function TextGenerationTracker({
                       onClick={handleDownloadText}
                       className={cn(
                         'flex items-center justify-center rounded-lg p-2 transition-colors',
-                        isDark ? 'text-stone-400' : 'text-stone-500',
-                        isDark
-                          ? 'hover:text-stone-300'
-                          : 'hover:text-stone-700',
-                        isDark
-                          ? 'hover:bg-stone-600/40'
-                          : 'hover:bg-stone-300/40',
+                        'text-stone-500 hover:text-stone-700 hover:bg-stone-300/40 dark:text-stone-400 dark:hover:text-stone-300 dark:hover:bg-stone-600/40',
                         'focus:outline-none'
                       )}
                       style={{ transform: 'translateZ(0)' }}
@@ -330,23 +316,21 @@ export function TextGenerationTracker({
                 <div
                   className={cn(
                     'absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed',
-                    isDark
-                      ? 'border-stone-600 bg-stone-800/50'
-                      : 'border-stone-300 bg-stone-50'
+                    'border-stone-300 bg-stone-50 dark:border-stone-600 dark:bg-stone-800/50'
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <Loader2
                       className={cn(
                         'h-5 w-5 animate-spin',
-                        isDark ? 'text-stone-400' : 'text-stone-600'
+                        'text-stone-600 dark:text-stone-400'
                       )}
                     />
                     <div>
                       <div
                         className={cn(
                           'font-serif font-medium',
-                          isDark ? 'text-stone-200' : 'text-stone-800'
+                          'text-stone-800 dark:text-stone-200'
                         )}
                       >
                         {t('loadingState.title')}
@@ -354,7 +338,7 @@ export function TextGenerationTracker({
                       <div
                         className={cn(
                           'font-serif text-sm',
-                          isDark ? 'text-stone-400' : 'text-stone-600'
+                          'text-stone-600 dark:text-stone-400'
                         )}
                       >
                         {t('loadingState.description')}
@@ -370,9 +354,7 @@ export function TextGenerationTracker({
                     'absolute inset-0 overflow-y-auto overscroll-contain rounded-lg border p-4 font-serif',
                     'focus:border-transparent focus:ring-2 focus:ring-stone-500 focus:outline-none',
                     'assistant-message-content', // Reuse the style class of the assistant message
-                    isDark
-                      ? 'border-stone-600 bg-stone-800 text-stone-200'
-                      : 'border-stone-300 bg-white text-stone-900'
+                    'border-stone-300 bg-white text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200'
                   )}
                   style={{
                     scrollBehavior: 'auto',
@@ -390,7 +372,7 @@ export function TextGenerationTracker({
                     <div
                       className={cn(
                         'flex h-full items-center justify-center font-serif',
-                        isDark ? 'text-stone-400' : 'text-stone-500'
+                        'text-stone-500 dark:text-stone-400'
                       )}
                     >
                       {isExecuting
@@ -406,9 +388,7 @@ export function TextGenerationTracker({
                 <div
                   className={cn(
                     'absolute right-4 bottom-4 flex items-center gap-2 rounded-full px-3 py-1 text-xs',
-                    isDark
-                      ? 'bg-stone-700 text-stone-300'
-                      : 'bg-stone-100 text-stone-600'
+                    'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'
                   )}
                 >
                   <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
