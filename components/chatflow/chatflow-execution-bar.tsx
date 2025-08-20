@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import type {
   ChatflowNode,
   ChatflowParallelBranch,
@@ -42,7 +41,6 @@ export function ChatflowExecutionBar({
   index,
   delay = 0,
 }: ChatflowExecutionBarProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('pages.chatflow.executionBar');
   const [isVisible, setIsVisible] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -113,17 +111,14 @@ export function ChatflowExecutionBar({
           <Loader2
             className={cn(
               'h-4 w-4 animate-spin',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           />
         );
       case 'completed':
         return (
           <CheckCircle
-            className={cn(
-              'h-4 w-4',
-              isDark ? 'text-stone-400' : 'text-stone-600'
-            )}
+            className={cn('h-4 w-4', 'text-stone-600 dark:text-stone-400')}
           />
         );
       case 'failed':
@@ -131,19 +126,13 @@ export function ChatflowExecutionBar({
       case 'pending':
         return (
           <Clock
-            className={cn(
-              'h-4 w-4',
-              isDark ? 'text-stone-500' : 'text-stone-400'
-            )}
+            className={cn('h-4 w-4', 'text-stone-400 dark:text-stone-500')}
           />
         );
       default:
         return (
           <AlertCircle
-            className={cn(
-              'h-4 w-4',
-              isDark ? 'text-stone-500' : 'text-stone-400'
-            )}
+            className={cn('h-4 w-4', 'text-stone-400 dark:text-stone-500')}
           />
         );
     }
@@ -247,7 +236,7 @@ export function ChatflowExecutionBar({
             // Use new indicator bar style
             node.isInIteration ? 'iteration-node' : 'loop-node',
             // Slight background color distinction
-            isDark ? 'bg-stone-800/20' : 'bg-stone-50/40'
+            'bg-stone-50/40 dark:bg-stone-800/20'
           )
         : '';
 
@@ -257,37 +246,27 @@ export function ChatflowExecutionBar({
       case 'running':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-600 bg-stone-700/50 shadow-lg shadow-stone-900/30'
-            : 'border-stone-300 bg-stone-200/50 shadow-lg shadow-stone-200/50'
+          'border-stone-300 bg-stone-200/50 shadow-lg shadow-stone-200/50 dark:border-stone-600 dark:bg-stone-700/50 dark:shadow-lg dark:shadow-stone-900/30'
         );
       case 'completed':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-500 bg-stone-600/30'
-            : 'border-stone-300 bg-stone-100'
+          'border-stone-300 bg-stone-100 dark:border-stone-500 dark:bg-stone-600/30'
         );
       case 'failed':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-red-700/50 bg-red-900/20'
-            : 'border-red-200 bg-red-50'
+          'border-red-200 bg-red-50 dark:border-red-700/50 dark:bg-red-900/20'
         );
       case 'pending':
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50 dark:border-stone-700/50 dark:bg-stone-800/50'
         );
       default:
         return cn(
           combinedBaseStyles,
-          isDark
-            ? 'border-stone-700/50 bg-stone-800/50'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50 dark:border-stone-700/50 dark:bg-stone-800/50'
         );
     }
   };
@@ -324,7 +303,7 @@ export function ChatflowExecutionBar({
             <span
               className={cn(
                 'flex-1 truncate font-serif text-sm font-medium',
-                isDark ? 'text-stone-200' : 'text-stone-800'
+                'text-stone-800 dark:text-stone-200'
               )}
             >
               {getNodeTitle()}
@@ -337,7 +316,7 @@ export function ChatflowExecutionBar({
                 <span
                   className={cn(
                     'rounded bg-stone-200 px-1.5 py-0.5 text-xs text-stone-700',
-                    isDark && 'bg-stone-700/50 text-stone-300'
+                    'dark:bg-stone-700/50 dark:text-stone-300'
                   )}
                 >
                   {(node.currentIteration || 0) + 1}/{node.totalIterations}
@@ -347,7 +326,7 @@ export function ChatflowExecutionBar({
                 <span
                   className={cn(
                     'rounded bg-stone-200 px-1.5 py-0.5 text-xs text-stone-700',
-                    isDark && 'bg-stone-700/50 text-stone-300'
+                    'dark:bg-stone-700/50 dark:text-stone-300'
                   )}
                 >
                   {node.completedBranches || 0}/{node.totalBranches}
@@ -357,7 +336,7 @@ export function ChatflowExecutionBar({
                 <span
                   className={cn(
                     'rounded bg-stone-200 px-1.5 py-0.5 text-xs text-stone-700',
-                    isDark && 'bg-stone-700/50 text-stone-300'
+                    'dark:bg-stone-700/50 dark:text-stone-300'
                   )}
                 >
                   {node.maxLoops
@@ -372,23 +351,15 @@ export function ChatflowExecutionBar({
                   node.status === 'running'
                     ? cn(
                         // Base style
-                        isDark
-                          ? 'bg-stone-600/40 text-stone-200'
-                          : 'bg-stone-300/60 text-stone-700',
+                        'bg-stone-300/60 text-stone-700 dark:bg-stone-600/40 dark:text-stone-200',
                         // Subtle pulse effect
                         'animate-pulse'
                       )
                     : node.status === 'completed'
-                      ? isDark
-                        ? 'bg-stone-500/40 text-stone-100'
-                        : 'bg-stone-200 text-stone-800'
+                      ? 'bg-stone-200 text-stone-800 dark:bg-stone-500/40 dark:text-stone-100'
                       : node.status === 'failed'
-                        ? isDark
-                          ? 'bg-red-700/30 text-red-200'
-                          : 'bg-red-100 text-red-700'
-                        : isDark
-                          ? 'bg-stone-700/50 text-stone-400'
-                          : 'bg-stone-200/80 text-stone-600'
+                        ? 'bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-200'
+                        : 'bg-stone-200/80 text-stone-600 dark:bg-stone-700/50 dark:text-stone-400'
                 )}
               >
                 {getStatusText()}
@@ -404,7 +375,7 @@ export function ChatflowExecutionBar({
               <div
                 className={cn(
                   'font-serif text-xs',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
+                  'text-stone-500 dark:text-stone-400'
                 )}
               >
                 {formatTime(elapsedTime)}
@@ -435,7 +406,6 @@ export function ChatflowExecutionBar({
                 current={node.completedBranches || 0}
                 total={node.totalBranches}
                 type="branch"
-                isDark={isDark}
               />
             </div>
           )}
@@ -443,11 +413,7 @@ export function ChatflowExecutionBar({
           {/* Branch list */}
           <div className="space-y-1">
             {node.parallelBranches?.map(branch => (
-              <ParallelBranchItem
-                key={branch.id}
-                branch={branch}
-                isDark={isDark}
-              />
+              <ParallelBranchItem key={branch.id} branch={branch} />
             ))}
           </div>
         </div>
@@ -485,10 +451,9 @@ function CollapsibleContent({
 // --- 🎯 New: parallel branch item component ---
 interface ParallelBranchItemProps {
   branch: ChatflowParallelBranch;
-  isDark: boolean;
 }
 
-function ParallelBranchItem({ branch, isDark }: ParallelBranchItemProps) {
+function ParallelBranchItem({ branch }: ParallelBranchItemProps) {
   const t = useTranslations('pages.chatflow.executionBar');
   const [elapsedTime, setElapsedTime] = useState(0);
 
@@ -531,13 +496,13 @@ function ParallelBranchItem({ branch, isDark }: ParallelBranchItemProps) {
       className={cn(
         'ml-4 flex items-center gap-2 rounded-md border-l-2 px-3 py-2 font-serif',
         branch.status === 'running' &&
-          cn('border-l-stone-400', isDark ? 'bg-stone-800/20' : 'bg-stone-100'),
+          cn('border-l-stone-400', 'bg-stone-100 dark:bg-stone-800/20'),
         branch.status === 'completed' &&
-          cn('border-l-stone-500', isDark ? 'bg-stone-700/20' : 'bg-stone-50'),
+          cn('border-l-stone-500', 'bg-stone-50 dark:bg-stone-700/20'),
         branch.status === 'failed' &&
-          cn('border-l-red-500', isDark ? 'bg-red-900/20' : 'bg-red-50'),
+          cn('border-l-red-500', 'bg-red-50 dark:bg-red-900/20'),
         branch.status === 'pending' &&
-          cn('border-l-stone-300', isDark ? 'bg-stone-800/20' : 'bg-stone-50')
+          cn('border-l-stone-300', 'bg-stone-50 dark:bg-stone-800/20')
       )}
     >
       <div className="flex-shrink-0">
@@ -550,17 +515,12 @@ function ParallelBranchItem({ branch, isDark }: ParallelBranchItemProps) {
           <span
             className={cn(
               'text-sm font-medium',
-              isDark ? 'text-stone-200' : 'text-stone-800'
+              'text-stone-800 dark:text-stone-200'
             )}
           >
             {t('branch.label')} {String.fromCharCode(65 + branch.index)}
           </span>
-          <span
-            className={cn(
-              'text-xs',
-              isDark ? 'text-stone-400' : 'text-stone-600'
-            )}
-          >
+          <span className={cn('text-xs', 'text-stone-600 dark:text-stone-400')}>
             {branch.description || t('status.executing_')}
           </span>
         </div>
@@ -573,7 +533,7 @@ function ParallelBranchItem({ branch, isDark }: ParallelBranchItemProps) {
           <span
             className={cn(
               'font-serif text-xs',
-              isDark ? 'text-stone-400' : 'text-stone-500'
+              'text-stone-500 dark:text-stone-400'
             )}
           >
             {formatTime(elapsedTime)}
@@ -589,10 +549,9 @@ interface ProgressBarProps {
   current: number;
   total: number;
   type: 'iteration' | 'branch';
-  isDark: boolean;
 }
 
-function ProgressBar({ current, total, type, isDark }: ProgressBarProps) {
+function ProgressBar({ current, total, type }: ProgressBarProps) {
   const t = useTranslations('pages.chatflow.executionBar');
   const percentage = total > 0 ? (current / total) * 100 : 0;
 
@@ -602,7 +561,7 @@ function ProgressBar({ current, total, type, isDark }: ProgressBarProps) {
         <span
           className={cn(
             'font-serif text-xs font-medium',
-            isDark ? 'text-stone-300' : 'text-stone-700'
+            'text-stone-700 dark:text-stone-300'
           )}
         >
           {type === 'iteration'
@@ -612,7 +571,7 @@ function ProgressBar({ current, total, type, isDark }: ProgressBarProps) {
         <span
           className={cn(
             'font-serif text-xs',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         >
           {current}/{total}
@@ -622,7 +581,7 @@ function ProgressBar({ current, total, type, isDark }: ProgressBarProps) {
       <div
         className={cn(
           'h-2 w-full overflow-hidden rounded-full',
-          isDark ? 'bg-stone-700' : 'bg-stone-200'
+          'bg-stone-200 dark:bg-stone-700'
         )}
       >
         <div
