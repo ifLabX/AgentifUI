@@ -2,7 +2,6 @@
 
 import { VersionTag } from '@components/ui';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { Info, LogOut, Sliders, UserCircle, Wrench } from 'lucide-react';
 
@@ -26,7 +25,6 @@ export function UserBottomSheet({
   isLoggedIn,
   onLogoutClick,
 }: UserBottomSheetProps) {
-  const { isDark } = useTheme();
   const router = useRouter();
   const t = useTranslations('mobile.user');
   const tBottomSheet = useTranslations('mobile.bottomSheet');
@@ -69,7 +67,7 @@ export function UserBottomSheet({
       onClick={onClick}
       className={cn(
         'flex w-full items-center rounded-lg px-4 py-3',
-        isDark
+        false
           ? danger
             ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300'
             : 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
@@ -100,13 +98,13 @@ export function UserBottomSheet({
           <div
             className={cn(
               'mb-3 rounded-lg px-3 py-2',
-              isDark ? 'bg-stone-700/30' : 'bg-stone-100/80'
+              false ? 'bg-stone-700/30' : 'bg-stone-100/80'
             )}
           >
             <div
               className={cn(
                 'font-serif font-medium',
-                isDark ? 'text-white' : 'text-stone-800'
+                false ? 'text-white' : 'text-stone-800'
               )}
             >
               {userName}
@@ -114,7 +112,7 @@ export function UserBottomSheet({
             <div
               className={cn(
                 'font-serif text-sm',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                false ? 'text-stone-400' : 'text-stone-500'
               )}
             >
               {userRole}
@@ -124,9 +122,9 @@ export function UserBottomSheet({
           <div
             className={cn(
               'space-y-1 overflow-hidden rounded-lg',
-              isDark ? 'bg-stone-800/50' : 'bg-stone-50',
+              false ? 'bg-stone-800/50' : 'bg-stone-50',
               'border',
-              isDark ? 'border-stone-700' : 'border-stone-200',
+              'border-stone-200 dark:border-stone-700',
               'mb-2'
             )}
           >
@@ -164,9 +162,9 @@ export function UserBottomSheet({
           <div
             className={cn(
               'overflow-hidden rounded-lg',
-              isDark ? 'bg-stone-800/50' : 'bg-stone-50',
+              false ? 'bg-stone-800/50' : 'bg-stone-50',
               'border',
-              isDark ? 'border-stone-700' : 'border-stone-200'
+              'border-stone-200 dark:border-stone-700'
             )}
           >
             {renderMenuItem(
@@ -182,7 +180,7 @@ export function UserBottomSheet({
           <div
             className={cn(
               'mb-4 rounded-lg px-4 py-4 text-center',
-              isDark
+              false
                 ? 'bg-stone-700/50 text-stone-300'
                 : 'bg-stone-100 text-stone-600'
             )}
@@ -190,7 +188,7 @@ export function UserBottomSheet({
             <UserCircle
               className={cn(
                 'mx-auto mb-3 h-16 w-16',
-                isDark ? 'text-stone-400' : 'text-stone-500'
+                false ? 'text-stone-400' : 'text-stone-500'
               )}
             />
             <p className="font-serif">{t('loginPrompt')}</p>
@@ -200,7 +198,7 @@ export function UserBottomSheet({
             onClick={handleLogin}
             className={cn(
               'w-full rounded-lg px-4 py-3 text-center font-serif font-medium',
-              isDark
+              false
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
                 : 'bg-blue-500 text-white hover:bg-blue-600',
               'shadow-sm transition-colors duration-200'
@@ -213,7 +211,7 @@ export function UserBottomSheet({
             onClick={handleRegister}
             className={cn(
               'w-full rounded-lg px-4 py-3 text-center font-serif font-medium',
-              isDark
+              false
                 ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
                 : 'bg-stone-200 text-stone-700 hover:bg-stone-300',
               'shadow-sm transition-colors duration-200'

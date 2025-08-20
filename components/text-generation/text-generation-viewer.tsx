@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import {
   CheckCircle,
@@ -49,7 +48,6 @@ export function TextGenerationViewer({
   onRetry,
   onReset,
 }: TextGenerationViewerProps) {
-  const { isDark } = useTheme();
   const [copied, setCopied] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const t = useTranslations('pages.textGeneration');
@@ -140,7 +138,7 @@ export function TextGenerationViewer({
       <div
         className={cn(
           'flex-shrink-0 border-b p-4',
-          isDark
+          false
             ? 'border-stone-700 bg-stone-900/50'
             : 'border-stone-200 bg-stone-50/50'
         )}
@@ -153,7 +151,7 @@ export function TextGenerationViewer({
               <div
                 className={cn(
                   'font-serif font-medium',
-                  isDark ? 'text-stone-200' : 'text-stone-800'
+                  'text-stone-800 dark:text-stone-200'
                 )}
               >
                 {statusInfo.text}
@@ -162,7 +160,7 @@ export function TextGenerationViewer({
                 <div
                   className={cn(
                     'font-serif text-sm',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {t('progress', { percent: Math.round(progress) })}
@@ -180,7 +178,7 @@ export function TextGenerationViewer({
                   onClick={handleCopyText}
                   className={cn(
                     'rounded-lg p-2 transition-colors',
-                    isDark
+                    false
                       ? 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
                       : 'text-stone-600 hover:bg-stone-200 hover:text-stone-800'
                   )}
@@ -193,7 +191,7 @@ export function TextGenerationViewer({
                   onClick={handleDownloadText}
                   className={cn(
                     'rounded-lg p-2 transition-colors',
-                    isDark
+                    false
                       ? 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
                       : 'text-stone-600 hover:bg-stone-200 hover:text-stone-800'
                   )}
@@ -238,7 +236,7 @@ export function TextGenerationViewer({
                 onClick={onReset}
                 className={cn(
                   'rounded-lg px-3 py-2 font-serif transition-colors',
-                  isDark
+                  false
                     ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
                     : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
                 )}
@@ -256,7 +254,7 @@ export function TextGenerationViewer({
             <div
               className={cn(
                 'h-2 w-full overflow-hidden rounded-full',
-                isDark ? 'bg-stone-700' : 'bg-stone-200'
+                'bg-stone-200 dark:bg-stone-700'
               )}
             >
               <div
@@ -277,13 +275,13 @@ export function TextGenerationViewer({
               <div
                 className={cn(
                   'mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed',
-                  isDark ? 'border-stone-600' : 'border-stone-300'
+                  'border-stone-300 dark:border-stone-600'
                 )}
               >
                 <FileText
                   className={cn(
                     'h-6 w-6',
-                    isDark ? 'text-stone-400' : 'text-stone-500'
+                    'text-stone-500 dark:text-stone-400'
                   )}
                 />
               </div>
@@ -291,7 +289,7 @@ export function TextGenerationViewer({
                 <h3
                   className={cn(
                     'font-serif text-lg font-semibold',
-                    isDark ? 'text-stone-200' : 'text-stone-800'
+                    'text-stone-800 dark:text-stone-200'
                   )}
                 >
                   {t('emptyState.title')}
@@ -299,7 +297,7 @@ export function TextGenerationViewer({
                 <p
                   className={cn(
                     'max-w-md font-serif text-sm',
-                    isDark ? 'text-stone-400' : 'text-stone-600'
+                    'text-stone-600 dark:text-stone-400'
                   )}
                 >
                   {t('emptyState.description')}
@@ -317,7 +315,7 @@ export function TextGenerationViewer({
               className={cn(
                 'h-full w-full resize-none border-0 bg-transparent focus:outline-none',
                 'font-serif text-base leading-relaxed',
-                isDark ? 'text-stone-200' : 'text-stone-800'
+                'text-stone-800 dark:text-stone-200'
               )}
               placeholder={
                 isExecuting
@@ -332,7 +330,7 @@ export function TextGenerationViewer({
                 className={cn(
                   'absolute right-6 bottom-6 flex items-center gap-2 rounded-lg px-3 py-2',
                   'border backdrop-blur-sm',
-                  isDark
+                  false
                     ? 'border-stone-600 bg-stone-800/80 text-stone-300'
                     : 'border-stone-300 bg-white/80 text-stone-700'
                 )}
@@ -374,17 +372,14 @@ export function TextGenerationViewer({
         <div
           className={cn(
             'flex-shrink-0 border-t px-6 py-3',
-            isDark
+            false
               ? 'border-stone-700 bg-stone-900/50'
               : 'border-stone-200 bg-stone-50/50'
           )}
         >
           <div className="flex items-center justify-between text-sm">
             <div
-              className={cn(
-                'font-serif',
-                isDark ? 'text-stone-400' : 'text-stone-600'
-              )}
+              className={cn('font-serif', 'text-stone-600 dark:text-stone-400')}
             >
               {t('stats.characters', { count: generatedText.length })},{' '}
               {t('stats.words', {
@@ -398,7 +393,7 @@ export function TextGenerationViewer({
               <div
                 className={cn(
                   'font-serif',
-                  isDark ? 'text-stone-400' : 'text-stone-600'
+                  'text-stone-600 dark:text-stone-400'
                 )}
               >
                 {t('stats.tokensUsed', {

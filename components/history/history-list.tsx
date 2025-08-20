@@ -7,7 +7,6 @@ import {
   DateFormatPresets,
   useDateFormatter,
 } from '@lib/hooks/use-date-formatter';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useDropdownStore } from '@lib/stores/ui/dropdown-store';
 import { Conversation } from '@lib/types/database';
 import { cn } from '@lib/utils';
@@ -76,7 +75,6 @@ export function HistoryList({
   selectedConversations = new Set(),
   onSelectConversation,
 }: HistoryListProps): React.ReactElement {
-  const { isDark } = useTheme();
   const t = useTranslations('history');
   const { formatDate } = useDateFormatter();
 
@@ -198,19 +196,19 @@ export function HistoryList({
           // In selection mode, selected items have different styling
           isSelectionMode &&
             isSelected &&
-            (isDark
+            (false
               ? 'border-stone-500 bg-stone-700/40'
               : 'border-stone-400 bg-stone-100'),
           // Normal hover styling
           !isSelected &&
-            (isDark
+            (false
               ? 'border border-stone-600 hover:border-stone-500 hover:bg-stone-700/50'
               : 'border border-stone-300 hover:border-stone-400 hover:bg-stone-200/70'),
           // Selected state border
           isSelected &&
-            (isDark ? 'border border-stone-500' : 'border border-stone-400'),
+            (false ? 'border border-stone-500' : 'border border-stone-400'),
           !isSelected &&
-            (isDark ? 'border border-stone-600' : 'border border-stone-300'),
+            (false ? 'border border-stone-600' : 'border border-stone-300'),
           'mb-3'
         )}
         onClick={handleItemClick}
@@ -225,10 +223,10 @@ export function HistoryList({
                 'transition-all duration-200 ease-in-out',
                 'hover:scale-110',
                 isSelected
-                  ? isDark
+                  ? false
                     ? 'border-stone-600 bg-stone-600 text-white'
                     : 'border-stone-500 bg-stone-500 text-white'
-                  : isDark
+                  : false
                     ? 'border-stone-600 hover:border-stone-500'
                     : 'border-stone-400 hover:border-stone-500'
               )}
@@ -257,7 +255,7 @@ export function HistoryList({
             <h3
               className={cn(
                 'truncate font-serif text-base font-medium',
-                isDark ? 'text-stone-100' : 'text-stone-800'
+                false ? 'text-stone-100' : 'text-stone-800'
               )}
             >
               {title}
@@ -267,7 +265,7 @@ export function HistoryList({
               <span
                 className={cn(
                   'font-serif text-xs',
-                  isDark ? 'text-stone-500' : 'text-stone-500'
+                  false ? 'text-stone-500' : 'text-stone-500'
                 )}
               >
                 {date}
@@ -297,9 +295,9 @@ export function HistoryList({
                     className={cn(
                       'rounded-md p-1 transition-all duration-200 ease-in-out',
                       'cursor-pointer',
-                      isDark ? 'hover:bg-white/10' : 'hover:bg-black/5',
+                      false ? 'hover:bg-white/10' : 'hover:bg-black/5',
                       'hover:scale-110',
-                      isDark ? 'active:bg-white/20' : 'active:bg-black/10',
+                      false ? 'active:bg-white/20' : 'active:bg-black/10',
                       'focus-visible:ring-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
                     )}
                     data-more-button-id={`history-dropdown-${conversation.id}`}
@@ -313,7 +311,7 @@ export function HistoryList({
                     id={`history-dropdown-${conversation.id}`}
                     minWidth={150}
                     className={cn(
-                      isDark
+                      false
                         ? 'border border-stone-700 bg-stone-800'
                         : 'border border-stone-200 bg-white',
                       'overflow-hidden rounded-md shadow-lg' // Add shadow and rounded corners
@@ -344,7 +342,7 @@ export function HistoryList({
           <p
             className={cn(
               'line-clamp-2 font-serif text-sm',
-              isDark ? 'text-stone-400' : 'text-stone-600'
+              false ? 'text-stone-400' : 'text-stone-600'
             )}
           >
             {preview}
@@ -362,7 +360,7 @@ export function HistoryList({
         <div
           className={cn(
             'flex h-full flex-col items-center justify-center py-16',
-            isDark ? 'text-stone-400' : 'text-stone-500'
+            false ? 'text-stone-400' : 'text-stone-500'
           )}
         >
           {searchQuery ? (
@@ -389,7 +387,7 @@ export function HistoryList({
             <div
               className={cn(
                 'mt-4 flex items-center justify-center border-t py-6',
-                isDark
+                false
                   ? 'border-stone-600 text-stone-500'
                   : 'border-stone-300 text-stone-500'
               )}

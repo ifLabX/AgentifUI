@@ -3,7 +3,6 @@
 import { LogoutConfirmDialog, UserAvatar } from '@components/ui';
 import { useMobile } from '@lib/hooks/use-mobile';
 import { useProfile } from '@lib/hooks/use-profile';
-import { useTheme } from '@lib/hooks/use-theme';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import { cn } from '@lib/utils';
 import { User } from 'lucide-react';
@@ -20,7 +19,6 @@ import { UserBottomSheet } from './ui/user-bottom-sheet';
  * Style consistent with other sidebar buttons
  */
 export function MobileUserButton() {
-  const { isDark } = useTheme();
   const isMobile = useMobile();
   const { isExpanded } = useSidebarStore();
   const [isOpen, setIsOpen] = useState(false);
@@ -71,13 +69,13 @@ export function MobileUserButton() {
           'cursor-pointer outline-none',
 
           // Apply different styles based on theme and login status
-          !isDark && [
+          !false && [
             'text-stone-600',
             'hover:bg-stone-300 hover:shadow-md',
             isLoggedIn ? '' : 'text-blue-600',
           ],
 
-          isDark && [
+          false && [
             'text-gray-200',
             'hover:bg-stone-600 hover:shadow-md',
             isLoggedIn ? '' : 'text-blue-400',
@@ -99,7 +97,7 @@ export function MobileUserButton() {
               className={cn(
                 'flex h-8 w-8 items-center justify-center rounded-full',
                 'transition-all duration-200 ease-in-out',
-                isDark
+                false
                   ? 'bg-blue-600/20 text-blue-400'
                   : 'bg-blue-500/10 text-blue-600'
               )}

@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@lib/hooks/use-theme';
 import { cn } from '@lib/utils';
 import { CheckSquare, Square, Trash2, X } from 'lucide-react';
 
@@ -31,7 +30,6 @@ export function HistorySelectionBar({
   onCancelSelection,
   isDeleting = false,
 }: HistorySelectionBarProps) {
-  const { isDark } = useTheme();
   const t = useTranslations('history');
 
   // If not in selection mode and no items are selected, do not display the operation bar
@@ -48,7 +46,7 @@ export function HistorySelectionBar({
         'sticky top-0 z-10 transition-all duration-300 ease-in-out',
         'mb-4 rounded-xl backdrop-blur-sm',
         'bg-gradient-to-r',
-        isDark
+        false
           ? 'border border-stone-600/50 from-stone-800/95 via-stone-800/90 to-stone-800/95 shadow-lg shadow-stone-900/20'
           : 'border border-stone-200/80 from-stone-50/95 via-white/90 to-stone-50/95 shadow-lg shadow-stone-900/10'
       )}
@@ -65,7 +63,7 @@ export function HistorySelectionBar({
                 'transition-all duration-200 ease-in-out',
                 'font-serif text-sm font-medium',
                 'hover:scale-105 hover:shadow-md',
-                isDark
+                false
                   ? 'border border-stone-600 text-stone-300 hover:bg-stone-700'
                   : 'border border-stone-300 text-stone-600 hover:bg-stone-200'
               )}
@@ -84,7 +82,7 @@ export function HistorySelectionBar({
               <div
                 className={cn(
                   'font-serif text-xs',
-                  isDark ? 'text-stone-400' : 'text-stone-500'
+                  false ? 'text-stone-400' : 'text-stone-500'
                 )}
               >
                 {t('selected', { count: selectedCount, total: totalCount })}
@@ -105,7 +103,7 @@ export function HistorySelectionBar({
                   'font-serif text-sm font-medium',
                   'hover:scale-105 hover:shadow-lg',
                   isDeleting && 'cursor-not-allowed opacity-50',
-                  isDark
+                  false
                     ? 'border border-red-800 bg-red-900/40 text-red-300 shadow-md shadow-red-900/20 hover:bg-red-900/60'
                     : 'border border-red-300 bg-red-50 text-red-700 shadow-md shadow-red-900/10 hover:bg-red-100'
                 )}
@@ -127,7 +125,7 @@ export function HistorySelectionBar({
                 'transition-all duration-200 ease-in-out',
                 'font-serif text-sm font-medium',
                 'hover:scale-105 hover:shadow-md',
-                isDark
+                false
                   ? 'border border-stone-600 text-stone-400 hover:bg-stone-700'
                   : 'border border-stone-300 text-stone-500 hover:bg-stone-200'
               )}
