@@ -41,20 +41,12 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-3">
+        <div className={cn('h-4 rounded', 'bg-stone-200 dark:bg-stone-700')} />
         <div
-          className={cn('h-4 rounded', false ? 'bg-stone-700' : 'bg-stone-200')}
+          className={cn('h-4 w-3/4 rounded', 'bg-stone-200 dark:bg-stone-700')}
         />
         <div
-          className={cn(
-            'h-4 w-3/4 rounded',
-            false ? 'bg-stone-700' : 'bg-stone-200'
-          )}
-        />
-        <div
-          className={cn(
-            'h-4 w-1/2 rounded',
-            false ? 'bg-stone-700' : 'bg-stone-200'
-          )}
+          className={cn('h-4 w-1/2 rounded', 'bg-stone-200 dark:bg-stone-700')}
         />
       </div>
     );
@@ -90,7 +82,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
           <div
             className={cn(
               'inline-flex rounded-md',
-              false ? 'bg-stone-800' : 'bg-stone-100'
+              'bg-stone-100 dark:bg-stone-800'
             )}
           >
             <button
@@ -98,12 +90,8 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
               className={cn(
                 'inline-flex items-center space-x-1 rounded-l-md px-2 py-1 text-xs font-medium transition-colors',
                 viewMode === 'rendered'
-                  ? false
-                    ? 'bg-stone-600 text-stone-200'
-                    : 'bg-stone-300 text-stone-800'
-                  : false
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-600 hover:text-stone-700'
+                  ? 'bg-stone-300 text-stone-800 dark:bg-stone-600 dark:text-stone-200'
+                  : 'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
               )}
             >
               <EyeIcon className="h-3 w-3" />
@@ -114,12 +102,8 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
               className={cn(
                 'inline-flex items-center space-x-1 rounded-r-md px-2 py-1 text-xs font-medium transition-colors',
                 viewMode === 'raw'
-                  ? false
-                    ? 'bg-stone-600 text-stone-200'
-                    : 'bg-stone-300 text-stone-800'
-                  : false
-                    ? 'text-stone-400 hover:text-stone-300'
-                    : 'text-stone-600 hover:text-stone-700'
+                  ? 'bg-stone-300 text-stone-800 dark:bg-stone-600 dark:text-stone-200'
+                  : 'text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300'
               )}
             >
               <CodeIcon className="h-3 w-3" />
@@ -130,9 +114,8 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
             onClick={onDownload}
             className={cn(
               'inline-flex items-center space-x-1 rounded px-2 py-1 text-xs font-medium transition-colors',
-              false
-                ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-                : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+              'bg-stone-200 text-stone-800 hover:bg-stone-300',
+              'dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600'
             )}
             title={t('downloadButton')}
           >
@@ -146,17 +129,13 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
       <div
         className={cn(
           'min-h-[60vh] flex-1 overflow-auto rounded-md border p-4',
-          false
-            ? 'border-stone-700 bg-stone-800'
-            : 'border-stone-200 bg-stone-50'
+          'border-stone-200 bg-stone-50',
+          'dark:border-stone-700 dark:bg-stone-800'
         )}
       >
         {viewMode === 'rendered' ? (
           <div
-            className={cn(
-              'prose prose-sm max-w-none',
-              false ? 'prose-invert' : ''
-            )}
+            className={cn('prose prose-sm max-w-none', 'dark:prose-invert')}
             dangerouslySetInnerHTML={{
               __html: renderMarkdown(markdown),
             }}
@@ -165,7 +144,7 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
           <pre
             className={cn(
               'font-mono text-sm break-words whitespace-pre-wrap',
-              false ? 'text-stone-200' : 'text-stone-800'
+              'text-stone-800 dark:text-stone-200'
             )}
           >
             {markdown}

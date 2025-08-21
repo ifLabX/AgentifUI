@@ -196,19 +196,13 @@ export function HistoryList({
           // In selection mode, selected items have different styling
           isSelectionMode &&
             isSelected &&
-            (false
-              ? 'border-stone-500 bg-stone-700/40'
-              : 'border-stone-400 bg-stone-100'),
+            'border-stone-400 bg-stone-100 dark:border-stone-500 dark:bg-stone-700/40',
           // Normal hover styling
           !isSelected &&
-            (false
-              ? 'border border-stone-600 hover:border-stone-500 hover:bg-stone-700/50'
-              : 'border border-stone-300 hover:border-stone-400 hover:bg-stone-200/70'),
+            'border border-stone-300 hover:border-stone-400 hover:bg-stone-200/70 dark:border-stone-600 dark:hover:border-stone-500 dark:hover:bg-stone-700/50',
           // Selected state border
-          isSelected &&
-            (false ? 'border border-stone-500' : 'border border-stone-400'),
-          !isSelected &&
-            (false ? 'border border-stone-600' : 'border border-stone-300'),
+          isSelected && 'border border-stone-400 dark:border-stone-500',
+          !isSelected && 'border border-stone-300 dark:border-stone-600',
           'mb-3'
         )}
         onClick={handleItemClick}
@@ -223,12 +217,8 @@ export function HistoryList({
                 'transition-all duration-200 ease-in-out',
                 'hover:scale-110',
                 isSelected
-                  ? false
-                    ? 'border-stone-600 bg-stone-600 text-white'
-                    : 'border-stone-500 bg-stone-500 text-white'
-                  : false
-                    ? 'border-stone-600 hover:border-stone-500'
-                    : 'border-stone-400 hover:border-stone-500'
+                  ? 'border-stone-500 bg-stone-500 text-white dark:border-stone-600 dark:bg-stone-600'
+                  : 'border-stone-400 hover:border-stone-500 dark:border-stone-600 dark:hover:border-stone-500'
               )}
             >
               {isSelected && (
@@ -255,19 +245,14 @@ export function HistoryList({
             <h3
               className={cn(
                 'truncate font-serif text-base font-medium',
-                false ? 'text-stone-100' : 'text-stone-800'
+                'text-stone-800 dark:text-stone-100'
               )}
             >
               {title}
             </h3>
 
             <div className="flex items-center">
-              <span
-                className={cn(
-                  'font-serif text-xs',
-                  false ? 'text-stone-500' : 'text-stone-500'
-                )}
-              >
+              <span className={cn('font-serif text-xs text-stone-500')}>
                 {date}
               </span>
 
@@ -295,9 +280,9 @@ export function HistoryList({
                     className={cn(
                       'rounded-md p-1 transition-all duration-200 ease-in-out',
                       'cursor-pointer',
-                      false ? 'hover:bg-white/10' : 'hover:bg-black/5',
+                      'hover:bg-black/5 dark:hover:bg-white/10',
                       'hover:scale-110',
-                      false ? 'active:bg-white/20' : 'active:bg-black/10',
+                      'active:bg-black/10 dark:active:bg-white/20',
                       'focus-visible:ring-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
                     )}
                     data-more-button-id={`history-dropdown-${conversation.id}`}
@@ -311,9 +296,7 @@ export function HistoryList({
                     id={`history-dropdown-${conversation.id}`}
                     minWidth={150}
                     className={cn(
-                      false
-                        ? 'border border-stone-700 bg-stone-800'
-                        : 'border border-stone-200 bg-white',
+                      'border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-800',
                       'overflow-hidden rounded-md shadow-lg' // Add shadow and rounded corners
                     )}
                   >
@@ -342,7 +325,7 @@ export function HistoryList({
           <p
             className={cn(
               'line-clamp-2 font-serif text-sm',
-              false ? 'text-stone-400' : 'text-stone-600'
+              'text-stone-600 dark:text-stone-400'
             )}
           >
             {preview}
@@ -360,7 +343,7 @@ export function HistoryList({
         <div
           className={cn(
             'flex h-full flex-col items-center justify-center py-16',
-            false ? 'text-stone-400' : 'text-stone-500'
+            'text-stone-500 dark:text-stone-400'
           )}
         >
           {searchQuery ? (
@@ -387,9 +370,7 @@ export function HistoryList({
             <div
               className={cn(
                 'mt-4 flex items-center justify-center border-t py-6',
-                false
-                  ? 'border-stone-600 text-stone-500'
-                  : 'border-stone-300 text-stone-500'
+                'border-stone-300 text-stone-500 dark:border-stone-600'
               )}
             >
               <Clock className="mr-2 h-4 w-4" />

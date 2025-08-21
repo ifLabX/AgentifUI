@@ -46,9 +46,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
             onClick={handleOpenInNewTab}
             className={cn(
               'inline-flex items-center space-x-1 rounded px-2 py-1 text-xs font-medium transition-colors',
-              false
-                ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-                : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+              'bg-stone-200 text-stone-800 hover:bg-stone-300',
+              'dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600'
             )}
             title={t('openButton')}
           >
@@ -59,9 +58,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
             onClick={onDownload}
             className={cn(
               'inline-flex items-center space-x-1 rounded px-2 py-1 text-xs font-medium transition-colors',
-              false
-                ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-                : 'bg-stone-200 text-stone-800 hover:bg-stone-300'
+              'bg-stone-200 text-stone-800 hover:bg-stone-300',
+              'dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600'
             )}
             title={t('downloadButton')}
           >
@@ -89,9 +87,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({
           <div
             className={cn(
               'flex h-96 items-center justify-center',
-              false
-                ? 'bg-stone-800 text-stone-400'
-                : 'bg-stone-50 text-stone-600'
+              'bg-stone-50 text-stone-600',
+              'dark:bg-stone-800 dark:text-stone-400'
             )}
           >
             Loading PDF...
