@@ -509,10 +509,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
           base_url: newApiUrl,
         });
 
-        const updatedProvider = handleResult(
-          updatedProviderResult,
-          'Update Dify provider'
-        );
+        handleResult(updatedProviderResult, 'Update Dify provider');
 
         // update local state
         set({
@@ -580,10 +577,7 @@ export const useApiConfigStore = create<ApiConfigState>((set, get) => ({
             true // mark the key as encrypted
           );
 
-          const updatedKey = handleResult(
-            updatedKeyResult,
-            'Update default API key'
-          );
+          handleResult(updatedKeyResult, 'Update default API key');
 
           // update local state
           set({

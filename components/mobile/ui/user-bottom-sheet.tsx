@@ -67,13 +67,9 @@ export function UserBottomSheet({
       onClick={onClick}
       className={cn(
         'flex w-full items-center rounded-lg px-4 py-3',
-        false
-          ? danger
-            ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300'
-            : 'text-stone-300 hover:bg-stone-700 hover:text-stone-200'
-          : danger
-            ? 'text-red-600 hover:bg-red-50 hover:text-red-700'
-            : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900',
+        danger
+          ? 'text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:text-red-300'
+          : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-200',
         'transition-colors duration-200'
       )}
     >
@@ -98,13 +94,13 @@ export function UserBottomSheet({
           <div
             className={cn(
               'mb-3 rounded-lg px-3 py-2',
-              false ? 'bg-stone-700/30' : 'bg-stone-100/80'
+              'bg-stone-100/80 dark:bg-stone-700/30'
             )}
           >
             <div
               className={cn(
                 'font-serif font-medium',
-                false ? 'text-white' : 'text-stone-800'
+                'text-stone-800 dark:text-white'
               )}
             >
               {userName}
@@ -112,7 +108,7 @@ export function UserBottomSheet({
             <div
               className={cn(
                 'font-serif text-sm',
-                false ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             >
               {userRole}
@@ -122,7 +118,7 @@ export function UserBottomSheet({
           <div
             className={cn(
               'space-y-1 overflow-hidden rounded-lg',
-              false ? 'bg-stone-800/50' : 'bg-stone-50',
+              'bg-stone-50 dark:bg-stone-800/50',
               'border',
               'border-stone-200 dark:border-stone-700',
               'mb-2'
@@ -162,7 +158,7 @@ export function UserBottomSheet({
           <div
             className={cn(
               'overflow-hidden rounded-lg',
-              false ? 'bg-stone-800/50' : 'bg-stone-50',
+              'bg-stone-50 dark:bg-stone-800/50',
               'border',
               'border-stone-200 dark:border-stone-700'
             )}
@@ -180,15 +176,13 @@ export function UserBottomSheet({
           <div
             className={cn(
               'mb-4 rounded-lg px-4 py-4 text-center',
-              false
-                ? 'bg-stone-700/50 text-stone-300'
-                : 'bg-stone-100 text-stone-600'
+              'bg-stone-100 text-stone-600 dark:bg-stone-700/50 dark:text-stone-300'
             )}
           >
             <UserCircle
               className={cn(
                 'mx-auto mb-3 h-16 w-16',
-                false ? 'text-stone-400' : 'text-stone-500'
+                'text-stone-500 dark:text-stone-400'
               )}
             />
             <p className="font-serif">{t('loginPrompt')}</p>
@@ -198,9 +192,7 @@ export function UserBottomSheet({
             onClick={handleLogin}
             className={cn(
               'w-full rounded-lg px-4 py-3 text-center font-serif font-medium',
-              false
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-blue-500 text-white hover:bg-blue-600',
+              'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700',
               'shadow-sm transition-colors duration-200'
             )}
           >
@@ -211,9 +203,7 @@ export function UserBottomSheet({
             onClick={handleRegister}
             className={cn(
               'w-full rounded-lg px-4 py-3 text-center font-serif font-medium',
-              false
-                ? 'bg-stone-700 text-stone-200 hover:bg-stone-600'
-                : 'bg-stone-200 text-stone-700 hover:bg-stone-300',
+              'bg-stone-200 text-stone-700 hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-200 dark:hover:bg-stone-600',
               'shadow-sm transition-colors duration-200'
             )}
           >
