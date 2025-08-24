@@ -147,7 +147,8 @@
         "lastModified": "2025-08-12T12:00:00.000Z",
         "author": "system-migration",
         "migrationTimestamp": "2025-08-12T12:00:00.000Z",
-        "locale": "de-DE"
+        "locale": "de-DE",
+        "migratedFrom": "legacy-Format"
       }
     },
     "chat": {
