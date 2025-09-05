@@ -3,6 +3,18 @@ import { create } from 'zustand';
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
 /**
+ * Action button for notification
+ */
+interface NotificationAction {
+  /** Button text */
+  text: string;
+  /** Click handler */
+  handler: () => void;
+  /** Button variant (optional) */
+  variant?: 'primary' | 'secondary';
+}
+
+/**
  * Notification state interface
  * @description Defines the structure for notification store state and actions
  */
@@ -15,11 +27,14 @@ interface NotificationState {
   duration: number;
   /** Whether notification is currently visible */
   isVisible: boolean;
-  /** Show notification with message and optional type/duration */
+  /** Optional action button */
+  action: NotificationAction | null;
+  /** Show notification with message and optional type/duration/action */
   showNotification: (
     message: string,
     type?: NotificationType,
-    duration?: number
+    duration?: number,
+    action?: NotificationAction
   ) => void;
   /** Hide current notification */
   hideNotification: () => void;
@@ -36,15 +51,16 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   type: 'info',
   duration: 3000,
   isVisible: false,
+  action: null,
 
-  showNotification: (message, type = 'warning', duration = 3000) => {
+  showNotification: (message, type = 'warning', duration = 3000, action) => {
     // Clear existing timer to avoid issues with rapid consecutive triggers
     if (timeoutId) {
       clearTimeout(timeoutId);
       timeoutId = null;
     }
     // Set new notification state and show
-    set({ message, type, duration, isVisible: true });
+    set({ message, type, duration, isVisible: true, action: action || null });
     // Set auto-hide timer
     timeoutId = setTimeout(() => {
       get().hideNotification();
@@ -57,7 +73,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       clearTimeout(timeoutId);
       timeoutId = null;
     }
-    // Hide notification and reset message
-    set({ isVisible: false, message: null });
+    // Hide notification and reset state
+    set({ isVisible: false, message: null, action: null });
   },
 }));
+
+// Export types for use in other files
+export type { NotificationType, NotificationAction };

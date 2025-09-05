@@ -4,11 +4,12 @@ import { ReturnToChatButton } from '@components/admin/return-to-chat-button';
 import { LanguageSwitcher } from '@components/ui/language-switcher';
 import { cn } from '@lib/utils';
 import {
-  Bell,
   Building2,
   ChevronRight,
+  FileText,
   Key,
   KeyRound,
+  MessageSquare,
   ShieldCheck,
   Users,
   Wrench,
@@ -57,7 +58,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       text: t('menuItems.content.text'),
-      icon: Bell,
+      icon: FileText,
       href: '/admin/content',
       description: t('menuItems.content.description'),
     },
@@ -84,6 +85,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: ShieldCheck,
       href: '/admin/permissions',
       description: t('menuItems.permissions.description'),
+    },
+    {
+      text: t('menuItems.notifications.text'),
+      icon: MessageSquare,
+      href: '/admin/notifications',
+      description: t('menuItems.notifications.description'),
     },
   ];
 

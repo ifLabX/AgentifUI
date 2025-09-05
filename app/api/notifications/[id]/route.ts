@@ -17,11 +17,11 @@ import type { UpdateNotificationData } from '@lib/types/notification-center';
 
 import { NextRequest, NextResponse } from 'next/server';
 
-interface RouteParams {
-  params: {
+type RouteParams = {
+  params: Promise<{
     id: string;
-  };
-}
+  }>;
+};
 
 /**
  * GET /api/notifications/[id]
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate UUID format
     const uuidRegex =
@@ -108,7 +108,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate UUID format
     const uuidRegex =
@@ -212,7 +212,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate UUID format
     const uuidRegex =
