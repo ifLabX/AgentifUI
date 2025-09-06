@@ -1014,6 +1014,10 @@
           "permissions": {
             "text": "App Permission Management",
             "description": "Manage application visibility and group permissions"
+          },
+          "notifications": {
+            "text": "Notification Management",
+            "description": "Manage system notifications and announcements"
           }
         },
         "actions": {
@@ -2205,7 +2209,8 @@
       "tabs": {
         "all": "All",
         "changelog": "Updates",
-        "message": "Messages"
+        "message": "Messages",
+        "messages": "Messages"
       },
       "actions": {
         "markAllRead": "Mark all as read",
@@ -2213,9 +2218,34 @@
       },
       "empty": {
         "title": "No notifications",
-        "description": "You're all caught up!"
+        "description": "You're all caught up!",
+        "all": "No notifications yet",
+        "changelog": "No updates yet",
+        "messages": "No messages yet"
       },
-      "loading": "Loading notifications..."
+      "loading": "Loading notifications...",
+      "close": "Close notifications",
+      "categories": {
+        "admin_announcement": "Admin Announcement",
+        "agent_result": "Agent Result",
+        "token_usage": "Token Usage",
+        "system_maintenance": "System Maintenance",
+        "security_alert": "Security Alert",
+        "feature_tip": "Feature Tip",
+        "feature": "New Feature",
+        "improvement": "Improvement",
+        "bugfix": "Bug Fix",
+        "security": "Security Update",
+        "api_change": "API Change"
+      },
+      "page": {
+        "title": "Notifications",
+        "searchPlaceholder": "Search notifications..."
+      },
+      "types": {
+        "message": "Message",
+        "changelog": "Changelog"
+      }
     }
   },
   "debug": {

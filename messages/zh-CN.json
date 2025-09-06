@@ -1014,6 +1014,10 @@
           "permissions": {
             "text": "应用权限管理",
             "description": "管理应用可见性和群组权限"
+          },
+          "notifications": {
+            "text": "通知管理",
+            "description": "管理系统通知和公告"
           }
         },
         "actions": {
@@ -2205,7 +2209,8 @@
       "tabs": {
         "all": "全部",
         "changelog": "更新日志",
-        "message": "消息"
+        "message": "消息",
+        "messages": "消息"
       },
       "actions": {
         "markAllRead": "全部已读",
@@ -2213,9 +2218,34 @@
       },
       "empty": {
         "title": "暂无通知",
-        "description": "您已查看了所有通知！"
+        "description": "您已查看了所有通知！",
+        "all": "暂无通知",
+        "changelog": "暂无更新",
+        "messages": "暂无消息"
       },
-      "loading": "加载通知中..."
+      "loading": "加载通知中...",
+      "close": "关闭通知",
+      "categories": {
+        "admin_announcement": "管理员公告",
+        "agent_result": "智能体结果",
+        "token_usage": "Token使用量",
+        "system_maintenance": "系统维护",
+        "security_alert": "安全警报",
+        "feature_tip": "功能提示",
+        "feature": "新功能",
+        "improvement": "功能改进",
+        "bugfix": "问题修复",
+        "security": "安全更新",
+        "api_change": "API变更"
+      },
+      "page": {
+        "title": "通知",
+        "searchPlaceholder": "搜索通知..."
+      },
+      "types": {
+        "message": "消息",
+        "changelog": "更新日志"
+      }
     }
   },
   "debug": {
