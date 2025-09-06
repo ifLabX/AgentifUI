@@ -2365,7 +2365,12 @@
       "apiConfig": "API配置",
       "security": "安全设置",
       "analytics": "数据分析",
-      "content": "页面内容管理"
+      "content": "页面内容管理",
+      "notifications": {
+        "title": "通知管理",
+        "noData": "暂无通知",
+        "noMatchingData": "未找到匹配的通知"
+      }
     },
     "auth": {
       "login": "登录",

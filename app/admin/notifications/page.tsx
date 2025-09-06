@@ -23,6 +23,7 @@ import {
 
 import { useEffect, useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface Notification {
@@ -117,6 +118,7 @@ const PRIORITY_OPTIONS = {
 };
 
 export default function NotificationsAdminPage() {
+  const t = useTranslations('pages.admin.notifications');
   const { showNotification } = useNotificationStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -396,8 +398,8 @@ export default function NotificationsAdminPage() {
               selectedType !== 'all' ||
               selectedCategory !== 'all' ||
               selectedPriority !== 'all'
-                ? 'No matching notifications found'
-                : '暂无通知'}
+                ? t('noMatchingData')
+                : t('noData')}
             </div>
           ) : (
             <div className="space-y-4">

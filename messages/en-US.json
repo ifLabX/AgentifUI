@@ -2365,7 +2365,12 @@
       "apiConfig": "API Configuration",
       "security": "Security Settings",
       "analytics": "Data Analytics",
-      "content": "Content Management"
+      "content": "Content Management",
+      "notifications": {
+        "title": "Notification Management",
+        "noData": "No notifications",
+        "noMatchingData": "No matching notifications found"
+      }
     },
     "auth": {
       "login": "Login",
