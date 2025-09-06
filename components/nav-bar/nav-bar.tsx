@@ -8,8 +8,15 @@ import { cn } from '@lib/utils';
 
 import React from 'react';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
+import {
+  useNotificationCenter,
+  useNotificationCenterOpen,
+  useUnreadCount,
+} from '../../lib/stores/notification-center-store';
+import { NotificationBell } from '../notification-center/notification-bell';
+import { NotificationCenter } from '../notification-center/notification-center';
 import { ConversationTitleButton } from './conversation-title-button';
 import { DesktopUserAvatar } from './desktop-user-avatar';
 import { WorkflowHistoryButton } from './workflow-history-button';
@@ -27,9 +34,34 @@ import { WorkflowHistoryButton } from './workflow-history-button';
 export function NavBar() {
   const isMobile = useMobile();
   const pathname = usePathname();
+  const router = useRouter();
   const { colors: themeColors } = useThemeColors();
   const { colors: settingsColors } = useSettingsColors();
   const { isExpanded } = useSidebarStore();
+
+  // Notification center hooks
+  const isNotificationCenterOpen = useNotificationCenterOpen();
+  const unreadCount = useUnreadCount();
+  const { openCenterWithDelay, closeCenterWithDelay, cancelTimeouts } =
+    useNotificationCenter();
+
+  // Handle notification bell interactions
+  const handleNotificationClick = () => {
+    // Cancel any pending hover timeouts
+    cancelTimeouts();
+    // Navigate to notifications page
+    router.push('/notifications');
+  };
+
+  const handleNotificationHover = () => {
+    // Show notification center with delay (800ms)
+    openCenterWithDelay(800);
+  };
+
+  const handleNotificationLeave = () => {
+    // Hide notification center with delay (300ms)
+    closeCenterWithDelay(300);
+  };
 
   if (isMobile) {
     return null;
@@ -69,6 +101,27 @@ export function NavBar() {
         <div className="flex items-center space-x-2">
           {/* Workflow history button (only shows on workflow and text generation pages) */}
           <WorkflowHistoryButton />
+
+          {/* Notification bell */}
+          <div className="relative" onMouseLeave={handleNotificationLeave}>
+            <NotificationBell
+              unreadCount={unreadCount.total}
+              onClick={handleNotificationClick}
+              onHover={handleNotificationHover}
+              onLeave={handleNotificationLeave}
+              size="sm"
+            />
+            {/* Notification center popup */}
+            {isNotificationCenterOpen && (
+              <div
+                className="absolute top-full right-0 z-50 mt-2"
+                onMouseEnter={cancelTimeouts}
+                onMouseLeave={handleNotificationLeave}
+              >
+                <NotificationCenter maxHeight={500} />
+              </div>
+            )}
+          </div>
 
           {/* User avatar button */}
           <DesktopUserAvatar />

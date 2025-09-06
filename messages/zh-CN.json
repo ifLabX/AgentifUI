@@ -2199,6 +2199,23 @@
       "userAvatar": {
         "alt": "的头像"
       }
+    },
+    "notificationCenter": {
+      "title": "通知",
+      "tabs": {
+        "all": "全部",
+        "changelog": "更新日志",
+        "message": "消息"
+      },
+      "actions": {
+        "markAllRead": "全部已读",
+        "viewAll": "查看全部"
+      },
+      "empty": {
+        "title": "暂无通知",
+        "description": "您已查看了所有通知！"
+      },
+      "loading": "加载通知中..."
     }
   },
   "debug": {

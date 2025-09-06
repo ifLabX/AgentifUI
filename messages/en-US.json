@@ -2199,6 +2199,23 @@
       "userAvatar": {
         "alt": "'s avatar"
       }
+    },
+    "notificationCenter": {
+      "title": "Notifications",
+      "tabs": {
+        "all": "All",
+        "changelog": "Updates",
+        "message": "Messages"
+      },
+      "actions": {
+        "markAllRead": "Mark all as read",
+        "viewAll": "View all"
+      },
+      "empty": {
+        "title": "No notifications",
+        "description": "You're all caught up!"
+      },
+      "loading": "Loading notifications..."
     }
   },
   "debug": {
