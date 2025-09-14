@@ -69,44 +69,25 @@ export function ConfirmDialog({
     if (!isOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      // Stop all mouse events from propagating to prevent interaction with background modal
-      e.stopPropagation();
-
+      // Check if click is outside the dialog
       if (
         dialogRef.current &&
         !dialogRef.current.contains(e.target as Node) &&
         !isLoading
       ) {
+        e.stopPropagation();
         onClose();
       }
-    };
-
-    // Prevent all interactions with background elements
-    const preventBackgroundInteraction = (e: MouseEvent | TouchEvent) => {
-      e.stopPropagation();
-      e.preventDefault();
     };
 
     // Add delay to avoid closing immediately when opened
     const timer = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('click', preventBackgroundInteraction, true);
-      document.addEventListener(
-        'touchstart',
-        preventBackgroundInteraction,
-        true
-      );
     }, 100);
 
     return () => {
       clearTimeout(timer);
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('click', preventBackgroundInteraction, true);
-      document.removeEventListener(
-        'touchstart',
-        preventBackgroundInteraction,
-        true
-      );
     };
   }, [isOpen, onClose, isLoading]);
 
