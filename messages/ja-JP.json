@@ -967,7 +967,8 @@
         "systemTimezone": "システムタイムゾーン",
         "customTimezone": "カスタムタイムゾーン",
         "timezonePreview": "プレビュー時刻：{time}",
-        "timezoneUpdated": "タイムゾーン設定が更新されました"
+        "timezoneUpdated": "タイムゾーン設定が更新されました",
+        "timezoneUpdateFailed": "タイムゾーンの更新に失敗しました"
       },
       "languageSettings": {
         "title": "言語設定",

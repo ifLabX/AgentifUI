@@ -967,7 +967,8 @@
         "systemTimezone": "System-Zeitzone",
         "customTimezone": "Benutzerdefinierte Zeitzone",
         "timezonePreview": "Vorschauzeit: {time}",
-        "timezoneUpdated": "Zeitzoneneinstellungen aktualisiert"
+        "timezoneUpdated": "Zeitzoneneinstellungen aktualisiert",
+        "timezoneUpdateFailed": "Zeitzone konnte nicht aktualisiert werden"
       },
       "languageSettings": {
         "title": "Spracheinstellungen",

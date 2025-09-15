@@ -967,7 +967,8 @@
         "systemTimezone": "Fuseau horaire du système",
         "customTimezone": "Fuseau horaire personnalisé",
         "timezonePreview": "Aperçu de l'heure : {time}",
-        "timezoneUpdated": "Paramètres de fuseau horaire mis à jour"
+        "timezoneUpdated": "Paramètres de fuseau horaire mis à jour",
+        "timezoneUpdateFailed": "Échec de la mise à jour du fuseau horaire"
       },
       "languageSettings": {
         "title": "Paramètres de langue",

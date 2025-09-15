@@ -967,7 +967,8 @@
         "systemTimezone": "Fuso Orario di Sistema",
         "customTimezone": "Fuso Orario Personalizzato",
         "timezonePreview": "Ora di anteprima: {time}",
-        "timezoneUpdated": "Impostazioni del fuso orario aggiornate"
+        "timezoneUpdated": "Impostazioni del fuso orario aggiornate",
+        "timezoneUpdateFailed": "Impossibile aggiornare il fuso orario"
       },
       "languageSettings": {
         "title": "Impostazioni Lingua",

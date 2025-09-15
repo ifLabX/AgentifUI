@@ -967,7 +967,8 @@
         "systemTimezone": "Zona Horaria del Sistema",
         "customTimezone": "Zona Horaria Personalizada",
         "timezonePreview": "Hora de vista previa: {time}",
-        "timezoneUpdated": "Configuración de zona horaria actualizada"
+        "timezoneUpdated": "Configuración de zona horaria actualizada",
+        "timezoneUpdateFailed": "Error al actualizar la zona horaria"
       },
       "languageSettings": {
         "title": "Configuración de Idioma",

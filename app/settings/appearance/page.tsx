@@ -6,6 +6,7 @@ import { useSettingsColors } from '@lib/hooks/use-settings-colors';
 import { useTheme } from '@lib/hooks/use-theme';
 import { useUserTimezone } from '@lib/hooks/use-user-timezone';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 import { useState } from 'react';
 
@@ -45,6 +46,12 @@ export default function AppearanceSettingsPage() {
 
     if (success) {
       console.log(`[AppearanceSettings] Timezone updated to: ${newTimezone}`);
+      toast.success(t('timezoneUpdated'));
+    } else {
+      console.error(
+        `[AppearanceSettings] Failed to update timezone to: ${newTimezone}`
+      );
+      toast.error(t('timezoneUpdateFailed'));
     }
 
     // Simulate save delay

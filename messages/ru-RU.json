@@ -967,7 +967,8 @@
         "systemTimezone": "Системный часовой пояс",
         "customTimezone": "Пользовательский часовой пояс",
         "timezonePreview": "Время предпросмотра: {time}",
-        "timezoneUpdated": "Настройки часового пояса обновлены"
+        "timezoneUpdated": "Настройки часового пояса обновлены",
+        "timezoneUpdateFailed": "Не удалось обновить часовой пояс"
       },
       "languageSettings": {
         "title": "Настройки языка",

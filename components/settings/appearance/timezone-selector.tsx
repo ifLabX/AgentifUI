@@ -7,7 +7,6 @@ import {
 import { cn } from '@lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronRight, MapPin, Timer, X } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { useMemo, useState } from 'react';
 
@@ -38,12 +37,6 @@ const ALL_TIMEZONES: TimezoneOption[] = [
   {
     value: 'Asia/Shanghai',
     cityKey: 'shanghai',
-    region: 'asia',
-    offset: '+08:00',
-  },
-  {
-    value: 'Asia/Beijing',
-    cityKey: 'beijing',
     region: 'asia',
     offset: '+08:00',
   },
@@ -268,12 +261,6 @@ export function TimezoneSelector({
   const handleTimezoneSelect = (timezone: string) => {
     onChange(timezone);
     setIsModalOpen(false);
-
-    // Show success prompt
-    const selectedTz = ALL_TIMEZONES.find(tz => tz.value === timezone);
-    if (selectedTz) {
-      toast.success(t('timezoneUpdated'));
-    }
   };
 
   return (

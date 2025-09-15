@@ -56,3 +56,5 @@ docs/security
 
 # pm2
 pm2-logs/
+
+.serena

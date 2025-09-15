@@ -967,7 +967,8 @@
         "systemTimezone": "Fuso Horário do Sistema",
         "customTimezone": "Fuso Horário Personalizado",
         "timezonePreview": "Hora de pré-visualização: {time}",
-        "timezoneUpdated": "Definições de fuso horário atualizadas"
+        "timezoneUpdated": "Definições de fuso horário atualizadas",
+        "timezoneUpdateFailed": "Falha ao atualizar o fuso horário"
       },
       "languageSettings": {
         "title": "Definições de Idioma",

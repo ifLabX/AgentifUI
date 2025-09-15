@@ -967,7 +967,8 @@
         "systemTimezone": "System Timezone",
         "customTimezone": "Custom Timezone",
         "timezonePreview": "Preview time: {time}",
-        "timezoneUpdated": "Timezone settings updated"
+        "timezoneUpdated": "Timezone settings updated",
+        "timezoneUpdateFailed": "Failed to update timezone"
       },
       "languageSettings": {
         "title": "Language Settings",

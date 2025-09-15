@@ -967,7 +967,8 @@
         "systemTimezone": "系統時區",
         "customTimezone": "自定義時區",
         "timezonePreview": "預覽時間：{time}",
-        "timezoneUpdated": "時區設定已更新"
+        "timezoneUpdated": "時區設定已更新",
+        "timezoneUpdateFailed": "時區更新失敗"
       },
       "languageSettings": {
         "title": "語言設定",
