@@ -3,7 +3,10 @@
  *
  * Shared utilities for notification administration interface
  */
-import type { NotificationCategory } from '@lib/types/notification-center';
+import type {
+  NotificationCategory,
+  NotificationPriority,
+} from '@lib/types/notification-center';
 
 interface CategoryOption {
   label: string;
@@ -90,7 +93,7 @@ export const getCategoryOptions = (
  */
 export const getPriorityOptions = (
   t: (key: string) => string
-): Record<string, PriorityOption> => ({
+): Record<NotificationPriority, PriorityOption> => ({
   low: {
     label: t('priorities.low.label'),
     description: t('priorities.low.description'),
