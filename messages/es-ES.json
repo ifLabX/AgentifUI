@@ -28,7 +28,8 @@
       "copy": "Copiar",
       "copied": "¡Copiado!",
       "open": "Abrir",
-      "dismiss": "Cerrar"
+      "dismiss": "Cerrar",
+      "viewDetails": "View Details"
     },
     "time": {
       "notRecorded": "No registrado",
@@ -1014,6 +1015,10 @@
           "permissions": {
             "text": "Gestión de Permisos de Aplicaciones",
             "description": "Gestionar visibilidad de aplicaciones y permisos de grupo"
+          },
+          "notifications": {
+            "text": "Notification Management",
+            "description": "Manage system notifications and announcements"
           }
         },
         "actions": {
@@ -2005,6 +2010,222 @@
           "updateVisibilityError": "Error al actualizar visibilidad de aplicación",
           "updateGroupPermissionError": "Error al actualizar permisos de grupo"
         }
+      },
+      "notifications": {
+        "create": {
+          "savingButton": "Saving...",
+          "basicInfo": {
+            "priority": {
+              "label": "Priority"
+            },
+            "category": {
+              "label": "Category"
+            },
+            "type": {
+              "message": "Message",
+              "changelog": "Changelog",
+              "label": "Type"
+            },
+            "notificationTitle": {
+              "label": "Title",
+              "placeholder": "Enter notification title"
+            },
+            "title": "Basic Information"
+          },
+          "content": {
+            "title": "Content",
+            "label": "Content",
+            "placeholder": "Enter notification content...",
+            "variableHint": "Use variables like '{username}', '{time}' for dynamic content",
+            "variableInsert": {
+              "title": "Insert Variables"
+            }
+          },
+          "targeting": {
+            "roles": {
+              "label": "Target Roles",
+              "user": "Users",
+              "admin": "Administrators",
+              "developer": "Developers",
+              "tester": "Testers"
+            },
+            "title": "Target Settings",
+            "scheduling": {
+              "placeholder": "Leave empty to send immediately",
+              "label": "Scheduled Time (Optional)"
+            }
+          },
+          "templates": {
+            "newFeature": {
+              "title": "New Feature Announcement",
+              "content": "We're excited to introduce '{featureName}'! This new feature allows you to '{features}'. Start exploring it today!"
+            },
+            "title": "Quick Templates",
+            "agentResult": {
+              "title": "Agent Task Completed",
+              "content": "Your agent task '{agentName}' has been completed successfully. Duration: '{duration}'. Result: '{result}'"
+            },
+            "securityAlert": {
+              "title": "Security Alert",
+              "content": "We detected unusual activity from your account at '{time}' from IP '{ip}'. If this wasn't you, please change your password immediately and contact support."
+            },
+            "tokenWarning": {
+              "content": "Dear '{username}', your token usage has reached '{percentage}'% of your limit ('{currentUsage}'/'{limit}'). Please consider upgrading your plan to continue using our services.",
+              "title": "Token Usage Warning"
+            },
+            "maintenance": {
+              "title": "Scheduled Maintenance",
+              "content": "We will be performing scheduled maintenance on '{date}' from '{time}'. During this period, some services may be temporarily unavailable. Details: '{details}'"
+            }
+          },
+          "tips": {
+            "priorityItems": [
+              "Critical: System outages, security breaches",
+              "High: Important updates, maintenance notices",
+              "Medium: New features, improvements",
+              "Low: Tips, minor updates"
+            ],
+            "title": "Tips",
+            "priorityAdvice": "Priority Guidelines:",
+            "contentAdvice": "Content Best Practices:",
+            "contentItems": [
+              "Keep titles concise and clear",
+              "Use variables for personalization",
+              "Include action items when applicable",
+              "Test with preview before publishing"
+            ]
+          },
+          "messages": {
+            "saveSuccess": "Notification saved successfully",
+            "saveFailed": "Failed to save notification"
+          },
+          "preview": {
+            "title": "Preview",
+            "targetRoles": "Target Roles",
+            "scheduledTime": "Scheduled Time"
+          },
+          "publishButton": "Publish",
+          "saveDraftButton": "Save Draft",
+          "previewButton": "Preview",
+          "subtitle": "Create and send notifications to users",
+          "backButton": "Back to Notifications",
+          "publishingButton": "Publishing...",
+          "title": "Create Notification",
+          "editButton": "Edit"
+        },
+        "categories": {
+          "system_maintenance": {
+            "description": "Scheduled maintenance and system updates",
+            "label": "System Maintenance"
+          },
+          "token_usage": {
+            "label": "Token Usage",
+            "description": "Token consumption and usage warnings"
+          },
+          "agent_result": {
+            "label": "Agent Result",
+            "description": "Results and status updates from automated agents"
+          },
+          "api_change": {
+            "description": "API changes and modifications",
+            "label": "API Change"
+          },
+          "security": {
+            "description": "Security patches and updates",
+            "label": "Security Update"
+          },
+          "bugfix": {
+            "label": "Bug Fix",
+            "description": "Bug fixes and issue resolutions"
+          },
+          "admin_announcement": {
+            "label": "Admin Announcement",
+            "description": "Important announcements from administrators"
+          },
+          "improvement": {
+            "label": "Improvement",
+            "description": "System improvements and enhancements"
+          },
+          "feature": {
+            "label": "New Feature",
+            "description": "New feature announcements and updates"
+          },
+          "security_alert": {
+            "label": "Security Alert",
+            "description": "Security-related warnings and alerts"
+          },
+          "feature_tip": {
+            "label": "Feature Tip",
+            "description": "Tips and guidance on using features"
+          }
+        },
+        "filtersAndSearch": {
+          "type": {
+            "all": "All Types",
+            "changelog": "Changelog",
+            "message": "Message",
+            "label": "Type"
+          },
+          "category": {
+            "label": "Category",
+            "all": "All Categories"
+          },
+          "priority": {
+            "label": "Priority",
+            "all": "All Priorities"
+          },
+          "searchPlaceholder": "Search notification title or content...",
+          "title": "Filter and Search",
+          "filtersButton": "Filters"
+        },
+        "priorities": {
+          "high": {
+            "label": "High",
+            "description": "Important notifications requiring attention"
+          },
+          "low": {
+            "label": "Low",
+            "description": "Non-urgent information and tips"
+          },
+          "medium": {
+            "description": "Standard notifications and updates",
+            "label": "Medium"
+          },
+          "critical": {
+            "label": "Critical",
+            "description": "Urgent notifications requiring immediate action"
+          }
+        },
+        "noMatchingData": "No matching notifications found",
+        "types": {
+          "changelog": "Changelog",
+          "message": "Message"
+        },
+        "list": {
+          "title": "Notifications List",
+          "loading": "Loading notifications...",
+          "created": "Created",
+          "published": "Published",
+          "target": "Target",
+          "none": "None"
+        },
+        "actions": {
+          "edit": "Edit",
+          "updateError": "Update failed, please try again",
+          "confirmDelete": "Are you sure you want to delete this notification?",
+          "delete": "Delete",
+          "publish": "Publish",
+          "unpublish": "Unpublish",
+          "deleteError": "Delete failed, please try again"
+        },
+        "createButton": "Create Notification",
+        "status": {
+          "published": "Published",
+          "draft": "Draft"
+        },
+        "title": "Notification Management",
+        "subtitle": "Manage system notifications and changelogs",
+        "noData": "No notifications"
       }
     },
     "about": {
@@ -2199,6 +2420,50 @@
       "userAvatar": {
         "alt": " avatar de"
       }
+    },
+    "notificationCenter": {
+      "categories": {
+        "system_maintenance": "System Maintenance",
+        "feature_tip": "Feature Tip",
+        "admin_announcement": "Admin Announcement",
+        "token_usage": "Token Usage",
+        "security": "Security Update",
+        "api_change": "API Change",
+        "improvement": "Improvement",
+        "feature": "New Feature",
+        "bugfix": "Bug Fix",
+        "agent_result": "Agent Result",
+        "security_alert": "Security Alert"
+      },
+      "tabs": {
+        "all": "All",
+        "changelog": "Updates",
+        "message": "Messages",
+        "messages": "Messages"
+      },
+      "empty": {
+        "title": "No notifications",
+        "messages": "No messages yet",
+        "all": "No notifications yet",
+        "changelog": "No updates yet",
+        "description": "You're all caught up!"
+      },
+      "types": {
+        "message": "Message",
+        "changelog": "Changelog"
+      },
+      "page": {
+        "searchPlaceholder": "Search notifications...",
+        "title": "Notifications",
+        "backButton": "Back"
+      },
+      "actions": {
+        "markAllRead": "Mark all as read",
+        "viewAll": "View all"
+      },
+      "close": "Close notifications",
+      "loading": "Loading notifications...",
+      "title": "Notifications"
     }
   },
   "debug": {
