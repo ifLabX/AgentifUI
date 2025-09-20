@@ -1,6 +1,6 @@
 -- 创建提供商表
 CREATE TABLE IF NOT EXISTS providers (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   type TEXT NOT NULL,
   base_url TEXT NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS providers (
 
 -- 创建服务实例表
 CREATE TABLE IF NOT EXISTS service_instances (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   provider_id UUID REFERENCES providers(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   instance_id TEXT,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS service_instances (
 
 -- 创建 API 密钥表
 CREATE TABLE IF NOT EXISTS api_keys (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   provider_id UUID REFERENCES providers(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   key_value TEXT NOT NULL,
