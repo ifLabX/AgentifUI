@@ -442,7 +442,8 @@ export class CASConfigService {
         full_name: protocolConfig.attributes_mapping?.full_name || 'cas:name',
         email: protocolConfig.attributes_mapping?.email || 'cas:mail',
       },
-      emailDomain: provider.settings?.email_domain || process.env.DEFAULT_SSO_EMAIL_DOMAIN,
+      emailDomain:
+        provider.settings?.email_domain || process.env.DEFAULT_SSO_EMAIL_DOMAIN,
     };
   }
 

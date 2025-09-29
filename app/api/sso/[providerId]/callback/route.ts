@@ -146,7 +146,8 @@ export async function GET(
     }
 
     // use email domain from provider settings or environment variable fallback
-    const emailDomain = casFullConfig.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
+    const emailDomain =
+      casFullConfig.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
     const userEmail = `${user.employee_number || employeeNumberStr}@${emailDomain}`;
 
     console.log(

@@ -204,7 +204,8 @@ export class SSOUserService {
 
       // Create auth.users record using Supabase Admin API
       // This will also trigger creation of profiles record via trigger
-      const emailDomain = userData.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
+      const emailDomain =
+        userData.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
       const email = `${userData.employeeNumber}@${emailDomain}`; // Use employee number and configured domain to generate email
 
       console.log(
