@@ -506,5 +506,4 @@ export class CASConfigService {
     const config = await this.getCASConfig(providerId);
     return new GenericCASService(config);
   }
-
 }
