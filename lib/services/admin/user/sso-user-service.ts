@@ -38,8 +38,8 @@ export class SSOUserService {
     try {
       const supabase = await createClient();
 
-      // Construct SSO user's email address using provided domain or fallback
-      const domain = emailDomain || 'sso.local';
+      // Construct SSO user's email address using provided domain or environment variable fallback
+      const domain = emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
       const email = `${employeeNumber.trim()}@${domain}`;
       console.log(
         `Looking up user by email: ${email} (for employee: ${employeeNumber})`
@@ -204,7 +204,7 @@ export class SSOUserService {
 
       // Create auth.users record using Supabase Admin API
       // This will also trigger creation of profiles record via trigger
-      const emailDomain = userData.emailDomain || 'sso.local';
+      const emailDomain = userData.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
       const email = `${userData.employeeNumber}@${emailDomain}`; // Use employee number and configured domain to generate email
 
       console.log(

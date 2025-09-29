@@ -674,7 +674,7 @@ export function SsoProviderForm({
                             onChange={e =>
                               handleSettingsChange(
                                 'email_domain',
-                                e.target.value || 'sso.local'
+                                e.target.value
                               )
                             }
                             className={cn(
