@@ -1698,6 +1698,8 @@
             "displayOrder": "Anzeigereihenfolge",
             "buttonText": "Schaltflächentext",
             "buttonTextPlaceholder": "Leer lassen, um den Anbieternamen zu verwenden",
+            "emailDomain": "E-Mail-Domain",
+            "emailDomainPlaceholder": "z.B. example.com",
             "enableProvider": "Diesen Anbieter aktivieren",
             "baseUrl": "Basis-URL",
             "baseUrlPlaceholder": "https://sso.example.com",

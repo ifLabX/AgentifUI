@@ -1698,6 +1698,8 @@
             "displayOrder": "Порядок отображения",
             "buttonText": "Текст кнопки",
             "buttonTextPlaceholder": "Оставьте пустым, чтобы использовать название провайдера",
+            "emailDomain": "Домен электронной почты",
+            "emailDomainPlaceholder": "например: example.com",
             "enableProvider": "Включить этого провайдера",
             "baseUrl": "Базовый URL",
             "baseUrlPlaceholder": "https://sso.example.com",

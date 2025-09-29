@@ -1698,6 +1698,8 @@
             "displayOrder": "显示顺序",
             "buttonText": "按钮文本",
             "buttonTextPlaceholder": "留空则使用提供商名称",
+            "emailDomain": "邮箱域名",
+            "emailDomainPlaceholder": "例如：example.com",
             "enableProvider": "启用此提供商",
             "baseUrl": "基础URL",
             "baseUrlPlaceholder": "https://sso.example.com",

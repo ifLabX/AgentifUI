@@ -1698,6 +1698,8 @@
             "displayOrder": "Ordine di visualizzazione",
             "buttonText": "Testo pulsante",
             "buttonTextPlaceholder": "Lascia vuoto per usare il nome del fornitore",
+            "emailDomain": "Dominio email",
+            "emailDomainPlaceholder": "es. example.com",
             "enableProvider": "Abilita questo fornitore",
             "baseUrl": "URL di base",
             "baseUrlPlaceholder": "https://sso.example.com",

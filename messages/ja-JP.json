@@ -1698,6 +1698,8 @@
             "displayOrder": "表示順序",
             "buttonText": "ボタンテキスト",
             "buttonTextPlaceholder": "空白のままにするとプロバイダー名が使用されます",
+            "emailDomain": "メールドメイン",
+            "emailDomainPlaceholder": "例: example.com",
             "enableProvider": "このプロバイダーを有効にする",
             "baseUrl": "ベースURL",
             "baseUrlPlaceholder": "https://sso.example.com",

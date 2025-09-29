@@ -1698,6 +1698,8 @@
             "displayOrder": "Orden de visualización",
             "buttonText": "Texto del botón",
             "buttonTextPlaceholder": "Dejar en blanco para usar el nombre del proveedor",
+            "emailDomain": "Dominio de correo",
+            "emailDomainPlaceholder": "ej. example.com",
             "enableProvider": "Habilitar este proveedor",
             "baseUrl": "URL base",
             "baseUrlPlaceholder": "https://sso.example.com",

@@ -1698,6 +1698,8 @@
             "displayOrder": "顯示順序",
             "buttonText": "按鈕文字",
             "buttonTextPlaceholder": "留空則使用服務商名稱",
+            "emailDomain": "電郵網域",
+            "emailDomainPlaceholder": "例如：example.com",
             "enableProvider": "啟用此服務商",
             "baseUrl": "基礎 URL",
             "baseUrlPlaceholder": "https://sso.example.com",
