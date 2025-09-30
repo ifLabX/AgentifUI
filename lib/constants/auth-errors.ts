@@ -28,13 +28,13 @@ export const AUTH_SYSTEM_ERRORS = {
  */
 export function getAccountStatusError(
   status: string | undefined | null
-): string {
-  if (!status) return ACCOUNT_STATUS_DEFAULT_ERROR;
-
-  return (
-    ACCOUNT_STATUS_ERROR_MAP[status as keyof typeof ACCOUNT_STATUS_ERROR_MAP] ??
-    ACCOUNT_STATUS_DEFAULT_ERROR
-  );
+): AccountStatusErrorCode {
+  if (status && status in ACCOUNT_STATUS_ERROR_MAP) {
+    return ACCOUNT_STATUS_ERROR_MAP[
+      status as keyof typeof ACCOUNT_STATUS_ERROR_MAP
+    ];
+  }
+  return ACCOUNT_STATUS_DEFAULT_ERROR;
 }
 
 // Type exports for TypeScript safety
