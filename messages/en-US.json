@@ -609,7 +609,9 @@
           "ssoProviderNotFound": "SSO service configuration error, please contact administrator",
           "missingTicket": "Authentication parameters missing, please login again",
           "default": "An error occurred during login, please try again later",
-          "loginFailed": "Login failed, please check your email and password"
+          "loginFailed": "Login failed, please check your email and password",
+          "accountSuspended": "Your account has been suspended. Please contact administrator for assistance.",
+          "accountPending": "Your account is pending approval. Please wait for administrator to activate your account."
         }
       },
       "register": {

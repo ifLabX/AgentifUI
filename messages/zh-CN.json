@@ -609,7 +609,9 @@
           "ssoProviderNotFound": "SSO服务配置错误，请联系管理员",
           "missingTicket": "认证参数缺失，请重新登录",
           "default": "登录过程中出现错误，请稍后重试",
-          "loginFailed": "登录失败，请检查您的邮箱和密码"
+          "loginFailed": "登录失败，请检查您的邮箱和密码",
+          "accountSuspended": "您的账户已被暂停使用，请联系管理员寻求帮助。",
+          "accountPending": "您的账户正在等待审核，请等待管理员激活您的账户。"
         }
       },
       "register": {

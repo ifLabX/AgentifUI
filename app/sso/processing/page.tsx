@@ -98,6 +98,17 @@ export default function SSOProcessingPage() {
 
         if (!response.ok) {
           const errorData = await response.json();
+
+          // 🔒 Handle account status errors (suspended/pending)
+          // Redirect to login page with error message
+          if (errorData.redirect) {
+            console.log(
+              `Account status error detected: ${errorData.message}, redirecting to ${errorData.redirect}`
+            );
+            router.replace(errorData.redirect);
+            return;
+          }
+
           throw new Error(errorData.message || t('errors.loginFailed'));
         }
 

@@ -127,6 +127,54 @@ export async function POST(request: NextRequest) {
           `Creating session for SSO user: ${userId}, URL email: ${userEmail}, actual email: ${actualUserEmail}`
         );
 
+        // 🔒 Security: Check user account status before creating session
+        // Prevent suspended or pending users from logging in via SSO
+        const { data: profile, error: profileError } = await adminSupabase
+          .from('profiles')
+          .select('status')
+          .eq('id', userId)
+          .single();
+
+        if (profileError) {
+          console.error('Failed to query user profile status:', profileError);
+          return NextResponse.json(
+            { message: 'Failed to verify user account status' },
+            { status: 500 }
+          );
+        }
+
+        // Reject session creation for suspended users
+        if (profile?.status === 'suspended') {
+          console.log(
+            `[SSO Authentication] Rejected login attempt for suspended user: ${userId}`
+          );
+          return NextResponse.json(
+            {
+              message: 'account_suspended',
+              redirect: '/login?error=account_suspended',
+            },
+            { status: 403 }
+          );
+        }
+
+        // Reject session creation for pending users
+        if (profile?.status === 'pending') {
+          console.log(
+            `[SSO Authentication] Rejected login attempt for pending user: ${userId}`
+          );
+          return NextResponse.json(
+            {
+              message: 'account_pending',
+              redirect: '/login?error=account_pending',
+            },
+            { status: 403 }
+          );
+        }
+
+        console.log(
+          `[SSO Authentication] User status verified: ${profile?.status || 'active'} for user: ${userId}`
+        );
+
         // use optimized temporary password method to create session
         // this is the most reliable and simple method
         try {
