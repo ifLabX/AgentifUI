@@ -127,8 +127,9 @@ export async function POST(request: NextRequest) {
           `Creating session for SSO user: ${userId}, URL email: ${userEmail}, actual email: ${actualUserEmail}`
         );
 
-        // 🔒 Security: Check user account status before creating session
-        // Prevent suspended or pending users from logging in via SSO
+        // 🔒 Security: Check user account status before creating session using whitelist validation
+        // Only 'active' status users are allowed to log in via SSO
+        // This prevents bypass via invalid status values (NULL, typos, unexpected enums)
         const { data: profile, error: profileError } = await adminSupabase
           .from('profiles')
           .select('status')
@@ -143,36 +144,29 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Reject session creation for suspended users
-        if (profile?.status === 'suspended') {
-          console.log(
-            `[SSO Authentication] Rejected login attempt for suspended user: ${userId}`
-          );
-          return NextResponse.json(
-            {
-              message: 'account_suspended',
-              redirect: '/login?error=account_suspended',
-            },
-            { status: 403 }
-          );
-        }
+        // Reject session creation for non-active users
+        if (profile?.status !== 'active') {
+          const errorMap: Record<string, string> = {
+            suspended: 'account_suspended',
+            pending: 'account_pending',
+          };
+          const errorCode =
+            errorMap[profile.status as string] || 'invalid_account';
 
-        // Reject session creation for pending users
-        if (profile?.status === 'pending') {
           console.log(
-            `[SSO Authentication] Rejected login attempt for pending user: ${userId}`
+            `[SSO Authentication] Rejected login attempt for user with status '${profile.status}': ${userId}`
           );
           return NextResponse.json(
             {
-              message: 'account_pending',
-              redirect: '/login?error=account_pending',
+              message: errorCode,
+              redirect: `/login?error=${errorCode}`,
             },
             { status: 403 }
           );
         }
 
         console.log(
-          `[SSO Authentication] User status verified: ${profile?.status || 'active'} for user: ${userId}`
+          `[SSO Authentication] User status verified as 'active' for user: ${userId}`
         );
 
         // use optimized temporary password method to create session

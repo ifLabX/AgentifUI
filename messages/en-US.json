@@ -611,7 +611,8 @@
           "default": "An error occurred during login, please try again later",
           "loginFailed": "Login failed, please check your email and password",
           "accountSuspended": "Your account has been suspended. Please contact administrator for assistance.",
-          "accountPending": "Your account is pending approval. Please wait for administrator to activate your account."
+          "accountPending": "Your account is pending approval. Please wait for administrator to activate your account.",
+          "invalidAccount": "Your account status is invalid. Please contact administrator for assistance."
         }
       },
       "register": {

@@ -41,6 +41,8 @@ export default function LoginPage() {
         return t('errors.accountSuspended');
       case 'account_pending':
         return t('errors.accountPending');
+      case 'invalid_account':
+        return t('errors.invalidAccount');
       default:
         return t('errors.default');
     }

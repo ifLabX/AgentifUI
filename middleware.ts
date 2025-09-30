@@ -159,24 +159,23 @@ export async function middleware(request: NextRequest) {
         console.error(`[Middleware] Error querying user profile:`, error);
         // Fail-open: allow request to proceed but log the error
       } else if (profile) {
-        // 🔒 Priority 1: Check account status (suspended/pending users cannot access any protected routes)
-        if (profile.status === 'suspended') {
-          console.log(
-            `[Middleware] Suspended user attempting to access ${pathname}, signing out and redirecting to login`
-          );
-          await supabase.auth.signOut();
-          return NextResponse.redirect(
-            new URL('/login?error=account_suspended', request.url)
-          );
-        }
+        // 🔒 Priority 1: Check account status using whitelist validation
+        // Only 'active' status users are allowed to access protected routes
+        // This prevents bypass via invalid status values (NULL, typos, unexpected enums)
+        if (profile.status !== 'active') {
+          const errorMap: Record<string, string> = {
+            suspended: 'account_suspended',
+            pending: 'account_pending',
+          };
+          const errorCode =
+            errorMap[profile.status as string] || 'invalid_account';
 
-        if (profile.status === 'pending') {
           console.log(
-            `[Middleware] Pending user attempting to access ${pathname}, signing out and redirecting to login`
+            `[Middleware] User with status '${profile.status}' attempting to access ${pathname}, signing out and redirecting to login`
           );
           await supabase.auth.signOut();
           return NextResponse.redirect(
-            new URL('/login?error=account_pending', request.url)
+            new URL(`/login?error=${errorCode}`, request.url)
           );
         }
 
