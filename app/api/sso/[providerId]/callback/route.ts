@@ -89,6 +89,11 @@ export async function GET(
     const employeeNumberStr = validationResult.employeeNumber;
     const username = validationResult.username;
     const fullName = validationResult.attributes?.name || username;
+    const extractedEmail = validationResult.email; // Extract email from CAS response
+
+    console.log(
+      `SSO validation success: ${casConfig.name}, user: ${username}, employee: ${employeeNumberStr}, extracted_email: ${extractedEmail || 'none'}`
+    );
 
     if (!employeeNumberStr) {
       console.error(
@@ -102,10 +107,6 @@ export async function GET(
       );
     }
 
-    console.log(
-      `Processing SSO user for ${casConfig.name}: ${username} (${employeeNumberStr}), name: ${fullName}`
-    );
-
     // get full CAS config (pre-fetch)
     const casFullConfig = await CASConfigService.getCASConfig(providerId);
 
@@ -117,49 +118,40 @@ export async function GET(
 
     if (!user) {
       console.log(
-        `Creating new user for employee: ${employeeNumberStr} via ${casConfig.name}`
-      );
-
-      console.log(
-        `Using SSO provider for user creation: ${casFullConfig.name}`
+        `Creating new SSO user for employee: ${employeeNumberStr} via ${casConfig.name}`
       );
 
       user = await SSOUserService.createSSOUser({
         employeeNumber: employeeNumberStr,
-        username: username,
-        fullName: fullName,
+        username,
+        fullName,
         ssoProviderId: casFullConfig.id,
         ssoProviderName: casFullConfig.name,
         emailDomain: casFullConfig.emailDomain,
+        extractedEmail, // Pass extracted email to user service
       });
 
       console.log(
-        `Created new user: ${user.id} for employee ${employeeNumberStr}`
+        `SSO user created: ${user.id}, email: ${user.email}, employee: ${employeeNumberStr}`
       );
     } else {
-      console.log(
-        `Found existing user: ${user.id} for employee ${employeeNumberStr}`
-      );
+      console.log(`SSO user login: ${user.id}, employee: ${employeeNumberStr}`);
 
       // update last login time
       await SSOUserService.updateLastLogin(user.id);
     }
 
-    // use email domain from provider settings or environment variable fallback
-    const emailDomain =
-      casFullConfig.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
-    const userEmail = `${user.employee_number || employeeNumberStr}@${emailDomain}`;
-
-    console.log(
-      `Preparing to create Supabase session for user: ${user.id}, email: ${userEmail}`
-    );
+    // Use user's actual email from the profile (which was resolved via email priority logic)
+    const userEmail =
+      user.email ||
+      `${user.employee_number || employeeNumberStr}@${casFullConfig.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN}`;
 
     // build SSO user data for session creation
     const ssoUserData = {
       userId: user.id,
       employeeNumber: employeeNumberStr,
-      username: username,
-      fullName: fullName,
+      username,
+      fullName,
       provider: casFullConfig.name,
       loginTime: Date.now(),
       expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
@@ -174,20 +166,8 @@ export async function GET(
     processingUrl.searchParams.set('redirect_to', validatedReturnUrl);
     processingUrl.searchParams.set('welcome', fullName);
 
-    console.log(
-      `Redirecting to SSO processing page for session creation: ${processingUrl.toString()}`
-    );
-
     // create response object and set SSO user data cookie for frontend use
     const response = NextResponse.redirect(processingUrl.toString());
-    const cookieValue = JSON.stringify(ssoUserData);
-
-    // debug: output the cookie value
-    console.log(
-      'Setting cookie value (first 100 chars):',
-      cookieValue.substring(0, 100)
-    );
-    console.log('Cookie value length:', cookieValue.length);
 
     // split sensitive and non-sensitive data
     // store sensitive data in httpOnly cookie, accessible data in regular cookie

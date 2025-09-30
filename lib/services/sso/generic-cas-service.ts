@@ -29,15 +29,26 @@ export interface CASConfig {
   emailDomain: string; // email domain
 }
 
-// CAS user info interface
+// CAS attribute value types - flexible for different CAS implementations
+type CASAttributeValue =
+  | string
+  | string[]
+  | number
+  | boolean
+  | null
+  | undefined
+  | Record<string, unknown>;
+
+// CAS user info interface - flexible attributes structure
 export interface CASUserInfo {
   employeeNumber: string; // Employee number (primary identifier)
   username: string; // Username
+  email?: string; // Email extracted from SSO (new field)
   success: boolean; // Whether validation is successful
   attributes?: {
-    name?: string; // Real name
-    username?: string; // Username
-    [key: string]: any; // Other possible attributes
+    name?: string; // Real name (common field)
+    username?: string; // Username (common field)
+    [key: string]: CASAttributeValue; // Flexible attributes for different CAS implementations
   };
   rawResponse?: string; // Original XML response (for debugging)
 }
@@ -46,7 +57,7 @@ export interface CASUserInfo {
 export interface CASValidationError {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 /**
@@ -87,9 +98,6 @@ export class GenericCASService {
 
       const loginUrl = `${this.config.baseUrl}${this.config.endpoints.login}?${params.toString()}`;
 
-      console.log(
-        `Generated CAS login URL for ${this.config.name}: ${loginUrl}`
-      );
       return loginUrl;
     } catch (error) {
       console.error(
@@ -117,9 +125,6 @@ export class GenericCASService {
 
       const logoutUrl = `${this.config.baseUrl}${this.config.endpoints.logout}${params.toString() ? '?' + params.toString() : ''}`;
 
-      console.log(
-        `Generated CAS logout URL for ${this.config.name}: ${logoutUrl}`
-      );
       return logoutUrl;
     } catch (error) {
       console.error(
@@ -163,10 +168,6 @@ export class GenericCASService {
 
       const validateUrl = `${this.config.baseUrl}${validateEndpoint}?${params.toString()}`;
 
-      console.log(
-        `Validating ticket for ${this.config.name} at: ${validateUrl.replace(/ticket=[^&]+/, 'ticket=***')}`
-      );
-
       // send validation request
       const response = await fetch(validateUrl, {
         method: 'GET',
@@ -183,16 +184,6 @@ export class GenericCASService {
       }
 
       const xmlText = await response.text();
-      console.log(`Received CAS validation response from ${this.config.name}`);
-
-      // print raw XML response in CAS service layer for debugging
-      console.log(
-        `=== ${this.config.name} CAS service layer received raw XML ===`
-      );
-      console.log(xmlText);
-      console.log(
-        `=== ${this.config.name} CAS service layer XML response end ===`
-      );
 
       return this.parseValidationResponse(xmlText);
     } catch (error) {
@@ -219,20 +210,7 @@ export class GenericCASService {
    */
   private parseValidationResponse(xmlText: string): CASUserInfo {
     try {
-      console.log(`Parsing CAS response XML for ${this.config.name}...`);
-
-      // print raw XML content length and first 100 chars preview before parsing
-      console.log(`XML length: ${xmlText.length} chars`);
-      console.log(
-        `XML preview: ${xmlText.substring(0, 200)}${xmlText.length > 200 ? '...' : ''}`
-      );
-
       const parsed = this.xmlParser.parse(xmlText);
-
-      // print parsed full JSON structure
-      console.log(`=== ${this.config.name} parsed full JSON structure ===`);
-      console.log(JSON.stringify(parsed, null, 2));
-      console.log('=== parsed structure end ===');
 
       const serviceResponse = parsed['cas:serviceResponse'];
 
@@ -269,14 +247,16 @@ export class GenericCASService {
             this.config.attributesMapping.full_name
           ) || ''
         );
-
-        console.log(
-          `CAS authentication successful for ${this.config.name} - user: ${username}, employee: ${employeeNumber}, name: ${fullName}`
+        const emailAttr = this.extractAttribute(
+          attributes,
+          this.config.attributesMapping.email
         );
+        const extractedEmail = (emailAttr as string | undefined)?.trim() || '';
 
         return {
           username,
           employeeNumber,
+          email: extractedEmail,
           success: true,
           attributes: {
             name: fullName,
@@ -286,11 +266,13 @@ export class GenericCASService {
               (acc, key) => {
                 if (key.startsWith('cas:')) {
                   const cleanKey = key.replace('cas:', '');
-                  acc[cleanKey] = String(attributes[key] || '');
+                  const value = attributes[key];
+                  // Keep the original type (could be string, array, etc.)
+                  acc[cleanKey] = value as CASAttributeValue;
                 }
                 return acc;
               },
-              {} as Record<string, any>
+              {} as Record<string, CASAttributeValue>
             ),
           },
           rawResponse: xmlText,
@@ -342,25 +324,39 @@ export class GenericCASService {
   }
 
   /**
+   * validate email format using simple regex
+   * @private
+   * @param email email string to validate
+   * @returns true if email format is valid
+   */
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  }
+
+  /**
    * extract specified field value from CAS attributes
    * @private
    * @param attributes CAS attributes object
    * @param fieldName field name (supports cas: prefix)
    * @returns field value
    */
-  private extractAttribute(attributes: any, fieldName: string): any {
+  private extractAttribute(
+    attributes: Record<string, unknown>,
+    fieldName: string
+  ): CASAttributeValue {
     // prioritize fields with cas: prefix
     const casFieldName = fieldName.startsWith('cas:')
       ? fieldName
       : `cas:${fieldName}`;
     if (attributes[casFieldName] !== undefined) {
-      return attributes[casFieldName];
+      return attributes[casFieldName] as CASAttributeValue;
     }
 
     // fallback to fields without prefix
     const plainFieldName = fieldName.replace('cas:', '');
     if (attributes[plainFieldName] !== undefined) {
-      return attributes[plainFieldName];
+      return attributes[plainFieldName] as CASAttributeValue;
     }
 
     return undefined;
@@ -410,8 +406,9 @@ export class CASConfigService {
       throw new Error(`CAS provider not found or disabled: ${providerId}`);
     }
 
-    const settings = provider.settings as any;
-    const protocolConfig = settings.protocol_config || {};
+    const settings = provider.settings as Record<string, unknown>;
+    const protocolConfig =
+      (settings.protocol_config as Record<string, unknown>) || {};
 
     // get current app URL for building callback URL
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -421,26 +418,52 @@ export class CASConfigService {
       );
     }
 
+    // Helper function to safely access nested properties
+    const getConfigValue = (
+      path: string[],
+      defaultValue: unknown = ''
+    ): unknown => {
+      let current: unknown = protocolConfig;
+      for (const key of path) {
+        if (current && typeof current === 'object' && key in current) {
+          current = (current as Record<string, unknown>)[key];
+        } else {
+          return defaultValue;
+        }
+      }
+      return current;
+    };
+
     return {
       id: provider.id,
       name: provider.name,
-      baseUrl: protocolConfig.base_url || '',
+      baseUrl: String(getConfigValue(['base_url'], '')),
       serviceUrl: `${appUrl}/api/sso/${provider.id}/callback`,
-      version: protocolConfig.version || '2.0',
-      timeout: protocolConfig.timeout || 10000,
+      version: String(getConfigValue(['version'], '2.0')) as '2.0' | '3.0',
+      timeout: Number(getConfigValue(['timeout'], 10000)),
       endpoints: {
-        login: protocolConfig.endpoints?.login || '/login',
-        logout: protocolConfig.endpoints?.logout || '/logout',
-        validate: protocolConfig.endpoints?.validate || '/serviceValidate',
-        validate_v3:
-          protocolConfig.endpoints?.validate_v3 || '/p3/serviceValidate',
+        login: String(getConfigValue(['endpoints', 'login'], '/login')),
+        logout: String(getConfigValue(['endpoints', 'logout'], '/logout')),
+        validate: String(
+          getConfigValue(['endpoints', 'validate'], '/serviceValidate')
+        ),
+        validate_v3: String(
+          getConfigValue(['endpoints', 'validate_v3'], '/p3/serviceValidate')
+        ),
       },
       attributesMapping: {
-        employee_id:
-          protocolConfig.attributes_mapping?.employee_id || 'cas:user',
-        username: protocolConfig.attributes_mapping?.username || 'cas:username',
-        full_name: protocolConfig.attributes_mapping?.full_name || 'cas:name',
-        email: protocolConfig.attributes_mapping?.email || 'cas:mail',
+        employee_id: String(
+          getConfigValue(['attributes_mapping', 'employee_id'], 'cas:user')
+        ),
+        username: String(
+          getConfigValue(['attributes_mapping', 'username'], 'cas:username')
+        ),
+        full_name: String(
+          getConfigValue(['attributes_mapping', 'full_name'], 'cas:name')
+        ),
+        email: String(
+          getConfigValue(['attributes_mapping', 'email'], 'cas:mail')
+        ),
       },
       emailDomain:
         provider.settings?.email_domain || process.env.DEFAULT_SSO_EMAIL_DOMAIN,
