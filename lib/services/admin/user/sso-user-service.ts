@@ -10,6 +10,7 @@ export interface CreateSSOUserData {
   ssoProviderId: string; // SSO provider ID
   ssoProviderName: string; // SSO provider name
   emailDomain: string; // Email domain
+  extractedEmail?: string; // Email extracted from SSO (new field)
   fullName?: string; // Full name (optional)
 }
 
@@ -22,6 +23,40 @@ export interface SSOUserLookupResult {
 
 // SSO User Service class
 export class SSOUserService {
+  /**
+   * Validate email format using simple regex
+   * @private
+   * @param email email string to validate
+   * @returns true if email format is valid
+   */
+  private static isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  }
+
+  /**
+   * Resolve user email with priority logic: extracted email > constructed email
+   * @private
+   * @param extractedEmail email extracted from SSO response
+   * @param employeeNumber employee number for construction
+   * @param emailDomain email domain for construction
+   * @returns resolved email address
+   */
+  private static resolveUserEmail(
+    extractedEmail: string | undefined,
+    employeeNumber: string,
+    emailDomain: string
+  ): string {
+    // If SSO extracted valid email, use it directly
+    if (extractedEmail && this.isValidEmail(extractedEmail)) {
+      return extractedEmail.trim();
+    }
+
+    // Otherwise construct email (existing logic)
+    const constructedEmail = `${employeeNumber}@${emailDomain}`;
+    return constructedEmail;
+  }
+
   /**
    * Find user by employee number (actually by email)
    * @param employeeNumber Employee number
@@ -41,9 +76,6 @@ export class SSOUserService {
       // Construct SSO user's email address using provided domain or environment variable fallback
       const domain = emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
       const email = `${employeeNumber.trim()}@${domain}`;
-      console.log(
-        `Looking up user by email: ${email} (for employee: ${employeeNumber})`
-      );
 
       // First try to find user with normal client (subject to RLS)
       const { data, error } = await supabase
@@ -54,10 +86,6 @@ export class SSOUserService {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          console.log(
-            `No user found with email via normal client: ${email}, trying admin client...`
-          );
-
           // If not found, try with admin client (bypass RLS)
           // This is important for SSO user lookup as RLS may block access
           try {
@@ -70,9 +98,6 @@ export class SSOUserService {
 
             if (adminError) {
               if (adminError.code === 'PGRST116') {
-                console.log(
-                  `No user found with email via admin client: ${email}`
-                );
                 return null;
               }
               console.error(
@@ -83,9 +108,6 @@ export class SSOUserService {
             }
 
             if (adminData) {
-              console.log(
-                `Found user via admin client: ${adminData.username} (email: ${adminData.email})`
-              );
               return adminData as Profile;
             }
           } catch (adminError) {
@@ -102,13 +124,9 @@ export class SSOUserService {
       }
 
       if (data) {
-        console.log(
-          `Found user via normal client: ${data.username} (email: ${data.email})`
-        );
         return data as Profile;
       }
 
-      console.log(`No user found with email: ${email}`);
       return null;
     } catch (error) {
       console.error(
@@ -134,8 +152,6 @@ export class SSOUserService {
     try {
       const adminSupabase = await createAdminClient();
 
-      console.log(`Looking up user by ID with admin client: ${userId}`);
-
       const { data, error } = await adminSupabase
         .from('profiles')
         .select('*')
@@ -144,7 +160,6 @@ export class SSOUserService {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          console.log(`No user found with ID: ${userId}`);
           return null;
         }
         console.error('Error finding user by ID:', error);
@@ -152,7 +167,6 @@ export class SSOUserService {
       }
 
       if (data) {
-        console.log(`Found user by ID: ${data.username} (${data.email})`);
         return data as Profile;
       }
 
@@ -196,9 +210,6 @@ export class SSOUserService {
         userData.employeeNumber
       );
       if (existingUser) {
-        console.log(
-          `User already exists for employee ${userData.employeeNumber}, returning existing user`
-        );
         return existingUser;
       }
 
@@ -206,10 +217,24 @@ export class SSOUserService {
       // This will also trigger creation of profiles record via trigger
       const emailDomain =
         userData.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
-      const email = `${userData.employeeNumber}@${emailDomain}`; // Use employee number and configured domain to generate email
+
+      // Validate email domain is configured
+      if (!emailDomain) {
+        throw new Error(
+          'Email domain is required for SSO user creation. ' +
+            'Configure emailDomain in SSO provider settings or set DEFAULT_SSO_EMAIL_DOMAIN environment variable.'
+        );
+      }
+
+      // Use new email resolution logic: extracted email > constructed email
+      const email = this.resolveUserEmail(
+        userData.extractedEmail,
+        userData.employeeNumber,
+        emailDomain
+      );
 
       console.log(
-        `Creating auth user with email: ${email}, employee_number: ${userData.employeeNumber}`
+        `Email resolved for ${userData.employeeNumber}: ${email} (source: ${userData.extractedEmail && this.isValidEmail(userData.extractedEmail) ? 'SSO extracted' : 'constructed'})`
       );
 
       const { data: authUser, error: authError } =
@@ -232,25 +257,15 @@ export class SSOUserService {
       // Handle email conflict
       // If email already exists, user is already registered, try to find existing user
       if (authError && authError.message.includes('already been registered')) {
-        console.log(
-          `Email ${email} already exists, trying to find existing user`
-        );
-
         // Strategy 1: Lookup user again, using enhanced method (including admin client)
         const existingUser = await this.findUserByEmployeeNumber(
           userData.employeeNumber
         );
         if (existingUser) {
-          console.log(
-            `Found existing user via email lookup: ${existingUser.id}`
-          );
           return existingUser;
         }
 
         // Strategy 2: If email lookup fails, try to get user ID from Auth API, then lookup profile directly
-        console.log(
-          'Email lookup failed, trying to find auth user and corresponding profile...'
-        );
         try {
           // Use Admin API to list auth.users
           const { data: authUsers, error: authLookupError } =
@@ -259,18 +274,11 @@ export class SSOUserService {
           if (!authLookupError && authUsers?.users) {
             const authUser = authUsers.users.find(user => user.email === email);
             if (authUser) {
-              console.log(`Found auth.users record with ID: ${authUser.id}`);
-
               // Lookup profile by ID
               const profileUser = await this.findUserByIdWithAdmin(authUser.id);
               if (profileUser) {
-                console.log(
-                  `Found corresponding profile: ${profileUser.username}`
-                );
                 return profileUser;
               } else {
-                console.log('Profile not found, creating one...');
-
                 // If auth.users exists but profiles does not, create profiles record
                 const { data: newProfile, error: createError } =
                   await adminSupabase
@@ -300,7 +308,6 @@ export class SSOUserService {
                   throw new Error('PROFILE_CREATION_FAILED');
                 }
 
-                console.log('Successfully created missing profile');
                 return newProfile as Profile;
               }
             }
@@ -326,10 +333,6 @@ export class SSOUserService {
         throw new Error('Failed to create auth user: no user returned');
       }
 
-      console.log(
-        `Successfully created auth.users record with ID: ${authUser.user.id}`
-      );
-
       // Wait for trigger to create profiles record, then lookup user by email
       // Use retry mechanism; lookup by email is more reliable than by ID
       let profile = null;
@@ -347,15 +350,7 @@ export class SSOUserService {
           );
 
           if (profile) {
-            console.log(
-              'Successfully found user via email after trigger execution'
-            );
-
             // Update SSO-specific fields (employee_number, sso_provider_id, etc.)
-            // Ensure employee_number is set correctly
-            console.log(
-              `Updating profile ${profile.id} with employee_number: ${userData.employeeNumber}`
-            );
 
             const { data: updatedProfile, error: updateError } = await supabase
               .from('profiles')
@@ -385,9 +380,6 @@ export class SSOUserService {
             break; // Success, exit retry loop
           } else {
             retryCount++;
-            console.log(
-              `Profile not found via email yet, retry ${retryCount}/${maxRetries}`
-            );
           }
         } catch (error) {
           retryCount++;
@@ -400,10 +392,6 @@ export class SSOUserService {
 
       // Fallback: if trigger-created record cannot be found by email, use admin client to lookup and update
       if (!profile) {
-        console.log(
-          'Trying admin client to find and update existing profile...'
-        );
-
         try {
           const adminSupabaseForProfile = await createAdminClient();
 
@@ -416,14 +404,7 @@ export class SSOUserService {
               .single();
 
           if (!findError && existingProfile) {
-            console.log(
-              'Found existing profile via admin client, updating SSO fields...'
-            );
-
             // Update SSO fields in existing record
-            console.log(
-              `Updating existing profile ${authUser.user.id} with employee_number: ${userData.employeeNumber}, email: ${email}`
-            );
 
             const { data: updatedProfile, error: updateError } =
               await adminSupabaseForProfile
@@ -448,14 +429,8 @@ export class SSOUserService {
             }
 
             profile = updatedProfile;
-            console.log(
-              'Successfully updated existing profile with SSO fields'
-            );
           } else {
             // If no profiles record, create a new one
-            console.log(
-              `No profile found, creating new one with admin client for user ${authUser.user.id}, employee_number: ${userData.employeeNumber}, email: ${email}`
-            );
 
             const { data: newProfile, error: createError } =
               await adminSupabaseForProfile
@@ -486,7 +461,6 @@ export class SSOUserService {
             }
 
             profile = newProfile;
-            console.log('Successfully created new profile with admin client');
           }
         } catch (adminError) {
           const errorMsg = 'Failed to handle profile with admin client';
@@ -495,7 +469,6 @@ export class SSOUserService {
           // Cleanup created auth user
           try {
             await adminSupabase.auth.admin.deleteUser(authUser.user.id);
-            console.log('Cleaned up auth user after profile handling failure');
           } catch (cleanupError) {
             console.error('Failed to cleanup auth user:', cleanupError);
           }
@@ -527,8 +500,6 @@ export class SSOUserService {
     try {
       const supabase = await createClient();
 
-      console.log(`Updating last login time for user: ${userId}`);
-
       // Use database function to update login time
       const { data: success, error } = await supabase.rpc(
         'update_sso_user_login',
@@ -542,12 +513,7 @@ export class SSOUserService {
         throw error;
       }
 
-      const updateSuccessful = success === true;
-      console.log(
-        `Last login update ${updateSuccessful ? 'successful' : 'failed'} for user: ${userId}`
-      );
-
-      return updateSuccessful;
+      return success === true;
     } catch (error) {
       console.error('Failed to update user last login:', error);
       throw new Error(
@@ -669,9 +635,6 @@ export class SSOUserService {
       }
     }
 
-    console.log(
-      `Batch update completed: ${result.success} successful, ${result.failed} failed`
-    );
     return result;
   }
 }
