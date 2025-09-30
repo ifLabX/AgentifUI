@@ -37,6 +37,10 @@ export default function LoginPage() {
         return t('errors.ssoProviderNotFound');
       case 'missing_ticket':
         return t('errors.missingTicket');
+      case 'account_suspended':
+        return t('errors.accountSuspended');
+      case 'account_pending':
+        return t('errors.accountPending');
       default:
         return t('errors.default');
     }
