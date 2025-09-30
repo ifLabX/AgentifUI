@@ -1,6 +1,7 @@
 // SSO login API
 // establish Supabase session for verified SSO users
 // add request deduplication logic and improved error handling
+import { getAccountStatusError } from '@lib/constants/auth-errors';
 import { createAdminClient } from '@lib/supabase/server';
 
 import { cookies } from 'next/headers';
@@ -146,15 +147,10 @@ export async function POST(request: NextRequest) {
 
         // Reject session creation for non-active users
         if (profile?.status !== 'active') {
-          const errorMap: Record<string, string> = {
-            suspended: 'account_suspended',
-            pending: 'account_pending',
-          };
-          const errorCode =
-            errorMap[profile.status as string] || 'invalid_account';
+          const errorCode = getAccountStatusError(profile?.status);
 
           console.log(
-            `[SSO Authentication] Rejected login attempt for user with status '${profile.status}': ${userId}`
+            `[SSO Authentication] Rejected login attempt for user with status '${profile?.status ?? 'NULL'}': ${userId}`
           );
           return NextResponse.json(
             {

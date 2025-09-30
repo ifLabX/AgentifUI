@@ -2,6 +2,10 @@ import {
   createCorsHeaders,
   handleCorsPreflightRequest,
 } from '@lib/config/cors-config';
+import {
+  AUTH_SYSTEM_ERRORS,
+  getAccountStatusError,
+} from '@lib/constants/auth-errors';
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -156,19 +160,41 @@ export async function middleware(request: NextRequest) {
         .single();
 
       if (error) {
-        console.error(`[Middleware] Error querying user profile:`, error);
-        // Fail-open: allow request to proceed but log the error
-      } else if (profile) {
+        console.error(
+          `[SECURITY] Profile query failed for user ${user.id}:`,
+          error.message,
+          { pathname, code: error.code }
+        );
+        await supabase.auth.signOut();
+        return NextResponse.redirect(
+          new URL(
+            `/login?error=${AUTH_SYSTEM_ERRORS.PROFILE_CHECK_FAILED}`,
+            request.url
+          )
+        );
+      }
+
+      // 🔒 Defense: Handle missing profile (should never happen but defensive)
+      if (!profile) {
+        console.error(
+          `[SECURITY] No profile found for authenticated user ${user.id}`
+        );
+        await supabase.auth.signOut();
+        return NextResponse.redirect(
+          new URL(
+            `/login?error=${AUTH_SYSTEM_ERRORS.PROFILE_NOT_FOUND}`,
+            request.url
+          )
+        );
+      }
+
+      // Now we have a valid profile, check status and permissions
+      {
         // 🔒 Priority 1: Check account status using whitelist validation
         // Only 'active' status users are allowed to access protected routes
         // This prevents bypass via invalid status values (NULL, typos, unexpected enums)
         if (profile.status !== 'active') {
-          const errorMap: Record<string, string> = {
-            suspended: 'account_suspended',
-            pending: 'account_pending',
-          };
-          const errorCode =
-            errorMap[profile.status as string] || 'invalid_account';
+          const errorCode = getAccountStatusError(profile.status);
 
           console.log(
             `[Middleware] User with status '${profile.status}' attempting to access ${pathname}, signing out and redirecting to login`
@@ -193,10 +219,17 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       console.error(
-        `[Middleware] Error checking user status and permissions:`,
-        error
+        `[SECURITY] Unexpected error in account validation for user ${user.id}:`,
+        error instanceof Error ? error.message : 'Unknown error',
+        { pathname }
       );
-      // Fail-open: allow request to proceed for availability
+      await supabase.auth.signOut();
+      return NextResponse.redirect(
+        new URL(
+          `/login?error=${AUTH_SYSTEM_ERRORS.PERMISSION_CHECK_FAILED}`,
+          request.url
+        )
+      );
     }
   }
 

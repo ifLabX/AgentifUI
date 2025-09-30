@@ -43,6 +43,12 @@ export default function LoginPage() {
         return t('errors.accountPending');
       case 'invalid_account':
         return t('errors.invalidAccount');
+      case 'profile_check_failed':
+        return t('errors.profileCheckFailed');
+      case 'profile_not_found':
+        return t('errors.profileNotFound');
+      case 'permission_check_failed':
+        return t('errors.permissionCheckFailed');
       default:
         return t('errors.default');
     }
