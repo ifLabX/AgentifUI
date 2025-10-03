@@ -26,6 +26,18 @@ export function CreatePageDialog({
   onSuccess,
 }: CreatePageDialogProps) {
   const [slug, setSlug] = useState('');
+  const [titles, setTitles] = useState<Record<string, string>>({
+    'en-US': '',
+    'zh-CN': '',
+    'es-ES': '',
+    'zh-TW': '',
+    'ja-JP': '',
+    'de-DE': '',
+    'fr-FR': '',
+    'ru-RU': '',
+    'it-IT': '',
+    'pt-PT': '',
+  });
   const [isPublished, setIsPublished] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -56,6 +68,7 @@ export function CreatePageDialog({
         },
         body: JSON.stringify({
           slug: slug.trim(),
+          titles,
           isPublished,
         }),
       });
@@ -69,6 +82,18 @@ export function CreatePageDialog({
 
       toast.success(`Page "${slug}" created successfully!`);
       setSlug('');
+      setTitles({
+        'en-US': '',
+        'zh-CN': '',
+        'es-ES': '',
+        'zh-TW': '',
+        'ja-JP': '',
+        'de-DE': '',
+        'fr-FR': '',
+        'ru-RU': '',
+        'it-IT': '',
+        'pt-PT': '',
+      });
       setIsPublished(false);
       onOpenChange(false);
       onSuccess();
@@ -94,7 +119,7 @@ export function CreatePageDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="max-h-[60vh] space-y-6 overflow-y-auto py-4">
           {/* Route Path Input */}
           <div className="space-y-2">
             <label
@@ -123,6 +148,48 @@ export function CreatePageDialog({
             <p className="text-xs text-stone-500 dark:text-stone-400">
               Examples: /contact, /services, /services/consulting
             </p>
+          </div>
+
+          {/* Page Titles */}
+          <div className="space-y-3">
+            <label
+              className={cn(
+                'text-sm font-medium',
+                'text-stone-700 dark:text-stone-300'
+              )}
+            >
+              Page Titles (for tabs)
+            </label>
+            <div className="space-y-2">
+              {Object.entries(titles).map(([locale, title]) => (
+                <div key={locale} className="flex items-center gap-2">
+                  <span className="w-16 text-xs text-stone-500 dark:text-stone-400">
+                    {locale}
+                  </span>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={e =>
+                      setTitles({ ...titles, [locale]: e.target.value })
+                    }
+                    placeholder={
+                      locale === 'en-US'
+                        ? 'Help'
+                        : locale === 'zh-CN'
+                          ? '帮助'
+                          : ''
+                    }
+                    className={cn(
+                      'flex-1 rounded border px-2 py-1.5 text-sm',
+                      'border-stone-300 bg-white text-stone-900',
+                      'dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100',
+                      'focus:ring-2 focus:ring-stone-500 focus:outline-none'
+                    )}
+                    disabled={isCreating}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Publish Status */}

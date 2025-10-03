@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export interface DynamicPage {
   id: string;
   slug: string;
+  titles: Record<string, string>;
   is_published: boolean;
   created_at: string;
   updated_at: string;

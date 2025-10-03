@@ -1,5 +1,5 @@
 import { createClient } from '@lib/supabase/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
 
     // Parse request body
     const body = await request.json();
-    const { slug, isPublished = false } = body;
+    const { slug, titles = {}, isPublished = false } = body;
 
     if (!slug) {
       return NextResponse.json(
@@ -149,6 +149,7 @@ export async function POST(request: Request) {
       .from('dynamic_pages')
       .insert({
         slug,
+        titles,
         is_published: isPublished,
         created_by: user.id,
       })
@@ -195,6 +196,96 @@ export async function POST(request: Request) {
     return NextResponse.json({ page: newPage }, { status: 201 });
   } catch (error) {
     console.error('POST /api/admin/dynamic-pages error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/admin/dynamic-pages?slug=/path
+ * Delete a dynamic page
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const supabase = await createClient();
+
+    // Check if user is admin
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Get slug from query params
+    const { searchParams } = new URL(request.url);
+    const slug = searchParams.get('slug');
+
+    if (!slug) {
+      return NextResponse.json(
+        { error: 'Slug parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    // Delete from database
+    const { error: deleteError } = await supabase
+      .from('dynamic_pages')
+      .delete()
+      .eq('slug', slug);
+
+    if (deleteError) {
+      console.error('Failed to delete dynamic page:', deleteError);
+      return NextResponse.json(
+        { error: 'Failed to delete page' },
+        { status: 500 }
+      );
+    }
+
+    // Remove from dynamicRoutes array in JSON file
+    const routesData = await fs.readFile(RESERVED_ROUTES_PATH, 'utf-8');
+    const routes = JSON.parse(routesData);
+    routes.dynamicRoutes = routes.dynamicRoutes.filter(
+      (route: string) => route !== slug
+    );
+    await fs.writeFile(RESERVED_ROUTES_PATH, JSON.stringify(routes, null, 2));
+
+    // Remove translation sections from all language files
+    const messagesDir = path.join(process.cwd(), 'messages');
+    const locales = ['en-US', 'zh-CN', 'es-ES', 'zh-TW', 'ja-JP', 'de-DE', 'fr-FR', 'ru-RU', 'it-IT', 'pt-PT'];
+
+    for (const locale of locales) {
+      try {
+        const messagePath = path.join(messagesDir, `${locale}.json`);
+        const messageData = JSON.parse(await fs.readFile(messagePath, 'utf-8'));
+
+        // Remove the dynamic page section
+        const sectionKey = slug.replace(/\//g, '_');
+        if (messageData.pages?.dynamic?.[sectionKey]) {
+          delete messageData.pages.dynamic[sectionKey];
+        }
+
+        await fs.writeFile(messagePath, JSON.stringify(messageData, null, 2));
+      } catch (error) {
+        console.warn(`Failed to clean up translations for ${locale}:`, error);
+      }
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('DELETE /api/admin/dynamic-pages error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

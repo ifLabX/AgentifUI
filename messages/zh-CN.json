@@ -2157,11 +2157,63 @@
     },
     "dynamic": {
       "_help": {
-        "sections": [],
+        "sections": [
+          {
+            "id": "section-1759492794627-6lcilnoo1",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1759492795773-qu9ws68a8",
+                  "type": "heading",
+                  "props": {
+                    "content": "不帮",
+                    "level": 2,
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1759492810641-13rqo8kbf",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1759492810641-kldghrcmk",
+                  "type": "divider",
+                  "props": {
+                    "style": "solid",
+                    "thickness": "thin",
+                    "color": "gray"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
         "metadata": {
           "version": "1.0.0",
-          "lastModified": "2025-10-03T11:11:42.963Z",
-          "author": "admin"
+          "lastModified": "2025-10-03T12:00:12.929Z",
+          "author": "system-migration",
+          "migrated": true
         }
       }
     }

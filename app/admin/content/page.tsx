@@ -4,6 +4,7 @@ import { AboutEditor } from '@components/admin/content/about-editor';
 import { AboutPreview } from '@components/admin/content/about-preview';
 import { ContentTabs } from '@components/admin/content/content-tabs';
 import { CreatePageDialog } from '@components/admin/content/create-page-dialog';
+import { DeletePageDialog } from '@components/admin/content/delete-page-dialog';
 import { EditorSkeleton } from '@components/admin/content/editor-skeleton';
 import { HomePreviewDynamic } from '@components/admin/content/home-preview-dynamic';
 import { PreviewToolbar } from '@components/admin/content/preview-toolbar';
@@ -104,6 +105,11 @@ export default function ContentManagementPage() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [deleteDialogState, setDeleteDialogState] = useState<{
+    open: boolean;
+    slug: string;
+    title?: string;
+  }>({ open: false, slug: '' });
 
   useEffect(() => {
     const loadTranslations = async () => {
@@ -476,6 +482,19 @@ export default function ContentManagementPage() {
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
                 onCreatePage={() => setShowCreateDialog(true)}
+                onDeletePage={slug => {
+                  // Get page title for confirmation dialog
+                  import('@lib/hooks/use-dynamic-pages').then(
+                    ({ useDynamicPages }) => {
+                      // This is a workaround - ideally we should pass pages as prop
+                      setDeleteDialogState({
+                        open: true,
+                        slug,
+                        title: slug,
+                      });
+                    }
+                  );
+                }}
               />
             </div>
           </div>
@@ -673,6 +692,24 @@ export default function ContentManagementPage() {
         onOpenChange={setShowCreateDialog}
         onSuccess={() => {
           // Reload the page to show new tab
+          window.location.reload();
+        }}
+      />
+
+      {/* Delete Page Dialog */}
+      <DeletePageDialog
+        open={deleteDialogState.open}
+        onOpenChange={open =>
+          setDeleteDialogState({ ...deleteDialogState, open })
+        }
+        slug={deleteDialogState.slug}
+        title={deleteDialogState.title}
+        onSuccess={() => {
+          // Switch to about tab if deleting current tab
+          if (activeTab === `dynamic:${deleteDialogState.slug}`) {
+            handleTabChange('about');
+          }
+          // Reload to refresh tabs
           window.location.reload();
         }}
       />

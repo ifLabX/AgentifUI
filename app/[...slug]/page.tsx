@@ -1,12 +1,13 @@
 'use client';
 
 import { DynamicAboutRenderer } from '@components/about/dynamic-about-renderer';
-import { AdminButton } from '@components/admin/admin-button';
-import { LanguageSwitcher } from '@components/ui/language-switcher';
 import { PageLoader } from '@components/ui/page-loader';
 import { useDynamicTranslations } from '@lib/hooks/use-dynamic-translations';
+import { useMobile } from '@lib/hooks';
 import { createClient } from '@lib/supabase/client';
+import { useSidebarStore } from '@lib/stores/sidebar-store';
 import type { AboutTranslationData } from '@lib/types/about-page-components';
+import { cn } from '@lib/utils';
 
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -14,6 +15,8 @@ import { useEffect, useState } from 'react';
 export default function DynamicPage() {
   const params = useParams();
   const router = useRouter();
+  const { isExpanded } = useSidebarStore();
+  const isMobile = useMobile();
 
   // Handle array slug from catch-all route
   const slugArray = Array.isArray(params.slug) ? params.slug : [params.slug];
@@ -21,6 +24,12 @@ export default function DynamicPage() {
 
   const [pageExists, setPageExists] = useState<boolean | null>(null);
   const [mounted, setMounted] = useState(false);
+
+  // Calculate left margin based on sidebar state
+  const getLeftMargin = () => {
+    if (isMobile) return 'ml-0';
+    return isExpanded ? 'ml-64' : 'ml-16';
+  };
 
   // Dynamic translation section key
   const sectionKey = `pages.dynamic.${slug.replace(/\//g, '_')}`;
@@ -123,13 +132,13 @@ export default function DynamicPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-stone-100 px-4 py-12 dark:bg-stone-900 sm:px-6 lg:px-8">
-      {/* Top-right toolbar */}
-      <div className="fixed top-4 right-4 z-50 hidden flex-col items-end gap-2 sm:flex sm:flex-row sm:items-center sm:gap-3 lg:top-6 lg:right-6">
-        <AdminButton />
-        <LanguageSwitcher variant="floating" />
-      </div>
-
+    <div
+      className={cn(
+        'relative min-h-screen w-full bg-stone-100 px-4 py-12 dark:bg-stone-900 sm:px-6 lg:px-8',
+        getLeftMargin(),
+        'transition-[margin-left] duration-150 ease-in-out'
+      )}
+    >
       <main className="mx-auto max-w-5xl">
         <DynamicAboutRenderer
           translationData={translationData}
