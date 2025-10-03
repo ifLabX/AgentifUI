@@ -33,6 +33,62 @@ import { DifyStopTaskRequestPayload, DifyStopTaskResponse } from './types';
 const DIFY_API_BASE_URL = '/api/dify';
 
 /**
+ * Safely extract usage data with type checking
+ * @param usage - Unknown usage data from API response
+ * @returns Validated DifyUsage object or undefined
+ */
+const extractUsage = (usage: unknown): DifyUsage | undefined => {
+  if (usage && typeof usage === 'object' && 'total_tokens' in usage) {
+    return usage as DifyUsage;
+  }
+  return undefined;
+};
+
+/**
+ * Type guard to validate DifyRetrieverResource structure
+ * @param resource - Unknown resource object
+ * @returns True if resource matches DifyRetrieverResource interface
+ */
+const isRetrieverResource = (
+  resource: unknown
+): resource is DifyRetrieverResource =>
+  !!resource &&
+  typeof resource === 'object' &&
+  'segment_id' in resource &&
+  'document_id' in resource &&
+  'document_name' in resource &&
+  'position' in resource &&
+  'content' in resource;
+
+/**
+ * Normalize and filter retriever resources array
+ * @param value - Unknown value to normalize
+ * @returns Array of valid retriever resources
+ */
+const normaliseResources = (value: unknown): DifyRetrieverResource[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter(isRetrieverResource);
+};
+
+/**
+ * Extract retriever resources with fallback logic
+ * @param preferred - Preferred source (event.metadata.retriever_resources)
+ * @param fallback - Fallback source (event.retriever_resources)
+ * @returns Array of valid retriever resources
+ */
+const extractRetrieverResources = (
+  preferred: unknown,
+  fallback: unknown
+): DifyRetrieverResource[] => {
+  const preferredResources = normaliseResources(preferred);
+  return preferredResources.length
+    ? preferredResources
+    : normaliseResources(fallback);
+};
+
+/**
  * Calls Dify's chat-messages endpoint and handles streaming response
  *
  * @param payload - Request body sent to Dify API
@@ -361,53 +417,6 @@ export async function streamDifyChat(
                   taskId
                 );
               }
-
-              // Safely extract usage data with type checking
-              const extractUsage = (usage: unknown): DifyUsage | undefined => {
-                if (
-                  usage &&
-                  typeof usage === 'object' &&
-                  'total_tokens' in usage
-                ) {
-                  return usage as DifyUsage;
-                }
-                return undefined;
-              };
-
-              const isRetrieverResource = (
-                resource: unknown
-              ): resource is DifyRetrieverResource =>
-                !!resource &&
-                typeof resource === 'object' &&
-                'segment_id' in resource &&
-                'document_id' in resource &&
-                'document_name' in resource &&
-                'position' in resource &&
-                'content' in resource;
-
-              const extractRetrieverResources = (
-                preferred: unknown,
-                fallback: unknown
-              ): DifyRetrieverResource[] => {
-                const normalise = (value: unknown) => {
-                  if (!Array.isArray(value)) {
-                    return [];
-                  }
-                  return value.filter(isRetrieverResource);
-                };
-
-                const preferredResources = normalise(preferred);
-                if (preferredResources.length) {
-                  return preferredResources;
-                }
-
-                const fallbackResources = normalise(fallback);
-                if (fallbackResources.length) {
-                  return fallbackResources;
-                }
-
-                return [];
-              };
 
               const completionData = {
                 usage: extractUsage(event.metadata?.usage || event.usage),
