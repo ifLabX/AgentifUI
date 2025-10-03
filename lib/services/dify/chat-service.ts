@@ -374,10 +374,48 @@ export async function streamDifyChat(
                 return undefined;
               };
 
+              const isRetrieverResource = (
+                resource: unknown
+              ): resource is DifyRetrieverResource =>
+                !!resource &&
+                typeof resource === 'object' &&
+                'segment_id' in resource &&
+                'document_id' in resource &&
+                'document_name' in resource &&
+                'position' in resource &&
+                'content' in resource;
+
+              const extractRetrieverResources = (
+                preferred: unknown,
+                fallback: unknown
+              ): DifyRetrieverResource[] => {
+                const normalise = (value: unknown) => {
+                  if (!Array.isArray(value)) {
+                    return [];
+                  }
+                  return value.filter(isRetrieverResource);
+                };
+
+                const preferredResources = normalise(preferred);
+                if (preferredResources.length) {
+                  return preferredResources;
+                }
+
+                const fallbackResources = normalise(fallback);
+                if (fallbackResources.length) {
+                  return fallbackResources;
+                }
+
+                return [];
+              };
+
               const completionData = {
                 usage: extractUsage(event.metadata?.usage || event.usage),
                 metadata: event.metadata || {},
-                retrieverResources: event.retriever_resources || [],
+                retrieverResources: extractRetrieverResources(
+                  event.metadata?.retriever_resources,
+                  event.retriever_resources
+                ),
               };
 
               console.log(
