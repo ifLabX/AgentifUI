@@ -2154,6 +2154,16 @@
         "migrationTimestamp": "2025-08-08T12:23:05.510Z",
         "locale": "en-US"
       }
+    },
+    "dynamic": {
+      "_help": {
+        "sections": [],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-03T11:11:42.959Z",
+          "author": "admin"
+        }
+      }
     }
   },
   "components": {

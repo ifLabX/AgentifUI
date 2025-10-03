@@ -2148,6 +2148,16 @@
         "migrationTimestamp": "2025-08-08T12:23:05.516Z",
         "locale": "zh-TW"
       }
+    },
+    "dynamic": {
+      "_help": {
+        "sections": [],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-03T11:11:42.967Z",
+          "author": "admin"
+        }
+      }
     }
   },
   "components": {

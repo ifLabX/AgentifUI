@@ -1,0 +1,33 @@
+{
+  "reservedRoutes": [
+    "/",
+    "/about",
+    "/home",
+    "/chat",
+    "/chat/history",
+    "/login",
+    "/register",
+    "/phone-login",
+    "/forgot-password",
+    "/reset-password",
+    "/sso",
+    "/sso/processing",
+    "/admin",
+    "/admin/users",
+    "/admin/groups",
+    "/admin/permissions",
+    "/admin/content",
+    "/admin/api-config",
+    "/admin/sso-providers",
+    "/settings",
+    "/settings/profile",
+    "/settings/account",
+    "/settings/appearance",
+    "/settings/language",
+    "/apps",
+    "/api"
+  ],
+  "dynamicRoutes": [
+    "/help"
+  ]
+}

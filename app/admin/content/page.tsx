@@ -3,6 +3,7 @@
 import { AboutEditor } from '@components/admin/content/about-editor';
 import { AboutPreview } from '@components/admin/content/about-preview';
 import { ContentTabs } from '@components/admin/content/content-tabs';
+import { CreatePageDialog } from '@components/admin/content/create-page-dialog';
 import { EditorSkeleton } from '@components/admin/content/editor-skeleton';
 import { HomePreviewDynamic } from '@components/admin/content/home-preview-dynamic';
 import { PreviewToolbar } from '@components/admin/content/preview-toolbar';
@@ -64,7 +65,7 @@ export default function ContentManagementPage() {
   const { setPageContent: setHomePageContent, reset: resetHomeEditor } =
     useHomeEditorStore();
 
-  const [activeTab, setActiveTab] = useState<'about' | 'home'>('about');
+  const [activeTab, setActiveTab] = useState<string>('about');
   const [showPreview, setShowPreview] = useState(true);
   const [previewDevice, setPreviewDevice] = useState<
     'desktop' | 'tablet' | 'mobile'
@@ -87,6 +88,14 @@ export default function ContentManagementPage() {
   const [originalHomeTranslations, setOriginalHomeTranslations] =
     useState<Record<SupportedLocale, HomeTranslationData> | null>(null);
 
+  // Dynamic page translations
+  const [dynamicTranslations, setDynamicTranslations] = useState<Record<
+    SupportedLocale,
+    AboutTranslationData
+  > | null>(null);
+  const [originalDynamicTranslations, setOriginalDynamicTranslations] =
+    useState<Record<SupportedLocale, AboutTranslationData> | null>(null);
+
   const [currentLocale, setCurrentLocale] = useState<SupportedLocale>(
     getCurrentLocaleFromCookie()
   );
@@ -94,6 +103,7 @@ export default function ContentManagementPage() {
     []
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   useEffect(() => {
     const loadTranslations = async () => {
@@ -109,6 +119,14 @@ export default function ContentManagementPage() {
             await TranslationService.getHomePageTranslations();
           setHomeTranslations(translations);
           setOriginalHomeTranslations(translations);
+        } else if (activeTab.startsWith('dynamic:')) {
+          // Load dynamic page translations
+          const slug = activeTab.replace('dynamic:', '');
+          const sectionKey = `pages.dynamic.${slug.replace(/\//g, '_')}`;
+          const translations =
+            await TranslationService.getAllTranslationsForSection(sectionKey);
+          setDynamicTranslations(translations);
+          setOriginalDynamicTranslations(translations);
         }
 
         // load language list only when needed
@@ -129,7 +147,7 @@ export default function ContentManagementPage() {
 
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'about' || tab === 'home') {
+    if (tab) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -141,15 +159,20 @@ export default function ContentManagementPage() {
     const homeChanged =
       JSON.stringify(homeTranslations) !==
       JSON.stringify(originalHomeTranslations);
-    setHasChanges(aboutChanged || homeChanged);
+    const dynamicChanged =
+      JSON.stringify(dynamicTranslations) !==
+      JSON.stringify(originalDynamicTranslations);
+    setHasChanges(aboutChanged || homeChanged || dynamicChanged);
   }, [
     aboutTranslations,
     originalAboutTranslations,
     homeTranslations,
     originalHomeTranslations,
+    dynamicTranslations,
+    originalDynamicTranslations,
   ]);
 
-  const handleTabChange = (tab: 'about' | 'home') => {
+  const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', tab);
@@ -165,6 +188,16 @@ export default function ContentManagementPage() {
       } else if (activeTab === 'home' && homeTranslations) {
         await TranslationService.updateHomePageTranslations(homeTranslations);
         setOriginalHomeTranslations({ ...homeTranslations });
+      } else if (activeTab.startsWith('dynamic:') && dynamicTranslations) {
+        // Save dynamic page translations
+        const slug = activeTab.replace('dynamic:', '');
+        const sectionKey = `pages.dynamic.${slug.replace(/\//g, '_')}`;
+        await TranslationService.batchUpdateTranslations({
+          section: sectionKey,
+          updates: dynamicTranslations,
+          mode: 'merge',
+        });
+        setOriginalDynamicTranslations({ ...dynamicTranslations });
       }
 
       // clear dynamic translation cache to force refresh on frontend
@@ -338,6 +371,22 @@ export default function ContentManagementPage() {
         <div>{t('loadingEditor.home')}</div>
       );
     }
+
+    if (activeTab.startsWith('dynamic:')) {
+      // Render editor for dynamic pages
+      return dynamicTranslations ? (
+        <AboutEditor
+          translations={dynamicTranslations}
+          currentLocale={currentLocale}
+          supportedLocales={supportedLocales}
+          onTranslationsChange={setDynamicTranslations}
+          onLocaleChange={setCurrentLocale}
+        />
+      ) : (
+        <div>Loading dynamic page editor...</div>
+      );
+    }
+
     return null;
   };
 
@@ -364,6 +413,18 @@ export default function ContentManagementPage() {
         />
       ) : (
         <div>{t('loadingPreview')}</div>
+      );
+    }
+    if (activeTab.startsWith('dynamic:')) {
+      // Preview for dynamic pages
+      const currentDynamicTranslation = dynamicTranslations?.[currentLocale];
+      return currentDynamicTranslation ? (
+        <AboutPreview
+          translation={currentDynamicTranslation}
+          previewDevice={previewDevice}
+        />
+      ) : (
+        <div>Loading preview...</div>
       );
     }
     return null;
@@ -414,6 +475,7 @@ export default function ContentManagementPage() {
               <ContentTabs
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
+                onCreatePage={() => setShowCreateDialog(true)}
               />
             </div>
           </div>
@@ -604,6 +666,16 @@ export default function ContentManagementPage() {
           </div>
         </div>
       )}
+
+      {/* Create Page Dialog */}
+      <CreatePageDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSuccess={() => {
+          // Reload the page to show new tab
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
