@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Environment files
+.env*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+supabase/migrations/*.sql
+*.db
+*.sqlite
+
+# Generated files
+*.d.ts
+!src/**/*.d.ts
+
+# Package manager files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Other
+*.tsbuildinfo
+.cache/
+.parcel-cache/
+
+# Legal and policy documents with special formatting
+CLA.md
+
+# GitHub workflows (to preserve exact formatting)
+.github/workflows/*.yml
+.github/workflows/*.yaml 

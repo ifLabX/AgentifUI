@@ -1,0 +1,103 @@
+name: 🐛 Bug Report
+description: Report a bug to help us improve AgentifUI
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report this bug! Your feedback helps make AgentifUI better for everyone.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Self Checks
+      description: Please confirm you have completed the following steps
+      options:
+        - label: This is only for bug report, if you would like to ask a question, please head to Discussions
+          required: true
+        - label: I have searched for existing issues
+          required: true
+        - label: I confirm that I am using English to submit this report
+          required: true
+        - label: Please do not modify this template and fill in all the required fields
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: AgentifUI Version
+      description: Which version of AgentifUI are you using?
+      placeholder: 'e.g., 0.1.0, main branch, commit hash'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: How are you running AgentifUI?
+      options:
+        - Local Development (pnpm dev)
+        - Production (PM2)
+        - Docker
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: |
+        Describe what happened...
+
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide step-by-step instructions to reproduce the issue
+      placeholder: |
+        Describe the steps to reproduce the issue...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: ✔️ Expected Behavior
+      description: What should have happened?
+      placeholder: Describe the expected outcome...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: ❌ Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what actually happened...
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console Logs
+      description: Please paste any relevant console logs, error messages, or stack traces
+      placeholder: Paste console output here...
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the problem here, such as:
+        - Screenshots or videos
+        - Configuration details
+        - Related issues or workarounds
+
+      placeholder: |
+        Add any other context about the problem here...

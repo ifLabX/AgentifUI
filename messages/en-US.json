@@ -1,0 +1,2590 @@
+{
+  "common": {
+    "ui": {
+      "cancel": "Cancel",
+      "back": "Back",
+      "loading": "Loading...",
+      "retry": "Retry",
+      "remove": "Remove",
+      "error": "Error",
+      "download": "Download",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "open": "Open",
+      "dismiss": "Dismiss",
+      "customSelect": {
+        "placeholder": "Please select..."
+      },
+      "exportButton": {
+        "tooltip": "Export file",
+        "ariaLabel": "Export file"
+      },
+      "logoutDialog": {
+        "title": "Logout",
+        "message": "Are you sure you want to logout? You will need to log in again to access your account.",
+        "confirm": "Logout",
+        "cancel": "Cancel",
+        "loggingOut": "Logging out..."
+      },
+      "moreButton": {
+        "ariaLabel": "More options"
+      }
+    },
+    "time": {
+      "notRecorded": "Not recorded",
+      "invalidDate": "Invalid date",
+      "formatError": "Format error",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening",
+        "night": "It's getting late",
+        "default": "Hello"
+      }
+    }
+  },
+  "pages": {
+    "home": {
+      "sections": [
+        {
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "Explore the infinite possibilities of AI and create intelligent new experiences",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Large Model Integration",
+                      "description": "Support for multiple model providers including OpenAI, Anthropic, Dify, etc., meeting different enterprise needs"
+                    },
+                    {
+                      "title": "RAG Knowledge Enhancement",
+                      "description": "Integrate Retrieval-Augmented Generation (RAG) technology to enable private knowledge bases and context awareness"
+                    },
+                    {
+                      "title": "Enterprise Deployment",
+                      "description": "Support for private deployment, ensuring data security, providing stable and reliable services based on Dify backend"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "Get Started",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "Learn More",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Explore the infinite possibilities of AI.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "en-US"
+      }
+    },
+    "chat": {
+      "newChat": "New Chat",
+      "sendMessage": "Send",
+      "inputPlaceholder": "Type your message...",
+      "noMessages": "No messages yet",
+      "typing": "Typing...",
+      "recentChats": "Recent Chats",
+      "historyChats": "Chat History",
+      "input": {
+        "placeholder": "Type your message...",
+        "sendMessage": "Send message",
+        "stopGeneration": "Stop generation",
+        "attachFile": "Attach file",
+        "selectModel": "Select model",
+        "noModelAvailable": "No models available",
+        "pleaseSelectModel": "Please select a model",
+        "sending": "Sending...",
+        "uploading": "Uploading...",
+        "uploadFailed": "Upload failed",
+        "retryUpload": "Retry upload",
+        "removeFile": "Remove file",
+        "fileUploadError": "File upload error",
+        "messageSendFailed": "Message send failed",
+        "unknownError": "Unknown error",
+        "validatingConfig": "Validating app configuration...",
+        "cannotSubmit": "Cannot submit",
+        "addAttachment": "Add attachment",
+        "retryUploadTooltip": "Retry upload",
+        "removeAttachment": "Remove attachment",
+        "scrollToBottom": "Scroll to bottom"
+      },
+      "fileUpload": {
+        "selectFileType": "Select file type",
+        "image": "Image",
+        "document": "Document",
+        "audio": "Audio",
+        "video": "Video",
+        "custom": "Custom",
+        "uploadProgress": "Upload progress",
+        "uploadComplete": "Upload complete",
+        "uploadError": "Upload error",
+        "fileTooLarge": "File too large",
+        "unsupportedFormat": "Unsupported file format"
+      },
+      "fileTypeSelector": {
+        "ariaLabel": "Add attachment",
+        "notSupported": "This app does not support file uploads",
+        "noLimit": "File upload limit is 0",
+        "noTypesConfigured": "No supported file types configured",
+        "maxFilesReached": "Maximum file limit reached ({maxFiles})",
+        "addAttachment": "Add attachment ({currentFiles}/{maxFiles})",
+        "loading": "Loading...",
+        "loadError": "Failed to load file types",
+        "reachedLimit": "Limit reached ({currentFiles}/{maxFiles})",
+        "maxUpload": "Upload up to {maxFiles} files",
+        "noUploadLimit": "No upload limit"
+      },
+      "modelSelector": {
+        "noModelsAvailable": "No models available",
+        "selectModel": "Select model",
+        "appNotFound": "App not found: {appId}"
+      },
+      "messages": {
+        "assistant": "Assistant",
+        "user": "You",
+        "thinking": "Thinking...",
+        "stopped": "Stopped",
+        "completed": "Completed",
+        "copyMessage": "Copy message",
+        "editMessage": "Edit message",
+        "deleteMessage": "Delete message",
+        "regenerate": "Regenerate",
+        "feedback": "Feedback",
+        "like": "Like",
+        "dislike": "Dislike",
+        "copied": "Copied",
+        "copyFailed": "Copy failed",
+        "imageLink": "Image link",
+        "viewImage": "View image",
+        "clickToView": "Click to view",
+        "clickToViewWithAlt": "Click to view: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "{count} more questions..."
+      }
+    },
+    "chatflow": {
+      "loading": {
+        "inputConfig": "Loading input configuration..."
+      },
+      "form": {
+        "question": {
+          "label": "Your Question or Request",
+          "placeholder": "Please describe your question or request in detail...",
+          "required": "Please enter your question or request",
+          "tooLong": "Question description cannot exceed {maxLength} characters"
+        },
+        "additionalInfo": "Additional Information",
+        "reset": "Reset Form",
+        "processing": "Processing...",
+        "startConversation": "Start Conversation",
+        "checkAndCorrectErrors": "Please check and correct the errors marked in the form",
+        "defaultAppName": "AI Chat",
+        "defaultDescription": "Please enter your question to start an intelligent conversation"
+      },
+      "floatingController": {
+        "showTracker": "Show Node Tracker",
+        "hideTracker": "Hide Node Tracker"
+      },
+      "nodeTracker": {
+        "title": "Node Execution Progress",
+        "starting": "Starting Chatflow",
+        "noRecords": "No node execution records",
+        "waitingUpdate": "Waiting for node status update...",
+        "showProgress": "Node execution progress will be shown after starting conversation",
+        "executionError": "Execution Error:"
+      },
+      "executionBar": {
+        "status": {
+          "iterating": "Iterating",
+          "iterationCompleted": "Iteration Complete",
+          "iterationFailed": "Iteration Failed",
+          "waitingIteration": "Waiting Iteration",
+          "looping": "Looping",
+          "loopCompleted": "Loop Complete",
+          "loopFailed": "Loop Failed",
+          "waitingLoop": "Waiting Loop",
+          "executing": "Executing",
+          "completed": "Completed",
+          "failed": "Failed",
+          "waiting": "Waiting",
+          "unknown": "Unknown",
+          "executing_": "Executing..."
+        },
+        "nodeTypes": {
+          "start": "Start Node",
+          "llm": "LLM Inference",
+          "knowledgeRetrieval": "Knowledge Retrieval",
+          "questionClassifier": "Question Classifier",
+          "ifElse": "Conditional Branch",
+          "code": "Code Execution",
+          "templateTransform": "Template Transform",
+          "variableAssigner": "Variable Assigner",
+          "variableAggregator": "Variable Aggregator",
+          "documentExtractor": "Document Extractor",
+          "parameterExtractor": "Parameter Extractor",
+          "httpRequest": "HTTP Request",
+          "listOperator": "List Operator",
+          "iteration": "Loop Iteration",
+          "end": "End Node",
+          "node": "Node"
+        },
+        "progressType": {
+          "iteration": "Iteration Progress",
+          "branch": "Branch Progress"
+        },
+        "branch": {
+          "label": "Branch"
+        }
+      }
+    },
+    "workflow": {
+      "form": {
+        "inputPlaceholder": "Please enter {label}",
+        "selectPlaceholder": "Please select {label}",
+        "rangeHint": "Range: {min} - {max}",
+        "minValueHint": "Minimum value: {min}",
+        "maxValueHint": "Maximum value: {max}",
+        "stepHint": "Step: {step}",
+        "precisionHint": "Decimal places: {precision}",
+        "defaultLabel": "Input text",
+        "loading": "Loading form configuration...",
+        "noFormConfig": "This app has no input form configured",
+        "reset": "Reset form",
+        "executing": "Executing...",
+        "startExecution": "Start execution",
+        "errors": {
+          "instanceNotFound": "Service instance with instanceId {instanceId} not found"
+        },
+        "validation": {
+          "required": "{label} is required",
+          "invalidNumber": "{label} must be a valid number",
+          "minValue": "{label} cannot be less than {min}",
+          "maxValue": "{label} cannot be greater than {max}",
+          "stepValue": "{label} must be a multiple of {step}",
+          "precisionExceeded": "{label} decimal places cannot exceed {precision} digits",
+          "maxLengthExceeded": "{label} length cannot exceed {maxLength} characters",
+          "invalidSelection": "Invalid value selected for {label}",
+          "tooManyFiles": "{label} file count cannot exceed {maxFiles}",
+          "fileTooLarge": "File \"{fileName}\" in {label} exceeds {maxSize}MB",
+          "unsupportedFileType": "File \"{fileName}\" in {label} is not supported, supported types: {allowedTypes}"
+        }
+      },
+      "status": {
+        "running": "Workflow executing",
+        "completed": "Execution completed",
+        "failed": "Execution failed",
+        "stopped": "Execution stopped",
+        "pending": "Waiting for execution",
+        "unknown": "Unknown",
+        "totalTime": "Total time: {time}s"
+      },
+      "nodeStatus": {
+        "iterating": "Iterating...",
+        "iterationCompleted": "Iteration completed",
+        "iterationFailed": "Iteration failed",
+        "waitingIteration": "Waiting for iteration",
+        "looping": "Looping",
+        "loopCompleted": "Loop completed",
+        "loopFailed": "Loop failed",
+        "waitingLoop": "Waiting for loop",
+        "parallelRunning": "Parallel executing...",
+        "parallelCompleted": "Parallel completed",
+        "parallelFailed": "Parallel failed",
+        "waitingParallel": "Waiting for parallel execution",
+        "executing": "Executing...",
+        "nodeCompleted": "Execution completed",
+        "nodeFailed": "Execution failed",
+        "nodePending": "Waiting for execution",
+        "nodeUnknown": "Unknown status"
+      },
+      "nodeTypes": {
+        "start": "Start Node",
+        "llm": "LLM Inference",
+        "knowledgeRetrieval": "Knowledge Retrieval",
+        "questionClassifier": "Question Classifier",
+        "ifElse": "Conditional Branch",
+        "code": "Code Execution",
+        "templateTransform": "Template Transform",
+        "variableAssigner": "Variable Assigner",
+        "variableAggregator": "Variable Aggregator",
+        "documentExtractor": "Document Extractor",
+        "parameterExtractor": "Parameter Extractor",
+        "httpRequest": "HTTP Request",
+        "listOperator": "List Operator",
+        "iteration": "Loop Iteration",
+        "parallel": "Parallel Branch",
+        "end": "End Node"
+      },
+      "iterationDetails": {
+        "roundIteration": "Round {round} Iteration",
+        "roundLoop": "Round {round} Loop",
+        "nodeNumber": "Node {number}"
+      },
+      "buttons": {
+        "retry": "Retry",
+        "close": "Close",
+        "copy": "Copy result",
+        "copied": "Copied",
+        "download": "Download result",
+        "retryUpload": "Retry upload",
+        "removeFile": "Remove file",
+        "viewResult": "View result",
+        "stop": "Stop",
+        "reset": "Reset"
+      },
+      "history": {
+        "showHistory": "View history",
+        "hideHistory": "Close history",
+        "noDetailData": "This execution record has no detailed result data, but you can view basic information",
+        "title": "Execution History",
+        "selected": "{count} selected",
+        "batchDelete": "Batch delete",
+        "deleteSelected": "Delete selected {count} items",
+        "cancelSelection": "Cancel selection",
+        "loading": "Loading execution history...",
+        "noRecords": "No execution records",
+        "getDetailFailed": "Failed to get execution details",
+        "unknownError": "Unknown error",
+        "userNotLoggedIn": "User not logged in"
+      },
+      "fileUpload": {
+        "uploading": "Uploading file...",
+        "dropOrClick": "Drag files here or click to upload",
+        "uploadFailed": "Upload failed",
+        "supportAllTypes": "Support uploading various file types",
+        "supportTypes": "Support uploading: {types}",
+        "fileTypes": {
+          "image": "Image",
+          "document": "Document",
+          "audio": "Audio",
+          "video": "Video",
+          "custom": "Other files"
+        },
+        "uploaded": "Uploaded",
+        "maxFiles": "Upload up to {maxFiles} files ({remaining} remaining)",
+        "maxFileSize": "Maximum file size {size}MB",
+        "maxFilesReached": "Maximum file limit reached ({current}/{max})",
+        "selectedFiles": "Selected files"
+      },
+      "tabs": {
+        "inputForm": "Input Form",
+        "executionStatus": "Execution Status",
+        "history": "History"
+      },
+      "resultViewer": {
+        "title": "Workflow Execution Result",
+        "noData": "No result data",
+        "copy": "Copy result",
+        "copied": "Copied",
+        "download": "Download result"
+      }
+    },
+    "textGeneration": {
+      "status": {
+        "generating": "Generating text...",
+        "completed": "Generation completed",
+        "failed": "Generation failed",
+        "stopped": "Stopped",
+        "waiting": "Waiting to generate",
+        "result": "Generation result"
+      },
+      "progress": "Progress: {percent}%",
+      "buttons": {
+        "copy": "Copy text",
+        "copied": "Copied",
+        "download": "Download text",
+        "stop": "Stop",
+        "retry": "Retry",
+        "reset": "Reset",
+        "close": "Close"
+      },
+      "emptyState": {
+        "title": "Waiting to generate text",
+        "description": "Fill out the form on the left and click the execute button to start text generation"
+      },
+      "placeholder": {
+        "generating": "Generating text...",
+        "result": "Generated text will be displayed here"
+      },
+      "loadingState": {
+        "title": "Generating Text",
+        "description": "Please wait, generating content for you..."
+      },
+      "streamingIndicator": "Generating",
+      "stats": {
+        "characters": "Characters: {count}",
+        "words": "Words: {count}",
+        "tokensUsed": "Tokens used: {count}"
+      }
+    },
+    "apps": {
+      "startChatWith": "Start chatting with {appName}...",
+      "continueChatWith": "Continue chatting with {appName}...",
+      "defaultApp": "App",
+      "loadFailed": "App failed to load",
+      "backToMarket": "Back to App Market",
+      "loading": {
+        "app": "Loading app...",
+        "validating": "Validating app configuration...",
+        "default": "Loading..."
+      },
+      "errors": {
+        "appNotFound": "App not found",
+        "initializationFailed": "Initialization failed",
+        "appLoadFailed": "App failed to load"
+      },
+      "status": {
+        "loadingApp": "Loading app...",
+        "validatingConfig": "Validating app configuration...",
+        "loading": "Loading..."
+      },
+      "buttons": {
+        "backToMarket": "Back to App Market"
+      },
+      "market": {
+        "categories": {
+          "all": "All",
+          "favorite": "Popular",
+          "writing": "Writing",
+          "translation": "Translation",
+          "programming": "Programming",
+          "codeGeneration": "Code Generation",
+          "analysis": "Analysis",
+          "summary": "Summary",
+          "conversation": "Conversation",
+          "assistant": "Assistant",
+          "textGeneration": "Text Generation",
+          "document": "Document",
+          "dataAnalysis": "Data Analysis",
+          "development": "Development",
+          "generation": "Generation",
+          "conversationModel": "Conversation Model",
+          "reasoningModel": "Reasoning Model",
+          "documentModel": "Document Model",
+          "multimodal": "Multimodal",
+          "highPrecision": "High Precision",
+          "fastResponse": "Fast",
+          "localDeployment": "Local",
+          "enterprise": "Enterprise",
+          "private": "Private",
+          "tools": "Tools",
+          "general": "General",
+          "professional": "Professional"
+        },
+        "search": {
+          "placeholder": "Search apps..."
+        },
+        "tryAdjustSearch": "Try adjusting search criteria or browse other categories",
+        "viewMode": {
+          "grid": "Grid",
+          "list": "List"
+        },
+        "appCard": {
+          "noDescription": "No description",
+          "defaultType": "App"
+        },
+        "header": {
+          "title": "App Market",
+          "totalApps": "{count} apps in total",
+          "categoryApps": "{category} · {count} apps",
+          "totalLabel": "{count} total"
+        },
+        "categoryKeys": {
+          "all": "All",
+          "commonApps": "Popular Apps"
+        },
+        "unknownAppType": "Unknown Dify app type",
+        "useDefaultRoute": "Use default route",
+        "routeJump": "Route jump",
+        "app": "App",
+        "type": "Type",
+        "path": "Path",
+        "openAppFailed": "Failed to open app"
+      }
+    },
+    "auth": {
+      "login": {
+        "title": "Login",
+        "subtitle": "Welcome to Intelligent Assistant",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "••••••••",
+        "loginButton": "Login",
+        "forgotPasswordLink": "Forgot password?",
+        "phoneLoginLink": "📱 Login with phone verification",
+        "noAccountText": "Don't have an account?",
+        "registerLink": "Sign up now",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "orSeparator": "Login with email and password",
+        "orSeparatorSso": "Or use email and password",
+        "alerts": {
+          "registered": "Registration successful! Please check your email to verify your account, then login.",
+          "resetSuccess": "Password reset successful! Please login with your new password."
+        },
+        "errors": {
+          "oauthFailed": "OAuth login failed, please try again or use other login methods",
+          "ssoCallbackFailed": "SSO authentication callback failed, please try to login again",
+          "ticketValidationFailed": "SSO ticket validation failed, please login again",
+          "invalidEmployeeNumber": "Employee number format is incorrect, please contact administrator",
+          "userCreationFailed": "Account creation failed, this may be due to inconsistent account data. Please try to login again, if the problem persists, please contact administrator",
+          "accountDataInconsistent": "Account data is inconsistent, system is trying to automatically repair. Please wait a moment and login again",
+          "profileCreationFailed": "User profile creation failed, please contact administrator for assistance",
+          "ssoProviderNotFound": "SSO service configuration error, please contact administrator",
+          "missingTicket": "Authentication parameters missing, please login again",
+          "default": "An error occurred during login, please try again later",
+          "loginFailed": "Login failed, please check your email and password",
+          "accountSuspended": "Your account has been suspended. Please contact administrator for assistance.",
+          "accountPending": "Your account is pending approval. Please wait for administrator to activate your account.",
+          "invalidAccount": "Your account status is invalid. Please contact administrator for assistance.",
+          "profileCheckFailed": "Unable to verify your account status. Please try again or contact administrator.",
+          "profileNotFound": "Your account information was not found. Please contact administrator.",
+          "permissionCheckFailed": "Unable to verify your permissions. Please try again or contact administrator."
+        }
+      },
+      "register": {
+        "title": "Register",
+        "subtitle": "Join AgentifUI and start your AI journey",
+        "nameLabel": "Full Name",
+        "usernameLabel": "Username",
+        "usernameOptional": "(optional)",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "confirmPasswordLabel": "Confirm Password",
+        "namePlaceholder": "Enter your full name",
+        "usernamePlaceholder": "Choose a username",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "••••••••",
+        "createAccountButton": "Create Account",
+        "phoneLoginLink": "📱 Login with phone verification",
+        "hasAccountText": "Already have an account?",
+        "loginLink": "Sign in now",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "showConfirmPassword": "Show confirm password",
+        "hideConfirmPassword": "Hide confirm password",
+        "orSeparator": "Or use email and password",
+        "errors": {
+          "nameRequired": "Please enter your full name",
+          "emailRequired": "Please enter email address",
+          "passwordTooShort": "Password must be at least 6 characters",
+          "passwordMismatch": "Passwords do not match",
+          "usernameInvalid": "Username can only contain letters, numbers, underscores and hyphens, 2-20 characters long",
+          "emailExists": "This email is already registered, please use a different email or login directly",
+          "passwordWeak": "Password is not strong enough, please use a more complex password",
+          "emailInvalid": "Email format is incorrect, please check and try again",
+          "registerFailed": "Registration failed, please try again later"
+        }
+      },
+      "phoneLoginPage": {
+        "title": "AgentifUI",
+        "subtitle": "Intelligent conversation at your fingertips",
+        "orSeparator": "Or",
+        "emailLoginLink": "Login with email and password",
+        "registerLink": "Don't have an account? Sign up now",
+        "termsText": "By logging in, you agree to our",
+        "termsLink": "Terms of Service",
+        "privacyLink": "Privacy Policy",
+        "andText": "and"
+      },
+      "ssoProcessing": {
+        "title": "SSO Login",
+        "loading": "Loading..."
+      },
+      "forgotPassword": {
+        "title": "Forgot Password",
+        "subtitle": "Enter your email address and we'll send you a password reset link",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "your@email.com",
+        "sendButton": "Send Reset Link",
+        "sendingButton": "Sending...",
+        "backToLogin": "Back to Login",
+        "success": {
+          "title": "Email Sent",
+          "message": "We've sent a password reset link to {email}",
+          "instructions": "Please check your email (including spam folder) and click the link to reset your password.",
+          "noEmail": "If you don't receive the email, please check if the email address is correct or try again later."
+        },
+        "errors": {
+          "emailRequired": "Please enter a valid email address",
+          "rateLimited": "Too many requests, please try again later",
+          "sendFailed": "Failed to send, please try again later"
+        }
+      },
+      "resetPassword": {
+        "title": "Reset Password",
+        "subtitle": "Please enter your new password",
+        "verifying": "Verifying",
+        "verifyingSubtitle": "Verifying reset link...",
+        "invalidTitle": "Invalid Link",
+        "invalidSubtitle": "Password reset link has expired or is invalid",
+        "successTitle": "Password Reset Successful",
+        "successSubtitle": "Your password has been successfully reset",
+        "passwordLabel": "New Password",
+        "confirmPasswordLabel": "Confirm Password",
+        "passwordPlaceholder": "Enter new password",
+        "confirmPasswordPlaceholder": "Enter new password again",
+        "resetButton": "Reset Password",
+        "resettingButton": "Resetting...",
+        "showPassword": "Show new password",
+        "hidePassword": "Hide new password",
+        "showConfirmPassword": "Show confirm password",
+        "hideConfirmPassword": "Hide confirm password",
+        "passwordHint": "Password must contain uppercase and lowercase letters, numbers, at least 8 characters",
+        "backToLogin": "Go to Login",
+        "retryReset": "Request password reset again",
+        "successMessage": "You can now login to your account with the new password.",
+        "errors": {
+          "passwordRequired": "Please enter new password",
+          "passwordTooShort": "Password must be at least 6 characters",
+          "passwordMismatch": "Passwords do not match",
+          "passwordWeak": "Password is not strong enough, please use a more complex password",
+          "sessionExpired": "Session has expired, please request password reset again",
+          "resetFailed": "Password reset failed, please try again later",
+          "linkInvalid": "Reset link verification failed",
+          "linkExpired": "Reset link is invalid or expired, please request password reset again",
+          "verifyFailed": "Verification failed, please request password reset again"
+        }
+      },
+      "phoneLogin": {
+        "title": "Phone Login",
+        "subtitle": "Login using phone number to receive verification code",
+        "otpSubtitle": "Please enter the 6-digit verification code you received",
+        "phoneLabel": "Phone Number",
+        "otpLabel": "Verification Code",
+        "phonePlaceholder": "13812345678",
+        "otpPlaceholder": "Enter 6-digit code",
+        "sendOtpButton": "Send Verification Code",
+        "sendingButton": "Sending...",
+        "verifyButton": "Verify Code",
+        "verifyingButton": "Verifying...",
+        "resendButton": "Resend Verification Code",
+        "changePhoneButton": "Change Phone Number",
+        "otpSentTo": "Verification code sent to +86{phone}",
+        "errors": {
+          "phoneRequired": "Please enter phone number",
+          "phoneInvalid": "Please enter a valid Chinese mainland phone number",
+          "otpRequired": "Please enter verification code",
+          "otpInvalid": "Verification code should be 6 digits",
+          "sendFailed": "Failed to send verification code, please try again later",
+          "verifyFailed": "Verification code is incorrect, please re-enter"
+        },
+        "success": {
+          "otpSent": "Verification code has been sent, please check your SMS",
+          "verifySuccess": "Verification successful! Logging in..."
+        }
+      },
+      "sso": {
+        "title": "Single Sign-On Authentication",
+        "subtitle": "Login with your unified authentication account",
+        "button": "Login with SSO",
+        "simpleButton": "🏛️ Single Sign-On",
+        "jumpingButton": "Redirecting...",
+        "helpText": "Account will be created automatically on first login",
+        "contactText": "Please contact system administrator if you have any questions",
+        "startError": "Failed to start SSO login, please try again later",
+        "noProvider": "No SSO login methods available at the moment",
+        "processing": {
+          "title": "SSO Login",
+          "processing": "Processing SSO login...",
+          "welcome": "Welcome {name}, establishing session...",
+          "verifying": "Verifying identity...",
+          "sessionCheck": "Verifying session...",
+          "success": "Login successful! Redirecting...",
+          "failed": "Login failed",
+          "redirecting": "Will automatically redirect to login page in 3 seconds...",
+          "errors": {
+            "missingParams": "SSO parameters missing or invalid",
+            "userDataNotFound": "SSO user data not found",
+            "sessionExpired": "SSO session expired, please login again",
+            "loginFailed": "SSO login failed",
+            "sessionValidationFailed": "Session validation failed",
+            "noValidSessionData": "Server did not return valid session data",
+            "processingFailed": "SSO processing failed"
+          }
+        }
+      },
+      "social": {
+        "github": {
+          "login": "Login with GitHub",
+          "register": "Register with GitHub",
+          "failed": "GitHub login failed"
+        }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Profile",
+      "account": "Account",
+      "appearance": "Appearance",
+      "language": "Language",
+      "navigation": {
+        "overview": "Overview",
+        "profileNav": "Profile",
+        "accountNav": "Account",
+        "appearanceNav": "Appearance",
+        "languageNav": "Language"
+      },
+      "descriptions": {
+        "overview": "Manage your personal preferences and customize your app experience",
+        "profileDesc": "Update personal information, avatar and account settings",
+        "accountDesc": "Manage your account security and login information",
+        "appearanceDesc": "Customize themes, colors, interface layout and timezone settings",
+        "languageDesc": "Choose your preferred display language and region settings"
+      },
+      "accountSettings": {
+        "title": "Account Settings",
+        "accountInfo": "Account Information",
+        "loginEmail": "Login Email",
+        "authMethod": "Authentication Method",
+        "emailPasswordAuth": "Email & Password",
+        "securitySettings": "Security Settings",
+        "logoutAccount": "Logout of current account",
+        "confirmLogout": "Are you sure you want to logout?",
+        "confirmLogoutBtn": "Confirm Logout",
+        "logout": "Logout",
+        "loggingOut": "Logging out...",
+        "loadAccountError": "Error loading account information",
+        "retry": "Retry",
+        "deleteAccount": "Delete Account"
+      },
+      "profileSettings": {
+        "title": "Profile",
+        "accountInfo": "Account Information",
+        "registrationTime": "Registration Time",
+        "accountRole": "Account Role",
+        "lastLogin": "Last Login",
+        "editProfile": "Edit Profile",
+        "name": "Name",
+        "nickname": "Username",
+        "profileUpdated": "Profile updated successfully",
+        "updateFailed": "Failed to update profile",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "namePlaceholder": "Enter your name",
+        "usernamePlaceholder": "Enter your username",
+        "roles": {
+          "admin": "Administrator",
+          "manager": "Manager",
+          "user": "User"
+        },
+        "status": {
+          "notRecorded": "Not recorded",
+          "notSet": "Not set"
+        },
+        "loadProfileError": "Error loading profile",
+        "avatar": {
+          "defaultUser": "User",
+          "userAvatar": "{userName}'s avatar",
+          "editHover": "Edit",
+          "uploadSuccess": "Avatar uploaded successfully",
+          "deleteSuccess": "Avatar deleted successfully"
+        }
+      },
+      "avatarModal": {
+        "title": "Avatar Settings",
+        "subtitle": "Click to upload or drag image to the area below",
+        "currentAvatar": "Current Avatar",
+        "supportedFormats": "Supports JPEG, JPG, PNG, WebP formats • Max 5MB",
+        "crop": {
+          "zoom": "Zoom",
+          "cancel": "Reselect",
+          "confirm": "Confirm Crop",
+          "uploading": "Uploading..."
+        },
+        "uploadArea": {
+          "uploading": "Uploading...",
+          "changeAvatar": "Click to change avatar",
+          "uploadAvatar": "Click to upload avatar",
+          "uploadProgress": "Upload progress: {progress}%",
+          "dragHint": "Or drag image here"
+        },
+        "buttons": {
+          "deleteAvatar": "Delete Avatar",
+          "complete": "Complete",
+          "uploading": "Uploading...",
+          "cancel": "Cancel",
+          "confirmDelete": "Confirm Delete",
+          "deleting": "Deleting..."
+        },
+        "deleteConfirm": {
+          "title": "Delete Avatar",
+          "message": "Are you sure you want to delete the current avatar? This action cannot be undone."
+        },
+        "status": {
+          "success": "Operation completed successfully"
+        },
+        "errors": {
+          "unsupportedType": "Unsupported file type. Please select JPEG, JPG, PNG or WebP format images.",
+          "fileTooLarge": "File too large. Please select images smaller than 5MB.",
+          "userNotLoggedIn": "User not logged in",
+          "uploadFailed": "Upload failed",
+          "deleteFailed": "Delete failed"
+        }
+      },
+      "avatarUpload": {
+        "errors": {
+          "unsupportedFileType": "Unsupported file type. Supported formats: {types}",
+          "fileTooLarge": "File too large. Maximum supported {maxSize}MB",
+          "uploadFailed": "Upload failed: {message}",
+          "getUrlFailed": "Failed to get avatar URL",
+          "updateDatabaseFailed": "Failed to update database: {message}",
+          "deleteFailed": "Delete failed: {message}",
+          "uploadFailedGeneric": "Upload failed",
+          "deleteFailedGeneric": "Delete failed"
+        }
+      },
+      "appearanceSettings": {
+        "title": "Appearance Settings",
+        "theme": "Theme",
+        "themeDescription": "Choose your preferred display mode",
+        "themes": {
+          "light": "Light Mode",
+          "dark": "Dark Mode",
+          "system": "Follow System"
+        },
+        "preview": {
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System"
+        },
+        "timezone": "Timezone Settings",
+        "timezoneDescription": "Select your timezone to affect time display format",
+        "currentTimezone": "Current Timezone",
+        "timezoneRegions": {
+          "asia": "Asia",
+          "europe": "Europe",
+          "america": "Americas",
+          "africa": "Africa",
+          "australia": "Oceania",
+          "utc": "Coordinated Universal Time"
+        },
+        "timezoneCities": {
+          "shanghai": "Shanghai",
+          "beijing": "Beijing",
+          "hongKong": "Hong Kong",
+          "taipei": "Taipei",
+          "tokyo": "Tokyo",
+          "seoul": "Seoul",
+          "singapore": "Singapore",
+          "bangkok": "Bangkok",
+          "dubai": "Dubai",
+          "kolkata": "Kolkata",
+          "london": "London",
+          "paris": "Paris",
+          "berlin": "Berlin",
+          "rome": "Rome",
+          "madrid": "Madrid",
+          "amsterdam": "Amsterdam",
+          "moscow": "Moscow",
+          "newYork": "New York",
+          "losAngeles": "Los Angeles",
+          "chicago": "Chicago",
+          "denver": "Denver",
+          "toronto": "Toronto",
+          "saoPaulo": "São Paulo",
+          "mexicoCity": "Mexico City",
+          "sydney": "Sydney",
+          "melbourne": "Melbourne",
+          "perth": "Perth",
+          "auckland": "Auckland",
+          "cairo": "Cairo",
+          "johannesburg": "Johannesburg",
+          "lagos": "Lagos",
+          "utc": "UTC"
+        },
+        "timezoneSearch": "Search timezone...",
+        "systemTimezone": "System Timezone",
+        "customTimezone": "Custom Timezone",
+        "timezonePreview": "Preview time: {time}",
+        "timezoneUpdated": "Timezone settings updated",
+        "timezoneUpdateFailed": "Failed to update timezone"
+      },
+      "languageSettings": {
+        "title": "Language Settings",
+        "language": "Language",
+        "languageDescription": "Choose your preferred display language",
+        "currentLanguage": "Current Language",
+        "switchLanguage": "Switch Language"
+      }
+    },
+    "admin": {
+      "title": "Admin Panel",
+      "main": {
+        "title": "Admin Panel Overview",
+        "subtitle": "Welcome to the AgentifUI Admin Panel. Here you can manage various system configurations and settings"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI Admin Panel",
+        "breadcrumbRoot": "Admin Panel",
+        "menuItems": {
+          "main": {
+            "text": "Admin Home",
+            "description": "Admin panel overview"
+          },
+          "apiConfig": {
+            "text": "API Configuration",
+            "description": "Manage application instances and configuration parameters"
+          },
+          "content": {
+            "text": "Content Management",
+            "description": "Manage home and about page content"
+          },
+          "users": {
+            "text": "User Management",
+            "description": "Manage user accounts and permissions"
+          },
+          "ssoProviders": {
+            "text": "SSO Providers Management",
+            "description": "Manage SSO provider configurations"
+          },
+          "groups": {
+            "text": "Group Management",
+            "description": "Manage users and groups, configure group application permissions"
+          },
+          "permissions": {
+            "text": "App Permission Management",
+            "description": "Manage application visibility and group permissions"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "Rebuild",
+            "messages": {
+              "startRebuild": "Starting rebuild and deployment...",
+              "startRebuildDescription": "This process may take a few minutes, please be patient.",
+              "buildInProgress": "Build in progress",
+              "buildInProgressDescription": "Please wait for the current build to complete before trying again.",
+              "authFailed": "Authentication failed",
+              "authFailedDescription": "Please log in again and try.",
+              "permissionDenied": "Permission denied",
+              "permissionDeniedDescription": "You do not have permission to perform this operation.",
+              "unknownError": "Unknown error occurred",
+              "buildComplete": "Build complete!",
+              "buildCompleteDescription": "The application will automatically restart in 2 seconds to apply changes.",
+              "appRestarting": "Application restarting...",
+              "appRestartingDescription": "The page will automatically refresh after restart is complete.",
+              "deployFailed": "Deployment failed",
+              "networkError": "Network error, please check connection and try again."
+            }
+          },
+          "returnToChatButton": {
+            "text": "Return to Chat"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "Refresh Data",
+            "save": "Save Changes",
+            "saving": "Saving...",
+            "reset": "Reset",
+            "create": "Create",
+            "cancel": "Cancel",
+            "confirm": "Confirm"
+          },
+          "status": {
+            "hasUnsavedChanges": "Has unsaved changes",
+            "saving": "Saving...",
+            "allChangesSaved": "All changes saved"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "Select Application Instance",
+          "description": "Select an application instance from the left list to view and edit its configuration, or click the add button to create a new application instance"
+        },
+        "formActions": {
+          "save": "Save",
+          "saving": "Saving...",
+          "cancel": "Cancel"
+        },
+        "providerManagement": {
+          "buttonText": "Manage Providers",
+          "modal": {
+            "title": "Manage Service Providers",
+            "providerList": "Provider List",
+            "addProvider": "Add Provider",
+            "editProvider": "Edit Provider",
+            "addNewProvider": "Add New Provider",
+            "loading": "Loading...",
+            "noProviders": "No providers configured",
+            "deleteConfirm": "Are you sure you want to delete provider \"{name}\"? This action cannot be undone.",
+            "messages": {
+              "loadFailed": "Failed to load provider list",
+              "createSuccess": "Provider created successfully",
+              "createFailed": "Failed to create provider",
+              "updateSuccess": "Provider updated successfully",
+              "updateFailed": "Failed to update provider",
+              "deleteSuccess": "Provider deleted successfully",
+              "deleteFailed": "Failed to delete provider",
+              "saveFailed": "Failed to save provider"
+            },
+            "providerTypes": {
+              "llm": "LLM (Large Language Model)",
+              "platform": "Platform (Aggregation Platform)",
+              "embedding": "Embedding (Vectorization)",
+              "tts": "TTS (Text to Speech)",
+              "stt": "STT (Speech to Text)",
+              "vision": "Vision (Image Recognition)",
+              "multimodal": "Multimodal"
+            },
+            "authTypes": {
+              "api_key": "API Key",
+              "bearer_token": "Bearer Token",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Basic Auth"
+            },
+            "status": {
+              "enabled": "Enabled",
+              "disabled": "Disabled",
+              "default": "Default Provider"
+            },
+            "form": {
+              "name": {
+                "label": "Provider Name",
+                "placeholder": "e.g.: Dify, OpenAI, Claude",
+                "required": "Provider name cannot be empty"
+              },
+              "type": {
+                "label": "Provider Type",
+                "placeholder": "Select provider type",
+                "required": "Please select provider type"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "e.g.: https://api.dify.ai/v1",
+                "required": "API URL cannot be empty",
+                "invalid": "Please enter a valid URL format"
+              },
+              "authType": {
+                "label": "Authentication Type",
+                "placeholder": "Select authentication type",
+                "required": "Please select authentication type"
+              },
+              "isActive": {
+                "label": "Enable Status"
+              },
+              "isDefault": {
+                "label": "Default Provider",
+                "description": "Only one default provider can exist in the system. Setting this will automatically clear the default status of other providers.",
+                "setAsDefault": "Set as Default",
+                "notDefault": "Not Default"
+              },
+              "authMethod": "Authentication Method"
+            },
+            "buttons": {
+              "delete": "Delete",
+              "cancel": "Cancel",
+              "save": "Save",
+              "saving": "Saving..."
+            }
+          }
+        },
+        "layout": {
+          "loading": "Loading application instances...",
+          "noInstances": "No application instances",
+          "noInstancesForProvider": "No application instances for this provider",
+          "addFirstApp": "Add first application",
+          "searchPlaceholder": "Search applications...",
+          "defaultApp": "Default",
+          "delete": "Delete",
+          "deleteConfirm": "Are you sure you want to delete this application instance? This action cannot be undone.",
+          "defaultAppCannotDelete": "Default application cannot be deleted. Please set another application as default first.",
+          "instanceNotFound": "Instance to delete not found",
+          "deleteInstanceFailed": "Failed to delete application instance",
+          "setDefaultConfirm": "Are you sure you want to set \"{name}\" as the default application?",
+          "instanceNotFoundForDefault": "Instance to set as default not found",
+          "setDefaultFailed": "Failed to set default application",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "API Key (key_value)",
+          "providerBinding": "Provider Binding",
+          "urlPlaceholder": "URL will automatically use the selected provider's configuration",
+          "urlBindingInfo": "URL is bound to service provider, modify in \"Manage Providers\"",
+          "currentProvider": "Current provider: {name}",
+          "unknownProvider": "Unknown provider",
+          "keyConfigured": "Configured",
+          "keyNotConfigured": "Not configured",
+          "keyPlaceholderEdit": "Leave empty to keep existing API key",
+          "keyPlaceholderNew": "Enter API key",
+          "keyEditHint": "Leaving the input field empty will keep the existing key unchanged",
+          "tagsLabel": "Application Tags (tags)",
+          "tagCategories": {
+            "modelType": "Model Type",
+            "useCase": "Use Case",
+            "features": "Technical Features"
+          },
+          "predefinedTags": {
+            "conversationModel": "Conversation Model",
+            "reasoningModel": "Reasoning Model",
+            "documentModel": "Document Model",
+            "multimodal": "Multimodal",
+            "textGeneration": "Text Generation",
+            "codeGeneration": "Code Generation",
+            "dataAnalysis": "Data Analysis",
+            "translation": "Translation",
+            "highAccuracy": "High Accuracy",
+            "fastResponse": "Fast Response",
+            "localDeployment": "Local Deployment",
+            "enterpriseGrade": "Enterprise Grade"
+          },
+          "customTagPlaceholder": "Custom tag (press Enter to add)",
+          "tagHelpText": "Tags are used for application classification and search"
+        },
+        "providerSelector": {
+          "placeholder": "Please select provider",
+          "defaultLabel": "Default",
+          "noProviders": "No available service providers"
+        },
+        "customProviderSelector": {
+          "placeholder": "Please select provider",
+          "defaultLabel": "Default",
+          "noProviders": "No available service providers"
+        },
+        "instanceFilter": {
+          "allApps": "All Applications",
+          "providerApps": "{name} Applications",
+          "defaultLabel": "Default",
+          "totalCount": "Total {count}",
+          "noProviders": "No available service providers"
+        },
+        "events": {
+          "defaultSetSuccess": "Default application set successfully"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "Please select a service provider",
+            "invalidProvider": "Selected service provider is invalid",
+            "inactiveProvider": "Selected service provider is not active",
+            "createFailed": "Failed to create application instance",
+            "updateFailed": "Failed to update application instance",
+            "setDefaultFailed": "Failed to set default application"
+          },
+          "success": {
+            "instanceCreated": "Application instance created successfully",
+            "instanceUpdated": "Application instance updated successfully",
+            "setAsDefault": "Application instance set as default"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "Application created successfully, but failed to set as default"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify Parameter Configuration",
+          "defaultInstanceName": "this app",
+          "unsavedChanges": "You have unsaved changes",
+          "sections": {
+            "basic": {
+              "title": "Basic Configuration",
+              "openingStatement": {
+                "label": "Opening Statement",
+                "placeholder": "Enter opening statement..."
+              },
+              "suggestedQuestions": {
+                "label": "Suggested Questions",
+                "addButton": "Add Suggested Question",
+                "placeholder": "Enter suggested question..."
+              }
+            },
+            "fileUpload": {
+              "title": "File Upload Feature",
+              "enabled": "Enabled",
+              "disabled": "Disabled"
+            },
+            "speechToText": {
+              "title": "Speech to Text",
+              "enabled": "Enabled",
+              "disabled": "Disabled"
+            },
+            "textToSpeech": {
+              "title": "Text to Speech",
+              "enabled": "Enabled",
+              "disabled": "Disabled",
+              "enableLabel": "Enable Text to Speech",
+              "voiceType": {
+                "label": "Voice Type",
+                "placeholder": "e.g.: alloy, echo, fable"
+              },
+              "language": {
+                "label": "Language",
+                "selectPlaceholder": "Select Language",
+                "options": {
+                  "zh": "Chinese",
+                  "en": "English",
+                  "ja": "Japanese",
+                  "ko": "Korean"
+                }
+              },
+              "autoPlay": {
+                "label": "Auto Play",
+                "enabled": "On",
+                "disabled": "Off"
+              }
+            },
+            "retrieverResource": {
+              "title": "Citation and Attribution"
+            },
+            "annotationReply": {
+              "title": "Annotation Reply"
+            },
+            "userInputForm": {
+              "title": "User Input Form",
+              "fieldsCount": "{count} fields",
+              "description": "User input form configuration is usually auto-generated by Dify application. It's recommended to get the latest configuration through sync function.",
+              "fieldInfo": "Variable: {variable} | Required: {required} | Default: {defaultValue}",
+              "fieldRequired": "Yes",
+              "fieldOptional": "No",
+              "fieldNoDefault": "None",
+              "fieldLabel": "Field {index}",
+              "noFields": "No user input form configuration"
+            },
+            "systemParameters": {
+              "title": "System Parameters",
+              "fileSizeLimit": "Document Size Limit (MB)",
+              "imageSizeLimit": "Image Size Limit (MB)",
+              "audioSizeLimit": "Audio Size Limit (MB)",
+              "videoSizeLimit": "Video Size Limit (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "File Upload Configuration",
+            "uploadMethod": {
+              "label": "Upload Method",
+              "local": "Local Upload",
+              "url": "URL Link",
+              "both": "Both Methods"
+            },
+            "maxFiles": {
+              "label": "Maximum File Count",
+              "description": "Documents < 15MB, Images < 10MB, Audio < 50MB, Video < 100MB"
+            },
+            "fileTypes": {
+              "label": "Supported File Types",
+              "image": "Image",
+              "document": "Document",
+              "audio": "Audio",
+              "video": "Video",
+              "other": "Other File Types",
+              "customPlaceholder": "e.g.: zip, rar, 7z, tar",
+              "customDescription": "Supported formats: zip, rar, 7z, tar, gz, bz2, xz, etc."
+            }
+          },
+          "buttons": {
+            "cancel": "Cancel",
+            "save": "Save",
+            "confirm": "Confirm"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "Edit Application Instance",
+            "add": "Add Application Instance"
+          },
+          "unsavedChanges": "Unsaved changes",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "Cannot contain spaces (affects URL routing)",
+              "invalidChars": "Can only contain letters, numbers, hyphens (-), underscores (_), and dots (.)",
+              "tooLong": "Length cannot exceed 50 characters",
+              "mustStartWithAlphanumeric": "Must start with a letter or number",
+              "formatError": "Application ID format error",
+              "notModifiable": "Application ID cannot be modified after creation",
+              "formatDescription": "Can only contain letters, numbers, hyphens (-), underscores (_), and dots (.). No spaces allowed. You can sync configuration to auto-generate."
+            },
+            "formValidationFailed": "Form validation failed",
+            "fillApiCredentials": "Please fill in API URL and API Key first",
+            "fillInstanceId": "Please fill in Application ID first"
+          },
+          "sync": {
+            "basicInfo": "Basic Information",
+            "paramConfig": "Parameter Configuration",
+            "noDataReceived": "Unable to retrieve any configuration data from Dify API. Please check if Application ID and API configuration are correct",
+            "successMessage": "Successfully synced {items} from Dify API!",
+            "autoGeneratedId": " Auto-generated Application ID: {instanceId}",
+            "syncFailed": "Configuration sync failed",
+            "syncFailedTitle": "Sync Failed",
+            "syncing": "Syncing...",
+            "syncFromDify": "Sync from Dify",
+            "syncFromDifyWithAutoId": "Sync from Dify API (will auto-generate Application ID if empty)",
+            "syncFromDifyDescription": "Sync configuration from Dify API",
+            "syncButtonDisabled": "Please fill in API URL and API Key first"
+          },
+          "defaultApp": {
+            "setAsDefault": "Set as Default",
+            "isDefault": "Default App",
+            "willSetAsDefault": "Will Set as Default",
+            "setDefaultConfirm": "Are you sure you want to set \"{name}\" as the default application?",
+            "setDefaultSuccess": "Default application set successfully",
+            "setDefaultFailed": "Failed to set default application",
+            "instanceNotFound": "Instance ID does not exist, cannot set as default application"
+          },
+          "provider": {
+            "title": "Service Provider",
+            "current": "Current application service provider (cannot be modified)",
+            "select": "Select service provider",
+            "unknown": "Unknown Provider",
+            "selectPlaceholder": "Please select provider"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "Application ID (instance_id) *",
+              "placeholder": "Enter Application ID",
+              "generateButton": "Generate ID",
+              "generateTooltip": "Click to generate random UUID as Application ID"
+            },
+            "displayName": {
+              "label": "Display Name (display_name) *",
+              "placeholder": "Enter display name"
+            },
+            "description": {
+              "label": "Application Description (description)",
+              "placeholder": "Enter application description"
+            }
+          },
+          "appType": {
+            "label": "Application Type (app_type) *",
+            "model": {
+              "title": "Model",
+              "description": "For model switching"
+            },
+            "marketplace": {
+              "title": "Marketplace",
+              "description": "For application marketplace"
+            },
+            "note": "Applications with \"Model\" type will appear in the chat interface model selector"
+          },
+          "syncConfirm": {
+            "updateDescription": "Update description to: \"{description}\"?"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify Application Type (dify_apptype) *",
+            "titleCompact": "Dify Application Type",
+            "description": "Choose the Dify application type that fits your use case. Different types have different features and applicable scenarios."
+          },
+          "difyConfig": {
+            "title": "Dify Parameter Configuration",
+            "appTypeNote": "Applications with \"Model\" type will appear in the chat interface model selector"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "Default application set successfully"
+        }
+      },
+      "content": {
+        "page": {
+          "title": "Content Management",
+          "subtitle": "Manage multilingual content for home and about pages",
+          "showPreview": "Show Preview",
+          "fullscreenPreview": "Fullscreen Preview",
+          "closePreview": "Close Preview",
+          "loadingEditor": {
+            "about": "Unable to load about page editor.",
+            "home": "Unable to load home page editor."
+          },
+          "loadingPreview": "Loading preview...",
+          "messages": {
+            "loadFailed": "Failed to load translation data",
+            "saveSuccess": "Configuration saved successfully",
+            "saveFailed": "Failed to save configuration, please try again"
+          },
+          "saveActions": {
+            "hasChanges": "Unsaved changes",
+            "saving": "Saving...",
+            "allSaved": "All changes saved",
+            "reset": "Reset",
+            "save": "Save Changes",
+            "saving_": "Saving..."
+          }
+        },
+        "tabs": {
+          "about": "About Page",
+          "home": "Home Page"
+        },
+        "previewToolbar": {
+          "aboutPreview": "About Page Preview",
+          "homePreview": "Home Page Preview"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "Edit Language",
+            "selectLanguage": "Select Language",
+            "cardNumber": "Card #{number}"
+          },
+          "home": {
+            "pageTitle": "Page Title (title)",
+            "subtitle": "Subtitle (subtitle)",
+            "features": "Feature Cards (features)",
+            "featureTitle": "Title (title)",
+            "featureDescription": "Description (description)",
+            "getStarted": "Primary Button (getStarted)",
+            "learnMore": "Secondary Button (learnMore)",
+            "copyright": "Copyright Info (copyright)",
+            "copyrightPrefix": "Prefix (prefix)",
+            "copyrightLinkText": "Link Text (linkText)",
+            "copyrightSuffix": "Suffix (suffix)"
+          },
+          "about": {
+            "pageTitle": "Page Title (title)",
+            "subtitle": "Subtitle (subtitle)",
+            "mission": "Mission Description (mission.description)",
+            "values": "Value Cards (values.items)",
+            "valueTitle": "Title (title)",
+            "valueDescription": "Description (description)",
+            "buttonText": "Button Text (buttonText)",
+            "copyright": "Copyright Info (copyright)",
+            "copyrightPrefix": "Prefix (prefix)",
+            "copyrightLinkText": "Link Text (linkText)",
+            "copyrightSuffix": "Suffix (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "User Management",
+        "subtitle": "Manage system user accounts, permissions and access control",
+        "stats": {
+          "totalUsers": "Total Users",
+          "activeUsers": "Active Users",
+          "suspendedUsers": "Suspended",
+          "pendingUsers": "Pending",
+          "adminUsers": "Administrators",
+          "managerUsers": "Managers",
+          "regularUsers": "Regular Users",
+          "newUsersToday": "New Today",
+          "activeUsersRatio": "Percentage of total users",
+          "newUsersThisWeek": "Other days this week"
+        },
+        "filters": {
+          "searchPlaceholder": "Search user email, name or username...",
+          "advancedFilters": "Advanced Filters",
+          "reset": "Reset",
+          "rolePermissions": "Role Permissions",
+          "accountStatus": "Account Status",
+          "authSource": "Authentication Source",
+          "roleOptions": {
+            "all": "All Roles",
+            "admin": "Administrator",
+            "manager": "Manager",
+            "user": "Regular User"
+          },
+          "statusOptions": {
+            "all": "All Status",
+            "active": "Active",
+            "suspended": "Suspended",
+            "pending": "Pending"
+          },
+          "authSourceOptions": {
+            "all": "All Sources",
+            "email": "📧 Email",
+            "sso": "SSO Authentication",
+            "phone": "📱 Phone"
+          },
+          "sortBy": "Sort By",
+          "sortOptions": {
+            "createdAt": "Registration Time",
+            "lastSignIn": "Last Login",
+            "email": "Email",
+            "fullName": "Name"
+          },
+          "sortOrder": {
+            "desc": "Newest First",
+            "asc": "Oldest First"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "User Information",
+            "contact": "Contact",
+            "groups": "Groups",
+            "rolePermissions": "Role Permissions",
+            "status": "Status",
+            "lastLogin": "Last Login",
+            "registerTime": "Registration Time"
+          },
+          "loading": "Loading user data...",
+          "loadingSubtext": "Please wait, fetching latest user information",
+          "noData": "No user data",
+          "noDataSubtext": "No users found matching the criteria, please try adjusting filters",
+          "noDataHint": "You can reset filters or contact administrator to add new users"
+        },
+        "batchOperations": {
+          "selected": "Selected {count} users",
+          "cancelSelection": "Cancel Selection",
+          "setAsAdmin": "Set as Administrator",
+          "setAsManager": "Set as Manager",
+          "setAsUser": "Set as Regular User",
+          "activate": "Activate",
+          "suspend": "Suspend"
+        },
+        "actions": {
+          "refreshData": "Refresh Data",
+          "addUser": "Add User",
+          "addUserInDevelopment": "Add user feature in development",
+          "viewUser": "View user: {name}",
+          "editUser": "Edit user: {name}",
+          "viewDetails": "View Details",
+          "editInfo": "Edit Information",
+          "changeRole": "Change Role",
+          "changeStatus": "Change Status",
+          "deleteUser": "Delete User",
+          "confirm": "Confirm",
+          "current": "(Current)",
+          "self": "(Self)",
+          "admin": "(Admin)",
+          "notSet": "Not Set",
+          "notSetEmail": "Email not set",
+          "notSetPhone": "Phone not set",
+          "defaultUser": "User",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
+          "moreGroups": "+{count} groups",
+          "notInGroup": "Not in any group",
+          "moreGroupsTooltip": "{count} more groups: {names}"
+        },
+        "pagination": {
+          "showing": "Showing {start} - {end} of {total} records",
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "messages": {
+          "cannotIncludeSelf": "Cannot include yourself in batch operations",
+          "cannotDowngradeAdmin": "Cannot downgrade other administrators in batch operations",
+          "cannotChangeOwnRole": "Cannot modify your own role",
+          "cannotDowngradeOtherAdmin": "Cannot downgrade other administrators",
+          "cannotDeleteSelf": "Cannot delete yourself",
+          "cannotDeleteOtherAdmin": "Cannot delete other administrators",
+          "roleChangeSuccess": "Changed {name}'s role to {role}",
+          "statusChangeSuccess": "Changed {name}'s status to {status}",
+          "batchRoleChangeSuccess": "Batch changed {count} users' roles",
+          "batchStatusChangeSuccess": "Batch changed {count} users' status",
+          "roleChangeConfirm": "Change {name}'s role to {role}?",
+          "statusChangeConfirm": "Change {name}'s status to {status}?",
+          "batchRoleChangeConfirm": "Change {count} users' roles to {role}?",
+          "batchStatusChangeConfirm": "Change {count} users' status to {status}?",
+          "deleteConfirm": "Are you sure you want to delete user {name}? This action cannot be undone.",
+          "deleteSuccess": "Deleted user {name}",
+          "roles": {
+            "admin": "Administrator",
+            "manager": "Manager",
+            "user": "Regular User"
+          },
+          "statuses": {
+            "active": "Active",
+            "suspended": "Suspended",
+            "pending": "Pending"
+          }
+        }
+      },
+      "ssoProviders": {
+        "title": "SSO Provider Management",
+        "subtitle": "Manage single sign-on providers and their configurations",
+        "addProvider": "Add Provider",
+        "refresh": "Refresh Data",
+        "error": "Error",
+        "filters": {
+          "searchPlaceholder": "Search provider name or protocol...",
+          "reset": "Reset"
+        },
+        "table": {
+          "headers": {
+            "name": "Name",
+            "protocol": "Protocol",
+            "status": "Status",
+            "order": "Order",
+            "created": "Created At"
+          },
+          "enabled": "Enabled",
+          "disabled": "Disabled",
+          "button": "Button",
+          "noProviders": "No SSO providers found",
+          "createFirst": "Create your first SSO provider to get started",
+          "loadingProviders": "Loading SSO providers...",
+          "actions": {
+            "viewDetails": "View Details",
+            "edit": "Edit",
+            "enable": "Enable",
+            "disable": "Disable",
+            "delete": "Delete"
+          }
+        },
+        "form": {
+          "createTitle": "Create SSO Provider",
+          "editTitle": "Edit SSO Provider",
+          "createDescription": "Configure a new single sign-on provider",
+          "editDescription": "Modify the configuration of an existing SSO provider",
+          "tabs": {
+            "basicInfo": "Basic Info",
+            "protocolConfig": "Protocol Config",
+            "security": "Security",
+            "uiSettings": "UI Settings"
+          },
+          "fields": {
+            "providerName": "Provider Name",
+            "providerNamePlaceholder": "Example University SSO",
+            "protocol": "Protocol",
+            "selectProtocol": "Select Protocol",
+            "displayOrder": "Display Order",
+            "buttonText": "Button Text",
+            "buttonTextPlaceholder": "Leave blank to use provider name",
+            "emailDomain": "Email Domain",
+            "emailDomainPlaceholder": "e.g., example.com",
+            "enableProvider": "Enable this provider",
+            "baseUrl": "Base URL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "Login Endpoint",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "Logout Endpoint",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "Validate Endpoint",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3 Validate Endpoint",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "Attribute Mapping",
+            "employeeId": "Employee ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "Username",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "Require HTTPS",
+            "validateCertificates": "Validate SSL Certificates",
+            "allowedRedirectHosts": "Allowed Redirect Hosts",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "Enter one host per line",
+            "icon": "Icon",
+            "iconPlaceholder": "🏛️",
+            "theme": "Theme",
+            "logoUrl": "Logo URL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "Description",
+            "descriptionPlaceholder": "University SSO System"
+          },
+          "themes": {
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "default": "Default",
+            "outline": "Outline"
+          },
+          "advancedSettings": "Advanced Settings",
+          "showRawJson": "Show Raw JSON",
+          "hideRawJson": "Hide Raw JSON",
+          "rawJsonConfig": "Raw JSON Configuration",
+          "actions": {
+            "cancel": "Cancel",
+            "save": "Save",
+            "saving": "Saving..."
+          },
+          "messages": {
+            "fixJsonErrors": "Please fix JSON errors before saving",
+            "createSuccess": "SSO provider created successfully",
+            "updateSuccess": "SSO provider updated successfully",
+            "unexpectedError": "An unexpected error occurred"
+          }
+        },
+        "deleteDialog": {
+          "title": "Confirm Deletion",
+          "message": "Are you sure you want to delete the SSO provider \"{name}\"? This action cannot be undone and will disable SSO login for users of this provider.",
+          "cancel": "Cancel",
+          "delete": "Delete",
+          "deleting": "Deleting...",
+          "success": "\"{name}\" has been successfully deleted"
+        },
+        "detailsModal": {
+          "title": "Provider Details and Configuration Overview",
+          "basicInfo": "Basic Information",
+          "protocol": "Protocol",
+          "status": "Status",
+          "displayOrder": "Display Order",
+          "buttonText": "Button Text",
+          "protocolConfig": "Protocol Configuration",
+          "baseUrl": "Base URL",
+          "login": "Login",
+          "logout": "Logout",
+          "securitySettings": "Security Settings",
+          "requireHttps": "Require HTTPS",
+          "validateCertificates": "Validate Certificates",
+          "yes": "Yes",
+          "no": "No",
+          "uiConfig": "UI Configuration",
+          "theme": "Theme",
+          "icon": "Icon",
+          "description": "Description",
+          "timestamps": "Timestamps",
+          "created": "Created At",
+          "updated": "Updated At",
+          "actions": {
+            "close": "Close",
+            "editProvider": "Edit Provider"
+          }
+        },
+        "stats": {
+          "totalProviders": "Total Providers",
+          "allSsoProviders": "All SSO providers are configured",
+          "enabled": "Enabled",
+          "percentOfTotal": "of total",
+          "noProviders": "No providers configured",
+          "disabled": "Disabled",
+          "activeProtocols": "Active Protocols",
+          "differentProtocolTypes": "different protocol types",
+          "protocolBreakdown": "Protocol Breakdown"
+        }
+      },
+      "groups": {
+        "title": "Group Management",
+        "subtitle": "Manage user groups and application permission assignments",
+        "stats": {
+          "totalGroups": "Total Groups",
+          "totalMembers": "Total Members",
+          "averageMembers": "Average Members",
+          "activeGroups": "Active Groups"
+        },
+        "header": {
+          "title": "Group Management",
+          "subtitle": "Manage user groups and application permission assignments",
+          "refreshData": "Refresh Data",
+          "createGroup": "Create Group"
+        },
+        "search": {
+          "placeholder": "Search group name or description...",
+          "searchResults": "Search Results",
+          "keyword": "Keyword",
+          "noResults": "No matching groups found",
+          "noResultsHint": "Try using different keywords"
+        },
+        "list": {
+          "noGroups": "No Groups",
+          "noGroupsHint": "Click \"Create Group\" button to create your first group",
+          "loading": "Loading group list...",
+          "memberCount": "{count} members",
+          "createdAt": "Created",
+          "actions": {
+            "manageMembers": "Manage Members",
+            "editGroup": "Edit Group",
+            "deleteGroup": "Delete Group"
+          }
+        },
+        "createModal": {
+          "title": "Create Group",
+          "nameLabel": "Group Name",
+          "nameRequired": "Group name cannot be empty",
+          "nameTooShort": "Group name must be at least 2 characters",
+          "nameTooLong": "Group name cannot exceed 50 characters",
+          "namePlaceholder": "Enter group name",
+          "descriptionLabel": "Group Description",
+          "descriptionTooLong": "Description cannot exceed 200 characters",
+          "descriptionPlaceholder": "Enter group description (optional)",
+          "creating": "Creating...",
+          "createButton": "Create Group",
+          "cancel": "Cancel",
+          "createSuccess": "Group \"{name}\" created successfully"
+        },
+        "editModal": {
+          "title": "Edit Group",
+          "nameLabel": "Group Name",
+          "nameRequired": "Group name cannot be empty",
+          "nameTooShort": "Group name must be at least 2 characters",
+          "nameTooLong": "Group name cannot exceed 50 characters",
+          "namePlaceholder": "Enter group name",
+          "descriptionLabel": "Group Description",
+          "descriptionTooLong": "Description cannot exceed 200 characters",
+          "descriptionPlaceholder": "Enter group description (optional)",
+          "updating": "Updating...",
+          "updateButton": "Save Changes",
+          "cancel": "Cancel",
+          "noChanges": "No changes detected",
+          "updateSuccess": "Group \"{name}\" updated successfully"
+        },
+        "membersModal": {
+          "title": "Group Member Management",
+          "subtitle": "{groupName} · {count} members total",
+          "addMember": "Add Member",
+          "searchPlaceholder": "Search members...",
+          "loading": "Loading member list...",
+          "noMembers": "No group members",
+          "noMembersHint": "Click \"Add Member\" button to invite users to join the group",
+          "noSearchResults": "No matching members found",
+          "noSearchResultsHint": "Try using different keywords",
+          "unknownUser": "Unknown User",
+          "joinedAt": "Joined",
+          "removeMember": "Remove Member",
+          "removeMemberConfirm": "Are you sure you want to remove \"{memberName}\" from group \"{groupName}\"?",
+          "removeMemberSuccess": "Removed member \"{memberName}\""
+        },
+        "addMembersModal": {
+          "title": "Add Members",
+          "subtitle": "Select users to add to group \"{groupName}\"",
+          "searchPlaceholder": "Search username, name or email...",
+          "loading": "Loading user list...",
+          "noUsers": "No users available to add",
+          "noSearchResults": "No matching users found",
+          "selectAll": "Select All",
+          "deselectAll": "Deselect All",
+          "addSelected": "Add {count} members",
+          "tableHeaders": {
+            "userInfo": "User Info",
+            "role": "Role"
+          },
+          "userRoles": {
+            "admin": "Administrator",
+            "manager": "Manager",
+            "user": "Regular User"
+          },
+          "unknownUser": "Unknown User",
+          "pagination": {
+            "showing": "Showing {start} - {end} of {total} records",
+            "previous": "Previous",
+            "next": "Next"
+          },
+          "addSuccess": "Successfully added {count} members to group",
+          "addPartialSuccess": "{errorCount} members failed to add"
+        },
+        "messages": {
+          "deleteConfirm": "Are you sure you want to delete group \"{name}\"? This action cannot be undone.",
+          "deleteSuccess": "Deleted group \"{name}\"",
+          "loadError": "Failed to load group data",
+          "createError": "Failed to create group",
+          "updateError": "Failed to update group",
+          "deleteError": "Failed to delete group",
+          "addMemberError": "Failed to add member",
+          "removeMemberError": "Failed to remove member"
+        }
+      },
+      "permissions": {
+        "header": {
+          "title": "Application Permission Management",
+          "subtitle": "Unified management of application visibility and group permissions",
+          "refreshButton": "Refresh Data"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "Search application name or description...",
+          "filterLabel": "Application Type:",
+          "filterOptions": {
+            "all": "All Applications",
+            "public": "Public Applications",
+            "groupOnly": "Group Applications",
+            "private": "Private Applications"
+          }
+        },
+        "layout": {
+          "appListTitle": "Application List",
+          "appListSubtitle": "Select an application to configure permissions",
+          "permissionPanelTitle": "Permission Configuration",
+          "permissionPanelSubtitle": "Manage application visibility and group permissions"
+        },
+        "appList": {
+          "noApps": "No Applications",
+          "noAppsDescription": "Please create application instances first",
+          "loading": "Loading...",
+          "unknown": "Unknown",
+          "visibility": {
+            "public": "Public",
+            "groupOnly": "Group",
+            "private": "Private"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "Select Application",
+            "description": "Choose an application from the left list to configure permissions"
+          },
+          "visibilitySettings": {
+            "title": "Visibility Settings",
+            "currentSetting": "Current",
+            "options": {
+              "public": {
+                "label": "Public Application",
+                "description": "All users can access this application"
+              },
+              "groupOnly": {
+                "label": "Group Application",
+                "description": "Only authorized group members can access"
+              },
+              "private": {
+                "label": "Private Application",
+                "description": "Only administrators can access this application"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "Group Permissions",
+            "description": "Select which groups can access this application",
+            "noGroups": {
+              "title": "No Groups",
+              "description": "Please create groups first to set application permissions"
+            },
+            "status": {
+              "enabled": "Enabled",
+              "disabled": "Disabled"
+            },
+            "actions": {
+              "enable": "Enable Access",
+              "disable": "Disable Access"
+            },
+            "memberCount": "{count} members"
+          },
+          "permissionExplanation": {
+            "title": "Permission Explanation",
+            "public": "Public Application: All users can access",
+            "groupOnly": "Group Application: Only authorized group members can access",
+            "private": "Private Application: Only administrators can access"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "Application visibility updated to \"{visibility}\"",
+          "groupPermissionEnabled": "Enabled {groupName} access to this application",
+          "groupPermissionDisabled": "Disabled {groupName} access to this application",
+          "loadAppsError": "Failed to load application list",
+          "loadGroupsError": "Failed to load group list",
+          "updateVisibilityError": "Failed to update application visibility",
+          "updateGroupPermissionError": "Failed to update group permissions"
+        }
+      }
+    },
+    "about": {
+      "sections": [
+        {
+          "id": "section-1754655785510-hi9o34kms",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785510-9wmd3qfbr",
+                "type": "heading",
+                "props": {
+                  "content": "About AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785510-8kgg6bug1",
+                "type": "paragraph",
+                "props": {
+                  "content": "Connecting AI with enterprises, creating new experiences with large language models",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785510-4gy9xxu1j",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785510-wmcqou18g",
+                "type": "heading",
+                "props": {
+                  "content": "Our Mission",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785510-422a30k5a",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUI is committed to leveraging the power of large language models to provide innovative application solutions for enterprises. We integrate capabilities from multiple model providers and provide stable, reliable services based on Dify backend, helping organizations fully utilize the value of AI technology.",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785510-ftxgzp8bp",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785510-trc6k02bt",
+                "type": "heading",
+                "props": {
+                  "content": "Our Values",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785510-rat1vf5ow",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Technical Innovation",
+                      "description": "Continuously integrate cutting-edge large model technologies to provide leading AI solutions for enterprises"
+                    },
+                    {
+                      "title": "Data Security",
+                      "description": "Support private deployment and strict data protection measures to ensure the security and privacy of enterprise data"
+                    },
+                    {
+                      "title": "Flexible Customization",
+                      "description": "Provide highly customizable solutions to meet specific needs of different industries and scenarios"
+                    },
+                    {
+                      "title": "Knowledge Enhancement",
+                      "description": "Integrate private knowledge bases through RAG technology to enhance model's contextual awareness capabilities"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785510-ul1fhhk7e",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785510-ac4fm11q8",
+                "type": "button",
+                "props": {
+                  "text": "Start Exploring",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785510-7dkmyp6wa",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785510-8fd66745a",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Explore the future of large model applications.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.510Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.510Z",
+        "locale": "en-US"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "Copy",
+        "copied": "Copied",
+        "edit": "Edit",
+        "regenerate": "Regenerate",
+        "useful": "Useful",
+        "notUseful": "Not useful",
+        "rated": "Rated"
+      },
+      "referenceSources": {
+        "title": "Referenced {count} knowledge base resources",
+        "knowledgeBase": "Knowledge Base",
+        "expand": "Expand full text",
+        "collapse": "Collapse",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Copy failed",
+        "relevanceScore": "Relevance",
+        "wordCount": "{count} words",
+        "page": "Page {page}"
+      },
+      "thinkBlock": {
+        "thinking": "Deep thinking",
+        "stopped": "Thinking stopped",
+        "completed": "Deep thought completed"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "File limit exceeded ({current}/{max}), please remove some files"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Drag to resize panels, double-click to reset"
+      },
+      "notificationBar": {
+        "closeNotification": "Close notification"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Suggested question: {question}"
+      },
+      "copyButton": {
+        "copy": "Copy content",
+        "copied": "Copied",
+        "noContent": "No content to copy"
+      },
+      "userAvatar": {
+        "alt": "'s avatar"
+      }
+    }
+  },
+  "debug": {
+    "setDefaultApp": "Setting default app - passed ID:",
+    "currentInstances": "Current all instances:",
+    "instanceNotFound": "Instance not found, passed ID:",
+    "foundInstance": "Found instance:",
+    "setDefaultFailed": "Failed to set default app:",
+    "syncConfig": "Sync config",
+    "syncFailed": "Sync failed:",
+    "syncSuccess": "Sync success"
+  },
+  "buttons": {
+    "syncInProgress": "Syncing...",
+    "syncConfig": "Sync Config",
+    "tooltip": {
+      "syncFromDify": "Sync configuration from Dify API",
+      "syncFromDifyEdit": "Sync configuration from Dify API",
+      "syncFromDifyCreate": "Sync configuration from Dify API (auto-generate ID if empty)",
+      "fillCredentials": "Please fill in API URL and API Key first"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "Update display name to: \"{name}\"?"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "serverError": "Server error",
+    "unauthorized": "Unauthorized access"
+  },
+  "navbar": {
+    "user": {
+      "userMenu": "User Menu",
+      "login": "Login",
+      "logout": "Logout",
+      "loggingOut": "Logging out...",
+      "register": "Register",
+      "history": "Chat History",
+      "settings": "Settings",
+      "about": "About",
+      "admin": "Admin Panel",
+      "loginPrompt": "Login to access more features",
+      "loginDescription": "Access your chat history and personal settings"
+    },
+    "conversation": {
+      "newChat": "New Chat",
+      "creating": "Creating...",
+      "loading": "Loading...",
+      "rename": "Rename",
+      "delete": "Delete Chat",
+      "star": "Add to Favorites",
+      "unstar": "Remove from Favorites",
+      "appsMarket": "App Market",
+      "renameDialog": {
+        "title": "Rename Chat",
+        "placeholder": "Enter new chat name",
+        "confirmText": "Confirm Rename"
+      },
+      "deleteDialog": {
+        "title": "Delete Chat",
+        "message": "Are you sure you want to delete chat \"{title}\"? This action cannot be undone.",
+        "confirmText": "Confirm Delete"
+      },
+      "createInProgress": "Chat is being created, please try again later.",
+      "incompleteInfo": "Chat information is incomplete, cannot proceed.",
+      "renameFailed": "Failed to rename chat.",
+      "deleteFailed": "Failed to delete chat.",
+      "operationError": "Operation failed, please try again later."
+    },
+    "workflow": {
+      "history": "History",
+      "closeHistory": "Close History",
+      "viewHistory": "View History",
+      "closeHistoryShort": "Close History",
+      "historyShort": "History"
+    }
+  },
+  "sidebar": {
+    "appName": "AgentifUI",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "newChat": "New Chat",
+    "historyChats": "Chat History",
+    "appsMarket": "App Market",
+    "settings": "Settings",
+    "recentChats": "Recent Chats",
+    "moreOptions": "More Options",
+    "rename": "Rename",
+    "delete": "Delete Chat",
+    "untitled": "Untitled",
+    "creating": "Creating...",
+    "favoriteApps": "Favorite Apps",
+    "loading": "Loading...",
+    "startWorkflow": "Start Workflow",
+    "startTextGeneration": "Start Text Generation",
+    "startChat": "Start Chat",
+    "hideApp": "Hide App",
+    "renameDialog": {
+      "title": "Rename Chat",
+      "label": "Chat Name",
+      "placeholder": "Enter new chat name",
+      "confirmText": "Confirm Rename"
+    },
+    "deleteDialog": {
+      "title": "Delete Chat",
+      "message": "Are you sure you want to delete chat \"{title}\"? This action cannot be undone.",
+      "confirmText": "Confirm Delete"
+    },
+    "syncingMessage": "Chat data is syncing, please try to {action} later.",
+    "operationFailed": "Operation failed, please try again later.",
+    "saveFailed": "Failed to save chat",
+    "createFailed": "Failed to create chat"
+  },
+  "mobile": {
+    "navigation": {
+      "openMenu": "Open Menu",
+      "openUserMenu": "Open User Menu"
+    },
+    "user": {
+      "defaultUser": "User",
+      "loginRegister": "Login/Register",
+      "avatarAlt": "{userName}'s avatar",
+      "loginPrompt": "Login to access more features"
+    },
+    "bottomSheet": {
+      "userMenu": "User Menu",
+      "account": "Account"
+    },
+    "menu": {
+      "settings": "Settings",
+      "logout": "Logout",
+      "login": "Login",
+      "register": "Register",
+      "adminPanel": "Admin Panel",
+      "about": "About"
+    }
+  },
+  "loading": {
+    "default": "Loading...",
+    "app": "Loading app...",
+    "appList": "Loading app list...",
+    "messages": "Loading more messages...",
+    "moreMessages": "Load more history messages",
+    "retry": "Retry",
+    "failed": "Loading failed",
+    "loadingFailed": "Failed to load messages: {error}",
+    "spinner": "Loading",
+    "pageLoader": {
+      "title": "Loading"
+    }
+  },
+  "dynamicTitle": {
+    "base": "AgentifUI",
+    "settings": {
+      "main": "Settings",
+      "profile": "Profile",
+      "account": "Account Settings",
+      "appearance": "Appearance Settings",
+      "language": "Language Settings"
+    },
+    "admin": {
+      "main": "Admin Panel",
+      "users": "User Management",
+      "apiConfig": "API Configuration",
+      "security": "Security Settings",
+      "analytics": "Data Analytics",
+      "content": "Content Management"
+    },
+    "auth": {
+      "login": "Login",
+      "register": "Register",
+      "phoneLogin": "Phone Login",
+      "resetPassword": "Reset Password",
+      "forgotPassword": "Forgot Password",
+      "ssoProcessing": "SSO Login Processing"
+    },
+    "apps": {
+      "market": "App Market",
+      "agent": "Agent App",
+      "chatbot": "Chatbot App",
+      "chatflow": "Chatflow App",
+      "workflow": "Workflow App",
+      "textGeneration": "Text Generation App",
+      "details": "App Details",
+      "loading": "Loading App..."
+    },
+    "chat": {
+      "main": "Chat",
+      "new": "New Chat",
+      "history": "Chat History",
+      "loading": "Loading Chat...",
+      "notFound": "Chat Not Found"
+    },
+    "about": "About"
+  },
+  "history": {
+    "title": "Chat History",
+    "loading": "Loading conversation records...",
+    "noRecords": "No conversation history",
+    "totalCount": "Found {total} conversations",
+    "searchResults": "Search results: {count} conversations",
+    "totalRecords": "Total {total} conversations",
+    "searchPlaceholder": "Search chat history...",
+    "newChat": "New Chat",
+    "noMessagePreview": "No message preview",
+    "batchDelete": "Batch Delete",
+    "exitSelection": "Exit Selection",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "selected": "Selected {count} / {total} conversations",
+    "deleteCount": "Delete ({count})",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "rename": "Rename",
+    "delete": "Delete Chat",
+    "moreOptions": "More Options",
+    "noSearchResults": "No matching conversations found",
+    "searchHint": "Try using different search terms",
+    "noHistoryTitle": "No chat history",
+    "noHistoryDesc": "Start a new conversation",
+    "renameDialog": {
+      "title": "Rename Chat",
+      "label": "Chat Name",
+      "placeholder": "Enter new chat name",
+      "confirmText": "Confirm Rename"
+    },
+    "deleteDialog": {
+      "title": "Delete Chat",
+      "message": "Are you sure you want to delete chat \"{title}\"? This action cannot be undone.",
+      "confirmText": "Confirm Delete"
+    },
+    "batchDeleteDialog": {
+      "title": "Batch Delete Chats",
+      "message": "Are you sure you want to delete the selected {count} chats? This action cannot be undone.",
+      "confirmText": "Delete",
+      "cancelText": "Cancel"
+    },
+    "operations": {
+      "renameFailed": "Failed to rename chat",
+      "deleteFailed": "Failed to delete chat",
+      "batchDeleteSuccess": "Successfully deleted {success} conversations, {failed} failed to delete",
+      "batchDeleteFailed": "Deletion failed, please try again later",
+      "error": "Operation failed, please try again later"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "Workflow",
+      "description": "Automated workflow process",
+      "features": {
+        "automation": "Automation",
+        "batchProcessing": "Batch Processing",
+        "processControl": "Process Control"
+      }
+    },
+    "text-generation": {
+      "label": "Text Generation",
+      "description": "Single text generation application",
+      "features": {
+        "textGeneration": "Text Generation",
+        "contentCreation": "Content Creation",
+        "formattedOutput": "Formatted Output"
+      },
+      "resultViewer": {
+        "title": "Generation Result",
+        "defaultTitle": "Text Generation Result",
+        "actions": {
+          "copy": "Copy Result",
+          "copied": "Copied",
+          "download": "Download Result"
+        },
+        "executionInfo": {
+          "title": "Execution Info",
+          "status": "Status:",
+          "createdAt": "Created At:",
+          "elapsedTime": "Elapsed Time:",
+          "statusValues": {
+            "completed": "Completed",
+            "failed": "Failed",
+            "stopped": "Stopped"
+          }
+        },
+        "content": {
+          "title": "Generated Content",
+          "noContent": "No content available"
+        }
+      }
+    },
+    "chatbot": {
+      "label": "Chatbot",
+      "description": "Basic conversational chatbot",
+      "features": {
+        "conversation": "Conversation",
+        "fileUpload": "File Upload",
+        "speechToText": "Speech to Text"
+      }
+    },
+    "agent": {
+      "label": "Agent",
+      "description": "Intelligent agent with tool calling",
+      "features": {
+        "conversation": "Conversation",
+        "toolCalling": "Tool Calling",
+        "reasoningChain": "Reasoning Chain",
+        "multiTurnTasks": "Multi-turn Tasks"
+      }
+    },
+    "chatflow": {
+      "label": "Chatflow",
+      "description": "Conversational workflow application",
+      "features": {
+        "processOrchestration": "Process Orchestration",
+        "conditionalBranching": "Conditional Branching",
+        "conversationManagement": "Conversation Management"
+      }
+    }
+  },
+  "filePreview": {
+    "loading": "Loading file content...",
+    "failed": "Failed to load file",
+    "retryButton": "Retry",
+    "dismissButton": "Dismiss",
+    "downloadButton": "Download File",
+    "closeButton": "Close preview",
+    "noFileSelected": "No file selected",
+    "previewNotSupported": "Preview not supported for this file type. You can download it to view the content.",
+    "textPreview": {
+      "title": "Text Preview",
+      "copyButton": "Copy",
+      "copiedButton": "Copied!",
+      "downloadButton": "Download",
+      "charactersCount": "{count} characters"
+    },
+    "pdfPreview": {
+      "title": "PDF Preview",
+      "openButton": "Open",
+      "downloadButton": "Download",
+      "fileSize": "{size} MB"
+    },
+    "imagePreview": {
+      "title": "Image Preview",
+      "downloadButton": "Download",
+      "loadError": "Failed to load image",
+      "downloadToView": "Download to view",
+      "filename": "Filename",
+      "fileSize": "File Size",
+      "fileType": "File Type"
+    },
+    "audio": {
+      "title": "Audio Preview",
+      "duration": "Duration",
+      "loadError": "Failed to load audio file",
+      "notSupported": "Your browser does not support audio playback"
+    },
+    "video": {
+      "title": "Video Preview",
+      "duration": "Duration",
+      "resolution": "Resolution",
+      "loadError": "Failed to load video file",
+      "notSupported": "Your browser does not support video playback"
+    },
+    "markdownPreview": {
+      "title": "Markdown Preview",
+      "renderedMode": "Rendered",
+      "rawMode": "Raw",
+      "downloadButton": "Download",
+      "charactersCount": "{count} characters"
+    },
+    "errors": {
+      "noAppId": "No application ID available for file preview",
+      "downloadNoAppId": "No application ID available for file download"
+    },
+    "fileInfo": {
+      "title": "File Information",
+      "name": "Name:",
+      "type": "Type:",
+      "size": "Size:"
+    }
+  }
+}

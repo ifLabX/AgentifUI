@@ -1,0 +1,389 @@
+/* Markdown Styles */
+
+/* Code syntax highlighting - using CSS variables */
+:root {
+  /* Base syntax highlight colors - light theme */
+  --syntax-comment: #6a737d;
+  --syntax-keyword: #d73a49;
+  --syntax-string: #032f62;
+  --syntax-variable: #e36209;
+  --syntax-function: #6f42c1;
+  --syntax-operator: #005cc5;
+  --syntax-number: #005cc5;
+  --syntax-builtin: #005cc5;
+  --syntax-class: #6f42c1;
+  --syntax-tag: #22863a;
+  --syntax-attr-name: #6f42c1;
+  --syntax-attr-value: #032f62;
+  --syntax-punctuation: #24292e;
+}
+
+.dark {
+  /* Base syntax highlight colors - dark theme */
+  --syntax-comment: #8b949e;
+  --syntax-keyword: #ff7b72;
+  --syntax-string: #a5d6ff;
+  --syntax-variable: #ffa657;
+  --syntax-function: #d2a8ff;
+  --syntax-operator: #79c0ff;
+  --syntax-number: #79c0ff;
+  --syntax-builtin: #79c0ff;
+  --syntax-class: #d2a8ff;
+  --syntax-tag: #7ee787;
+  --syntax-attr-name: #d2a8ff;
+  --syntax-attr-value: #a5d6ff;
+  --syntax-punctuation: #c9d1d9;
+}
+
+/* Syntax highlight classes */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--syntax-comment);
+  font-style: italic;
+}
+
+.token.namespace {
+  opacity: 0.7;
+}
+
+.token.string,
+.token.attr-value {
+  color: var(--syntax-string);
+}
+
+.token.punctuation {
+  color: var(--syntax-punctuation);
+}
+
+.token.operator {
+  color: var(--syntax-operator);
+}
+
+.token.boolean,
+.token.number {
+  color: var(--syntax-number);
+}
+
+.token.property {
+  color: var(--syntax-variable);
+}
+
+.token.tag {
+  color: var(--syntax-tag);
+}
+
+.token.attr-name {
+  color: var(--syntax-attr-name);
+}
+
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: var(--syntax-string);
+}
+
+.token.selector,
+.token.inserted {
+  color: var(--syntax-tag);
+}
+
+.token.atrule,
+.token.keyword,
+.token.important,
+.token.deleted {
+  color: var(--syntax-keyword);
+}
+
+.token.regex,
+.token.statement {
+  color: var(--syntax-operator);
+}
+
+.token.placeholder,
+.token.variable {
+  color: var(--syntax-variable);
+}
+
+.token.important,
+.token.statement,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.function,
+.token.class-name {
+  color: var(--syntax-function);
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.markdown-body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-size: 0.875em;
+}
+
+.markdown-body h6 {
+  font-size: 0.85em;
+}
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body ul li,
+.markdown-body ol li {
+  margin-top: 0.25em;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.markdown-body hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #e1e4e8;
+  border: 0;
+}
+
+/* Code block styles */
+.markdown-body pre {
+  overflow: auto;
+  border-radius: 6px;
+}
+
+.markdown-body code {
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* Table styles */
+.markdown-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+
+.markdown-body table th {
+  font-weight: 600;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+}
+
+/* Apply theme variables to table headers, overriding Tailwind utility classes if necessary */
+/* Light mode (uses variables defined in :root) */
+.markdown-body table th {
+  background-color: var(--md-table-header-bg);
+  color: var(--md-table-header-text);
+  border-bottom-color: var(
+    --md-table-divide
+  ); /* Overrides border-gray-700 from Tailwind */
+  /* Spacing and font styles from Tailwind classes like px-4, text-sm will still apply */
+}
+
+/* Dark mode (uses variables defined in .dark) */
+.dark .markdown-body table th {
+  background-color: var(--md-table-header-bg) !important;
+  color: var(--md-table-header-text) !important;
+  border-bottom-color: var(--md-table-divide) !important;
+}
+
+/* LaTeX formula styles */
+.markdown-body .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5em 0;
+}
+
+/* Blockquote styles */
+.markdown-body blockquote {
+  margin: 0 0 16px 0;
+}
+
+/* Dark mode adaptation */
+.dark .markdown-body a {
+  color: #58a6ff;
+}
+
+.dark .markdown-body hr {
+  background-color: #30363d;
+}
+
+/* ========================================
+   Assistant message custom line and paragraph spacing system
+   ======================================== */
+
+/* 
+ * Base line-height for assistant message content container
+ * Scope: all content under .assistant-message-content class
+ * 
+ * line-height: 1.35 - relatively compact base line height
+ * Purpose: provide compact default line height for most content, saving vertical space
+ * 
+ * Suggestions:
+ * - For more compact: set to 1.2-1.3
+ * - For looser: set to 1.4-1.5
+ */
+.assistant-message-content {
+  line-height: 1.35 !important;
+}
+
+/* 
+ * Paragraph element custom styles
+ * This is the core style for text display, controlling line height within paragraphs and spacing between paragraphs
+ * 
+ * line-height: 1.9 - line height within paragraph text
+ * Purpose: give enough breathing room for text in paragraphs, improving readability
+ * Creates a difference from the base line-height 1.35, making paragraph text more comfortable
+ * 
+ * margin: 0 0 0.1em 0 - vertical spacing between paragraphs
+ * Top: 0 - no top margin, avoids cumulative spacing
+ * Right: 0 - does not affect horizontal layout
+ * Bottom: 0.1em - small space between paragraphs for visual separation
+ * Left: 0 - does not affect horizontal layout
+ * 
+ * How to adjust paragraph spacing:
+ * - Increase: change 0.1em to 0.3em, 0.5em, 1em, etc.
+ * - Decrease: change 0.1em to 0.05em or 0
+ * - Remove spacing: set margin: 0 !important;
+ * 
+ * How to adjust line height within paragraphs:
+ * - More compact: change 1.9 to 1.5-1.7
+ * - Looser: change 1.9 to 2.0-2.2
+ * - Ultra compact: change 1.9 to 1.3-1.4
+ */
+.assistant-message-content p {
+  line-height: 1.5 !important;
+  margin: 0 0 1em 0 !important;
+}
+
+/* 
+ * List item line-height control
+ * Purpose: keep list items as compact as the base content
+ * 
+ * line-height: 1.35 - same as base line height
+ * Reason: lists usually have short entries, do not need as loose line height as paragraphs
+ * 
+ * Suggestions:
+ * - If list content is long, set to 1.5-1.6
+ * - For more compact lists, set to 1.2-1.3
+ */
+.assistant-message-content ul li,
+.assistant-message-content ol li {
+  line-height: 1.35 !important;
+  margin-bottom: 0.1em !important;
+}
+
+/* 
+ * Heading element line-height control
+ * Purpose: maintain visual hierarchy and readability for headings
+ * 
+ * line-height: 1.25 - relatively compact heading line height
+ * Reason: headings are usually short, compact line height emphasizes their importance
+ * Also matches the default heading line height in markdown.css
+ * 
+ * Hierarchy:
+ * Heading (1.25) < Base content (1.35) < Paragraph text (1.9)
+ * Creates a clear visual hierarchy: headings most compact, paragraphs loosest
+ * 
+ * Suggestions:
+ * - For more prominent headings: set to 1.1-1.2
+ * - For more relaxed headings: set to 1.3-1.4
+ */
+.assistant-message-content h1,
+.assistant-message-content h2,
+.assistant-message-content h3,
+.assistant-message-content h4,
+.assistant-message-content h5,
+.assistant-message-content h6 {
+  line-height: 1.25 !important;
+  margin-top: 0em !important;
+  margin-bottom: 0.5em !important;
+}
+
+/* 
+ * List container margin control - fix too much space between lists and headings
+ * Purpose: control the distance between lists and other elements (especially following headings)
+ * 
+ * margin-bottom: 0.6em - bottom margin for lists
+ * Reason: default 16px (about 1em) is too large, causing too much space between lists and following headings
+ * Set to 0.6em for a more compact look compared to 1em paragraph spacing, creating a reasonable visual hierarchy
+ * 
+ * Suggestions:
+ * - For more compact: set to 0.4em or 0.5em
+ * - For looser: set to 0.8em or 1em
+ */
+.assistant-message-content ul,
+.assistant-message-content ol {
+  margin-bottom: 0.6em !important;
+  margin-top: 0 !important;
+}

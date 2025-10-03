@@ -1,0 +1,2584 @@
+{
+  "common": {
+    "ui": {
+      "cancel": "Annulla",
+      "back": "Indietro",
+      "loading": "Caricamento...",
+      "retry": "Riprova",
+      "remove": "Rimuovi",
+      "error": "Errore",
+      "customSelect": {
+        "placeholder": "Si prega di selezionare..."
+      },
+      "exportButton": {
+        "tooltip": "Esporta file",
+        "ariaLabel": "Esporta file"
+      },
+      "logoutDialog": {
+        "title": "Logout",
+        "message": "Sei sicuro di voler effettuare il logout? Dovrai accedere nuovamente per visualizzare il tuo account.",
+        "confirm": "Logout",
+        "cancel": "Annulla",
+        "loggingOut": "Disconnessione in corso..."
+      },
+      "moreButton": {
+        "ariaLabel": "Altre opzioni"
+      },
+      "download": "Scarica",
+      "copy": "Copia",
+      "copied": "Copiato!",
+      "open": "Apri",
+      "dismiss": "Chiudi"
+    },
+    "time": {
+      "notRecorded": "Non registrato",
+      "invalidDate": "Data non valida",
+      "formatError": "Errore di formato",
+      "greeting": {
+        "morning": "Buongiorno",
+        "afternoon": "Buon pomeriggio",
+        "evening": "Buonasera",
+        "night": "Si sta facendo tardi",
+        "default": "Ciao"
+      }
+    }
+  },
+  "pages": {
+    "home": {
+      "sections": [
+        {
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "Esplora le infinite possibilità dell'IA e crea nuove esperienze intelligenti",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Integrazione di Grandi Modelli",
+                      "description": "Supporto per più fornitori di modelli, tra cui OpenAI, Anthropic, Dify, ecc., per soddisfare le diverse esigenze aziendali"
+                    },
+                    {
+                      "title": "Miglioramento della Conoscenza con RAG",
+                      "description": "Integra la tecnologia Retrieval-Augmented Generation (RAG) per abilitare basi di conoscenza private e consapevolezza del contesto"
+                    },
+                    {
+                      "title": "Distribuzione Aziendale",
+                      "description": "Supporto per la distribuzione privata, garantendo la sicurezza dei dati e fornendo servizi stabili e affidabili basati sul backend di Dify"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "Inizia",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "Scopri di più",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Esplora le infinite possibilità dell'IA.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "it-IT",
+        "migratedFrom": "legacy-format"
+      }
+    },
+    "chat": {
+      "newChat": "Nuova Chat",
+      "sendMessage": "Invia",
+      "inputPlaceholder": "Scrivi il tuo messaggio...",
+      "noMessages": "Nessun messaggio ancora",
+      "typing": "Sta scrivendo...",
+      "recentChats": "Chat Recenti",
+      "historyChats": "Cronologia Chat",
+      "input": {
+        "placeholder": "Scrivi il tuo messaggio...",
+        "sendMessage": "Invia messaggio",
+        "stopGeneration": "Interrompi generazione",
+        "attachFile": "Allega file",
+        "selectModel": "Seleziona modello",
+        "noModelAvailable": "Nessun modello disponibile",
+        "pleaseSelectModel": "Per favore, seleziona un modello",
+        "sending": "Invio in corso...",
+        "uploading": "Caricamento in corso...",
+        "uploadFailed": "Caricamento fallito",
+        "retryUpload": "Riprova caricamento",
+        "removeFile": "Rimuovi file",
+        "fileUploadError": "Errore nel caricamento del file",
+        "messageSendFailed": "Invio messaggio fallito",
+        "unknownError": "Errore sconosciuto",
+        "validatingConfig": "Convalida della configurazione dell'app...",
+        "cannotSubmit": "Impossibile inviare",
+        "addAttachment": "Aggiungi allegato",
+        "retryUploadTooltip": "Riprova caricamento",
+        "removeAttachment": "Rimuovi allegato",
+        "scrollToBottom": "Scorri fino in fondo"
+      },
+      "fileUpload": {
+        "selectFileType": "Seleziona tipo di file",
+        "image": "Immagine",
+        "document": "Documento",
+        "audio": "Audio",
+        "video": "Video",
+        "custom": "Personalizzato",
+        "uploadProgress": "Progresso caricamento",
+        "uploadComplete": "Caricamento completato",
+        "uploadError": "Errore di caricamento",
+        "fileTooLarge": "File troppo grande",
+        "unsupportedFormat": "Formato file non supportato"
+      },
+      "fileTypeSelector": {
+        "ariaLabel": "Aggiungi allegato",
+        "notSupported": "Questa app non supporta il caricamento di file",
+        "noLimit": "Il limite di caricamento file è 0",
+        "noTypesConfigured": "Nessun tipo di file supportato configurato",
+        "maxFilesReached": "Limite massimo di file raggiunto ({maxFiles})",
+        "addAttachment": "Aggiungi allegato ({currentFiles}/{maxFiles})",
+        "loading": "Caricamento...",
+        "loadError": "Impossibile caricare i tipi di file",
+        "reachedLimit": "Limite raggiunto ({currentFiles}/{maxFiles})",
+        "maxUpload": "Carica fino a {maxFiles} file",
+        "noUploadLimit": "Nessun limite di caricamento"
+      },
+      "modelSelector": {
+        "noModelsAvailable": "Nessun modello disponibile",
+        "selectModel": "Seleziona modello",
+        "appNotFound": "App non trovata: {appId}"
+      },
+      "messages": {
+        "assistant": "Assistente",
+        "user": "Tu",
+        "thinking": "Sto pensando...",
+        "stopped": "Interrotto",
+        "completed": "Completato",
+        "copyMessage": "Copia messaggio",
+        "editMessage": "Modifica messaggio",
+        "deleteMessage": "Elimina messaggio",
+        "regenerate": "Rigenera",
+        "feedback": "Feedback",
+        "like": "Mi piace",
+        "dislike": "Non mi piace",
+        "copied": "Copiato",
+        "copyFailed": "Copia fallita",
+        "imageLink": "Link immagine",
+        "viewImage": "Visualizza immagine",
+        "clickToView": "Clicca per visualizzare",
+        "clickToViewWithAlt": "Clicca per visualizzare: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "Altre {count} domande..."
+      }
+    },
+    "chatflow": {
+      "loading": {
+        "inputConfig": "Caricamento configurazione di input..."
+      },
+      "form": {
+        "question": {
+          "label": "La tua Domanda o Richiesta",
+          "placeholder": "Descrivi la tua domanda o richiesta in dettaglio...",
+          "required": "Per favore, inserisci la tua domanda o richiesta",
+          "tooLong": "La descrizione della domanda non può superare {maxLength} caratteri"
+        },
+        "additionalInfo": "Informazioni Aggiuntive",
+        "reset": "Resetta Modulo",
+        "processing": "Elaborazione in corso...",
+        "startConversation": "Inizia Conversazione",
+        "checkAndCorrectErrors": "Per favore, controlla e correggi gli errori contrassegnati nel modulo",
+        "defaultAppName": "Chat AI",
+        "defaultDescription": "Per favore, inserisci la tua domanda per avviare una conversazione intelligente"
+      },
+      "floatingController": {
+        "showTracker": "Mostra Tracciatore Nodi",
+        "hideTracker": "Nascondi Tracciatore Nodi"
+      },
+      "nodeTracker": {
+        "title": "Progresso Esecuzione Nodi",
+        "starting": "Avvio di Chatflow",
+        "noRecords": "Nessun record di esecuzione dei nodi",
+        "waitingUpdate": "In attesa di aggiornamento dello stato del nodo...",
+        "showProgress": "Il progresso dell'esecuzione dei nodi verrà mostrato dopo l'inizio della conversazione",
+        "executionError": "Errore di Esecuzione:"
+      },
+      "executionBar": {
+        "status": {
+          "iterating": "In iterazione",
+          "iterationCompleted": "Iterazione Completata",
+          "iterationFailed": "Iterazione Fallita",
+          "waitingIteration": "In Attesa di Iterazione",
+          "looping": "In ciclo",
+          "loopCompleted": "Ciclo Completato",
+          "loopFailed": "Ciclo Fallito",
+          "waitingLoop": "In Attesa di Ciclo",
+          "executing": "In esecuzione",
+          "completed": "Completato",
+          "failed": "Fallito",
+          "waiting": "In attesa",
+          "unknown": "Sconosciuto",
+          "executing_": "In esecuzione..."
+        },
+        "nodeTypes": {
+          "start": "Nodo di Inizio",
+          "llm": "Inferenza LLM",
+          "knowledgeRetrieval": "Recupero Conoscenza",
+          "questionClassifier": "Classificatore Domande",
+          "ifElse": "Ramo Condizionale",
+          "code": "Esecuzione Codice",
+          "templateTransform": "Trasformazione Template",
+          "variableAssigner": "Assegnatore Variabili",
+          "variableAggregator": "Aggregatore Variabili",
+          "documentExtractor": "Estrattore Documenti",
+          "parameterExtractor": "Estrattore Parametri",
+          "httpRequest": "Richiesta HTTP",
+          "listOperator": "Operatore Lista",
+          "iteration": "Iterazione Ciclo",
+          "end": "Nodo di Fine",
+          "node": "Nodo"
+        },
+        "progressType": {
+          "iteration": "Progresso Iterazione",
+          "branch": "Progresso Ramo"
+        },
+        "branch": {
+          "label": "Ramo"
+        }
+      }
+    },
+    "workflow": {
+      "form": {
+        "inputPlaceholder": "Per favore, inserisci {label}",
+        "selectPlaceholder": "Per favore, seleziona {label}",
+        "rangeHint": "Intervallo: {min} - {max}",
+        "minValueHint": "Valore minimo: {min}",
+        "maxValueHint": "Valore massimo: {max}",
+        "stepHint": "Passo: {step}",
+        "precisionHint": "Cifre decimali: {precision}",
+        "defaultLabel": "Testo di input",
+        "loading": "Caricamento configurazione modulo...",
+        "noFormConfig": "Questa app non ha un modulo di input configurato",
+        "reset": "Resetta modulo",
+        "executing": "In esecuzione...",
+        "startExecution": "Avvia esecuzione",
+        "errors": {
+          "instanceNotFound": "Istanza di servizio con instanceId {instanceId} non trovata"
+        },
+        "validation": {
+          "required": "{label} è obbligatorio",
+          "invalidNumber": "{label} deve essere un numero valido",
+          "minValue": "{label} non può essere inferiore a {min}",
+          "maxValue": "{label} non può essere maggiore di {max}",
+          "stepValue": "{label} deve essere un multiplo di {step}",
+          "precisionExceeded": "{label} non può avere più di {precision} decimali",
+          "maxLengthExceeded": "{label} non può superare {maxLength} caratteri",
+          "invalidSelection": "Valore selezionato per {label} non valido",
+          "tooManyFiles": "{label} non può avere più di {maxFiles} file",
+          "fileTooLarge": "Il file \"{fileName}\" in {label} supera {maxSize}MB",
+          "unsupportedFileType": "Il file \"{fileName}\" in {label} non è supportato, tipi supportati: {allowedTypes}"
+        }
+      },
+      "status": {
+        "running": "Workflow in esecuzione",
+        "completed": "Esecuzione completata",
+        "failed": "Esecuzione fallita",
+        "stopped": "Esecuzione interrotta",
+        "pending": "In attesa di esecuzione",
+        "unknown": "Sconosciuto",
+        "totalTime": "Tempo totale: {time}s"
+      },
+      "nodeStatus": {
+        "iterating": "In iterazione...",
+        "iterationCompleted": "Iterazione completata",
+        "iterationFailed": "Iterazione fallita",
+        "waitingIteration": "In attesa di iterazione",
+        "looping": "In ciclo",
+        "loopCompleted": "Ciclo completato",
+        "loopFailed": "Ciclo fallito",
+        "waitingLoop": "In attesa di ciclo",
+        "parallelRunning": "In esecuzione parallela...",
+        "parallelCompleted": "Parallelo completato",
+        "parallelFailed": "Parallelo fallito",
+        "waitingParallel": "In attesa di esecuzione parallela",
+        "executing": "In esecuzione...",
+        "nodeCompleted": "Esecuzione completata",
+        "nodeFailed": "Esecuzione fallita",
+        "nodePending": "In attesa di esecuzione",
+        "nodeUnknown": "Stato sconosciuto"
+      },
+      "nodeTypes": {
+        "start": "Nodo di Inizio",
+        "llm": "Inferenza LLM",
+        "knowledgeRetrieval": "Recupero Conoscenza",
+        "questionClassifier": "Classificatore Domande",
+        "ifElse": "Ramo Condizionale",
+        "code": "Esecuzione Codice",
+        "templateTransform": "Trasformazione Template",
+        "variableAssigner": "Assegnatore Variabili",
+        "variableAggregator": "Aggregatore Variabili",
+        "documentExtractor": "Estrattore Documenti",
+        "parameterExtractor": "Estrattore Parametri",
+        "httpRequest": "Richiesta HTTP",
+        "listOperator": "Operatore Lista",
+        "iteration": "Iterazione Ciclo",
+        "parallel": "Ramo Parallelo",
+        "end": "Nodo di Fine"
+      },
+      "iterationDetails": {
+        "roundIteration": "Iterazione {round}",
+        "roundLoop": "Ciclo {round}",
+        "nodeNumber": "Nodo {number}"
+      },
+      "buttons": {
+        "retry": "Riprova",
+        "close": "Chiudi",
+        "copy": "Copia risultato",
+        "copied": "Copiato",
+        "download": "Scarica risultato",
+        "retryUpload": "Riprova caricamento",
+        "removeFile": "Rimuovi file",
+        "viewResult": "Visualizza risultato",
+        "stop": "Ferma",
+        "reset": "Resetta"
+      },
+      "history": {
+        "showHistory": "Visualizza cronologia",
+        "hideHistory": "Chiudi cronologia",
+        "noDetailData": "Questo record di esecuzione non ha dati di risultato dettagliati, ma puoi visualizzare le informazioni di base",
+        "title": "Cronologia Esecuzioni",
+        "selected": "{count} selezionati",
+        "batchDelete": "Elimina in blocco",
+        "deleteSelected": "Elimina {count} elementi selezionati",
+        "cancelSelection": "Annulla selezione",
+        "loading": "Caricamento cronologia esecuzioni...",
+        "noRecords": "Nessun record di esecuzione",
+        "getDetailFailed": "Impossibile ottenere i dettagli dell'esecuzione",
+        "unknownError": "Errore sconosciuto",
+        "userNotLoggedIn": "Utente non autenticato"
+      },
+      "fileUpload": {
+        "uploading": "Caricamento file...",
+        "dropOrClick": "Trascina i file qui o clicca per caricare",
+        "uploadFailed": "Caricamento fallito",
+        "supportAllTypes": "Supporta il caricamento di vari tipi di file",
+        "supportTypes": "Supporta il caricamento di: {types}",
+        "fileTypes": {
+          "image": "Immagine",
+          "document": "Documento",
+          "audio": "Audio",
+          "video": "Video",
+          "custom": "Altri file"
+        },
+        "uploaded": "Caricato",
+        "maxFiles": "Carica fino a {maxFiles} file ({remaining} rimanenti)",
+        "maxFileSize": "Dimensione massima file {size}MB",
+        "maxFilesReached": "Limite massimo di file raggiunto ({current}/{max})",
+        "selectedFiles": "File selezionati"
+      },
+      "tabs": {
+        "inputForm": "Modulo di Input",
+        "executionStatus": "Stato Esecuzione",
+        "history": "Cronologia"
+      },
+      "resultViewer": {
+        "title": "Risultato Esecuzione Workflow",
+        "noData": "Nessun dato di risultato",
+        "copy": "Copia risultato",
+        "copied": "Copiato",
+        "download": "Scarica risultato"
+      }
+    },
+    "textGeneration": {
+      "status": {
+        "generating": "Generazione testo in corso...",
+        "completed": "Generazione completata",
+        "failed": "Generazione fallita",
+        "stopped": "Interrotta",
+        "waiting": "In attesa di generare",
+        "result": "Risultato della generazione"
+      },
+      "progress": "Progresso: {percent}%",
+      "buttons": {
+        "copy": "Copia testo",
+        "copied": "Copiato",
+        "download": "Scarica testo",
+        "stop": "Ferma",
+        "retry": "Riprova",
+        "reset": "Resetta",
+        "close": "Chiudi"
+      },
+      "emptyState": {
+        "title": "In attesa di generare testo",
+        "description": "Compila il modulo a sinistra e clicca il pulsante di esecuzione per avviare la generazione del testo"
+      },
+      "placeholder": {
+        "generating": "Generazione testo in corso...",
+        "result": "Il testo generato verrà visualizzato qui"
+      },
+      "loadingState": {
+        "title": "Generazione Testo",
+        "description": "Attendere prego, sto generando contenuti per te..."
+      },
+      "streamingIndicator": "Generazione in corso",
+      "stats": {
+        "characters": "Caratteri: {count}",
+        "words": "Parole: {count}",
+        "tokensUsed": "Token usati: {count}"
+      }
+    },
+    "apps": {
+      "startChatWith": "Inizia a chattare con {appName}...",
+      "continueChatWith": "Continua a chattare con {appName}...",
+      "defaultApp": "App",
+      "loadFailed": "Caricamento dell'app fallito",
+      "backToMarket": "Torna al Mercato App",
+      "loading": {
+        "app": "Caricamento app...",
+        "validating": "Convalida configurazione app...",
+        "default": "Caricamento..."
+      },
+      "errors": {
+        "appNotFound": "App non trovata",
+        "initializationFailed": "Inizializzazione fallita",
+        "appLoadFailed": "Caricamento dell'app fallito"
+      },
+      "status": {
+        "loadingApp": "Caricamento app...",
+        "validatingConfig": "Convalida configurazione app...",
+        "loading": "Caricamento..."
+      },
+      "buttons": {
+        "backToMarket": "Torna al Mercato App"
+      },
+      "market": {
+        "categories": {
+          "all": "Tutte",
+          "favorite": "Popolari",
+          "writing": "Scrittura",
+          "translation": "Traduzione",
+          "programming": "Programmazione",
+          "codeGeneration": "Generazione Codice",
+          "analysis": "Analisi",
+          "summary": "Riassunto",
+          "conversation": "Conversazione",
+          "assistant": "Assistente",
+          "textGeneration": "Generazione Testo",
+          "document": "Documento",
+          "dataAnalysis": "Analisi Dati",
+          "development": "Sviluppo",
+          "generation": "Generazione",
+          "conversationModel": "Modello di Conversazione",
+          "reasoningModel": "Modello di Ragionamento",
+          "documentModel": "Modello di Documento",
+          "multimodal": "Multimodale",
+          "highPrecision": "Alta Precisione",
+          "fastResponse": "Veloce",
+          "localDeployment": "Locale",
+          "enterprise": "Aziendale",
+          "private": "Privato",
+          "tools": "Strumenti",
+          "general": "Generale",
+          "professional": "Professionale"
+        },
+        "search": {
+          "placeholder": "Cerca app..."
+        },
+        "tryAdjustSearch": "Prova a modificare i criteri di ricerca o naviga in altre categorie",
+        "viewMode": {
+          "grid": "Griglia",
+          "list": "Lista"
+        },
+        "appCard": {
+          "noDescription": "Nessuna descrizione",
+          "defaultType": "App"
+        },
+        "header": {
+          "title": "Mercato App",
+          "totalApps": "{count} app in totale",
+          "categoryApps": "{category} · {count} app",
+          "totalLabel": "{count} totali"
+        },
+        "categoryKeys": {
+          "all": "Tutte",
+          "commonApps": "App Popolari"
+        },
+        "unknownAppType": "Tipo di app Dify sconosciuto",
+        "useDefaultRoute": "Usa rotta predefinita",
+        "routeJump": "Salto di rotta",
+        "app": "App",
+        "type": "Tipo",
+        "path": "Percorso",
+        "openAppFailed": "Impossibile aprire l'app"
+      }
+    },
+    "auth": {
+      "login": {
+        "title": "Login",
+        "subtitle": "Benvenuto nell'Assistente Intelligente",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "emailPlaceholder": "tua@email.com",
+        "passwordPlaceholder": "••••••••",
+        "loginButton": "Login",
+        "forgotPasswordLink": "Password dimenticata?",
+        "phoneLoginLink": "📱 Accedi con verifica telefonica",
+        "noAccountText": "Non hai un account?",
+        "registerLink": "Registrati ora",
+        "showPassword": "Mostra password",
+        "hidePassword": "Nascondi password",
+        "orSeparator": "Accedi con email e password",
+        "orSeparatorSso": "Oppure usa email e password",
+        "alerts": {
+          "registered": "Registrazione avvenuta con successo! Controlla la tua email per verificare il tuo account, quindi effettua il login.",
+          "resetSuccess": "Password reimpostata con successo! Effettua il login con la tua nuova password."
+        },
+        "errors": {
+          "oauthFailed": "Login con OAuth fallito, riprova o usa altri metodi di login",
+          "ssoCallbackFailed": "Callback di autenticazione SSO fallito, prova a effettuare nuovamente il login",
+          "ticketValidationFailed": "Validazione del ticket SSO fallita, effettua nuovamente il login",
+          "invalidEmployeeNumber": "Il formato del numero di dipendente non è corretto, contatta l'amministratore",
+          "userCreationFailed": "Creazione dell'account fallita, potrebbe essere dovuto a dati dell'account incoerenti. Prova a effettuare nuovamente il login, se il problema persiste, contatta l'amministratore",
+          "accountDataInconsistent": "I dati dell'account sono incoerenti, il sistema sta tentando di riparare automaticamente. Attendi un momento e effettua nuovamente il login",
+          "profileCreationFailed": "Creazione del profilo utente fallita, contatta l'amministratore per assistenza",
+          "ssoProviderNotFound": "Errore di configurazione del servizio SSO, contatta l'amministratore",
+          "missingTicket": "Parametri di autenticazione mancanti, effettua nuovamente il login",
+          "default": "Si è verificato un errore durante il login, riprova più tardi",
+          "loginFailed": "Login fallito, controlla email e password"
+        }
+      },
+      "register": {
+        "title": "Registrati",
+        "subtitle": "Unisciti a AgentifUI e inizia il tuo viaggio nell'IA",
+        "nameLabel": "Nome Completo",
+        "usernameLabel": "Nome Utente",
+        "usernameOptional": "(opzionale)",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "confirmPasswordLabel": "Conferma Password",
+        "namePlaceholder": "Inserisci il tuo nome completo",
+        "usernamePlaceholder": "Scegli un nome utente",
+        "emailPlaceholder": "tua@email.com",
+        "passwordPlaceholder": "••••••••",
+        "createAccountButton": "Crea Account",
+        "phoneLoginLink": "📱 Accedi con verifica telefonica",
+        "hasAccountText": "Hai già un account?",
+        "loginLink": "Accedi ora",
+        "showPassword": "Mostra password",
+        "hidePassword": "Nascondi password",
+        "showConfirmPassword": "Mostra password di conferma",
+        "hideConfirmPassword": "Nascondi password di conferma",
+        "orSeparator": "Oppure usa email e password",
+        "errors": {
+          "nameRequired": "Per favore, inserisci il tuo nome completo",
+          "emailRequired": "Per favore, inserisci l'indirizzo email",
+          "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+          "passwordMismatch": "Le password non corrispondono",
+          "usernameInvalid": "Il nome utente può contenere solo lettere, numeri, trattini bassi e trattini, lungo da 2 a 20 caratteri",
+          "emailExists": "Questa email è già registrata, usa un'email diversa o accedi direttamente",
+          "passwordWeak": "La password non è abbastanza sicura, usa una password più complessa",
+          "emailInvalid": "Il formato dell'email non è corretto, controlla e riprova",
+          "registerFailed": "Registrazione fallita, riprova più tardi"
+        }
+      },
+      "phoneLoginPage": {
+        "title": "AgentifUI",
+        "subtitle": "Conversazione intelligente a portata di mano",
+        "orSeparator": "O",
+        "emailLoginLink": "Accedi con email e password",
+        "registerLink": "Non hai un account? Registrati ora",
+        "termsText": "Effettuando il login, accetti i nostri",
+        "termsLink": "Termini di Servizio",
+        "privacyLink": "Informativa sulla Privacy",
+        "andText": "e"
+      },
+      "ssoProcessing": {
+        "title": "Login SSO",
+        "loading": "Caricamento..."
+      },
+      "forgotPassword": {
+        "title": "Password Dimenticata",
+        "subtitle": "Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password",
+        "emailLabel": "Indirizzo Email",
+        "emailPlaceholder": "tua@email.com",
+        "sendButton": "Invia Link di Reimpostazione",
+        "sendingButton": "Invio in corso...",
+        "backToLogin": "Torna al Login",
+        "success": {
+          "title": "Email Inviata",
+          "message": "Abbiamo inviato un link per reimpostare la password a {email}",
+          "instructions": "Controlla la tua email (inclusa la cartella spam) e clicca sul link per reimpostare la password.",
+          "noEmail": "Se non ricevi l'email, controlla se l'indirizzo email è corretto o riprova più tardi."
+        },
+        "errors": {
+          "emailRequired": "Per favore, inserisci un indirizzo email valido",
+          "rateLimited": "Troppe richieste, riprova più tardi",
+          "sendFailed": "Invio fallito, riprova più tardi"
+        }
+      },
+      "resetPassword": {
+        "title": "Reimposta Password",
+        "subtitle": "Per favore, inserisci la tua nuova password",
+        "verifying": "Verifica in corso",
+        "verifyingSubtitle": "Verifica del link di reimpostazione...",
+        "invalidTitle": "Link Non Valido",
+        "invalidSubtitle": "Il link per reimpostare la password è scaduto o non è valido",
+        "successTitle": "Password Reimpostata con Successo",
+        "successSubtitle": "La tua password è stata reimpostata con successo",
+        "passwordLabel": "Nuova Password",
+        "confirmPasswordLabel": "Conferma Password",
+        "passwordPlaceholder": "Inserisci nuova password",
+        "confirmPasswordPlaceholder": "Inserisci nuovamente la nuova password",
+        "resetButton": "Reimposta Password",
+        "resettingButton": "Reimpostazione in corso...",
+        "showPassword": "Mostra nuova password",
+        "hidePassword": "Nascondi nuova password",
+        "showConfirmPassword": "Mostra password di conferma",
+        "hideConfirmPassword": "Nascondi password di conferma",
+        "passwordHint": "La password deve contenere lettere maiuscole e minuscole, numeri, almeno 8 caratteri",
+        "backToLogin": "Vai al Login",
+        "retryReset": "Richiedi nuovamente la reimpostazione della password",
+        "successMessage": "Ora puoi accedere al tuo account con la nuova password.",
+        "errors": {
+          "passwordRequired": "Per favore, inserisci la nuova password",
+          "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+          "passwordMismatch": "Le password non corrispondono",
+          "passwordWeak": "La password non è abbastanza sicura, usa una password più complessa",
+          "sessionExpired": "La sessione è scaduta, richiedi nuovamente la reimpostazione della password",
+          "resetFailed": "Reimpostazione della password fallita, riprova più tardi",
+          "linkInvalid": "Verifica del link di reimpostazione fallita",
+          "linkExpired": "Il link di reimpostazione non è valido o è scaduto, richiedi nuovamente la reimpostazione della password",
+          "verifyFailed": "Verifica fallita, richiedi nuovamente la reimpostazione della password"
+        }
+      },
+      "phoneLogin": {
+        "title": "Login con Telefono",
+        "subtitle": "Accedi usando il numero di telefono per ricevere il codice di verifica",
+        "otpSubtitle": "Per favore, inserisci il codice di verifica a 6 cifre che hai ricevuto",
+        "phoneLabel": "Numero di Telefono",
+        "otpLabel": "Codice di Verifica",
+        "otpPlaceholder": "Inserisci codice a 6 cifre",
+        "phonePlaceholder": "3331234567",
+        "sendOtpButton": "Invia Codice di Verifica",
+        "sendingButton": "Invio in corso...",
+        "verifyButton": "Verifica Codice",
+        "verifyingButton": "Verifica in corso...",
+        "resendButton": "Reinvia Codice di Verifica",
+        "changePhoneButton": "Cambia Numero di Telefono",
+        "otpSentTo": "Codice di verifica inviato a +39{phone}",
+        "errors": {
+          "phoneRequired": "Per favore, inserisci il numero di telefono",
+          "phoneInvalid": "Per favore, inserisci un numero di telefono italiano valido",
+          "otpRequired": "Per favore, inserisci il codice di verifica",
+          "otpInvalid": "Il codice di verifica deve essere di 6 cifre",
+          "sendFailed": "Invio del codice di verifica fallito, riprova più tardi",
+          "verifyFailed": "Il codice di verifica non è corretto, inseriscilo di nuovo"
+        },
+        "success": {
+          "otpSent": "Il codice di verifica è stato inviato, controlla i tuoi SMS",
+          "verifySuccess": "Verifica riuscita! Accesso in corso..."
+        }
+      },
+      "sso": {
+        "title": "Autenticazione Single Sign-On",
+        "subtitle": "Accedi con il tuo account di autenticazione unificata",
+        "button": "Accedi con SSO",
+        "simpleButton": "🏛️ Single Sign-On",
+        "jumpingButton": "Reindirizzamento in corso...",
+        "helpText": "L'account verrà creato automaticamente al primo accesso",
+        "contactText": "Contatta l'amministratore di sistema se hai domande",
+        "startError": "Avvio del login SSO fallito, riprova più tardi",
+        "noProvider": "Al momento non ci sono metodi di login SSO disponibili",
+        "processing": {
+          "title": "Login SSO",
+          "processing": "Elaborazione login SSO...",
+          "welcome": "Benvenuto {name}, stabilimento della sessione...",
+          "verifying": "Verifica dell'identità...",
+          "sessionCheck": "Verifica della sessione...",
+          "success": "Login riuscito! Reindirizzamento in corso...",
+          "failed": "Login fallito",
+          "redirecting": "Verrai reindirizzato automaticamente alla pagina di login in 3 secondi...",
+          "errors": {
+            "missingParams": "Parametri SSO mancanti o non validi",
+            "userDataNotFound": "Dati utente SSO non trovati",
+            "sessionExpired": "Sessione SSO scaduta, effettua nuovamente il login",
+            "loginFailed": "Login SSO fallito",
+            "sessionValidationFailed": "Validazione della sessione fallita",
+            "noValidSessionData": "Il server non ha restituito dati di sessione validi",
+            "processingFailed": "Elaborazione SSO fallita"
+          }
+        }
+      },
+      "social": {
+        "github": {
+          "login": "Accedi con GitHub",
+          "register": "Registrati con GitHub",
+          "failed": "Login con GitHub fallito"
+        }
+      }
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "profile": "Profilo",
+      "account": "Account",
+      "appearance": "Aspetto",
+      "language": "Lingua",
+      "navigation": {
+        "overview": "Panoramica",
+        "profileNav": "Profilo",
+        "accountNav": "Account",
+        "appearanceNav": "Aspetto",
+        "languageNav": "Lingua"
+      },
+      "descriptions": {
+        "overview": "Gestisci le tue preferenze personali e personalizza la tua esperienza con l'app",
+        "profileDesc": "Aggiorna le informazioni personali, l'avatar e le impostazioni dell'account",
+        "accountDesc": "Gestisci la sicurezza del tuo account e le informazioni di login",
+        "appearanceDesc": "Personalizza temi, colori, layout dell'interfaccia e impostazioni del fuso orario",
+        "languageDesc": "Scegli la lingua di visualizzazione e le impostazioni regionali preferite"
+      },
+      "accountSettings": {
+        "title": "Impostazioni Account",
+        "accountInfo": "Informazioni Account",
+        "loginEmail": "Email di Login",
+        "authMethod": "Metodo di Autenticazione",
+        "emailPasswordAuth": "Email e Password",
+        "securitySettings": "Impostazioni di Sicurezza",
+        "logoutAccount": "Logout dall'account corrente",
+        "confirmLogout": "Sei sicuro di voler effettuare il logout?",
+        "confirmLogoutBtn": "Conferma Logout",
+        "logout": "Logout",
+        "loggingOut": "Disconnessione in corso...",
+        "loadAccountError": "Errore nel caricamento delle informazioni dell'account",
+        "retry": "Riprova",
+        "deleteAccount": "Elimina Account"
+      },
+      "profileSettings": {
+        "title": "Profilo",
+        "accountInfo": "Informazioni Account",
+        "registrationTime": "Data di Registrazione",
+        "accountRole": "Ruolo Account",
+        "lastLogin": "Ultimo Accesso",
+        "editProfile": "Modifica Profilo",
+        "name": "Nome",
+        "nickname": "Nome Utente",
+        "profileUpdated": "Profilo aggiornato con successo",
+        "updateFailed": "Aggiornamento del profilo fallito",
+        "saving": "Salvataggio...",
+        "saveChanges": "Salva Modifiche",
+        "namePlaceholder": "Inserisci il tuo nome",
+        "usernamePlaceholder": "Inserisci il tuo nome utente",
+        "roles": {
+          "admin": "Amministratore",
+          "manager": "Manager",
+          "user": "Utente"
+        },
+        "status": {
+          "notRecorded": "Non registrato",
+          "notSet": "Non impostato"
+        },
+        "loadProfileError": "Errore nel caricamento del profilo",
+        "avatar": {
+          "defaultUser": "Utente",
+          "userAvatar": "Avatar di {userName}",
+          "editHover": "Modifica",
+          "uploadSuccess": "Avatar caricato con successo",
+          "deleteSuccess": "Avatar eliminato con successo"
+        }
+      },
+      "avatarModal": {
+        "title": "Impostazioni Avatar",
+        "subtitle": "Clicca per caricare o trascina l'immagine nell'area sottostante",
+        "currentAvatar": "Avatar Attuale",
+        "supportedFormats": "Supporta i formati JPEG, JPG, PNG, WebP • Max 5MB",
+        "crop": {
+          "zoom": "Zoom",
+          "cancel": "Seleziona di nuovo",
+          "confirm": "Conferma Ritaglio",
+          "uploading": "Caricamento in corso..."
+        },
+        "uploadArea": {
+          "uploading": "Caricamento in corso...",
+          "changeAvatar": "Clicca per cambiare avatar",
+          "uploadAvatar": "Clicca per caricare avatar",
+          "uploadProgress": "Progresso caricamento: {progress}%",
+          "dragHint": "O trascina l'immagine qui"
+        },
+        "buttons": {
+          "deleteAvatar": "Elimina Avatar",
+          "complete": "Completa",
+          "uploading": "Caricamento in corso...",
+          "cancel": "Annulla",
+          "confirmDelete": "Conferma Eliminazione",
+          "deleting": "Eliminazione in corso..."
+        },
+        "deleteConfirm": {
+          "title": "Elimina Avatar",
+          "message": "Sei sicuro di voler eliminare l'avatar corrente? Questa azione non può essere annullata."
+        },
+        "status": {
+          "success": "Operazione completata con successo"
+        },
+        "errors": {
+          "unsupportedType": "Tipo di file non supportato. Seleziona immagini in formato JPEG, JPG, PNG o WebP.",
+          "fileTooLarge": "File troppo grande. Seleziona immagini più piccole di 5MB.",
+          "userNotLoggedIn": "Utente non autenticato",
+          "uploadFailed": "Caricamento fallito",
+          "deleteFailed": "Eliminazione fallita"
+        }
+      },
+      "avatarUpload": {
+        "errors": {
+          "unsupportedFileType": "Tipo di file non supportato. Formati supportati: {types}",
+          "fileTooLarge": "File troppo grande. Massimo supportato {maxSize}MB",
+          "uploadFailed": "Caricamento fallito: {message}",
+          "getUrlFailed": "Impossibile ottenere l'URL dell'avatar",
+          "updateDatabaseFailed": "Impossibile aggiornare il database: {message}",
+          "deleteFailed": "Eliminazione fallita: {message}",
+          "uploadFailedGeneric": "Caricamento fallito",
+          "deleteFailedGeneric": "Eliminazione fallita"
+        }
+      },
+      "appearanceSettings": {
+        "title": "Impostazioni Aspetto",
+        "theme": "Tema",
+        "themeDescription": "Scegli la modalità di visualizzazione preferita",
+        "themes": {
+          "light": "Modalità Chiara",
+          "dark": "Modalità Scura",
+          "system": "Segui Sistema"
+        },
+        "preview": {
+          "light": "Chiaro",
+          "dark": "Scuro",
+          "system": "Sistema"
+        },
+        "timezone": "Impostazioni Fuso Orario",
+        "timezoneDescription": "Seleziona il tuo fuso orario per influenzare il formato di visualizzazione dell'ora",
+        "currentTimezone": "Fuso Orario Attuale",
+        "timezoneRegions": {
+          "asia": "Asia",
+          "europe": "Europa",
+          "america": "Americhe",
+          "africa": "Africa",
+          "australia": "Oceania",
+          "utc": "Tempo Coordinato Universale"
+        },
+        "timezoneCities": {
+          "shanghai": "Shanghai",
+          "beijing": "Pechino",
+          "hongKong": "Hong Kong",
+          "taipei": "Taipei",
+          "tokyo": "Tokyo",
+          "seoul": "Seul",
+          "singapore": "Singapore",
+          "bangkok": "Bangkok",
+          "dubai": "Dubai",
+          "kolkata": "Calcutta",
+          "london": "Londra",
+          "paris": "Parigi",
+          "berlin": "Berlino",
+          "rome": "Roma",
+          "madrid": "Madrid",
+          "amsterdam": "Amsterdam",
+          "moscow": "Mosca",
+          "newYork": "New York",
+          "losAngeles": "Los Angeles",
+          "chicago": "Chicago",
+          "denver": "Denver",
+          "toronto": "Toronto",
+          "saoPaulo": "San Paolo",
+          "mexicoCity": "Città del Messico",
+          "sydney": "Sydney",
+          "melbourne": "Melbourne",
+          "perth": "Perth",
+          "auckland": "Auckland",
+          "cairo": "Il Cairo",
+          "johannesburg": "Johannesburg",
+          "lagos": "Lagos",
+          "utc": "UTC"
+        },
+        "timezoneSearch": "Cerca fuso orario...",
+        "systemTimezone": "Fuso Orario di Sistema",
+        "customTimezone": "Fuso Orario Personalizzato",
+        "timezonePreview": "Ora di anteprima: {time}",
+        "timezoneUpdated": "Impostazioni del fuso orario aggiornate",
+        "timezoneUpdateFailed": "Impossibile aggiornare il fuso orario"
+      },
+      "languageSettings": {
+        "title": "Impostazioni Lingua",
+        "language": "Lingua",
+        "languageDescription": "Scegli la lingua di visualizzazione preferita",
+        "currentLanguage": "Lingua Attuale",
+        "switchLanguage": "Cambia Lingua"
+      }
+    },
+    "admin": {
+      "title": "Pannello di Amministrazione",
+      "main": {
+        "title": "Panoramica del Pannello di Amministrazione",
+        "subtitle": "Benvenuto nel Pannello di Amministrazione di AgentifUI. Qui puoi gestire varie configurazioni e impostazioni di sistema"
+      },
+      "layout": {
+        "headerTitle": "Pannello di Amministrazione di AgentifUI",
+        "breadcrumbRoot": "Pannello di Amministrazione",
+        "menuItems": {
+          "main": {
+            "text": "Home Amministrazione",
+            "description": "Panoramica del pannello di amministrazione"
+          },
+          "apiConfig": {
+            "text": "Configurazione API",
+            "description": "Gestisci istanze di applicazioni e parametri di configurazione"
+          },
+          "content": {
+            "text": "Gestione Contenuti",
+            "description": "Gestisci i contenuti della home e della pagina 'chi siamo'"
+          },
+          "users": {
+            "text": "Gestione Utenti",
+            "description": "Gestisci account utente e permessi"
+          },
+          "ssoProviders": {
+            "text": "Gestione Fornitori SSO",
+            "description": "Gestisci la configurazione del fornitore SSO"
+          },
+          "groups": {
+            "text": "Gestione Gruppi",
+            "description": "Gestisci utenti e gruppi, configura i permessi delle applicazioni di gruppo"
+          },
+          "permissions": {
+            "text": "Gestione Permessi App",
+            "description": "Gestisci la visibilità delle applicazioni e i permessi di gruppo"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "Ricostruisci",
+            "messages": {
+              "startRebuild": "Avvio ricostruzione e distribuzione...",
+              "startRebuildDescription": "Questo processo potrebbe richiedere alcuni minuti, attendere prego.",
+              "buildInProgress": "Ricostruzione in corso",
+              "buildInProgressDescription": "Attendere il completamento della compilazione corrente prima di riprovare.",
+              "authFailed": "Autenticazione fallita",
+              "authFailedDescription": "Effettua nuovamente il login e riprova.",
+              "permissionDenied": "Permesso negato",
+              "permissionDeniedDescription": "Non hai il permesso di eseguire questa operazione.",
+              "unknownError": "Si è verificato un errore sconosciuto",
+              "buildComplete": "Ricostruzione completata!",
+              "buildCompleteDescription": "L'applicazione si riavvierà automaticamente tra 2 secondi per applicare le modifiche.",
+              "appRestarting": "Riavvio dell'applicazione...",
+              "appRestartingDescription": "La pagina si aggiornerà automaticamente al termine del riavvio.",
+              "deployFailed": "Distribuzione fallita",
+              "networkError": "Errore di rete, controlla la connessione e riprova."
+            }
+          },
+          "returnToChatButton": {
+            "text": "Torna alla Chat"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "Aggiorna Dati",
+            "save": "Salva Modifiche",
+            "saving": "Salvataggio...",
+            "reset": "Resetta",
+            "create": "Crea",
+            "cancel": "Annulla",
+            "confirm": "Conferma"
+          },
+          "status": {
+            "hasUnsavedChanges": "Ci sono modifiche non salvate",
+            "saving": "Salvataggio...",
+            "allChangesSaved": "Tutte le modifiche sono state salvate"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "Seleziona Istanza Applicazione",
+          "description": "Seleziona un'istanza di applicazione dalla lista a sinistra per visualizzare e modificare la sua configurazione, oppure clicca sul pulsante aggiungi per creare una nuova istanza di applicazione"
+        },
+        "formActions": {
+          "save": "Salva",
+          "saving": "Salvataggio...",
+          "cancel": "Annulla"
+        },
+        "providerManagement": {
+          "buttonText": "Gestisci Fornitori",
+          "modal": {
+            "title": "Gestisci Fornitori di Servizi",
+            "providerList": "Lista Fornitori",
+            "addProvider": "Aggiungi Fornitore",
+            "editProvider": "Modifica Fornitore",
+            "addNewProvider": "Aggiungi Nuovo Fornitore",
+            "loading": "Caricamento...",
+            "noProviders": "Nessun fornitore configurato",
+            "deleteConfirm": "Sei sicuro di voler eliminare il fornitore \"{name}\"? Questa azione non può essere annullata.",
+            "messages": {
+              "loadFailed": "Impossibile caricare la lista dei fornitori",
+              "createSuccess": "Fornitore creato con successo",
+              "createFailed": "Creazione del fornitore fallita",
+              "updateSuccess": "Fornitore aggiornato con successo",
+              "updateFailed": "Aggiornamento del fornitore fallito",
+              "deleteSuccess": "Fornitore eliminato con successo",
+              "deleteFailed": "Eliminazione del fornitore fallita",
+              "saveFailed": "Salvataggio del fornitore fallito"
+            },
+            "providerTypes": {
+              "llm": "LLM (Large Language Model)",
+              "platform": "Piattaforma (Piattaforma di Aggregazione)",
+              "embedding": "Embedding (Vettorizzazione)",
+              "tts": "TTS (Text to Speech)",
+              "stt": "STT (Speech to Text)",
+              "vision": "Visione (Riconoscimento Immagini)",
+              "multimodal": "Multimodale"
+            },
+            "authTypes": {
+              "api_key": "Chiave API",
+              "bearer_token": "Token Bearer",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Autenticazione di Base"
+            },
+            "status": {
+              "enabled": "Abilitato",
+              "disabled": "Disabilitato",
+              "default": "Fornitore Predefinito"
+            },
+            "form": {
+              "name": {
+                "label": "Nome Fornitore",
+                "placeholder": "es: Dify, OpenAI, Claude",
+                "required": "Il nome del fornitore non può essere vuoto"
+              },
+              "type": {
+                "label": "Tipo Fornitore",
+                "placeholder": "Seleziona tipo fornitore",
+                "required": "Per favore, seleziona il tipo di fornitore"
+              },
+              "baseUrl": {
+                "label": "URL API",
+                "placeholder": "es: https://api.dify.ai/v1",
+                "required": "L'URL dell'API non può essere vuoto",
+                "invalid": "Per favore, inserisci un formato URL valido"
+              },
+              "authType": {
+                "label": "Tipo di Autenticazione",
+                "placeholder": "Seleziona tipo di autenticazione",
+                "required": "Per favore, seleziona il tipo di autenticazione"
+              },
+              "isActive": {
+                "label": "Stato Abilitazione"
+              },
+              "isDefault": {
+                "label": "Fornitore Predefinito",
+                "description": "Nel sistema può esistere un solo fornitore predefinito. Impostando questa opzione, lo stato predefinito degli altri fornitori verrà automaticamente cancellato.",
+                "setAsDefault": "Imposta come Predefinito",
+                "notDefault": "Non Predefinito"
+              },
+              "authMethod": "Metodo di Autenticazione"
+            },
+            "buttons": {
+              "cancel": "Annulla",
+              "save": "Salva",
+              "saving": "Salvataggio...",
+              "delete": "Elimina"
+            }
+          }
+        },
+        "layout": {
+          "loading": "Caricamento istanze di applicazioni...",
+          "noInstances": "Nessuna istanza di applicazione",
+          "noInstancesForProvider": "Nessuna istanza di applicazione per questo fornitore",
+          "addFirstApp": "Aggiungi la prima applicazione",
+          "searchPlaceholder": "Cerca applicazioni...",
+          "defaultApp": "Predefinito",
+          "delete": "Elimina",
+          "deleteConfirm": "Sei sicuro di voler eliminare questa istanza di applicazione? Questa azione non può essere annullata.",
+          "defaultAppCannotDelete": "L'applicazione predefinita non può essere eliminata. Imposta prima un'altra applicazione come predefinita.",
+          "instanceNotFound": "Istanza da eliminare non trovata",
+          "deleteInstanceFailed": "Eliminazione dell'istanza dell'applicazione fallita",
+          "setDefaultConfirm": "Sei sicuro di voler impostare \"{name}\" come applicazione predefinita?",
+          "instanceNotFoundForDefault": "Istanza da impostare come predefinita non trovata",
+          "setDefaultFailed": "Impostazione dell'applicazione predefinita fallita",
+          "setAsDefault": "Imposta come Predefinito"
+        },
+        "fields": {
+          "apiUrl": "URL API (config.api_url)",
+          "apiKey": "Chiave API (key_value)",
+          "providerBinding": "Collegamento Fornitore",
+          "urlPlaceholder": "L'URL utilizzerà automaticamente la configurazione del fornitore selezionato",
+          "urlBindingInfo": "L'URL è collegato al fornitore di servizi, modifica in \"Gestisci Fornitori\"",
+          "currentProvider": "Fornitore attuale: {name}",
+          "unknownProvider": "Fornitore sconosciuto",
+          "keyConfigured": "Configurata",
+          "keyNotConfigured": "Non configurata",
+          "keyPlaceholderEdit": "Lascia vuoto per mantenere la chiave API esistente",
+          "keyPlaceholderNew": "Inserisci la chiave API",
+          "keyEditHint": "Lasciando il campo di input vuoto, la chiave esistente non verrà modificata",
+          "tagsLabel": "Tag Applicazione (tags)",
+          "tagCategories": {
+            "modelType": "Tipo di Modello",
+            "useCase": "Caso d'Uso",
+            "features": "Caratteristiche Tecniche"
+          },
+          "predefinedTags": {
+            "conversationModel": "Modello di Conversazione",
+            "reasoningModel": "Modello di Ragionamento",
+            "documentModel": "Modello di Documento",
+            "multimodal": "Multimodale",
+            "textGeneration": "Generazione Testo",
+            "codeGeneration": "Generazione Codice",
+            "dataAnalysis": "Analisi Dati",
+            "translation": "Traduzione",
+            "highAccuracy": "Alta Precisione",
+            "fastResponse": "Risposta Veloce",
+            "localDeployment": "Distribuzione Locale",
+            "enterpriseGrade": "Livello Aziendale"
+          },
+          "customTagPlaceholder": "Tag personalizzato (premi Invio per aggiungere)",
+          "tagHelpText": "I tag sono usati per la classificazione e la ricerca delle applicazioni"
+        },
+        "providerSelector": {
+          "placeholder": "Per favore, seleziona un fornitore",
+          "defaultLabel": "Predefinito",
+          "noProviders": "Nessun fornitore di servizi disponibile"
+        },
+        "customProviderSelector": {
+          "placeholder": "Per favore, seleziona un fornitore",
+          "defaultLabel": "Predefinito",
+          "noProviders": "Nessun fornitore di servizi disponibile"
+        },
+        "instanceFilter": {
+          "allApps": "Tutte le Applicazioni",
+          "providerApps": "Applicazioni di {name}",
+          "defaultLabel": "Predefinito",
+          "totalCount": "Totale {count}",
+          "noProviders": "Nessun fornitore di servizi disponibile"
+        },
+        "events": {
+          "defaultSetSuccess": "Applicazione predefinita impostata con successo"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "Per favore, seleziona un fornitore di servizi",
+            "invalidProvider": "Il fornitore di servizi selezionato non è valido",
+            "inactiveProvider": "Il fornitore di servizi selezionato non è attivo",
+            "createFailed": "Creazione dell'istanza dell'applicazione fallita",
+            "updateFailed": "Aggiornamento dell'istanza dell'applicazione fallito",
+            "setDefaultFailed": "Impostazione dell'applicazione predefinita fallita"
+          },
+          "success": {
+            "instanceCreated": "Istanza dell'applicazione creata con successo",
+            "instanceUpdated": "Istanza dell'applicazione aggiornata con successo",
+            "setAsDefault": "Istanza dell'applicazione impostata come predefinita"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "Applicazione creata con successo, ma impossibile impostarla come predefinita"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Configurazione Parametri Dify",
+          "defaultInstanceName": "questa app",
+          "unsavedChanges": "Hai modifiche non salvate",
+          "sections": {
+            "basic": {
+              "title": "Configurazione di Base",
+              "openingStatement": {
+                "label": "Dichiarazione di Apertura",
+                "placeholder": "Inserisci dichiarazione di apertura..."
+              },
+              "suggestedQuestions": {
+                "label": "Domande Suggerite",
+                "addButton": "Aggiungi Domanda Suggerita",
+                "placeholder": "Inserisci domanda suggerita..."
+              }
+            },
+            "fileUpload": {
+              "title": "Funzione di Caricamento File",
+              "enabled": "Abilitata",
+              "disabled": "Disabilitata"
+            },
+            "speechToText": {
+              "title": "Sintesi Vocale (Speech to Text)",
+              "enabled": "Abilitato",
+              "disabled": "Disabilitato"
+            },
+            "textToSpeech": {
+              "title": "Sintesi Vocale (Text to Speech)",
+              "enabled": "Abilitato",
+              "disabled": "Disabilitato",
+              "enableLabel": "Abilita Text to Speech",
+              "voiceType": {
+                "label": "Tipo di Voce",
+                "placeholder": "es: alloy, echo, fable"
+              },
+              "language": {
+                "label": "Lingua",
+                "selectPlaceholder": "Seleziona Lingua",
+                "options": {
+                  "zh": "Cinese",
+                  "en": "Inglese",
+                  "ja": "Giapponese",
+                  "ko": "Coreano"
+                }
+              },
+              "autoPlay": {
+                "label": "Riproduzione Automatica",
+                "enabled": "On",
+                "disabled": "Off"
+              }
+            },
+            "retrieverResource": {
+              "title": "Citazione e Attribuzione"
+            },
+            "annotationReply": {
+              "title": "Risposta con Annotazione"
+            },
+            "userInputForm": {
+              "title": "Modulo di Input Utente",
+              "fieldsCount": "{count} campi",
+              "description": "La configurazione del modulo di input utente è solitamente generata automaticamente dall'applicazione Dify. Si consiglia di ottenere l'ultima configurazione tramite la funzione di sincronizzazione.",
+              "fieldInfo": "Variabile: {variable} | Richiesto: {required} | Predefinito: {defaultValue}",
+              "fieldRequired": "Sì",
+              "fieldOptional": "No",
+              "fieldNoDefault": "Nessuno",
+              "fieldLabel": "Campo {index}",
+              "noFields": "Nessuna configurazione del modulo di input utente"
+            },
+            "systemParameters": {
+              "title": "Parametri di Sistema",
+              "fileSizeLimit": "Limite Dimensione Documento (MB)",
+              "imageSizeLimit": "Limite Dimensione Immagine (MB)",
+              "audioSizeLimit": "Limite Dimensione Audio (MB)",
+              "videoSizeLimit": "Limite Dimensione Video (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "Configurazione Caricamento File",
+            "uploadMethod": {
+              "label": "Metodo di Caricamento",
+              "local": "Caricamento Locale",
+              "url": "Link URL",
+              "both": "Entrambi i Metodi"
+            },
+            "maxFiles": {
+              "label": "Numero Massimo di File",
+              "description": "Documenti < 15MB, Immagini < 10MB, Audio < 50MB, Video < 100MB"
+            },
+            "fileTypes": {
+              "label": "Tipi di File Supportati",
+              "image": "Immagine",
+              "document": "Documento",
+              "audio": "Audio",
+              "video": "Video",
+              "other": "Altri Tipi di File",
+              "customPlaceholder": "es: zip, rar, 7z, tar",
+              "customDescription": "Formati supportati: zip, rar, 7z, tar, gz, bz2, xz, ecc."
+            }
+          },
+          "buttons": {
+            "cancel": "Annulla",
+            "save": "Salva",
+            "confirm": "Conferma"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "Modifica Istanza Applicazione",
+            "add": "Aggiungi Istanza Applicazione"
+          },
+          "unsavedChanges": "Modifiche non salvate",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "Non può contenere spazi (influenza il routing degli URL)",
+              "invalidChars": "Può contenere solo lettere, numeri, trattini (-), trattini bassi (_) e punti (.)",
+              "tooLong": "La lunghezza non può superare i 50 caratteri",
+              "mustStartWithAlphanumeric": "Deve iniziare con una lettera o un numero",
+              "formatError": "Errore di formato dell'ID dell'applicazione",
+              "notModifiable": "L'ID dell'applicazione non può essere modificato dopo la creazione",
+              "formatDescription": "Può contenere solo lettere, numeri, trattini (-), trattini bassi (_) e punti (.). Non sono ammessi spazi. Puoi sincronizzare la configurazione per generarla automaticamente."
+            },
+            "formValidationFailed": "Validazione del modulo fallita",
+            "fillApiCredentials": "Per favore, compila prima l'URL dell'API e la Chiave API",
+            "fillInstanceId": "Per favore, compila prima l'ID dell'Applicazione"
+          },
+          "sync": {
+            "basicInfo": "Informazioni di Base",
+            "paramConfig": "Configurazione Parametri",
+            "noDataReceived": "Impossibile recuperare dati di configurazione dall'API di Dify. Controlla se l'ID dell'Applicazione e la configurazione dell'API sono corretti",
+            "successMessage": "Sincronizzati con successo {items} dall'API di Dify!",
+            "autoGeneratedId": " ID Applicazione generato automaticamente: {instanceId}",
+            "syncFailed": "Sincronizzazione della configurazione fallita",
+            "syncFailedTitle": "Sincronizzazione Fallita",
+            "syncing": "Sincronizzazione...",
+            "syncFromDify": "Sincronizza da Dify",
+            "syncFromDifyWithAutoId": "Sincronizza dall'API di Dify (genererà automaticamente l'ID dell'Applicazione se vuoto)",
+            "syncFromDifyDescription": "Sincronizza la configurazione dall'API di Dify",
+            "syncButtonDisabled": "Per favore, compila prima l'URL dell'API e la Chiave API"
+          },
+          "defaultApp": {
+            "setAsDefault": "Imposta come Predefinito",
+            "isDefault": "App Predefinita",
+            "willSetAsDefault": "Verrà Impostato come Predefinito",
+            "setDefaultConfirm": "Sei sicuro di voler impostare \"{name}\" come applicazione predefinita?",
+            "setDefaultSuccess": "Applicazione predefinita impostata con successo",
+            "setDefaultFailed": "Impostazione dell'applicazione predefinita fallita",
+            "instanceNotFound": "L'ID dell'istanza non esiste, impossibile impostare come applicazione predefinita"
+          },
+          "provider": {
+            "title": "Fornitore di Servizi",
+            "current": "Fornitore di servizi dell'applicazione corrente (non può essere modificato)",
+            "select": "Seleziona fornitore di servizi",
+            "unknown": "Fornitore Sconosciuto",
+            "selectPlaceholder": "Per favore, seleziona un fornitore"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "ID Applicazione (instance_id) *",
+              "placeholder": "Inserisci ID Applicazione",
+              "generateButton": "Genera ID",
+              "generateTooltip": "Clicca per generare un UUID casuale come ID Applicazione"
+            },
+            "displayName": {
+              "label": "Nome Visualizzato (display_name) *",
+              "placeholder": "Inserisci nome visualizzato"
+            },
+            "description": {
+              "label": "Descrizione Applicazione (description)",
+              "placeholder": "Inserisci descrizione applicazione"
+            }
+          },
+          "appType": {
+            "label": "Tipo Applicazione (app_type) *",
+            "model": {
+              "title": "Modello",
+              "description": "Per il cambio di modello"
+            },
+            "marketplace": {
+              "title": "Mercato",
+              "description": "Per il mercato delle applicazioni"
+            },
+            "note": "Le applicazioni di tipo \"Modello\" appariranno nel selettore di modelli dell'interfaccia di chat"
+          },
+          "syncConfirm": {
+            "updateDescription": "Aggiornare la descrizione a: \"{description}\"?"
+          },
+          "difyAppTypeSelector": {
+            "title": "Tipo di Applicazione Dify (dify_apptype) *",
+            "titleCompact": "Tipo di Applicazione Dify",
+            "description": "Scegli il tipo di applicazione Dify che si adatta al tuo caso d'uso. Tipi diversi hanno caratteristiche e scenari applicabili differenti."
+          },
+          "difyConfig": {
+            "title": "Configurazione Parametri Dify",
+            "appTypeNote": "Le applicazioni di tipo \"Modello\" appariranno nel selettore di modelli dell'interfaccia di chat"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "Applicazione predefinita impostata con successo"
+        }
+      },
+      "content": {
+        "page": {
+          "title": "Gestione Contenuti",
+          "subtitle": "Gestisci i contenuti multilingue per le pagine home e 'chi siamo'",
+          "showPreview": "Mostra Anteprima",
+          "fullscreenPreview": "Anteprima a Schermo Intero",
+          "closePreview": "Chiudi Anteprima",
+          "loadingEditor": {
+            "about": "Impossibile caricare l'editor della pagina 'chi siamo'.",
+            "home": "Impossibile caricare l'editor della home page."
+          },
+          "loadingPreview": "Caricamento anteprima...",
+          "messages": {
+            "loadFailed": "Impossibile caricare i dati di traduzione",
+            "saveSuccess": "Configurazione salvata con successo",
+            "saveFailed": "Salvataggio della configurazione fallito, riprova"
+          },
+          "saveActions": {
+            "hasChanges": "Modifiche non salvate",
+            "saving": "Salvataggio...",
+            "allSaved": "Tutte le modifiche salvate",
+            "reset": "Resetta",
+            "save": "Salva Modifiche",
+            "saving_": "Salvataggio..."
+          }
+        },
+        "tabs": {
+          "about": "Pagina 'Chi Siamo'",
+          "home": "Home Page"
+        },
+        "previewToolbar": {
+          "aboutPreview": "Anteprima Pagina 'Chi Siamo'",
+          "homePreview": "Anteprima Home Page"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "Modifica Lingua",
+            "selectLanguage": "Seleziona Lingua",
+            "cardNumber": "Scheda #{number}"
+          },
+          "home": {
+            "pageTitle": "Titolo Pagina (title)",
+            "subtitle": "Sottotitolo (subtitle)",
+            "features": "Schede Funzionalità (features)",
+            "featureTitle": "Titolo (title)",
+            "featureDescription": "Descrizione (description)",
+            "getStarted": "Pulsante Primario (getStarted)",
+            "learnMore": "Pulsante Secondario (learnMore)",
+            "copyright": "Info Copyright (copyright)",
+            "copyrightPrefix": "Prefisso (prefix)",
+            "copyrightLinkText": "Testo Link (linkText)",
+            "copyrightSuffix": "Suffisso (suffix)"
+          },
+          "about": {
+            "pageTitle": "Titolo Pagina (title)",
+            "subtitle": "Sottotitolo (subtitle)",
+            "mission": "Descrizione Missione (mission.description)",
+            "values": "Schede Valori (values.items)",
+            "valueTitle": "Titolo (title)",
+            "valueDescription": "Descrizione (description)",
+            "buttonText": "Testo Pulsante (buttonText)",
+            "copyright": "Info Copyright (copyright)",
+            "copyrightPrefix": "Prefisso (prefix)",
+            "copyrightLinkText": "Testo Link (linkText)",
+            "copyrightSuffix": "Suffisso (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "Gestione Utenti",
+        "subtitle": "Gestisci gli account utente, i permessi e il controllo degli accessi del sistema",
+        "stats": {
+          "totalUsers": "Utenti Totali",
+          "activeUsers": "Utenti Attivi",
+          "suspendedUsers": "Sospesi",
+          "pendingUsers": "In attesa",
+          "adminUsers": "Amministratori",
+          "managerUsers": "Manager",
+          "regularUsers": "Utenti Regolari",
+          "newUsersToday": "Nuovi Oggi",
+          "activeUsersRatio": "Percentuale di utenti totali",
+          "newUsersThisWeek": "Altri giorni di questa settimana"
+        },
+        "filters": {
+          "searchPlaceholder": "Cerca email, nome o nome utente...",
+          "advancedFilters": "Filtri Avanzati",
+          "reset": "Resetta",
+          "rolePermissions": "Permessi Ruolo",
+          "accountStatus": "Stato Account",
+          "authSource": "Fonte di Autenticazione",
+          "roleOptions": {
+            "all": "Tutti i Ruoli",
+            "admin": "Amministratore",
+            "manager": "Manager",
+            "user": "Utente Regolare"
+          },
+          "statusOptions": {
+            "all": "Tutti gli Stati",
+            "active": "Attivo",
+            "suspended": "Sospeso",
+            "pending": "In attesa"
+          },
+          "authSourceOptions": {
+            "all": "Tutte le Fonti",
+            "email": "📧 Email",
+            "sso": "Autenticazione SSO",
+            "phone": "📱 Telefono"
+          },
+          "sortBy": "Ordina Per",
+          "sortOptions": {
+            "createdAt": "Data di Registrazione",
+            "lastSignIn": "Ultimo Accesso",
+            "email": "Email",
+            "fullName": "Nome"
+          },
+          "sortOrder": {
+            "desc": "Più Recenti Prima",
+            "asc": "Meno Recenti Prima"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "Informazioni Utente",
+            "contact": "Contatto",
+            "groups": "Gruppi",
+            "rolePermissions": "Permessi Ruolo",
+            "status": "Stato",
+            "lastLogin": "Ultimo Accesso",
+            "registerTime": "Data di Registrazione"
+          },
+          "loading": "Caricamento dati utente...",
+          "loadingSubtext": "Attendere prego, sto recuperando le ultime informazioni utente",
+          "noData": "Nessun dato utente",
+          "noDataSubtext": "Nessun utente trovato che corrisponda ai criteri, prova a modificare i filtri",
+          "noDataHint": "Puoi reimpostare i filtri o contattare l'amministratore per aggiungere nuovi utenti"
+        },
+        "batchOperations": {
+          "selected": "Selezionati {count} utenti",
+          "cancelSelection": "Annulla Selezione",
+          "setAsAdmin": "Imposta come Amministratore",
+          "setAsManager": "Imposta come Manager",
+          "setAsUser": "Imposta come Utente Regolare",
+          "activate": "Attiva",
+          "suspend": "Sospendi"
+        },
+        "actions": {
+          "refreshData": "Aggiorna Dati",
+          "addUser": "Aggiungi Utente",
+          "addUserInDevelopment": "La funzione di aggiunta utente è in fase di sviluppo",
+          "viewUser": "Visualizza utente: {name}",
+          "editUser": "Modifica utente: {name}",
+          "viewDetails": "Visualizza Dettagli",
+          "editInfo": "Modifica Informazioni",
+          "changeRole": "Cambia Ruolo",
+          "changeStatus": "Cambia Stato",
+          "deleteUser": "Elimina Utente",
+          "current": "(Attuale)",
+          "self": "(Tu)",
+          "admin": "(Admin)",
+          "notSet": "Non Impostato",
+          "notSetEmail": "Email non impostata",
+          "notSetPhone": "Telefono non impostato",
+          "defaultUser": "Utente",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
+          "moreGroups": "+{count} gruppi",
+          "notInGroup": "Non in nessun gruppo",
+          "moreGroupsTooltip": "{count} altri gruppi: {names}",
+          "confirm": "Conferma"
+        },
+        "pagination": {
+          "showing": "Mostrando {start} - {end} di {total} record",
+          "previous": "Precedente",
+          "next": "Successivo"
+        },
+        "messages": {
+          "cannotIncludeSelf": "Non puoi includerti nelle operazioni in blocco",
+          "cannotDowngradeAdmin": "Non puoi declassare altri amministratori nelle operazioni in blocco",
+          "cannotChangeOwnRole": "Non puoi modificare il tuo ruolo",
+          "cannotDowngradeOtherAdmin": "Non puoi declassare altri amministratori",
+          "cannotDeleteSelf": "Non puoi eliminare te stesso",
+          "cannotDeleteOtherAdmin": "Non puoi eliminare altri amministratori",
+          "roleChangeSuccess": "Cambiato il ruolo di {name} a {role}",
+          "statusChangeSuccess": "Cambiato lo stato di {name} a {status}",
+          "batchRoleChangeSuccess": "Cambiati in blocco i ruoli di {count} utenti",
+          "batchStatusChangeSuccess": "Cambiati in blocco gli stati di {count} utenti",
+          "deleteConfirm": "Sei sicuro di voler eliminare l'utente {name}? Questa azione non può essere annullata.",
+          "deleteSuccess": "Eliminato l'utente {name}",
+          "roles": {
+            "admin": "Amministratore",
+            "manager": "Manager",
+            "user": "Utente Regolare"
+          },
+          "statuses": {
+            "active": "Attivo",
+            "suspended": "Sospeso",
+            "pending": "In attesa"
+          },
+          "roleChangeConfirm": "Cambiare il ruolo di {name} in {role}?",
+          "statusChangeConfirm": "Modificare lo stato di {name} in {status}?",
+          "batchRoleChangeConfirm": "Modificare i ruoli di {count} utenti in {role}?",
+          "batchStatusChangeConfirm": "Modificare lo stato di {count} utenti in {status}?"
+        }
+      },
+      "ssoProviders": {
+        "title": "Gestione fornitori SSO",
+        "subtitle": "Gestisci i fornitori di Single Sign-On e le loro configurazioni",
+        "addProvider": "Aggiungi fornitore",
+        "refresh": "Aggiorna dati",
+        "error": "Errore",
+        "filters": {
+          "searchPlaceholder": "Cerca nome fornitore o protocollo...",
+          "reset": "Reimposta"
+        },
+        "table": {
+          "headers": {
+            "name": "Nome",
+            "protocol": "Protocollo",
+            "status": "Stato",
+            "order": "Ordine",
+            "created": "Data creazione"
+          },
+          "enabled": "Abilitato",
+          "disabled": "Disabilitato",
+          "button": "Pulsante",
+          "noProviders": "Nessun fornitore SSO trovato",
+          "createFirst": "Crea il tuo primo fornitore SSO per iniziare",
+          "loadingProviders": "Caricamento fornitori SSO...",
+          "actions": {
+            "viewDetails": "Visualizza dettagli",
+            "edit": "Modifica",
+            "enable": "Abilita",
+            "disable": "Disabilita",
+            "delete": "Elimina"
+          }
+        },
+        "form": {
+          "createTitle": "Crea fornitore SSO",
+          "editTitle": "Modifica fornitore SSO",
+          "createDescription": "Configura un nuovo fornitore di Single Sign-On",
+          "editDescription": "Modifica la configurazione di un fornitore SSO esistente",
+          "tabs": {
+            "basicInfo": "Informazioni di base",
+            "protocolConfig": "Configurazione protocollo",
+            "security": "Impostazioni di sicurezza",
+            "uiSettings": "Impostazioni UI"
+          },
+          "fields": {
+            "providerName": "Nome fornitore",
+            "providerNamePlaceholder": "Esempio SSO Università",
+            "protocol": "Protocollo",
+            "selectProtocol": "Seleziona protocollo",
+            "displayOrder": "Ordine di visualizzazione",
+            "buttonText": "Testo pulsante",
+            "buttonTextPlaceholder": "Lascia vuoto per usare il nome del fornitore",
+            "emailDomain": "Dominio email",
+            "emailDomainPlaceholder": "es. example.com",
+            "enableProvider": "Abilita questo fornitore",
+            "baseUrl": "URL di base",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "Endpoint di accesso",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "Endpoint di disconnessione",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "Endpoint di validazione",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "Endpoint di validazione V3",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "Mappatura attributi",
+            "employeeId": "ID dipendente",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "Nome utente",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "Richiedi HTTPS",
+            "validateCertificates": "Valida certificati SSL",
+            "allowedRedirectHosts": "Host di reindirizzamento consentiti",
+            "allowedRedirectHostsPlaceholder": "example.com\nsottodominio.example.com",
+            "allowedRedirectHostsHint": "Inserisci un host per riga",
+            "icon": "Icona",
+            "iconPlaceholder": "🏛️",
+            "theme": "Tema",
+            "logoUrl": "URL Logo",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "Descrizione",
+            "descriptionPlaceholder": "Sistema SSO universitario"
+          },
+          "themes": {
+            "primary": "Primario",
+            "secondary": "Secondario",
+            "default": "Predefinito",
+            "outline": "Contorno"
+          },
+          "advancedSettings": "Impostazioni avanzate",
+          "showRawJson": "Mostra JSON grezzo",
+          "hideRawJson": "Nascondi JSON grezzo",
+          "rawJsonConfig": "Configurazione JSON grezza",
+          "actions": {
+            "cancel": "Annulla",
+            "save": "Salva",
+            "saving": "Salvataggio in corso..."
+          },
+          "messages": {
+            "fixJsonErrors": "Si prega di correggere gli errori JSON prima di salvare",
+            "createSuccess": "Fornitore SSO creato con successo",
+            "updateSuccess": "Fornitore SSO aggiornato con successo",
+            "unexpectedError": "Si è verificato un errore inaspettato"
+          }
+        },
+        "deleteDialog": {
+          "title": "Conferma eliminazione",
+          "message": "Sei sicuro di voler eliminare il fornitore SSO \"{name}\"? Questa azione è irreversibile e disabiliterà l'accesso SSO per gli utenti che lo utilizzano.",
+          "cancel": "Annulla",
+          "delete": "Elimina",
+          "deleting": "Eliminazione in corso...",
+          "success": "\"{name}\" eliminato con successo"
+        },
+        "detailsModal": {
+          "title": "Panoramica dettagli e configurazione fornitore",
+          "basicInfo": "Informazioni di base",
+          "protocol": "Protocollo",
+          "status": "Stato",
+          "displayOrder": "Ordine di visualizzazione",
+          "buttonText": "Testo pulsante",
+          "protocolConfig": "Configurazione protocollo",
+          "baseUrl": "URL di base",
+          "login": "Accesso",
+          "logout": "Disconnessione",
+          "securitySettings": "Impostazioni di sicurezza",
+          "requireHttps": "Richiedi HTTPS",
+          "validateCertificates": "Valida certificati",
+          "yes": "Sì",
+          "no": "No",
+          "uiConfig": "Configurazione UI",
+          "theme": "Tema",
+          "icon": "Icona",
+          "description": "Descrizione",
+          "timestamps": "Timestamp",
+          "created": "Creato il",
+          "updated": "Aggiornato il",
+          "actions": {
+            "close": "Chiudi",
+            "editProvider": "Modifica fornitore"
+          }
+        },
+        "stats": {
+          "totalProviders": "Totale fornitori",
+          "allSsoProviders": "Tutti i fornitori SSO configurati",
+          "enabled": "Abilitati",
+          "percentOfTotal": "% del totale",
+          "noProviders": "Nessun fornitore configurato per ora",
+          "disabled": "Disabilitati",
+          "activeProtocols": "Protocolli attivi",
+          "differentProtocolTypes": "Tipi di protocollo diversi",
+          "protocolBreakdown": "Ripartizione per protocollo"
+        }
+      },
+      "groups": {
+        "title": "Gestione Gruppi",
+        "subtitle": "Gestisci gruppi di utenti e assegnazioni di permessi delle applicazioni",
+        "stats": {
+          "totalGroups": "Gruppi Totali",
+          "totalMembers": "Membri Totali",
+          "averageMembers": "Media Membri",
+          "activeGroups": "Gruppi Attivi"
+        },
+        "header": {
+          "title": "Gestione Gruppi",
+          "subtitle": "Gestisci gruppi di utenti e assegnazioni di permessi delle applicazioni",
+          "refreshData": "Aggiorna Dati",
+          "createGroup": "Crea Gruppo"
+        },
+        "search": {
+          "placeholder": "Cerca nome o descrizione del gruppo...",
+          "searchResults": "Risultati della Ricerca",
+          "keyword": "Parola Chiave",
+          "noResults": "Nessun gruppo corrispondente trovato",
+          "noResultsHint": "Prova a usare parole chiave diverse"
+        },
+        "list": {
+          "noGroups": "Nessun Gruppo",
+          "noGroupsHint": "Clicca il pulsante \"Crea Gruppo\" per creare il tuo primo gruppo",
+          "loading": "Caricamento lista gruppi...",
+          "memberCount": "{count} membri",
+          "createdAt": "Creato il",
+          "actions": {
+            "manageMembers": "Gestisci Membri",
+            "editGroup": "Modifica Gruppo",
+            "deleteGroup": "Elimina Gruppo"
+          }
+        },
+        "createModal": {
+          "title": "Crea Gruppo",
+          "nameLabel": "Nome Gruppo",
+          "nameRequired": "Il nome del gruppo non può essere vuoto",
+          "nameTooShort": "Il nome del gruppo deve essere di almeno 2 caratteri",
+          "nameTooLong": "Il nome del gruppo non può superare i 50 caratteri",
+          "namePlaceholder": "Inserisci nome del gruppo",
+          "descriptionLabel": "Descrizione Gruppo",
+          "descriptionTooLong": "La descrizione non può superare i 200 caratteri",
+          "descriptionPlaceholder": "Inserisci descrizione del gruppo (opzionale)",
+          "creating": "Creazione...",
+          "createButton": "Crea Gruppo",
+          "cancel": "Annulla",
+          "createSuccess": "Gruppo \"{name}\" creato con successo"
+        },
+        "editModal": {
+          "title": "Modifica Gruppo",
+          "nameLabel": "Nome Gruppo",
+          "nameRequired": "Il nome del gruppo non può essere vuoto",
+          "nameTooShort": "Il nome del gruppo deve essere di almeno 2 caratteri",
+          "nameTooLong": "Il nome del gruppo non può superare i 50 caratteri",
+          "namePlaceholder": "Inserisci nome del gruppo",
+          "descriptionLabel": "Descrizione Gruppo",
+          "descriptionTooLong": "La descrizione non può superare i 200 caratteri",
+          "descriptionPlaceholder": "Inserisci descrizione del gruppo (opzionale)",
+          "updating": "Aggiornamento...",
+          "updateButton": "Salva Modifiche",
+          "cancel": "Annulla",
+          "noChanges": "Nessuna modifica rilevata",
+          "updateSuccess": "Gruppo \"{name}\" aggiornato con successo"
+        },
+        "membersModal": {
+          "title": "Gestione Membri del Gruppo",
+          "subtitle": "{groupName} · {count} membri totali",
+          "addMember": "Aggiungi Membro",
+          "searchPlaceholder": "Cerca membri...",
+          "loading": "Caricamento lista membri...",
+          "noMembers": "Nessun membro del gruppo",
+          "noMembersHint": "Clicca il pulsante \"Aggiungi Membro\" per invitare utenti a unirsi al gruppo",
+          "noSearchResults": "Nessun membro corrispondente trovato",
+          "noSearchResultsHint": "Prova a usare parole chiave diverse",
+          "unknownUser": "Utente Sconosciuto",
+          "joinedAt": "Iscritto il",
+          "removeMember": "Rimuovi Membro",
+          "removeMemberConfirm": "Sei sicuro di voler rimuovere \"{memberName}\" dal gruppo \"{groupName}\"?",
+          "removeMemberSuccess": "Membro \"{memberName}\" rimosso"
+        },
+        "addMembersModal": {
+          "title": "Aggiungi Membri",
+          "subtitle": "Seleziona utenti da aggiungere al gruppo \"{groupName}\"",
+          "searchPlaceholder": "Cerca nome utente, nome o email...",
+          "loading": "Caricamento lista utenti...",
+          "noUsers": "Nessun utente disponibile da aggiungere",
+          "noSearchResults": "Nessun utente corrispondente trovato",
+          "selectAll": "Seleziona Tutto",
+          "deselectAll": "Deseleziona Tutto",
+          "addSelected": "Aggiungi {count} membri",
+          "tableHeaders": {
+            "userInfo": "Info Utente",
+            "role": "Ruolo"
+          },
+          "userRoles": {
+            "admin": "Amministratore",
+            "manager": "Manager",
+            "user": "Utente Regolare"
+          },
+          "unknownUser": "Utente Sconosciuto",
+          "pagination": {
+            "showing": "Mostrando {start} - {end} di {total} record",
+            "previous": "Precedente",
+            "next": "Successivo"
+          },
+          "addSuccess": "Aggiunti con successo {count} membri al gruppo",
+          "addPartialSuccess": "Impossibile aggiungere {errorCount} membri"
+        },
+        "messages": {
+          "deleteConfirm": "Sei sicuro di voler eliminare il gruppo \"{name}\"? Questa azione non può essere annullata.",
+          "deleteSuccess": "Gruppo \"{name}\" eliminato",
+          "loadError": "Impossibile caricare i dati del gruppo",
+          "createError": "Impossibile creare il gruppo",
+          "updateError": "Impossibile aggiornare il gruppo",
+          "deleteError": "Impossibile eliminare il gruppo",
+          "addMemberError": "Impossibile aggiungere il membro",
+          "removeMemberError": "Impossibile rimuovere il membro"
+        }
+      },
+      "permissions": {
+        "header": {
+          "title": "Gestione Permessi Applicazione",
+          "subtitle": "Gestione unificata della visibilità delle applicazioni e dei permessi di gruppo",
+          "refreshButton": "Aggiorna Dati"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "Cerca nome o descrizione dell'applicazione...",
+          "filterLabel": "Tipo di Applicazione:",
+          "filterOptions": {
+            "all": "Tutte le Applicazioni",
+            "public": "Applicazioni Pubbliche",
+            "groupOnly": "Applicazioni di Gruppo",
+            "private": "Applicazioni Private"
+          }
+        },
+        "layout": {
+          "appListTitle": "Lista Applicazioni",
+          "appListSubtitle": "Seleziona un'applicazione per configurare i permessi",
+          "permissionPanelTitle": "Configurazione Permessi",
+          "permissionPanelSubtitle": "Gestisci la visibilità delle applicazioni e i permessi di gruppo"
+        },
+        "appList": {
+          "noApps": "Nessuna Applicazione",
+          "noAppsDescription": "Per favore, crea prima le istanze delle applicazioni",
+          "loading": "Caricamento...",
+          "unknown": "Sconosciuto",
+          "visibility": {
+            "public": "Pubblica",
+            "groupOnly": "Gruppo",
+            "private": "Privata"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "Seleziona Applicazione",
+            "description": "Scegli un'applicazione dalla lista a sinistra per configurare i permessi"
+          },
+          "visibilitySettings": {
+            "title": "Impostazioni di Visibilità",
+            "currentSetting": "Attuale",
+            "options": {
+              "public": {
+                "label": "Applicazione Pubblica",
+                "description": "Tutti gli utenti possono accedere a questa applicazione"
+              },
+              "groupOnly": {
+                "label": "Applicazione di Gruppo",
+                "description": "Solo i membri autorizzati del gruppo possono accedere"
+              },
+              "private": {
+                "label": "Applicazione Privata",
+                "description": "Solo gli amministratori possono accedere a questa applicazione"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "Permessi di Gruppo",
+            "description": "Seleziona quali gruppi possono accedere a questa applicazione",
+            "noGroups": {
+              "title": "Nessun Gruppo",
+              "description": "Per favore, crea prima i gruppi per impostare i permessi delle applicazioni"
+            },
+            "status": {
+              "enabled": "Abilitato",
+              "disabled": "Disabilitato"
+            },
+            "actions": {
+              "enable": "Abilita Accesso",
+              "disable": "Disabilita Accesso"
+            },
+            "memberCount": "{count} membri"
+          },
+          "permissionExplanation": {
+            "title": "Spiegazione dei Permessi",
+            "public": "Applicazione Pubblica: Tutti gli utenti possono accedere",
+            "groupOnly": "Applicazione di Gruppo: Solo i membri autorizzati del gruppo possono accedere",
+            "private": "Applicazione Privata: Solo gli amministratori possono accedere"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "Visibilità dell'applicazione aggiornata a \"{visibility}\"",
+          "groupPermissionEnabled": "Accesso del gruppo {groupName} a questa applicazione abilitato",
+          "groupPermissionDisabled": "Accesso del gruppo {groupName} a questa applicazione disabilitato",
+          "loadAppsError": "Impossibile caricare la lista delle applicazioni",
+          "loadGroupsError": "Impossibile caricare la lista dei gruppi",
+          "updateVisibilityError": "Impossibile aggiornare la visibilità dell'applicazione",
+          "updateGroupPermissionError": "Impossibile aggiornare i permessi di gruppo"
+        }
+      }
+    },
+    "about": {
+      "sections": [
+        {
+          "id": "section-1754655785533-eloh11o61",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785533-z38dxe2cr",
+                "type": "heading",
+                "props": {
+                  "content": "Informazioni su AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785533-qnxmx4ycv",
+                "type": "paragraph",
+                "props": {
+                  "content": "Connettere l'IA con le imprese, creando nuove esperienze con grandi modelli linguistici",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785533-0c0tqr23z",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785533-dc7y75lx4",
+                "type": "heading",
+                "props": {
+                  "content": "La Nostra Missione",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785533-uokca1y3i",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUI si impegna a sfruttare la potenza dei grandi modelli linguistici per fornire soluzioni applicative innovative per le imprese. Integriamo le capacità di più fornitori di modelli e forniamo servizi stabili e affidabili basati sul backend di Dify, aiutando le organizzazioni a utilizzare appieno il valore della tecnologia IA.",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785533-jwrlxby40",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785533-nw7469jtw",
+                "type": "heading",
+                "props": {
+                  "content": "I Nostri Valori",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785533-j6hungucq",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "Innovazione Tecnica",
+                      "description": "Integrare continuamente tecnologie all'avanguardia di grandi modelli per fornire soluzioni IA leader per le imprese"
+                    },
+                    {
+                      "title": "Sicurezza dei Dati",
+                      "description": "Supportare la distribuzione privata e rigorose misure di protezione dei dati per garantire la sicurezza e la privacy dei dati aziendali"
+                    },
+                    {
+                      "title": "Personalizzazione Flessibile",
+                      "description": "Fornire soluzioni altamente personalizzabili per soddisfare le esigenze specifiche di diversi settori e scenari"
+                    },
+                    {
+                      "title": "Miglioramento della Conoscenza",
+                      "description": "Integrare basi di conoscenza private tramite la tecnologia RAG per migliorare le capacità di consapevolezza contestuale del modello"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785533-0o4u0z1ex",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785533-79q1kzcs2",
+                "type": "button",
+                "props": {
+                  "text": "Inizia a Esplorare",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785533-68esngg0h",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785533-7piv2dhg7",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. Esplora il futuro delle applicazioni di grandi modelli.",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.533Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.533Z",
+        "locale": "it-IT"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "Copia",
+        "copied": "Copiato",
+        "edit": "Modifica",
+        "regenerate": "Rigenera",
+        "useful": "Utile",
+        "notUseful": "Non utile",
+        "rated": "Valutato"
+      },
+      "referenceSources": {
+        "title": "{count} risorse della base di conoscenza referenziate",
+        "knowledgeBase": "Base di Conoscenza",
+        "expand": "Espandi testo completo",
+        "collapse": "Comprimi",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "copyFailed": "Copia fallita",
+        "relevanceScore": "Rilevanza",
+        "wordCount": "{count} parole",
+        "page": "Pagina {page}"
+      },
+      "thinkBlock": {
+        "thinking": "Pensiero profondo",
+        "stopped": "Pensiero fermato",
+        "completed": "Pensiero profondo completato"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "Limite file superato ({current}/{max}), rimuovere alcuni file"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "Trascina per ridimensionare i pannelli, doppio clic per ripristinare"
+      },
+      "notificationBar": {
+        "closeNotification": "Chiudi notifica"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "Domanda suggerita: {question}"
+      },
+      "copyButton": {
+        "copy": "Copia contenuto",
+        "copied": "Copiato",
+        "noContent": "Nessun contenuto da copiare"
+      },
+      "userAvatar": {
+        "alt": " avatar di"
+      }
+    }
+  },
+  "debug": {
+    "setDefaultApp": "Impostazione app predefinita - ID passato:",
+    "currentInstances": "Tutte le istanze attuali:",
+    "instanceNotFound": "Istanza non trovata, ID passato:",
+    "foundInstance": "Istanza trovata:",
+    "setDefaultFailed": "Impostazione app predefinita fallita:",
+    "syncConfig": "Sincronizza configurazione",
+    "syncFailed": "Sincronizzazione fallita:",
+    "syncSuccess": "Sincronizzazione riuscita"
+  },
+  "buttons": {
+    "syncInProgress": "Sincronizzazione...",
+    "syncConfig": "Sincronizza Config.",
+    "tooltip": {
+      "syncFromDify": "Sincronizza configurazione dall'API di Dify",
+      "syncFromDifyEdit": "Sincronizza configurazione dall'API di Dify",
+      "syncFromDifyCreate": "Sincronizza configurazione dall'API di Dify (genera automaticamente l'ID se vuoto)",
+      "fillCredentials": "Per favore, compila prima l'URL dell'API e la Chiave API"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "Aggiornare il nome visualizzato a: \"{name}\"?"
+  },
+  "errors": {
+    "notFound": "Pagina non trovata",
+    "serverError": "Errore del server",
+    "unauthorized": "Accesso non autorizzato"
+  },
+  "navbar": {
+    "user": {
+      "userMenu": "Menu Utente",
+      "login": "Login",
+      "logout": "Logout",
+      "loggingOut": "Disconnessione in corso...",
+      "register": "Registrati",
+      "history": "Cronologia Chat",
+      "settings": "Impostazioni",
+      "about": "Informazioni",
+      "admin": "Pannello di Amministrazione",
+      "loginPrompt": "Accedi per accedere a più funzionalità",
+      "loginDescription": "Accedi alla cronologia chat e alle impostazioni personali"
+    },
+    "conversation": {
+      "newChat": "Nuova Chat",
+      "creating": "Creazione...",
+      "loading": "Caricamento...",
+      "rename": "Rinomina",
+      "delete": "Elimina Chat",
+      "star": "Aggiungi ai Preferiti",
+      "unstar": "Rimuovi dai Preferiti",
+      "appsMarket": "Mercato App",
+      "renameDialog": {
+        "title": "Rinomina Chat",
+        "placeholder": "Inserisci il nuovo nome della chat",
+        "confirmText": "Conferma Rinomina"
+      },
+      "deleteDialog": {
+        "title": "Elimina Chat",
+        "message": "Sei sicuro di voler eliminare la chat \"{title}\"? Questa azione non può essere annullata.",
+        "confirmText": "Conferma Eliminazione"
+      },
+      "createInProgress": "La chat è in fase di creazione, riprova più tardi.",
+      "incompleteInfo": "Le informazioni sulla chat sono incomplete, impossibile procedere.",
+      "renameFailed": "Rinomina della chat fallita.",
+      "deleteFailed": "Eliminazione della chat fallita.",
+      "operationError": "Operazione fallita, riprova più tardi."
+    },
+    "workflow": {
+      "history": "Cronologia",
+      "closeHistory": "Chiudi Cronologia",
+      "viewHistory": "Visualizza Cronologia",
+      "closeHistoryShort": "Chiudi Cronologia",
+      "historyShort": "Cronologia"
+    }
+  },
+  "sidebar": {
+    "appName": "AgentifUI",
+    "expand": "Espandi",
+    "collapse": "Comprimi",
+    "newChat": "Nuova Chat",
+    "historyChats": "Cronologia Chat",
+    "appsMarket": "Mercato App",
+    "settings": "Impostazioni",
+    "recentChats": "Chat Recenti",
+    "moreOptions": "Altre Opzioni",
+    "rename": "Rinomina",
+    "delete": "Elimina Chat",
+    "untitled": "Senza Titolo",
+    "creating": "Creazione...",
+    "favoriteApps": "App Preferite",
+    "loading": "Caricamento...",
+    "startWorkflow": "Avvia Workflow",
+    "startTextGeneration": "Avvia Generazione Testo",
+    "startChat": "Inizia Chat",
+    "hideApp": "Nascondi App",
+    "renameDialog": {
+      "title": "Rinomina Chat",
+      "label": "Nome Chat",
+      "placeholder": "Inserisci il nuovo nome della chat",
+      "confirmText": "Conferma Rinomina"
+    },
+    "deleteDialog": {
+      "title": "Elimina Chat",
+      "message": "Sei sicuro di voler eliminare la chat \"{title}\"? Questa azione non può essere annullata.",
+      "confirmText": "Conferma Eliminazione"
+    },
+    "syncingMessage": "I dati della chat sono in fase di sincronizzazione, prova a {action} più tardi.",
+    "operationFailed": "Operazione fallita, riprova più tardi.",
+    "saveFailed": "Salvataggio della chat fallito",
+    "createFailed": "Creazione della chat fallita"
+  },
+  "mobile": {
+    "navigation": {
+      "openMenu": "Apri Menu",
+      "openUserMenu": "Apri Menu Utente"
+    },
+    "user": {
+      "defaultUser": "Utente",
+      "loginRegister": "Login/Registrati",
+      "avatarAlt": "Avatar di {userName}",
+      "loginPrompt": "Accedi per accedere a più funzionalità"
+    },
+    "bottomSheet": {
+      "userMenu": "Menu Utente",
+      "account": "Account"
+    },
+    "menu": {
+      "settings": "Impostazioni",
+      "logout": "Logout",
+      "login": "Login",
+      "register": "Crea Account",
+      "adminPanel": "Pannello di Amministrazione",
+      "about": "Informazioni"
+    }
+  },
+  "loading": {
+    "default": "Caricamento...",
+    "app": "Caricamento app...",
+    "appList": "Caricamento lista app...",
+    "messages": "Caricamento di altri messaggi...",
+    "moreMessages": "Carica altri messaggi dalla cronologia",
+    "retry": "Riprova",
+    "failed": "Caricamento fallito",
+    "loadingFailed": "Impossibile caricare i messaggi: {error}",
+    "spinner": "Caricamento",
+    "pageLoader": {
+      "title": "Caricamento"
+    }
+  },
+  "dynamicTitle": {
+    "base": "AgentifUI",
+    "settings": {
+      "main": "Impostazioni",
+      "profile": "Profilo",
+      "account": "Impostazioni Account",
+      "appearance": "Impostazioni Aspetto",
+      "language": "Impostazioni Lingua"
+    },
+    "admin": {
+      "main": "Pannello di Amministrazione",
+      "users": "Gestione Utenti",
+      "apiConfig": "Configurazione API",
+      "security": "Impostazioni di Sicurezza",
+      "analytics": "Analisi Dati",
+      "content": "Gestione Contenuti"
+    },
+    "auth": {
+      "login": "Login",
+      "register": "Registrati",
+      "phoneLogin": "Login con Telefono",
+      "resetPassword": "Reimposta Password",
+      "forgotPassword": "Password Dimenticata",
+      "ssoProcessing": "Elaborazione Login SSO"
+    },
+    "apps": {
+      "market": "Mercato App",
+      "agent": "App Agente",
+      "chatbot": "App Chatbot",
+      "chatflow": "App Chatflow",
+      "workflow": "App Workflow",
+      "textGeneration": "App Generazione Testo",
+      "details": "Dettagli App",
+      "loading": "Caricamento App..."
+    },
+    "chat": {
+      "main": "Chat",
+      "new": "Nuova Chat",
+      "history": "Cronologia Chat",
+      "loading": "Caricamento Chat...",
+      "notFound": "Chat Non Trovata"
+    },
+    "about": "Informazioni"
+  },
+  "history": {
+    "title": "Cronologia Chat",
+    "loading": "Caricamento record conversazioni...",
+    "noRecords": "Nessuna cronologia conversazioni",
+    "totalCount": "Trovate {total} conversazioni",
+    "searchResults": "Risultati della ricerca: {count} conversazioni",
+    "totalRecords": "Totale {total} conversazioni",
+    "searchPlaceholder": "Cerca nella cronologia chat...",
+    "newChat": "Nuova Chat",
+    "noMessagePreview": "Nessuna anteprima messaggio",
+    "batchDelete": "Elimina in Blocco",
+    "exitSelection": "Esci dalla Selezione",
+    "selectAll": "Seleziona Tutto",
+    "deselectAll": "Deseleziona Tutto",
+    "selected": "Selezionate {count} / {total} conversazioni",
+    "deleteCount": "Elimina ({count})",
+    "deleting": "Eliminazione...",
+    "cancel": "Annulla",
+    "rename": "Rinomina",
+    "delete": "Elimina Chat",
+    "moreOptions": "Altre Opzioni",
+    "noSearchResults": "Nessuna conversazione corrispondente trovata",
+    "searchHint": "Prova a usare termini di ricerca diversi",
+    "noHistoryTitle": "Nessuna cronologia chat",
+    "noHistoryDesc": "Inizia una nuova conversazione",
+    "renameDialog": {
+      "title": "Rinomina Chat",
+      "label": "Nome Chat",
+      "placeholder": "Inserisci il nuovo nome della chat",
+      "confirmText": "Conferma Rinomina"
+    },
+    "deleteDialog": {
+      "title": "Elimina Chat",
+      "message": "Sei sicuro di voler eliminare la chat \"{title}\"? Questa azione non può essere annullata.",
+      "confirmText": "Conferma Eliminazione"
+    },
+    "batchDeleteDialog": {
+      "title": "Elimina Chat in Blocco",
+      "message": "Sei sicuro di voler eliminare le {count} chat selezionate? Questa azione non può essere annullata.",
+      "confirmText": "Elimina",
+      "cancelText": "Annulla"
+    },
+    "operations": {
+      "renameFailed": "Rinomina della chat fallita",
+      "deleteFailed": "Eliminazione della chat fallita",
+      "batchDeleteSuccess": "Eliminate con successo {success} conversazioni, {failed} non sono state eliminate",
+      "batchDeleteFailed": "Eliminazione fallita, riprova più tardi",
+      "error": "Operazione fallita, riprova più tardi"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "Workflow",
+      "description": "Processo di workflow automatizzato",
+      "features": {
+        "automation": "Automazione",
+        "batchProcessing": "Elaborazione in Blocco",
+        "processControl": "Controllo del Processo"
+      }
+    },
+    "text-generation": {
+      "label": "Generazione di Testo",
+      "description": "Applicazione di generazione di testo singolo",
+      "features": {
+        "textGeneration": "Generazione di Testo",
+        "contentCreation": "Creazione di Contenuti",
+        "formattedOutput": "Output Formattato"
+      },
+      "resultViewer": {
+        "title": "Risultato della generazione",
+        "defaultTitle": "Risultato della generazione di testo",
+        "actions": {
+          "copy": "Copia risultato",
+          "copied": "Copiato",
+          "download": "Scarica risultato"
+        },
+        "executionInfo": {
+          "title": "Informazioni di esecuzione",
+          "status": "Stato:",
+          "createdAt": "Creato il:",
+          "elapsedTime": "Tempo trascorso:",
+          "statusValues": {
+            "completed": "Completato",
+            "failed": "Fallito",
+            "stopped": "Fermato"
+          }
+        },
+        "content": {
+          "title": "Contenuto generato",
+          "noContent": "Nessun contenuto disponibile"
+        }
+      }
+    },
+    "chatbot": {
+      "label": "Chatbot",
+      "description": "Chatbot conversazionale di base",
+      "features": {
+        "conversation": "Conversazione",
+        "fileUpload": "Caricamento File",
+        "speechToText": "Da Voce a Testo"
+      }
+    },
+    "agent": {
+      "label": "Agente",
+      "description": "Agente intelligente con chiamata di strumenti",
+      "features": {
+        "conversation": "Conversazione",
+        "toolCalling": "Chiamata di Strumenti",
+        "reasoningChain": "Catena di Ragionamento",
+        "multiTurnTasks": "Compiti a più turni"
+      }
+    },
+    "chatflow": {
+      "label": "Chatflow",
+      "description": "Applicazione di workflow conversazionale",
+      "features": {
+        "processOrchestration": "Orchestrazione del Processo",
+        "conditionalBranching": "Ramificazione Condizionale",
+        "conversationManagement": "Gestione della Conversazione"
+      }
+    }
+  },
+  "filePreview": {
+    "loading": "Caricamento contenuto file...",
+    "failed": "Caricamento file fallito",
+    "retryButton": "Riprova",
+    "dismissButton": "Chiudi",
+    "downloadButton": "Scarica file",
+    "noFileSelected": "Nessun file selezionato",
+    "previewNotSupported": "Anteprima non supportata per questo tipo di file. Puoi scaricarlo per visualizzare il contenuto.",
+    "textPreview": {
+      "title": "Anteprima testo",
+      "copyButton": "Copia",
+      "copiedButton": "Copiato!",
+      "downloadButton": "Scarica",
+      "charactersCount": "{count} caratteri"
+    },
+    "pdfPreview": {
+      "title": "Anteprima PDF",
+      "openButton": "Apri",
+      "downloadButton": "Scarica",
+      "fileSize": "{size} MB"
+    },
+    "imagePreview": {
+      "title": "Anteprima immagine",
+      "downloadButton": "Scarica",
+      "loadError": "Errore nel caricamento dell'immagine",
+      "downloadToView": "Scarica per visualizzare",
+      "filename": "Nome del file",
+      "fileSize": "Dimensione del file",
+      "fileType": "Tipo di file"
+    },
+    "audio": {
+      "title": "Anteprima audio",
+      "duration": "Durata",
+      "loadError": "Errore nel caricamento del file audio",
+      "notSupported": "Il tuo browser non supporta la riproduzione audio"
+    },
+    "video": {
+      "title": "Anteprima video",
+      "duration": "Durata",
+      "resolution": "Risoluzione",
+      "loadError": "Errore nel caricamento del file video",
+      "notSupported": "Il tuo browser non supporta la riproduzione video"
+    },
+    "markdownPreview": {
+      "title": "Anteprima Markdown",
+      "renderedMode": "Renderizzato",
+      "rawMode": "Grezzo",
+      "downloadButton": "Scarica",
+      "charactersCount": "{count} caratteri"
+    },
+    "errors": {
+      "noAppId": "ID applicazione non disponibile per anteprima file",
+      "downloadNoAppId": "ID applicazione non disponibile per download file"
+    },
+    "fileInfo": {
+      "title": "Informazioni file",
+      "name": "Nome:",
+      "type": "Tipo:",
+      "size": "Dimensione:"
+    },
+    "closeButton": "Chiudi anteprima"
+  }
+}

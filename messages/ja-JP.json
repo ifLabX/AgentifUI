@@ -1,0 +1,2584 @@
+{
+  "common": {
+    "ui": {
+      "cancel": "キャンセル",
+      "back": "戻る",
+      "loading": "読み込み中...",
+      "retry": "再試行",
+      "remove": "削除",
+      "error": "エラー",
+      "customSelect": {
+        "placeholder": "選択してください..."
+      },
+      "exportButton": {
+        "tooltip": "ファイルをエクスポート",
+        "ariaLabel": "ファイルをエクスポート"
+      },
+      "logoutDialog": {
+        "title": "ログアウト",
+        "message": "本当にログアウトしますか？アカウントにアクセスするには再度ログインする必要があります。",
+        "confirm": "ログアウト",
+        "cancel": "キャンセル",
+        "loggingOut": "ログアウト中..."
+      },
+      "moreButton": {
+        "ariaLabel": "その他のオプション"
+      },
+      "download": "ダウンロード",
+      "copy": "コピー",
+      "copied": "コピーしました！",
+      "open": "開く",
+      "dismiss": "閉じる"
+    },
+    "time": {
+      "notRecorded": "記録なし",
+      "invalidDate": "無効な日付",
+      "formatError": "フォーマットエラー",
+      "greeting": {
+        "morning": "おはようございます",
+        "afternoon": "こんにちは",
+        "evening": "こんばんは",
+        "night": "遅い時間ですね",
+        "default": "こんにちは"
+      }
+    }
+  },
+  "pages": {
+    "home": {
+      "sections": [
+        {
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "AIの無限の可能性を探求し、インテリジェントな新体験を創造",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "大規模モデル統合",
+                      "description": "OpenAI、Anthropic、Difyなど複数のモデルプロバイダーをサポートし、様々な企業ニーズに対応"
+                    },
+                    {
+                      "title": "RAG知識強化",
+                      "description": "検索拡張生成（RAG）技術を統合し、プライベート知識ベースとコンテキスト認識を実現"
+                    },
+                    {
+                      "title": "エンタープライズ展開",
+                      "description": "プライベート展開をサポートし、データセキュリティを保証、Difyバックエンドに基づく安定した信頼性の高いサービスを提供"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "始める",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "詳しく見る",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI。AIの無限の可能性を探求。",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "ja-JP"
+      }
+    },
+    "chat": {
+      "newChat": "新しいチャット",
+      "sendMessage": "送信",
+      "inputPlaceholder": "メッセージを入力...",
+      "noMessages": "まだメッセージがありません",
+      "typing": "入力中...",
+      "recentChats": "最近のチャット",
+      "historyChats": "チャット履歴",
+      "input": {
+        "placeholder": "メッセージを入力...",
+        "sendMessage": "メッセージを送信",
+        "stopGeneration": "生成を停止",
+        "attachFile": "ファイルを添付",
+        "selectModel": "モデルを選択",
+        "noModelAvailable": "利用可能なモデルがありません",
+        "pleaseSelectModel": "モデルを選択してください",
+        "sending": "送信中...",
+        "uploading": "アップロード中...",
+        "uploadFailed": "アップロード失敗",
+        "retryUpload": "アップロードを再試行",
+        "removeFile": "ファイルを削除",
+        "fileUploadError": "ファイルアップロードエラー",
+        "messageSendFailed": "メッセージ送信失敗",
+        "unknownError": "不明なエラー",
+        "validatingConfig": "アプリ設定を検証中...",
+        "cannotSubmit": "送信できません",
+        "addAttachment": "添付ファイルを追加",
+        "retryUploadTooltip": "アップロードを再試行",
+        "removeAttachment": "添付ファイルを削除",
+        "scrollToBottom": "最下部にスクロール"
+      },
+      "fileUpload": {
+        "selectFileType": "ファイルタイプを選択",
+        "image": "画像",
+        "document": "ドキュメント",
+        "audio": "音声",
+        "video": "動画",
+        "custom": "カスタム",
+        "uploadProgress": "アップロード進行状況",
+        "uploadComplete": "アップロード完了",
+        "uploadError": "アップロードエラー",
+        "fileTooLarge": "ファイルが大きすぎます",
+        "unsupportedFormat": "サポートされていないファイル形式"
+      },
+      "fileTypeSelector": {
+        "ariaLabel": "添付ファイルを追加",
+        "notSupported": "このアプリはファイルアップロードをサポートしていません",
+        "noLimit": "ファイルアップロード制限は0です",
+        "noTypesConfigured": "サポートされているファイルタイプが設定されていません",
+        "maxFilesReached": "最大ファイル数制限に達しました ({maxFiles})",
+        "addAttachment": "添付ファイルを追加 ({currentFiles}/{maxFiles})",
+        "loading": "読み込み中...",
+        "loadError": "ファイルタイプの読み込みに失敗しました",
+        "reachedLimit": "制限に達しました ({currentFiles}/{maxFiles})",
+        "maxUpload": "最大{maxFiles}個のファイルをアップロード",
+        "noUploadLimit": "アップロード制限なし"
+      },
+      "modelSelector": {
+        "noModelsAvailable": "利用可能なモデルがありません",
+        "selectModel": "モデルを選択",
+        "appNotFound": "アプリが見つかりません: {appId}"
+      },
+      "messages": {
+        "assistant": "アシスタント",
+        "user": "あなた",
+        "thinking": "思考中...",
+        "stopped": "停止",
+        "completed": "完了",
+        "copyMessage": "メッセージをコピー",
+        "editMessage": "メッセージを編集",
+        "deleteMessage": "メッセージを削除",
+        "regenerate": "再生成",
+        "feedback": "フィードバック",
+        "like": "いいね",
+        "dislike": "よくない",
+        "copied": "コピーしました",
+        "copyFailed": "コピー失敗",
+        "imageLink": "画像リンク",
+        "viewImage": "画像を表示",
+        "clickToView": "クリックして表示",
+        "clickToViewWithAlt": "クリックして表示: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "他に {count} つの質問があります..."
+      }
+    },
+    "chatflow": {
+      "loading": {
+        "inputConfig": "入力設定を読み込み中..."
+      },
+      "form": {
+        "question": {
+          "label": "ご質問またはご要望",
+          "placeholder": "ご質問やご要望を詳しくお聞かせください...",
+          "required": "ご質問またはご要望を入力してください",
+          "tooLong": "質問の説明は{maxLength}文字を超えることはできません"
+        },
+        "additionalInfo": "追加情報",
+        "reset": "フォームをリセット",
+        "processing": "処理中...",
+        "startConversation": "会話を開始",
+        "checkAndCorrectErrors": "フォーム内のマークされたエラーを確認して修正してください",
+        "defaultAppName": "AI チャット",
+        "defaultDescription": "質問を入力してインテリジェントな会話を開始してください"
+      },
+      "floatingController": {
+        "showTracker": "ノードトラッカーを表示",
+        "hideTracker": "ノードトラッカーを非表示"
+      },
+      "nodeTracker": {
+        "title": "ノード実行進捗",
+        "starting": "Chatflow開始中",
+        "noRecords": "ノード実行記録なし",
+        "waitingUpdate": "ノードステータス更新を待機中...",
+        "showProgress": "会話開始後にノード実行進捗が表示されます",
+        "executionError": "実行エラー："
+      },
+      "executionBar": {
+        "status": {
+          "iterating": "反復中",
+          "iterationCompleted": "反復完了",
+          "iterationFailed": "反復失敗",
+          "waitingIteration": "反復待機",
+          "looping": "ループ中",
+          "loopCompleted": "ループ完了",
+          "loopFailed": "ループ失敗",
+          "waitingLoop": "ループ待機",
+          "executing": "実行中",
+          "completed": "完了",
+          "failed": "失敗",
+          "waiting": "待機中",
+          "unknown": "不明",
+          "executing_": "実行中..."
+        },
+        "nodeTypes": {
+          "start": "開始ノード",
+          "llm": "LLM推論",
+          "knowledgeRetrieval": "知識検索",
+          "questionClassifier": "質問分類器",
+          "ifElse": "条件分岐",
+          "code": "コード実行",
+          "templateTransform": "テンプレート変換",
+          "variableAssigner": "変数割り当て",
+          "variableAggregator": "変数集約器",
+          "documentExtractor": "文書抽出器",
+          "parameterExtractor": "パラメータ抽出器",
+          "httpRequest": "HTTPリクエスト",
+          "listOperator": "リスト操作",
+          "iteration": "ループ反復",
+          "end": "終了ノード",
+          "node": "ノード"
+        },
+        "progressType": {
+          "iteration": "反復進捗",
+          "branch": "分岐進捗"
+        },
+        "branch": {
+          "label": "分岐"
+        }
+      }
+    },
+    "workflow": {
+      "form": {
+        "inputPlaceholder": "{label}を入力してください",
+        "selectPlaceholder": "{label}を選択してください",
+        "rangeHint": "範囲：{min} - {max}",
+        "minValueHint": "最小値：{min}",
+        "maxValueHint": "最大値：{max}",
+        "stepHint": "ステップ：{step}",
+        "precisionHint": "小数点以下桁数：{precision}",
+        "defaultLabel": "入力テキスト",
+        "loading": "フォーム設定を読み込み中...",
+        "noFormConfig": "このアプリには入力フォームが設定されていません",
+        "reset": "フォームをリセット",
+        "executing": "実行中...",
+        "startExecution": "実行開始",
+        "errors": {
+          "instanceNotFound": "instanceId {instanceId} のサービスインスタンスが見つかりません"
+        },
+        "validation": {
+          "required": "{label}は必須項目です",
+          "invalidNumber": "{label}は有効な数値である必要があります",
+          "minValue": "{label}は{min}より小さくできません",
+          "maxValue": "{label}は{max}より大きくできません",
+          "stepValue": "{label}は{step}の倍数である必要があります",
+          "precisionExceeded": "{label}の小数点以下桁数は{precision}桁を超えることはできません",
+          "maxLengthExceeded": "{label}の長さは{maxLength}文字を超えることはできません",
+          "invalidSelection": "{label}で選択された値が無効です",
+          "tooManyFiles": "{label}のファイル数は{maxFiles}個を超えることはできません",
+          "fileTooLarge": "{label}のファイル\"{fileName}\"のサイズが{maxSize}MBを超えています",
+          "unsupportedFileType": "{label}のファイル\"{fileName}\"はサポートされていません。サポートされているタイプ: {allowedTypes}"
+        }
+      },
+      "status": {
+        "running": "ワークフロー実行中",
+        "completed": "実行完了",
+        "failed": "実行失敗",
+        "stopped": "実行停止",
+        "pending": "実行待機中",
+        "unknown": "不明",
+        "totalTime": "総時間: {time}秒"
+      },
+      "nodeStatus": {
+        "iterating": "反復中...",
+        "iterationCompleted": "反復完了",
+        "iterationFailed": "反復失敗",
+        "waitingIteration": "反復待機中",
+        "looping": "ループ中",
+        "loopCompleted": "ループ完了",
+        "loopFailed": "ループ失敗",
+        "waitingLoop": "ループ待機中",
+        "parallelRunning": "並列実行中...",
+        "parallelCompleted": "並列完了",
+        "parallelFailed": "並列失敗",
+        "waitingParallel": "並列実行待機中",
+        "executing": "実行中...",
+        "nodeCompleted": "実行完了",
+        "nodeFailed": "実行失敗",
+        "nodePending": "実行待機中",
+        "nodeUnknown": "不明なステータス"
+      },
+      "nodeTypes": {
+        "start": "開始ノード",
+        "llm": "LLM推論",
+        "knowledgeRetrieval": "知識検索",
+        "questionClassifier": "質問分類器",
+        "ifElse": "条件分岐",
+        "code": "コード実行",
+        "templateTransform": "テンプレート変換",
+        "variableAssigner": "変数割り当て",
+        "variableAggregator": "変数集約器",
+        "documentExtractor": "文書抽出器",
+        "parameterExtractor": "パラメータ抽出器",
+        "httpRequest": "HTTPリクエスト",
+        "listOperator": "リスト操作",
+        "iteration": "ループ反復",
+        "parallel": "並列分岐",
+        "end": "終了ノード"
+      },
+      "iterationDetails": {
+        "roundIteration": "第{round}回イテレーション",
+        "roundLoop": "第{round}回ループ",
+        "nodeNumber": "ノード{number}"
+      },
+      "buttons": {
+        "retry": "再試行",
+        "close": "閉じる",
+        "copy": "結果をコピー",
+        "copied": "コピー済み",
+        "download": "結果をダウンロード",
+        "retryUpload": "アップロードを再試行",
+        "removeFile": "ファイルを削除",
+        "viewResult": "結果を表示",
+        "stop": "停止",
+        "reset": "リセット"
+      },
+      "history": {
+        "showHistory": "履歴を表示",
+        "hideHistory": "履歴を閉じる",
+        "noDetailData": "この実行記録には詳細な結果データがありませんが、基本情報は表示できます",
+        "title": "実行履歴",
+        "selected": "{count}個選択済み",
+        "batchDelete": "一括削除",
+        "deleteSelected": "選択した{count}個を削除",
+        "cancelSelection": "選択をキャンセル",
+        "loading": "実行履歴を読み込み中...",
+        "noRecords": "実行記録がありません",
+        "getDetailFailed": "実行詳細の取得に失敗しました",
+        "unknownError": "不明なエラー",
+        "userNotLoggedIn": "ユーザーがログインしていません"
+      },
+      "fileUpload": {
+        "uploading": "ファイルをアップロード中...",
+        "dropOrClick": "ファイルをここにドラッグするかクリックしてアップロード",
+        "uploadFailed": "アップロード失敗",
+        "supportAllTypes": "様々なファイルタイプのアップロードをサポート",
+        "supportTypes": "アップロード可能: {types}",
+        "fileTypes": {
+          "image": "画像",
+          "document": "ドキュメント",
+          "audio": "音声",
+          "video": "動画",
+          "custom": "その他のファイル"
+        },
+        "uploaded": "アップロード済み",
+        "maxFiles": "最大{maxFiles}個のファイルをアップロード（残り{remaining}個）",
+        "maxFileSize": "最大ファイルサイズ{size}MB",
+        "maxFilesReached": "最大ファイル数制限に達しました（{current}/{max}）",
+        "selectedFiles": "選択されたファイル"
+      },
+      "tabs": {
+        "inputForm": "入力フォーム",
+        "executionStatus": "実行ステータス",
+        "history": "履歴"
+      },
+      "resultViewer": {
+        "title": "ワークフロー実行結果",
+        "noData": "結果データなし",
+        "copy": "結果をコピー",
+        "copied": "コピー済み",
+        "download": "結果をダウンロード"
+      }
+    },
+    "textGeneration": {
+      "status": {
+        "generating": "テキスト生成中...",
+        "completed": "生成完了",
+        "failed": "生成失敗",
+        "stopped": "停止済み",
+        "waiting": "生成待機中",
+        "result": "生成結果"
+      },
+      "progress": "進捗: {percent}%",
+      "buttons": {
+        "copy": "テキストをコピー",
+        "copied": "コピー済み",
+        "download": "テキストをダウンロード",
+        "stop": "停止",
+        "retry": "再試行",
+        "reset": "リセット",
+        "close": "閉じる"
+      },
+      "emptyState": {
+        "title": "テキスト生成待機中",
+        "description": "左側のフォームに入力し、実行ボタンをクリックしてテキスト生成を開始してください"
+      },
+      "placeholder": {
+        "generating": "テキスト生成中...",
+        "result": "生成されたテキストがここに表示されます"
+      },
+      "loadingState": {
+        "title": "テキスト生成中",
+        "description": "お待ちください、コンテンツを生成しています..."
+      },
+      "streamingIndicator": "生成中",
+      "stats": {
+        "characters": "文字数: {count}",
+        "words": "単語数: {count}",
+        "tokensUsed": "使用トークン: {count}"
+      }
+    },
+    "apps": {
+      "startChatWith": "{appName}とのチャットを開始...",
+      "continueChatWith": "{appName}とのチャットを続行...",
+      "defaultApp": "アプリ",
+      "loadFailed": "アプリの読み込みに失敗しました",
+      "backToMarket": "アプリマーケットに戻る",
+      "loading": {
+        "app": "アプリを読み込み中...",
+        "validating": "アプリ設定を検証中...",
+        "default": "読み込み中..."
+      },
+      "errors": {
+        "appNotFound": "アプリが見つかりません",
+        "initializationFailed": "初期化に失敗しました",
+        "appLoadFailed": "アプリの読み込みに失敗しました"
+      },
+      "status": {
+        "loadingApp": "アプリを読み込み中...",
+        "validatingConfig": "アプリ設定を検証中...",
+        "loading": "読み込み中..."
+      },
+      "buttons": {
+        "backToMarket": "アプリマーケットに戻る"
+      },
+      "market": {
+        "categories": {
+          "all": "すべて",
+          "favorite": "人気",
+          "writing": "執筆",
+          "translation": "翻訳",
+          "programming": "プログラミング",
+          "codeGeneration": "コード生成",
+          "analysis": "分析",
+          "summary": "要約",
+          "conversation": "会話",
+          "assistant": "アシスタント",
+          "textGeneration": "テキスト生成",
+          "document": "文書",
+          "dataAnalysis": "データ分析",
+          "development": "開発",
+          "generation": "生成",
+          "conversationModel": "会話モデル",
+          "reasoningModel": "推論モデル",
+          "documentModel": "文書モデル",
+          "multimodal": "マルチモーダル",
+          "highPrecision": "高精度",
+          "fastResponse": "高速",
+          "localDeployment": "ローカル",
+          "enterprise": "エンタープライズ",
+          "private": "プライベート",
+          "tools": "ツール",
+          "general": "汎用",
+          "professional": "プロフェッショナル"
+        },
+        "search": {
+          "placeholder": "アプリを検索..."
+        },
+        "tryAdjustSearch": "検索条件を調整するか、他のカテゴリを閲覧してください",
+        "viewMode": {
+          "grid": "グリッド",
+          "list": "リスト"
+        },
+        "appCard": {
+          "noDescription": "説明なし",
+          "defaultType": "アプリ"
+        },
+        "header": {
+          "title": "アプリマーケット",
+          "totalApps": "合計 {count} 個のアプリ",
+          "categoryApps": "{category} · {count} 個のアプリ",
+          "totalLabel": "合計 {count} 個"
+        },
+        "categoryKeys": {
+          "all": "すべて",
+          "commonApps": "人気アプリ"
+        },
+        "unknownAppType": "不明なDifyアプリタイプ",
+        "useDefaultRoute": "デフォルトルートを使用",
+        "routeJump": "ルートジャンプ",
+        "app": "アプリ",
+        "type": "タイプ",
+        "path": "パス",
+        "openAppFailed": "アプリを開くのに失敗しました"
+      }
+    },
+    "auth": {
+      "login": {
+        "title": "ログイン",
+        "subtitle": "インテリジェントアシスタントへようこそ",
+        "emailLabel": "メールアドレス",
+        "passwordLabel": "パスワード",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "••••••••",
+        "loginButton": "ログイン",
+        "forgotPasswordLink": "パスワードを忘れましたか？",
+        "phoneLoginLink": "📱 電話番号による認証でログイン",
+        "noAccountText": "アカウントをお持ちでないですか？",
+        "registerLink": "今すぐ登録",
+        "showPassword": "パスワードを表示",
+        "hidePassword": "パスワードを非表示",
+        "orSeparator": "メールアドレスとパスワードでログイン",
+        "orSeparatorSso": "またはメールアドレスとパスワードを使用",
+        "alerts": {
+          "registered": "登録が完了しました！メールアドレスを確認してアカウントを認証し、ログインしてください。",
+          "resetSuccess": "パスワードリセットが完了しました！新しいパスワードでログインしてください。"
+        },
+        "errors": {
+          "oauthFailed": "OAuth ログインに失敗しました。再試行するか、他のログイン方法をお試しください",
+          "ssoCallbackFailed": "SSO認証コールバック処理に失敗しました。再度ログインをお試しください",
+          "ticketValidationFailed": "SSOチケット検証に失敗しました。再度ログインしてください",
+          "invalidEmployeeNumber": "従業員番号の形式が正しくありません。管理者にお問い合わせください",
+          "userCreationFailed": "アカウント作成に失敗しました。これはアカウントデータの不整合によるものかもしれません。再度ログインをお試しください。問題が続く場合は管理者にお問い合わせください",
+          "accountDataInconsistent": "アカウントデータに不整合があります。システムが自動修復を試行中です。しばらくお待ちいただき、再度ログインしてください",
+          "profileCreationFailed": "ユーザープロフィール作成に失敗しました。管理者にサポートをお問い合わせください",
+          "ssoProviderNotFound": "SSOサービス設定エラーです。管理者にお問い合わせください",
+          "missingTicket": "認証パラメータが不足しています。再度ログインしてください",
+          "default": "ログイン中にエラーが発生しました。後でもう一度お試しください",
+          "loginFailed": "ログインに失敗しました。メールアドレスとパスワードをご確認ください"
+        }
+      },
+      "register": {
+        "title": "登録",
+        "subtitle": "AgentifUIに参加して、AIの旅を始めましょう",
+        "nameLabel": "氏名",
+        "usernameLabel": "ユーザー名",
+        "usernameOptional": "（任意）",
+        "emailLabel": "メールアドレス",
+        "passwordLabel": "パスワード",
+        "confirmPasswordLabel": "パスワード確認",
+        "namePlaceholder": "氏名を入力してください",
+        "usernamePlaceholder": "ユーザー名を選択してください",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "••••••••",
+        "createAccountButton": "アカウント作成",
+        "phoneLoginLink": "📱 電話番号による認証でログイン",
+        "hasAccountText": "すでにアカウントをお持ちですか？",
+        "loginLink": "今すぐログイン",
+        "showPassword": "パスワードを表示",
+        "hidePassword": "パスワードを非表示",
+        "showConfirmPassword": "確認パスワードを表示",
+        "hideConfirmPassword": "確認パスワードを非表示",
+        "orSeparator": "またはメールアドレスとパスワードを使用",
+        "errors": {
+          "nameRequired": "氏名を入力してください",
+          "emailRequired": "メールアドレスを入力してください",
+          "passwordTooShort": "パスワードは6文字以上である必要があります",
+          "passwordMismatch": "パスワードが一致しません",
+          "usernameInvalid": "ユーザー名には文字、数字、アンダースコア、ハイフンのみ使用でき、2〜20文字である必要があります",
+          "emailExists": "このメールアドレスは既に登録されています。別のメールアドレスを使用するか、直接ログインしてください",
+          "passwordWeak": "パスワードの強度が不足しています。より複雑なパスワードをお使いください",
+          "emailInvalid": "メールアドレスの形式が正しくありません。確認して再試行してください",
+          "registerFailed": "登録に失敗しました。後でもう一度お試しください"
+        }
+      },
+      "phoneLoginPage": {
+        "title": "AgentifUI",
+        "subtitle": "インテリジェント会話があなたの手に",
+        "orSeparator": "または",
+        "emailLoginLink": "メールアドレスとパスワードでログイン",
+        "registerLink": "アカウントをお持ちでないですか？今すぐ登録",
+        "termsText": "ログインすることで、当社の",
+        "termsLink": "利用規約",
+        "privacyLink": "プライバシーポリシー",
+        "andText": "および"
+      },
+      "ssoProcessing": {
+        "title": "SSO ログイン",
+        "loading": "読み込み中..."
+      },
+      "forgotPassword": {
+        "title": "パスワードを忘れた",
+        "subtitle": "メールアドレスを入力していただければ、パスワードリセットリンクを送信いたします",
+        "emailLabel": "メールアドレス",
+        "emailPlaceholder": "your@email.com",
+        "sendButton": "リセットリンクを送信",
+        "sendingButton": "送信中...",
+        "backToLogin": "ログインに戻る",
+        "success": {
+          "title": "メール送信完了",
+          "message": "{email} にパスワードリセットリンクを送信しました",
+          "instructions": "メール（迷惑メールフォルダを含む）をご確認いただき、リンクをクリックしてパスワードをリセットしてください。",
+          "noEmail": "メールが届かない場合は、メールアドレスが正しいかご確認いただくか、後でもう一度お試しください。"
+        },
+        "errors": {
+          "emailRequired": "有効なメールアドレスを入力してください",
+          "rateLimited": "リクエストが多すぎます。後でもう一度お試しください",
+          "sendFailed": "送信に失敗しました。後でもう一度お試しください"
+        }
+      },
+      "resetPassword": {
+        "title": "パスワードリセット",
+        "subtitle": "新しいパスワードを入力してください",
+        "verifying": "確認中",
+        "verifyingSubtitle": "リセットリンクを確認中...",
+        "invalidTitle": "無効なリンク",
+        "invalidSubtitle": "パスワードリセットリンクが期限切れまたは無効です",
+        "successTitle": "パスワードリセット成功",
+        "successSubtitle": "パスワードが正常にリセットされました",
+        "passwordLabel": "新しいパスワード",
+        "confirmPasswordLabel": "パスワード確認",
+        "passwordPlaceholder": "新しいパスワードを入力",
+        "confirmPasswordPlaceholder": "新しいパスワードを再入力",
+        "resetButton": "パスワードリセット",
+        "resettingButton": "リセット中...",
+        "showPassword": "新しいパスワードを表示",
+        "hidePassword": "新しいパスワードを非表示",
+        "showConfirmPassword": "確認パスワードを表示",
+        "hideConfirmPassword": "確認パスワードを非表示",
+        "passwordHint": "パスワードには大文字と小文字、数字を含む8文字以上が必要です",
+        "backToLogin": "ログインへ",
+        "retryReset": "パスワードリセットを再申請",
+        "successMessage": "新しいパスワードでアカウントにログインできるようになりました。",
+        "errors": {
+          "passwordRequired": "新しいパスワードを入力してください",
+          "passwordTooShort": "パスワードは6文字以上である必要があります",
+          "passwordMismatch": "パスワードが一致しません",
+          "passwordWeak": "パスワードの強度が不足しています。より複雑なパスワードをお使いください",
+          "sessionExpired": "セッションが期限切れです。パスワードリセットを再申請してください",
+          "resetFailed": "パスワードリセットに失敗しました。後でもう一度お試しください",
+          "linkInvalid": "リセットリンクの確認に失敗しました",
+          "linkExpired": "リセットリンクが無効または期限切れです。パスワードリセットを再申請してください",
+          "verifyFailed": "確認に失敗しました。パスワードリセットを再申請してください"
+        }
+      },
+      "phoneLogin": {
+        "title": "電話番号ログイン",
+        "subtitle": "電話番号を使用して認証コードを受信してログイン",
+        "otpSubtitle": "受信した6桁の認証コードを入力してください",
+        "phoneLabel": "電話番号",
+        "otpLabel": "認証コード",
+        "phonePlaceholder": "13812345678",
+        "otpPlaceholder": "6桁のコードを入力",
+        "sendOtpButton": "認証コードを送信",
+        "sendingButton": "送信中...",
+        "verifyButton": "コードを確認",
+        "verifyingButton": "確認中...",
+        "resendButton": "認証コードを再送信",
+        "changePhoneButton": "電話番号を変更",
+        "otpSentTo": "認証コードを +86{phone} に送信しました",
+        "errors": {
+          "phoneRequired": "電話番号を入力してください",
+          "phoneInvalid": "有効な中国本土の電話番号を入力してください",
+          "otpRequired": "認証コードを入力してください",
+          "otpInvalid": "認証コードは6桁である必要があります",
+          "sendFailed": "認証コードの送信に失敗しました。後でもう一度お試しください",
+          "verifyFailed": "認証コードが正しくありません。再入力してください"
+        },
+        "success": {
+          "otpSent": "認証コードが送信されました。SMSをご確認ください",
+          "verifySuccess": "認証成功！ログイン中..."
+        }
+      },
+      "sso": {
+        "title": "シングルサインオン認証",
+        "subtitle": "統一認証アカウントでログイン",
+        "button": "SSOでログイン",
+        "simpleButton": "🏛️ シングルサインオン",
+        "jumpingButton": "リダイレクト中...",
+        "helpText": "初回ログイン時にアカウントが自動作成されます",
+        "contactText": "ご質問がございましたらシステム管理者にお問い合わせください",
+        "startError": "SSOログインの開始に失敗しました。後でもう一度お試しください",
+        "noProvider": "現在、SSOログイン方式は利用できません",
+        "processing": {
+          "title": "SSO ログイン",
+          "processing": "SSOログインを処理中...",
+          "welcome": "ようこそ {name} さん、セッションを確立中...",
+          "verifying": "身元を確認中...",
+          "sessionCheck": "セッションを確認中...",
+          "success": "ログイン成功！リダイレクト中...",
+          "failed": "ログイン失敗",
+          "redirecting": "3秒後に自動的にログインページにリダイレクトします...",
+          "errors": {
+            "missingParams": "SSOパラメータが不足または無効です",
+            "userDataNotFound": "SSOユーザーデータが見つかりません",
+            "sessionExpired": "SSOセッションが期限切れです。再度ログインしてください",
+            "loginFailed": "SSOログインに失敗しました",
+            "sessionValidationFailed": "セッション検証に失敗しました",
+            "noValidSessionData": "サーバーから有効なセッションデータが返されませんでした",
+            "processingFailed": "SSO処理に失敗しました"
+          }
+        }
+      },
+      "social": {
+        "github": {
+          "login": "GitHub でログイン",
+          "register": "GitHub で登録",
+          "failed": "GitHub ログインに失敗しました"
+        }
+      }
+    },
+    "settings": {
+      "title": "設定",
+      "profile": "プロフィール",
+      "account": "アカウント",
+      "appearance": "外観",
+      "language": "言語",
+      "navigation": {
+        "overview": "概要",
+        "profileNav": "プロフィール",
+        "accountNav": "アカウント",
+        "appearanceNav": "外観",
+        "languageNav": "言語"
+      },
+      "descriptions": {
+        "overview": "個人設定を管理し、アプリ体験をカスタマイズ",
+        "profileDesc": "個人情報、アバター、アカウント設定を更新",
+        "accountDesc": "アカウントセキュリティとログイン情報を管理",
+        "appearanceDesc": "テーマ、色、インターフェースレイアウト、タイムゾーン設定をカスタマイズ",
+        "languageDesc": "お好みの表示言語と地域設定を選択"
+      },
+      "accountSettings": {
+        "title": "アカウント設定",
+        "accountInfo": "アカウント情報",
+        "loginEmail": "ログインメール",
+        "authMethod": "認証方法",
+        "emailPasswordAuth": "メール・パスワード",
+        "securitySettings": "セキュリティ設定",
+        "logoutAccount": "現在のアカウントからログアウト",
+        "confirmLogout": "本当にログアウトしますか？",
+        "confirmLogoutBtn": "ログアウト確認",
+        "logout": "ログアウト",
+        "loggingOut": "ログアウト中...",
+        "loadAccountError": "アカウント情報の読み込みエラー",
+        "retry": "再試行",
+        "deleteAccount": "アカウント削除"
+      },
+      "profileSettings": {
+        "title": "プロフィール",
+        "accountInfo": "アカウント情報",
+        "registrationTime": "登録日時",
+        "accountRole": "アカウント役割",
+        "lastLogin": "最終ログイン",
+        "editProfile": "プロフィール編集",
+        "name": "名前",
+        "nickname": "ユーザー名",
+        "profileUpdated": "プロフィールが正常に更新されました",
+        "updateFailed": "プロフィールの更新に失敗しました",
+        "saving": "保存中...",
+        "saveChanges": "変更を保存",
+        "namePlaceholder": "お名前を入力してください",
+        "usernamePlaceholder": "ユーザー名を入力してください",
+        "roles": {
+          "admin": "管理者",
+          "manager": "マネージャー",
+          "user": "ユーザー"
+        },
+        "status": {
+          "notRecorded": "記録なし",
+          "notSet": "未設定"
+        },
+        "loadProfileError": "プロフィールの読み込みエラー",
+        "avatar": {
+          "defaultUser": "ユーザー",
+          "userAvatar": "{userName}のアバター",
+          "editHover": "編集",
+          "uploadSuccess": "アバターのアップロードが完了しました",
+          "deleteSuccess": "アバターの削除が完了しました"
+        }
+      },
+      "avatarModal": {
+        "title": "アバター設定",
+        "subtitle": "クリックしてアップロードするか、下のエリアに画像をドラッグしてください",
+        "currentAvatar": "現在のアバター",
+        "supportedFormats": "JPEG、JPG、PNG、WebP形式をサポート • 最大5MB",
+        "crop": {
+          "zoom": "ズーム",
+          "cancel": "再選択",
+          "confirm": "トリミング確認",
+          "uploading": "アップロード中..."
+        },
+        "uploadArea": {
+          "uploading": "アップロード中...",
+          "changeAvatar": "クリックしてアバターを変更",
+          "uploadAvatar": "クリックしてアバターをアップロード",
+          "uploadProgress": "アップロード進捗: {progress}%",
+          "dragHint": "または画像をここにドラッグ"
+        },
+        "buttons": {
+          "deleteAvatar": "アバターを削除",
+          "complete": "完了",
+          "uploading": "アップロード中...",
+          "cancel": "キャンセル",
+          "confirmDelete": "削除を確認",
+          "deleting": "削除中..."
+        },
+        "deleteConfirm": {
+          "title": "アバターを削除",
+          "message": "現在のアバターを削除してもよろしいですか？この操作は取り消せません。"
+        },
+        "status": {
+          "success": "操作が正常に完了しました"
+        },
+        "errors": {
+          "unsupportedType": "サポートされていないファイル形式です。JPEG、JPG、PNG、WebP形式の画像を選択してください。",
+          "fileTooLarge": "ファイルサイズが大きすぎます。5MB以下の画像を選択してください。",
+          "userNotLoggedIn": "ユーザーがログインしていません",
+          "uploadFailed": "アップロードに失敗しました",
+          "deleteFailed": "削除に失敗しました"
+        }
+      },
+      "avatarUpload": {
+        "errors": {
+          "unsupportedFileType": "サポートされていないファイル形式です。サポート形式：{types}",
+          "fileTooLarge": "ファイルサイズが大きすぎます。最大サポート {maxSize}MB",
+          "uploadFailed": "アップロード失敗：{message}",
+          "getUrlFailed": "アバターURLの取得に失敗しました",
+          "updateDatabaseFailed": "データベース更新に失敗しました：{message}",
+          "deleteFailed": "削除失敗：{message}",
+          "uploadFailedGeneric": "アップロードに失敗しました",
+          "deleteFailedGeneric": "削除に失敗しました"
+        }
+      },
+      "appearanceSettings": {
+        "title": "外観設定",
+        "theme": "テーマ",
+        "themeDescription": "お好みの表示モードを選択",
+        "themes": {
+          "light": "ライトモード",
+          "dark": "ダークモード",
+          "system": "システムに従う"
+        },
+        "preview": {
+          "light": "ライト",
+          "dark": "ダーク",
+          "system": "システム"
+        },
+        "timezone": "タイムゾーン設定",
+        "timezoneDescription": "お住まいのタイムゾーンを選択し、時刻表示形式に影響します",
+        "currentTimezone": "現在のタイムゾーン",
+        "timezoneRegions": {
+          "asia": "アジア",
+          "europe": "ヨーロッパ",
+          "america": "アメリカ大陸",
+          "africa": "アフリカ",
+          "australia": "オセアニア",
+          "utc": "協定世界時"
+        },
+        "timezoneCities": {
+          "shanghai": "上海",
+          "beijing": "北京",
+          "hongKong": "香港",
+          "taipei": "台北",
+          "tokyo": "東京",
+          "seoul": "ソウル",
+          "singapore": "シンガポール",
+          "bangkok": "バンコク",
+          "dubai": "ドバイ",
+          "kolkata": "コルカタ",
+          "london": "ロンドン",
+          "paris": "パリ",
+          "berlin": "ベルリン",
+          "rome": "ローマ",
+          "madrid": "マドリード",
+          "amsterdam": "アムステルダム",
+          "moscow": "モスクワ",
+          "newYork": "ニューヨーク",
+          "losAngeles": "ロサンゼルス",
+          "chicago": "シカゴ",
+          "denver": "デンバー",
+          "toronto": "トロント",
+          "saoPaulo": "サンパウロ",
+          "mexicoCity": "メキシコシティ",
+          "sydney": "シドニー",
+          "melbourne": "メルボルン",
+          "perth": "パース",
+          "auckland": "オークランド",
+          "cairo": "カイロ",
+          "johannesburg": "ヨハネスブルク",
+          "lagos": "ラゴス",
+          "utc": "UTC"
+        },
+        "timezoneSearch": "タイムゾーンを検索...",
+        "systemTimezone": "システムタイムゾーン",
+        "customTimezone": "カスタムタイムゾーン",
+        "timezonePreview": "プレビュー時刻：{time}",
+        "timezoneUpdated": "タイムゾーン設定が更新されました",
+        "timezoneUpdateFailed": "タイムゾーンの更新に失敗しました"
+      },
+      "languageSettings": {
+        "title": "言語設定",
+        "language": "言語",
+        "languageDescription": "お好みの表示言語を選択",
+        "currentLanguage": "現在の言語",
+        "switchLanguage": "言語を切り替える"
+      }
+    },
+    "admin": {
+      "title": "管理パネル",
+      "main": {
+        "title": "管理パネル概要",
+        "subtitle": "AgentifUI管理パネルへようこそ。ここでシステムの各種設定と構成を管理できます"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI 管理パネル",
+        "breadcrumbRoot": "管理パネル",
+        "menuItems": {
+          "main": {
+            "text": "管理ホーム",
+            "description": "管理パネル概要"
+          },
+          "apiConfig": {
+            "text": "API設定",
+            "description": "アプリケーションインスタンスと設定パラメータを管理"
+          },
+          "content": {
+            "text": "コンテンツ管理",
+            "description": "ホームページと概要ページのコンテンツを管理"
+          },
+          "users": {
+            "text": "ユーザー管理",
+            "description": "ユーザーアカウントと権限を管理"
+          },
+          "ssoProviders": {
+            "text": "SSOプロバイダー管理",
+            "description": "SSOプロバイダー構成の管理"
+          },
+          "groups": {
+            "text": "グループ管理",
+            "description": "ユーザーとグループを管理し、グループアプリケーション権限を設定"
+          },
+          "permissions": {
+            "text": "アプリケーション権限管理",
+            "description": "アプリケーションの可視性とグループ権限を管理"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "リビルド",
+            "messages": {
+              "startRebuild": "リビルドとデプロイを開始しています...",
+              "startRebuildDescription": "この処理には数分かかる場合があります。しばらくお待ちください。",
+              "buildInProgress": "ビルド進行中",
+              "buildInProgressDescription": "現在のビルドが完了するまでお待ちください。",
+              "authFailed": "認証に失敗しました",
+              "authFailedDescription": "再度ログインしてお試しください。",
+              "permissionDenied": "権限が不足しています",
+              "permissionDeniedDescription": "この操作を実行する権限がありません。",
+              "unknownError": "不明なエラーが発生しました",
+              "buildComplete": "ビルド完了！",
+              "buildCompleteDescription": "変更を適用するため、アプリケーションが2秒後に自動的に再起動されます。",
+              "appRestarting": "アプリケーション再起動中...",
+              "appRestartingDescription": "再起動完了後、ページが自動的に更新されます。",
+              "deployFailed": "デプロイに失敗しました",
+              "networkError": "ネットワークエラーです。接続を確認して再試行してください。"
+            }
+          },
+          "returnToChatButton": {
+            "text": "チャットに戻る"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "データを更新",
+            "save": "変更を保存",
+            "saving": "保存中...",
+            "reset": "リセット",
+            "create": "作成",
+            "cancel": "キャンセル",
+            "confirm": "確認"
+          },
+          "status": {
+            "hasUnsavedChanges": "未保存の変更があります",
+            "saving": "保存中...",
+            "allChangesSaved": "すべての変更が保存されました"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "アプリケーションインスタンスを選択",
+          "description": "左側のリストからアプリケーションインスタンスを選択して設定を表示・編集するか、追加ボタンをクリックして新しいアプリケーションインスタンスを作成してください"
+        },
+        "formActions": {
+          "save": "保存",
+          "saving": "保存中...",
+          "cancel": "キャンセル"
+        },
+        "providerManagement": {
+          "buttonText": "プロバイダー管理",
+          "modal": {
+            "title": "サービスプロバイダー管理",
+            "providerList": "プロバイダーリスト",
+            "addProvider": "プロバイダー追加",
+            "editProvider": "プロバイダー編集",
+            "addNewProvider": "新しいプロバイダーを追加",
+            "loading": "読み込み中...",
+            "noProviders": "プロバイダーが設定されていません",
+            "deleteConfirm": "プロバイダー「{name}」を削除してもよろしいですか？この操作は元に戻せません。",
+            "messages": {
+              "loadFailed": "プロバイダーリストの読み込みに失敗しました",
+              "createSuccess": "プロバイダーが正常に作成されました",
+              "createFailed": "プロバイダーの作成に失敗しました",
+              "updateSuccess": "プロバイダーが正常に更新されました",
+              "updateFailed": "プロバイダーの更新に失敗しました",
+              "deleteSuccess": "プロバイダーが正常に削除されました",
+              "deleteFailed": "プロバイダーの削除に失敗しました",
+              "saveFailed": "プロバイダーの保存に失敗しました"
+            },
+            "providerTypes": {
+              "llm": "LLM（大規模言語モデル）",
+              "platform": "プラットフォーム（統合プラットフォーム）",
+              "embedding": "エンベディング（ベクトル化）",
+              "tts": "TTS（テキスト読み上げ）",
+              "stt": "STT（音声認識）",
+              "vision": "ビジョン（画像認識）",
+              "multimodal": "マルチモーダル"
+            },
+            "authTypes": {
+              "api_key": "APIキー",
+              "bearer_token": "ベアラートークン",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "ベーシック認証"
+            },
+            "status": {
+              "enabled": "有効",
+              "disabled": "無効",
+              "default": "デフォルトプロバイダー"
+            },
+            "form": {
+              "name": {
+                "label": "プロバイダー名",
+                "placeholder": "例：Dify、OpenAI、Claude",
+                "required": "プロバイダー名は空にできません"
+              },
+              "type": {
+                "label": "プロバイダータイプ",
+                "placeholder": "プロバイダータイプを選択",
+                "required": "プロバイダータイプを選択してください"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "例：https://api.dify.ai/v1",
+                "required": "API URLは空にできません",
+                "invalid": "有効なURL形式を入力してください"
+              },
+              "authType": {
+                "label": "認証タイプ",
+                "placeholder": "認証タイプを選択",
+                "required": "認証タイプを選択してください"
+              },
+              "isActive": {
+                "label": "有効状態"
+              },
+              "isDefault": {
+                "label": "デフォルトプロバイダー",
+                "description": "システム内にはデフォルトプロバイダーを1つだけ設定できます。これを設定すると、他のプロバイダーのデフォルト状態が自動的にクリアされます。",
+                "setAsDefault": "デフォルトに設定",
+                "notDefault": "非デフォルト"
+              },
+              "authMethod": "認証方法"
+            },
+            "buttons": {
+              "cancel": "キャンセル",
+              "save": "保存",
+              "saving": "保存中...",
+              "delete": "削除"
+            }
+          }
+        },
+        "layout": {
+          "loading": "アプリケーションインスタンス読み込み中...",
+          "noInstances": "アプリケーションインスタンスがありません",
+          "noInstancesForProvider": "このプロバイダーのアプリケーションインスタンスがありません",
+          "addFirstApp": "最初のアプリケーションを追加",
+          "searchPlaceholder": "アプリを検索...",
+          "defaultApp": "デフォルト",
+          "delete": "削除",
+          "deleteConfirm": "このアプリケーションインスタンスを削除してもよろしいですか？この操作は元に戻せません。",
+          "defaultAppCannotDelete": "デフォルトアプリケーションは削除できません。まず他のアプリケーションをデフォルトに設定してください。",
+          "instanceNotFound": "削除するインスタンスが見つかりません",
+          "deleteInstanceFailed": "アプリケーションインスタンスの削除に失敗しました",
+          "setDefaultConfirm": "\"{name}\"をデフォルトアプリケーションに設定してもよろしいですか？",
+          "instanceNotFoundForDefault": "デフォルトに設定するインスタンスが見つかりません",
+          "setDefaultFailed": "デフォルトアプリケーションの設定に失敗しました",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "APIキー (key_value)",
+          "providerBinding": "プロバイダーバインディング",
+          "urlPlaceholder": "URLは選択されたプロバイダーの設定を自動的に使用します",
+          "urlBindingInfo": "URLはサービスプロバイダーにバインドされています。\"プロバイダー管理\"で変更してください",
+          "currentProvider": "現在のプロバイダー: {name}",
+          "unknownProvider": "不明なプロバイダー",
+          "keyConfigured": "設定済み",
+          "keyNotConfigured": "未設定",
+          "keyPlaceholderEdit": "空白のままにすると既存のAPIキーを保持します",
+          "keyPlaceholderNew": "APIキーを入力",
+          "keyEditHint": "入力フィールドを空白のままにすると、既存のキーが変更されずに保持されます",
+          "tagsLabel": "アプリケーションタグ (tags)",
+          "tagCategories": {
+            "modelType": "モデルタイプ",
+            "useCase": "使用事例",
+            "features": "技術的特徴"
+          },
+          "predefinedTags": {
+            "conversationModel": "会話モデル",
+            "reasoningModel": "推論モデル",
+            "documentModel": "ドキュメントモデル",
+            "multimodal": "マルチモーダル",
+            "textGeneration": "テキスト生成",
+            "codeGeneration": "コード生成",
+            "dataAnalysis": "データ分析",
+            "translation": "翻訳",
+            "highAccuracy": "高精度",
+            "fastResponse": "高速応答",
+            "localDeployment": "ローカル展開",
+            "enterpriseGrade": "エンタープライズグレード"
+          },
+          "customTagPlaceholder": "カスタムタグ（Enterで追加）",
+          "tagHelpText": "タグはアプリケーションの分類と検索に使用されます"
+        },
+        "providerSelector": {
+          "placeholder": "プロバイダーを選択してください",
+          "defaultLabel": "デフォルト",
+          "noProviders": "利用可能なサービスプロバイダーがありません"
+        },
+        "customProviderSelector": {
+          "placeholder": "プロバイダーを選択してください",
+          "defaultLabel": "デフォルト",
+          "noProviders": "利用可能なサービスプロバイダーがありません"
+        },
+        "instanceFilter": {
+          "allApps": "すべてのアプリケーション",
+          "providerApps": "{name}アプリケーション",
+          "defaultLabel": "デフォルト",
+          "totalCount": "合計 {count} 個",
+          "noProviders": "利用可能なサービスプロバイダーがありません"
+        },
+        "events": {
+          "defaultSetSuccess": "デフォルトアプリケーションが正常に設定されました"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "サービスプロバイダーを選択してください",
+            "invalidProvider": "選択されたサービスプロバイダーは無効です",
+            "inactiveProvider": "選択されたサービスプロバイダーは有効ではありません",
+            "createFailed": "アプリケーションインスタンスの作成に失敗しました",
+            "updateFailed": "アプリケーションインスタンスの更新に失敗しました",
+            "setDefaultFailed": "デフォルトアプリケーションの設定に失敗しました"
+          },
+          "success": {
+            "instanceCreated": "アプリケーションインスタンスが正常に作成されました",
+            "instanceUpdated": "アプリケーションインスタンスが正常に更新されました",
+            "setAsDefault": "アプリケーションインスタンスがデフォルトアプリケーションに設定されました"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "アプリケーションの作成は成功しましたが、デフォルトアプリケーションの設定に失敗しました"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify パラメータ設定",
+          "defaultInstanceName": "アプリケーションインスタンス",
+          "unsavedChanges": "未保存の変更があります",
+          "sections": {
+            "basic": {
+              "title": "基本設定",
+              "openingStatement": {
+                "label": "オープニングステートメント",
+                "placeholder": "オープニングステートメントを入力..."
+              },
+              "suggestedQuestions": {
+                "label": "推奨質問",
+                "addButton": "推奨質問を追加",
+                "placeholder": "推奨質問を入力..."
+              }
+            },
+            "fileUpload": {
+              "title": "ファイルアップロード機能",
+              "enabled": "有効",
+              "disabled": "無効"
+            },
+            "speechToText": {
+              "title": "音声テキスト変換",
+              "enabled": "有効",
+              "disabled": "無効"
+            },
+            "textToSpeech": {
+              "title": "テキスト音声変換",
+              "enabled": "有効",
+              "disabled": "無効",
+              "enableLabel": "テキスト音声変換を有効にする",
+              "voiceType": {
+                "label": "音声タイプ",
+                "placeholder": "例：alloy, echo, fable"
+              },
+              "language": {
+                "label": "言語",
+                "selectPlaceholder": "言語を選択",
+                "options": {
+                  "zh": "中国語",
+                  "en": "英語",
+                  "ja": "日本語",
+                  "ko": "韓国語"
+                }
+              },
+              "autoPlay": {
+                "label": "自動再生",
+                "enabled": "オン",
+                "disabled": "オフ"
+              }
+            },
+            "retrieverResource": {
+              "title": "引用と帰属"
+            },
+            "annotationReply": {
+              "title": "注釈返信"
+            },
+            "userInputForm": {
+              "title": "ユーザー入力フォーム",
+              "fieldsCount": "{count} フィールド",
+              "description": "ユーザー入力フォーム設定は通常、Dify アプリケーションによって自動生成されます。同期機能を通じて最新の設定を取得することをお勧めします。",
+              "fieldInfo": "変数：{variable} | 必須：{required} | デフォルト：{defaultValue}",
+              "fieldRequired": "はい",
+              "fieldOptional": "いいえ",
+              "fieldNoDefault": "なし",
+              "fieldLabel": "フィールド {index}",
+              "noFields": "ユーザー入力フォーム設定なし"
+            },
+            "systemParameters": {
+              "title": "システムパラメータ",
+              "fileSizeLimit": "ドキュメントサイズ制限 (MB)",
+              "imageSizeLimit": "画像サイズ制限 (MB)",
+              "audioSizeLimit": "オーディオサイズ制限 (MB)",
+              "videoSizeLimit": "ビデオサイズ制限 (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "ファイルアップロード設定",
+            "uploadMethod": {
+              "label": "アップロード方法",
+              "local": "ローカルアップロード",
+              "url": "URL リンク",
+              "both": "両方の方法"
+            },
+            "maxFiles": {
+              "label": "最大ファイル数",
+              "description": "ドキュメント < 15MB, 画像 < 10MB, 音声 < 50MB, 動画 < 100MB"
+            },
+            "fileTypes": {
+              "label": "サポートされるファイルタイプ",
+              "image": "画像",
+              "document": "ドキュメント",
+              "audio": "オーディオ",
+              "video": "ビデオ",
+              "other": "その他のファイルタイプ",
+              "customPlaceholder": "例：zip, rar, 7z, tar",
+              "customDescription": "サポート形式：zip, rar, 7z, tar, gz, bz2, xz など"
+            }
+          },
+          "buttons": {
+            "cancel": "キャンセル",
+            "save": "保存",
+            "confirm": "確認"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "アプリケーションインスタンスを編集",
+            "add": "アプリケーションインスタンスを追加"
+          },
+          "unsavedChanges": "未保存の変更があります",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "スペースを含めることはできません（URLルーティングに影響します）",
+              "invalidChars": "文字、数字、ハイフン(-)、アンダースコア(_)、ピリオド(.)のみ使用できます",
+              "tooLong": "長さは50文字を超えることはできません",
+              "mustStartWithAlphanumeric": "文字または数字で始まる必要があります",
+              "formatError": "アプリケーションIDの形式エラー",
+              "notModifiable": "アプリケーション ID は作成後に変更できません",
+              "formatDescription": "文字、数字、ハイフン(-)、アンダースコア(_)、ピリオド(.)のみ使用できます。スペースは使用できません。設定を同期して自動生成できます。"
+            },
+            "formValidationFailed": "フォーム検証に失敗しました",
+            "fillApiCredentials": "まずAPI URLとAPIキーを入力してください",
+            "fillInstanceId": "まずアプリケーションIDを入力してください"
+          },
+          "sync": {
+            "basicInfo": "基本情報",
+            "paramConfig": "パラメータ設定",
+            "noDataReceived": "Dify APIから設定データを取得できませんでした。アプリケーションIDとAPI設定が正しいかご確認ください",
+            "successMessage": "Dify APIから{items}の同期に成功しました！",
+            "autoGeneratedId": " アプリケーションIDを自動生成しました：{instanceId}",
+            "syncFailed": "設定の同期に失敗しました",
+            "syncFailedTitle": "同期失敗",
+            "syncing": "同期中...",
+            "syncFromDify": "Difyから同期",
+            "syncFromDifyWithAutoId": "Dify APIから同期（アプリケーションIDが空の場合は自動生成されます）",
+            "syncFromDifyDescription": "Dify APIから設定を同期",
+            "syncButtonDisabled": "まずAPI URLとAPIキーを入力してください"
+          },
+          "defaultApp": {
+            "setAsDefault": "デフォルトに設定",
+            "isDefault": "デフォルトアプリ",
+            "willSetAsDefault": "デフォルトに設定されます",
+            "setDefaultConfirm": "\"{name}\"をデフォルトアプリケーションに設定してもよろしいですか？",
+            "setDefaultSuccess": "デフォルトアプリケーションの設定に成功しました",
+            "setDefaultFailed": "デフォルトアプリケーションの設定に失敗しました",
+            "instanceNotFound": "インスタンスIDが存在しません。デフォルトアプリケーションに設定できません"
+          },
+          "provider": {
+            "title": "サービスプロバイダー",
+            "current": "現在のアプリケーションサービスプロバイダー（変更不可）",
+            "select": "サービスプロバイダーを選択",
+            "unknown": "不明なプロバイダー",
+            "selectPlaceholder": "プロバイダーを選択してください"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "アプリケーション ID (instance_id) *",
+              "placeholder": "アプリケーション IDを入力",
+              "generateButton": "IDを生成",
+              "generateTooltip": "クリックしてランダムUUIDをアプリケーションIDとして生成"
+            },
+            "displayName": {
+              "label": "表示名 (display_name) *",
+              "placeholder": "表示名を入力"
+            },
+            "description": {
+              "label": "アプリケーション説明 (description)",
+              "placeholder": "アプリケーション説明を入力"
+            }
+          },
+          "appType": {
+            "label": "アプリケーションタイプ (app_type) *",
+            "model": {
+              "title": "モデル",
+              "description": "モデル切り替え用"
+            },
+            "marketplace": {
+              "title": "アプリケーションマーケット",
+              "description": "アプリケーションマーケット用"
+            },
+            "note": "「モデル」タイプのアプリケーションはチャットインターフェースのモデルセレクターに表示されます"
+          },
+          "syncConfirm": {
+            "updateDescription": "説明を「{description}」に更新しますか？"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify アプリケーションタイプ (dify_apptype) *",
+            "titleCompact": "Dify アプリケーションタイプ",
+            "description": "ユースケースに適したDifyアプリケーションタイプを選択してください。タイプによって異なる機能と適用シナリオがあります。"
+          },
+          "difyConfig": {
+            "title": "Dify パラメータ設定",
+            "appTypeNote": "「モデル」タイプのアプリケーションはチャットインターフェースのモデルセレクターに表示されます"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "デフォルトアプリケーションが正常に設定されました"
+        }
+      },
+      "content": {
+        "page": {
+          "title": "コンテンツ管理",
+          "subtitle": "ホームページとアバウトページの多言語コンテンツを管理",
+          "showPreview": "プレビュー表示",
+          "fullscreenPreview": "フルスクリーンプレビュー",
+          "closePreview": "プレビューを閉じる",
+          "loadingEditor": {
+            "about": "アバウトページエディターを読み込めません。",
+            "home": "ホームページエディターを読み込めません。"
+          },
+          "loadingPreview": "プレビュー読み込み中...",
+          "messages": {
+            "loadFailed": "翻訳データの読み込みに失敗しました",
+            "saveSuccess": "設定が正常に保存されました",
+            "saveFailed": "設定の保存に失敗しました。もう一度お試しください"
+          },
+          "saveActions": {
+            "hasChanges": "未保存の変更",
+            "saving": "保存中...",
+            "allSaved": "すべての変更が保存されました",
+            "reset": "リセット",
+            "save": "変更を保存",
+            "saving_": "保存中..."
+          }
+        },
+        "tabs": {
+          "about": "アバウトページ",
+          "home": "ホームページ"
+        },
+        "previewToolbar": {
+          "aboutPreview": "アバウトページプレビュー",
+          "homePreview": "ホームページプレビュー"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "編集言語",
+            "selectLanguage": "言語を選択",
+            "cardNumber": "カード #{number}"
+          },
+          "home": {
+            "pageTitle": "ページタイトル (title)",
+            "subtitle": "サブタイトル (subtitle)",
+            "features": "機能カード (features)",
+            "featureTitle": "タイトル (title)",
+            "featureDescription": "説明 (description)",
+            "getStarted": "メインボタン (getStarted)",
+            "learnMore": "サブボタン (learnMore)",
+            "copyright": "著作権情報 (copyright)",
+            "copyrightPrefix": "プレフィックス (prefix)",
+            "copyrightLinkText": "リンクテキスト (linkText)",
+            "copyrightSuffix": "サフィックス (suffix)"
+          },
+          "about": {
+            "pageTitle": "ページタイトル (title)",
+            "subtitle": "サブタイトル (subtitle)",
+            "mission": "ミッション説明 (mission.description)",
+            "values": "価値観カード (values.items)",
+            "valueTitle": "タイトル (title)",
+            "valueDescription": "説明 (description)",
+            "buttonText": "ボタンテキスト (buttonText)",
+            "copyright": "著作権情報 (copyright)",
+            "copyrightPrefix": "プレフィックス (prefix)",
+            "copyrightLinkText": "リンクテキスト (linkText)",
+            "copyrightSuffix": "サフィックス (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "ユーザー管理",
+        "subtitle": "システムユーザーアカウント、権限、アクセス制御の管理",
+        "stats": {
+          "totalUsers": "総ユーザー数",
+          "activeUsers": "アクティブユーザー",
+          "suspendedUsers": "停止中",
+          "pendingUsers": "承認待ち",
+          "adminUsers": "管理者",
+          "managerUsers": "マネージャー",
+          "regularUsers": "一般ユーザー",
+          "newUsersToday": "本日の新規",
+          "activeUsersRatio": "総ユーザーに占める割合",
+          "newUsersThisWeek": "今週の他の日"
+        },
+        "filters": {
+          "searchPlaceholder": "ユーザーメール、名前、ユーザー名を検索...",
+          "advancedFilters": "高度なフィルター",
+          "reset": "リセット",
+          "rolePermissions": "役割権限",
+          "accountStatus": "アカウント状態",
+          "authSource": "認証ソース",
+          "roleOptions": {
+            "all": "すべての役割",
+            "admin": "管理者",
+            "manager": "マネージャー",
+            "user": "一般ユーザー"
+          },
+          "statusOptions": {
+            "all": "すべての状態",
+            "active": "アクティブ",
+            "suspended": "停止中",
+            "pending": "承認待ち"
+          },
+          "authSourceOptions": {
+            "all": "すべてのソース",
+            "email": "📧 メール",
+            "sso": "SSO認証",
+            "phone": "📱 電話"
+          },
+          "sortBy": "並び順",
+          "sortOptions": {
+            "createdAt": "登録日時",
+            "lastSignIn": "最終ログイン",
+            "email": "メール",
+            "fullName": "名前"
+          },
+          "sortOrder": {
+            "desc": "新しい順",
+            "asc": "古い順"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "ユーザー情報",
+            "contact": "連絡先",
+            "groups": "グループ",
+            "rolePermissions": "役割権限",
+            "status": "状態",
+            "lastLogin": "最終ログイン",
+            "registerTime": "登録時間"
+          },
+          "loading": "ユーザーデータを読み込み中...",
+          "loadingSubtext": "しばらくお待ちください、最新のユーザー情報を取得中",
+          "noData": "ユーザーデータがありません",
+          "noDataSubtext": "条件に合致するユーザーが見つかりません、フィルターを調整してください",
+          "noDataHint": "フィルターをリセットするか、管理者に新しいユーザーの追加を依頼してください"
+        },
+        "batchOperations": {
+          "selected": "{count}人のユーザーを選択中",
+          "cancelSelection": "選択を解除",
+          "setAsAdmin": "管理者に設定",
+          "setAsManager": "マネージャーに設定",
+          "setAsUser": "一般ユーザーに設定",
+          "activate": "有効化",
+          "suspend": "停止"
+        },
+        "actions": {
+          "refreshData": "データを更新",
+          "addUser": "ユーザーを追加",
+          "addUserInDevelopment": "ユーザー追加機能は開発中",
+          "viewUser": "ユーザーを表示：{name}",
+          "editUser": "ユーザーを編集：{name}",
+          "viewDetails": "詳細を表示",
+          "editInfo": "情報を編集",
+          "changeRole": "ロールを変更",
+          "changeStatus": "ステータスを変更",
+          "deleteUser": "ユーザーを削除",
+          "current": "(現在)",
+          "self": "(自分)",
+          "admin": "(管理者)",
+          "notSet": "未設定",
+          "notSetEmail": "メール未設定",
+          "notSetPhone": "電話未設定",
+          "defaultUser": "ユーザー",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
+          "moreGroups": "+{count} グループ",
+          "notInGroup": "グループ未参加",
+          "moreGroupsTooltip": "他 {count} グループ：{names}",
+          "confirm": "確認"
+        },
+        "pagination": {
+          "showing": "{start} - {end} 件を表示、全 {total} 件",
+          "previous": "前へ",
+          "next": "次へ"
+        },
+        "messages": {
+          "cannotIncludeSelf": "バッチ操作に自分自身を含めることはできません",
+          "cannotDowngradeAdmin": "バッチ操作で他の管理者を降格することはできません",
+          "cannotChangeOwnRole": "自分の役割を変更することはできません",
+          "cannotDowngradeOtherAdmin": "他の管理者を降格することはできません",
+          "cannotDeleteSelf": "自分自身を削除することはできません",
+          "cannotDeleteOtherAdmin": "他の管理者を削除することはできません",
+          "roleChangeSuccess": "{name}の役割を{role}に変更しました",
+          "statusChangeSuccess": "{name}の状態を{status}に変更しました",
+          "batchRoleChangeSuccess": "{count}人のユーザーの役割を一括変更しました",
+          "batchStatusChangeSuccess": "{count}人のユーザーの状態を一括変更しました",
+          "deleteConfirm": "ユーザー {name} を削除してもよろしいですか？この操作は取り消せません。",
+          "deleteSuccess": "ユーザー {name} を削除しました",
+          "roles": {
+            "admin": "管理者",
+            "manager": "マネージャー",
+            "user": "一般ユーザー"
+          },
+          "statuses": {
+            "active": "アクティブ",
+            "suspended": "停止中",
+            "pending": "承認待ち"
+          },
+          "roleChangeConfirm": "{name}の役割を{role}に変更しますか？",
+          "statusChangeConfirm": "{name}のステータスを{status}に変更しますか？",
+          "batchRoleChangeConfirm": "{count}ユーザーの役割を{role}に変更しますか？",
+          "batchStatusChangeConfirm": "{count}ユーザーのステータスを{status}に変更しますか？"
+        }
+      },
+      "ssoProviders": {
+        "title": "SSOプロバイダー管理",
+        "subtitle": "シングルサインオンプロバイダーとその設定を管理",
+        "addProvider": "プロバイダーを追加",
+        "refresh": "データを更新",
+        "error": "エラー",
+        "filters": {
+          "searchPlaceholder": "プロバイダー名またはプロトコルを検索...",
+          "reset": "リセット"
+        },
+        "table": {
+          "headers": {
+            "name": "名前",
+            "protocol": "プロトコル",
+            "status": "ステータス",
+            "order": "順序",
+            "created": "作成日時"
+          },
+          "enabled": "有効",
+          "disabled": "無効",
+          "button": "ボタン",
+          "noProviders": "SSOプロバイダーが見つかりません",
+          "createFirst": "最初のSSOプロバイダーを作成して使い始める",
+          "loadingProviders": "SSOプロバイダーを読み込んでいます...",
+          "actions": {
+            "viewDetails": "詳細を表示",
+            "edit": "編集",
+            "enable": "有効にする",
+            "disable": "無効にする",
+            "delete": "削除"
+          }
+        },
+        "form": {
+          "createTitle": "SSOプロバイダーを作成",
+          "editTitle": "SSOプロバイダーを編集",
+          "createDescription": "新しいシングルサインオンプロバイダーを設定する",
+          "editDescription": "既存のSSOプロバイダーの設定を変更する",
+          "tabs": {
+            "basicInfo": "基本情報",
+            "protocolConfig": "プロトコル設定",
+            "security": "セキュリティ設定",
+            "uiSettings": "UI設定"
+          },
+          "fields": {
+            "providerName": "プロバイダー名",
+            "providerNamePlaceholder": "例: 大学SSO",
+            "protocol": "プロトコル",
+            "selectProtocol": "プロトコルを選択",
+            "displayOrder": "表示順序",
+            "buttonText": "ボタンテキスト",
+            "buttonTextPlaceholder": "空白のままにするとプロバイダー名が使用されます",
+            "emailDomain": "メールドメイン",
+            "emailDomainPlaceholder": "例: example.com",
+            "enableProvider": "このプロバイダーを有効にする",
+            "baseUrl": "ベースURL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "ログインエンドポイント",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "ログアウトエンドポイント",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "検証エンドポイント",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3検証エンドポイント",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "属性マッピング",
+            "employeeId": "従業員ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "ユーザー名",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "HTTPSを要求",
+            "validateCertificates": "SSL証明書を検証",
+            "allowedRedirectHosts": "許可されたリダイレクトホスト",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "各行に1つのホストを入力してください",
+            "icon": "アイコン",
+            "iconPlaceholder": "🏛️",
+            "theme": "テーマ",
+            "logoUrl": "ロゴURL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "説明",
+            "descriptionPlaceholder": "大学SSOシステム"
+          },
+          "themes": {
+            "primary": "プライマリ",
+            "secondary": "セカンダリ",
+            "default": "デフォルト",
+            "outline": "アウトライン"
+          },
+          "advancedSettings": "詳細設定",
+          "showRawJson": "生のJSONを表示",
+          "hideRawJson": "生のJSONを非表示",
+          "rawJsonConfig": "生のJSON設定",
+          "actions": {
+            "cancel": "キャンセル",
+            "save": "保存",
+            "saving": "保存中..."
+          },
+          "messages": {
+            "fixJsonErrors": "保存する前にJSONエラーを修正してください",
+            "createSuccess": "SSOプロバイダーが正常に作成されました",
+            "updateSuccess": "SSOプロバイダーが正常に更新されました",
+            "unexpectedError": "予期せぬエラーが発生しました"
+          }
+        },
+        "deleteDialog": {
+          "title": "削除の確認",
+          "message": "SSOプロバイダー「{name}」を削除してもよろしいですか？この操作は元に戻すことはできず、このプロバイダーを使用しているユーザーのSSOログイン機能が無効になります。",
+          "cancel": "キャンセル",
+          "delete": "削除",
+          "deleting": "削除中...",
+          "success": "「{name}」は正常に削除されました"
+        },
+        "detailsModal": {
+          "title": "プロバイダーの詳細と設定の概要",
+          "basicInfo": "基本情報",
+          "protocol": "プロトコル",
+          "status": "ステータス",
+          "displayOrder": "表示順序",
+          "buttonText": "ボタンテキスト",
+          "protocolConfig": "プロトコル設定",
+          "baseUrl": "ベースURL",
+          "login": "ログイン",
+          "logout": "ログアウト",
+          "securitySettings": "セキュリティ設定",
+          "requireHttps": "HTTPSを要求",
+          "validateCertificates": "証明書を検証",
+          "yes": "はい",
+          "no": "いいえ",
+          "uiConfig": "UI設定",
+          "theme": "テーマ",
+          "icon": "アイコン",
+          "description": "説明",
+          "timestamps": "タイムスタンプ",
+          "created": "作成済み",
+          "updated": "更新済み",
+          "actions": {
+            "close": "閉じる",
+            "editProvider": "プロバイダーを編集"
+          }
+        },
+        "stats": {
+          "totalProviders": "プロバイダー合計",
+          "allSsoProviders": "すべてのSSOプロバイダーが設定済み",
+          "enabled": "有効",
+          "percentOfTotal": "合計の割合",
+          "noProviders": "現在設定されているプロバイダーはありません",
+          "disabled": "無効",
+          "activeProtocols": "アクティブなプロトコル",
+          "differentProtocolTypes": "異なるプロトコルタイプ",
+          "protocolBreakdown": "プロトコル内訳"
+        }
+      },
+      "groups": {
+        "title": "グループ管理",
+        "subtitle": "ユーザーグループとアプリケーション権限の割り当てを管理",
+        "stats": {
+          "totalGroups": "総グループ数",
+          "totalMembers": "総メンバー数",
+          "averageMembers": "平均メンバー数",
+          "activeGroups": "アクティブグループ"
+        },
+        "header": {
+          "title": "グループ管理",
+          "subtitle": "ユーザーグループとアプリケーション権限の割り当てを管理",
+          "refreshData": "データを更新",
+          "createGroup": "グループを作成"
+        },
+        "search": {
+          "placeholder": "グループ名または説明を検索...",
+          "searchResults": "検索結果",
+          "keyword": "キーワード",
+          "noResults": "一致するグループが見つかりません",
+          "noResultsHint": "異なるキーワードを試してください"
+        },
+        "list": {
+          "noGroups": "グループがありません",
+          "noGroupsHint": "「グループを作成」ボタンをクリックして最初のグループを作成してください",
+          "loading": "グループリストを読み込み中...",
+          "memberCount": "{count}名のメンバー",
+          "createdAt": "作成日時",
+          "actions": {
+            "manageMembers": "メンバー管理",
+            "editGroup": "グループを編集",
+            "deleteGroup": "グループを削除"
+          }
+        },
+        "createModal": {
+          "title": "グループを作成",
+          "nameLabel": "グループ名",
+          "nameRequired": "グループ名は必須です",
+          "nameTooShort": "グループ名は2文字以上である必要があります",
+          "nameTooLong": "グループ名は50文字以下である必要があります",
+          "namePlaceholder": "グループ名を入力してください",
+          "descriptionLabel": "グループの説明",
+          "descriptionTooLong": "説明は200文字以下である必要があります",
+          "descriptionPlaceholder": "グループの説明を入力してください（任意）",
+          "creating": "作成中...",
+          "createButton": "グループを作成",
+          "cancel": "キャンセル",
+          "createSuccess": "グループ「{name}」が正常に作成されました"
+        },
+        "editModal": {
+          "title": "グループを編集",
+          "nameLabel": "グループ名",
+          "nameRequired": "グループ名は必須です",
+          "nameTooShort": "グループ名は2文字以上である必要があります",
+          "nameTooLong": "グループ名は50文字以下である必要があります",
+          "namePlaceholder": "グループ名を入力してください",
+          "descriptionLabel": "グループの説明",
+          "descriptionTooLong": "説明は200文字以下である必要があります",
+          "descriptionPlaceholder": "グループの説明を入力してください（任意）",
+          "updating": "更新中...",
+          "updateButton": "変更を保存",
+          "cancel": "キャンセル",
+          "noChanges": "変更は検出されませんでした",
+          "updateSuccess": "グループ「{name}」が正常に更新されました"
+        },
+        "membersModal": {
+          "title": "グループメンバー管理",
+          "subtitle": "{groupName} · 合計{count}名のメンバー",
+          "addMember": "メンバーを追加",
+          "searchPlaceholder": "メンバーを検索...",
+          "loading": "メンバーリストを読み込み中...",
+          "noMembers": "グループメンバーがいません",
+          "noMembersHint": "「メンバーを追加」ボタンをクリックしてユーザーをグループに招待してください",
+          "noSearchResults": "一致するメンバーが見つかりません",
+          "noSearchResultsHint": "異なるキーワードを試してください",
+          "unknownUser": "不明なユーザー",
+          "joinedAt": "参加日",
+          "removeMember": "メンバーを削除",
+          "removeMemberConfirm": "「{memberName}」をグループ「{groupName}」から削除してもよろしいですか？",
+          "removeMemberSuccess": "メンバー「{memberName}」を削除しました"
+        },
+        "addMembersModal": {
+          "title": "メンバーを追加",
+          "subtitle": "グループ「{groupName}」に追加するユーザーを選択してください",
+          "searchPlaceholder": "ユーザー名、名前、またはメールアドレスを検索...",
+          "loading": "ユーザーリストを読み込み中...",
+          "noUsers": "追加できるユーザーがいません",
+          "noSearchResults": "一致するユーザーが見つかりません",
+          "selectAll": "すべて選択",
+          "deselectAll": "すべて選択解除",
+          "addSelected": "{count}名のメンバーを追加",
+          "tableHeaders": {
+            "userInfo": "ユーザー情報",
+            "role": "役割"
+          },
+          "userRoles": {
+            "admin": "管理者",
+            "manager": "マネージャー",
+            "user": "一般ユーザー"
+          },
+          "unknownUser": "不明なユーザー",
+          "pagination": {
+            "showing": "{total}件中{start} - {end}件を表示",
+            "previous": "前へ",
+            "next": "次へ"
+          },
+          "addSuccess": "{count}名のメンバーをグループに正常に追加しました",
+          "addPartialSuccess": "{errorCount}名のメンバーの追加に失敗しました"
+        },
+        "messages": {
+          "deleteConfirm": "グループ「{name}」を削除してもよろしいですか？この操作は元に戻せません。",
+          "deleteSuccess": "グループ「{name}」を削除しました",
+          "loadError": "グループデータの読み込みに失敗しました",
+          "createError": "グループの作成に失敗しました",
+          "updateError": "グループの更新に失敗しました",
+          "deleteError": "グループの削除に失敗しました",
+          "addMemberError": "メンバーの追加に失敗しました",
+          "removeMemberError": "メンバーの削除に失敗しました"
+        }
+      },
+      "permissions": {
+        "header": {
+          "title": "アプリケーション権限管理",
+          "subtitle": "アプリケーションの可視性とグループ権限の統合管理",
+          "refreshButton": "データを更新"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "アプリケーション名または説明を検索...",
+          "filterLabel": "アプリケーションタイプ：",
+          "filterOptions": {
+            "all": "すべてのアプリケーション",
+            "public": "パブリックアプリケーション",
+            "groupOnly": "グループアプリケーション",
+            "private": "プライベートアプリケーション"
+          }
+        },
+        "layout": {
+          "appListTitle": "アプリケーションリスト",
+          "appListSubtitle": "権限を設定するアプリケーションを選択",
+          "permissionPanelTitle": "権限設定",
+          "permissionPanelSubtitle": "アプリケーションの可視性とグループ権限を管理"
+        },
+        "appList": {
+          "noApps": "アプリケーションがありません",
+          "noAppsDescription": "まずアプリケーションインスタンスを作成してください",
+          "loading": "読み込み中...",
+          "unknown": "不明",
+          "visibility": {
+            "public": "パブリック",
+            "groupOnly": "グループ",
+            "private": "プライベート"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "アプリケーションを選択",
+            "description": "左のアプリケーションリストから権限を設定するアプリケーションを選択してください"
+          },
+          "visibilitySettings": {
+            "title": "可視性設定",
+            "currentSetting": "現在の設定",
+            "options": {
+              "public": {
+                "label": "パブリックアプリケーション",
+                "description": "すべてのユーザーがこのアプリケーションにアクセスできます"
+              },
+              "groupOnly": {
+                "label": "グループアプリケーション",
+                "description": "認証されたグループメンバーのみアクセス可能"
+              },
+              "private": {
+                "label": "プライベートアプリケーション",
+                "description": "管理者のみがこのアプリケーションにアクセスできます"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "グループ権限",
+            "description": "このアプリケーションにアクセスできるグループを選択",
+            "noGroups": {
+              "title": "グループがありません",
+              "description": "アプリケーション権限を設定するには、まずグループを作成してください"
+            },
+            "status": {
+              "enabled": "有効",
+              "disabled": "無効"
+            },
+            "actions": {
+              "enable": "アクセスを有効にする",
+              "disable": "アクセスを無効にする"
+            },
+            "memberCount": "{count} メンバー"
+          },
+          "permissionExplanation": {
+            "title": "権限の説明",
+            "public": "パブリックアプリケーション：すべてのユーザーがアクセス可能",
+            "groupOnly": "グループアプリケーション：認証されたグループメンバーのみアクセス可能",
+            "private": "プライベートアプリケーション：管理者のみアクセス可能"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "アプリケーションの可視性が「{visibility}」に更新されました",
+          "groupPermissionEnabled": "{groupName}のこのアプリケーションへのアクセスを有効にしました",
+          "groupPermissionDisabled": "{groupName}のこのアプリケーションへのアクセスを無効にしました",
+          "loadAppsError": "アプリケーションリストの読み込みに失敗しました",
+          "loadGroupsError": "グループリストの読み込みに失敗しました",
+          "updateVisibilityError": "アプリケーションの可視性の更新に失敗しました",
+          "updateGroupPermissionError": "グループ権限の更新に失敗しました"
+        }
+      }
+    },
+    "about": {
+      "sections": [
+        {
+          "id": "section-1754655785520-817etyg0d",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-22626u94f",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUIについて",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785520-9e9qre6gq",
+                "type": "paragraph",
+                "props": {
+                  "content": "AIと企業を繋ぎ、大規模言語モデルで新しい体験を創造",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-lt84rggrn",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-tdp6yjlmz",
+                "type": "heading",
+                "props": {
+                  "content": "私たちの使命",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785520-9vsha3qtk",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUIは大規模言語モデルの力を活用し、企業に革新的なアプリケーションソリューションを提供することに取り組んでいます。複数のモデルプロバイダーの能力を統合し、Difyバックエンドに基づく安定した信頼性の高いサービスを提供し、組織がAI技術の価値を最大限に活用できるよう支援します。",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-rp9u08tjy",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-yldbhhn6i",
+                "type": "heading",
+                "props": {
+                  "content": "私たちの価値観",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785520-9lcaoqkek",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "技術革新",
+                      "description": "最先端の大規模モデル技術を継続的に統合し、企業に最先端のAIソリューションを提供"
+                    },
+                    {
+                      "title": "データセキュリティ",
+                      "description": "プライベート展開と厳格なデータ保護措置をサポートし、企業データのセキュリティとプライバシーを保証"
+                    },
+                    {
+                      "title": "柔軟なカスタマイズ",
+                      "description": "高度にカスタマイズ可能なソリューションを提供し、異なる業界とシナリオの特定のニーズに対応"
+                    },
+                    {
+                      "title": "知識強化",
+                      "description": "RAG技術を通じてプライベート知識ベースを統合し、モデルのコンテキスト認識能力を強化"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-3s050qgmy",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-a3uo1m6lo",
+                "type": "button",
+                "props": {
+                  "text": "探索を始める",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785520-sfsoc34ab",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785520-sukotrhas",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI。大規模モデルアプリケーションの未来を探求。",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.520Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.520Z",
+        "locale": "ja-JP"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "コピー",
+        "copied": "コピー済み",
+        "edit": "編集",
+        "regenerate": "再生成",
+        "useful": "役に立つ",
+        "notUseful": "役に立たない",
+        "rated": "評価済み"
+      },
+      "referenceSources": {
+        "title": "{count}つのナレッジベースリソースを参照",
+        "knowledgeBase": "ナレッジベース",
+        "expand": "全文を展開",
+        "collapse": "折りたたむ",
+        "copy": "コピー",
+        "copied": "コピー済み",
+        "copyFailed": "コピー失敗",
+        "relevanceScore": "関連度",
+        "wordCount": "{count}文字",
+        "page": "{page}ページ"
+      },
+      "thinkBlock": {
+        "thinking": "深く思考中",
+        "stopped": "思考が停止しました",
+        "completed": "深い思考が完了しました"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "ファイル数の上限を超えています ({current}/{max})、いくつかのファイルを削除してください"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "ドラッグしてパネルのサイズを変更、ダブルクリックでリセット"
+      },
+      "notificationBar": {
+        "closeNotification": "通知を閉じる"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推奨質問: {question}"
+      },
+      "copyButton": {
+        "copy": "内容をコピー",
+        "copied": "コピー済み",
+        "noContent": "コピーする内容がありません"
+      },
+      "userAvatar": {
+        "alt": "のアバター"
+      }
+    }
+  },
+  "debug": {
+    "setDefaultApp": "デフォルトアプリを設定 - 渡されたID:",
+    "currentInstances": "現在のすべてのインスタンス:",
+    "instanceNotFound": "インスタンスが見つかりません、渡されたID:",
+    "foundInstance": "インスタンスが見つかりました:",
+    "setDefaultFailed": "デフォルトアプリの設定に失敗:",
+    "syncConfig": "設定を同期",
+    "syncFailed": "同期に失敗:",
+    "syncSuccess": "同期成功"
+  },
+  "buttons": {
+    "syncInProgress": "同期中...",
+    "syncConfig": "設定を同期",
+    "tooltip": {
+      "syncFromDify": "Dify APIから設定を同期",
+      "syncFromDifyEdit": "Dify APIから設定を同期",
+      "syncFromDifyCreate": "Dify APIから設定を同期（アプリIDが空の場合は自動生成）",
+      "fillCredentials": "まずAPI URLとAPIキーを入力してください"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "表示名を \"{name}\" に更新しますか？"
+  },
+  "errors": {
+    "notFound": "ページが見つかりません",
+    "serverError": "サーバーエラー",
+    "unauthorized": "未認証アクセス"
+  },
+  "navbar": {
+    "user": {
+      "userMenu": "ユーザーメニュー",
+      "login": "ログイン",
+      "logout": "ログアウト",
+      "loggingOut": "ログアウト中...",
+      "register": "アカウント作成",
+      "history": "チャット履歴",
+      "settings": "設定",
+      "about": "について",
+      "admin": "管理パネル",
+      "loginPrompt": "より多くの機能にアクセスするにはログインしてください",
+      "loginDescription": "チャット履歴と個人設定にアクセス"
+    },
+    "conversation": {
+      "newChat": "新しいチャット",
+      "creating": "作成中...",
+      "loading": "読み込み中...",
+      "rename": "名前を変更",
+      "delete": "チャットを削除",
+      "star": "お気に入りに追加",
+      "unstar": "お気に入りから削除",
+      "appsMarket": "アプリマーケット",
+      "renameDialog": {
+        "title": "会話の名前を変更",
+        "placeholder": "新しい会話名を入力",
+        "confirmText": "名前変更を確認"
+      },
+      "deleteDialog": {
+        "title": "会話を削除",
+        "message": "会話 \"{title}\" を削除してもよろしいですか？この操作は元に戻せません。",
+        "confirmText": "削除を確認"
+      },
+      "createInProgress": "会話を作成中です。後でもう一度お試しください。",
+      "incompleteInfo": "会話情報が不完全です。操作を続行できません。",
+      "renameFailed": "会話の名前変更に失敗しました。",
+      "deleteFailed": "会話の削除に失敗しました。",
+      "operationError": "操作に失敗しました。後でもう一度お試しください。"
+    },
+    "workflow": {
+      "history": "履歴",
+      "closeHistory": "履歴を閉じる",
+      "viewHistory": "履歴を表示",
+      "closeHistoryShort": "履歴を閉じる",
+      "historyShort": "履歴"
+    }
+  },
+  "sidebar": {
+    "appName": "AgentifUI",
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "newChat": "新しいチャット",
+    "historyChats": "チャット履歴",
+    "appsMarket": "アプリマーケット",
+    "settings": "設定",
+    "recentChats": "最近のチャット",
+    "moreOptions": "その他のオプション",
+    "rename": "名前を変更",
+    "delete": "チャットを削除",
+    "untitled": "無題",
+    "creating": "作成中...",
+    "favoriteApps": "お気に入りアプリ",
+    "loading": "読み込み中...",
+    "startWorkflow": "ワークフローを開始",
+    "startTextGeneration": "テキスト生成を開始",
+    "startChat": "チャットを開始",
+    "hideApp": "アプリを非表示",
+    "renameDialog": {
+      "title": "会話の名前を変更",
+      "label": "会話名",
+      "placeholder": "新しい会話名を入力",
+      "confirmText": "名前変更を確認"
+    },
+    "deleteDialog": {
+      "title": "会話を削除",
+      "message": "会話 \"{title}\" を削除してもよろしいですか？この操作は元に戻せません。",
+      "confirmText": "削除を確認"
+    },
+    "syncingMessage": "会話データが同期中です。後で{action}を試してください。",
+    "operationFailed": "操作に失敗しました。後でもう一度お試しください。",
+    "saveFailed": "会話の保存に失敗しました",
+    "createFailed": "会話の作成に失敗しました"
+  },
+  "mobile": {
+    "navigation": {
+      "openMenu": "メニューを開く",
+      "openUserMenu": "ユーザーメニューを開く"
+    },
+    "user": {
+      "defaultUser": "ユーザー",
+      "loginRegister": "ログイン/登録",
+      "avatarAlt": "{userName}のアバター",
+      "loginPrompt": "より多くの機能にアクセスするにはログインしてください"
+    },
+    "bottomSheet": {
+      "userMenu": "ユーザーメニュー",
+      "account": "アカウント"
+    },
+    "menu": {
+      "settings": "設定",
+      "logout": "ログアウト",
+      "login": "ログイン",
+      "register": "アカウント作成",
+      "adminPanel": "管理パネル",
+      "about": "について"
+    }
+  },
+  "loading": {
+    "default": "読み込み中...",
+    "app": "アプリを読み込み中...",
+    "appList": "アプリリストを読み込み中...",
+    "messages": "メッセージをさらに読み込み中...",
+    "moreMessages": "履歴メッセージをさらに読み込む",
+    "retry": "再試行",
+    "failed": "読み込み失敗",
+    "loadingFailed": "メッセージの読み込みに失敗しました: {error}",
+    "spinner": "読み込み中",
+    "pageLoader": {
+      "title": "読み込み中"
+    }
+  },
+  "dynamicTitle": {
+    "base": "AgentifUI",
+    "settings": {
+      "main": "設定",
+      "profile": "プロフィール",
+      "account": "アカウント設定",
+      "appearance": "外観設定",
+      "language": "言語設定"
+    },
+    "admin": {
+      "main": "管理パネル",
+      "users": "ユーザー管理",
+      "apiConfig": "API設定",
+      "security": "セキュリティ設定",
+      "analytics": "データ分析",
+      "content": "コンテンツ管理"
+    },
+    "auth": {
+      "login": "ログイン",
+      "register": "登録",
+      "phoneLogin": "電話番号ログイン",
+      "resetPassword": "パスワードリセット",
+      "forgotPassword": "パスワードを忘れた",
+      "ssoProcessing": "SSOログイン処理中"
+    },
+    "apps": {
+      "market": "アプリマーケット",
+      "agent": "エージェントアプリ",
+      "chatbot": "チャットボットアプリ",
+      "chatflow": "チャットフローアプリ",
+      "workflow": "ワークフローアプリ",
+      "textGeneration": "テキスト生成アプリ",
+      "details": "アプリ詳細",
+      "loading": "アプリ読み込み中..."
+    },
+    "chat": {
+      "main": "チャット",
+      "new": "新しいチャット",
+      "history": "チャット履歴",
+      "loading": "チャット読み込み中...",
+      "notFound": "チャットが見つかりません"
+    },
+    "about": "概要"
+  },
+  "history": {
+    "title": "チャット履歴",
+    "loading": "会話記録を読み込み中...",
+    "noRecords": "会話履歴がありません",
+    "totalCount": "{total}個の会話が見つかりました",
+    "searchResults": "検索結果: {count}個の会話",
+    "totalRecords": "合計{total}個の会話",
+    "searchPlaceholder": "チャット履歴を検索...",
+    "newChat": "新しいチャット",
+    "noMessagePreview": "メッセージプレビューなし",
+    "batchDelete": "一括削除",
+    "exitSelection": "選択を終了",
+    "selectAll": "すべて選択",
+    "deselectAll": "すべて選択解除",
+    "selected": "{count} / {total}個の会話を選択",
+    "deleteCount": "削除 ({count})",
+    "deleting": "削除中...",
+    "cancel": "キャンセル",
+    "rename": "名前を変更",
+    "delete": "会話を削除",
+    "moreOptions": "その他のオプション",
+    "noSearchResults": "一致する会話が見つかりません",
+    "searchHint": "別の検索語句をお試しください",
+    "noHistoryTitle": "チャット履歴がありません",
+    "noHistoryDesc": "新しい会話を始めましょう",
+    "renameDialog": {
+      "title": "会話の名前を変更",
+      "label": "会話名",
+      "placeholder": "新しい会話名を入力",
+      "confirmText": "名前変更を確認"
+    },
+    "deleteDialog": {
+      "title": "会話を削除",
+      "message": "会話 \"{title}\" を削除してもよろしいですか？この操作は元に戻せません。",
+      "confirmText": "削除を確認"
+    },
+    "batchDeleteDialog": {
+      "title": "会話を一括削除",
+      "message": "選択した{count}個の会話を削除してもよろしいですか？この操作は元に戻せません。",
+      "confirmText": "削除",
+      "cancelText": "キャンセル"
+    },
+    "operations": {
+      "renameFailed": "会話の名前変更に失敗しました",
+      "deleteFailed": "会話の削除に失敗しました",
+      "batchDeleteSuccess": "{success}個の会話を正常に削除しました。{failed}個の削除に失敗しました",
+      "batchDeleteFailed": "削除に失敗しました。後でもう一度お試しください",
+      "error": "操作に失敗しました。後でもう一度お試しください"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "ワークフロー",
+      "description": "自動化されたワークフロープロセス",
+      "features": {
+        "automation": "自動化",
+        "batchProcessing": "バッチ処理",
+        "processControl": "プロセス制御"
+      }
+    },
+    "text-generation": {
+      "label": "テキスト生成",
+      "description": "単一テキスト生成アプリケーション",
+      "features": {
+        "textGeneration": "テキスト生成",
+        "contentCreation": "コンテンツ作成",
+        "formattedOutput": "フォーマット済み出力"
+      },
+      "resultViewer": {
+        "title": "生成結果",
+        "defaultTitle": "テキスト生成結果",
+        "actions": {
+          "copy": "結果をコピー",
+          "copied": "コピー済み",
+          "download": "結果をダウンロード"
+        },
+        "executionInfo": {
+          "title": "実行情報",
+          "status": "ステータス：",
+          "createdAt": "作成日時：",
+          "elapsedTime": "経過時間：",
+          "statusValues": {
+            "completed": "完了",
+            "failed": "失敗",
+            "stopped": "停止"
+          }
+        },
+        "content": {
+          "title": "生成されたコンテンツ",
+          "noContent": "コンテンツがありません"
+        }
+      }
+    },
+    "chatbot": {
+      "label": "チャットボット",
+      "description": "基本的な会話チャットボット",
+      "features": {
+        "conversation": "会話",
+        "fileUpload": "ファイルアップロード",
+        "speechToText": "音声をテキストに"
+      }
+    },
+    "agent": {
+      "label": "エージェント",
+      "description": "ツール呼び出し対応インテリジェントエージェント",
+      "features": {
+        "conversation": "会話",
+        "toolCalling": "ツール呼び出し",
+        "reasoningChain": "推論チェーン",
+        "multiTurnTasks": "マルチターンタスク"
+      }
+    },
+    "chatflow": {
+      "label": "チャットフロー",
+      "description": "会話ワークフローアプリケーション",
+      "features": {
+        "processOrchestration": "プロセスオーケストレーション",
+        "conditionalBranching": "条件分岐",
+        "conversationManagement": "会話管理"
+      }
+    }
+  },
+  "filePreview": {
+    "loading": "ファイル内容を読み込み中...",
+    "failed": "ファイルの読み込みに失敗しました",
+    "retryButton": "再試行",
+    "dismissButton": "閉じる",
+    "downloadButton": "ファイルダウンロード",
+    "noFileSelected": "ファイルが選択されていません",
+    "previewNotSupported": "このファイルタイプのプレビューはサポートされていません。ダウンロードして内容を確認できます。",
+    "textPreview": {
+      "title": "テキストプレビュー",
+      "copyButton": "コピー",
+      "copiedButton": "コピーしました！",
+      "downloadButton": "ダウンロード",
+      "charactersCount": "{count} 文字"
+    },
+    "pdfPreview": {
+      "title": "PDFプレビュー",
+      "openButton": "開く",
+      "downloadButton": "ダウンロード",
+      "fileSize": "{size} MB"
+    },
+    "imagePreview": {
+      "title": "画像プレビュー",
+      "downloadButton": "ダウンロード",
+      "loadError": "画像の読み込みに失敗しました",
+      "downloadToView": "ダウンロードして表示",
+      "filename": "ファイル名",
+      "fileSize": "ファイルサイズ",
+      "fileType": "ファイルタイプ"
+    },
+    "audio": {
+      "title": "オーディオプレビュー",
+      "duration": "時間",
+      "loadError": "オーディオファイルの読み込みに失敗しました",
+      "notSupported": "お使いのブラウザーはオーディオ再生に対応していません"
+    },
+    "video": {
+      "title": "ビデオプレビュー",
+      "duration": "時間",
+      "resolution": "解像度",
+      "loadError": "ビデオファイルの読み込みに失敗しました",
+      "notSupported": "お使いのブラウザーはビデオ再生に対応していません"
+    },
+    "markdownPreview": {
+      "title": "Markdownプレビュー",
+      "renderedMode": "レンダリング",
+      "rawMode": "生テキスト",
+      "downloadButton": "ダウンロード",
+      "charactersCount": "{count} 文字"
+    },
+    "errors": {
+      "noAppId": "ファイルプレビューに必要なアプリケーションIDがありません",
+      "downloadNoAppId": "ファイルダウンロードに必要なアプリケーションIDがありません"
+    },
+    "fileInfo": {
+      "title": "ファイル情報",
+      "name": "名前：",
+      "type": "タイプ：",
+      "size": "サイズ："
+    },
+    "closeButton": "プレビューを閉じる"
+  }
+}

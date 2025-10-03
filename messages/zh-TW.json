@@ -1,0 +1,2584 @@
+{
+  "common": {
+    "ui": {
+      "cancel": "取消",
+      "back": "返回",
+      "loading": "載入中...",
+      "retry": "重試",
+      "remove": "移除",
+      "error": "錯誤",
+      "customSelect": {
+        "placeholder": "請選擇..."
+      },
+      "exportButton": {
+        "tooltip": "匯出檔案",
+        "ariaLabel": "匯出檔案"
+      },
+      "logoutDialog": {
+        "title": "登出",
+        "message": "確定要登出嗎？登出後需要重新登入才能存取您的帳戶。",
+        "confirm": "確認登出",
+        "cancel": "取消",
+        "loggingOut": "登出中..."
+      },
+      "moreButton": {
+        "ariaLabel": "更多選項"
+      },
+      "download": "下載",
+      "copy": "複製",
+      "copied": "已複製！",
+      "open": "開啟",
+      "dismiss": "關閉"
+    },
+    "time": {
+      "notRecorded": "未記錄",
+      "invalidDate": "無效日期",
+      "formatError": "格式化錯誤",
+      "greeting": {
+        "morning": "早上好",
+        "afternoon": "下午好",
+        "evening": "晚上好",
+        "night": "夜深了",
+        "default": "您好"
+      }
+    }
+  },
+  "pages": {
+    "home": {
+      "sections": [
+        {
+          "id": "section-home-hero",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-title",
+                "type": "heading",
+                "props": {
+                  "content": "AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-home-subtitle",
+                "type": "paragraph",
+                "props": {
+                  "content": "探索AI的無限可能，打造智慧新體驗",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-features",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-features",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "大模型整合",
+                      "description": "支援多種模型供應商，包括OpenAI、Anthropic、Dify等，滿足不同企業需求"
+                    },
+                    {
+                      "title": "RAG知識增強",
+                      "description": "整合檢索增強生成(RAG)技術，實現私有知識庫和上下文感知"
+                    },
+                    {
+                      "title": "企業級部署",
+                      "description": "支援私有化部署，保障資料安全，基於Dify後端提供穩定可靠的服務"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-buttons",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-button-primary",
+                "type": "button",
+                "props": {
+                  "text": "立即開始",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center",
+                  "secondaryButton": {
+                    "text": "了解更多",
+                    "variant": "outline",
+                    "action": "link",
+                    "url": "/about"
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-home-footer",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-home-copyright",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. 探索AI的無限可能。",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-12T12:00:00.000Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-12T12:00:00.000Z",
+        "locale": "zh-TW"
+      }
+    },
+    "chat": {
+      "newChat": "新對話",
+      "sendMessage": "發送",
+      "inputPlaceholder": "輸入您的訊息...",
+      "noMessages": "還沒有訊息",
+      "typing": "正在輸入...",
+      "recentChats": "近期對話",
+      "historyChats": "歷史對話",
+      "input": {
+        "placeholder": "輸入訊息...",
+        "sendMessage": "發送訊息",
+        "stopGeneration": "停止生成",
+        "attachFile": "附加檔案",
+        "selectModel": "選擇模型",
+        "noModelAvailable": "沒有可用的模型",
+        "pleaseSelectModel": "請選擇一個模型",
+        "sending": "發送中...",
+        "uploading": "上傳中...",
+        "uploadFailed": "上傳失敗",
+        "retryUpload": "重試上傳",
+        "removeFile": "移除檔案",
+        "fileUploadError": "檔案上傳錯誤",
+        "messageSendFailed": "訊息發送失敗",
+        "unknownError": "未知錯誤",
+        "validatingConfig": "正在驗證應用設定...",
+        "cannotSubmit": "無法提交",
+        "addAttachment": "新增附件",
+        "retryUploadTooltip": "重新上傳",
+        "removeAttachment": "移除附件",
+        "scrollToBottom": "滾動到底部"
+      },
+      "fileUpload": {
+        "selectFileType": "選擇檔案類型",
+        "image": "圖片",
+        "document": "文件",
+        "audio": "音訊",
+        "video": "影片",
+        "custom": "自訂",
+        "uploadProgress": "上傳進度",
+        "uploadComplete": "上傳完成",
+        "uploadError": "上傳失敗",
+        "fileTooLarge": "檔案過大",
+        "unsupportedFormat": "不支援的檔案格式"
+      },
+      "fileTypeSelector": {
+        "ariaLabel": "新增附件",
+        "notSupported": "該應用不支援上傳檔案",
+        "noLimit": "檔案上傳數量限制為0",
+        "noTypesConfigured": "未設定支援的檔案類型",
+        "maxFilesReached": "已達到最大檔案數量限制 ({maxFiles})",
+        "addAttachment": "新增附件 ({currentFiles}/{maxFiles})",
+        "loading": "載入中...",
+        "loadError": "載入檔案類型失敗",
+        "reachedLimit": "已達上限 ({currentFiles}/{maxFiles})",
+        "maxUpload": "最多上傳 {maxFiles} 個檔案",
+        "noUploadLimit": "無上傳限制"
+      },
+      "modelSelector": {
+        "noModelsAvailable": "暫無可用模型",
+        "selectModel": "選擇模型",
+        "appNotFound": "未找到應用: {appId}"
+      },
+      "messages": {
+        "assistant": "助理",
+        "user": "您",
+        "thinking": "思考中...",
+        "stopped": "已停止",
+        "completed": "完成",
+        "copyMessage": "複製訊息",
+        "editMessage": "編輯訊息",
+        "deleteMessage": "刪除訊息",
+        "regenerate": "重新生成",
+        "feedback": "回饋",
+        "like": "讚",
+        "dislike": "踩",
+        "copied": "已複製",
+        "copyFailed": "複製失敗",
+        "imageLink": "圖片連結",
+        "viewImage": "檢視圖片",
+        "clickToView": "點擊檢視",
+        "clickToViewWithAlt": "點擊檢視: {alt}"
+      },
+      "suggestedQuestions": {
+        "moreQuestions": "還有 {count} 個問題..."
+      }
+    },
+    "chatflow": {
+      "loading": {
+        "inputConfig": "正在載入輸入設定..."
+      },
+      "form": {
+        "question": {
+          "label": "您的問題或需求",
+          "placeholder": "請詳細描述您的問題或需求...",
+          "required": "請輸入您的問題或需求",
+          "tooLong": "問題描述長度不能超過{maxLength}個字元"
+        },
+        "additionalInfo": "補充資訊",
+        "reset": "重設表單",
+        "processing": "處理中...",
+        "startConversation": "開始對話",
+        "checkAndCorrectErrors": "請檢查並修正表單中標記的錯誤資訊",
+        "defaultAppName": "AI 對話",
+        "defaultDescription": "請輸入您的問題，開始智慧對話"
+      },
+      "floatingController": {
+        "showTracker": "顯示節點追蹤器",
+        "hideTracker": "隱藏節點追蹤器"
+      },
+      "nodeTracker": {
+        "title": "節點執行進度",
+        "starting": "正在啟動 Chatflow",
+        "noRecords": "暫無節點執行記錄",
+        "waitingUpdate": "等待節點狀態更新...",
+        "showProgress": "開始對話後將顯示節點執行進度",
+        "executionError": "執行錯誤："
+      },
+      "executionBar": {
+        "status": {
+          "iterating": "正在迭代",
+          "iterationCompleted": "迭代完成",
+          "iterationFailed": "迭代失敗",
+          "waitingIteration": "等待迭代",
+          "looping": "正在循環",
+          "loopCompleted": "循環完成",
+          "loopFailed": "循環失敗",
+          "waitingLoop": "等待循環",
+          "executing": "正在執行",
+          "completed": "處理完成",
+          "failed": "處理失敗",
+          "waiting": "等待處理",
+          "unknown": "未知狀態",
+          "executing_": "執行中..."
+        },
+        "nodeTypes": {
+          "start": "開始節點",
+          "llm": "LLM 推理",
+          "knowledgeRetrieval": "知識檢索",
+          "questionClassifier": "問題分類器",
+          "ifElse": "條件分支",
+          "code": "程式碼執行",
+          "templateTransform": "範本轉換",
+          "variableAssigner": "變數賦值",
+          "variableAggregator": "變數聚合器",
+          "documentExtractor": "文件提取器",
+          "parameterExtractor": "參數提取器",
+          "httpRequest": "HTTP 請求",
+          "listOperator": "清單操作",
+          "iteration": "循環迭代",
+          "end": "結束節點",
+          "node": "節點"
+        },
+        "progressType": {
+          "iteration": "迭代進度",
+          "branch": "分支進度"
+        },
+        "branch": {
+          "label": "分支"
+        }
+      }
+    },
+    "workflow": {
+      "form": {
+        "inputPlaceholder": "請輸入{label}",
+        "selectPlaceholder": "請選擇{label}",
+        "rangeHint": "範圍：{min} - {max}",
+        "minValueHint": "最小值：{min}",
+        "maxValueHint": "最大值：{max}",
+        "stepHint": "步長：{step}",
+        "precisionHint": "小數位數：{precision}",
+        "defaultLabel": "輸入文字",
+        "loading": "正在載入表單設定...",
+        "noFormConfig": "該應用未設定輸入表單",
+        "reset": "重設表單",
+        "executing": "執行中...",
+        "startExecution": "開始執行",
+        "errors": {
+          "instanceNotFound": "未找到 instanceId 為 {instanceId} 的服務實例"
+        },
+        "validation": {
+          "required": "{label}為必填項",
+          "invalidNumber": "{label}必須是有效的數字",
+          "minValue": "{label}不能小於{min}",
+          "maxValue": "{label}不能大於{max}",
+          "stepValue": "{label}必須是{step}的倍數",
+          "precisionExceeded": "{label}小數位數不能超過{precision}位",
+          "maxLengthExceeded": "{label}長度不能超過{maxLength}個字符",
+          "invalidSelection": "{label}選擇的值無效",
+          "tooManyFiles": "{label}文件數量不能超過{maxFiles}個",
+          "fileTooLarge": "{label}中的文件\"{fileName}\"大小超過{maxSize}MB",
+          "unsupportedFileType": "{label}中的文件\"{fileName}\"類型不支持，支持的類型：{allowedTypes}"
+        }
+      },
+      "status": {
+        "running": "工作流程執行中",
+        "completed": "執行完成",
+        "failed": "執行失敗",
+        "stopped": "執行已停止",
+        "pending": "等待執行",
+        "unknown": "未知",
+        "totalTime": "總耗時: {time}s"
+      },
+      "nodeStatus": {
+        "iterating": "正在迭代...",
+        "iterationCompleted": "迭代完成",
+        "iterationFailed": "迭代失敗",
+        "waitingIteration": "等待迭代",
+        "looping": "正在循環",
+        "loopCompleted": "循環完成",
+        "loopFailed": "循環失敗",
+        "waitingLoop": "等待循環",
+        "parallelRunning": "並行執行中...",
+        "parallelCompleted": "並行完成",
+        "parallelFailed": "並行失敗",
+        "waitingParallel": "等待並行執行",
+        "executing": "正在執行...",
+        "nodeCompleted": "執行完成",
+        "nodeFailed": "執行失敗",
+        "nodePending": "等待執行",
+        "nodeUnknown": "未知狀態"
+      },
+      "nodeTypes": {
+        "start": "開始節點",
+        "llm": "LLM 推理",
+        "knowledgeRetrieval": "知識檢索",
+        "questionClassifier": "問題分類器",
+        "ifElse": "條件分支",
+        "code": "程式碼執行",
+        "templateTransform": "範本轉換",
+        "variableAssigner": "變數賦值",
+        "variableAggregator": "變數聚合器",
+        "documentExtractor": "文件提取器",
+        "parameterExtractor": "參數提取器",
+        "httpRequest": "HTTP 請求",
+        "listOperator": "清單操作",
+        "iteration": "循環迭代",
+        "parallel": "並行分支",
+        "end": "結束節點"
+      },
+      "iterationDetails": {
+        "roundIteration": "第 {round} 輪迭代",
+        "roundLoop": "第 {round} 輪循環",
+        "nodeNumber": "節點 {number}"
+      },
+      "buttons": {
+        "retry": "重試",
+        "close": "關閉",
+        "copy": "複製結果",
+        "copied": "已複製",
+        "download": "下載結果",
+        "retryUpload": "重新上傳",
+        "removeFile": "移除檔案",
+        "viewResult": "檢視結果",
+        "stop": "停止",
+        "reset": "重設"
+      },
+      "history": {
+        "showHistory": "檢視歷史記錄",
+        "hideHistory": "關閉歷史記錄",
+        "noDetailData": "該執行記錄暫無詳細結果資料，但可以檢視基本資訊",
+        "title": "執行歷史",
+        "selected": "已選 {count} 項",
+        "batchDelete": "批次刪除",
+        "deleteSelected": "刪除選中的 {count} 項",
+        "cancelSelection": "取消選擇",
+        "loading": "正在載入歷史記錄...",
+        "noRecords": "暫無執行記錄",
+        "getDetailFailed": "取得執行詳情失敗",
+        "unknownError": "未知錯誤",
+        "userNotLoggedIn": "使用者未登入"
+      },
+      "fileUpload": {
+        "uploading": "正在上傳檔案...",
+        "dropOrClick": "拖曳檔案到此處或點擊上傳",
+        "uploadFailed": "上傳失敗",
+        "supportAllTypes": "支援上傳各種檔案類型",
+        "supportTypes": "支援上傳：{types}",
+        "fileTypes": {
+          "image": "圖片",
+          "document": "文件",
+          "audio": "音訊",
+          "video": "影片",
+          "custom": "其他檔案"
+        },
+        "uploaded": "已上傳",
+        "maxFiles": "最多上傳 {maxFiles} 個檔案 (剩餘 {remaining} 個)",
+        "maxFileSize": "單個檔案最大 {size}MB",
+        "maxFilesReached": "已達到最大檔案數量限制 ({current}/{max})",
+        "selectedFiles": "已選檔案"
+      },
+      "tabs": {
+        "inputForm": "輸入表單",
+        "executionStatus": "執行狀態",
+        "history": "歷史記錄"
+      },
+      "resultViewer": {
+        "title": "工作流程執行結果",
+        "noData": "無結果資料",
+        "copy": "複製結果",
+        "copied": "已複製",
+        "download": "下載結果"
+      }
+    },
+    "textGeneration": {
+      "status": {
+        "generating": "正在生成文本...",
+        "completed": "生成完成",
+        "failed": "生成失敗",
+        "stopped": "已停止",
+        "waiting": "等待生成",
+        "result": "生成結果"
+      },
+      "progress": "進度: {percent}%",
+      "buttons": {
+        "copy": "複製文字",
+        "copied": "已複製",
+        "download": "下載文字",
+        "stop": "停止",
+        "retry": "重試",
+        "reset": "重設",
+        "close": "關閉"
+      },
+      "emptyState": {
+        "title": "等待生成文字",
+        "description": "填寫左側表單並點擊執行按鈕開始文字生成"
+      },
+      "placeholder": {
+        "generating": "正在生成文本...",
+        "result": "生成的文本將顯示在這裡"
+      },
+      "loadingState": {
+        "title": "文本生成中",
+        "description": "請稍候，正在為您生成內容..."
+      },
+      "streamingIndicator": "生成中",
+      "stats": {
+        "characters": "字元數: {count}",
+        "words": "詞數: {count}",
+        "tokensUsed": "Token 使用: {count}"
+      }
+    },
+    "apps": {
+      "startChatWith": "與 {appName} 開始對話...",
+      "continueChatWith": "與 {appName} 繼續對話...",
+      "defaultApp": "應用程式",
+      "loadFailed": "應用程式載入失敗",
+      "backToMarket": "返回應用程式市場",
+      "loading": {
+        "app": "正在載入應用程式...",
+        "validating": "正在驗證應用程式設定...",
+        "default": "載入中..."
+      },
+      "errors": {
+        "appNotFound": "應用程式不存在",
+        "initializationFailed": "初始化失敗",
+        "appLoadFailed": "應用程式載入失敗"
+      },
+      "status": {
+        "loadingApp": "正在載入應用程式...",
+        "validatingConfig": "正在驗證應用程式設定...",
+        "loading": "載入中..."
+      },
+      "buttons": {
+        "backToMarket": "返回應用程式市場"
+      },
+      "market": {
+        "categories": {
+          "all": "全部",
+          "favorite": "常用",
+          "writing": "寫作",
+          "translation": "翻譯",
+          "programming": "程式設計",
+          "codeGeneration": "程式碼生成",
+          "analysis": "分析",
+          "summary": "總結",
+          "conversation": "對話",
+          "assistant": "助理",
+          "textGeneration": "文字生成",
+          "document": "文件",
+          "dataAnalysis": "資料分析",
+          "development": "開發",
+          "generation": "生成",
+          "conversationModel": "對話模型",
+          "reasoningModel": "推理模型",
+          "documentModel": "文件模型",
+          "multimodal": "多模態",
+          "highPrecision": "高精度",
+          "fastResponse": "快速",
+          "localDeployment": "本地",
+          "enterprise": "企業",
+          "private": "私有",
+          "tools": "工具",
+          "general": "通用",
+          "professional": "專業"
+        },
+        "search": {
+          "placeholder": "搜尋應用程式..."
+        },
+        "tryAdjustSearch": "嘗試調整搜尋條件或瀏覽其他分類",
+        "viewMode": {
+          "grid": "網格",
+          "list": "清單"
+        },
+        "appCard": {
+          "noDescription": "暫無描述",
+          "defaultType": "應用程式"
+        },
+        "header": {
+          "title": "應用程式市場",
+          "totalApps": "共 {count} 個應用程式",
+          "categoryApps": "{category} · {count} 個應用程式",
+          "totalLabel": "共 {count} 個"
+        },
+        "categoryKeys": {
+          "all": "全部",
+          "commonApps": "常用應用程式"
+        },
+        "unknownAppType": "未知的Dify應用程式類型",
+        "useDefaultRoute": "使用預設路由",
+        "routeJump": "路由跳轉",
+        "app": "應用程式",
+        "type": "類型",
+        "path": "路徑",
+        "openAppFailed": "開啟應用程式失敗"
+      }
+    },
+    "auth": {
+      "login": {
+        "title": "登入",
+        "subtitle": "歡迎使用智慧助手",
+        "emailLabel": "電子郵件",
+        "passwordLabel": "密碼",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "••••••••",
+        "loginButton": "登入",
+        "forgotPasswordLink": "忘記密碼？",
+        "phoneLoginLink": "📱 使用手機號碼驗證碼登入",
+        "noAccountText": "還沒有帳戶？",
+        "registerLink": "立即註冊",
+        "showPassword": "顯示密碼",
+        "hidePassword": "隱藏密碼",
+        "orSeparator": "使用電子郵件密碼登入",
+        "orSeparatorSso": "或使用電子郵件密碼",
+        "alerts": {
+          "registered": "註冊成功！請查看您的電子郵件以驗證帳戶，然後登入。",
+          "resetSuccess": "密碼重設成功！請使用新密碼登入。"
+        },
+        "errors": {
+          "oauthFailed": "OAuth登入失敗，請重試或使用其他登入方式",
+          "ssoCallbackFailed": "SSO認證回調處理失敗，請重新嘗試登入",
+          "ticketValidationFailed": "SSO票據驗證失敗，請重新登入",
+          "invalidEmployeeNumber": "學工號格式不正確，請聯絡管理員",
+          "userCreationFailed": "帳戶建立失敗，這可能是由於帳戶資料不一致導致的。請嘗試重新登入，如果問題持續存在，請聯絡管理員",
+          "accountDataInconsistent": "帳戶資料不一致，系統正在嘗試自動修復。請稍等片刻後重新登入",
+          "profileCreationFailed": "使用者檔案建立失敗，請聯絡管理員協助解決",
+          "ssoProviderNotFound": "SSO服務設定錯誤，請聯絡管理員",
+          "missingTicket": "認證參數缺失，請重新登入",
+          "default": "登入過程中出現錯誤，請稍後重試",
+          "loginFailed": "登入失敗，請檢查您的電子郵件和密碼"
+        }
+      },
+      "register": {
+        "title": "註冊",
+        "subtitle": "加入 AgentifUI，開啟 AI 智慧之旅",
+        "nameLabel": "姓名",
+        "usernameLabel": "暱稱",
+        "usernameOptional": "(可選)",
+        "emailLabel": "電子郵件",
+        "passwordLabel": "密碼",
+        "confirmPasswordLabel": "確認密碼",
+        "namePlaceholder": "輸入您的姓名",
+        "usernamePlaceholder": "選擇一個使用者名稱",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "••••••••",
+        "createAccountButton": "建立帳戶",
+        "phoneLoginLink": "📱 使用手機號碼驗證碼登入",
+        "hasAccountText": "已有帳戶？",
+        "loginLink": "立即登入",
+        "showPassword": "顯示密碼",
+        "hidePassword": "隱藏密碼",
+        "showConfirmPassword": "顯示確認密碼",
+        "hideConfirmPassword": "隱藏確認密碼",
+        "orSeparator": "或使用電子郵件密碼",
+        "errors": {
+          "nameRequired": "請輸入姓名",
+          "emailRequired": "請輸入電子郵件地址",
+          "passwordTooShort": "密碼長度至少6位",
+          "passwordMismatch": "兩次輸入的密碼不一致",
+          "usernameInvalid": "暱稱只能包含字母、數字、底線和連字符，長度2-20位",
+          "emailExists": "該電子郵件已被註冊，請使用其他電子郵件或直接登入",
+          "passwordWeak": "密碼強度不夠，請使用更複雜的密碼",
+          "emailInvalid": "電子郵件格式不正確，請檢查後重試",
+          "registerFailed": "註冊失敗，請稍後再試"
+        }
+      },
+      "phoneLoginPage": {
+        "title": "AgentifUI",
+        "subtitle": "智慧對話，觸手可及",
+        "orSeparator": "或者",
+        "emailLoginLink": "使用電子郵件密碼登入",
+        "registerLink": "還沒有帳戶？立即註冊",
+        "termsText": "登入即表示您同意我們的",
+        "termsLink": "服務條款",
+        "privacyLink": "隱私政策",
+        "andText": "和"
+      },
+      "ssoProcessing": {
+        "title": "SSO 登入",
+        "loading": "載入中..."
+      },
+      "forgotPassword": {
+        "title": "忘記密碼",
+        "subtitle": "輸入您的電子郵件地址，我們將發送重設密碼連結",
+        "emailLabel": "電子郵件地址",
+        "emailPlaceholder": "your@email.com",
+        "sendButton": "發送重設連結",
+        "sendingButton": "發送中...",
+        "backToLogin": "返回登入",
+        "success": {
+          "title": "郵件已發送",
+          "message": "我們已向 {email} 發送了重設密碼連結",
+          "instructions": "請檢查您的電子郵件（包括垃圾郵件資料夾）並點擊連結重設密碼。",
+          "noEmail": "如果您沒有收到郵件，請檢查電子郵件地址是否正確或稍後重試。"
+        },
+        "errors": {
+          "emailRequired": "請輸入有效的電子郵件地址",
+          "rateLimited": "發送過於頻繁，請稍後再試",
+          "sendFailed": "發送失敗，請稍後再試"
+        }
+      },
+      "resetPassword": {
+        "title": "重設密碼",
+        "subtitle": "請輸入您的新密碼",
+        "verifying": "驗證中",
+        "verifyingSubtitle": "正在驗證重設連結...",
+        "invalidTitle": "連結無效",
+        "invalidSubtitle": "重設密碼連結已過期或無效",
+        "successTitle": "密碼重設成功",
+        "successSubtitle": "您的密碼已成功重設",
+        "passwordLabel": "新密碼",
+        "confirmPasswordLabel": "確認密碼",
+        "passwordPlaceholder": "輸入新密碼",
+        "confirmPasswordPlaceholder": "再次輸入新密碼",
+        "resetButton": "重設密碼",
+        "resettingButton": "重設中...",
+        "showPassword": "顯示新密碼",
+        "hidePassword": "隱藏新密碼",
+        "showConfirmPassword": "顯示確認密碼",
+        "hideConfirmPassword": "隱藏確認密碼",
+        "passwordHint": "密碼需包含大小寫字母、數字，至少8位",
+        "backToLogin": "前往登入",
+        "retryReset": "重新申請重設密碼",
+        "successMessage": "您現在可以使用新密碼登入您的帳戶。",
+        "errors": {
+          "passwordRequired": "請輸入新密碼",
+          "passwordTooShort": "密碼長度至少6位",
+          "passwordMismatch": "兩次輸入的密碼不一致",
+          "passwordWeak": "密碼強度不夠，請使用更複雜的密碼",
+          "sessionExpired": "會話已過期，請重新申請重設密碼",
+          "resetFailed": "密碼重設失敗，請稍後再試",
+          "linkInvalid": "重設連結驗證失敗",
+          "linkExpired": "重設連結無效或已過期，請重新申請重設密碼",
+          "verifyFailed": "驗證失敗，請重新申請重設密碼"
+        }
+      },
+      "phoneLogin": {
+        "title": "手機號碼登入",
+        "subtitle": "使用手機號碼接收驗證碼登入",
+        "otpSubtitle": "請輸入收到的6位驗證碼",
+        "phoneLabel": "手機號碼",
+        "otpLabel": "驗證碼",
+        "phonePlaceholder": "13812345678",
+        "otpPlaceholder": "請輸入6位驗證碼",
+        "sendOtpButton": "發送驗證碼",
+        "sendingButton": "發送中...",
+        "verifyButton": "確認驗證碼",
+        "verifyingButton": "驗證中...",
+        "resendButton": "重新發送驗證碼",
+        "changePhoneButton": "修改手機號碼",
+        "otpSentTo": "驗證碼已發送至 +86{phone}",
+        "errors": {
+          "phoneRequired": "請輸入手機號碼",
+          "phoneInvalid": "請輸入正確的中國大陸手機號碼",
+          "otpRequired": "請輸入驗證碼",
+          "otpInvalid": "驗證碼應為6位數字",
+          "sendFailed": "發送驗證碼失敗，請稍後重試",
+          "verifyFailed": "驗證碼錯誤，請重新輸入"
+        },
+        "success": {
+          "otpSent": "驗證碼已發送，請查收簡訊",
+          "verifySuccess": "驗證成功！正在登入..."
+        }
+      },
+      "sso": {
+        "title": "統一身份認證",
+        "subtitle": "使用您的統一認證帳號登入",
+        "button": "使用統一認證登入",
+        "simpleButton": "🏛️ 統一身份認證",
+        "jumpingButton": "正在跳轉...",
+        "helpText": "首次登入將自動建立帳戶",
+        "contactText": "如有問題請聯繫系統管理員",
+        "startError": "啟動SSO登入失敗，請稍後重試",
+        "noProvider": "暫無可用的SSO登入方式",
+        "processing": {
+          "title": "SSO 登入",
+          "processing": "正在處理SSO登入...",
+          "welcome": "歡迎 {name}，正在建立會話...",
+          "verifying": "正在驗證身份...",
+          "sessionCheck": "正在驗證會話...",
+          "success": "登入成功！正在跳轉...",
+          "failed": "登入失敗",
+          "redirecting": "3秒後將自動跳轉到登入頁面...",
+          "errors": {
+            "missingParams": "SSO參數缺失或無效",
+            "userDataNotFound": "SSO使用者資料未找到",
+            "sessionExpired": "SSO會話已過期，請重新登入",
+            "loginFailed": "SSO登入失敗",
+            "sessionValidationFailed": "會話驗證失敗",
+            "noValidSessionData": "伺服器未返回有效會話資料",
+            "processingFailed": "SSO處理失敗"
+          }
+        }
+      },
+      "social": {
+        "github": {
+          "login": "使用 GitHub 登入",
+          "register": "使用 GitHub 註冊",
+          "failed": "GitHub 登入失敗"
+        }
+      }
+    },
+    "settings": {
+      "title": "設定",
+      "profile": "個人資料",
+      "account": "帳戶",
+      "appearance": "外觀",
+      "language": "語言",
+      "navigation": {
+        "overview": "概覽",
+        "profileNav": "個人資料",
+        "accountNav": "帳戶",
+        "appearanceNav": "外觀",
+        "languageNav": "語言"
+      },
+      "descriptions": {
+        "overview": "管理您的個人偏好，自訂應用程式體驗",
+        "profileDesc": "更新個人資訊、頭像和帳戶設定",
+        "accountDesc": "管理您的帳戶安全和登入資訊",
+        "appearanceDesc": "自訂主題、顏色、介面配置和時區設定",
+        "languageDesc": "選擇您偏好的顯示語言和地區設定"
+      },
+      "accountSettings": {
+        "title": "帳戶設定",
+        "accountInfo": "帳戶資訊",
+        "loginEmail": "登入電子郵件",
+        "authMethod": "認證方式",
+        "emailPasswordAuth": "電子郵件密碼",
+        "securitySettings": "安全設定",
+        "logoutAccount": "登出目前帳戶",
+        "confirmLogout": "確定要登出嗎？",
+        "confirmLogoutBtn": "確認登出",
+        "logout": "登出",
+        "loggingOut": "登出中...",
+        "loadAccountError": "載入帳戶資訊時發生錯誤",
+        "retry": "重試",
+        "deleteAccount": "刪除帳戶"
+      },
+      "profileSettings": {
+        "title": "個人資料",
+        "accountInfo": "帳戶資訊",
+        "registrationTime": "註冊時間",
+        "accountRole": "帳戶角色",
+        "lastLogin": "上次登入",
+        "editProfile": "編輯個人資料",
+        "name": "姓名",
+        "nickname": "暱稱",
+        "profileUpdated": "個人資料已更新",
+        "updateFailed": "更新資料失敗",
+        "saving": "儲存中...",
+        "saveChanges": "儲存修改",
+        "namePlaceholder": "請輸入您的姓名",
+        "usernamePlaceholder": "請輸入您的使用者名稱",
+        "roles": {
+          "admin": "管理員",
+          "manager": "經理",
+          "user": "一般使用者"
+        },
+        "status": {
+          "notRecorded": "未記錄",
+          "notSet": "未設置"
+        },
+        "loadProfileError": "載入資料時發生錯誤",
+        "avatar": {
+          "defaultUser": "使用者",
+          "userAvatar": "{userName}的頭像",
+          "editHover": "編輯",
+          "uploadSuccess": "頭像上傳成功",
+          "deleteSuccess": "頭像刪除成功"
+        }
+      },
+      "avatarModal": {
+        "title": "頭像設定",
+        "subtitle": "點擊上傳或將圖片拖拽至下方區域",
+        "currentAvatar": "目前頭像",
+        "supportedFormats": "支援 JPEG、JPG、PNG、WebP 格式 • 最大 5MB",
+        "crop": {
+          "zoom": "縮放",
+          "cancel": "重新選擇",
+          "confirm": "確認裁切",
+          "uploading": "上傳中..."
+        },
+        "uploadArea": {
+          "uploading": "上傳中...",
+          "changeAvatar": "點擊更換頭像",
+          "uploadAvatar": "點擊上傳頭像",
+          "uploadProgress": "上傳進度：{progress}%",
+          "dragHint": "或將圖片拖拽到此處"
+        },
+        "buttons": {
+          "deleteAvatar": "刪除頭像",
+          "complete": "完成",
+          "uploading": "上傳中...",
+          "cancel": "取消",
+          "confirmDelete": "確認刪除",
+          "deleting": "刪除中..."
+        },
+        "deleteConfirm": {
+          "title": "刪除頭像",
+          "message": "確定要刪除目前頭像嗎？此操作無法復原。"
+        },
+        "status": {
+          "success": "操作成功完成"
+        },
+        "errors": {
+          "unsupportedType": "不支援的檔案類型。請選擇 JPEG、JPG、PNG 或 WebP 格式的圖片。",
+          "fileTooLarge": "檔案過大。請選擇小於 5MB 的圖片。",
+          "userNotLoggedIn": "使用者未登入",
+          "uploadFailed": "上傳失敗",
+          "deleteFailed": "刪除失敗"
+        }
+      },
+      "avatarUpload": {
+        "errors": {
+          "unsupportedFileType": "不支援的檔案類型。支援的格式：{types}",
+          "fileTooLarge": "檔案過大。最大支援 {maxSize}MB",
+          "uploadFailed": "上傳失敗：{message}",
+          "getUrlFailed": "取得頭像URL失敗",
+          "updateDatabaseFailed": "更新資料庫失敗：{message}",
+          "deleteFailed": "刪除失敗：{message}",
+          "uploadFailedGeneric": "上傳失敗",
+          "deleteFailedGeneric": "刪除失敗"
+        }
+      },
+      "appearanceSettings": {
+        "title": "外觀設定",
+        "theme": "主題",
+        "themeDescription": "選擇您偏好的顯示模式",
+        "themes": {
+          "light": "淺色模式",
+          "dark": "深色模式",
+          "system": "跟隨系統"
+        },
+        "preview": {
+          "light": "亮色",
+          "dark": "暗色",
+          "system": "系統"
+        },
+        "timezone": "時區設定",
+        "timezoneDescription": "選擇您所在的時區，影響時間顯示格式",
+        "currentTimezone": "目前時區",
+        "timezoneRegions": {
+          "asia": "亞洲",
+          "europe": "歐洲",
+          "america": "美洲",
+          "africa": "非洲",
+          "australia": "大洋洲",
+          "utc": "協調世界時"
+        },
+        "timezoneCities": {
+          "shanghai": "上海",
+          "beijing": "北京",
+          "hongKong": "香港",
+          "taipei": "台北",
+          "tokyo": "東京",
+          "seoul": "首爾",
+          "singapore": "新加坡",
+          "bangkok": "曼谷",
+          "dubai": "杜拜",
+          "kolkata": "加爾各答",
+          "london": "倫敦",
+          "paris": "巴黎",
+          "berlin": "柏林",
+          "rome": "羅馬",
+          "madrid": "馬德里",
+          "amsterdam": "阿姆斯特丹",
+          "moscow": "莫斯科",
+          "newYork": "紐約",
+          "losAngeles": "洛杉磯",
+          "chicago": "芝加哥",
+          "denver": "丹佛",
+          "toronto": "多倫多",
+          "saoPaulo": "聖保羅",
+          "mexicoCity": "墨西哥城",
+          "sydney": "雪梨",
+          "melbourne": "墨爾本",
+          "perth": "伯斯",
+          "auckland": "奧克蘭",
+          "cairo": "開羅",
+          "johannesburg": "約翰尼斯堡",
+          "lagos": "拉哥斯",
+          "utc": "UTC"
+        },
+        "timezoneSearch": "搜尋時區...",
+        "systemTimezone": "系統時區",
+        "customTimezone": "自定義時區",
+        "timezonePreview": "預覽時間：{time}",
+        "timezoneUpdated": "時區設定已更新",
+        "timezoneUpdateFailed": "時區更新失敗"
+      },
+      "languageSettings": {
+        "title": "語言設定",
+        "language": "語言",
+        "languageDescription": "選擇您偏好的顯示語言",
+        "currentLanguage": "目前語言",
+        "switchLanguage": "切換語言"
+      }
+    },
+    "admin": {
+      "title": "管理後台",
+      "main": {
+        "title": "管理後台概覽",
+        "subtitle": "歡迎使用 AgentifUI 管理後台，在這裡您可以管理系統的各項設定和配置"
+      },
+      "layout": {
+        "headerTitle": "AgentifUI 管理後台",
+        "breadcrumbRoot": "管理後台",
+        "menuItems": {
+          "main": {
+            "text": "管理主頁",
+            "description": "管理後台概覽"
+          },
+          "apiConfig": {
+            "text": "API 設定",
+            "description": "管理應用程式實例和設定參數"
+          },
+          "content": {
+            "text": "頁面內容管理",
+            "description": "管理首頁和關於頁面的內容"
+          },
+          "users": {
+            "text": "使用者管理",
+            "description": "管理使用者帳戶和權限"
+          },
+          "ssoProviders": {
+            "text": "SSO供應商管理",
+            "description": "管理SSO供應商設定"
+          },
+          "groups": {
+            "text": "群組管理",
+            "description": "管理使用者和群組，設定群組應用程式權限"
+          },
+          "permissions": {
+            "text": "應用程式權限管理",
+            "description": "管理應用程式可見性和群組權限"
+          }
+        },
+        "actions": {
+          "rebuildButton": {
+            "text": "重新編譯",
+            "messages": {
+              "startRebuild": "開始重新編譯和部署...",
+              "startRebuildDescription": "這個過程可能需要幾分鐘，請保持耐心。",
+              "buildInProgress": "構建正在進行中",
+              "buildInProgressDescription": "請等待目前構建完成後再試。",
+              "authFailed": "認證失敗",
+              "authFailedDescription": "請重新登入後再試。",
+              "permissionDenied": "權限不足",
+              "permissionDeniedDescription": "您沒有權限執行此操作。",
+              "unknownError": "發生未知錯誤",
+              "buildComplete": "構建完成！",
+              "buildCompleteDescription": "應用將在2秒後自動重啟以套用更改。",
+              "appRestarting": "應用重啟中...",
+              "appRestartingDescription": "頁面將在重啟完成後自動重新整理。",
+              "deployFailed": "部署失敗",
+              "networkError": "網路錯誤，請檢查連線後重試。"
+            }
+          },
+          "returnToChatButton": {
+            "text": "返回對話"
+          }
+        },
+        "common": {
+          "actions": {
+            "refresh": "重新整理資料",
+            "save": "儲存變更",
+            "saving": "儲存中...",
+            "reset": "重設",
+            "create": "建立",
+            "cancel": "取消",
+            "confirm": "確定"
+          },
+          "status": {
+            "hasUnsavedChanges": "有未儲存的變更",
+            "saving": "儲存中...",
+            "allChangesSaved": "所有變更已儲存"
+          }
+        }
+      },
+      "apiConfig": {
+        "emptyState": {
+          "title": "選擇應用程式實例",
+          "description": "從左側列表中選擇一個應用程式實例來查看和編輯其設定，或點擊新增按鈕建立新的應用程式實例"
+        },
+        "formActions": {
+          "save": "儲存",
+          "saving": "儲存中...",
+          "cancel": "取消"
+        },
+        "providerManagement": {
+          "buttonText": "管理提供商",
+          "modal": {
+            "title": "管理服務提供商",
+            "providerList": "提供商列表",
+            "addProvider": "新增提供商",
+            "editProvider": "編輯提供商",
+            "addNewProvider": "新增新提供商",
+            "loading": "載入中...",
+            "noProviders": "暫無提供商配置",
+            "deleteConfirm": "確定要刪除提供商「{name}」嗎？此操作不可撤銷。",
+            "messages": {
+              "loadFailed": "載入提供商列表失敗",
+              "createSuccess": "提供商建立成功",
+              "createFailed": "建立提供商失敗",
+              "updateSuccess": "提供商更新成功",
+              "updateFailed": "更新提供商失敗",
+              "deleteSuccess": "提供商刪除成功",
+              "deleteFailed": "刪除提供商失敗",
+              "saveFailed": "儲存提供商失敗"
+            },
+            "providerTypes": {
+              "llm": "LLM (大語言模型)",
+              "platform": "Platform (聚合平台)",
+              "embedding": "Embedding (向量化)",
+              "tts": "TTS (文字轉語音)",
+              "stt": "STT (語音轉文字)",
+              "vision": "Vision (圖像識別)",
+              "multimodal": "Multimodal (多模態)"
+            },
+            "authTypes": {
+              "api_key": "API Key",
+              "bearer_token": "Bearer Token",
+              "oauth2": "OAuth 2.0",
+              "basic_auth": "Basic Auth"
+            },
+            "status": {
+              "enabled": "已啟用",
+              "disabled": "已停用",
+              "default": "預設提供商"
+            },
+            "form": {
+              "name": {
+                "label": "提供商名稱",
+                "placeholder": "例如：Dify、OpenAI、Claude",
+                "required": "提供商名稱不能為空"
+              },
+              "type": {
+                "label": "提供商類型",
+                "placeholder": "選擇提供商類型",
+                "required": "請選擇提供商類型"
+              },
+              "baseUrl": {
+                "label": "API URL",
+                "placeholder": "例如：https://api.dify.ai/v1",
+                "required": "API URL不能為空",
+                "invalid": "請輸入有效的URL格式"
+              },
+              "authType": {
+                "label": "認證類型",
+                "placeholder": "選擇認證類型",
+                "required": "請選擇認證類型"
+              },
+              "isActive": {
+                "label": "啟用狀態"
+              },
+              "isDefault": {
+                "label": "預設提供商",
+                "description": "系統中只能有一個預設提供商，設定後其他提供商的預設狀態將被自動清除",
+                "setAsDefault": "設為預設",
+                "notDefault": "非預設"
+              },
+              "authMethod": "認證方式"
+            },
+            "buttons": {
+              "cancel": "取消",
+              "save": "儲存",
+              "saving": "儲存中...",
+              "delete": "刪除"
+            }
+          }
+        },
+        "layout": {
+          "loading": "載入應用程式實例中...",
+          "noInstances": "暫無應用程式實例",
+          "noInstancesForProvider": "該提供商暫無應用程式實例",
+          "addFirstApp": "新增第一個應用程式",
+          "searchPlaceholder": "搜尋應用程式...",
+          "defaultApp": "預設",
+          "delete": "刪除",
+          "deleteConfirm": "確定要刪除此應用程式實例嗎？此操作不可復原。",
+          "defaultAppCannotDelete": "預設應用程式不可刪除，請先設定其他應用程式為預設應用程式",
+          "instanceNotFound": "未找到要刪除的實例",
+          "deleteInstanceFailed": "刪除應用程式實例失敗",
+          "setDefaultConfirm": "確定要將\"{name}\"設定為預設應用程式嗎？",
+          "instanceNotFoundForDefault": "未找到要設定的實例",
+          "setDefaultFailed": "設定預設應用程式失敗",
+          "setAsDefault": "Set as Default"
+        },
+        "fields": {
+          "apiUrl": "API URL (config.api_url)",
+          "apiKey": "API 密鑰 (key_value)",
+          "providerBinding": "供應商綁定",
+          "urlPlaceholder": "URL 將自動使用所選供應商的設定",
+          "urlBindingInfo": "URL 與服務供應商綁定，修改請在\"管理提供商\"中操作",
+          "currentProvider": "目前供應商: {name}",
+          "unknownProvider": "未知供應商",
+          "keyConfigured": "已設定",
+          "keyNotConfigured": "未設定",
+          "keyPlaceholderEdit": "留空則不更新 API 密鑰",
+          "keyPlaceholderNew": "輸入 API 密鑰",
+          "keyEditHint": "留空輸入框將保持現有密鑰不變",
+          "tagsLabel": "應用程式標籤 (tags)",
+          "tagCategories": {
+            "modelType": "模型類型",
+            "useCase": "應用場景",
+            "features": "技術特性"
+          },
+          "predefinedTags": {
+            "conversationModel": "對話模型",
+            "reasoningModel": "推理模型",
+            "documentModel": "文檔模型",
+            "multimodal": "多模態",
+            "textGeneration": "文本生成",
+            "codeGeneration": "代碼生成",
+            "dataAnalysis": "數據分析",
+            "translation": "翻譯",
+            "highAccuracy": "高精度",
+            "fastResponse": "快速響應",
+            "localDeployment": "本地部署",
+            "enterpriseGrade": "企業級"
+          },
+          "customTagPlaceholder": "自定義標籤（按Enter添加）",
+          "tagHelpText": "標籤用於應用程式分類和搜尋"
+        },
+        "providerSelector": {
+          "placeholder": "請選擇提供商",
+          "defaultLabel": "預設",
+          "noProviders": "暫無可用的服務提供商"
+        },
+        "customProviderSelector": {
+          "placeholder": "請選擇提供商",
+          "defaultLabel": "預設",
+          "noProviders": "暫無可用的服務提供商"
+        },
+        "instanceFilter": {
+          "allApps": "全部應用程式",
+          "providerApps": "{name}應用程式",
+          "defaultLabel": "預設",
+          "totalCount": "共 {count} 個",
+          "noProviders": "暫無可用的服務提供商"
+        },
+        "events": {
+          "defaultSetSuccess": "預設應用程式設定成功"
+        },
+        "instanceSaveHandlers": {
+          "errors": {
+            "selectProvider": "請選擇服務提供商",
+            "invalidProvider": "選擇的服務提供商無效",
+            "inactiveProvider": "選擇的服務提供商未啟用",
+            "createFailed": "建立應用程式實例失敗",
+            "updateFailed": "更新應用程式實例失敗",
+            "setDefaultFailed": "設定預設應用程式失敗"
+          },
+          "success": {
+            "instanceCreated": "應用程式實例建立成功",
+            "instanceUpdated": "應用程式實例更新成功",
+            "setAsDefault": "應用程式實例已設為預設應用程式"
+          },
+          "warnings": {
+            "createSuccessButDefaultFailed": "應用程式建立成功，但設定預設應用程式失敗"
+          }
+        },
+        "difyParametersPanel": {
+          "title": "{instanceName} - Dify 參數配置",
+          "defaultInstanceName": "應用實例",
+          "unsavedChanges": "您有未儲存的變更",
+          "sections": {
+            "basic": {
+              "title": "基礎配置",
+              "openingStatement": {
+                "label": "開場白內容",
+                "placeholder": "輸入開場白內容..."
+              },
+              "suggestedQuestions": {
+                "label": "開場推薦問題",
+                "addButton": "新增推薦問題",
+                "placeholder": "輸入推薦問題..."
+              }
+            },
+            "fileUpload": {
+              "title": "檔案上傳功能",
+              "enabled": "已啟用",
+              "disabled": "已停用"
+            },
+            "speechToText": {
+              "title": "語音轉文字",
+              "enabled": "已啟用",
+              "disabled": "已停用"
+            },
+            "textToSpeech": {
+              "title": "文字轉語音",
+              "enabled": "已啟用",
+              "disabled": "已停用",
+              "enableLabel": "啟用文字轉語音",
+              "voiceType": {
+                "label": "語音類型",
+                "placeholder": "例如：alloy, echo, fable"
+              },
+              "language": {
+                "label": "語言",
+                "selectPlaceholder": "選擇語言",
+                "options": {
+                  "zh": "中文",
+                  "en": "英文",
+                  "ja": "日文",
+                  "ko": "韓文"
+                }
+              },
+              "autoPlay": {
+                "label": "自動播放",
+                "enabled": "開啟",
+                "disabled": "關閉"
+              }
+            },
+            "retrieverResource": {
+              "title": "引用和歸屬"
+            },
+            "annotationReply": {
+              "title": "註釋回覆"
+            },
+            "userInputForm": {
+              "title": "使用者輸入表單",
+              "fieldsCount": "{count} 個欄位",
+              "description": "使用者輸入表單配置通常由 Dify 應用程式自動生成。建議透過同步功能取得最新配置。",
+              "fieldInfo": "變數：{variable} | 必填：{required} | 預設值：{defaultValue}",
+              "fieldRequired": "是",
+              "fieldOptional": "否",
+              "fieldNoDefault": "無",
+              "fieldLabel": "欄位 {index}",
+              "noFields": "無使用者輸入表單配置"
+            },
+            "systemParameters": {
+              "title": "系統參數",
+              "fileSizeLimit": "文件大小限制 (MB)",
+              "imageSizeLimit": "圖片大小限制 (MB)",
+              "audioSizeLimit": "音訊大小限制 (MB)",
+              "videoSizeLimit": "影片大小限制 (MB)"
+            }
+          },
+          "fileUploadModal": {
+            "title": "檔案上傳配置",
+            "uploadMethod": {
+              "label": "上傳方式",
+              "local": "本地上傳",
+              "url": "URL 連結",
+              "both": "兩種方式"
+            },
+            "maxFiles": {
+              "label": "最大檔案數量",
+              "description": "文件 < 15MB, 圖片 < 10MB, 音訊 < 50MB, 影片 < 100MB"
+            },
+            "fileTypes": {
+              "label": "支援的檔案類型",
+              "image": "圖片",
+              "document": "文件",
+              "audio": "音訊",
+              "video": "影片",
+              "other": "其他檔案類型",
+              "customPlaceholder": "例如：zip, rar, 7z, tar",
+              "customDescription": "支援格式：zip, rar, 7z, tar, gz, bz2, xz 等"
+            }
+          },
+          "buttons": {
+            "cancel": "取消",
+            "save": "儲存",
+            "confirm": "確認"
+          }
+        },
+        "page": {
+          "title": {
+            "edit": "編輯應用實例",
+            "add": "新增應用實例"
+          },
+          "unsavedChanges": "有未儲存的變更",
+          "validation": {
+            "instanceId": {
+              "noSpaces": "不能包含空格（會影響URL路由）",
+              "invalidChars": "只能包含字母、數字、連字符(-)、底線(_)和點(.)",
+              "tooLong": "長度不能超過50個字符",
+              "mustStartWithAlphanumeric": "必須以字母或數字開頭",
+              "formatError": "應用ID格式錯誤",
+              "notModifiable": "應用 ID 建立後不可修改",
+              "formatDescription": "只能包含字母、數字、連字符(-)、底線(_)和點(.)，不能包含空格。可先同步配置自動生成。"
+            },
+            "formValidationFailed": "表單驗證失敗",
+            "fillApiCredentials": "請先填寫API URL和API Key",
+            "fillInstanceId": "請先填寫應用ID"
+          },
+          "sync": {
+            "basicInfo": "基本資訊",
+            "paramConfig": "參數配置",
+            "noDataReceived": "未能從 Dify API 取得任何配置資料，請檢查應用ID和API配置是否正確",
+            "successMessage": "成功從 Dify API 同步{items}！",
+            "autoGeneratedId": " 已自動生成應用ID：{instanceId}",
+            "syncFailed": "同步配置失敗",
+            "syncFailedTitle": "同步失敗",
+            "syncing": "同步中...",
+            "syncFromDify": "從Dify同步配置",
+            "syncFromDifyWithAutoId": "從 Dify API 同步配置（應用ID為空時將自動生成）",
+            "syncFromDifyDescription": "從 Dify API 同步配置",
+            "syncButtonDisabled": "請先填寫API URL和API Key"
+          },
+          "defaultApp": {
+            "setAsDefault": "設為預設",
+            "isDefault": "預設應用",
+            "willSetAsDefault": "將設為預設",
+            "setDefaultConfirm": "確定要將\"{name}\"設定為預設應用嗎？",
+            "setDefaultSuccess": "預設應用設定成功",
+            "setDefaultFailed": "設定預設應用失敗",
+            "instanceNotFound": "實例ID不存在，無法設定為預設應用"
+          },
+          "provider": {
+            "title": "服務提供商",
+            "current": "目前應用的服務提供商（不可修改）",
+            "select": "選擇服務提供商",
+            "unknown": "未知提供商",
+            "selectPlaceholder": "請選擇提供商"
+          },
+          "fields": {
+            "instanceId": {
+              "label": "應用 ID (instance_id) *",
+              "placeholder": "輸入應用 ID",
+              "generateButton": "生成ID",
+              "generateTooltip": "點擊生成隨機UUID作為應用ID"
+            },
+            "displayName": {
+              "label": "顯示名稱 (display_name) *",
+              "placeholder": "輸入顯示名稱"
+            },
+            "description": {
+              "label": "應用描述 (description)",
+              "placeholder": "輸入應用描述"
+            }
+          },
+          "appType": {
+            "label": "應用類型 (app_type) *",
+            "model": {
+              "title": "模型",
+              "description": "用於模型切換"
+            },
+            "marketplace": {
+              "title": "應用市場",
+              "description": "用於應用市場"
+            },
+            "note": "選擇\"模型\"類型的應用會出現在聊天介面的模型選擇器中"
+          },
+          "syncConfirm": {
+            "updateDescription": "是否將描述更新為：\"{description}\"？"
+          },
+          "difyAppTypeSelector": {
+            "title": "Dify 應用類型 (dify_apptype) *",
+            "titleCompact": "Dify 應用類型",
+            "description": "選擇適合您應用場景的 Dify 應用類型。不同類型具有不同的功能特性和適用場景。"
+          },
+          "difyConfig": {
+            "title": "Dify 參數配置",
+            "appTypeNote": "選擇\"模型\"類型的應用會出現在聊天介面的模型選擇器中"
+          }
+        },
+        "useApiConfigEvents": {
+          "defaultInstanceSetSuccess": "預設應用程式設定成功"
+        }
+      },
+      "content": {
+        "page": {
+          "title": "內容管理",
+          "subtitle": "管理首頁和關於頁面的多語言內容",
+          "showPreview": "顯示預覽",
+          "fullscreenPreview": "全螢幕預覽",
+          "closePreview": "關閉預覽",
+          "loadingEditor": {
+            "about": "無法載入關於頁面編輯器。",
+            "home": "無法載入首頁編輯器。"
+          },
+          "loadingPreview": "載入預覽中...",
+          "messages": {
+            "loadFailed": "載入翻譯資料失敗",
+            "saveSuccess": "設定儲存成功",
+            "saveFailed": "儲存設定失敗，請重試"
+          },
+          "saveActions": {
+            "hasChanges": "有未儲存的變更",
+            "saving": "正在儲存...",
+            "allSaved": "所有變更已儲存",
+            "reset": "重設",
+            "save": "儲存變更",
+            "saving_": "儲存中..."
+          }
+        },
+        "tabs": {
+          "about": "關於頁面",
+          "home": "首頁"
+        },
+        "previewToolbar": {
+          "aboutPreview": "關於頁面預覽",
+          "homePreview": "首頁預覽"
+        },
+        "editor": {
+          "common": {
+            "editLanguage": "編輯語言",
+            "selectLanguage": "選擇語言",
+            "cardNumber": "卡片 #{number}"
+          },
+          "home": {
+            "pageTitle": "頁面標題 (title)",
+            "subtitle": "副標題 (subtitle)",
+            "features": "特色卡片 (features)",
+            "featureTitle": "標題 (title)",
+            "featureDescription": "描述 (description)",
+            "getStarted": "主要按鈕 (getStarted)",
+            "learnMore": "次要按鈕 (learnMore)",
+            "copyright": "版權資訊 (copyright)",
+            "copyrightPrefix": "前綴 (prefix)",
+            "copyrightLinkText": "連結文字 (linkText)",
+            "copyrightSuffix": "後綴 (suffix)"
+          },
+          "about": {
+            "pageTitle": "頁面標題 (title)",
+            "subtitle": "副標題 (subtitle)",
+            "mission": "使命描述 (mission.description)",
+            "values": "價值觀卡片 (values.items)",
+            "valueTitle": "標題 (title)",
+            "valueDescription": "描述 (description)",
+            "buttonText": "按鈕文字 (buttonText)",
+            "copyright": "版權資訊 (copyright)",
+            "copyrightPrefix": "前綴 (prefix)",
+            "copyrightLinkText": "連結文字 (linkText)",
+            "copyrightSuffix": "後綴 (suffix)"
+          }
+        }
+      },
+      "users": {
+        "title": "使用者管理",
+        "subtitle": "管理系統使用者帳戶、權限和存取控制",
+        "stats": {
+          "totalUsers": "總使用者數",
+          "activeUsers": "活躍使用者",
+          "suspendedUsers": "已暫停",
+          "pendingUsers": "待啟用",
+          "adminUsers": "管理員",
+          "managerUsers": "經理",
+          "regularUsers": "一般使用者",
+          "newUsersToday": "今日新增",
+          "activeUsersRatio": "佔總使用者比例",
+          "newUsersThisWeek": "本週其他天數"
+        },
+        "filters": {
+          "searchPlaceholder": "搜尋使用者信箱、姓名或使用者名稱...",
+          "advancedFilters": "進階篩選",
+          "reset": "重設",
+          "rolePermissions": "角色權限",
+          "accountStatus": "帳戶狀態",
+          "authSource": "認證來源",
+          "roleOptions": {
+            "all": "所有角色",
+            "admin": "管理員",
+            "manager": "經理",
+            "user": "一般使用者"
+          },
+          "statusOptions": {
+            "all": "所有狀態",
+            "active": "活躍",
+            "suspended": "已暫停",
+            "pending": "待啟用"
+          },
+          "authSourceOptions": {
+            "all": "所有來源",
+            "email": "📧 信箱",
+            "sso": "SSO認證",
+            "phone": "📱 手機"
+          },
+          "sortBy": "排序方式",
+          "sortOptions": {
+            "createdAt": "註冊時間",
+            "lastSignIn": "最後登入",
+            "email": "信箱",
+            "fullName": "姓名"
+          },
+          "sortOrder": {
+            "desc": "最新在前",
+            "asc": "最舊在前"
+          }
+        },
+        "table": {
+          "headers": {
+            "userInfo": "使用者資訊",
+            "contact": "聯絡方式",
+            "groups": "群組",
+            "rolePermissions": "角色權限",
+            "status": "狀態",
+            "lastLogin": "最後登入",
+            "registerTime": "註冊時間"
+          },
+          "loading": "載入使用者資料中...",
+          "loadingSubtext": "請稍候，正在取得最新的使用者資訊",
+          "noData": "暫無使用者資料",
+          "noDataSubtext": "沒有找到符合條件的使用者，請嘗試調整篩選條件",
+          "noDataHint": "您可以重設篩選條件或聯絡管理員新增使用者"
+        },
+        "batchOperations": {
+          "selected": "已選擇 {count} 個使用者",
+          "cancelSelection": "取消選擇",
+          "setAsAdmin": "設為管理員",
+          "setAsManager": "設為經理",
+          "setAsUser": "設為一般使用者",
+          "activate": "啟用",
+          "suspend": "暫停"
+        },
+        "actions": {
+          "refreshData": "重新整理資料",
+          "addUser": "新增使用者",
+          "addUserInDevelopment": "新增使用者功能開發中",
+          "viewUser": "檢視使用者：{name}",
+          "editUser": "編輯使用者：{name}",
+          "viewDetails": "檢視詳情",
+          "editInfo": "編輯資訊",
+          "changeRole": "更改角色",
+          "changeStatus": "更改狀態",
+          "deleteUser": "刪除使用者",
+          "current": "(目前)",
+          "self": "(自己)",
+          "admin": "(管理員)",
+          "notSet": "未設置",
+          "notSetEmail": "未設置信箱",
+          "notSetPhone": "未設置手機",
+          "defaultUser": "使用者",
+          "emailIcon": "📧",
+          "phoneIcon": "📱",
+          "moreGroups": "+{count} 個群組",
+          "notInGroup": "未加入群組",
+          "moreGroupsTooltip": "還有 {count} 個群組：{names}",
+          "confirm": "確認"
+        },
+        "pagination": {
+          "showing": "顯示第 {start} - {end} 筆，共 {total} 筆記錄",
+          "previous": "上一頁",
+          "next": "下一頁"
+        },
+        "messages": {
+          "cannotIncludeSelf": "不能在批次操作中包含自己",
+          "cannotDowngradeAdmin": "不能在批次操作中降級其他管理員",
+          "cannotChangeOwnRole": "不能修改自己的角色",
+          "cannotDowngradeOtherAdmin": "不能降級其他管理員",
+          "cannotDeleteSelf": "不能刪除自己",
+          "cannotDeleteOtherAdmin": "不能刪除其他管理員",
+          "roleChangeSuccess": "已將 {name} 的角色更改為{role}",
+          "statusChangeSuccess": "已將 {name} 的狀態更改為{status}",
+          "batchRoleChangeSuccess": "已批次更改 {count} 個使用者的角色",
+          "batchStatusChangeSuccess": "已批次更改 {count} 個使用者的狀態",
+          "deleteConfirm": "確定要刪除使用者 {name} 嗎？此操作無法撤銷。",
+          "deleteSuccess": "已刪除使用者 {name}",
+          "roles": {
+            "admin": "管理員",
+            "manager": "經理",
+            "user": "一般使用者"
+          },
+          "statuses": {
+            "active": "活躍",
+            "suspended": "已暫停",
+            "pending": "待啟用"
+          },
+          "roleChangeConfirm": "要將{name}的角色變更為{role}嗎？",
+          "statusChangeConfirm": "要將{name}的狀態變更為{status}嗎？",
+          "batchRoleChangeConfirm": "將{count}個用戶的角色更改為{role} ？",
+          "batchStatusChangeConfirm": "要將{count}位使用者的狀態變更為{status}嗎？"
+        }
+      },
+      "ssoProviders": {
+        "title": "單一登入服務商管理",
+        "subtitle": "管理單一登入服務商及其設定",
+        "addProvider": "新增服務商",
+        "refresh": "重新整理資料",
+        "error": "錯誤",
+        "filters": {
+          "searchPlaceholder": "搜尋服務商名稱或協定...",
+          "reset": "重設"
+        },
+        "table": {
+          "headers": {
+            "name": "名稱",
+            "protocol": "協定",
+            "status": "狀態",
+            "order": "順序",
+            "created": "建立時間"
+          },
+          "enabled": "已啟用",
+          "disabled": "已停用",
+          "button": "按鈕",
+          "noProviders": "未找到單一登入服務商",
+          "createFirst": "建立您的第一個單一登入服務商以開始使用",
+          "loadingProviders": "正在載入SSO供應商...",
+          "actions": {
+            "viewDetails": "檢視詳細資訊",
+            "edit": "編輯",
+            "enable": "啟用",
+            "disable": "停用",
+            "delete": "刪除"
+          }
+        },
+        "form": {
+          "createTitle": "建立單一登入服務商",
+          "editTitle": "編輯單一登入服務商",
+          "createDescription": "設定新的單一登入服務商",
+          "editDescription": "修改現有單一登入服務商的設定",
+          "tabs": {
+            "basicInfo": "基本資訊",
+            "protocolConfig": "協定設定",
+            "security": "安全性設定",
+            "uiSettings": "介面設定"
+          },
+          "fields": {
+            "providerName": "服務商名稱",
+            "providerNamePlaceholder": "範例大學單一登入",
+            "protocol": "協定",
+            "selectProtocol": "選擇協定",
+            "displayOrder": "顯示順序",
+            "buttonText": "按鈕文字",
+            "buttonTextPlaceholder": "留空則使用服務商名稱",
+            "emailDomain": "電郵網域",
+            "emailDomainPlaceholder": "例如：example.com",
+            "enableProvider": "啟用此服務商",
+            "baseUrl": "基礎 URL",
+            "baseUrlPlaceholder": "https://sso.example.com",
+            "loginEndpoint": "登入端點",
+            "loginEndpointPlaceholder": "/login",
+            "logoutEndpoint": "登出端點",
+            "logoutEndpointPlaceholder": "/logout",
+            "validateEndpoint": "驗證端點",
+            "validateEndpointPlaceholder": "/serviceValidate",
+            "validateV3Endpoint": "V3 驗證端點",
+            "validateV3EndpointPlaceholder": "/p3/serviceValidate",
+            "attributeMapping": "屬性對應",
+            "employeeId": "員工 ID",
+            "employeeIdPlaceholder": "cas:user",
+            "username": "使用者名稱",
+            "usernamePlaceholder": "cas:username",
+            "requireHttps": "要求 HTTPS",
+            "validateCertificates": "驗證 SSL 憑證",
+            "allowedRedirectHosts": "允許的重新導向主機",
+            "allowedRedirectHostsPlaceholder": "example.com\nsubdomain.example.com",
+            "allowedRedirectHostsHint": "每行輸入一個主機",
+            "icon": "圖示",
+            "iconPlaceholder": "🏛️",
+            "theme": "主題",
+            "logoUrl": "Logo URL",
+            "logoUrlPlaceholder": "https://example.com/logo.png",
+            "description": "描述",
+            "descriptionPlaceholder": "大學單一登入系統"
+          },
+          "themes": {
+            "primary": "主要",
+            "secondary": "次要",
+            "default": "預設",
+            "outline": "外框"
+          },
+          "advancedSettings": "進階設定",
+          "showRawJson": "顯示原始 JSON",
+          "hideRawJson": "隱藏原始 JSON",
+          "rawJsonConfig": "原始 JSON 設定",
+          "actions": {
+            "cancel": "取消",
+            "save": "儲存",
+            "saving": "儲存中..."
+          },
+          "messages": {
+            "fixJsonErrors": "請先修正 JSON 錯誤再儲存",
+            "createSuccess": "單一登入服務商建立成功",
+            "updateSuccess": "單一登入服務商更新成功",
+            "unexpectedError": "發生意外錯誤"
+          }
+        },
+        "deleteDialog": {
+          "title": "確認刪除",
+          "message": "確定要刪除單一登入服務商「{name}」嗎？此操作不可撤銷，將停用使用此服務商的使用者單一登入功能。",
+          "cancel": "取消",
+          "delete": "刪除",
+          "deleting": "刪除中...",
+          "success": "「{name}」已成功刪除"
+        },
+        "detailsModal": {
+          "title": "服務商詳細資訊與設定概覽",
+          "basicInfo": "基本資訊",
+          "protocol": "協定",
+          "status": "狀態",
+          "displayOrder": "顯示順序",
+          "buttonText": "按鈕文字",
+          "protocolConfig": "協定設定",
+          "baseUrl": "基礎 URL",
+          "login": "登入",
+          "logout": "登出",
+          "securitySettings": "安全性設定",
+          "requireHttps": "要求 HTTPS",
+          "validateCertificates": "驗證憑證",
+          "yes": "是",
+          "no": "否",
+          "uiConfig": "介面設定",
+          "theme": "主題",
+          "icon": "圖示",
+          "description": "描述",
+          "timestamps": "時間戳",
+          "created": "建立於",
+          "updated": "更新於",
+          "actions": {
+            "close": "關閉",
+            "editProvider": "編輯服務商"
+          }
+        },
+        "stats": {
+          "totalProviders": "服務商總數",
+          "allSsoProviders": "所有單一登入服務商已設定",
+          "enabled": "已啟用",
+          "percentOfTotal": "佔總數",
+          "noProviders": "暫無設定的服務商",
+          "disabled": "已停用",
+          "activeProtocols": "啟用協定",
+          "differentProtocolTypes": "不同協定類型",
+          "protocolBreakdown": "協定分佈"
+        }
+      },
+      "groups": {
+        "title": "群組管理",
+        "subtitle": "管理使用者群組和應用程式權限分配",
+        "stats": {
+          "totalGroups": "群組總數",
+          "totalMembers": "成員總數",
+          "averageMembers": "平均成員數",
+          "activeGroups": "活躍群組"
+        },
+        "header": {
+          "title": "群組管理",
+          "subtitle": "管理使用者群組和應用程式權限分配",
+          "refreshData": "重新整理資料",
+          "createGroup": "建立群組"
+        },
+        "search": {
+          "placeholder": "搜尋群組名稱或描述...",
+          "searchResults": "搜尋結果",
+          "keyword": "關鍵字",
+          "noResults": "未找到匹配的群組",
+          "noResultsHint": "嘗試使用其他關鍵字搜尋"
+        },
+        "list": {
+          "noGroups": "暫無群組",
+          "noGroupsHint": "點擊「建立群組」按鈕來建立第一個群組",
+          "loading": "載入群組清單中...",
+          "memberCount": "{count} 名成員",
+          "createdAt": "建立時間",
+          "actions": {
+            "manageMembers": "成員管理",
+            "editGroup": "編輯群組",
+            "deleteGroup": "刪除群組"
+          }
+        },
+        "createModal": {
+          "title": "建立群組",
+          "nameLabel": "群組名稱",
+          "nameRequired": "群組名稱不能為空",
+          "nameTooShort": "群組名稱至少需要2個字元",
+          "nameTooLong": "群組名稱不能超過50個字元",
+          "namePlaceholder": "請輸入群組名稱",
+          "descriptionLabel": "群組描述",
+          "descriptionTooLong": "描述不能超過200個字元",
+          "descriptionPlaceholder": "請輸入群組描述（可選）",
+          "creating": "建立中...",
+          "createButton": "建立群組",
+          "cancel": "取消",
+          "createSuccess": "群組「{name}」建立成功"
+        },
+        "editModal": {
+          "title": "編輯群組",
+          "nameLabel": "群組名稱",
+          "nameRequired": "群組名稱不能為空",
+          "nameTooShort": "群組名稱至少需要2個字元",
+          "nameTooLong": "群組名稱不能超過50個字元",
+          "namePlaceholder": "請輸入群組名稱",
+          "descriptionLabel": "群組描述",
+          "descriptionTooLong": "描述不能超過200個字元",
+          "descriptionPlaceholder": "請輸入群組描述（可選）",
+          "updating": "更新中...",
+          "updateButton": "儲存變更",
+          "cancel": "取消",
+          "noChanges": "沒有檢測到任何變更",
+          "updateSuccess": "群組「{name}」更新成功"
+        },
+        "membersModal": {
+          "title": "群組成員管理",
+          "subtitle": "{groupName} · 共 {count} 名成員",
+          "addMember": "新增成員",
+          "searchPlaceholder": "搜尋成員...",
+          "loading": "載入成員清單中...",
+          "noMembers": "暫無群組成員",
+          "noMembersHint": "點擊「新增成員」按鈕來邀請使用者加入群組",
+          "noSearchResults": "未找到匹配的成員",
+          "noSearchResultsHint": "嘗試使用其他關鍵字搜尋",
+          "unknownUser": "未知使用者",
+          "joinedAt": "加入於",
+          "removeMember": "移除成員",
+          "removeMemberConfirm": "確定要將「{memberName}」從群組「{groupName}」中移除嗎？",
+          "removeMemberSuccess": "已移除成員「{memberName}」"
+        },
+        "addMembersModal": {
+          "title": "新增成員",
+          "subtitle": "選擇使用者並將其新增到群組「{groupName}」",
+          "searchPlaceholder": "搜尋使用者名稱、姓名或電子郵件...",
+          "loading": "載入使用者清單中...",
+          "noUsers": "沒有可新增的使用者",
+          "noSearchResults": "未找到匹配的使用者",
+          "selectAll": "全選",
+          "deselectAll": "取消全選",
+          "addSelected": "新增 {count} 名成員",
+          "tableHeaders": {
+            "userInfo": "使用者資訊",
+            "role": "角色"
+          },
+          "userRoles": {
+            "admin": "管理員",
+            "manager": "經理",
+            "user": "一般使用者"
+          },
+          "unknownUser": "未知使用者",
+          "pagination": {
+            "showing": "顯示第 {start} - {end} 條，共 {total} 條記錄",
+            "previous": "上一頁",
+            "next": "下一頁"
+          },
+          "addSuccess": "成功新增 {count} 名成員到群組",
+          "addPartialSuccess": "{errorCount} 名成員新增失敗"
+        },
+        "messages": {
+          "deleteConfirm": "確定要刪除群組「{name}」嗎？此操作無法撤銷。",
+          "deleteSuccess": "已刪除群組「{name}」",
+          "loadError": "載入群組資料失敗",
+          "createError": "建立群組失敗",
+          "updateError": "更新群組失敗",
+          "deleteError": "刪除群組失敗",
+          "addMemberError": "新增成員失敗",
+          "removeMemberError": "移除成員失敗"
+        }
+      },
+      "permissions": {
+        "header": {
+          "title": "應用程式權限管理",
+          "subtitle": "統一管理應用程式可見性和群組權限分配",
+          "refreshButton": "重新整理資料"
+        },
+        "searchAndFilter": {
+          "searchPlaceholder": "搜尋應用程式名稱或描述...",
+          "filterLabel": "應用程式類型：",
+          "filterOptions": {
+            "all": "全部應用程式",
+            "public": "公開應用程式",
+            "groupOnly": "群組應用程式",
+            "private": "私人應用程式"
+          }
+        },
+        "layout": {
+          "appListTitle": "應用程式清單",
+          "appListSubtitle": "選擇應用程式來設定權限",
+          "permissionPanelTitle": "權限設定",
+          "permissionPanelSubtitle": "管理應用程式可見性和群組權限"
+        },
+        "appList": {
+          "noApps": "暫無應用程式",
+          "noAppsDescription": "請先建立應用程式實例",
+          "loading": "載入中...",
+          "unknown": "未知",
+          "visibility": {
+            "public": "公開",
+            "groupOnly": "群組",
+            "private": "私人"
+          }
+        },
+        "permissionPanel": {
+          "selectApp": {
+            "title": "選擇應用程式",
+            "description": "從左側應用程式清單中選擇一個應用程式來設定權限"
+          },
+          "visibilitySettings": {
+            "title": "可見性設定",
+            "currentSetting": "目前設定",
+            "options": {
+              "public": {
+                "label": "公開應用程式",
+                "description": "所有使用者都可以存取此應用程式"
+              },
+              "groupOnly": {
+                "label": "群組應用程式",
+                "description": "僅授權群組的成員可以存取"
+              },
+              "private": {
+                "label": "私人應用程式",
+                "description": "僅管理員可以存取此應用程式"
+              }
+            }
+          },
+          "groupPermissions": {
+            "title": "群組權限",
+            "description": "選擇哪些群組可以存取此應用程式",
+            "noGroups": {
+              "title": "暫無群組",
+              "description": "請先建立群組才能設定應用程式權限"
+            },
+            "status": {
+              "enabled": "已啟用",
+              "disabled": "已停用"
+            },
+            "actions": {
+              "enable": "啟用存取",
+              "disable": "停用存取"
+            },
+            "memberCount": "{count} 成員"
+          },
+          "permissionExplanation": {
+            "title": "權限說明",
+            "public": "公開應用程式：所有使用者都可以存取",
+            "groupOnly": "群組應用程式：僅授權群組的成員可以存取",
+            "private": "私人應用程式：僅管理員可以存取"
+          }
+        },
+        "messages": {
+          "visibilityUpdateSuccess": "應用程式可見性已更新為「{visibility}」",
+          "groupPermissionEnabled": "已啟用{groupName}對此應用程式的存取權限",
+          "groupPermissionDisabled": "已停用{groupName}對此應用程式的存取權限",
+          "loadAppsError": "載入應用程式清單失敗",
+          "loadGroupsError": "載入群組清單失敗",
+          "updateVisibilityError": "更新應用程式可見性失敗",
+          "updateGroupPermissionError": "更新群組權限失敗"
+        }
+      }
+    },
+    "about": {
+      "sections": [
+        {
+          "id": "section-1754655785516-0gtnyowfz",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785516-arpgn8u9r",
+                "type": "heading",
+                "props": {
+                  "content": "關於 AgentifUI",
+                  "level": 1,
+                  "textAlign": "center"
+                }
+              },
+              {
+                "id": "comp-1754655785516-kwyablkrd",
+                "type": "paragraph",
+                "props": {
+                  "content": "連接 AI 與企業，打造大模型應用新體驗",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785516-cmmopg4cw",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785516-5ie7wbie9",
+                "type": "heading",
+                "props": {
+                  "content": "我們的使命",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785516-h6vlfnfvd",
+                "type": "paragraph",
+                "props": {
+                  "content": "AgentifUI 致力於利用大型語言模型的力量，為企業提供創新的應用解決方案。我們整合了多種模型供應商的能力，並基於 Dify 後端提供穩定、可靠的服務，幫助組織充分利用 AI 技術的價值。",
+                  "textAlign": "left"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785516-cxcotoc0i",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785516-4ajdcbfpz",
+                "type": "heading",
+                "props": {
+                  "content": "我們的價值觀",
+                  "level": 2,
+                  "textAlign": "left"
+                }
+              },
+              {
+                "id": "comp-1754655785516-qkn65c0pz",
+                "type": "cards",
+                "props": {
+                  "layout": "grid",
+                  "items": [
+                    {
+                      "title": "技術創新",
+                      "description": "持續整合前沿的大模型技術，為企業提供領先的 AI 解決方案"
+                    },
+                    {
+                      "title": "資料安全",
+                      "description": "支援私有化部署和嚴格的資料保護措施，確保企業資料的安全與隱私"
+                    },
+                    {
+                      "title": "靈活客製",
+                      "description": "提供高度可客製的解決方案，滿足不同行業和情境的特定需求"
+                    },
+                    {
+                      "title": "知識增強",
+                      "description": "透過 RAG 技術實現私有知識庫的整合，增強模型的上下文感知能力"
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785516-u3wi14baf",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785516-5fomxvrls",
+                "type": "button",
+                "props": {
+                  "text": "開始探索",
+                  "variant": "solid",
+                  "action": "link",
+                  "url": "/chat",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        },
+        {
+          "id": "section-1754655785516-sty7g2pgd",
+          "layout": "single-column",
+          "columns": [
+            [
+              {
+                "id": "comp-1754655785516-4wtktv1bg",
+                "type": "paragraph",
+                "props": {
+                  "content": "© {year} AgentifUI. 探索大模型應用的未來。",
+                  "textAlign": "center"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "lastModified": "2025-08-08T12:23:05.516Z",
+        "author": "system-migration",
+        "migratedFrom": "legacy-format",
+        "migrationTimestamp": "2025-08-08T12:23:05.516Z",
+        "locale": "zh-TW"
+      }
+    }
+  },
+  "components": {
+    "chat": {
+      "messageActions": {
+        "copy": "複製",
+        "copied": "已複製",
+        "edit": "編輯",
+        "regenerate": "重新生成",
+        "useful": "有用",
+        "notUseful": "無用",
+        "rated": "已評價"
+      },
+      "referenceSources": {
+        "title": "引用了 {count} 個知識庫資源",
+        "knowledgeBase": "知識庫",
+        "expand": "展開全文",
+        "collapse": "收起",
+        "copy": "複製",
+        "copied": "已複製",
+        "copyFailed": "複製失敗",
+        "relevanceScore": "相關度",
+        "wordCount": "{count} 字",
+        "page": "第 {page} 頁"
+      },
+      "thinkBlock": {
+        "thinking": "正在深度思考",
+        "stopped": "思考已停止",
+        "completed": "已深度思考"
+      }
+    },
+    "chatInput": {
+      "attachmentPreview": {
+        "fileLimitExceeded": "已超出檔案數量限制 ({current}/{max})，請刪除部分檔案"
+      }
+    },
+    "ui": {
+      "resizableSplitPane": {
+        "tooltip": "拖拽調整面板大小，雙擊重置"
+      },
+      "notificationBar": {
+        "closeNotification": "關閉通知"
+      },
+      "suggestedQuestionButton": {
+        "ariaLabel": "推薦問題: {question}"
+      },
+      "copyButton": {
+        "copy": "複製內容",
+        "copied": "已複製",
+        "noContent": "無內容可複製"
+      },
+      "userAvatar": {
+        "alt": "的頭像"
+      }
+    }
+  },
+  "debug": {
+    "setDefaultApp": "設定預設應用程式 - 傳入ID:",
+    "currentInstances": "目前所有實例:",
+    "instanceNotFound": "未找到實例，傳入ID:",
+    "foundInstance": "找到實例:",
+    "setDefaultFailed": "設定預設應用程式失敗:",
+    "syncConfig": "同步設定",
+    "syncFailed": "同步失敗:",
+    "syncSuccess": "同步成功"
+  },
+  "buttons": {
+    "syncInProgress": "同步中...",
+    "syncConfig": "同步設定",
+    "tooltip": {
+      "syncFromDify": "從 Dify API 同步設定",
+      "syncFromDifyEdit": "從 Dify API 同步設定",
+      "syncFromDifyCreate": "從 Dify API 同步設定（應用程式ID為空時將自動生成）",
+      "fillCredentials": "請先填寫API URL和API金鑰"
+    }
+  },
+  "confirmDialog": {
+    "updateDisplayName": "是否將顯示名稱更新為：\"{name}\"？"
+  },
+  "errors": {
+    "notFound": "頁面未找到",
+    "serverError": "伺服器錯誤",
+    "unauthorized": "未授權存取"
+  },
+  "navbar": {
+    "user": {
+      "userMenu": "用戶選單",
+      "login": "登錄",
+      "logout": "登出",
+      "loggingOut": "登出中...",
+      "register": "註冊新帳戶",
+      "history": "歷史對話",
+      "settings": "設定",
+      "about": "關於",
+      "admin": "管理後台",
+      "loginPrompt": "登錄以使用更多功能",
+      "loginDescription": "訪問您的對話歷史和個人設定"
+    },
+    "conversation": {
+      "newChat": "新對話",
+      "creating": "建立中...",
+      "loading": "載入中...",
+      "rename": "重新命名",
+      "delete": "刪除對話",
+      "star": "收藏",
+      "unstar": "取消收藏",
+      "appsMarket": "應用程式市場",
+      "renameDialog": {
+        "title": "重新命名對話",
+        "placeholder": "輸入新的對話名稱",
+        "confirmText": "確認重新命名"
+      },
+      "deleteDialog": {
+        "title": "刪除對話",
+        "message": "確定要刪除會話 \"{title}\" 嗎？此操作無法復原。",
+        "confirmText": "確認刪除"
+      },
+      "createInProgress": "對話正在建立中，請稍後再試。",
+      "incompleteInfo": "對話資訊不完整，無法操作。",
+      "renameFailed": "重新命名會話失敗。",
+      "deleteFailed": "刪除會話失敗。",
+      "operationError": "操作出錯，請稍後再試。"
+    },
+    "workflow": {
+      "history": "歷史記錄",
+      "closeHistory": "關閉歷史記錄",
+      "viewHistory": "檢視歷史記錄",
+      "closeHistoryShort": "關閉歷史",
+      "historyShort": "歷史記錄"
+    }
+  },
+  "sidebar": {
+    "appName": "AgentifUI",
+    "expand": "展開",
+    "collapse": "收起",
+    "newChat": "新對話",
+    "historyChats": "歷史對話",
+    "appsMarket": "應用程式市場",
+    "settings": "設定",
+    "recentChats": "近期對話",
+    "moreOptions": "更多選項",
+    "rename": "重新命名",
+    "delete": "刪除對話",
+    "untitled": "無標題",
+    "creating": "建立中...",
+    "favoriteApps": "常用應用程式",
+    "loading": "載入中...",
+    "startWorkflow": "開始工作流程",
+    "startTextGeneration": "開始文字生成",
+    "startChat": "開始對話",
+    "hideApp": "隱藏該應用程式",
+    "renameDialog": {
+      "title": "重新命名對話",
+      "label": "對話名稱",
+      "placeholder": "輸入新的對話名稱",
+      "confirmText": "確認重新命名"
+    },
+    "deleteDialog": {
+      "title": "刪除對話",
+      "message": "確定要刪除會話 \"{title}\" 嗎？此操作無法復原。",
+      "confirmText": "確認刪除"
+    },
+    "syncingMessage": "對話資料正在同步中，請稍後再嘗試{action}。",
+    "operationFailed": "操作失敗，請稍後再試。",
+    "saveFailed": "儲存對話失敗",
+    "createFailed": "建立對話失敗"
+  },
+  "mobile": {
+    "navigation": {
+      "openMenu": "打開選單",
+      "openUserMenu": "打開用戶選單"
+    },
+    "user": {
+      "defaultUser": "用戶",
+      "loginRegister": "登錄/註冊",
+      "avatarAlt": "{userName}的頭像",
+      "loginPrompt": "登錄以使用更多功能"
+    },
+    "bottomSheet": {
+      "userMenu": "使用者選單",
+      "account": "帳戶"
+    },
+    "menu": {
+      "settings": "設定",
+      "logout": "登出",
+      "login": "登入",
+      "register": "註冊新帳戶",
+      "adminPanel": "管理後台",
+      "about": "關於"
+    }
+  },
+  "loading": {
+    "default": "載入中...",
+    "app": "正在載入應用程式...",
+    "appList": "載入應用程式清單...",
+    "messages": "載入更多訊息...",
+    "moreMessages": "載入更多歷史訊息",
+    "retry": "重試",
+    "failed": "載入失敗",
+    "loadingFailed": "載入訊息失敗: {error}",
+    "spinner": "載入中",
+    "pageLoader": {
+      "title": "載入中"
+    }
+  },
+  "dynamicTitle": {
+    "base": "AgentifUI",
+    "settings": {
+      "main": "設定",
+      "profile": "個人資料",
+      "account": "帳戶設定",
+      "appearance": "外觀設定",
+      "language": "語言設定"
+    },
+    "admin": {
+      "main": "管理後台",
+      "users": "使用者管理",
+      "apiConfig": "API設定",
+      "security": "安全設定",
+      "analytics": "資料分析",
+      "content": "頁面內容管理"
+    },
+    "auth": {
+      "login": "登入",
+      "register": "註冊",
+      "phoneLogin": "手機號碼登入",
+      "resetPassword": "重設密碼",
+      "forgotPassword": "忘記密碼",
+      "ssoProcessing": "SSO登入處理中"
+    },
+    "apps": {
+      "market": "應用程式市場",
+      "agent": "Agent應用程式",
+      "chatbot": "Chatbot應用程式",
+      "chatflow": "Chatflow應用程式",
+      "workflow": "Workflow應用程式",
+      "textGeneration": "文字生成應用程式",
+      "details": "應用程式詳情",
+      "loading": "載入應用程式..."
+    },
+    "chat": {
+      "main": "聊天",
+      "new": "新對話",
+      "history": "歷史對話",
+      "loading": "載入對話...",
+      "notFound": "對話不存在"
+    },
+    "about": "關於"
+  },
+  "history": {
+    "title": "歷史對話",
+    "loading": "會話記錄載入中...",
+    "noRecords": "暫無會話歷史",
+    "totalCount": "共找到 {total} 個對話",
+    "searchResults": "搜尋結果：{count} 個對話",
+    "totalRecords": "共 {total} 個對話",
+    "searchPlaceholder": "搜尋聊天歷史...",
+    "newChat": "新對話",
+    "noMessagePreview": "無訊息預覽",
+    "batchDelete": "批次刪除",
+    "exitSelection": "退出選擇",
+    "selectAll": "全選",
+    "deselectAll": "取消全選",
+    "selected": "已選擇 {count} / {total} 個對話",
+    "deleteCount": "刪除 ({count})",
+    "deleting": "刪除中...",
+    "cancel": "取消",
+    "rename": "重新命名",
+    "delete": "刪除對話",
+    "moreOptions": "更多選項",
+    "noSearchResults": "未找到符合的對話",
+    "searchHint": "請嘗試其他搜尋詞",
+    "noHistoryTitle": "暫無聊天歷史",
+    "noHistoryDesc": "開始一個新對話吧",
+    "renameDialog": {
+      "title": "重新命名對話",
+      "label": "對話名稱",
+      "placeholder": "輸入新的對話名稱",
+      "confirmText": "確認重新命名"
+    },
+    "deleteDialog": {
+      "title": "刪除對話",
+      "message": "確定要刪除對話 \"{title}\" 嗎？此操作無法復原。",
+      "confirmText": "確認刪除"
+    },
+    "batchDeleteDialog": {
+      "title": "批次刪除對話",
+      "message": "確定要刪除選中的 {count} 個對話嗎？此操作無法復原。",
+      "confirmText": "刪除",
+      "cancelText": "取消"
+    },
+    "operations": {
+      "renameFailed": "對話重新命名失敗",
+      "deleteFailed": "對話刪除失敗",
+      "batchDeleteSuccess": "成功刪除 {success} 個對話，{failed} 個刪除失敗",
+      "batchDeleteFailed": "刪除失敗，請稍後重試",
+      "error": "操作出錯，請稍後再試"
+    }
+  },
+  "difyAppTypes": {
+    "workflow": {
+      "label": "工作流",
+      "description": "自動化工作流程",
+      "features": {
+        "automation": "自動化",
+        "batchProcessing": "批次處理",
+        "processControl": "流程控制"
+      }
+    },
+    "text-generation": {
+      "label": "文本生成",
+      "description": "單次文本生成應用",
+      "features": {
+        "textGeneration": "文本生成",
+        "contentCreation": "內容創作",
+        "formattedOutput": "格式化輸出"
+      },
+      "resultViewer": {
+        "title": "生成結果",
+        "defaultTitle": "文本生成結果",
+        "actions": {
+          "copy": "複製結果",
+          "copied": "已複製",
+          "download": "下載結果"
+        },
+        "executionInfo": {
+          "title": "執行資訊",
+          "status": "狀態：",
+          "createdAt": "建立時間：",
+          "elapsedTime": "耗時：",
+          "statusValues": {
+            "completed": "已完成",
+            "failed": "已失敗",
+            "stopped": "已停止"
+          }
+        },
+        "content": {
+          "title": "生成內容",
+          "noContent": "暫無內容"
+        }
+      }
+    },
+    "chatbot": {
+      "label": "聊天機器人",
+      "description": "基礎對話聊天機器人",
+      "features": {
+        "conversation": "對話",
+        "fileUpload": "檔案上傳",
+        "speechToText": "語音轉文字"
+      }
+    },
+    "agent": {
+      "label": "智能代理",
+      "description": "支援工具調用的智能代理",
+      "features": {
+        "conversation": "對話",
+        "toolCalling": "工具調用",
+        "reasoningChain": "推理鏈",
+        "multiTurnTasks": "多輪任務"
+      }
+    },
+    "chatflow": {
+      "label": "對話流",
+      "description": "對話流程編排應用",
+      "features": {
+        "processOrchestration": "流程編排",
+        "conditionalBranching": "條件分支",
+        "conversationManagement": "對話管理"
+      }
+    }
+  },
+  "filePreview": {
+    "loading": "正在載入檔案內容...",
+    "failed": "檔案載入失敗",
+    "retryButton": "重試",
+    "dismissButton": "關閉",
+    "downloadButton": "下載檔案",
+    "noFileSelected": "未選擇檔案",
+    "previewNotSupported": "不支援預覽此檔案類型。您可以下載查看內容。",
+    "textPreview": {
+      "title": "文字預覽",
+      "copyButton": "複製",
+      "copiedButton": "已複製！",
+      "downloadButton": "下載",
+      "charactersCount": "{count} 個字符"
+    },
+    "pdfPreview": {
+      "title": "PDF 預覽",
+      "openButton": "開啟",
+      "downloadButton": "下載",
+      "fileSize": "{size} MB"
+    },
+    "imagePreview": {
+      "title": "圖片預覽",
+      "downloadButton": "下載",
+      "loadError": "圖片載入失敗",
+      "downloadToView": "下載檢視",
+      "filename": "檔案名稱",
+      "fileSize": "檔案大小",
+      "fileType": "檔案類型"
+    },
+    "audio": {
+      "title": "音頻預覽",
+      "duration": "時長",
+      "loadError": "音頻檔案載入失敗",
+      "notSupported": "您的瀏覽器不支援音頻播放"
+    },
+    "video": {
+      "title": "影片預覽",
+      "duration": "時長",
+      "resolution": "解析度",
+      "loadError": "影片檔案載入失敗",
+      "notSupported": "您的瀏覽器不支援影片播放"
+    },
+    "markdownPreview": {
+      "title": "Markdown 預覽",
+      "renderedMode": "渲染模式",
+      "rawMode": "原始模式",
+      "downloadButton": "下載",
+      "charactersCount": "{count} 個字符"
+    },
+    "errors": {
+      "noAppId": "檔案預覽缺少應用程式 ID",
+      "downloadNoAppId": "檔案下載缺少應用程式 ID"
+    },
+    "fileInfo": {
+      "title": "檔案資訊",
+      "name": "名稱：",
+      "type": "類型：",
+      "size": "大小："
+    },
+    "closeButton": "關閉預覽"
+  }
+}

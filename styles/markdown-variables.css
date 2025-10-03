@@ -1,0 +1,100 @@
+/* Markdown block component CSS variables */
+
+:root {
+  /* Code block */
+  --md-code-bg: rgb(250, 250, 249); /* stone-50 */
+  --md-code-border: rgba(214, 211, 209, 0.7); /* stone-300/70 */
+  --md-code-text: rgb(28, 25, 23); /* stone-900 */
+
+  /* Code block header */
+  --md-code-header-bg: rgb(245, 245, 244); /* stone-100 */
+  --md-code-header-border: rgb(214, 211, 209); /* stone-300 */
+  --md-code-header-text: rgb(87, 83, 78); /* stone-600 */
+
+  /* Inline code */
+  --md-inline-code-bg: rgb(231, 229, 228); /* stone-200 */
+  --md-inline-code-border: rgba(214, 211, 209, 0.7); /* stone-300/70 */
+  --md-inline-code-text: rgb(185, 28, 28); /* pink-600 */
+
+  /* Blockquote */
+  --md-blockquote-bg: rgba(245, 245, 244, 0.8); /* stone-100/80 */
+  --md-blockquote-border: rgb(251, 191, 36); /* amber-400 */
+  --md-blockquote-text: rgb(180, 83, 9); /* amber-700 */
+
+  /* Table */
+  --md-table-border: rgba(214, 211, 209, 0.8); /* stone-300/80 */
+  --md-table-divide: rgb(231, 229, 228); /* stone-200 */
+  --md-table-header-bg: rgb(245, 245, 244); /* stone-100 */
+  --md-table-header-text: rgb(28, 25, 23); /* stone-900 */
+  --md-table-cell-text: rgb(41, 37, 36); /* stone-800 */
+
+  /* Think block */
+  --md-think-header-bg: rgba(245, 245, 244, 0.8); /* stone-100/80 */
+  --md-think-header-border: rgb(214, 211, 209); /* stone-300 */
+  --md-think-header-text: rgb(87, 83, 78); /* stone-600 */
+  --md-think-header-icon: rgb(120, 113, 108); /* stone-500 */
+  --md-think-header-hover-bg: rgb(231, 229, 228); /* stone-200 */
+
+  /* Think block - thinking state */
+  --md-think-thinking-bg: rgba(245, 245, 244, 0.8); /* stone-200/80 */
+  --md-think-thinking-border: rgb(168, 162, 158); /* stone-400 */
+  --md-think-thinking-text: rgb(68, 64, 60); /* stone-700 */
+  --md-think-thinking-icon: rgb(120, 113, 108); /* stone-500 */
+
+  /* Think block - content area */
+  --md-think-content-bg: rgb(255, 255, 255); /* white */
+  --md-think-content-border: rgb(231, 229, 228); /* stone-200 */
+  --md-think-content-text: rgb(41, 37, 36); /* stone-800 */
+  --md-think-inline-code-bg: rgb(245, 245, 244); /* stone-100 */
+  --md-think-inline-code-text: rgb(87, 83, 78); /* stone-600 */
+}
+
+/* Dark mode variables */
+.dark {
+  /* Code block */
+  --md-code-bg: rgb(28, 25, 23); /* stone-900 */
+  --md-code-border: rgba(68, 64, 60, 0.5); /* stone-700/50 */
+  --md-code-text: rgb(245, 245, 244); /* stone-100 */
+
+  /* Code block header */
+  --md-code-header-bg: rgb(41, 37, 36); /* stone-800 */
+  --md-code-header-border: rgb(68, 64, 60); /* stone-700 */
+  --md-code-header-text: rgb(214, 211, 209); /* stone-300 */
+
+  /* Inline code */
+  --md-inline-code-bg: rgb(68, 64, 60); /* stone-700 */
+  --md-inline-code-border: rgba(87, 83, 78, 0.5); /* stone-600/50 */
+  --md-inline-code-text: rgb(249, 168, 212); /* pink-300 */
+
+  /* Blockquote */
+  --md-blockquote-bg: rgba(41, 37, 36, 0.8); /* stone-800/80 */
+  --md-blockquote-border: rgb(217, 119, 6); /* amber-600 */
+  --md-blockquote-text: rgb(253, 230, 138); /* amber-200 */
+
+  /* Table */
+  --md-table-border: rgba(68, 64, 60, 0.6); /* stone-700/60 */
+  --md-table-divide: rgb(68, 64, 60); /* stone-700 */
+  --md-table-header-bg: rgb(28, 25, 23); /* stone-900 */
+  --md-table-header-text: rgb(245, 245, 244); /* stone-100 */
+  --md-table-cell-text: rgb(214, 211, 209); /* stone-300 */
+
+  /* Think block */
+  --md-think-header-bg: rgb(41, 37, 36); /* stone-800 */
+  --md-think-header-border: rgb(68, 64, 60); /* stone-700 */
+  --md-think-header-text: rgb(214, 211, 209); /* stone-300 */
+  --md-think-header-icon: rgb(168, 162, 158); /* stone-400 */
+  --md-think-header-hover-bg: rgb(68, 64, 60); /* stone-700 */
+
+  /* Think block - thinking state */
+  --md-think-thinking-bg: rgba(68, 64, 60, 0.8); /* stone-700/80 */
+  --md-think-thinking-border: rgb(87, 83, 78); /* stone-600 */
+  --md-think-thinking-text: rgb(214, 211, 209); /* stone-300 */
+  --md-think-thinking-icon: rgb(168, 162, 158); /* stone-400 */
+
+  /* Think block - content area */
+  --md-think-content-bg: rgb(41, 37, 36); /* stone-800 */
+  --md-think-content-border: rgb(68, 64, 60); /* stone-700 */
+  --md-think-content-text: rgb(214, 211, 209); /* stone-300 */
+  --md-think-inline-code-bg: rgb(68, 64, 60); /* stone-700 */
+  --md-think-inline-code-text: rgb(231, 229, 228); /* stone-200 */
+}

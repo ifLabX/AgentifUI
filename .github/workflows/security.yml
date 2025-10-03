@@ -1,0 +1,85 @@
+name: Security Checks
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Run every Monday at 2:00 AM
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'pnpm'
+        
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+        
+    - name: Run pnpm audit
+      run: |
+        echo "Checking for dependency vulnerabilities..."
+        pnpm audit --audit-level=high
+
+  code-security:
+    name: Source Code Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Scan for hardcoded secrets
+      run: |
+        echo "Scanning for hardcoded secrets..."
+
+        # Check for hardcoded secrets
+        if grep -r -i -E "(api_key|apikey|secret|token|password)\s*[:=]\s*['\"][a-zA-Z0-9+/]{20,}['\"]" \
+           --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" \
+           . | grep -v node_modules | grep -v -E "(placeholder|example|test|demo|sample|mock)"; then
+          echo "Hardcoded secret detected"
+          exit 1
+        fi
+
+        # Check for accidentally committed .env files
+        if find . -name ".env" -not -path "./node_modules/*" -not -path "./.git/*" | grep -q .; then
+          echo ".env file committed to the repository"
+          exit 1
+        fi
+
+        echo "No hardcoded secrets found"
+
+  security-report:
+    name: Security Report Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, code-security]
+    if: always()
+    
+    steps:
+    - name: Generate security report
+      run: |
+        echo "Security Check Report"
+        echo "Generated at: $(date)"
+        echo "Dependency Scan Result: ${{ needs.dependency-scan.result }}"
+        echo "Code Security Check Result: ${{ needs.code-security.result }}"
+        
+        if [ "${{ needs.dependency-scan.result }}" = "success" ] && [ "${{ needs.code-security.result }}" = "success" ]; then
+          echo "Overall Status: Secure"
+        else
+          echo "Overall Status: Issues Detected. Please check logs for details."
+        fi
