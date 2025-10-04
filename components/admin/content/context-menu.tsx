@@ -1,5 +1,6 @@
 'use client';
 
+import { ImageUploadDialog } from '@components/admin/content/image-upload-dialog';
 import { Input } from '@components/ui/input';
 import { Label } from '@components/ui/label';
 import {
@@ -10,9 +11,10 @@ import {
   SelectValue,
 } from '@components/ui/select';
 import { Textarea } from '@components/ui/textarea';
+import { createClient } from '@lib/supabase/client';
 import { ComponentInstance } from '@lib/types/about-page-components';
 import { cn } from '@lib/utils';
-import { Plus, Trash2, X } from 'lucide-react';
+import { Plus, Trash2, Upload, X } from 'lucide-react';
 
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -40,6 +42,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x, y });
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (modalRef.current) {
@@ -78,6 +82,27 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [onClose]);
+
+  // Fetch current user ID on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchUserId = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (isMounted && user) {
+        setUserId(user.id);
+      }
+    };
+
+    fetchUserId();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   /**
    * Validate if a value is a valid CSS dimension
@@ -516,6 +541,46 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       );
     }
 
+    // Special handling for src field in image component
+    if (
+      key === 'src' &&
+      component.type === 'image' &&
+      typeof value === 'string'
+    ) {
+      return (
+        <div key={key} className="space-y-2">
+          <Label htmlFor={fieldId} className="text-sm capitalize">
+            {key}
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id={fieldId}
+              type="text"
+              value={String(value || '')}
+              onChange={e => handleInputChange(key, e.target.value)}
+              placeholder="Enter image URL"
+              className="h-8 flex-1 text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => setIsUploadDialogOpen(true)}
+              disabled={!userId}
+              className={cn(
+                'flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors',
+                'border-stone-300 bg-white text-stone-700 hover:bg-stone-50',
+                'dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700',
+                'disabled:cursor-not-allowed disabled:opacity-50'
+              )}
+              title="Upload local image"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span>Upload</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     // String fields
     if (typeof value === 'string') {
       return (
@@ -591,6 +656,19 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             renderPropertyField('secondaryButton', undefined)}
         </div>
       </div>
+
+      {/* Image Upload Dialog */}
+      {userId && (
+        <ImageUploadDialog
+          isOpen={isUploadDialogOpen}
+          onClose={() => setIsUploadDialogOpen(false)}
+          onUploadSuccess={url => {
+            // Auto-fill the uploaded image URL to src field
+            handleInputChange('src', url);
+          }}
+          userId={userId}
+        />
+      )}
     </>
   );
 };
