@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "Erro na configuração do serviço SSO, por favor contacte o administrador",
           "missingTicket": "Faltam parâmetros de autenticação, por favor inicie sessão novamente",
           "default": "Ocorreu um erro durante o início de sessão, por favor tente novamente mais tarde",
-          "loginFailed": "Falha no início de sessão, por favor verifique o seu email e palavra-passe"
+          "loginFailed": "Falha no início de sessão, por favor verifique o seu email e palavra-passe",
+          "accountSuspended": "Sua conta foi <span class=“red”>suspensa.</span><br>Por favor contacte o administrador para obter assistência.",
+          "accountPending": "A sua conta está pendente de aprovação. Aguarde até que o administrador ative a sua conta.",
+          "invalidAccount": "O estado da sua conta é inválido. Contacte o administrador para obter assistência.",
+          "profileCheckFailed": "Não foi possível verificar o estado da sua conta. Tente novamente ou contacte o administrador.",
+          "profileNotFound": "As informações da sua conta não foram encontradas. Contacte o administrador.",
+          "permissionCheckFailed": "Não foi possível verificar as suas permissões. Tente novamente ou contacte o administrador."
         }
       },
       "register": {
@@ -1509,6 +1515,19 @@
             "copyrightLinkText": "Texto do Link (linkText)",
             "copyrightSuffix": "Sufixo (suffix)"
           }
+        },
+        "imageUpload": {
+          "title": "Enviar Imagem",
+          "dropzone": {
+            "title": "Arraste e solte a imagem aqui ou clique para selecionar",
+            "subtitle": "Arraste e largue aqui uma imagem",
+            "formats": "Formatos suportados: JPG, PNG, WEBP, GIF (máx. 10 MB)"
+          },
+          "upload": "Carregar",
+          "uploading": "Carregando...",
+          "cancel": "Cancelar",
+          "success": "Imagem carregada com sucesso!",
+          "preview": "Visualização"
         }
       },
       "users": {

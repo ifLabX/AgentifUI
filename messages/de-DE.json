@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "SSO-Service-Konfigurationsfehler, bitte kontaktieren Sie den Administrator",
           "missingTicket": "Authentifizierungsparameter fehlen, bitte melden Sie sich erneut an",
           "default": "Fehler beim Anmeldeprozess aufgetreten, bitte versuchen Sie es später erneut",
-          "loginFailed": "Anmeldung fehlgeschlagen, bitte überprüfen Sie Ihre E-Mail und Ihr Passwort"
+          "loginFailed": "Anmeldung fehlgeschlagen, bitte überprüfen Sie Ihre E-Mail und Ihr Passwort",
+          "accountSuspended": "Ihr Konto wurde <span class=\"red\">gesperrt.</span><br>Bitte kontaktieren Sie einen Administrator.",
+          "accountPending": "Ihr Konto muss noch genehmigt werden. Bitte warten Sie, bis der Administrator Ihr Konto aktiviert hat.",
+          "invalidAccount": "Ihr Kontostatus ist ungültig. Bitte wenden Sie sich an den Administrator.",
+          "profileCheckFailed": "Dein Kontostatus kann nicht verifiziert werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Administrator.",
+          "profileNotFound": "Ihre Kontoinformationen wurden nicht gefunden. Bitte wenden Sie sich an den Administrator.",
+          "permissionCheckFailed": "Ihre Berechtigungen können nicht überprüft werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Administrator."
         }
       },
       "register": {
@@ -1509,6 +1515,19 @@
             "copyrightLinkText": "Link-Text (linkText)",
             "copyrightSuffix": "Suffix (suffix)"
           }
+        },
+        "imageUpload": {
+          "title": "Bild hochladen",
+          "dropzone": {
+            "title": "Bild hierher ziehen oder zum Auswählen anklicken",
+            "subtitle": "Ziehen Sie eine Bilddatei hierher und legen Sie sie dort ab",
+            "formats": "Unterstützte Formate: JPG, PNG, WEBP, GIF (max. 10 MB)"
+          },
+          "upload": "Hochladen",
+          "uploading": "Hochladen...",
+          "cancel": "Abbrechen",
+          "success": "Bild erfolgreich hochgeladen!",
+          "preview": "Vorschau"
         }
       },
       "users": {
