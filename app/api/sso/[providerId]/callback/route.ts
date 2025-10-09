@@ -137,6 +137,13 @@ export async function GET(
     } else {
       console.log(`SSO user login: ${user.id}, employee: ${employeeNumberStr}`);
 
+      // Update user profile with latest info from SSO, if available
+      // This ensures that if a real email is provided, it replaces a constructed one
+      await SSOUserService.updateUserFromSSO(user.id, {
+        email: extractedEmail,
+        fullName: fullName,
+      });
+
       // update last login time
       await SSOUserService.updateLastLogin(user.id);
     }

@@ -4,6 +4,7 @@
  */
 import { createClient } from '@lib/supabase/server';
 import type { SsoProvider } from '@lib/types/database';
+import { normalizeEmail } from '@lib/utils/validation';
 import { XMLParser } from 'fast-xml-parser';
 
 // generic CAS config interface
@@ -251,7 +252,10 @@ export class GenericCASService {
           attributes,
           this.config.attributesMapping.email
         );
-        const extractedEmail = (emailAttr as string | undefined)?.trim() || '';
+        // Normalize email to lowercase for consistent storage
+        const extractedEmail = emailAttr
+          ? normalizeEmail(emailAttr as string)
+          : '';
 
         return {
           username,
@@ -321,17 +325,6 @@ export class GenericCASService {
         rawResponse: xmlText,
       };
     }
-  }
-
-  /**
-   * validate email format using simple regex
-   * @private
-   * @param email email string to validate
-   * @returns true if email format is valid
-   */
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
   }
 
   /**

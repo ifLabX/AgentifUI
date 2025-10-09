@@ -95,25 +95,4 @@ describe('GenericCASService - Email extraction', () => {
       expect(result.email).toBe('user@example.com');
     });
   });
-
-  describe('isValidEmail', () => {
-    it('should validate standard email formats', () => {
-      expect(casService['isValidEmail']('user@example.com')).toBe(true);
-      expect(casService['isValidEmail']('test.user@company.org')).toBe(true);
-      expect(casService['isValidEmail']('user+tag@domain.co.uk')).toBe(true);
-    });
-
-    it('should reject invalid email formats', () => {
-      expect(casService['isValidEmail']('invalid')).toBe(false);
-      expect(casService['isValidEmail']('user@')).toBe(false);
-      expect(casService['isValidEmail']('@domain.com')).toBe(false);
-      expect(casService['isValidEmail']('user@@domain.com')).toBe(false);
-      expect(casService['isValidEmail']('')).toBe(false);
-      expect(casService['isValidEmail']('   ')).toBe(false);
-    });
-
-    it('should handle email with whitespace', () => {
-      expect(casService['isValidEmail']('  user@example.com  ')).toBe(true);
-    });
-  });
 });

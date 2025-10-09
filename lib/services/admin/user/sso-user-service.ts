@@ -2,6 +2,7 @@
 // Handles creation, lookup, and management of SSO users
 import { createAdminClient, createClient } from '@lib/supabase/server';
 import type { Profile } from '@lib/types/database';
+import { isValidEmail, normalizeEmail } from '@lib/utils/validation';
 
 // Data required to create an SSO user
 export interface CreateSSOUserData {
@@ -24,37 +25,30 @@ export interface SSOUserLookupResult {
 // SSO User Service class
 export class SSOUserService {
   /**
-   * Validate email format using simple regex
-   * @private
-   * @param email email string to validate
-   * @returns true if email format is valid
-   */
-  private static isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  }
-
-  /**
    * Resolve user email with priority logic: extracted email > constructed email
+   * Normalizes email to lowercase for consistent storage and comparison
    * @private
    * @param extractedEmail email extracted from SSO response
    * @param employeeNumber employee number for construction
    * @param emailDomain email domain for construction
-   * @returns resolved email address
+   * @returns resolved and normalized email address (lowercase)
    */
   private static resolveUserEmail(
     extractedEmail: string | undefined,
     employeeNumber: string,
     emailDomain: string
   ): string {
-    // If SSO extracted valid email, use it directly
-    if (extractedEmail && this.isValidEmail(extractedEmail)) {
-      return extractedEmail.trim();
+    // If SSO extracted valid email, normalize and use it
+    if (extractedEmail) {
+      const normalized = normalizeEmail(extractedEmail);
+      if (normalized) {
+        return normalized;
+      }
     }
 
-    // Otherwise construct email (existing logic)
+    // Otherwise construct email and normalize it
     const constructedEmail = `${employeeNumber}@${emailDomain}`;
-    return constructedEmail;
+    return constructedEmail.toLowerCase();
   }
 
   /**
@@ -74,8 +68,9 @@ export class SSOUserService {
       const supabase = await createClient();
 
       // Construct SSO user's email address using provided domain or environment variable fallback
+      // Normalize to lowercase for consistent comparison
       const domain = emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
-      const email = `${employeeNumber.trim()}@${domain}`;
+      const email = `${employeeNumber.trim()}@${domain}`.toLowerCase();
 
       // First try to find user with normal client (subject to RLS)
       const { data, error } = await supabase
@@ -234,7 +229,7 @@ export class SSOUserService {
       );
 
       console.log(
-        `Email resolved for ${userData.employeeNumber}: ${email} (source: ${userData.extractedEmail && this.isValidEmail(userData.extractedEmail) ? 'SSO extracted' : 'constructed'})`
+        `Email resolved for ${userData.employeeNumber}: ${email} (source: ${userData.extractedEmail && isValidEmail(userData.extractedEmail) ? 'SSO extracted' : 'constructed'})`
       );
 
       const { data: authUser, error: authError } =
@@ -519,6 +514,76 @@ export class SSOUserService {
       throw new Error(
         `Failed to update last login: ${error instanceof Error ? error.message : String(error)}`
       );
+    }
+  }
+
+  /**
+   * Update existing user profile with fresh SSO-provided information
+   *
+   * This method ensures that user profiles are kept up-to-date with the latest
+   * information from SSO providers. For example, if a user initially had a
+   * constructed email (e.g., employee123@company.com) and the SSO provider
+   * now provides their actual email (e.g., john.doe@company.com), this method
+   * will update the profile with the real email address.
+   *
+   * @param userId - User's unique identifier
+   * @param data - SSO-extracted user data to update
+   * @param data.email - Email address from SSO provider (optional)
+   * @param data.fullName - Full name from SSO provider (optional)
+   * @returns Updated user profile or null if update fails
+   */
+  static async updateUserFromSSO(
+    userId: string,
+    data: {
+      email?: string;
+      fullName?: string;
+    }
+  ): Promise<Profile | null> {
+    if (!userId) {
+      console.error('User ID is required for SSO profile update');
+      return null;
+    }
+
+    try {
+      const supabase = await createClient();
+      const updates: Partial<Profile> = {
+        updated_at: new Date().toISOString(),
+      };
+
+      // Update email if provided and valid, normalize to lowercase
+      if (data.email) {
+        const normalized = normalizeEmail(data.email);
+        if (normalized) {
+          updates.email = normalized;
+        }
+      }
+
+      // Update full name if provided and non-empty
+      if (data.fullName && data.fullName.trim()) {
+        updates.full_name = data.fullName.trim();
+      }
+
+      // Only perform update if there are actual changes beyond updated_at
+      if (Object.keys(updates).length > 1) {
+        const { data: updatedProfile, error } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', userId)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Failed to update SSO user profile:', error);
+          return null;
+        }
+
+        return updatedProfile as Profile;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error updating SSO user profile:', error);
+      return null;
     }
   }
 
