@@ -442,16 +442,12 @@ export class SSOUserService {
       if (authError && authError.message.includes('already been registered')) {
         console.warn(
           `[SSO-Create] ⚠️ Race condition detected: User ${validatedEmployeeNumber} already exists (email conflict)`,
-          JSON.stringify(
-            {
-              employeeNumber: validatedEmployeeNumber,
-              email,
-              timestamp: new Date().toISOString(),
-              errorMessage: authError.message,
-            },
-            null,
-            2
-          )
+          {
+            employeeNumber: validatedEmployeeNumber,
+            email,
+            timestamp: new Date().toISOString(),
+            errorMessage: authError.message,
+          }
         );
 
         // Strategy 1: Lookup user again, using enhanced method (including admin client)

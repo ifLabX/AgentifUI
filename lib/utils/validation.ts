@@ -231,14 +231,17 @@ export function validateEmployeeNumber(employeeNumber: unknown): string {
   // Trim whitespace
   const trimmed = employeeNumber.trim();
 
-  // Check empty after trim (防止纯空格攻击)
+  // Check empty after trim (prevent whitespace-only input attacks)
   if (trimmed.length === 0) {
-    throw new Error(
-      'Employee number cannot be empty or consist only of whitespace'
-    );
+    if (employeeNumber.length > 0) {
+      // Original string had content but was only whitespace
+      throw new Error('Employee number cannot consist only of whitespace');
+    }
+    // Original string was actually empty
+    throw new Error('Employee number cannot be empty');
   }
 
-  // Format validation (防止SQL注入、XSS等)
+  // Format validation (prevent SQL injection, XSS attacks, etc.)
   // Only allow: letters (a-z, A-Z), numbers (0-9), hyphen (-), underscore (_)
   if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
     throw new Error(
@@ -247,7 +250,7 @@ export function validateEmployeeNumber(employeeNumber: unknown): string {
     );
   }
 
-  // Length validation (防止DoS攻击和数据库性能问题)
+  // Length validation (prevent DoS attacks and database performance issues)
   if (trimmed.length > MAX_EMPLOYEE_NUMBER_LENGTH) {
     throw new Error(
       `Employee number exceeds maximum length of ${MAX_EMPLOYEE_NUMBER_LENGTH} characters ` +

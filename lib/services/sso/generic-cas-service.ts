@@ -423,9 +423,6 @@ export class GenericCASService {
         if (typeof item === 'string') {
           const trimmed = item.trim();
           if (trimmed) {
-            console.log(
-              `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is array, using first element: "${trimmed}"`
-            );
             return trimmed;
           }
         }
@@ -455,9 +452,6 @@ export class GenericCASService {
       for (const prop of propertyNames) {
         if (prop in obj && typeof obj[prop] === 'string') {
           const extracted = String(obj[prop]).trim();
-          console.log(
-            `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is object, extracted from property '${prop}': "${extracted}"`
-          );
           return extracted;
         }
       }
