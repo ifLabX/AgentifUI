@@ -48,6 +48,19 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: false,
+  },
+
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = config.externals || [];

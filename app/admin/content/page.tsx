@@ -11,8 +11,10 @@ import type { SupportedLocale } from '@lib/config/language-config';
 import { getCurrentLocaleFromCookie } from '@lib/config/language-config';
 import { clearTranslationCache } from '@lib/hooks/use-dynamic-translations';
 import { TranslationService } from '@lib/services/admin/content/translation-service';
+import { cleanupUnusedImages } from '@lib/services/content-image-upload-service';
 import { useAboutEditorStore } from '@lib/stores/about-editor-store';
 import { useHomeEditorStore } from '@lib/stores/home-editor-store';
+import { createClient } from '@lib/supabase/client';
 import type {
   AboutTranslationData,
   PageContent,
@@ -156,21 +158,101 @@ export default function ContentManagementPage() {
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
+  /**
+   * Helper function to collect all sections from translations
+   *
+   * @param translations - Translation data (about or home)
+   * @param isHome - Whether this is home page translations
+   * @returns All sections from all locales
+   */
+  const collectAllSections = (
+    translations: Record<string, AboutTranslationData | HomeTranslationData>,
+    isHome: boolean = false
+  ): PageContent['sections'] => {
+    return Object.values(translations).flatMap(translation => {
+      if (isHome) {
+        const t = isHomeDynamicFormat(translation as HomeTranslationData)
+          ? (translation as HomeTranslationData)
+          : migrateHomeTranslationData(translation as HomeTranslationData);
+        return t.sections || [];
+      } else {
+        const t = isDynamicFormat(translation as AboutTranslationData)
+          ? (translation as AboutTranslationData)
+          : migrateAboutTranslationData(translation as AboutTranslationData);
+        return t.sections || [];
+      }
+    });
+  };
+
+  /**
+   * Helper function to clean up unused images after successful save
+   *
+   * @param sections - All sections from all locales
+   * @param userId - Current user ID
+   * @returns Number of images deleted
+   */
+  const cleanupUnusedImagesAfterSave = async (
+    sections: PageContent['sections'],
+    userId: string
+  ): Promise<number> => {
+    try {
+      const deletedCount = await cleanupUnusedImages(sections, userId);
+      return deletedCount;
+    } catch (cleanupError) {
+      console.error('Failed to cleanup unused images:', cleanupError);
+      toast.warning(t('messages.cleanupFailed'));
+      return 0;
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Get current user ID for image cleanup
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      let cleanupCount = 0;
+
       if (activeTab === 'about' && aboutTranslations) {
         await TranslationService.updateAboutPageTranslations(aboutTranslations);
         setOriginalAboutTranslations({ ...aboutTranslations });
+
+        // Clean up unused images after successful save
+        if (user?.id) {
+          const allSections = collectAllSections(aboutTranslations, false);
+          cleanupCount = await cleanupUnusedImagesAfterSave(
+            allSections,
+            user.id
+          );
+        }
       } else if (activeTab === 'home' && homeTranslations) {
         await TranslationService.updateHomePageTranslations(homeTranslations);
         setOriginalHomeTranslations({ ...homeTranslations });
+
+        // Clean up unused images after successful save
+        if (user?.id) {
+          const allSections = collectAllSections(homeTranslations, true);
+          cleanupCount = await cleanupUnusedImagesAfterSave(
+            allSections,
+            user.id
+          );
+        }
       }
 
       // clear dynamic translation cache to force refresh on frontend
       clearTranslationCache();
 
-      toast.success(t('messages.saveSuccess'));
+      // Show success message with cleanup info
+      if (cleanupCount > 0) {
+        toast.success(
+          `${t('messages.saveSuccess')} ${t('messages.cleanupImages', { count: cleanupCount })}`
+        );
+      } else {
+        toast.success(t('messages.saveSuccess'));
+      }
     } catch (error) {
       console.error('Save configuration failed:', error);
       toast.error(t('messages.saveFailed'));

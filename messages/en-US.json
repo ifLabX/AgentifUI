@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "Failed to load translation data",
             "saveSuccess": "Configuration saved successfully",
-            "saveFailed": "Failed to save configuration, please try again"
+            "saveFailed": "Failed to save configuration, please try again",
+            "cleanupImages": "({count} unused {count, plural, one {image} other {images}} removed)",
+            "cleanupFailed": "Failed to cleanup unused images"
           },
           "saveActions": {
             "hasChanges": "Unsaved changes",

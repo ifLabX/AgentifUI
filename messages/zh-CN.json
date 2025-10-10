@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "加载翻译数据失败",
             "saveSuccess": "配置保存成功",
-            "saveFailed": "保存配置失败，请重试"
+            "saveFailed": "保存配置失败，请重试",
+            "cleanupImages": "({count}个未使用的{count, plural, one {图片} other {图片}}已删除)",
+            "cleanupFailed": "清理未使用的图片失败"
           },
           "saveActions": {
             "hasChanges": "有未保存的更改",

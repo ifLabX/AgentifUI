@@ -663,10 +663,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
           isOpen={isUploadDialogOpen}
           onClose={() => setIsUploadDialogOpen(false)}
           onUploadSuccess={(url, path) => {
-            // Auto-fill the uploaded image URL to src field
-            handleInputChange('src', url);
-            // Save image path for cleanup tracking
-            handleInputChange('_imagePath', path);
+            // Auto-fill the uploaded image URL and save path in one update
+            if (!component) return;
+            onPropsChange({
+              ...component.props,
+              src: url,
+              _imagePath: path,
+            });
           }}
           userId={userId}
         />
