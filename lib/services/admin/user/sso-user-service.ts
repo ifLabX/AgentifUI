@@ -798,31 +798,27 @@ export class SSOUserService {
                 : 'unknown';
             console.error(
               `[SSO-Update] 🔴 CONFLICT: ${conflictField} already exists`,
-              JSON.stringify(
-                {
-                  ...errorContext,
-                  conflictField,
-                  conflictDetails: pgError.details,
-                  suggestion:
-                    conflictField === 'email'
-                      ? 'Check SSO provider email extraction configuration'
-                      : 'Check username generation logic',
-                },
-                null,
-                2
-              )
+              {
+                ...errorContext,
+                conflictField,
+                conflictDetails: pgError.details,
+                suggestion:
+                  conflictField === 'email'
+                    ? 'Check SSO provider email extraction configuration'
+                    : 'Check username generation logic',
+              }
             );
           } else if (pgError.code === '23503') {
             // Foreign key violation
             console.error(
               '[SSO-Update] 🔴 FOREIGN KEY VIOLATION: Referenced entity does not exist',
-              JSON.stringify(errorContext, null, 2)
+              errorContext
             );
           } else {
             // Other database errors
             console.error(
               '[SSO-Update] 🔴 Database error during profile update',
-              JSON.stringify(errorContext, null, 2)
+              errorContext
             );
           }
 
@@ -837,23 +833,19 @@ export class SSOUserService {
       // Unexpected errors (not from database)
       console.error(
         '[SSO-Update] ❌ Unexpected error updating SSO user profile',
-        JSON.stringify(
-          {
-            userId,
-            attemptedData: data,
-            error:
-              error instanceof Error
-                ? {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack,
-                  }
-                : String(error),
-            timestamp: new Date().toISOString(),
-          },
-          null,
-          2
-        )
+        {
+          userId,
+          attemptedData: data,
+          error:
+            error instanceof Error
+              ? {
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack,
+                }
+              : String(error),
+          timestamp: new Date().toISOString(),
+        }
       );
       return null;
     }

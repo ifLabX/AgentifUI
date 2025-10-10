@@ -459,7 +459,7 @@ export class GenericCASService {
       // Object exists but no extractable string value found
       console.warn(
         `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is object without extractable string value:`,
-        JSON.stringify(value)
+        value
       );
       return '';
     }
