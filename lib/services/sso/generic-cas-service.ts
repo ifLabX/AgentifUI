@@ -4,6 +4,7 @@
  */
 import { createClient } from '@lib/supabase/server';
 import type { SsoProvider } from '@lib/types/database';
+import { normalizeEmail } from '@lib/utils/validation';
 import { XMLParser } from 'fast-xml-parser';
 
 // generic CAS config interface
@@ -224,34 +225,35 @@ export class GenericCASService {
         const user = success['cas:user'];
         const attributes = success['cas:attributes'] || {};
 
-        // extract user info based on config attributes mapping
-        const employeeNumber = String(
-          this.extractAttribute(
+        // Extract user info using type-safe extractors
+        // These methods handle arrays, objects, and other complex types safely
+
+        // Employee number: Use mapped attribute or fall back to cas:user
+        const employeeNumber =
+          this.extractStringAttribute(
             attributes,
             this.config.attributesMapping.employee_id
-          ) ||
-            user ||
-            ''
-        );
-        const username = String(
-          this.extractAttribute(
+          ) || String(user || '');
+
+        // Username: Use mapped attribute or fall back to cas:user
+        const username =
+          this.extractStringAttribute(
             attributes,
             this.config.attributesMapping.username
-          ) ||
-            user ||
-            ''
+          ) || String(user || '');
+
+        // Full name: Use mapped attribute (optional)
+        const fullName = this.extractStringAttribute(
+          attributes,
+          this.config.attributesMapping.full_name
         );
-        const fullName = String(
-          this.extractAttribute(
-            attributes,
-            this.config.attributesMapping.full_name
-          ) || ''
-        );
-        const emailAttr = this.extractAttribute(
+
+        // Email: Extract and normalize to lowercase for consistent storage
+        const emailAttr = this.extractStringAttribute(
           attributes,
           this.config.attributesMapping.email
         );
-        const extractedEmail = (emailAttr as string | undefined)?.trim() || '';
+        const extractedEmail = emailAttr ? normalizeEmail(emailAttr) : '';
 
         return {
           username,
@@ -324,17 +326,6 @@ export class GenericCASService {
   }
 
   /**
-   * validate email format using simple regex
-   * @private
-   * @param email email string to validate
-   * @returns true if email format is valid
-   */
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  }
-
-  /**
    * extract specified field value from CAS attributes
    * @private
    * @param attributes CAS attributes object
@@ -360,6 +351,131 @@ export class GenericCASService {
     }
 
     return undefined;
+  }
+
+  /**
+   * Safely extract string value from CAS attribute with type checking
+   *
+   * This method handles all possible CAS attribute value types and prevents
+   * dangerous type coercions. For example:
+   * - String(['a', 'b']) → "a,b" ❌ (dangerous)
+   * - extractStringAttribute(['a', 'b']) → "a" ✅ (safe, takes first)
+   * - String({id: '123'}) → "[object Object]" ❌ (dangerous)
+   * - extractStringAttribute({id: '123'}) → "123" ✅ (safe, extracts id)
+   *
+   * **Supported input types:**
+   * - `string`: Returns trimmed value
+   * - `string[]`: Returns first non-empty element (multi-value CAS attributes)
+   * - `number`: Converts to string safely
+   * - `boolean`: Converts to string safely
+   * - `object`: Attempts to extract common properties (id, value, text, #text)
+   * - `null/undefined`: Returns empty string
+   *
+   * **Real-world scenarios:**
+   *
+   * Scenario 1: Enterprise AD with multiple email addresses
+   * ```xml
+   * <cas:mail>primary@company.com</cas:mail>
+   * <cas:mail>secondary@company.com</cas:mail>
+   * ```
+   * Result: Uses "primary@company.com" (first element)
+   *
+   * Scenario 2: CAS 3.0 with structured user data
+   * ```xml
+   * <cas:employee>
+   *   <id>12345</id>
+   *   <department>IT</department>
+   * </cas:employee>
+   * ```
+   * Result: Extracts "12345" from id property
+   *
+   * Scenario 3: CAS returns numeric employee ID
+   * ```xml
+   * <cas:employeeNumber>12345</cas:employeeNumber>
+   * ```
+   * Result: Converts 12345 (number) to "12345" (string)
+   *
+   * @private
+   * @param attributes - CAS attributes object from XML parser
+   * @param fieldName - Field name to extract (supports cas: prefix)
+   * @returns Safe string value, empty string if extraction fails or value is invalid
+   */
+  private extractStringAttribute(
+    attributes: Record<string, unknown>,
+    fieldName: string
+  ): string {
+    const value = this.extractAttribute(attributes, fieldName);
+
+    // Handle null/undefined - common for optional attributes
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    // Handle string (most common case - fast path)
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+
+    // Handle array - take first non-empty element
+    // This occurs when CAS XML has multiple tags with the same name
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item === 'string') {
+          const trimmed = item.trim();
+          if (trimmed) {
+            console.log(
+              `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is array, using first element: "${trimmed}"`
+            );
+            return trimmed;
+          }
+        }
+      }
+
+      // Array exists but contains no valid strings
+      console.warn(
+        `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is array but contains no valid strings:`,
+        value
+      );
+      return '';
+    }
+
+    // Handle number/boolean - safe conversion
+    // Some CAS implementations return employee numbers as integers
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+
+    // Handle object - try common property names
+    // Some CAS 3.0 implementations return structured objects
+    if (typeof value === 'object' && value !== null) {
+      const obj = value as Record<string, unknown>;
+
+      // Try standard property names in order of priority
+      const propertyNames = ['id', 'value', 'text', '#text', 'content'];
+      for (const prop of propertyNames) {
+        if (prop in obj && typeof obj[prop] === 'string') {
+          const extracted = String(obj[prop]).trim();
+          console.log(
+            `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is object, extracted from property '${prop}': "${extracted}"`
+          );
+          return extracted;
+        }
+      }
+
+      // Object exists but no extractable string value found
+      console.warn(
+        `[CAS-Extract] ${this.config.name}: Field '${fieldName}' is object without extractable string value:`,
+        JSON.stringify(value)
+      );
+      return '';
+    }
+
+    // Fallback for unknown types (should never reach here)
+    console.warn(
+      `[CAS-Extract] ${this.config.name}: Field '${fieldName}' has unexpected type '${typeof value}':`,
+      value
+    );
+    return '';
   }
 
   /**
