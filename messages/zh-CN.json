@@ -2190,15 +2190,15 @@
       }
     },
     "dynamic": {
-      "_help": {
+      "_helps": {
         "sections": [
           {
-            "id": "section-1759492794627-6lcilnoo1",
+            "id": "section-1760191514582-k5m5kqfxn",
             "layout": "single-column",
             "columns": [
               [
                 {
-                  "id": "comp-1759492795773-qu9ws68a8",
+                  "id": "comp-1760191514582-mh6t9bdgn",
                   "type": "heading",
                   "props": {
                     "content": "不帮",
@@ -2218,12 +2218,148 @@
             }
           },
           {
-            "id": "section-1759492810641-13rqo8kbf",
+            "id": "section-1760191520302-kyprxjrl3",
             "layout": "single-column",
             "columns": [
               [
                 {
-                  "id": "comp-1759492810641-kldghrcmk",
+                  "id": "comp-1760191520302-iup0yj6t2",
+                  "type": "paragraph",
+                  "props": {
+                    "content": "求我",
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191556880-jcy41zf20",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191534231-xa7v0uj7p",
+                  "type": "divider",
+                  "props": {
+                    "style": "solid",
+                    "thickness": "thin",
+                    "color": "gray"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191537412-mzi47kjio",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191537412-ahlpwcaqq",
+                  "type": "cards",
+                  "props": {
+                    "layout": "grid",
+                    "items": [
+                      {
+                        "title": "卡片1",
+                        "description": "描述卡片1"
+                      },
+                      {
+                        "title": "卡片2",
+                        "description": "描述卡片2"
+                      }
+                    ]
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191596642-ll2uvwbyp",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191596642-tr4ts6t19",
+                  "type": "button",
+                  "props": {
+                    "text": "求也不帮",
+                    "variant": "solid",
+                    "action": "link",
+                    "url": "#"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191607728-stknwq4c6",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191607728-2vm3wmw3i",
+                  "type": "image",
+                  "props": {
+                    "src": "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=200&fit=crop",
+                    "alt": "Placeholder Image",
+                    "caption": "",
+                    "alignment": "center",
+                    "width": "auto",
+                    "height": "auto"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191611210-qdzp66zsr",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191611210-v1zgzle66",
                   "type": "divider",
                   "props": {
                     "style": "solid",
@@ -2245,7 +2381,43 @@
         ],
         "metadata": {
           "version": "1.0.0",
-          "lastModified": "2025-10-03T12:00:12.929Z",
+          "lastModified": "2025-10-11T14:06:55.766Z",
+          "author": "system-migration",
+          "migrated": true
+        }
+      },
+      "_happy": {
+        "sections": [
+          {
+            "id": "section-1760191900962-yxj27kch3",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191900962-qcgqbiv5k",
+                  "type": "button",
+                  "props": {
+                    "text": "好",
+                    "variant": "solid",
+                    "action": "link",
+                    "url": "/helps"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-11T14:11:52.556Z",
           "author": "system-migration",
           "migrated": true
         }

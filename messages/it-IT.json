@@ -2150,12 +2150,236 @@
       }
     },
     "dynamic": {
-      "_help": {
-        "sections": [],
+      "_helps": {
+        "sections": [
+          {
+            "id": "section-1760191514582-k5m5kqfxn",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191514582-mh6t9bdgn",
+                  "type": "heading",
+                  "props": {
+                    "content": "No.",
+                    "level": 2,
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191520302-kyprxjrl3",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191520302-iup0yj6t2",
+                  "type": "paragraph",
+                  "props": {
+                    "content": "Ora implora.",
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191556880-jcy41zf20",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191534231-xa7v0uj7p",
+                  "type": "divider",
+                  "props": {
+                    "style": "solid",
+                    "thickness": "thin",
+                    "color": "gray"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191537412-mzi47kjio",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191537412-ahlpwcaqq",
+                  "type": "cards",
+                  "props": {
+                    "layout": "grid",
+                    "items": [
+                      {
+                        "title": "Scheda 1",
+                        "description": "Scheda descrittiva 1"
+                      },
+                      {
+                        "title": "Card 2",
+                        "description": "Scheda descrittiva 2"
+                      }
+                    ]
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191596642-ll2uvwbyp",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191596642-tr4ts6t19",
+                  "type": "button",
+                  "props": {
+                    "text": "Per favore, non aiutarmi",
+                    "variant": "solid",
+                    "action": "link",
+                    "url": "#"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191607728-stknwq4c6",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191607728-2vm3wmw3i",
+                  "type": "image",
+                  "props": {
+                    "src": "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=200&fit=crop",
+                    "alt": "Immagine segnaposto",
+                    "caption": "",
+                    "alignment": "center",
+                    "width": "auto",
+                    "height": "auto"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760191611210-qdzp66zsr",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191611210-v1zgzle66",
+                  "type": "divider",
+                  "props": {
+                    "style": "solid",
+                    "thickness": "thin",
+                    "color": "gray"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
         "metadata": {
           "version": "1.0.0",
-          "lastModified": "2025-10-03T11:59:38.549Z",
-          "author": "admin"
+          "lastModified": "2025-10-11T14:07:28.741Z",
+          "author": "system-migration",
+          "migrated": true
+        }
+      },
+      "_happy": {
+        "sections": [
+          {
+            "id": "section-1760191900962-yxj27kch3",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760191900962-qcgqbiv5k",
+                  "type": "button",
+                  "props": {
+                    "text": "OK",
+                    "variant": "solid",
+                    "action": "link",
+                    "url": "/helps"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-11T14:12:11.063Z",
+          "author": "system-migration",
+          "migrated": true
         }
       }
     }

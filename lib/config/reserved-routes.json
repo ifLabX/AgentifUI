@@ -28,6 +28,8 @@
     "/api"
   ],
   "dynamicRoutes": [
-    "/help"
+    "/help",
+    "/helps",
+    "/happy"
   ]
 }
