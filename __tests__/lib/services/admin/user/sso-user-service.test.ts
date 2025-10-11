@@ -77,6 +77,7 @@ interface MockSupabaseClient extends MockSupabaseQueryBuilder {
 describe('SSOUserService - Comprehensive Tests', () => {
   let mockSupabaseClient: MockSupabaseClient;
   let mockAdminClient: MockSupabaseClient;
+  let repairSpy: jest.SpyInstance; // Spy for background repair method
 
   beforeEach(async () => {
     // Reset all mocks before each test
@@ -128,6 +129,21 @@ describe('SSOUserService - Comprehensive Tests', () => {
     );
     (createClient as jest.Mock).mockResolvedValue(mockSupabaseClient);
     (createAdminClient as jest.Mock).mockResolvedValue(mockAdminClient);
+
+    // Initialize spy for repairLegacyUserEmployeeNumber (private method)
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    repairSpy = jest.spyOn(
+      SSOUserService as any,
+      'repairLegacyUserEmployeeNumber'
+    );
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+  });
+
+  afterEach(() => {
+    // Clean up spy to prevent interference between tests
+    if (repairSpy) {
+      repairSpy.mockRestore();
+    }
   });
 
   // ========================================================================
@@ -183,25 +199,24 @@ describe('SSOUserService - Comprehensive Tests', () => {
         error: null,
       });
 
-      // Mock auto-repair update (should be called in background)
-      mockAdminClient.update.mockReturnThis();
-      mockAdminClient.eq.mockResolvedValue({
-        error: null,
-      });
+      // Mock auto-repair method to prevent actual execution
+      repairSpy.mockResolvedValue(undefined);
 
       const result = await SSOUserService.findUserByEmployeeNumber(
         testEmployeeNumber,
         testEmailDomain
       );
 
+      // Verify user was returned immediately (non-blocking)
       expect(result).toEqual(mockLegacyUser);
-
-      // Wait for background repair to be called
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Verify repair was triggered (background operation)
-      // Note: We check that the user was returned immediately (non-blocking)
       expect(result?.id).toBe('legacy-user-456');
+
+      // Verify repair was triggered in background (using spy instead of setTimeout)
+      expect(repairSpy).toHaveBeenCalledTimes(1);
+      expect(repairSpy).toHaveBeenCalledWith(
+        'legacy-user-456',
+        testEmployeeNumber
+      );
     });
 
     it('should fallback to admin client when RLS blocks normal query', async () => {

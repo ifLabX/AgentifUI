@@ -439,14 +439,25 @@ export class SSOUserService {
       // Handle email conflict
       // If email already exists, user is already registered, try to find existing user
       // This handles race conditions where multiple concurrent requests try to create the same user
-      if (authError && authError.message.includes('already been registered')) {
+      // Uses multi-layer error detection for robustness:
+      // 1. HTTP 409 status (most stable, RFC 7231 standard)
+      // 2. Supabase error code (stable across versions)
+      // 3. Error message substring (fallback for compatibility)
+      if (
+        authError &&
+        (authError.status === 409 ||
+          authError.code === 'user_already_exists' ||
+          authError.message.includes('already been registered'))
+      ) {
         console.warn(
           `[SSO-Create] ⚠️ Race condition detected: User ${validatedEmployeeNumber} already exists (email conflict)`,
           {
             employeeNumber: validatedEmployeeNumber,
             email,
-            timestamp: new Date().toISOString(),
+            errorStatus: authError.status,
+            errorCode: authError.code,
             errorMessage: authError.message,
+            timestamp: new Date().toISOString(),
           }
         );
 

@@ -325,7 +325,7 @@ describe('Validation utilities', () => {
 
       const veryLongEmpNum = 'a'.repeat(100);
       expect(() => validateEmployeeNumber(veryLongEmpNum)).toThrow(
-        'exceeds maximum length'
+        'Employee number exceeds maximum length of 50 characters (received: 100 characters)'
       );
     });
 
