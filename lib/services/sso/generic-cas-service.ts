@@ -451,8 +451,7 @@ export class GenericCASService {
       const propertyNames = ['id', 'value', 'text', '#text', 'content'];
       for (const prop of propertyNames) {
         if (prop in obj && typeof obj[prop] === 'string') {
-          const extracted = String(obj[prop]).trim();
-          return extracted;
+          return obj[prop].trim();
         }
       }
 
