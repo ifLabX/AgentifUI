@@ -1735,6 +1735,8 @@
             "employeeIdPlaceholder": "cas:user",
             "username": "Username",
             "usernamePlaceholder": "cas:username",
+            "email": "Email",
+            "emailPlaceholder": "cas:mail",
             "requireHttps": "Require HTTPS",
             "validateCertificates": "Validate SSL Certificates",
             "allowedRedirectHosts": "Allowed Redirect Hosts",

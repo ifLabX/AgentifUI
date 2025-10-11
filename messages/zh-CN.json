@@ -1735,6 +1735,8 @@
             "employeeIdPlaceholder": "cas:user",
             "username": "用户名",
             "usernamePlaceholder": "cas:username",
+            "email": "邮箱",
+            "emailPlaceholder": "cas:mail",
             "requireHttps": "要求HTTPS",
             "validateCertificates": "验证SSL证书",
             "allowedRedirectHosts": "允许的重定向主机",

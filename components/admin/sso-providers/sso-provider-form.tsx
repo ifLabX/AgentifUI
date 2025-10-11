@@ -183,10 +183,14 @@ export function SsoProviderForm({
   };
 
   // Handle settings update from visual form
-  const handleSettingsChange = (path: string, value: any) => {
+  const handleSettingsChange = (
+    path: string,
+    value: string | number | boolean | string[]
+  ) => {
     setFormData((prev: CreateSsoProviderData) => {
       const newSettings = { ...prev.settings };
       const keys = path.split('.');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let current: any = newSettings;
 
       // Navigate to the parent object
@@ -902,6 +906,38 @@ export function SsoProviderForm({
                                   : 'border-stone-300 bg-stone-50/50 text-stone-900 focus:border-stone-400 focus:ring-stone-400/30 focus:ring-offset-white'
                               )}
                               placeholder={t('fields.usernamePlaceholder')}
+                            />
+                          </div>
+
+                          <div>
+                            <label
+                              className={cn(
+                                'mb-2 block font-serif text-sm font-medium',
+                                isDark ? 'text-stone-300' : 'text-stone-700'
+                              )}
+                            >
+                              {t('fields.email')}
+                            </label>
+                            <input
+                              type="text"
+                              value={
+                                formData.settings.protocol_config
+                                  .attributes_mapping.email || ''
+                              }
+                              onChange={e =>
+                                handleSettingsChange(
+                                  'protocol_config.attributes_mapping.email',
+                                  e.target.value
+                                )
+                              }
+                              className={cn(
+                                'w-full rounded-lg border px-4 py-3 font-serif text-sm transition-colors',
+                                'focus:ring-2 focus:ring-offset-2 focus:outline-none',
+                                isDark
+                                  ? 'border-stone-600 bg-stone-800/50 text-stone-200 focus:border-stone-500 focus:ring-stone-500/30 focus:ring-offset-stone-900'
+                                  : 'border-stone-300 bg-stone-50/50 text-stone-900 focus:border-stone-400 focus:ring-stone-400/30 focus:ring-offset-white'
+                              )}
+                              placeholder={t('fields.emailPlaceholder')}
                             />
                           </div>
                         </div>
