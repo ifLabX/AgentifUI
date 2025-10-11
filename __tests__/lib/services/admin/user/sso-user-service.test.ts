@@ -273,11 +273,11 @@ describe('SSOUserService - Comprehensive Tests', () => {
     it('should validate employee number and reject invalid input', async () => {
       await expect(
         SSOUserService.findUserByEmployeeNumber('', testEmailDomain)
-      ).rejects.toThrow('Employee number is required');
+      ).rejects.toThrow('Employee number cannot be empty');
 
       await expect(
         SSOUserService.findUserByEmployeeNumber('   ', testEmailDomain)
-      ).rejects.toThrow('Employee number cannot be empty');
+      ).rejects.toThrow('Employee number cannot consist only of whitespace');
 
       await expect(
         SSOUserService.findUserByEmployeeNumber(
