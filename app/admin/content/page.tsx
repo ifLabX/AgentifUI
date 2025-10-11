@@ -337,6 +337,8 @@ export default function ContentManagementPage() {
           supportedLocales={supportedLocales}
           onTranslationsChange={handleAboutTranslationsChange}
           onLocaleChange={setCurrentLocale}
+          hasUnsavedChanges={hasChanges}
+          section="pages.about"
         />
       ) : (
         <div>{t('loadingEditor.about')}</div>
@@ -372,6 +374,8 @@ export default function ContentManagementPage() {
             handleHomeTranslationsChange(convertedBack);
           }}
           onLocaleChange={setCurrentLocale}
+          hasUnsavedChanges={hasChanges}
+          section="pages.home"
         />
       ) : (
         <div>{t('loadingEditor.home')}</div>
@@ -380,6 +384,9 @@ export default function ContentManagementPage() {
 
     if (activeTab.startsWith('dynamic:')) {
       // Render editor for dynamic pages
+      const slug = activeTab.replace('dynamic:', '');
+      const sectionKey = `pages.dynamic.${slug.replace(/\//g, '_')}`;
+
       return dynamicTranslations ? (
         <AboutEditor
           translations={dynamicTranslations}
@@ -387,6 +394,8 @@ export default function ContentManagementPage() {
           supportedLocales={supportedLocales}
           onTranslationsChange={setDynamicTranslations}
           onLocaleChange={setCurrentLocale}
+          hasUnsavedChanges={hasChanges}
+          section={sectionKey}
         />
       ) : (
         <div>Loading dynamic page editor...</div>

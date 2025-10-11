@@ -25,7 +25,7 @@ import {
   useDebouncedCallback,
   useThrottledCallback,
 } from '@lib/utils/performance';
-import { GripVertical, Plus, Redo2, Trash2, Undo2 } from 'lucide-react';
+import { GripVertical, Languages, Plus, Redo2, Trash2, Undo2 } from 'lucide-react';
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 
@@ -33,6 +33,7 @@ import { useTranslations } from 'next-intl';
 
 import ComponentPalette from './component-palette';
 import ComponentRenderer from './component-renderer';
+import { ContentTranslateDialog } from './content-translate-dialog';
 import { ContextMenu } from './context-menu';
 import { Droppable, Sortable, SortableContainer } from './dnd-components';
 import { DndContextWrapper } from './dnd-context';
@@ -47,6 +48,9 @@ interface AboutEditorProps {
     newTranslations: Record<SupportedLocale, AboutTranslationData>
   ) => void;
   onLocaleChange: (newLocale: SupportedLocale) => void;
+  hasUnsavedChanges?: boolean;
+  section?: string;
+  onReloadTranslations?: () => void;
 }
 
 export function AboutEditor({
@@ -55,6 +59,9 @@ export function AboutEditor({
   supportedLocales,
   onTranslationsChange,
   onLocaleChange,
+  hasUnsavedChanges = false,
+  section = 'pages.about',
+  onReloadTranslations,
 }: AboutEditorProps) {
   const t = useTranslations('pages.admin.content.editor');
 
@@ -70,6 +77,9 @@ export function AboutEditor({
     componentId: string;
     content: string;
   } | null>(null);
+
+  // Translation dialog state
+  const [showTranslateDialog, setShowTranslateDialog] = React.useState(false);
 
   // Zustand store
   const {
@@ -356,46 +366,58 @@ export function AboutEditor({
         >
           {/* Language Selector and Action Buttons */}
           <div className="flex items-end justify-between gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium">
-                {t('common.editLanguage')}
-              </label>
-              <Select
-                value={currentLocale}
-                onValueChange={value =>
-                  onLocaleChange(value as SupportedLocale)
-                }
+            <div className="flex items-end gap-3">
+              <div className="space-y-1">
+                <label className="text-sm font-medium">
+                  {t('common.editLanguage')}
+                </label>
+                <Select
+                  value={currentLocale}
+                  onValueChange={value =>
+                    onLocaleChange(value as SupportedLocale)
+                  }
+                >
+                  <SelectTrigger className="w-64">
+                    <SelectValue>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs opacity-60">
+                          {getLanguageInfo(currentLocale).code}
+                        </span>
+                        <span className="font-medium">
+                          {getLanguageInfo(currentLocale).nativeName}
+                        </span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {supportedLocales.map(locale => {
+                      const langInfo = getLanguageInfo(locale);
+                      return (
+                        <SelectItem key={locale} value={locale}>
+                          <div className="flex w-full items-center justify-between">
+                            <span className="font-medium">
+                              {langInfo.nativeName}
+                            </span>
+                            <span className="ml-2 text-xs opacity-60">
+                              {langInfo.code}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Translate Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowTranslateDialog(true)}
               >
-                <SelectTrigger className="w-64">
-                  <SelectValue>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs opacity-60">
-                        {getLanguageInfo(currentLocale).code}
-                      </span>
-                      <span className="font-medium">
-                        {getLanguageInfo(currentLocale).nativeName}
-                      </span>
-                    </div>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {supportedLocales.map(locale => {
-                    const langInfo = getLanguageInfo(locale);
-                    return (
-                      <SelectItem key={locale} value={locale}>
-                        <div className="flex w-full items-center justify-between">
-                          <span className="font-medium">
-                            {langInfo.nativeName}
-                          </span>
-                          <span className="ml-2 text-xs opacity-60">
-                            {langInfo.code}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+                <Languages className="mr-2 h-4 w-4" />
+                {t('contentTranslate.button')}
+              </Button>
             </div>
 
             <div className="flex items-center gap-4">
@@ -721,6 +743,21 @@ export function AboutEditor({
           onClose={() => setContextMenu(null)}
         />
       )}
+
+      {/* Translation Dialog */}
+      <ContentTranslateDialog
+        open={showTranslateDialog}
+        onOpenChange={setShowTranslateDialog}
+        sourceLocale={currentLocale}
+        currentContent={currentTranslation}
+        section={section}
+        supportedLocales={supportedLocales}
+        onTranslationComplete={() => {
+          setShowTranslateDialog(false);
+          // Reload translations from server after successful translation
+          onReloadTranslations?.();
+        }}
+      />
     </DndContextWrapper>
   );
 }

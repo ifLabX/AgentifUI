@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(openssl rand:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(supabase link:*)",
+      "Bash(supabase db push:*)",
+      "Bash(pnpm i18n:translate:*)",
+      "Bash(pnpm type-check)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "Error en la configuración del servicio SSO, por favor contacta al administrador",
           "missingTicket": "Parámetros de autenticación faltantes, por favor inicia sesión nuevamente",
           "default": "Ocurrió un error durante el inicio de sesión, por favor inténtalo más tarde",
-          "loginFailed": "Error en el inicio de sesión, por favor verifica tu correo electrónico y contraseña"
+          "loginFailed": "Error en el inicio de sesión, por favor verifica tu correo electrónico y contraseña",
+          "accountSuspended": "Tu cuenta ha sido suspendida. Póngase en contacto con el administrador para obtener ayuda.",
+          "accountPending": "Tu cuenta está pendiente de aprobación. Espere a que el administrador active su cuenta.",
+          "invalidAccount": "El estado de tu cuenta no es válido. Póngase en contacto con el administrador para obtener ayuda.",
+          "profileCheckFailed": "No se puede verificar el estado de tu cuenta. Inténtelo de nuevo o póngase en contacto con el administrador.",
+          "profileNotFound": "Su cuenta no se encuentra. Por favor, póngase en contacto con el administrador",
+          "permissionCheckFailed": "No se pueden verificar tus permisos. Inténtelo de nuevo o póngase en contacto con el administrador."
         }
       },
       "register": {
@@ -1475,7 +1481,8 @@
         },
         "previewToolbar": {
           "aboutPreview": "Vista Previa Página Acerca de",
-          "homePreview": "Vista Previa Página de Inicio"
+          "homePreview": "Vista Previa Página de Inicio",
+          "pagePreview": "Vista previa de página"
         },
         "editor": {
           "common": {
@@ -1508,6 +1515,39 @@
             "copyrightPrefix": "Prefijo (prefix)",
             "copyrightLinkText": "Texto Enlace (linkText)",
             "copyrightSuffix": "Sufijo (suffix)"
+          },
+          "contentTranslate": {
+            "button": "Traducir",
+            "saveBeforeTranslate": "Guarde los cambios antes de traducir",
+            "title": "Traducción automática de contenido",
+            "description": "Traducir el contenido de la página actual del idioma de origen a los idiomas de destino seleccionados utilizando la traducción de IA",
+            "sourceLanguage": "Idioma de origen",
+            "selectTargetLanguages": "Seleccionar idiomas de destino",
+            "selectAll": "Seleccionar todo",
+            "deselectAll": "Deseleccionar todo",
+            "warningMessage": "⚠️ Advertencia: La traducción sobrescribirá el contenido existente en los idiomas seleccionados",
+            "startTranslation": "Comenzar la traducción",
+            "translating": "Traduciendo...",
+            "progress": {
+              "title": "Traducción en curso",
+              "current": "Completado {current} de {total} idiomas"
+            },
+            "success": {
+              "title": "Traducción exitosa",
+              "message": "Traducido correctamente a {count} idiomas",
+              "saved": "Todas las traducciones se han guardado en los archivos de idioma correspondientes",
+              "closeButton": "Cerrar"
+            },
+            "partialSuccess": {
+              "title": "Traducción parcialmente correcta",
+              "failedMessage": "Error al traducir {count} idiomas",
+              "saved": "Se han guardado las traducciones correctas",
+              "retryButton": "Reintentar idiomas fallidos",
+              "closeButton": "Cerrar"
+            },
+            "error": {
+              "title": "Traducción fallida"
+            }
           }
         }
       },

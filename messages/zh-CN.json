@@ -144,7 +144,7 @@
       ],
       "metadata": {
         "version": "1.0.0",
-        "lastModified": "2025-08-12T12:00:00.000Z",
+        "lastModified": "2025-10-11T10:41:19.556Z",
         "author": "system-migration",
         "migratedFrom": "legacy-format",
         "migrationTimestamp": "2025-08-12T12:00:00.000Z",
@@ -1481,7 +1481,8 @@
         },
         "previewToolbar": {
           "aboutPreview": "关于页面预览",
-          "homePreview": "主页预览"
+          "homePreview": "主页预览",
+          "pagePreview": "页面预览"
         },
         "editor": {
           "common": {
@@ -1514,6 +1515,39 @@
             "copyrightPrefix": "前缀 (prefix)",
             "copyrightLinkText": "链接文字 (linkText)",
             "copyrightSuffix": "后缀 (suffix)"
+          },
+          "contentTranslate": {
+            "button": "翻译",
+            "saveBeforeTranslate": "请在翻译前保存您的更改",
+            "title": "内容自动翻译",
+            "description": "使用AI翻译将当前页面内容从源语言翻译为选定的目标语言",
+            "sourceLanguage": "Source Language ",
+            "selectTargetLanguages": "选择目标语言",
+            "selectAll": "全选",
+            "deselectAll": "全部取消选择",
+            "warningMessage": "⚠️ 警告：翻译将覆盖所选语言的现有内容",
+            "startTranslation": "Start of translation",
+            "translating": "正在翻译",
+            "progress": {
+              "title": "正在翻译",
+              "current": "已完成{current}/{total}种语言"
+            },
+            "success": {
+              "title": "翻译成功",
+              "message": "已成功翻译成{count}种语言",
+              "saved": "所有翻译都已保存到相应的语言文件",
+              "closeButton": "关闭"
+            },
+            "partialSuccess": {
+              "title": "翻译部分成功",
+              "failedMessage": "翻译{count}种语言失败",
+              "saved": "已保存成功的翻译",
+              "retryButton": "重试失败的语言",
+              "closeButton": "关闭"
+            },
+            "error": {
+              "title": "翻译失败"
+            }
           }
         }
       },
@@ -2148,7 +2182,7 @@
       ],
       "metadata": {
         "version": "1.0.0",
-        "lastModified": "2025-08-08T12:23:05.513Z",
+        "lastModified": "2025-10-11T10:41:23.695Z",
         "author": "system-migration",
         "migratedFrom": "legacy-format",
         "migrationTimestamp": "2025-08-08T12:23:05.513Z",

@@ -1481,13 +1481,47 @@
         },
         "previewToolbar": {
           "aboutPreview": "About Page Preview",
-          "homePreview": "Home Page Preview"
+          "homePreview": "Home Page Preview",
+          "pagePreview": "Page Preview"
         },
         "editor": {
           "common": {
             "editLanguage": "Edit Language",
             "selectLanguage": "Select Language",
             "cardNumber": "Card #{number}"
+          },
+          "contentTranslate": {
+            "button": "Translate",
+            "saveBeforeTranslate": "Please save your changes before translating",
+            "title": "Content Auto-Translation",
+            "description": "Translate current page content from source language to selected target languages using AI translation",
+            "sourceLanguage": "Source Language",
+            "selectTargetLanguages": "Select Target Languages",
+            "selectAll": "Select All",
+            "deselectAll": "Deselect All",
+            "warningMessage": "⚠️ Warning: Translation will overwrite existing content in selected languages",
+            "startTranslation": "Start Translation",
+            "translating": "Translating...",
+            "progress": {
+              "title": "Translation in Progress",
+              "current": "Completed {current} of {total} languages"
+            },
+            "success": {
+              "title": "Translation Successful",
+              "message": "Successfully translated to {count} languages",
+              "saved": "All translations have been saved to the corresponding language files",
+              "closeButton": "Close"
+            },
+            "partialSuccess": {
+              "title": "Translation Partially Successful",
+              "failedMessage": "Failed to translate {count} languages",
+              "saved": "Successful translations have been saved",
+              "retryButton": "Retry Failed Languages",
+              "closeButton": "Close"
+            },
+            "error": {
+              "title": "Translation Failed"
+            }
           },
           "home": {
             "pageTitle": "Page Title (title)",
@@ -2162,6 +2196,153 @@
           "version": "1.0.0",
           "lastModified": "2025-10-03T11:59:38.372Z",
           "author": "admin"
+        }
+      },
+      "Help": {
+        "sections": [
+          {
+            "id": "section-1760179165622-jji654l6k",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179168288-2ew0homw6",
+                  "type": "heading",
+                  "props": {
+                    "content": "Not helpful",
+                    "level": 2,
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179180273-9kkzjm3vv",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179180273-4y47ifeqw",
+                  "type": "button",
+                  "props": {
+                    "text": "Please don't help",
+                    "variant": "solid",
+                    "action": "link",
+                    "url": "#"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179193042-u8z1oq1pj",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179193042-z0s8ytmk2",
+                  "type": "cards",
+                  "props": {
+                    "layout": "grid",
+                    "items": [
+                      {
+                        "title": "Kartu 1",
+                        "description": "Description Card 1"
+                      },
+                      {
+                        "title": "Kartu 2",
+                        "description": "Description Card 2"
+                      }
+                    ]
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179225656-da5b9rj29",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179225656-lgcbkvz7i",
+                  "type": "divider",
+                  "props": {
+                    "style": "solid",
+                    "thickness": "thin",
+                    "color": "gray"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179223156-p4sbz0j4w",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179223156-dwkyhugrj",
+                  "type": "image",
+                  "props": {
+                    "src": "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=200&fit=crop",
+                    "alt": "Placeholder Image",
+                    "caption": "",
+                    "alignment": "center",
+                    "width": "auto",
+                    "height": "auto"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-11T13:11:05.561Z",
+          "author": "system-migration",
+          "migrated": true
         }
       }
     }

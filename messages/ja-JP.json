@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "SSOサービス設定エラーです。管理者にお問い合わせください",
           "missingTicket": "認証パラメータが不足しています。再度ログインしてください",
           "default": "ログイン中にエラーが発生しました。後でもう一度お試しください",
-          "loginFailed": "ログインに失敗しました。メールアドレスとパスワードをご確認ください"
+          "loginFailed": "ログインに失敗しました。メールアドレスとパスワードをご確認ください",
+          "accountSuspended": "アカウントが一時停止されました。管理者にお問い合わせください。",
+          "accountPending": "アカウントは承認待ちです。管理者がアカウントを有効化するまでお待ちください。",
+          "invalidAccount": "アカウントのステータスが無効です。管理者にお問い合わせください。",
+          "profileCheckFailed": "アカウントのステータスを確認できません。もう一度お試しいただくか、管理者にお問い合わせください。",
+          "profileNotFound": "アカウント情報が見つかりませんでした。管理者に連絡してください。",
+          "permissionCheckFailed": "権限を確認できません。もう一度お試しいただくか、管理者にお問い合わせください。"
         }
       },
       "register": {
@@ -1475,7 +1481,8 @@
         },
         "previewToolbar": {
           "aboutPreview": "アバウトページプレビュー",
-          "homePreview": "ホームページプレビュー"
+          "homePreview": "ホームページプレビュー",
+          "pagePreview": "印刷プレビュー"
         },
         "editor": {
           "common": {
@@ -1508,6 +1515,39 @@
             "copyrightPrefix": "プレフィックス (prefix)",
             "copyrightLinkText": "リンクテキスト (linkText)",
             "copyrightSuffix": "サフィックス (suffix)"
+          },
+          "contentTranslate": {
+            "button": "翻訳",
+            "saveBeforeTranslate": "翻訳する前に変更を保存してください",
+            "title": "コンテンツの自動翻訳",
+            "description": "AI翻訳を使用して、現在のページコンテンツをソース言語から選択したターゲット言語に翻訳する",
+            "sourceLanguage": "元言語",
+            "selectTargetLanguages": "ターゲット言語を選択",
+            "selectAll": "すべてを選択",
+            "deselectAll": "全て解除",
+            "warningMessage": "⚠️ 警告：翻訳は選択した言語の既存のコンテンツを上書きします",
+            "startTranslation": "翻訳を開始",
+            "translating": "翻訳",
+            "progress": {
+              "title": "翻訳中",
+              "current": "{total}言語のうち{current}を完了しました"
+            },
+            "success": {
+              "title": "翻訳に成功しました",
+              "message": "{count}言語に正常に翻訳されました",
+              "saved": "すべての翻訳が対応する言語ファイルに保存されました",
+              "closeButton": "閉じる"
+            },
+            "partialSuccess": {
+              "title": "翻訳が部分的に成功しました",
+              "failedMessage": "{count}言語の翻訳に失敗しました",
+              "saved": "正常な翻訳が保存されました",
+              "retryButton": "失敗した言語を再試行",
+              "closeButton": "閉じる"
+            },
+            "error": {
+              "title": "翻訳に失敗しました"
+            }
           }
         }
       },

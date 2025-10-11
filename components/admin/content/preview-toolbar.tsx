@@ -6,7 +6,7 @@ import { Fullscreen, Monitor, Smartphone, Tablet, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface PreviewToolbarProps {
-  activeTab: 'about' | 'home';
+  activeTab: string;
   previewDevice: 'desktop' | 'tablet' | 'mobile';
   onDeviceChange: (device: 'desktop' | 'tablet' | 'mobile') => void;
   showPreview: boolean;
@@ -43,7 +43,11 @@ export function PreviewToolbar({
             'text-stone-700 dark:text-stone-300'
           )}
         >
-          {activeTab === 'about' ? t('aboutPreview') : t('homePreview')}
+          {activeTab === 'about'
+            ? t('aboutPreview')
+            : activeTab === 'home'
+              ? t('homePreview')
+              : t('pagePreview')}
         </span>
       </div>
 

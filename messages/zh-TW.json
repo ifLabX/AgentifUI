@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "SSO服務設定錯誤，請聯絡管理員",
           "missingTicket": "認證參數缺失，請重新登入",
           "default": "登入過程中出現錯誤，請稍後重試",
-          "loginFailed": "登入失敗，請檢查您的電子郵件和密碼"
+          "loginFailed": "登入失敗，請檢查您的電子郵件和密碼",
+          "accountSuspended": "你的帳戶已被暫時停用。請聯絡管理員尋求協助。",
+          "accountPending": "您的帳戶正在等待審核。請等待管理員啟用您的帳戶。",
+          "invalidAccount": "您的帳戶狀態無效。請聯絡管理員尋求協助。",
+          "profileCheckFailed": "無法驗證你的帳戶狀態。請再試一次或聯絡管理員。",
+          "profileNotFound": "找不到您的帳戶資訊。請聯絡管理員。",
+          "permissionCheckFailed": "無法驗證您的權限。請再試一次或聯絡管理員。"
         }
       },
       "register": {
@@ -1475,7 +1481,8 @@
         },
         "previewToolbar": {
           "aboutPreview": "關於頁面預覽",
-          "homePreview": "首頁預覽"
+          "homePreview": "首頁預覽",
+          "pagePreview": "網頁預覽"
         },
         "editor": {
           "common": {
@@ -1508,6 +1515,39 @@
             "copyrightPrefix": "前綴 (prefix)",
             "copyrightLinkText": "連結文字 (linkText)",
             "copyrightSuffix": "後綴 (suffix)"
+          },
+          "contentTranslate": {
+            "button": "翻譯",
+            "saveBeforeTranslate": "請在翻譯前儲存您的變更",
+            "title": "內容自動翻譯",
+            "description": "使用AI翻譯將當前頁面內容從源語言翻譯為所選目標語言",
+            "sourceLanguage": "Source Language",
+            "selectTargetLanguages": "選擇目標語言",
+            "selectAll": "全選",
+            "deselectAll": "取消全選",
+            "warningMessage": "⚠️ 警告：翻譯將覆蓋所選語言的現有內容",
+            "startTranslation": "開始翻譯",
+            "translating": "翻译",
+            "progress": {
+              "title": "翻譯進行中",
+              "current": "已完成{current}/{total}種語言"
+            },
+            "success": {
+              "title": "翻譯成功",
+              "message": "已成功翻譯成{count}種語言",
+              "saved": "所有翻譯已儲存至相應的語言檔案",
+              "closeButton": "關閉"
+            },
+            "partialSuccess": {
+              "title": "翻譯部分成功",
+              "failedMessage": "無法翻譯{count}種語言",
+              "saved": "已儲存成功的翻譯",
+              "retryButton": "重試失敗的語言",
+              "closeButton": "關閉"
+            },
+            "error": {
+              "title": "翻譯失敗"
+            }
           }
         }
       },
@@ -2156,6 +2196,153 @@
           "version": "1.0.0",
           "lastModified": "2025-10-03T11:59:38.380Z",
           "author": "admin"
+        }
+      },
+      "Help": {
+        "sections": [
+          {
+            "id": "section-1760179165622-jji654l6k",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179168288-2ew0homw6",
+                  "type": "heading",
+                  "props": {
+                    "content": "不幫助",
+                    "level": 2,
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179180273-9kkzjm3vv",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179180273-4y47ifeqw",
+                  "type": "button",
+                  "props": {
+                    "text": "求也不幫",
+                    "variant": "solid",
+                    "action": "link",
+                    "url": "#"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179193042-u8z1oq1pj",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179193042-z0s8ytmk2",
+                  "type": "cards",
+                  "props": {
+                    "layout": "grid",
+                    "items": [
+                      {
+                        "title": "卡片1",
+                        "description": "描述卡片1"
+                      },
+                      {
+                        "title": "卡片2",
+                        "description": "描述卡片2"
+                      }
+                    ]
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179225656-da5b9rj29",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179225656-lgcbkvz7i",
+                  "type": "divider",
+                  "props": {
+                    "style": "solid",
+                    "thickness": "thin",
+                    "color": "gray"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          },
+          {
+            "id": "section-1760179223156-p4sbz0j4w",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760179223156-dwkyhugrj",
+                  "type": "image",
+                  "props": {
+                    "src": "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=200&fit=crop",
+                    "alt": "Placeholder Image",
+                    "caption": "",
+                    "alignment": "center",
+                    "width": "auto",
+                    "height": "auto"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-11T13:09:56.692Z",
+          "author": "system-migration",
+          "migrated": true
         }
       }
     }
