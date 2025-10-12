@@ -2381,6 +2381,41 @@
           "author": "system-migration",
           "migrated": true
         }
+      },
+      "_aa": {
+        "sections": [
+          {
+            "id": "section-1760273190998-t0m44u5r8",
+            "layout": "single-column",
+            "columns": [
+              [
+                {
+                  "id": "comp-1760273190998-90xmg2784",
+                  "type": "heading",
+                  "props": {
+                    "content": "Heute",
+                    "level": 2,
+                    "textAlign": "left"
+                  }
+                }
+              ]
+            ],
+            "commonProps": {
+              "theme": "auto",
+              "spacing": "normal",
+              "textAlign": "left",
+              "animation": "none",
+              "interactive": true,
+              "dragBehavior": "inherit"
+            }
+          }
+        ],
+        "metadata": {
+          "version": "1.0.0",
+          "lastModified": "2025-10-12T12:47:44.301Z",
+          "author": "system-migration",
+          "migrated": true
+        }
       }
     }
   },

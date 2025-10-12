@@ -30,6 +30,7 @@
   "dynamicRoutes": [
     "/help",
     "/helps",
-    "/happy"
+    "/happy",
+    "/aa"
   ]
 }
