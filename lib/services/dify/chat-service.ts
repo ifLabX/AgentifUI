@@ -41,7 +41,8 @@ const extractUsage = (usage: unknown): DifyUsage | undefined => {
   if (
     usage &&
     typeof usage === 'object' &&
-    typeof (usage as Record<string, unknown>).total_tokens === 'number'
+    'total_tokens' in usage &&
+    typeof (usage as { total_tokens: unknown }).total_tokens === 'number'
   ) {
     return usage as DifyUsage;
   }
