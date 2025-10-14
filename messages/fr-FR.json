@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "Échec du chargement des données de traduction",
             "saveSuccess": "Configuration enregistrée avec succès",
-            "saveFailed": "Échec de l'enregistrement de la configuration, veuillez réessayer"
+            "saveFailed": "Échec de l'enregistrement de la configuration, veuillez réessayer",
+            "cleanupImages": "({count} inutilisé {count, plural, one {image} other {images}} supprimé)",
+            "cleanupFailed": "Échec du nettoyage des images inutilisées"
           },
           "saveActions": {
             "hasChanges": "Modifications non enregistrées",

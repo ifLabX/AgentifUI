@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "載入翻譯資料失敗",
             "saveSuccess": "設定儲存成功",
-            "saveFailed": "儲存設定失敗，請重試"
+            "saveFailed": "儲存設定失敗，請重試",
+            "cleanupImages": "(已移除{count}個未使用的{count, plural, one {image} other {images}})",
+            "cleanupFailed": "無法清理未使用的影像"
           },
           "saveActions": {
             "hasChanges": "有未儲存的變更",

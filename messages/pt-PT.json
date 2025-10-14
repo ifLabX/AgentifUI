@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "Falha ao carregar dados de tradução",
             "saveSuccess": "Configuração guardada com sucesso",
-            "saveFailed": "Falha ao guardar a configuração, por favor tente novamente"
+            "saveFailed": "Falha ao guardar a configuração, por favor tente novamente",
+            "cleanupImages": "({count} {count, plural, one {imagem} other {imagens}} não utilizadas removidas)",
+            "cleanupFailed": "Falha ao limpar imagens não utilizadas"
           },
           "saveActions": {
             "hasChanges": "Alterações não guardadas",

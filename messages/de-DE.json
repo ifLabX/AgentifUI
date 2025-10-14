@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "Laden der Übersetzungsdaten fehlgeschlagen",
             "saveSuccess": "Konfiguration erfolgreich gespeichert",
-            "saveFailed": "Speichern der Konfiguration fehlgeschlagen, bitte versuchen Sie es erneut"
+            "saveFailed": "Speichern der Konfiguration fehlgeschlagen, bitte versuchen Sie es erneut",
+            "cleanupImages": "({count} unbenutzte {count, plural, one {Bild} other {Bilder}} entfernt)",
+            "cleanupFailed": "Nicht verwendete Bilder konnten nicht bereinigt werden"
           },
           "saveActions": {
             "hasChanges": "Ungespeicherte Änderungen",

@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "翻訳データの読み込みに失敗しました",
             "saveSuccess": "設定が正常に保存されました",
-            "saveFailed": "設定の保存に失敗しました。もう一度お試しください"
+            "saveFailed": "設定の保存に失敗しました。もう一度お試しください",
+            "cleanupImages": "({count}未使用の{count, plural, one {画像} other {画像}}が削除されました)",
+            "cleanupFailed": "使用していない画像をクリーンアップできませんでした"
           },
           "saveActions": {
             "hasChanges": "未保存の変更",

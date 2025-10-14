@@ -1464,7 +1464,9 @@
           "messages": {
             "loadFailed": "Impossibile caricare i dati di traduzione",
             "saveSuccess": "Configurazione salvata con successo",
-            "saveFailed": "Salvataggio della configurazione fallito, riprova"
+            "saveFailed": "Salvataggio della configurazione fallito, riprova",
+            "cleanupImages": "({count} inutilizzati {count, plural, one {image} other {images}} rimossi)",
+            "cleanupFailed": "Impossibile ripulire le immagini inutilizzate"
           },
           "saveActions": {
             "hasChanges": "Modifiche non salvate",
