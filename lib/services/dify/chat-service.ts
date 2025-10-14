@@ -38,7 +38,11 @@ const DIFY_API_BASE_URL = '/api/dify';
  * @returns Validated DifyUsage object or undefined
  */
 const extractUsage = (usage: unknown): DifyUsage | undefined => {
-  if (usage && typeof usage === 'object' && 'total_tokens' in usage) {
+  if (
+    usage &&
+    typeof usage === 'object' &&
+    typeof (usage as Record<string, unknown>).total_tokens === 'number'
+  ) {
     return usage as DifyUsage;
   }
   return undefined;
@@ -51,14 +55,21 @@ const extractUsage = (usage: unknown): DifyUsage | undefined => {
  */
 const isRetrieverResource = (
   resource: unknown
-): resource is DifyRetrieverResource =>
-  !!resource &&
-  typeof resource === 'object' &&
-  'segment_id' in resource &&
-  'document_id' in resource &&
-  'document_name' in resource &&
-  'position' in resource &&
-  'content' in resource;
+): resource is DifyRetrieverResource => {
+  if (!resource || typeof resource !== 'object') {
+    return false;
+  }
+
+  const res = resource as Record<string, unknown>;
+
+  return (
+    typeof res.segment_id === 'string' &&
+    typeof res.document_id === 'string' &&
+    typeof res.document_name === 'string' &&
+    typeof res.position === 'number' &&
+    typeof res.content === 'string'
+  );
+};
 
 /**
  * Normalize and filter retriever resources array
