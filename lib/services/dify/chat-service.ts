@@ -76,7 +76,7 @@ const isRetrieverResource = (
  * @param value - Unknown value to normalize
  * @returns Array of valid retriever resources
  */
-const normaliseResources = (value: unknown): DifyRetrieverResource[] => {
+const normalizeResources = (value: unknown): DifyRetrieverResource[] => {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -93,10 +93,10 @@ const extractRetrieverResources = (
   preferred: unknown,
   fallback: unknown
 ): DifyRetrieverResource[] => {
-  const preferredResources = normaliseResources(preferred);
+  const preferredResources = normalizeResources(preferred);
   return preferredResources.length
     ? preferredResources
-    : normaliseResources(fallback);
+    : normalizeResources(fallback);
 };
 
 /**
