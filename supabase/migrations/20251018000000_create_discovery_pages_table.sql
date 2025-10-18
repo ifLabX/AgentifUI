@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS public.discovery_pages (
 
 -- --- BEGIN COMMENT ---
 -- 2. Create indexes for performance
+-- Note: route column already has a UNIQUE constraint which creates an index automatically
 -- --- END COMMENT ---
-CREATE INDEX IF NOT EXISTS idx_discovery_pages_route ON public.discovery_pages(route);
 CREATE INDEX IF NOT EXISTS idx_discovery_pages_is_active ON public.discovery_pages(is_active);
 CREATE INDEX IF NOT EXISTS idx_discovery_pages_display_order ON public.discovery_pages(display_order);
 CREATE INDEX IF NOT EXISTS idx_discovery_pages_created_at ON public.discovery_pages(created_at DESC);
@@ -124,11 +124,12 @@ BEGIN
   WHERE schemaname = 'public'
   AND tablename = 'discovery_pages';
 
-  -- Count indexes
+  -- Count manually created indexes (with idx_ prefix)
   SELECT COUNT(*) INTO index_count
   FROM pg_indexes
   WHERE schemaname = 'public'
-  AND tablename = 'discovery_pages';
+  AND tablename = 'discovery_pages'
+  AND indexname LIKE 'idx_%';
 
   RAISE NOTICE '✅ Discovery pages table configuration completed';
   RAISE NOTICE '📊 Table "discovery_pages" exists: %', table_exists;
