@@ -1,6 +1,14 @@
 import { MediaResponseHandler } from '@lib/api/dify/handlers/media-response-handler';
 import { getDifyAppConfig } from '@lib/config/dify-config';
 import { type DifyAppConfig } from '@lib/config/dify-config';
+import {
+  getModerationConfig,
+  validateModerationConfig,
+} from '@lib/config/moderation';
+import {
+  extractMessageText,
+  moderateContent,
+} from '@lib/services/dify/moderation-service';
 import { createClient } from '@lib/supabase/server';
 import {
   type DifyAppType,
@@ -198,6 +206,100 @@ async function proxyToDify(
   console.log(
     `[App: ${appId}] [${req.method}] Configuration loaded successfully.`
   );
+
+  // 🔒 Global content moderation enforcement
+  // Check if this request needs moderation (POST requests with message content)
+  const needsModeration =
+    req.method === 'POST' &&
+    (slug.includes('chat-messages') || slug.includes('completion-messages'));
+
+  if (needsModeration && requestBody) {
+    // Load moderation config from environment variables
+    const moderationConfig = getModerationConfig();
+
+    // Validate config and proceed if enabled
+    if (
+      moderationConfig.enabled &&
+      !validateModerationConfig(moderationConfig)
+    ) {
+      console.error('[Moderation] Invalid configuration, skipping moderation');
+      // Continue without moderation if config is invalid
+    } else if (moderationConfig.enabled) {
+      console.log(
+        `[App: ${appId}] Content moderation enabled, checking message`
+      );
+
+      // Extract message text from request body
+      const messageText = extractMessageText(requestBody);
+
+      if (messageText) {
+        try {
+          // Perform content moderation via direct Dify API call
+          const moderationResult = await moderateContent(
+            messageText,
+            moderationConfig.apiUrl,
+            moderationConfig.apiKey,
+            moderationConfig.timeoutMs,
+            user.id
+          );
+
+          // Reject unsafe content
+          if (!moderationResult.isSafe) {
+            // Log detailed information in server console (terminal)
+            console.warn(`[Moderation] Content rejected for user ${user.id}`);
+            console.warn(
+              `[Moderation] Violation categories: ${moderationResult.categories.join(', ')}`
+            );
+            console.warn(
+              `[Moderation] Message preview: ${messageText.substring(0, 100)}...`
+            );
+
+            // Return simplified error to frontend (no technical details)
+            return NextResponse.json(
+              {
+                error: 'content_moderation_failed',
+                // Generic user-friendly message only
+                message: 'Content check failed',
+              },
+              { status: 400 }
+            );
+          }
+
+          console.log(
+            `[App: ${appId}] Content approved by moderation (${moderationResult.responseTimeMs}ms)`
+          );
+        } catch (moderationError) {
+          console.error(`[App: ${appId}] Moderation error:`, moderationError);
+
+          // Handle based on failure mode
+          if (moderationConfig.failureMode === 'fail_closed') {
+            // Fail closed: block the request
+            console.error(
+              `[App: ${appId}] Blocking request due to moderation failure (fail_closed mode)`
+            );
+
+            return NextResponse.json(
+              {
+                error: 'moderation_unavailable',
+                message:
+                  'Content moderation system is temporarily unavailable. Please try again later.',
+              },
+              { status: 503 }
+            );
+          } else {
+            // Fail open: allow the request but log the failure
+            console.warn(
+              `[App: ${appId}] Moderation failed but allowing request (fail_open mode)`
+            );
+          }
+        }
+      } else {
+        console.log(
+          `[App: ${appId}] No message text found to moderate, skipping`
+        );
+      }
+    }
+  }
 
   try {
     // construct target Dify URL
