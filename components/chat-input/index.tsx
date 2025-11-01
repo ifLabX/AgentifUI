@@ -296,21 +296,42 @@ export const ChatInput = ({
         console.log('[ChatInput] No message content to submit.');
       }
     } catch (error) {
-      // Submit failed, restore state
-      console.error(
-        '[ChatInput] Message submission failed, executing rollback',
-        error
-      );
-      // Fix: If validation failed (isWaiting didn't become true), need to restore state
-      // If validation succeeded but subsequent failure, input has been cleared, also need to restore
-      setMessage(savedMessage);
-      useAttachmentStore.getState().setFiles(savedAttachments);
-      // Call notification Store to show error message
-      useNotificationStore.getState().showNotification(
-        `${t('input.messageSendFailed')}: ${(error as Error)?.message || t('input.unknownError')}`,
-        'error',
-        3000 // Duration 3 seconds
-      );
+      // Check if this is a content moderation error
+      const isContentModeration =
+        (error as Error)?.name === 'ContentModerationError';
+
+      if (isContentModeration) {
+        // For moderation errors: NO browser console logging
+        // Detailed logs are already in server terminal (where `pnpm dev` runs)
+
+        // Clear message to prevent re-submission of inappropriate content
+        clearMessage();
+        clearAttachments();
+
+        // Show simple user notification (no technical details)
+        useNotificationStore
+          .getState()
+          .showNotification(t('input.moderationFailed'), 'warning', 3000);
+      } else {
+        // For other errors: log to browser console for debugging
+        console.error(
+          '[ChatInput] Message submission failed:',
+          (error as Error)?.message
+        );
+
+        // Restore state to allow retry
+        setMessage(savedMessage);
+        useAttachmentStore.getState().setFiles(savedAttachments);
+
+        // Show error notification
+        useNotificationStore
+          .getState()
+          .showNotification(
+            `${t('input.messageSendFailed')}: ${(error as Error)?.message || t('input.unknownError')}`,
+            'error',
+            3000
+          );
+      }
     } finally {
       // 🎯 Reset local submission state regardless of success or failure
       setIsLocalSubmitting(false);

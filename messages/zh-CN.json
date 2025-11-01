@@ -174,6 +174,7 @@
         "removeFile": "移除文件",
         "fileUploadError": "文件上传错误",
         "messageSendFailed": "消息发送失败",
+        "moderationFailed": "您的消息无法发送,请修改后重试。",
         "unknownError": "未知错误",
         "validatingConfig": "正在验证应用配置...",
         "cannotSubmit": "无法提交",

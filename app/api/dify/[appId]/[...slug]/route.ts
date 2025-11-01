@@ -250,16 +250,11 @@ async function proxyToDify(
             console.warn(
               `[Moderation] Violation categories: ${moderationResult.categories.join(', ')}`
             );
-            console.warn(
-              `[Moderation] Message preview: ${messageText.substring(0, 100)}...`
-            );
 
             // Return simplified error to frontend (no technical details)
             return NextResponse.json(
               {
                 error: 'content_moderation_failed',
-                // Generic user-friendly message only
-                message: 'Content check failed',
               },
               { status: 400 }
             );

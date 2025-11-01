@@ -67,6 +67,13 @@ export function validateModerationConfig(config: ModerationConfig): boolean {
     return false;
   }
 
+  if (!Number.isFinite(config.timeoutMs)) {
+    console.error(
+      '[Moderation Config] MODERATION_TIMEOUT_MS must be a valid finite number'
+    );
+    return false;
+  }
+
   if (config.timeoutMs <= 0 || config.timeoutMs > 30000) {
     console.error(
       '[Moderation Config] MODERATION_TIMEOUT_MS must be between 1 and 30000'

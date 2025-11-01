@@ -1066,9 +1066,47 @@ export function useChatInterface(
           }
         }
       } catch (error) {
-        console.error('[handleSubmit] Error occurred during streaming:', error);
-        streamError = error as Error;
-        const errorMessage = streamError?.message || 'Unknown error'; // Ensure error message is not empty
+        streamError = error instanceof Error ? error : new Error(String(error));
+        const isContentModerationError =
+          streamError.name === 'ContentModerationError';
+
+        if (isContentModerationError) {
+          const moderationCategories = Array.isArray(
+            (streamError as unknown as { categories?: unknown }).categories
+          )
+            ? (streamError as unknown as { categories: string[] }).categories
+            : [];
+
+          if (userMessage) {
+            const existingMetadata = userMessage.metadata || {};
+            updateMessage(userMessage.id, {
+              error: streamError.message,
+              persistenceStatus: 'error',
+              metadata: {
+                ...existingMetadata,
+                moderation_categories: moderationCategories,
+              },
+            });
+          }
+
+          if (assistantMessageId) {
+            setMessageError(assistantMessageId, streamError.message);
+            updateMessage(assistantMessageId, {
+              persistenceStatus: 'error',
+            });
+          }
+
+          setIsWaitingForResponse(false);
+          isSubmittingRef.current = false;
+
+          throw streamError;
+        }
+
+        console.error(
+          '[handleSubmit] Error occurred during streaming:',
+          streamError
+        );
+        const errorMessage = streamError.message || 'Unknown error'; // Ensure error message is not empty
 
         // Error handling:
         // 1. Update UI state, show error message

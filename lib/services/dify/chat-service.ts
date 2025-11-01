@@ -146,11 +146,33 @@ export async function streamDifyChat(
     // Check response status, throw if not 2xx
     if (!response.ok) {
       let errorBody = 'Unknown error';
+      let errorData: { error?: string } | null = null;
       try {
         errorBody = await response.text();
+        // Try to parse as JSON to detect moderation failures
+        try {
+          errorData = JSON.parse(errorBody);
+        } catch {
+          // If not JSON, keep original text
+        }
       } catch {
-        // Ignore error when reading error body
+        // Silently handle error reading response body
       }
+
+      // Check if this is a content moderation failure
+      if (errorData?.error === 'content_moderation_failed') {
+        // Import ContentModerationError dynamically to avoid circular dependency
+        const { ContentModerationError } = await import('./moderation-types');
+
+        // Throw simplified error with hardcoded message
+        // The actual user-facing message comes from i18n (t('input.moderationFailed'))
+        throw new ContentModerationError(
+          'Content check failed',
+          [] // Don't pass categories to frontend
+        );
+      }
+
+      // For other errors, throw generic API error
       throw new Error(
         `Dify API request failed with status ${response.status}: ${response.statusText}. Body: ${errorBody}`
       );

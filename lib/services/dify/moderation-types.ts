@@ -42,3 +42,23 @@ export class ModerationError extends Error {
     this.name = 'ModerationError';
   }
 }
+
+/**
+ * Content moderation failure error
+ * @description Thrown when user content is rejected by content moderation
+ * This is a user-facing error that should be handled gracefully in the UI
+ */
+export class ContentModerationError extends Error {
+  /**
+   * Create a content moderation error
+   * @param message - User-friendly error message
+   * @param categories - List of violated content categories
+   */
+  constructor(
+    message: string,
+    public categories: string[]
+  ) {
+    super(message);
+    this.name = 'ContentModerationError';
+  }
+}

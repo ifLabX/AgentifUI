@@ -281,6 +281,9 @@ export default function AppDetailPage() {
         // when sending fails, restore the UI state
         setIsSubmitting(false);
         setIsWelcomeScreen(true);
+
+        // Re-throw so ChatInput can surface moderation and other errors
+        throw error;
       }
     },
     [originalHandleSubmit, setIsWelcomeScreen]
