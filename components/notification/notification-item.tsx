@@ -61,6 +61,13 @@ import { useTranslations } from 'next-intl';
  * and category label. Supports compact and full display modes.
  */
 
+/**
+ * NotificationItem Component
+ *
+ * Displays a single notification with read/unread status, priority badge,
+ * and category label. Supports compact and full display modes.
+ */
+
 // ============================================================================
 // Types
 // ============================================================================

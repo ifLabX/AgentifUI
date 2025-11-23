@@ -65,6 +65,13 @@ import { NotificationItem } from './notification-item';
  * infinite scroll support, and loading states.
  */
 
+/**
+ * NotificationList Component
+ *
+ * Container for displaying a list of notifications with optional date grouping,
+ * infinite scroll support, and loading states.
+ */
+
 // ============================================================================
 // Types
 // ============================================================================
