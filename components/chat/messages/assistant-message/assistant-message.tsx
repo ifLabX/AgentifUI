@@ -1,3 +1,4 @@
+ 
 'use client';
 
 import {
@@ -36,6 +37,7 @@ import {
 import { AssistantMessageActions } from '@components/chat/message-actions';
 import { ReferenceSources } from '@components/chat/reference-sources';
 import { cn } from '@lib/utils';
+import { MessageBlock, parseThinkBlocks } from '@lib/utils/think-parser';
 import 'katex/dist/katex.min.css';
 import ReactMarkdown from 'react-markdown';
 import type { Components } from 'react-markdown';
@@ -50,167 +52,102 @@ import { useTranslations } from 'next-intl';
 
 import { StreamingText } from './streaming-markdown';
 
-// Extract think block and main content from raw message content
-const extractThinkContent = (
-  rawContent: string
-): {
-  hasThinkBlock: boolean;
-  thinkContent: string;
-  mainContent: string;
-  thinkClosed: boolean;
-} => {
-  // Debug: log details tag position and format if present
-  if (rawContent.includes('<details')) {
-    console.log('[AssistantMessage] Details tag detected:', {
-      content: rawContent.substring(0, 200) + '...',
-      startsWithDetails: rawContent.indexOf('<details') === 0,
-      detailsPosition: rawContent.indexOf('<details'),
-      firstLine: rawContent.split('\n')[0],
-    });
-  }
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-  // Support both <think> and <details> tags, prioritize <think>
-  // Allow a small amount of whitespace or short content before tags
-  const thinkStartTag = '<think>';
-  const thinkEndTag = '</think>';
-
-  // Find <think> tag near the start
-  const thinkStartIndex = rawContent.indexOf(thinkStartTag);
-  if (thinkStartIndex !== -1) {
-    // Allow up to 10 characters of non-whitespace before <think>
-    const contentBeforeThink = rawContent.substring(0, thinkStartIndex).trim();
-    const isThinkAtEffectiveStart =
-      thinkStartIndex === 0 ||
-      contentBeforeThink.length === 0 ||
-      contentBeforeThink.length <= 10;
-
-    if (isThinkAtEffectiveStart) {
-      const thinkContentStart = thinkStartIndex + thinkStartTag.length;
-      const endTagIndex = rawContent.indexOf(thinkEndTag, thinkContentStart);
-
-      if (endTagIndex !== -1) {
-        const thinkContent = rawContent.substring(
-          thinkContentStart,
-          endTagIndex
-        );
-        const mainContent = rawContent.substring(
-          endTagIndex + thinkEndTag.length
-        );
-        return {
-          hasThinkBlock: true,
-          thinkContent,
-          mainContent,
-          thinkClosed: true,
-        };
-      }
-
-      // Unclosed <think> tag
-      const thinkContent = rawContent.substring(thinkContentStart);
-      return {
-        hasThinkBlock: true,
-        thinkContent,
-        mainContent: '',
-        thinkClosed: false,
-      };
-    }
-  }
-
-  // Find <details> tag near the start
-  const detailsStartRegex = /<details(?:\s[^>]*)?>/i;
-  const detailsMatch = rawContent.match(detailsStartRegex);
-
-  if (detailsMatch) {
-    const detailsStartIndex = rawContent.indexOf(detailsMatch[0]);
-    // Allow up to 10 characters of non-whitespace before <details>
-    const contentBeforeDetails = rawContent
-      .substring(0, detailsStartIndex)
-      .trim();
-    const isDetailsAtEffectiveStart =
-      detailsStartIndex === 0 ||
-      contentBeforeDetails.length === 0 ||
-      contentBeforeDetails.length <= 10;
-
-    if (isDetailsAtEffectiveStart) {
-      const detailsStartTag = detailsMatch[0];
-      const detailsEndTag = '</details>';
-      const detailsContentStart = detailsStartIndex + detailsStartTag.length;
-      const endTagIndex = rawContent.indexOf(
-        detailsEndTag,
-        detailsContentStart
-      );
-
-      if (endTagIndex !== -1) {
-        // Extract content inside <details>, remove <summary> if present
-        let detailsContent = rawContent.substring(
-          detailsContentStart,
-          endTagIndex
-        );
-        const summaryRegex = /<summary[^>]*>[\s\S]*?<\/summary>/i;
-        detailsContent = detailsContent.replace(summaryRegex, '').trim();
-
-        const mainContent = rawContent.substring(
-          endTagIndex + detailsEndTag.length
-        );
-        return {
-          hasThinkBlock: true,
-          thinkContent: detailsContent,
-          mainContent,
-          thinkClosed: true,
-        };
-      }
-
-      // Unclosed <details> tag
-      let detailsContent = rawContent.substring(detailsContentStart);
-      const summaryRegex = /<summary[^>]*>[\s\S]*?<\/summary>/i;
-      detailsContent = detailsContent.replace(summaryRegex, '').trim();
-
-      return {
-        hasThinkBlock: true,
-        thinkContent: detailsContent,
-        mainContent: '',
-        thinkClosed: false,
-      };
-    }
-  }
-
-  // No think block found
-  return {
-    hasThinkBlock: false,
-    thinkContent: '',
-    mainContent: rawContent,
-    thinkClosed: false,
-  };
-};
-
-// Extract main content for copy (removes think/details blocks)
-const extractMainContentForCopy = (rawContent: string): string => {
-  // If there are unclosed <think> or <details> tags, return empty string (still streaming)
-  const openThinkCount = (rawContent.match(/<think(?:\s[^>]*)?>/gi) || [])
-    .length;
-  const closeThinkCount = (rawContent.match(/<\/think>/gi) || []).length;
-  const openDetailsCount = (rawContent.match(/<details(?:\s[^>]*)?>/gi) || [])
-    .length;
-  const closeDetailsCount = (rawContent.match(/<\/details>/gi) || []).length;
-
-  if (
-    openThinkCount > closeThinkCount ||
-    openDetailsCount > closeDetailsCount
-  ) {
-    return '';
-  }
-
-  let cleanContent = rawContent;
-
-  // Remove all <think>...</think> blocks
-  const thinkRegex = /<think(?:\s[^>]*)?>[\s\S]*?<\/think>/gi;
-  cleanContent = cleanContent.replace(thinkRegex, '');
-
-  // Remove all <details>...</details> blocks
-  const detailsRegex = /<details(?:\s[^>]*)?>[\s\S]*?<\/details>/gi;
-  cleanContent = cleanContent.replace(detailsRegex, '');
+// Extract main content for copy (concatenates text blocks)
+const extractMainContentForCopy = (blocks: MessageBlock[]): string => {
+  // Only include text blocks
+  const textContent = blocks
+    .filter(block => block.type === 'text')
+    .map(block => block.content)
+    .join('\n');
 
   // Remove extra blank lines
-  return cleanContent.replace(/\n\s*\n/g, '\n').trim();
+  return textContent.replace(/\n\s*\n/g, '\n').trim();
+};
+
+// Individual Think Block Component
+const ThinkBlockItem = ({
+  block,
+  isStreaming,
+  isLast,
+  wasManuallyStopped,
+}: {
+  block: MessageBlock;
+  isStreaming: boolean;
+  isLast: boolean;
+  wasManuallyStopped: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+  // Calculate the current think block status
+  const calculateStatus = (): ThinkBlockStatus => {
+    if (block.status === 'closed') {
+      return 'completed';
+    }
+    if (wasManuallyStopped) {
+      return 'stopped';
+    }
+    // If it's open and either it's the last block (active) or just open
+    // Actually if it's open and NOT last, it's effectively stopped/incomplete but not active.
+    // But our parser marks unclosed blocks as 'open'.
+    // If stream is done (!isStreaming), then it's completed/stopped.
+    if (!isStreaming) {
+      return 'completed'; // or stopped?
+    }
+
+    // If streaming and it is the last block, it is thinking.
+    if (isStreaming && isLast) {
+      return 'thinking';
+    }
+
+    // If streaming but not last (e.g. we moved to next text block), then this block is done (but unclosed tag).
+    return 'completed';
+  };
+
+  const currentStatus = calculateStatus();
+  const prevStatusRef = useRef<ThinkBlockStatus>(currentStatus);
+
+  useEffect(() => {
+    const previousStatus = prevStatusRef.current;
+
+    if (previousStatus === 'thinking' && currentStatus === 'completed') {
+      setIsOpen(false);
+    } else if (previousStatus !== 'thinking' && currentStatus === 'thinking') {
+      setIsOpen(true);
+    }
+
+    prevStatusRef.current = currentStatus;
+  }, [currentStatus]);
+
+  // Determine if this specific block is currently streaming (animating)
+  // It animates if it is the last block and the global stream is active.
+  // OR if it is 'open' and we are streaming.
+  const isBlockStreaming = isStreaming && isLast && block.status === 'open';
+  const isBlockComplete = !isStreaming || !isLast || block.status === 'closed';
+
+  return (
+    <div className="mb-4 last:mb-0">
+      <ThinkBlockHeader
+        status={currentStatus}
+        isOpen={isOpen}
+        onToggle={() => setIsOpen(prev => !prev)}
+      />
+      <StreamingText
+        content={block.content}
+        isStreaming={isBlockStreaming}
+        isComplete={isBlockComplete}
+        typewriterSpeed={80}
+      >
+        {displayedThinkContent => (
+          <ThinkBlockContent
+            markdownContent={displayedThinkContent}
+            isOpen={isOpen}
+          />
+        )}
+      </StreamingText>
+    </div>
+  );
 };
 
 interface AssistantMessageProps {
@@ -239,25 +176,11 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
   ({ id, content, isStreaming, wasManuallyStopped, metadata, className }) => {
     const t = useTranslations('pages.chat');
 
-    // Extract think block and main content from message
-    const { hasThinkBlock, thinkContent, mainContent, thinkClosed } = useMemo(
-      () => extractThinkContent(content),
-      [content]
-    );
+    // Parse content into blocks
+    const blocks = useMemo(() => parseThinkBlocks(content), [content]);
 
-    const [isOpen, setIsOpen] = useState(true);
-
-    const toggleOpen = () => {
-      setIsOpen(prev => !prev);
-    };
-
-    // Preprocess main content: ensure details tags are separated, escape unknown HTML tags
+    // Preprocess main content: escape unknown HTML tags
     const preprocessMainContent = (content: string): string => {
-      // Ensure </details> is followed by two newlines, and <details> is preceded by two newlines if needed
-      const processedContent = content
-        .replace(/(<\/details>)(\s*)([^\s])/g, '$1\n\n$3')
-        .replace(/([^\n])(\s*)(<details[^>]*>)/g, '$1\n\n$3');
-
       // Whitelist of allowed HTML tags
       const knownHtmlTags = new Set([
         'div',
@@ -304,7 +227,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
       ]);
 
       // Escape HTML tags not in whitelist
-      return processedContent
+      return content
         .replace(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g, (match, tagName) => {
           if (!knownHtmlTags.has(tagName.toLowerCase())) {
             return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -318,39 +241,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
           return match;
         });
     };
-
-    // Calculate the current think block status
-    const calculateStatus = (): ThinkBlockStatus => {
-      if (hasThinkBlock && thinkClosed) {
-        return 'completed';
-      }
-      if (wasManuallyStopped) {
-        return hasThinkBlock ? 'stopped' : 'completed';
-      }
-      if (isStreaming && hasThinkBlock && !thinkClosed) {
-        return 'thinking';
-      }
-      return 'completed';
-    };
-    const currentStatus = calculateStatus();
-
-    // Track previous status to control think block open/close animation
-    const prevStatusRef = useRef<ThinkBlockStatus>(currentStatus);
-
-    useEffect(() => {
-      const previousStatus = prevStatusRef.current;
-
-      if (previousStatus === 'thinking' && currentStatus === 'completed') {
-        setIsOpen(false);
-      } else if (
-        previousStatus !== 'thinking' &&
-        currentStatus === 'thinking'
-      ) {
-        setIsOpen(true);
-      }
-
-      prevStatusRef.current = currentStatus;
-    }, [currentStatus]);
 
     // Markdown rendering components for main content
     const mainMarkdownComponents: Components = {
@@ -620,91 +510,86 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
         )}
         data-message-id={id}
       >
-        {hasThinkBlock && (
-          <>
-            <ThinkBlockHeader
-              status={currentStatus}
-              isOpen={isOpen}
-              onToggle={toggleOpen}
-            />
-            <StreamingText
-              content={thinkContent}
-              isStreaming={isStreaming && !thinkClosed}
-              isComplete={thinkClosed || !isStreaming}
-              typewriterSpeed={80}
-            >
-              {displayedThinkContent => (
-                <ThinkBlockContent
-                  markdownContent={displayedThinkContent}
-                  isOpen={isOpen}
-                />
-              )}
-            </StreamingText>
-          </>
-        )}
+        {blocks.map((block, index) => {
+          const isLast = index === blocks.length - 1;
 
-        {mainContent && (
-          // Main content area: streaming markdown, references, and actions
-          <div
-            className={cn(
-              'markdown-body main-content-area assistant-message-content w-full text-base',
-              'text-stone-800 dark:text-stone-200', // Set text color based on theme
-              !hasThinkBlock ? 'py-2' : 'pt-1 pb-2' // Adjust vertical spacing if think block is present
-            )}
-          >
-            <StreamingText
-              content={preprocessMainContent(mainContent)}
-              isStreaming={isStreaming}
-              isComplete={!isStreaming}
-              typewriterSpeed={50}
-            >
-              {displayedContent => (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex, rehypeRaw]}
-                  components={mainMarkdownComponents}
-                >
-                  {displayedContent}
-                </ReactMarkdown>
-              )}
-            </StreamingText>
+          if (block.type === 'think') {
+            return (
+              <ThinkBlockItem
+                key={`think-${index}`}
+                block={block}
+                isStreaming={isStreaming}
+                isLast={isLast}
+                wasManuallyStopped={wasManuallyStopped}
+              />
+            );
+          }
 
-            {/* Reference sources and attribution */}
+          return (
+            <div
+              key={`text-${index}`}
+              className={cn(
+                'markdown-body main-content-area assistant-message-content w-full text-base',
+                'text-stone-800 dark:text-stone-200',
+                'mb-4 last:mb-0' // Add spacing between blocks
+              )}
+            >
+              <StreamingText
+                content={preprocessMainContent(block.content)}
+                isStreaming={isStreaming && isLast}
+                isComplete={!isStreaming || !isLast}
+                typewriterSpeed={50}
+              >
+                {displayedContent => (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex, rehypeRaw]}
+                    components={mainMarkdownComponents}
+                  >
+                    {displayedContent}
+                  </ReactMarkdown>
+                )}
+              </StreamingText>
+            </div>
+          );
+        })}
+
+        {/* Reference sources and attribution - Show at the bottom if exists */}
+        {(metadata?.dify_retriever_resources ||
+          metadata?.dify_metadata?.retriever_resources) && (
+          <div className="px-2">
             <ReferenceSources
               retrieverResources={
                 metadata?.dify_retriever_resources ||
                 metadata?.dify_metadata?.retriever_resources
               }
-              className="mt-4 mb-2"
-              animationDelay={isStreaming ? 0 : 300} // Delay 300ms after streaming ends
-            />
-
-            {/* Assistant message action buttons */}
-            <AssistantMessageActions
-              messageId={id}
-              content={extractMainContentForCopy(content) || undefined}
-              onRegenerate={() => console.log('Regenerate message', id)}
-              onFeedback={isPositive =>
-                console.log(
-                  'Feedback',
-                  isPositive ? 'positive' : 'negative',
-                  id
-                )
-              } // Feedback functionality can be updated later
-              isRegenerating={isStreaming}
-              className={cn(
-                '-ml-2',
-                // Adjust top margin based on reference presence
-                (
-                  metadata?.dify_retriever_resources ||
-                  metadata?.dify_metadata?.retriever_resources
-                )?.length > 0
-                  ? 'mt-0' // Normal spacing if references exist
-                  : '-mt-4' // Negative spacing if no references
-              )}
+              className="mt-2 mb-2"
+              animationDelay={isStreaming ? 0 : 300}
             />
           </div>
         )}
+
+        {/* Assistant message action buttons - Always show at bottom */}
+        <div className="px-2">
+          <AssistantMessageActions
+            messageId={id}
+            content={extractMainContentForCopy(blocks) || undefined}
+            onRegenerate={() => console.log('Regenerate message', id)}
+            onFeedback={isPositive =>
+              console.log('Feedback', isPositive ? 'positive' : 'negative', id)
+            }
+            isRegenerating={isStreaming}
+            className={cn(
+              '-ml-2',
+              (
+                metadata?.dify_retriever_resources ||
+                metadata?.dify_metadata?.retriever_resources
+              )?.length > 0
+                ? 'mt-0'
+                : 'mt-0'
+            )}
+          />
+        </div>
       </div>
     );
   }
