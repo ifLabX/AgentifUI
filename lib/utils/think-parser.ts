@@ -100,22 +100,21 @@ export function parseThinkBlocks(content: string): MessageBlock[] {
     }
   }
 
-  // Post-processing: Merge adjacent text blocks (if any)
-  // Also remove empty text blocks if desired, though empty text blocks might be useful for structure.
-  const mergedBlocks: MessageBlock[] = [];
-  blocks.forEach(block => {
-    if (
-      mergedBlocks.length > 0 &&
-      block.type === 'text' &&
-      mergedBlocks[mergedBlocks.length - 1].type === 'text'
-    ) {
-      mergedBlocks[mergedBlocks.length - 1].content += block.content;
-    } else {
-      mergedBlocks.push(block);
+  // Post-processing: Merge adjacent text blocks and filter empty text blocks
+  return blocks.reduce((acc, block) => {
+    // Skip empty text blocks (empty think blocks are preserved for UI state)
+    if (block.content.length === 0 && block.type === 'text') {
+      return acc;
     }
-  });
 
-  // Filter out empty text blocks? Maybe not, " " is valid text.
-  // But empty string "" is useless.
-  return mergedBlocks.filter(b => b.content.length > 0 || b.type === 'think');
+    // Merge adjacent text blocks
+    if (block.type === 'text' && acc[acc.length - 1]?.type === 'text') {
+      acc[acc.length - 1].content += block.content;
+    } else {
+      // Add think blocks (including empty ones) or new text blocks
+      acc.push(block);
+    }
+
+    return acc;
+  }, [] as MessageBlock[]);
 }
