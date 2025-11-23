@@ -443,7 +443,7 @@ export class CASConfigService {
         email: protocolConfig.attributes_mapping?.email || 'cas:mail',
       },
       emailDomain:
-        this.extractEmailDomain(protocolConfig.base_url) || 'example.com',
+        provider.settings?.email_domain || process.env.DEFAULT_SSO_EMAIL_DOMAIN,
     };
   }
 
@@ -506,25 +506,5 @@ export class CASConfigService {
   ): Promise<GenericCASService> {
     const config = await this.getCASConfig(providerId);
     return new GenericCASService(config);
-  }
-
-  /**
-   * extract email domain from base URL
-   * @private
-   * @param baseUrl CAS server base URL
-   * @returns email domain
-   */
-  private static extractEmailDomain(baseUrl: string): string {
-    try {
-      const url = new URL(baseUrl);
-      const hostname = url.hostname;
-      const parts = hostname.split('.');
-      if (parts.length >= 2) {
-        return parts.slice(-2).join('.');
-      }
-      return hostname;
-    } catch {
-      return 'example.com';
-    }
   }
 }

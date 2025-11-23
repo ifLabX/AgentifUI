@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "Errore di configurazione del servizio SSO, contatta l'amministratore",
           "missingTicket": "Parametri di autenticazione mancanti, effettua nuovamente il login",
           "default": "Si è verificato un errore durante il login, riprova più tardi",
-          "loginFailed": "Login fallito, controlla email e password"
+          "loginFailed": "Login fallito, controlla email e password",
+          "accountSuspended": "Il tuo account è stato sospeso. Contatta l'amministratore per assistenza.",
+          "accountPending": "Il tuo account è in attesa di approvazione. Attendi che l'amministratore attivi il tuo account.",
+          "invalidAccount": "Lo stato del tuo account non è valido. Contatta l'amministratore per assistenza.",
+          "profileCheckFailed": "Impossibile verificare lo stato del tuo account. Riprova o contatta l'amministratore.",
+          "profileNotFound": "Le informazioni del tuo account non sono state trovate. Contatta l'amministratore.",
+          "permissionCheckFailed": "Impossibile verificare le autorizzazioni. Riprova o contatta l'amministratore."
         }
       },
       "register": {
@@ -1458,7 +1464,9 @@
           "messages": {
             "loadFailed": "Impossibile caricare i dati di traduzione",
             "saveSuccess": "Configurazione salvata con successo",
-            "saveFailed": "Salvataggio della configurazione fallito, riprova"
+            "saveFailed": "Salvataggio della configurazione fallito, riprova",
+            "cleanupImages": "({count} inutilizzati {count, plural, one {image} other {images}} rimossi)",
+            "cleanupFailed": "Impossibile ripulire le immagini inutilizzate"
           },
           "saveActions": {
             "hasChanges": "Modifiche non salvate",
@@ -1509,6 +1517,19 @@
             "copyrightLinkText": "Testo Link (linkText)",
             "copyrightSuffix": "Suffisso (suffix)"
           }
+        },
+        "imageUpload": {
+          "title": "Carica immagine",
+          "dropzone": {
+            "title": "Rilascia l'immagine qui o fai clic per selezionare",
+            "subtitle": "Trascina e rilascia qui un file immagine",
+            "formats": "Formati supportati: JPG, PNG, WEBP, GIF (Max 10MB)"
+          },
+          "upload": "Caricare",
+          "uploading": "Caricamento in corso...",
+          "cancel": "Ignora",
+          "success": "Immagine Caricata con successo",
+          "preview": "Anteprima"
         }
       },
       "users": {
@@ -1698,6 +1719,8 @@
             "displayOrder": "Ordine di visualizzazione",
             "buttonText": "Testo pulsante",
             "buttonTextPlaceholder": "Lascia vuoto per usare il nome del fornitore",
+            "emailDomain": "Dominio email",
+            "emailDomainPlaceholder": "es. example.com",
             "enableProvider": "Abilita questo fornitore",
             "baseUrl": "URL di base",
             "baseUrlPlaceholder": "https://sso.example.com",

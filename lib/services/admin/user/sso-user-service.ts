@@ -28,7 +28,8 @@ export class SSOUserService {
    * @returns User profile or null
    */
   static async findUserByEmployeeNumber(
-    employeeNumber: string
+    employeeNumber: string,
+    emailDomain?: string
   ): Promise<Profile | null> {
     if (!employeeNumber || typeof employeeNumber !== 'string') {
       throw new Error('Employee number is required and must be a string');
@@ -37,10 +38,9 @@ export class SSOUserService {
     try {
       const supabase = await createClient();
 
-      // Construct SSO user's email address (employeeNumber@domain)
-      // Lookup by email, as the email field will be set correctly by trigger
-      // Note: This method is for lookup only; actual email should be from SSO provider config
-      const email = `${employeeNumber.trim()}@edu.cn`;
+      // Construct SSO user's email address using provided domain or environment variable fallback
+      const domain = emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
+      const email = `${employeeNumber.trim()}@${domain}`;
       console.log(
         `Looking up user by email: ${email} (for employee: ${employeeNumber})`
       );
@@ -204,7 +204,9 @@ export class SSOUserService {
 
       // Create auth.users record using Supabase Admin API
       // This will also trigger creation of profiles record via trigger
-      const email = `${userData.employeeNumber}@${userData.emailDomain}`; // Use employee number and provider domain to generate email
+      const emailDomain =
+        userData.emailDomain || process.env.DEFAULT_SSO_EMAIL_DOMAIN;
+      const email = `${userData.employeeNumber}@${emailDomain}`; // Use employee number and configured domain to generate email
 
       console.log(
         `Creating auth user with email: ${email}, employee_number: ${userData.employeeNumber}`

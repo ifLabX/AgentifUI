@@ -1,6 +1,7 @@
 // SSO login API
 // establish Supabase session for verified SSO users
 // add request deduplication logic and improved error handling
+import { getAccountStatusError } from '@lib/constants/auth-errors';
 import { createAdminClient } from '@lib/supabase/server';
 
 import { cookies } from 'next/headers';
@@ -125,6 +126,43 @@ export async function POST(request: NextRequest) {
         }
         console.log(
           `Creating session for SSO user: ${userId}, URL email: ${userEmail}, actual email: ${actualUserEmail}`
+        );
+
+        // 🔒 Security: Check user account status before creating session using whitelist validation
+        // Only 'active' status users are allowed to log in via SSO
+        // This prevents bypass via invalid status values (NULL, typos, unexpected enums)
+        const { data: profile, error: profileError } = await adminSupabase
+          .from('profiles')
+          .select('status')
+          .eq('id', userId)
+          .single();
+
+        if (profileError) {
+          console.error('Failed to query user profile status:', profileError);
+          return NextResponse.json(
+            { message: 'Failed to verify user account status' },
+            { status: 500 }
+          );
+        }
+
+        // Reject session creation for non-active users
+        if (profile?.status !== 'active') {
+          const errorCode = getAccountStatusError(profile?.status);
+
+          console.log(
+            `[SSO Authentication] Rejected login attempt for user with status '${profile?.status ?? 'NULL'}': ${userId}`
+          );
+          return NextResponse.json(
+            {
+              message: errorCode,
+              redirect: `/login?error=${errorCode}`,
+            },
+            { status: 403 }
+          );
+        }
+
+        console.log(
+          `[SSO Authentication] User status verified as 'active' for user: ${userId}`
         );
 
         // use optimized temporary password method to create session

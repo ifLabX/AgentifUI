@@ -242,7 +242,7 @@ const Image: React.FC<ImageProps> = ({
         src={src}
         alt={alt}
         style={imageStyle}
-        className="rounded-lg shadow-sm"
+        className="inline-block rounded-lg shadow-sm"
       />
       {caption && (
         <p className="text-muted-foreground mt-2 text-sm italic">{caption}</p>

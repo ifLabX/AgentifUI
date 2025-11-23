@@ -1,5 +1,6 @@
 'use client';
 
+import { ImageUploadDialog } from '@components/admin/content/image-upload-dialog';
 import { Input } from '@components/ui/input';
 import { Label } from '@components/ui/label';
 import {
@@ -10,9 +11,10 @@ import {
   SelectValue,
 } from '@components/ui/select';
 import { Textarea } from '@components/ui/textarea';
+import { createClient } from '@lib/supabase/client';
 import { ComponentInstance } from '@lib/types/about-page-components';
 import { cn } from '@lib/utils';
-import { Plus, Trash2, X } from 'lucide-react';
+import { Plus, Trash2, Upload, X } from 'lucide-react';
 
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -40,6 +42,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x, y });
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (modalRef.current) {
@@ -78,6 +82,40 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [onClose]);
+
+  // Fetch current user ID on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchUserId = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (isMounted && user) {
+        setUserId(user.id);
+      }
+    };
+
+    fetchUserId();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  /**
+   * Validate if a value is a valid CSS dimension
+   *
+   * Accepts: numbers, 'auto', percentages (e.g., '50%'), and CSS units (e.g., '100px')
+   */
+  const isValidCssDimension = (value: string | number): boolean => {
+    if (typeof value === 'number') return true;
+    if (typeof value !== 'string') return false;
+
+    // Match: numbers (integers or floats, pure or with units), percentages, or 'auto'
+    return /^(\d+(\.\d+)?(px|em|rem|%|vh|vw)?|auto)$/.test(value.trim());
+  };
 
   const handleInputChange = (name: string, value: unknown) => {
     if (!component) return;
@@ -435,6 +473,55 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       );
     }
 
+    // Smart dimension fields (width/height for image component)
+    if ((key === 'width' || key === 'height') && component.type === 'image') {
+      return (
+        <div key={key} className="space-y-2">
+          <Label htmlFor={fieldId} className="text-sm capitalize">
+            {key}
+          </Label>
+          <Input
+            id={fieldId}
+            type="text"
+            value={String(value || '')}
+            onChange={e => {
+              const inputValue = e.target.value;
+
+              // Allow empty value during editing (don't auto-fill immediately)
+              if (inputValue === '') {
+                handleInputChange(key, '');
+                return;
+              }
+
+              const trimmedValue = inputValue.trim();
+
+              // Convert pure numeric strings (integers or floats) to numbers for proper rendering
+              if (/^\d+(\.\d+)?$/.test(trimmedValue)) {
+                handleInputChange(key, Number(trimmedValue));
+              } else {
+                // Keep CSS values as strings (auto, 100%, 100px, etc.)
+                // Allow any input during typing, validation happens on blur
+                handleInputChange(key, trimmedValue);
+              }
+            }}
+            onBlur={e => {
+              const inputValue = e.target.value.trim();
+
+              // If empty or invalid, default to 'auto'
+              if (inputValue === '' || !isValidCssDimension(inputValue)) {
+                handleInputChange(key, 'auto');
+              }
+            }}
+            placeholder="e.g., 100, auto, 50%"
+            className="h-8 text-sm"
+          />
+          <p className="text-xs text-stone-500 dark:text-stone-400">
+            Enter number (e.g., 100), auto, or CSS value (e.g., 50%, 100px)
+          </p>
+        </div>
+      );
+    }
+
     // Number fields
     if (typeof value === 'number') {
       return (
@@ -450,6 +537,46 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             placeholder={`Enter ${key}`}
             className="h-8 text-sm"
           />
+        </div>
+      );
+    }
+
+    // Special handling for src field in image component
+    if (
+      key === 'src' &&
+      component.type === 'image' &&
+      typeof value === 'string'
+    ) {
+      return (
+        <div key={key} className="space-y-2">
+          <Label htmlFor={fieldId} className="text-sm capitalize">
+            {key}
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id={fieldId}
+              type="text"
+              value={String(value || '')}
+              onChange={e => handleInputChange(key, e.target.value)}
+              placeholder="Enter image URL"
+              className="h-8 flex-1 text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => setIsUploadDialogOpen(true)}
+              disabled={!userId}
+              className={cn(
+                'flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors',
+                'border-stone-300 bg-white text-stone-700 hover:bg-stone-50',
+                'dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700',
+                'disabled:cursor-not-allowed disabled:opacity-50'
+              )}
+              title="Upload local image"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span>Upload</span>
+            </button>
+          </div>
         </div>
       );
     }
@@ -529,6 +656,24 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             renderPropertyField('secondaryButton', undefined)}
         </div>
       </div>
+
+      {/* Image Upload Dialog */}
+      {userId && (
+        <ImageUploadDialog
+          isOpen={isUploadDialogOpen}
+          onClose={() => setIsUploadDialogOpen(false)}
+          onUploadSuccess={(url, path) => {
+            // Auto-fill the uploaded image URL and save path in one update
+            if (!component) return;
+            onPropsChange({
+              ...component.props,
+              src: url,
+              _imagePath: path,
+            });
+          }}
+          userId={userId}
+        />
+      )}
     </>
   );
 };

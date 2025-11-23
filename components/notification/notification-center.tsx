@@ -39,6 +39,13 @@ import { NotificationList } from './notification-list';
  * Provides filtering by type (All/Changelog/Messages) and batch operations.
  */
 
+/**
+ * NotificationCenter Component
+ *
+ * Modal popup displaying notifications with tab navigation and actions.
+ * Provides filtering by type (All/Changelog/Messages) and batch operations.
+ */
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -156,12 +163,12 @@ export function NotificationCenter({
       onOpenChange={onOpenChange}
       minWidth={420}
       placement="bottom"
-      offsetX={-180}
-      offsetY={8}
-      contentClassName="p-0"
+      offsetX={-12}
+      offsetY={4}
+      contentClassName="rounded-xl border border-stone-200 bg-stone-50 p-2 shadow-xl dark:border-stone-600 dark:bg-stone-800"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="flex items-center justify-between rounded-lg bg-stone-200/80 px-4 py-3 dark:bg-stone-700/50">
         <h2 className="text-lg font-semibold">{t('title')}</h2>
 
         <div className="flex items-center gap-1">
@@ -195,16 +202,16 @@ export function NotificationCenter({
 
       {/* Tabs */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+        <TabsList className="w-full justify-start rounded-none border-b border-stone-200 bg-transparent p-0 dark:border-stone-600">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="data-[state=active]:border-primary relative rounded-none border-b-2 border-transparent data-[state=active]:bg-transparent"
+              className="data-[state=active]:border-primary relative rounded-none border-b-2 border-transparent text-stone-700 data-[state=active]:bg-transparent data-[state=active]:text-stone-900 dark:text-stone-300 dark:data-[state=active]:text-stone-100"
             >
               {t(tab.labelKey)}
               {tab.count > 0 && (
-                <span className="bg-primary text-primary-foreground ml-2 rounded-full px-2 py-0.5 text-xs font-semibold">
+                <span className="ml-2 rounded-full bg-stone-300 px-2 py-0.5 text-xs font-semibold text-stone-800 dark:bg-stone-600 dark:text-stone-50">
                   {tab.count}
                 </span>
               )}

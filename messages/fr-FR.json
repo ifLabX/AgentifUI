@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "Erreur de configuration du service SSO, veuillez contacter l'administrateur",
           "missingTicket": "Paramètres d'authentification manquants, veuillez vous reconnecter",
           "default": "Une erreur s'est produite lors de la connexion, veuillez réessayer plus tard",
-          "loginFailed": "Échec de la connexion, veuillez vérifier votre e-mail et votre mot de passe"
+          "loginFailed": "Échec de la connexion, veuillez vérifier votre e-mail et votre mot de passe",
+          "accountSuspended": "Votre compte a été <span class=\"red\">suspendu.</span> <br>Veuillez contacter un administrateur.",
+          "accountPending": "Votre compte est en attente d'approbation. Veuillez attendre que l'administrateur active votre compte.",
+          "invalidAccount": "Le statut de votre compte n'est pas valide. Veuillez contacter l'administrateur pour obtenir de l'aide.",
+          "profileCheckFailed": "Impossible de vérifier le statut de votre compte. Veuillez réessayer ou contacter l'administrateur.",
+          "profileNotFound": "Les informations de votre compte sont introuvables. Veuillez contacter l'administrateur.",
+          "permissionCheckFailed": "Impossible de vérifier vos autorisations. Veuillez réessayer ou contacter l'administrateur."
         }
       },
       "register": {
@@ -1458,7 +1464,9 @@
           "messages": {
             "loadFailed": "Échec du chargement des données de traduction",
             "saveSuccess": "Configuration enregistrée avec succès",
-            "saveFailed": "Échec de l'enregistrement de la configuration, veuillez réessayer"
+            "saveFailed": "Échec de l'enregistrement de la configuration, veuillez réessayer",
+            "cleanupImages": "({count} inutilisé {count, plural, one {image} other {images}} supprimé)",
+            "cleanupFailed": "Échec du nettoyage des images inutilisées"
           },
           "saveActions": {
             "hasChanges": "Modifications non enregistrées",
@@ -1509,6 +1517,19 @@
             "copyrightLinkText": "Texte du lien (linkText)",
             "copyrightSuffix": "Suffixe (suffix)"
           }
+        },
+        "imageUpload": {
+          "title": "Uploader une image",
+          "dropzone": {
+            "title": "Déposez l'image ici ou cliquez pour sélectionner",
+            "subtitle": "Glisser et dÃ©poser ici l&apos; image",
+            "formats": "Formats pris en charge : JPG, PNG, WEBP, GIF (10 Mo maximum)"
+          },
+          "upload": "Télécharger",
+          "uploading": "Chargement...",
+          "cancel": "Annuler",
+          "success": "Image téléchargée avec succès !",
+          "preview": "Aperçu"
         }
       },
       "users": {
@@ -1698,6 +1719,8 @@
             "displayOrder": "Ordre d'affichage",
             "buttonText": "Texte du bouton",
             "buttonTextPlaceholder": "Laisser vide pour utiliser le nom du fournisseur",
+            "emailDomain": "Domaine de courriel",
+            "emailDomainPlaceholder": "ex: example.com",
             "enableProvider": "Activer ce fournisseur",
             "baseUrl": "URL de base",
             "baseUrlPlaceholder": "https://sso.example.com",

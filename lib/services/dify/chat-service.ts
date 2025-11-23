@@ -33,6 +33,74 @@ import { DifyStopTaskRequestPayload, DifyStopTaskResponse } from './types';
 const DIFY_API_BASE_URL = '/api/dify';
 
 /**
+ * Safely extract usage data with type checking
+ * @param usage - Unknown usage data from API response
+ * @returns Validated DifyUsage object or undefined
+ */
+const extractUsage = (usage: unknown): DifyUsage | undefined => {
+  if (
+    usage &&
+    typeof usage === 'object' &&
+    'total_tokens' in usage &&
+    typeof (usage as { total_tokens: unknown }).total_tokens === 'number'
+  ) {
+    return usage as DifyUsage;
+  }
+  return undefined;
+};
+
+/**
+ * Type guard to validate DifyRetrieverResource structure
+ * @param resource - Unknown resource object
+ * @returns True if resource matches DifyRetrieverResource interface
+ */
+const isRetrieverResource = (
+  resource: unknown
+): resource is DifyRetrieverResource => {
+  if (!resource || typeof resource !== 'object') {
+    return false;
+  }
+
+  const res = resource as Record<string, unknown>;
+
+  return (
+    typeof res.segment_id === 'string' &&
+    typeof res.document_id === 'string' &&
+    typeof res.document_name === 'string' &&
+    typeof res.position === 'number' &&
+    typeof res.content === 'string'
+  );
+};
+
+/**
+ * Normalize and filter retriever resources array
+ * @param value - Unknown value to normalize
+ * @returns Array of valid retriever resources
+ */
+const normalizeResources = (value: unknown): DifyRetrieverResource[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter(isRetrieverResource);
+};
+
+/**
+ * Extract retriever resources with fallback logic
+ * @param preferred - Preferred source (event.metadata.retriever_resources)
+ * @param fallback - Fallback source (event.retriever_resources)
+ * @returns Array of valid retriever resources
+ */
+const extractRetrieverResources = (
+  preferred: unknown,
+  fallback: unknown
+): DifyRetrieverResource[] => {
+  const preferredResources = normalizeResources(preferred);
+  return preferredResources.length
+    ? preferredResources
+    : normalizeResources(fallback);
+};
+
+/**
  * Calls Dify's chat-messages endpoint and handles streaming response
  *
  * @param payload - Request body sent to Dify API
@@ -362,22 +430,13 @@ export async function streamDifyChat(
                 );
               }
 
-              // Safely extract usage data with type checking
-              const extractUsage = (usage: unknown): DifyUsage | undefined => {
-                if (
-                  usage &&
-                  typeof usage === 'object' &&
-                  'total_tokens' in usage
-                ) {
-                  return usage as DifyUsage;
-                }
-                return undefined;
-              };
-
               const completionData = {
                 usage: extractUsage(event.metadata?.usage || event.usage),
                 metadata: event.metadata || {},
-                retrieverResources: event.retriever_resources || [],
+                retrieverResources: extractRetrieverResources(
+                  event.metadata?.retriever_resources,
+                  event.retriever_resources
+                ),
               };
 
               console.log(

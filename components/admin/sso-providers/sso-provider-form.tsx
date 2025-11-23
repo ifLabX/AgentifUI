@@ -657,6 +657,36 @@ export function SsoProviderForm({
                             placeholder={t('fields.buttonTextPlaceholder')}
                           />
                         </div>
+
+                        {/* Email Domain */}
+                        <div>
+                          <label
+                            className={cn(
+                              'mb-2 block font-serif text-sm font-medium',
+                              isDark ? 'text-stone-300' : 'text-stone-700'
+                            )}
+                          >
+                            {t('fields.emailDomain')}
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.settings.email_domain || ''}
+                            onChange={e =>
+                              handleSettingsChange(
+                                'email_domain',
+                                e.target.value
+                              )
+                            }
+                            className={cn(
+                              'w-full rounded-lg border px-4 py-3 font-serif text-sm transition-colors',
+                              'focus:ring-2 focus:ring-offset-2 focus:outline-none',
+                              isDark
+                                ? 'border-stone-600 bg-stone-800/50 text-stone-200 focus:border-stone-500 focus:ring-stone-500/30 focus:ring-offset-stone-900'
+                                : 'border-stone-300 bg-stone-50/50 text-stone-900 focus:border-stone-400 focus:ring-stone-400/30 focus:ring-offset-white'
+                            )}
+                            placeholder={t('fields.emailDomainPlaceholder')}
+                          />
+                        </div>
                       </div>
 
                       {/* Enable Provider */}

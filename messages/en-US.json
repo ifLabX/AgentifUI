@@ -617,7 +617,13 @@
           "ssoProviderNotFound": "SSO service configuration error, please contact administrator",
           "missingTicket": "Authentication parameters missing, please login again",
           "default": "An error occurred during login, please try again later",
-          "loginFailed": "Login failed, please check your email and password"
+          "loginFailed": "Login failed, please check your email and password",
+          "accountSuspended": "Your account has been suspended. Please contact administrator for assistance.",
+          "accountPending": "Your account is pending approval. Please wait for administrator to activate your account.",
+          "invalidAccount": "Your account status is invalid. Please contact administrator for assistance.",
+          "profileCheckFailed": "Unable to verify your account status. Please try again or contact administrator.",
+          "profileNotFound": "Your account information was not found. Please contact administrator.",
+          "permissionCheckFailed": "Unable to verify your permissions. Please try again or contact administrator."
         }
       },
       "register": {
@@ -1470,7 +1476,9 @@
           "messages": {
             "loadFailed": "Failed to load translation data",
             "saveSuccess": "Configuration saved successfully",
-            "saveFailed": "Failed to save configuration, please try again"
+            "saveFailed": "Failed to save configuration, please try again",
+            "cleanupImages": "({count} unused {count, plural, one {image} other {images}} removed)",
+            "cleanupFailed": "Failed to cleanup unused images"
           },
           "saveActions": {
             "hasChanges": "Unsaved changes",
@@ -1480,6 +1488,19 @@
             "save": "Save Changes",
             "saving_": "Saving..."
           }
+        },
+        "imageUpload": {
+          "title": "Upload Image",
+          "dropzone": {
+            "title": "Drop image here or click to select",
+            "subtitle": "Drag and drop an image file here",
+            "formats": "Supported formats: JPG, PNG, WEBP, GIF (Max 10MB)"
+          },
+          "upload": "Upload",
+          "uploading": "Uploading...",
+          "cancel": "Cancel",
+          "success": "Image uploaded successfully!",
+          "preview": "Preview"
         },
         "tabs": {
           "about": "About Page",
@@ -1710,6 +1731,8 @@
             "displayOrder": "Display Order",
             "buttonText": "Button Text",
             "buttonTextPlaceholder": "Leave blank to use provider name",
+            "emailDomain": "Email Domain",
+            "emailDomainPlaceholder": "e.g., example.com",
             "enableProvider": "Enable this provider",
             "baseUrl": "Base URL",
             "baseUrlPlaceholder": "https://sso.example.com",

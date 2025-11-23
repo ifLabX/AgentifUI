@@ -2,6 +2,10 @@ import {
   createCorsHeaders,
   handleCorsPreflightRequest,
 } from '@lib/config/cors-config';
+import {
+  AUTH_SYSTEM_ERRORS,
+  getAccountStatusError,
+} from '@lib/constants/auth-errors';
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -58,11 +62,19 @@ export async function middleware(request: NextRequest) {
   const hasSsoUserCookie = request.cookies.get('sso_user_data');
   const hasSsoSecureCookie = request.cookies.get('sso_user_data_secure');
 
-  // If it is an SSO login success callback or there is an SSO user data cookie, temporarily skip authentication check
-  // Allow the frontend component to establish a Supabase session
-  if (ssoLoginSuccess || hasSsoUserCookie || hasSsoSecureCookie) {
+  // 🔒 Security: Only bypass authentication check for SSO processing paths
+  // This ensures that SSO users still go through normal status checks for protected routes
+  const isSsoProcessingPath =
+    pathname === '/sso/processing' ||
+    pathname.startsWith('/api/sso/') ||
+    pathname.startsWith('/api/auth/sso-signin');
+
+  if (
+    (ssoLoginSuccess || hasSsoUserCookie || hasSsoSecureCookie) &&
+    isSsoProcessingPath
+  ) {
     console.log(
-      `[Middleware] SSO session detected, allowing request to ${pathname}`
+      `[Middleware] SSO processing path detected, allowing request to ${pathname}`
     );
     return response;
   }
@@ -137,26 +149,87 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 🔒 Secure admin route permission check
-  // Use user.id that has been verified by the server instead of session.user.id that may be tampered with
-  if (user && isAdminRoute) {
+  // 🔒 Check user account status and admin permissions for authenticated users
+  // Query profile once to get both status and role for performance optimization
+  if (user) {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, status')
         .eq('id', user.id) // 🔒 Use user.id that has been verified by the server
         .single();
 
-      if (error || !profile || profile.role !== 'admin') {
-        console.log(
-          `[Middleware] Non-admin user attempting to access admin route ${pathname}, redirecting to /`
+      if (error) {
+        console.error(
+          `[SECURITY] Profile query failed for user ${user.id}:`,
+          error.message,
+          { pathname, code: error.code }
         );
-        return NextResponse.redirect(new URL('/', request.url));
+        await supabase.auth.signOut();
+        return NextResponse.redirect(
+          new URL(
+            `/login?error=${AUTH_SYSTEM_ERRORS.PROFILE_CHECK_FAILED}`,
+            request.url
+          )
+        );
       }
-      console.log(`[Middleware] Admin user accessing ${pathname}`);
+
+      // 🔒 Defense: Handle missing profile (should never happen but defensive)
+      if (!profile) {
+        console.error(
+          `[SECURITY] No profile found for authenticated user ${user.id}`
+        );
+        await supabase.auth.signOut();
+        return NextResponse.redirect(
+          new URL(
+            `/login?error=${AUTH_SYSTEM_ERRORS.PROFILE_NOT_FOUND}`,
+            request.url
+          )
+        );
+      }
+
+      // Now we have a valid profile, check status and permissions
+      {
+        // 🔒 Priority 1: Check account status using whitelist validation
+        // Only 'active' status users are allowed to access protected routes
+        // This prevents bypass via invalid status values (NULL, typos, unexpected enums)
+        if (profile.status !== 'active') {
+          const errorCode = getAccountStatusError(profile.status);
+
+          console.log(
+            `[Middleware] User with status '${profile.status}' attempting to access ${pathname}, signing out and redirecting to login`
+          );
+          await supabase.auth.signOut();
+          return NextResponse.redirect(
+            new URL(`/login?error=${errorCode}`, request.url)
+          );
+        }
+
+        // 🔒 Priority 2: Check admin route permissions
+        if (isAdminRoute && profile.role !== 'admin') {
+          console.log(
+            `[Middleware] Non-admin user attempting to access admin route ${pathname}, redirecting to /`
+          );
+          return NextResponse.redirect(new URL('/', request.url));
+        }
+
+        if (isAdminRoute) {
+          console.log(`[Middleware] Admin user accessing ${pathname}`);
+        }
+      }
     } catch (error) {
-      console.error(`[Middleware] Error checking admin permissions:`, error);
-      return NextResponse.redirect(new URL('/', request.url));
+      console.error(
+        `[SECURITY] Unexpected error in account validation for user ${user.id}:`,
+        error instanceof Error ? error.message : 'Unknown error',
+        { pathname }
+      );
+      await supabase.auth.signOut();
+      return NextResponse.redirect(
+        new URL(
+          `/login?error=${AUTH_SYSTEM_ERRORS.PERMISSION_CHECK_FAILED}`,
+          request.url
+        )
+      );
     }
   }
 

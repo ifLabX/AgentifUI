@@ -617,7 +617,13 @@
           "ssoProviderNotFound": "SSO服务配置错误，请联系管理员",
           "missingTicket": "认证参数缺失，请重新登录",
           "default": "登录过程中出现错误，请稍后重试",
-          "loginFailed": "登录失败，请检查您的邮箱和密码"
+          "loginFailed": "登录失败，请检查您的邮箱和密码",
+          "accountSuspended": "您的账户已被暂停使用，请联系管理员寻求帮助。",
+          "accountPending": "您的账户正在等待审核，请等待管理员激活您的账户。",
+          "invalidAccount": "您的账户状态无效，请联系管理员寻求帮助。",
+          "profileCheckFailed": "无法验证您的账户状态，请重试或联系管理员。",
+          "profileNotFound": "找不到您的账户信息，请联系管理员。",
+          "permissionCheckFailed": "无法验证您的权限，请重试或联系管理员。"
         }
       },
       "register": {
@@ -1470,7 +1476,9 @@
           "messages": {
             "loadFailed": "加载翻译数据失败",
             "saveSuccess": "配置保存成功",
-            "saveFailed": "保存配置失败，请重试"
+            "saveFailed": "保存配置失败，请重试",
+            "cleanupImages": "({count}个未使用的{count, plural, one {图片} other {图片}}已删除)",
+            "cleanupFailed": "清理未使用的图片失败"
           },
           "saveActions": {
             "hasChanges": "有未保存的更改",
@@ -1480,6 +1488,19 @@
             "save": "保存更改",
             "saving_": "保存中..."
           }
+        },
+        "imageUpload": {
+          "title": "上传图片",
+          "dropzone": {
+            "title": "拖放图片到此处或点击选择",
+            "subtitle": "拖放图片文件到此处",
+            "formats": "支持格式：JPG、PNG、WEBP、GIF（最大 10MB）"
+          },
+          "upload": "上传",
+          "uploading": "上传中...",
+          "cancel": "取消",
+          "success": "图片上传成功！",
+          "preview": "预览"
         },
         "tabs": {
           "about": "关于页面",
@@ -1710,6 +1731,8 @@
             "displayOrder": "显示顺序",
             "buttonText": "按钮文本",
             "buttonTextPlaceholder": "留空则使用提供商名称",
+            "emailDomain": "邮箱域名",
+            "emailDomainPlaceholder": "例如：example.com",
             "enableProvider": "启用此提供商",
             "baseUrl": "基础URL",
             "baseUrlPlaceholder": "https://sso.example.com",

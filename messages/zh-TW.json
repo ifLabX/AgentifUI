@@ -609,7 +609,13 @@
           "ssoProviderNotFound": "SSO服務設定錯誤，請聯絡管理員",
           "missingTicket": "認證參數缺失，請重新登入",
           "default": "登入過程中出現錯誤，請稍後重試",
-          "loginFailed": "登入失敗，請檢查您的電子郵件和密碼"
+          "loginFailed": "登入失敗，請檢查您的電子郵件和密碼",
+          "accountSuspended": "你的帳戶已被暫時停用。請聯絡管理員尋求協助。",
+          "accountPending": "您的帳戶正在等待審核。請等待管理員啟用您的帳戶。",
+          "invalidAccount": "您的帳戶狀態無效。請聯絡管理員尋求協助。",
+          "profileCheckFailed": "無法驗證你的帳戶狀態。請再試一次或聯絡管理員。",
+          "profileNotFound": "找不到您的帳戶資訊。請聯絡管理員。",
+          "permissionCheckFailed": "無法驗證您的權限。請再試一次或聯絡管理員。"
         }
       },
       "register": {
@@ -1458,7 +1464,9 @@
           "messages": {
             "loadFailed": "載入翻譯資料失敗",
             "saveSuccess": "設定儲存成功",
-            "saveFailed": "儲存設定失敗，請重試"
+            "saveFailed": "儲存設定失敗，請重試",
+            "cleanupImages": "(已移除{count}個未使用的{count, plural, one {image} other {images}})",
+            "cleanupFailed": "無法清理未使用的影像"
           },
           "saveActions": {
             "hasChanges": "有未儲存的變更",
@@ -1509,6 +1517,19 @@
             "copyrightLinkText": "連結文字 (linkText)",
             "copyrightSuffix": "後綴 (suffix)"
           }
+        },
+        "imageUpload": {
+          "title": "上傳商品圖片",
+          "dropzone": {
+            "title": "將圖片拖放到此處或按一下以選擇",
+            "subtitle": "將圖片檔案拖放到此處",
+            "formats": "支援的格式： JPG、PNG、WEBP、GIF （最大10MB ）"
+          },
+          "upload": "上傳",
+          "uploading": "上傳中...",
+          "cancel": "取消",
+          "success": "圖片上傳成功！",
+          "preview": "預習"
         }
       },
       "users": {
@@ -1698,6 +1719,8 @@
             "displayOrder": "顯示順序",
             "buttonText": "按鈕文字",
             "buttonTextPlaceholder": "留空則使用服務商名稱",
+            "emailDomain": "電郵網域",
+            "emailDomainPlaceholder": "例如：example.com",
             "enableProvider": "啟用此服務商",
             "baseUrl": "基礎 URL",
             "baseUrlPlaceholder": "https://sso.example.com",

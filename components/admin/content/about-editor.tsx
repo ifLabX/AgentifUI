@@ -150,7 +150,7 @@ export function AboutEditor({
 
   // Debounced auto-save function
   const debouncedSave = useDebouncedCallback(
-    useCallback(() => {
+    useCallback(async () => {
       if (!pageContent) return;
 
       const updatedTranslation: AboutTranslationData = {
