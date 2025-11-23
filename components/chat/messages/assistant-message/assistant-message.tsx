@@ -66,17 +66,19 @@ const extractMainContentForCopy = (blocks: MessageBlock[]): string => {
 };
 
 // Individual Think Block Component
+interface ThinkBlockItemProps {
+  block: MessageBlock;
+  isStreaming: boolean;
+  isLast: boolean;
+  wasManuallyStopped: boolean;
+}
+
 const ThinkBlockItem = ({
   block,
   isStreaming,
   isLast,
   wasManuallyStopped,
-}: {
-  block: MessageBlock;
-  isStreaming: boolean;
-  isLast: boolean;
-  wasManuallyStopped: boolean;
-}) => {
+}: ThinkBlockItemProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
   // Calculate the current think block status
