@@ -59,6 +59,13 @@ import { Bell } from 'lucide-react';
  * Used in navigation bar to provide quick access to notification center.
  */
 
+/**
+ * NotificationBell Component
+ *
+ * Displays a notification bell icon with unread count badge.
+ * Used in navigation bar to provide quick access to notification center.
+ */
+
 // ============================================================================
 // Types
 // ============================================================================
