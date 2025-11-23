@@ -585,7 +585,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
                 metadata?.dify_metadata?.retriever_resources
               )?.length > 0
                 ? 'mt-0'
-                : 'mt-0'
+                : '-mt-4'
             )}
           />
         </div>

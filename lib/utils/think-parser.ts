@@ -50,20 +50,9 @@ export function parseThinkBlocks(content: string): MessageBlock[] {
         depth = 1;
         blockStartIndex = tagRegex.lastIndex; // Content starts after this tag
       } else {
-        // Found a close tag but we are not in a block.
-        // Treat as text.
-        // We don't do anything special, just let the loop continue.
-        // Ideally we treat this tag as part of the text.
-        // But wait, if we skip it here, it will be captured in the next "text before tag" or "end of string".
-        // Actually, if we ignore it, `lastIndex` is still at the previous position.
-        // We need to make sure we don't skip it in the final capture.
-        // The issue is `tagRegex` consumes it.
-        // If we want to treat it as text, we should NOT treat it as a boundary.
-        // BUT `tagRegex` finds it.
-        // If we ignore it, we just continue. `lastIndex` needs to update?
-        // No, `lastIndex` tracks "end of last processed valid block".
-        // If we ignore this tag, it becomes part of the next text block.
-        // So we just continue.
+        // Found a closing tag while in text mode (e.g., "some text </think>").
+        // Orphaned closing tags are treated as plain text by ignoring the match.
+        // The tag content will be captured as part of the next text block.
       }
     } else {
       // We are in Think mode
