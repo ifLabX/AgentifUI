@@ -154,9 +154,23 @@
     },
     "notifications": {
       "title": "Notifications",
+      "searchPlaceholder": "Search notifications...",
       "empty": {
         "title": "No notifications",
         "description": "You're all caught up!"
+      },
+      "sort": {
+        "label": "Sort by",
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "priorityHigh": "Priority: high to low",
+        "priorityLow": "Priority: low to high"
+      },
+      "filters": {
+        "unreadOnly": "Show unread only"
+      },
+      "actions": {
+        "markAllRead": "Mark all as read"
       }
     },
     "chat": {
@@ -2043,218 +2057,74 @@
         }
       },
       "notifications": {
-        "title": "Notification Management",
-        "subtitle": "Manage system notifications and changelogs",
-        "noData": "No notifications",
-        "noMatchingData": "No matching notifications found",
-        "createButton": "Create Notification",
-        "filtersAndSearch": {
-          "title": "Filter and Search",
-          "filtersButton": "Filters",
-          "searchPlaceholder": "Search notification title or content...",
+        "title": "Notifications (Admin)",
+        "subtitle": "Manage notifications, publish status, and bulk operations.",
+        "count": "{count} items",
+        "filters": {
+          "searchPlaceholder": "Search title or content",
+          "showDrafts": "Show drafts",
+          "sort": {
+            "label": "Sort by",
+            "newest": "Newest first",
+            "oldest": "Oldest first",
+            "priorityHigh": "Priority high→low",
+            "priorityLow": "Priority low→high"
+          }
+        },
+        "table": {
+          "title": "Title",
+          "type": "Type",
+          "category": "Category",
+          "priority": "Priority",
+          "published": "Published",
+          "created": "Created",
+          "actions": "Actions",
+          "publishedBadge": "Published",
+          "draftBadge": "Draft",
+          "empty": "No notifications found."
+        },
+        "actions": {
+          "refresh": "Refresh",
+          "new": "New",
+          "edit": "Edit",
+          "deleteSelected": "Delete selected",
+          "cancel": "Cancel",
+          "create": "Create",
+          "save": "Save changes"
+        },
+        "form": {
+          "title": {
+            "new": "New Notification",
+            "edit": "Edit Notification"
+          },
+          "subtitle": {
+            "new": "Create and publish a notification to users.",
+            "edit": "Update notification content, priority, or publish status."
+          },
           "type": {
             "label": "Type",
-            "all": "All Types",
-            "message": "Message",
-            "changelog": "Changelog"
+            "placeholder": "Type"
           },
           "category": {
             "label": "Category",
-            "all": "All Categories"
+            "placeholder": "e.g. feature, admin_announcement"
           },
           "priority": {
             "label": "Priority",
-            "all": "All Priorities"
-          }
-        },
-        "list": {
-          "title": "Notifications List",
-          "loading": "Loading notifications...",
-          "created": "Created",
-          "published": "Published",
-          "target": "Target",
-          "none": "None"
-        },
-        "actions": {
-          "publish": "Publish",
-          "unpublish": "Unpublish",
-          "edit": "Edit",
-          "delete": "Delete",
-          "confirmDelete": "Are you sure you want to delete this notification?",
-          "deleteError": "Delete failed, please try again",
-          "updateError": "Update failed, please try again"
-        },
-        "categories": {
-          "admin_announcement": {
-            "label": "Admin Announcement",
-            "description": "Important announcements from administrators"
+            "placeholder": "Priority"
           },
-          "agent_result": {
-            "label": "Agent Result",
-            "description": "Results and status updates from automated agents"
+          "published": {
+            "label": "Published",
+            "on": "Published",
+            "off": "Draft"
           },
-          "token_usage": {
-            "label": "Token Usage",
-            "description": "Token consumption and usage warnings"
-          },
-          "system_maintenance": {
-            "label": "System Maintenance",
-            "description": "Scheduled maintenance and system updates"
-          },
-          "security_alert": {
-            "label": "Security Alert",
-            "description": "Security-related warnings and alerts"
-          },
-          "feature_tip": {
-            "label": "Feature Tip",
-            "description": "Tips and guidance on using features"
-          },
-          "feature": {
-            "label": "New Feature",
-            "description": "New feature announcements and updates"
-          },
-          "improvement": {
-            "label": "Improvement",
-            "description": "System improvements and enhancements"
-          },
-          "bugfix": {
-            "label": "Bug Fix",
-            "description": "Bug fixes and issue resolutions"
-          },
-          "security": {
-            "label": "Security Update",
-            "description": "Security patches and updates"
-          },
-          "api_change": {
-            "label": "API Change",
-            "description": "API changes and modifications"
-          }
-        },
-        "priorities": {
-          "low": {
-            "label": "Low",
-            "description": "Non-urgent information and tips"
-          },
-          "medium": {
-            "label": "Medium",
-            "description": "Standard notifications and updates"
-          },
-          "high": {
-            "label": "High",
-            "description": "Important notifications requiring attention"
-          },
-          "critical": {
-            "label": "Critical",
-            "description": "Urgent notifications requiring immediate action"
-          }
-        },
-        "types": {
-          "message": "Message",
-          "changelog": "Changelog"
-        },
-        "status": {
-          "published": "Published",
-          "draft": "Draft"
-        },
-        "create": {
-          "title": "Create Notification",
-          "subtitle": "Create and send notifications to users",
-          "backButton": "Back to Notifications",
-          "editButton": "Edit",
-          "previewButton": "Preview",
-          "saveDraftButton": "Save Draft",
-          "publishButton": "Publish",
-          "savingButton": "Saving...",
-          "publishingButton": "Publishing...",
-          "basicInfo": {
-            "title": "Basic Information",
-            "type": {
-              "label": "Type",
-              "message": "Message",
-              "changelog": "Changelog"
-            },
-            "category": {
-              "label": "Category"
-            },
-            "notificationTitle": {
-              "label": "Title",
-              "placeholder": "Enter notification title"
-            },
-            "priority": {
-              "label": "Priority"
-            }
+          "titleField": {
+            "label": "Title",
+            "placeholder": "Title"
           },
           "content": {
-            "title": "Content",
             "label": "Content",
-            "placeholder": "Enter notification content...",
-            "variableHint": "Use variables like '{username}', '{time}' for dynamic content",
-            "variableInsert": {
-              "title": "Insert Variables"
-            }
-          },
-          "targeting": {
-            "title": "Target Settings",
-            "roles": {
-              "label": "Target Roles",
-              "user": "Users",
-              "admin": "Administrators",
-              "developer": "Developers",
-              "tester": "Testers"
-            },
-            "scheduling": {
-              "label": "Scheduled Time (Optional)",
-              "placeholder": "Leave empty to send immediately"
-            }
-          },
-          "templates": {
-            "title": "Quick Templates",
-            "tokenWarning": {
-              "title": "Token Usage Warning",
-              "content": "Dear '{username}', your token usage has reached '{percentage}'% of your limit ('{currentUsage}'/'{limit}'). Please consider upgrading your plan to continue using our services."
-            },
-            "agentResult": {
-              "title": "Agent Task Completed",
-              "content": "Your agent task '{agentName}' has been completed successfully. Duration: '{duration}'. Result: '{result}'"
-            },
-            "maintenance": {
-              "title": "Scheduled Maintenance",
-              "content": "We will be performing scheduled maintenance on '{date}' from '{time}'. During this period, some services may be temporarily unavailable. Details: '{details}'"
-            },
-            "securityAlert": {
-              "title": "Security Alert",
-              "content": "We detected unusual activity from your account at '{time}' from IP '{ip}'. If this wasn't you, please change your password immediately and contact support."
-            },
-            "newFeature": {
-              "title": "New Feature Announcement",
-              "content": "We're excited to introduce '{featureName}'! This new feature allows you to '{features}'. Start exploring it today!"
-            }
-          },
-          "preview": {
-            "title": "Preview",
-            "targetRoles": "Target Roles",
-            "scheduledTime": "Scheduled Time"
-          },
-          "tips": {
-            "title": "Tips",
-            "priorityAdvice": "Priority Guidelines:",
-            "priorityItems": [
-              "Critical: System outages, security breaches",
-              "High: Important updates, maintenance notices",
-              "Medium: New features, improvements",
-              "Low: Tips, minor updates"
-            ],
-            "contentAdvice": "Content Best Practices:",
-            "contentItems": [
-              "Keep titles concise and clear",
-              "Use variables for personalization",
-              "Include action items when applicable",
-              "Test with preview before publishing"
-            ]
-          },
-          "messages": {
-            "saveSuccess": "Notification saved successfully",
-            "saveFailed": "Failed to save notification"
+            "placeholder": "Content"
           }
         }
       }
@@ -2454,46 +2324,12 @@
     },
     "notificationCenter": {
       "title": "Notifications",
+      "markAllAsRead": "Mark all as read",
+      "settings": "Notification settings",
       "tabs": {
         "all": "All",
         "changelog": "Updates",
-        "message": "Messages",
         "messages": "Messages"
-      },
-      "actions": {
-        "markAllRead": "Mark all as read",
-        "viewAll": "View all"
-      },
-      "empty": {
-        "title": "No notifications",
-        "description": "You're all caught up!",
-        "all": "No notifications yet",
-        "changelog": "No updates yet",
-        "messages": "No messages yet"
-      },
-      "loading": "Loading notifications...",
-      "close": "Close notifications",
-      "categories": {
-        "admin_announcement": "Admin Announcement",
-        "agent_result": "Agent Result",
-        "token_usage": "Token Usage",
-        "system_maintenance": "System Maintenance",
-        "security_alert": "Security Alert",
-        "feature_tip": "Feature Tip",
-        "feature": "New Feature",
-        "improvement": "Improvement",
-        "bugfix": "Bug Fix",
-        "security": "Security Update",
-        "api_change": "API Change"
-      },
-      "page": {
-        "title": "Notifications",
-        "searchPlaceholder": "Search notifications...",
-        "backButton": "Back"
-      },
-      "types": {
-        "message": "Message",
-        "changelog": "Changelog"
       }
     },
     "notificationItem": {
@@ -2537,16 +2373,6 @@
         "yesterday": "Yesterday",
         "thisWeek": "This Week",
         "thisMonth": "This Month"
-      }
-    },
-    "notificationCenter": {
-      "title": "Notifications",
-      "markAllAsRead": "Mark all as read",
-      "settings": "Notification settings",
-      "tabs": {
-        "all": "All",
-        "changelog": "Updates",
-        "messages": "Messages"
       }
     }
   },

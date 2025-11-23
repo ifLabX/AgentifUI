@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
     const priorityParam = searchParams.get('priority');
     const sortByParam = searchParams.get('sort_by');
     const sortOrderParam = searchParams.get('sort_order');
+    const searchParam = searchParams.get('search');
 
     // Get all valid notification categories from type definition
     const validCategories: readonly NotificationCategory[] = [
@@ -97,6 +98,7 @@ export async function GET(request: NextRequest) {
         sortOrderParam === 'asc' || sortOrderParam === 'desc'
           ? sortOrderParam
           : 'desc',
+      search: searchParam || undefined,
     };
 
     // Validate pagination parameters

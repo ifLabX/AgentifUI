@@ -2,14 +2,23 @@
 
 import { NotificationList } from '@components/notification/notification-list';
 import { Button } from '@components/ui/button';
+import { Input } from '@components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/ui/select';
+import { Switch } from '@components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { useNotificationStore } from '@lib/stores/notification-store';
 import { useSidebarStore } from '@lib/stores/sidebar-store';
 import type { NotificationTab } from '@lib/types/notification-center';
 import { cn } from '@lib/utils';
-import { Bell } from 'lucide-react';
+import { Bell, Check, Filter } from 'lucide-react';
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -37,11 +46,26 @@ export default function NotificationsPage() {
     isLoading,
     activeTab,
     setActiveTab,
+    markAllAsRead,
   } = useNotificationStore();
 
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'created_at' | 'priority'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [includeRead, setIncludeRead] = useState(true);
+
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    const timeout = setTimeout(() => {
+      fetchNotifications({
+        search: search.trim() || undefined,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+        include_read: includeRead,
+      });
+    }, 200);
+
+    return () => clearTimeout(timeout);
+  }, [fetchNotifications, search, sortBy, sortOrder, includeRead, activeTab]);
 
   const sidebarPaddingClass = useMemo(
     () => (isExpanded ? 'md:pl-64 xl:pl-72' : 'md:pl-16 lg:pl-20'),
@@ -65,6 +89,14 @@ export default function NotificationsPage() {
   const handleLoadMore = useCallback(() => {
     void loadMore();
   }, [loadMore]);
+
+  const handleMarkAllAsRead = useCallback(() => {
+    void markAllAsRead();
+  }, [markAllAsRead]);
+
+  const handleIncludeReadToggle = useCallback((checked: boolean) => {
+    setIncludeRead(checked);
+  }, []);
 
   const shouldShowEmpty = !isLoading && notifications.length === 0;
 
@@ -93,6 +125,70 @@ export default function NotificationsPage() {
             ))}
           </TabsList>
         </Tabs>
+
+        <div className="w-full rounded-xl border border-stone-200 bg-white/80 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800/60">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-1 items-center gap-3">
+              <Input
+                placeholder={tPage('searchPlaceholder')}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full md:max-w-xs"
+              />
+              <Select
+                value={`${sortBy}:${sortOrder}`}
+                onValueChange={value => {
+                  const [by, order] = value.split(':') as [
+                    'created_at' | 'priority',
+                    'asc' | 'desc',
+                  ];
+                  setSortBy(by);
+                  setSortOrder(order);
+                }}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder={tPage('sort.label')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created_at:desc">
+                    {tPage('sort.newest')}
+                  </SelectItem>
+                  <SelectItem value="created_at:asc">
+                    {tPage('sort.oldest')}
+                  </SelectItem>
+                  <SelectItem value="priority:desc">
+                    {tPage('sort.priorityHigh')}
+                  </SelectItem>
+                  <SelectItem value="priority:asc">
+                    {tPage('sort.priorityLow')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-stone-600 dark:text-stone-300">
+                <Filter className="h-4 w-4" />
+                <span>{tPage('filters.unreadOnly')}</span>
+                <Switch
+                  checked={!includeRead}
+                  onCheckedChange={checked => handleIncludeReadToggle(!checked)}
+                  aria-label={tPage('filters.unreadOnly')}
+                />
+              </div>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleMarkAllAsRead}
+                className="flex items-center gap-1"
+              >
+                <Check className="h-4 w-4" />
+                {tPage('actions.markAllRead')}
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {shouldShowEmpty ? (
           <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-3 py-24">

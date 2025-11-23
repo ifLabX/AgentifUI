@@ -115,6 +115,7 @@ export interface GetNotificationsParams {
   priority?: NotificationPriority;
   sort_by?: 'created_at' | 'published_at' | 'priority';
   sort_order?: 'asc' | 'desc';
+  search?: string;
 }
 
 /**

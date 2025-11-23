@@ -153,10 +153,24 @@
       }
     },
     "notifications": {
-      "title": "通知",
+      "title": "通知中心",
+      "searchPlaceholder": "搜索通知...",
       "empty": {
         "title": "暂无通知",
         "description": "暂时没有新的提醒。"
+      },
+      "sort": {
+        "label": "排序",
+        "newest": "最新优先",
+        "oldest": "最旧优先",
+        "priorityHigh": "优先级：高到低",
+        "priorityLow": "优先级：低到高"
+      },
+      "filters": {
+        "unreadOnly": "只看未读"
+      },
+      "actions": {
+        "markAllRead": "全部标记已读"
       }
     },
     "chat": {
@@ -2043,218 +2057,74 @@
         }
       },
       "notifications": {
-        "title": "通知管理",
-        "subtitle": "管理系统通知和更新日志",
-        "noData": "暂无通知",
-        "noMatchingData": "未找到匹配的通知",
-        "createButton": "创建通知",
-        "filtersAndSearch": {
-          "title": "筛选和搜索",
-          "filtersButton": "筛选",
-          "searchPlaceholder": "搜索通知标题或内容...",
+        "title": "通知（管理端）",
+        "subtitle": "管理通知、发布状态和批量操作。",
+        "count": "{count} 条",
+        "filters": {
+          "searchPlaceholder": "搜索标题或内容",
+          "showDrafts": "显示草稿",
+          "sort": {
+            "label": "排序",
+            "newest": "最新优先",
+            "oldest": "最旧优先",
+            "priorityHigh": "优先级高→低",
+            "priorityLow": "优先级低→高"
+          }
+        },
+        "table": {
+          "title": "标题",
+          "type": "类型",
+          "category": "分类",
+          "priority": "优先级",
+          "published": "发布状态",
+          "created": "创建时间",
+          "actions": "操作",
+          "publishedBadge": "已发布",
+          "draftBadge": "草稿",
+          "empty": "暂无通知"
+        },
+        "actions": {
+          "refresh": "刷新",
+          "new": "新建",
+          "edit": "编辑",
+          "deleteSelected": "删除所选",
+          "cancel": "取消",
+          "create": "创建",
+          "save": "保存修改"
+        },
+        "form": {
+          "title": {
+            "new": "新建通知",
+            "edit": "编辑通知"
+          },
+          "subtitle": {
+            "new": "创建并发布通知给用户。",
+            "edit": "更新通知内容、优先级或发布状态。"
+          },
           "type": {
             "label": "类型",
-            "all": "所有类型",
-            "message": "消息",
-            "changelog": "更新日志"
+            "placeholder": "类型"
           },
           "category": {
             "label": "分类",
-            "all": "所有分类"
+            "placeholder": "例如：feature, admin_announcement"
           },
           "priority": {
             "label": "优先级",
-            "all": "所有优先级"
-          }
-        },
-        "list": {
-          "title": "通知列表",
-          "loading": "正在加载通知...",
-          "created": "创建于",
-          "published": "发布于",
-          "target": "目标",
-          "none": "无"
-        },
-        "actions": {
-          "publish": "发布",
-          "unpublish": "取消发布",
-          "edit": "编辑",
-          "delete": "删除",
-          "confirmDelete": "您确定要删除此通知吗？",
-          "deleteError": "删除失败，请重试",
-          "updateError": "更新失败，请重试"
-        },
-        "categories": {
-          "admin_announcement": {
-            "label": "管理员公告",
-            "description": "来自管理员的重要公告"
+            "placeholder": "优先级"
           },
-          "agent_result": {
-            "label": "代理结果",
-            "description": "自动代理的结果和状态更新"
+          "published": {
+            "label": "发布状态",
+            "on": "已发布",
+            "off": "草稿"
           },
-          "token_usage": {
-            "label": "Token 使用量",
-            "description": "Token 消耗和使用量警告"
-          },
-          "system_maintenance": {
-            "label": "系统维护",
-            "description": "计划维护和系统更新"
-          },
-          "security_alert": {
-            "label": "安全警报",
-            "description": "安全相关的警告和提醒"
-          },
-          "feature_tip": {
-            "label": "功能提示",
-            "description": "功能使用技巧和指导"
-          },
-          "feature": {
-            "label": "新功能",
-            "description": "新功能公告和更新"
-          },
-          "improvement": {
-            "label": "改进",
-            "description": "系统改进和增强"
-          },
-          "bugfix": {
-            "label": "错误修复",
-            "description": "错误修复和问题解决"
-          },
-          "security": {
-            "label": "安全更新",
-            "description": "安全补丁和更新"
-          },
-          "api_change": {
-            "label": "API 变更",
-            "description": "API 更改和修改"
-          }
-        },
-        "priorities": {
-          "low": {
-            "label": "低",
-            "description": "非紧急信息和提示"
-          },
-          "medium": {
-            "label": "中",
-            "description": "标准通知和更新"
-          },
-          "high": {
-            "label": "高",
-            "description": "需要注意的重要通知"
-          },
-          "critical": {
-            "label": "紧急",
-            "description": "需要立即处理的紧急通知"
-          }
-        },
-        "types": {
-          "message": "消息",
-          "changelog": "更新日志"
-        },
-        "status": {
-          "published": "已发布",
-          "draft": "草稿"
-        },
-        "create": {
-          "title": "创建通知",
-          "subtitle": "创建并发送通知给用户",
-          "backButton": "返回通知列表",
-          "editButton": "编辑",
-          "previewButton": "预览",
-          "saveDraftButton": "保存草稿",
-          "publishButton": "立即发布",
-          "savingButton": "保存中...",
-          "publishingButton": "发布中...",
-          "basicInfo": {
-            "title": "基本信息",
-            "type": {
-              "label": "类型",
-              "message": "消息",
-              "changelog": "更新日志"
-            },
-            "category": {
-              "label": "分类"
-            },
-            "notificationTitle": {
-              "label": "标题",
-              "placeholder": "请输入通知标题"
-            },
-            "priority": {
-              "label": "优先级"
-            }
+          "titleField": {
+            "label": "标题",
+            "placeholder": "标题"
           },
           "content": {
-            "title": "内容",
             "label": "内容",
-            "placeholder": "请输入通知内容...",
-            "variableHint": "使用变量如 '{username}'、'{time}' 来实现动态内容",
-            "variableInsert": {
-              "title": "插入变量"
-            }
-          },
-          "targeting": {
-            "title": "目标设置",
-            "roles": {
-              "label": "目标角色",
-              "user": "用户",
-              "admin": "管理员",
-              "developer": "开发者",
-              "tester": "测试员"
-            },
-            "scheduling": {
-              "label": "定时发送（可选）",
-              "placeholder": "留空表示立即发送"
-            }
-          },
-          "templates": {
-            "title": "快速模板",
-            "tokenWarning": {
-              "title": "Token 使用警告",
-              "content": "亲爱的 '{username}'，您的 Token 使用量已达到限额的 '{percentage}'%（'{currentUsage}'/'{limit}'）。请考虑升级您的套餐以继续使用我们的服务。"
-            },
-            "agentResult": {
-              "title": "代理任务完成",
-              "content": "您的代理任务「'{agentName}'」已成功完成。耗时：'{duration}'。结果：'{result}'"
-            },
-            "maintenance": {
-              "title": "计划维护通知",
-              "content": "我们将在 '{date}' '{time}' 进行计划维护。在此期间，部分服务可能暂时不可用。详情：'{details}'"
-            },
-            "securityAlert": {
-              "title": "安全警报",
-              "content": "我们在 '{time}' 检测到来自 IP '{ip}' 的异常活动。如果这不是您的操作，请立即更改密码并联系客服。"
-            },
-            "newFeature": {
-              "title": "新功能公告",
-              "content": "我们很兴奋地推出 '{featureName}'！这个新功能让您可以 '{features}'。快来体验吧！"
-            }
-          },
-          "preview": {
-            "title": "预览",
-            "targetRoles": "目标角色",
-            "scheduledTime": "定时发送"
-          },
-          "tips": {
-            "title": "提示",
-            "priorityAdvice": "优先级指南：",
-            "priorityItems": [
-              "紧急：系统故障、安全漏洞",
-              "高：重要更新、维护通知",
-              "中：新功能、改进",
-              "低：提示、小更新"
-            ],
-            "contentAdvice": "内容最佳实践：",
-            "contentItems": [
-              "保持标题简洁明了",
-              "使用变量进行个性化",
-              "包含行动要求（如适用）",
-              "发布前使用预览功能测试"
-            ]
-          },
-          "messages": {
-            "saveSuccess": "通知保存成功",
-            "saveFailed": "通知保存失败"
+            "placeholder": "内容"
           }
         }
       }
@@ -2453,47 +2323,13 @@
       }
     },
     "notificationCenter": {
-      "title": "通知",
+      "title": "通知中心",
+      "markAllAsRead": "全部标为已读",
+      "settings": "通知设置",
       "tabs": {
         "all": "全部",
         "changelog": "更新日志",
-        "message": "消息",
         "messages": "消息"
-      },
-      "actions": {
-        "markAllRead": "全部已读",
-        "viewAll": "查看全部"
-      },
-      "empty": {
-        "title": "暂无通知",
-        "description": "您已查看了所有通知！",
-        "all": "暂无通知",
-        "changelog": "暂无更新",
-        "messages": "暂无消息"
-      },
-      "loading": "加载通知中...",
-      "close": "关闭通知",
-      "categories": {
-        "admin_announcement": "管理员公告",
-        "agent_result": "智能体结果",
-        "token_usage": "Token使用量",
-        "system_maintenance": "系统维护",
-        "security_alert": "安全警报",
-        "feature_tip": "功能提示",
-        "feature": "新功能",
-        "improvement": "功能改进",
-        "bugfix": "问题修复",
-        "security": "安全更新",
-        "api_change": "API变更"
-      },
-      "page": {
-        "title": "通知",
-        "searchPlaceholder": "搜索通知...",
-        "backButton": "返回"
-      },
-      "types": {
-        "message": "消息",
-        "changelog": "更新日志"
       }
     },
     "notificationItem": {
@@ -2537,16 +2373,6 @@
         "yesterday": "昨天",
         "thisWeek": "本周",
         "thisMonth": "本月"
-      }
-    },
-    "notificationCenter": {
-      "title": "通知中心",
-      "markAllAsRead": "全部标为已读",
-      "settings": "通知设置",
-      "tabs": {
-        "all": "全部",
-        "changelog": "更新日志",
-        "messages": "消息"
       }
     }
   },

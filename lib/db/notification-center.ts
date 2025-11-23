@@ -146,6 +146,13 @@ export async function getNotificationsWithReadStatus(
     query = query.eq('priority', params.priority);
   }
 
+  if (params.search) {
+    const term = `%${params.search}%`;
+    query = query.or(
+      `title.ilike.${term},content.ilike.${term},category.ilike.${term}`
+    );
+  }
+
   // Apply pagination
   if (params.limit) {
     query = query.limit(params.limit);
@@ -223,6 +230,13 @@ export async function getAllNotificationsForAdmin(
 
   if (params.priority) {
     query = query.eq('priority', params.priority);
+  }
+
+  if (params.search) {
+    const term = `%${params.search}%`;
+    query = query.or(
+      `title.ilike.${term},content.ilike.${term},category.ilike.${term}`
+    );
   }
 
   // Apply pagination
