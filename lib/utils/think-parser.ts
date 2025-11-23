@@ -6,6 +6,8 @@ export interface MessageBlock {
   status?: ThinkBlockStatus; // Only for 'think' type
 }
 
+type ThinkTagType = 'think' | 'details';
+
 /**
  * Parses a message string into a sequence of think blocks and text blocks.
  * Supports:
@@ -23,13 +25,13 @@ export function parseThinkBlocks(content: string): MessageBlock[] {
 
   let lastIndex = 0;
   let depth = 0;
-  let activeTagType: string | null = null; // 'think' or 'details'
+  let activeTagType: ThinkTagType | null = null; // 'think' or 'details'
   let blockStartIndex = 0; // Where the current Think block content started (after the opening tag)
 
   let match;
   while ((match = tagRegex.exec(content)) !== null) {
     const tagFull = match[0];
-    const tagName = match[1].toLowerCase();
+    const tagName = match[1].toLowerCase() as ThinkTagType;
     const isCloseTag = tagFull.startsWith('</');
     const matchIndex = match.index;
 

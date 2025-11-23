@@ -55,11 +55,11 @@ import { StreamingText } from './streaming-markdown';
 
 // Extract main content for copy (concatenates text blocks)
 const extractMainContentForCopy = (blocks: MessageBlock[]): string => {
-  // Only include text blocks
+  // Only include text blocks and keep their original spacing intact.
   const textContent = blocks
     .filter(block => block.type === 'text')
     .map(block => block.content)
-    .join('\n');
+    .join('');
 
   // Remove extra blank lines
   return textContent.replace(/\n\s*\n/g, '\n').trim();

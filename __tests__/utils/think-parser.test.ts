@@ -6,6 +6,16 @@ describe('parseThinkBlocks', () => {
     expect(result).toEqual([{ type: 'text', content: 'Hello world' }]);
   });
 
+  it('should handle empty string input', () => {
+    const result = parseThinkBlocks('');
+    expect(result).toEqual([]);
+  });
+
+  it('should handle whitespace-only input', () => {
+    const result = parseThinkBlocks('   ');
+    expect(result).toEqual([{ type: 'text', content: '   ' }]);
+  });
+
   it('should parse a simple closed think block', () => {
     const result = parseThinkBlocks('<think>I am thinking</think>');
     expect(result).toEqual([
@@ -27,6 +37,11 @@ describe('parseThinkBlocks', () => {
       { type: 'think', content: 'thinking...', status: 'closed' },
       { type: 'text', content: ' World' },
     ]);
+  });
+
+  it('should parse empty think block', () => {
+    const result = parseThinkBlocks('<think></think>');
+    expect(result).toEqual([{ type: 'think', content: '', status: 'closed' }]);
   });
 
   it('should parse interleaved blocks', () => {
@@ -106,6 +121,11 @@ describe('parseThinkBlocks', () => {
   it('should treat orphaned closing tags as text', () => {
     const result = parseThinkBlocks('Hello </think> World');
     expect(result).toEqual([{ type: 'text', content: 'Hello </think> World' }]);
+  });
+
+  it('should handle only orphaned closing tag input', () => {
+    const result = parseThinkBlocks('</think>');
+    expect(result).toEqual([{ type: 'text', content: '</think>' }]);
   });
 
   it('should handle multiple lines and attributes', () => {
