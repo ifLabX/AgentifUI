@@ -87,20 +87,11 @@ const ThinkBlockItem = ({
     if (wasManuallyStopped) {
       return 'stopped';
     }
-    // If it's open and either it's the last block (active) or just open
-    // Actually if it's open and NOT last, it's effectively stopped/incomplete but not active.
-    // But our parser marks unclosed blocks as 'open'.
-    // If stream is done (!isStreaming), then it's completed/stopped.
-    if (!isStreaming) {
-      return 'completed'; // or stopped?
-    }
-
-    // If streaming and it is the last block, it is thinking.
+    // Parser leaves unfinished <think> tags "open"; only the last streaming block counts as thinking.
     if (isStreaming && isLast) {
       return 'thinking';
     }
 
-    // If streaming but not last (e.g. we moved to next text block), then this block is done (but unclosed tag).
     return 'completed';
   };
 
