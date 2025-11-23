@@ -40,8 +40,6 @@ export function parseThinkBlocks(content: string): MessageBlock[] {
         // 1. Capture text before this tag
         if (matchIndex > lastIndex) {
           const textContent = content.slice(lastIndex, matchIndex);
-          // Merge with previous text block if exists?
-          // For now, just push
           blocks.push({ type: 'text', content: textContent });
         }
 
