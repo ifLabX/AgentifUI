@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- **CRITICAL**: Fixed CVE-2025-55182 - React Server Components Remote Code Execution vulnerability (Critical Severity, CVSS 10.0)
 - **CRITICAL**: Fixed CVE-2025-55184 & CVE-2025-67779 - Denial of Service vulnerabilities (High Severity, CVSS 7.5)
 - **CRITICAL**: Fixed CVE-2025-55183 - Source Code Exposure vulnerability (Medium Severity, CVSS 5.3)
 - Upgraded React from 19.1.1 to 19.1.4
