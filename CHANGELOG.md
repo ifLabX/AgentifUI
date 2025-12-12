@@ -5,6 +5,80 @@ All notable changes to AgentifUI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-12-12
+
+### Security
+
+- **CRITICAL**: Fixed CVE-2025-55184 & CVE-2025-67779 - Denial of Service vulnerabilities (High Severity, CVSS 7.5)
+- **CRITICAL**: Fixed CVE-2025-55183 - Source Code Exposure vulnerability (Medium Severity, CVSS 5.3)
+- Upgraded React from 19.1.1 to 19.1.4
+- Upgraded Next.js from 15.4.7 to 15.4.10
+
+### Added
+
+- Enhanced think block parsing for multiple and nested blocks (#305)
+- Complete admin content image upload system (#288, #286, #283)
+  - Image upload service and custom hook (#283)
+  - Image upload dialog component (#286)
+  - Editor integration (#288)
+  - Auto-cleanup for unused content images (#289)
+- Content-images storage bucket for admin editor (#278)
+- Configurable email domain for SSO providers (#274)
+- Comprehensive document preview system with i18n support (#194)
+- Search functionality in application instances list (#192)
+- English fallback for missing translation keys (#186)
+- Version display in about menu (#201)
+- Optimized CI workflows and i18n translation system (#204)
+- MCP server configuration with environment variables (#202)
+- Enhanced Claude AI agent reviewer capabilities
+
+### Fixed
+
+- Dify retriever resource extraction from metadata (#287)
+- Image upload race condition and premature cleanup (#291)
+- Image alignment property in content editor (#282)
+- Image width/height input handling in context menu (#277)
+- UUID generation function migration from uuid_generate_v4() to gen_random_uuid() (#271)
+- Invalid Beijing timezone and validation feedback (#260)
+- Confirm dialog blocking background modal interactions (#259)
+- Start Exploring button navigation URL in all languages (#246)
+- Provider management modal UI and functionality (#217)
+- Hardcoded text replacement with i18n in file preview (#207)
+- Color mapping in sidebar and chat-input components (#233)
+- Sidebar highlight mutex behavior consistency (#198)
+- Sidebar highlight delay when switching conversations (#190)
+- CI PR creation authentication issues (#206)
+- Lint issues with safe unused variable and import removal (#200)
+
+### Changed
+
+- **Major**: Migrated entire codebase from isDark conditional logic to Tailwind dark: prefix
+  - 250+ conversions across 20+ pull requests
+  - Improved code consistency and maintainability
+  - Better Tailwind CSS best practices adoption
+- Rebuilt content editor with drag-and-drop component system (#209)
+- Centralized auth error handling with enhanced security validation (#280)
+- Aligned Claude agents with AgentifUI project requirements (#191)
+- Eliminated explicit any types in Dify services (#211)
+- Improved desktop user avatar component with Tailwind best practices (#216)
+
+### Removed
+
+- Deprecated stagewise toolbar integration (#189)
+- Docker deployment section from documentation (#188)
+- Unused files and cleaned up PM2 scripts (#183)
+
+### Chores
+
+- Updated Jest to latest version (#306)
+- Added Speckit framework configuration (#294)
+- Locked pnpm version to 10.14.0 (#212)
+- Updated favicon (#219)
+- Added ccusage statusline in Claude Code (#210)
+- Moved .claude/settings.json to example file (#270)
+- Restructured and cleaned up documentation (#187)
+- Auto-updated translations (#297, #285, #242, #218, #208)
+
 ## [0.1.0] - 2025-07-31
 
 ### Added
@@ -100,4 +174,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Code Standards**: Consistent code style and quality standards
 - **CI/CD Ready**: Prepared for continuous integration and deployment
 
+[0.2.0]: https://github.com/ifLabX/AgentifUI/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ifLabX/AgentifUI/releases/tag/v0.1.0
